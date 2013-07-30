@@ -189,11 +189,9 @@ namespace Mono.TextEditor.Utils
 
 					if (parent.Left == item) {
 						parent.Left = null;
-
 						DeleteBalanceTree (parent, -1);
 					} else {
 						parent.Right = null;
-
 						DeleteBalanceTree (parent, 1);
 					}
 				} else {
@@ -207,7 +205,6 @@ namespace Mono.TextEditor.Utils
 				DeleteBalanceTree (item, 0);
 			} else {
 				var successor = right;
-
 				if (successor.Left == null) {
 					IAvlNode parent = item.Parent;
 
@@ -309,7 +306,7 @@ namespace Mono.TextEditor.Utils
 
 		#endregion
 
-		void RotateRightRight (IAvlNode node)
+		void RotateRight (IAvlNode node)
 		{
 			IAvlNode rightChild = node.Right;
 			IAvlNode rightLeft = null;
@@ -323,25 +320,26 @@ namespace Mono.TextEditor.Utils
 				node.Balance = -rightChild.Balance;
 			}
 
-			node.Right = rightLeft;
 			node.Parent = rightChild;
+			node.Right = rightLeft;
 
-			if (rightLeft != null) {
+			if (rightLeft != null)
 				rightLeft.Parent = node;
-			}
 			node.UpdateAugmentedData ();
+
 			if (node == Root) {
 				Root = (T)rightChild;
-			} else if (parent.Right == node) {
-				parent.Right = rightChild;
-				parent.UpdateAugmentedData ();
 			} else {
-				parent.Left = rightChild;
+				if (parent.Right == node) {
+					parent.Right = rightChild;
+				} else {
+					parent.Left = rightChild;
+				}
 				parent.UpdateAugmentedData ();
 			}
 		}
 
-		void RotateLeftLeft (IAvlNode node)
+		void RotateLeft (IAvlNode node)
 		{
 			IAvlNode leftChild = node.Left;
 			IAvlNode leftRight = null;
@@ -358,18 +356,18 @@ namespace Mono.TextEditor.Utils
 			node.Parent = leftChild;
 			node.Left = leftRight;
 
-			if (leftRight != null) {
+			if (leftRight != null)
 				leftRight.Parent = node;
-			}
 			node.UpdateAugmentedData ();
 
 			if (node == Root) {
 				Root = (T)leftChild;
-			} else if (parent.Left == node) {
-				parent.Left = leftChild;
-				parent.UpdateAugmentedData ();
 			} else {
-				parent.Right = leftChild;
+				if (parent.Left == node) {
+					parent.Left = leftChild;
+				} else {
+					parent.Right = leftChild;
+				}
 				parent.UpdateAugmentedData ();
 			}
 		}
@@ -380,12 +378,10 @@ namespace Mono.TextEditor.Utils
 			IAvlNode rightLeft = null;
 			IAvlNode rightLeftRight = null;
 
-			if (rightChild != null) {
+			if (rightChild != null)
 				rightLeft = rightChild.Left;
-			}
-			if (rightLeft != null) {
+			if (rightLeft != null)
 				rightLeftRight = rightLeft.Right;
-			}
 
 			node.Right = rightLeft;
 
@@ -401,20 +397,22 @@ namespace Mono.TextEditor.Utils
 				rightChild.Balance--;
 			}
 
-			if (rightLeftRight != null) {
+			if (rightLeftRight != null)
 				rightLeftRight.Parent = rightChild;
-			}
-			RotateRightRight (node);
+
+			RotateRight (node);
 		}
 
 		void RotateLeftRight (IAvlNode node)
 		{
 			IAvlNode leftChild = node.Left;
-			IAvlNode leftRight = leftChild.Right;
+			IAvlNode leftRight = null;
 			IAvlNode leftRightLeft = null;
-			if (leftRight != null) {
+
+			if (leftChild != null)
+				leftRight = leftChild.Right;
+			if (leftRight != null)
 				leftRightLeft = leftRight.Left;
-			}
 
 			node.Left = leftRight;
 
@@ -430,62 +428,62 @@ namespace Mono.TextEditor.Utils
 				leftChild.Balance++;
 			}
 
-			if (leftRightLeft != null) {
+			if (leftRightLeft != null)
 				leftRightLeft.Parent = leftChild;
-			}
 
-			RotateLeftLeft (node);
+			RotateLeft (node);
 		}
 
-		void InsertBalanceTree (IAvlNode node, int addBalance)
+		void InsertBalanceTree (IAvlNode node, int balance)
 		{
 			while (node != null) {
-				node.Balance += addBalance;
+				node.Balance += balance;
+				balance = node.Balance;
 
-				if (node.Balance == 0)
+				if (balance == 0)
 					break;
-				if (node.Balance == 2) {
+				if (balance == 2) {
 					if (node.Left.Balance == 1) {
-						RotateLeftLeft (node);
+						RotateLeft (node);
 					} else {
 						RotateLeftRight (node);
 					}
 					break;
 				}
 
-				if (node.Balance == -2) {
+				if (balance == -2) {
 					if (node.Right.Balance == -1) {
-						RotateRightRight (node);
+						RotateRight (node);
 					} else {
 						RotateRightLeft (node);
 					}
 					break;
 				}
 
-				if (node.Parent != null)
-					addBalance = node.Parent.Left == node ? 1 : -1;
-				node = node.Parent;
+				var parent = node.Parent;
+				if (parent != null)
+					balance = parent.Left == node ? 1 : -1;
+				node = parent;
 			}
 		}
 
-		void DeleteBalanceTree (IAvlNode node, int addBalance)
+		void DeleteBalanceTree (IAvlNode node, int balance)
 		{
 			while (node != null) {
-				node.Balance += addBalance;
-				addBalance = node.Balance;
-
-				if (node.Balance == 2) {
+				node.Balance += balance;
+				balance = node.Balance;
+				if (balance == 2) {
 					if (node.Left != null && node.Left.Balance >= 0) {
-						RotateLeftLeft (node);
+						RotateLeft (node);
 
 						if (node.Balance == -1)
 							return;
 					} else {
 						RotateLeftRight (node);
 					}
-				} else if (node.Balance == -2) {
+				} else if (balance == -2) {
 					if (node.Right != null && node.Right.Balance <= 0) {
-						RotateRightRight (node);
+						RotateRight (node);
 
 						if (node.Balance == 1)
 							return;
@@ -496,15 +494,9 @@ namespace Mono.TextEditor.Utils
 					return;
 				}
 
-				IAvlNode parent = node.Parent;
-
-				if (parent != null) {
-					if (parent.Left == node) {
-						addBalance = -1;
-					} else {
-						addBalance = 1;
-					}
-				}
+				var parent = node.Parent;
+				if (parent != null)
+					balance = parent.Left == node ? -1 : 1;
 				node = parent;
 			}
 		}
