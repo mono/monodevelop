@@ -443,6 +443,16 @@
     <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
     <Compile Include="BuildVariables.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialStore.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialType.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IProxyCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\RequestHelper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IHttpWebResponse.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -539,5 +549,8 @@
     <Content Include="MonoDevelop.Core.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Core.Web\" />
   </ItemGroup>
 </Project>

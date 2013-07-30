@@ -41,6 +41,7 @@ using MonoDevelop.Core.Setup;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
+using MonoDevelop.Core.Web;
 
 
 namespace MonoDevelop.Core
@@ -107,10 +108,12 @@ namespace MonoDevelop.Core
 				}
 				
 				RegisterAddinRepositories ();
-				
+
 				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
+
+				WebService.Initialize ();
 				
 				initialized = true;
 				
