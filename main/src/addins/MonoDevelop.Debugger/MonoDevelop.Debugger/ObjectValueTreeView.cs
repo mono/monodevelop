@@ -786,6 +786,7 @@ namespace MonoDevelop.Debugger
 			switch (flags & ObjectValueFlags.OriginMask) {
 			case ObjectValueFlags.Property: source = "property"; break;
 			case ObjectValueFlags.Type: source = "class"; stic = string.Empty; break;
+			case ObjectValueFlags.Method: source = "method"; break;
 			case ObjectValueFlags.Literal: return "md-literal";
 			case ObjectValueFlags.Namespace: return "md-name-space";
 			case ObjectValueFlags.Group: return "md-open-resource-folder";
