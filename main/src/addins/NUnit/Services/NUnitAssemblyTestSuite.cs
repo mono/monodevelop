@@ -493,8 +493,11 @@ namespace MonoDevelop.NUnit
 				XDocument doc = XDocument.Load (outFile);
 
 				if (doc.Root != null) {
-					if (automaticUpdates)
-						testContext.ResultsPad.InitializeTestRun (test);
+					if (automaticUpdates) {
+						DispatchService.GuiDispatch (delegate {
+							testContext.ResultsPad.InitializeTestRun (test);
+						});
+					}
 
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
