@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.SplitProject
 				using (var dialog = new SplitProjectDialog (currentProject, graph)) {
 					if (MessageService.RunCustomDialog(dialog) == Xwt.Command.Ok) {
 						//Create class library project
-						string classLibraryName = "Testing 123";
+						string classLibraryName = dialog.NewProjectName;
 						var classLibraryBasePath = currentProject.BaseDirectory.ParentDirectory.Combine (classLibraryName);
 						Directory.CreateDirectory (classLibraryBasePath.ToString ());
 

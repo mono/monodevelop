@@ -55,7 +55,9 @@ namespace MonoDevelop.CSharp.SplitProject
 		DataField<ProjectGraph.Node> nodeField = new DataField<ProjectGraph.Node> ();
 		DataField<string> nameField = new DataField<string> ();
 
+		TextEntry newProjectNameField;
 		TreeStore dataSource;
+		DialogButton okButton;
 
 		Dictionary<ProjectGraph.Node, TreeNavigator> nodePositions;
 
@@ -76,11 +78,56 @@ namespace MonoDevelop.CSharp.SplitProject
 			}
 		}
 
+		public string NewProjectName
+		{
+			get {
+				return newProjectNameField.Text;
+			}
+		}
+
 		public SplitProjectDialog (DotNetProject project, ProjectGraph graph)
 		{
 			this.project = project;
 			this.graph = graph;
 
+			VBox layout = new VBox ();
+
+			var projectNameBox = new HBox ();
+			projectNameBox.PackStart (new Label (GettextCatalog.GetString ("Class Library Name:")));
+			newProjectNameField = new TextEntry ();
+			newProjectNameField.Changed += (object sender, EventArgs e) => ValidateSplitProposal ();
+			projectNameBox.PackStart (newProjectNameField);
+			layout.PackStart (projectNameBox);
+			var tree = BuildTree (graph);
+			layout.PackStart (tree, true, true);
+
+			Content = layout;
+
+			Title = "Split Project";
+
+			Buttons.Add (okButton = new Xwt.DialogButton (Command.Ok));
+			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
+
+			ValidateSplitProposal ();
+		}
+
+		void ValidateSplitProposal ()
+		{
+			okButton.Sensitive = IsSplitProposalValid ();
+		}
+
+		bool IsSplitProposalValid ()
+		{
+			if (!FileService.IsValidFileName (NewProjectName))
+				return false;
+
+			return true;
+
+			return true;
+		}
+
+		TreeView BuildTree (ProjectGraph graph)
+		{
 			var dataSource = new TreeStore (selectedField, nodeField, nameField);
 
 			nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
@@ -88,9 +135,7 @@ namespace MonoDevelop.CSharp.SplitProject
 
 			foreach (var node in graph.Nodes) {
 				var virtualPath = node.File.ProjectVirtualPath;
-
 				var parentNavigator = BuildDirectories (dataSource, navigators, virtualPath.ParentDirectory);
-
 				TreeNavigator nodeNavigator;
 				if (navigators.TryGetValue (virtualPath, out nodeNavigator)) {
 					nodeNavigator.SetValue (nodeField, node);
@@ -100,29 +145,25 @@ namespace MonoDevelop.CSharp.SplitProject
 					nodeNavigator.SetValue (nodeField, node).SetValue (nameField, node.ToString ());
 					nodePositions.Add (node, nodeNavigator);
 				}
-				
 				navigators.Add (virtualPath, nodeNavigator);
 			}
 
 			TreeView tree = new TreeView ();
-			var cellView = new CheckBoxCellView (selectedField) { Editable = true };
-
-			cellView.Toggled += (object sender, WidgetEventArgs e) => {
+			var cellView = new CheckBoxCellView (selectedField) {
+				Editable = true
+			}
+			;
+			cellView.Toggled += (object sender, WidgetEventArgs e) =>  {
 				var rowPosition = tree.CurrentEventRow;
 				if (rowPosition == null) {
 					Console.WriteLine ("<null>");
 					return;
 				}
-
 				var row = dataSource.GetNavigatorAt (rowPosition);
-
 				var selected = row.GetValue (selectedField);
 				var node = row.GetValue (nodeField);
-
 				Console.WriteLine ("node={0}", node);
-
 				graph.ResetVisitedNodes ();
-
 				if (node == null) {
 					//TODO: Handle folders
 				}
@@ -134,19 +175,12 @@ namespace MonoDevelop.CSharp.SplitProject
 						SelectNode (node);
 					}
 				}
-
 				e.Handled = true;
 			};
-			tree.Columns.Add (new ListViewColumn("Move to new project", cellView));
+			tree.Columns.Add (new ListViewColumn ("Move to new project", cellView));
 			tree.Columns.Add ("Name", nameField);
-
 			tree.DataSource = dataSource;
-			Content = tree;
-
-			Title = "Split Project";
-
-			Buttons.Add (new Xwt.DialogButton (Command.Ok));
-			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
+			return tree;
 		}
 
 		TreeNavigator BuildDirectories (TreeStore dataSource, Dictionary<string, TreeNavigator> directories, FilePath directory)
