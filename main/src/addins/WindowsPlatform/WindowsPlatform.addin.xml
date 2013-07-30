@@ -25,6 +25,10 @@
 	<Extension path = "/MonoDevelop/Ide/InitCompleteHandlers">
 		<Class class="MonoDevelop.Platform.JumpList" />
 	</Extension>
+
+	Extension path = "/MonoDevelop/Core/WebCredentialProviders">
+		<Class class="MonoDevelop.Platform.Windows.WindowsProxyCredentialProvider" />
+	</Extension>
 <!--
   <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
