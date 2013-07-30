@@ -118,7 +118,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			part = part ?? parentType.Parts.FirstOrDefault ();
 			if (part == null)
 				return tcs.Task;
-
 			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
 			loadedDocument.RunWhenLoaded (delegate {
 				var editor = loadedDocument.Editor;
@@ -141,10 +140,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					mode.CurIndex = 0;
 
 				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow () {
-					TransientFor = IdeApp.Workbench.RootWindow,
 					TitleText = operation
 				};
-				helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 				mode.HelpWindow = helpWindow;
 
 				mode.StartMode ();

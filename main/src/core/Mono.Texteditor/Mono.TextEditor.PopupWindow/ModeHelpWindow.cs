@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 namespace Mono.TextEditor.PopupWindow
 {
-	public abstract class ModeHelpWindow : Gtk.Window
+	public abstract class ModeHelpWindow : Gtk.EventBox
 	{
 		public string TitleText {
 			get;
@@ -44,15 +44,9 @@ namespace Mono.TextEditor.PopupWindow
 			private set;
 		}
 
-		public ModeHelpWindow () : base (Gtk.WindowType.Popup)
+		public ModeHelpWindow ()
 		{
-			this.SkipPagerHint = this.SkipTaskbarHint = true;
-			this.Decorated = false;
-			this.BorderWidth = 0;
-//			this.TypeHint = Gdk.WindowTypeHint.Normal;
-			this.AllowShrink = this.AllowGrow = false;
-			this.DestroyWithParent = true;
-			
+			VisibleWindow = false;
 			Items = new List<KeyValuePair<string, string>> ();
 			CheckScreenColormap ();
 		}
@@ -210,7 +204,7 @@ namespace Mono.TextEditor.PopupWindow
 				gc.Dispose ();
 			}
 
-			GtkWorkarounds.UpdateNativeShadow (this);
+	//		GtkWorkarounds.UpdateNativeShadow (this);
 			return false;
 		}
 	}
@@ -282,14 +276,8 @@ namespace Mono.TextEditor.PopupWindow
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			if (SupportsAlpha) {
-				using (var g = Gdk.CairoHelper.Create (args.Window)) {
-					g.SetSourceRGBA (1, 1, 1, 0);
-					g.Operator = Cairo.Operator.Source;
-					g.Paint ();
-				}	
-			}
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
+				g.Translate (Allocation.X, Allocation.Y);
 				g.LineWidth = 1.5;
 				titleLayout.SetMarkup (TitleText);
 				int width, height;
@@ -345,7 +333,7 @@ namespace Mono.TextEditor.PopupWindow
 				g.Color = textColor;
 				g.ShowLayout (descriptionLayout);
 			}
-			return false;
+			return base.OnExposeEvent (args);
 		}
 	}
 
