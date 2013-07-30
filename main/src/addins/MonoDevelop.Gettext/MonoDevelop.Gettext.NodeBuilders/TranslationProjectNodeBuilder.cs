@@ -53,13 +53,13 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			return project.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			TranslationProject project = dataObject as TranslationProject;
 			if (project == null)
 				return;
-			label = project.Name;
-			icon = Context.GetIcon ("md-gettext-project");
+			nodeInfo.Label = project.Name;
+			nodeInfo.Icon = Context.GetIcon ("md-gettext-project");
 		}
 		
 		public override void OnNodeAdded (object dataObject)

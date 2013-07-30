@@ -63,21 +63,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			SystemFile file = (SystemFile) dataObject;
-			label = GLib.Markup.EscapeText (file.Name);
+			nodeInfo.Label = GLib.Markup.EscapeText (file.Name);
 			
-			icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
+			nodeInfo.Icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
-				var gicon = Context.GetComposedIcon (icon, "fade");
+				var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
 				if (gicon == null) {
-					gicon = icon.WithAlpha (0.5);
-					Context.CacheComposedIcon (icon, "fade", gicon);
+					gicon = nodeInfo.Icon.WithAlpha (0.5);
+					Context.CacheComposedIcon (nodeInfo.Icon, "fade", gicon);
 				}
-				icon = gicon;
-				label = "<span foreground='dimgrey'>" + label + "</span>";
+				nodeInfo.Icon = gicon;
+				nodeInfo.Label = "<span foreground='dimgrey'>" + nodeInfo.Label + "</span>";
 			}
 		}
 		

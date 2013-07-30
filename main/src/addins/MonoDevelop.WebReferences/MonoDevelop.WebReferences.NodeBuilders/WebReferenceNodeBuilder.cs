@@ -54,11 +54,11 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="label">A string containing the label of the node.</param>
 		/// <param name="icon">A Pixbif containing the icon for the node.</param>
 		/// <param name="closedIcon">A Pixbif containing the closed icon for the node.</param>
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = ((WebReferenceItem) dataObject).Name;
-			icon = Context.GetIcon ("md-webreference-item");
-			closedIcon = Context.GetIcon ("md-webreference-item");
+			nodeInfo.Label = ((WebReferenceItem) dataObject).Name;
+			nodeInfo.Icon = Context.GetIcon ("md-webreference-item");
+			nodeInfo.ClosedIcon = Context.GetIcon ("md-webreference-item");
 		}
 		
 		/// <summary>Checks if the node builder has contains any child nodes.</summary>

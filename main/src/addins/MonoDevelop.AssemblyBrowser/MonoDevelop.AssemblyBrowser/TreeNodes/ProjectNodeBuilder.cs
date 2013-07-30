@@ -65,12 +65,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return project.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var project = (Project)dataObject;
 			
-			label = project.Name;
-			icon = Context.GetIcon (project.StockIcon);
+			nodeInfo.Label = project.Name;
+			nodeInfo.Icon = Context.GetIcon (project.StockIcon);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

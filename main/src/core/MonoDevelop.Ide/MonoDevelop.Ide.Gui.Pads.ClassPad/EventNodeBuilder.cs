@@ -47,11 +47,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Event"; }
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			IEvent data = dataObject as IEvent;
-			label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			icon = Context.GetIcon (data.GetStockIcon ());
+			nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+			nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

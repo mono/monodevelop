@@ -60,24 +60,22 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
 			Enumeration e = (Enumeration)dataObject;
 				
-			label = e.Name;
+			nodeInfo.Label = e.Name;
 			
 			switch (e.Access)
 			{
 			case AccessModifier.Public:
-				icon = Context.GetIcon (Stock.Enum);
+				nodeInfo.Icon = Context.GetIcon (Stock.Enum);
 				break;
 			case AccessModifier.Protected:
-				icon = Context.GetIcon (Stock.ProtectedEnum);
+				nodeInfo.Icon = Context.GetIcon (Stock.ProtectedEnum);
 				break;
 			case AccessModifier.Private:
-				icon = Context.GetIcon (Stock.PrivateEnum);
+				nodeInfo.Icon = Context.GetIcon (Stock.PrivateEnum);
 				break;
 			}
 		}

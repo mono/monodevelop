@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 			base.Dispose ();
 		}
 
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			if (!builder.Options["ShowVersionControlOverlays"])
 				return;
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl
 				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
-					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon, false);
+					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, false);
 				}
 				return;
 			} else if (dataObject is ProjectFolder) {
@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl
 				if (ce.ParentWorkspaceObject != null) {
 					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null) {
-						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon, true);
+						AddFolderOverlay (rep, ce.Path, nodeInfo, true);
 					}
 				}
 				return;
@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl
 
 			Xwt.Drawing.Image overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
 			if (overlay != null)
-				AddOverlay (ref icon, overlay);
+				nodeInfo.Icon = AddOverlay (nodeInfo.Icon, overlay);
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)
@@ -112,7 +112,7 @@ namespace MonoDevelop.VersionControl
 			base.PrepareChildNodes (dataObject);
 		}
 */		
-		void AddFolderOverlay (Repository rep, string folder, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon, bool skipVersionedOverlay)
+		void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
 		{
 			Xwt.Drawing.Image overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder);
@@ -125,19 +125,17 @@ namespace MonoDevelop.VersionControl
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
 			}
 			if (overlay != null) {
-				AddOverlay (ref icon, overlay);
-				if (closedIcon != null)
-					AddOverlay (ref closedIcon, overlay);
+				nodeInfo.Icon = AddOverlay (nodeInfo.Icon, overlay);
+				if (nodeInfo.ClosedIcon != null)
+					nodeInfo.ClosedIcon = AddOverlay (nodeInfo.ClosedIcon, overlay);
 			}
 		}
 		
-		void AddOverlay (ref Xwt.Drawing.Image icon, Xwt.Drawing.Image overlay)
+		Xwt.Drawing.Image AddOverlay (Xwt.Drawing.Image icon, Xwt.Drawing.Image overlay)
 		{
 			var cached = Context.GetComposedIcon (icon, overlay);
-			if (cached != null) {
-				icon = cached;
-				return;
-			}
+			if (cached != null)
+				return cached;
 			
 			int dx = 2;
 			int dy = 2;
@@ -147,7 +145,7 @@ namespace MonoDevelop.VersionControl
 			ib.Context.DrawImage (overlay, ib.Width - overlay.Width, ib.Height - overlay.Height);
 			var res = ib.ToVectorImage ();
 			Context.CacheComposedIcon (icon, overlay, res);
-			icon = res;
+			return res;
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)

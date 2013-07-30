@@ -79,14 +79,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			return it.Label;
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			TreeViewItem it = (TreeViewItem) dataObject;
-			label = it.Label;
+			nodeInfo.Label = it.Label;
 			if (!it.StockIcon.IsNull)
-				icon = closedIcon = Context.GetIcon (it.StockIcon);
+				nodeInfo.Icon = nodeInfo.ClosedIcon = Context.GetIcon (it.StockIcon);
 			else if (it.Icon != null)
-				icon = closedIcon = it.Icon;
+				nodeInfo.Icon = nodeInfo.ClosedIcon = it.Icon;
 		}
 
 	}

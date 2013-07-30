@@ -61,24 +61,22 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
 			Union u = (Union)dataObject;
 				
-			label = u.Name;
+			nodeInfo.Label = u.Name;
 			
 			switch (u.Access)
 			{
 			case AccessModifier.Public:
-				icon = Context.GetIcon ("md-union");
+				nodeInfo.Icon = Context.GetIcon ("md-union");
 				break;
 			case AccessModifier.Protected:
-				icon = Context.GetIcon ("md-protected-union");
+				nodeInfo.Icon = Context.GetIcon ("md-protected-union");
 				break;
 			case AccessModifier.Private:
-				icon = Context.GetIcon ("md-private-union");
+				nodeInfo.Icon = Context.GetIcon ("md-private-union");
 				break;
 			}
 		}

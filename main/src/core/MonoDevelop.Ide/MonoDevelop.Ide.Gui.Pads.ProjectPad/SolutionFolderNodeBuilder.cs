@@ -72,12 +72,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			SolutionFolder folder = dataObject as SolutionFolder;
-			label = GLib.Markup.EscapeText (folder.Name);
-			icon = Context.GetIcon (Stock.SolutionFolderOpen);
-			closedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
+			nodeInfo.Label = GLib.Markup.EscapeText (folder.Name);
+			nodeInfo.Icon = Context.GetIcon (Stock.SolutionFolderOpen);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

@@ -62,16 +62,14 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
 			if (treeBuilder.Options["NestedNamespaces"])
-				label = ((Namespace)dataObject).Name;
+				nodeInfo.Label = ((Namespace)dataObject).Name;
 			else
-				label = ((Namespace)dataObject).FullName;
+				nodeInfo.Label = ((Namespace)dataObject).FullName;
 			
-			icon = Context.GetIcon (Stock.NameSpace);
+			nodeInfo.Icon = Context.GetIcon (Stock.NameSpace);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)

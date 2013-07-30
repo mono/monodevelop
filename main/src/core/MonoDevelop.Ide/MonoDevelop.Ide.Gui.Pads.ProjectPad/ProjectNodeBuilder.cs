@@ -107,9 +107,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((Project)dataObject).BaseDirectory;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
+			base.BuildNode (treeBuilder, dataObject, nodeInfo);
 
 			Project p = dataObject as Project;
 			
@@ -118,19 +118,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (p is DotNetProject && ((DotNetProject)p).LanguageBinding == null) {
 				iconName = Gtk.Stock.DialogError;
-				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", escapedProjectName, ((DotNetProject)p).LanguageName);
+				nodeInfo.Label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", escapedProjectName, ((DotNetProject)p).LanguageName);
 			} else if (p is UnknownProject) {
 				iconName = Gtk.Stock.DialogError;
-				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown project type)</span>", escapedProjectName);
+				nodeInfo.Label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown project type)</span>", escapedProjectName);
 			} else {
 				iconName = p.StockIcon;
 				if (p.ParentSolution != null && p.ParentSolution.SingleStartup && p.ParentSolution.StartupItem == p)
-					label = "<b>" + escapedProjectName + "</b>";
+					nodeInfo.Label = "<b>" + escapedProjectName + "</b>";
 				else
-					label = escapedProjectName;
+					nodeInfo.Label = escapedProjectName;
 			}
 			
-			icon = Context.GetIcon (iconName);
+			nodeInfo.Icon = Context.GetIcon (iconName);
 			
 			// Gray out the project name if it is not selected in the current build configuration
 			
@@ -139,13 +139,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			bool noMapping = conf == null || (ce = conf.GetEntryForItem (p)) == null;
 			bool missingConfig = false;
 			if (noMapping || !ce.Build || (missingConfig = p.Configurations [ce.ItemConfiguration] == null)) {
-				var ticon = Context.GetComposedIcon (icon, "project-no-build");
+				var ticon = Context.GetComposedIcon (nodeInfo.Icon, "project-no-build");
 				if (ticon == null)
-					ticon = Context.CacheComposedIcon (icon, "project-no-build", icon.WithAlpha (0.5));
-				icon = ticon;
-				label = missingConfig
-					? "<span foreground='red'>" + label + " <small>(invalid configuration mapping)</small></span>"
-					: "<span foreground='gray'>" + label + " <small>(not built in active configuration)</small></span>";
+					ticon = Context.CacheComposedIcon (nodeInfo.Icon, "project-no-build", nodeInfo.Icon.WithAlpha (0.5));
+				nodeInfo.Icon = ticon;
+				nodeInfo.Label = missingConfig
+					? "<span foreground='red'>" + nodeInfo.Label + " <small>(invalid configuration mapping)</small></span>"
+					: "<span foreground='gray'>" + nodeInfo.Label + " <small>(not built in active configuration)</small></span>";
 			}
 		}
 

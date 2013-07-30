@@ -59,12 +59,12 @@ namespace MonoDevelop.AssemblyBrowser
 			return Path.GetFileNameWithoutExtension (loader.FileName);
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
 			
-			label = Path.GetFileNameWithoutExtension (compilationUnit.FileName);
-			icon = Context.GetIcon (Stock.Reference);
+			nodeInfo.Label = Path.GetFileNameWithoutExtension (compilationUnit.FileName);
+			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

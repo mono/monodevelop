@@ -69,13 +69,11 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
-			label = "Macro Definitions";
-			icon = Context.GetIcon (Stock.OpenFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedFolder);
+			nodeInfo.Label = "Macro Definitions";
+			nodeInfo.Icon = Context.GetIcon (Stock.OpenFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)

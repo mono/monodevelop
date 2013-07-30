@@ -277,56 +277,51 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
-				string text;
-				Xwt.Drawing.Image icon;
-				Xwt.Drawing.Image closedIcon;
-				GetNodeInfo (pad, this, chain, dataObject, out text, out icon, out closedIcon);
-				SetNodeInfo (currentIter, ats, text, icon, closedIcon);
+				var ni = GetNodeInfo (pad, this, chain, dataObject);
+				SetNodeInfo (currentIter, ats, ni);
 			}
 			
-			internal static void GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject, out string text, out Xwt.Drawing.Image icon, out Xwt.Drawing.Image closedIcon)
+			internal static NodeInfo GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject)
 			{
-				icon = null;
-				closedIcon = null;
-				text = string.Empty;
+				NodeInfo nodeInfo = new NodeInfo () {
+					Label = string.Empty
+				};
 				
 				NodePosition pos = tb.CurrentPosition;
 
-				Xwt.Drawing.Image wicon = null, wclosedIcon = null;
 				foreach (NodeBuilder builder in chain) {
 					try {
-						builder.BuildNode (tb, dataObject, ref text, ref wicon, ref wclosedIcon);
+						builder.BuildNode (tb, dataObject, nodeInfo);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					}
 					tb.MoveToPosition (pos);
 				}
 					
-				if (wclosedIcon == null) wclosedIcon = wicon;
+				if (nodeInfo.ClosedIcon == null) nodeInfo.ClosedIcon = nodeInfo.Icon;
 				
 				if (tree.CopyObjects != null && ((IList)tree.CopyObjects).Contains (dataObject) && tree.CurrentTransferOperation == DragOperation.Move) {
-					var gicon = tree.BuilderContext.GetComposedIcon (wicon, "fade");
+					var gicon = tree.BuilderContext.GetComposedIcon (nodeInfo.Icon, "fade");
 					if (gicon == null) {
-						gicon = wicon.WithAlpha (0.5);
-						tree.BuilderContext.CacheComposedIcon (wicon, "fade", gicon);
+						gicon = nodeInfo.Icon.WithAlpha (0.5);
+						tree.BuilderContext.CacheComposedIcon (nodeInfo.Icon, "fade", gicon);
 					}
-					wicon = gicon;
-					gicon = tree.BuilderContext.GetComposedIcon (wclosedIcon, "fade");
+					nodeInfo.Icon = gicon;
+					gicon = tree.BuilderContext.GetComposedIcon (nodeInfo.ClosedIcon, "fade");
 					if (gicon == null) {
-						gicon = wclosedIcon.WithAlpha (0.5);
-						tree.BuilderContext.CacheComposedIcon (wclosedIcon, "fade", gicon);
+						gicon = nodeInfo.ClosedIcon.WithAlpha (0.5);
+						tree.BuilderContext.CacheComposedIcon (nodeInfo.ClosedIcon, "fade", gicon);
 					}
-					wclosedIcon = gicon;
+					nodeInfo.ClosedIcon = gicon;
 				}
-				icon = wicon;
-				closedIcon = wclosedIcon;
+				return nodeInfo;
 			}
 			
-			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Xwt.Drawing.Image icon, Xwt.Drawing.Image closedIcon)
+			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, NodeInfo nodeInfo)
 			{
-				store.SetValue (it, ExtensibleTreeView.TextColumn, text);
-				if (icon != null) store.SetValue (it, ExtensibleTreeView.OpenIconColumn, icon);
-				if (closedIcon != null) store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, closedIcon);
+				store.SetValue (it, ExtensibleTreeView.TextColumn, nodeInfo.Label);
+				if (nodeInfo.Icon != null) store.SetValue (it, ExtensibleTreeView.OpenIconColumn, nodeInfo.Icon);
+				if (nodeInfo.ClosedIcon != null) store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, nodeInfo.ClosedIcon);
 				pad.Tree.QueueDraw ();
 			}
 

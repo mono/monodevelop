@@ -73,11 +73,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Workspace workspace = dataObject as Workspace;
-			label = workspace.Name;
-			icon = Context.GetIcon (Stock.Workspace);
+			nodeInfo.Label = workspace.Name;
+			nodeInfo.Icon = Context.GetIcon (Stock.Workspace);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

@@ -44,11 +44,11 @@ namespace MonoDevelop.AssemblyBrowser
 			return "Resources";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = MonoDevelop.Core.GettextCatalog.GetString ("Resources");
-			icon       = Context.GetIcon (Stock.OpenResourceFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
+			nodeInfo.Label = MonoDevelop.Core.GettextCatalog.GetString ("Resources");
+			nodeInfo.Icon       = Context.GetIcon (Stock.OpenResourceFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

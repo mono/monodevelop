@@ -59,11 +59,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((ClassData)dataObject).Class.FullName;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			ClassData classData = dataObject as ClassData;
-			label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			icon = Context.GetIcon (classData.Class.GetStockIcon ());
+			nodeInfo.Label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			nodeInfo.Icon = Context.GetIcon (classData.Class.GetStockIcon ());
 		}
 		/*
 		private string GetNameWithGenericParameters (IType c)

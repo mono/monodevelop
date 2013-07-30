@@ -109,18 +109,18 @@ namespace MonoDevelop.AssemblyBrowser
 			return type.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, type);
-				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
+				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
 			} catch (Exception) {
-				label = type.Name;
+				nodeInfo.Label = type.Name;
 			}
 			if (type.IsPrivate)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (type.GetStockIcon ());
+				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
+			nodeInfo.Icon = Context.GetIcon (type.GetStockIcon ());
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

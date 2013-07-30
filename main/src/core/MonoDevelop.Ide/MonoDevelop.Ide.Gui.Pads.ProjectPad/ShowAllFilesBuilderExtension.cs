@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((IFolderItem)dataObject).BaseDirectory;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			string thisPath = GetFolderPath (dataObject);
 			
@@ -113,18 +113,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			{
 				ProjectFolder pf = (ProjectFolder) dataObject;
 				if (pf.Project == null || !ProjectFolderCommandHandler.PathExistsInProject (pf.Project, thisPath)) {
-					var gicon = Context.GetComposedIcon (icon, "fade");
+					var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
 					if (gicon == null) {
-						gicon = icon.WithAlpha (0.5);
-						Context.CacheComposedIcon (icon, "fade", gicon);
+						gicon = nodeInfo.Icon.WithAlpha (0.5);
+						Context.CacheComposedIcon (nodeInfo.Icon, "fade", gicon);
 					}
-					icon = gicon;
-					gicon = Context.GetComposedIcon (closedIcon, "fade");
+					nodeInfo.Icon = gicon;
+					gicon = Context.GetComposedIcon (nodeInfo.ClosedIcon, "fade");
 					if (gicon == null) {
-						gicon = closedIcon.WithAlpha (0.5);
-						Context.CacheComposedIcon (closedIcon, "fade", gicon);
+						gicon = nodeInfo.ClosedIcon.WithAlpha (0.5);
+						Context.CacheComposedIcon (nodeInfo.ClosedIcon, "fade", gicon);
 					}
-					closedIcon = gicon;
+					nodeInfo.ClosedIcon = gicon;
 				}
 			}
 		}

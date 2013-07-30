@@ -68,30 +68,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				attributes |= NodeAttributes.Hidden;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
-			label = GLib.Markup.EscapeText (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
+			nodeInfo.Label = GLib.Markup.EscapeText (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
 			if (!File.Exists (file.FilePath)) {
-				label = "<span foreground='red'>" + label + "</span>";
+				nodeInfo.Label = "<span foreground='red'>" + nodeInfo.Label + "</span>";
 			}
 			
-			icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
+			nodeInfo.Icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
 			
-			if (file.IsLink && icon != null) {
+			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay");
-				var cached = Context.GetComposedIcon (icon, overlay);
+				var cached = Context.GetComposedIcon (nodeInfo.Icon, overlay);
 				if (cached != null)
-					icon = cached;
+					nodeInfo.Icon = cached;
 				else {
-					var ib = new Xwt.Drawing.ImageBuilder (icon.Width, icon.Height);
-					ib.Context.DrawImage (icon, 0, 0);
+					var ib = new Xwt.Drawing.ImageBuilder (nodeInfo.Icon.Width, nodeInfo.Icon.Height);
+					ib.Context.DrawImage (nodeInfo.Icon, 0, 0);
 					ib.Context.DrawImage (overlay, 0, 0);
 					var res = ib.ToVectorImage ();
 					ib.Dispose ();
-					Context.CacheComposedIcon (icon, overlay, res);
-					icon = res;
+					Context.CacheComposedIcon (nodeInfo.Icon, overlay, res);
+					nodeInfo.Icon = res;
 				}
 			}
 		}

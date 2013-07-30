@@ -59,11 +59,11 @@ namespace MonoDevelop.NUnit
 			return Path.GetFileName (((TestAssembly)dataObject).Path);
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			TestAssembly asm = dataObject as TestAssembly;
-			label = Path.GetFileName (asm.Path);
-			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Reference);
+			nodeInfo.Label = Path.GetFileName (asm.Path);
+			nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Reference);
 		}
 	}
 	

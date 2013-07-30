@@ -62,11 +62,11 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			return ((PackagingProject)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			PackagingProject project = dataObject as PackagingProject;
-			label = project.Name;
-			icon = Context.GetIcon ("md-packaging-project");
+			nodeInfo.Label = project.Name;
+			nodeInfo.Icon = Context.GetIcon ("md-packaging-project");
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

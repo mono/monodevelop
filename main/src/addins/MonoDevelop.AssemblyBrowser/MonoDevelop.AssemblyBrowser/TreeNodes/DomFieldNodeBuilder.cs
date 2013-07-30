@@ -60,19 +60,19 @@ namespace MonoDevelop.AssemblyBrowser
 			return field.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var field = (IUnresolvedField)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, field);
-				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			} catch (Exception) {
-				label = field.Name;
+				nodeInfo.Label = field.Name;
 			}
 
 			if (field.IsPrivate || field.IsInternal)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (field.GetStockIcon ());
+				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
+			nodeInfo.Icon = Context.GetIcon (field.GetStockIcon ());
 		}
 		
 		#region IAssemblyBrowserNodeBuilder

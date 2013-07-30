@@ -55,26 +55,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((ProjectReference)dataObject).Reference;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			ProjectReference pref = (ProjectReference) dataObject;
 			
 			switch (pref.ReferenceType) {
 				case ReferenceType.Project:
-					label = pref.Reference;
+					nodeInfo.Label = pref.Reference;
 					break;
 				case ReferenceType.Assembly:
-					label = Path.GetFileName(pref.Reference);
+					nodeInfo.Label = Path.GetFileName(pref.Reference);
 					break;
 				case ReferenceType.Package:
-					label = pref.Reference.Split(',')[0];
+					nodeInfo.Label = pref.Reference.Split(',')[0];
 					break;
 				default:
-					label = pref.Reference;
+					nodeInfo.Label = pref.Reference;
 					break;
 			}
 			
-			icon = Context.GetIcon (Stock.Reference);
+			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

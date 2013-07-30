@@ -63,18 +63,18 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			return ((Package)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Package package = dataObject as Package;
-			label = package.Name;
+			nodeInfo.Label = package.Name;
 			if (package.Name != package.PackageBuilder.Description)
-				label += " (" + package.PackageBuilder.Description + ")";
+				nodeInfo.Label += " (" + package.PackageBuilder.Description + ")";
 			
 			if (package.PackageBuilder is UnknownPackageBuilder) {
-				icon = Context.GetIcon (Stock.Error);
+				nodeInfo.Icon = Context.GetIcon (Stock.Error);
 			}
 			else {
-				icon = Context.GetIcon (package.PackageBuilder.Icon);
+				nodeInfo.Icon = Context.GetIcon (package.PackageBuilder.Icon);
 			}
 		}
 

@@ -65,11 +65,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return thisNode.Options ["NestedNamespaces"] ? ((NamespaceData)dataObject).Name : ((NamespaceData)dataObject).FullName;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			NamespaceData nsData = dataObject as NamespaceData;
-			label = treeBuilder.Options ["NestedNamespaces"] ? nsData.Name : nsData.FullName;
-			icon = Context.GetIcon (Stock.NameSpace);
+			nodeInfo.Label = treeBuilder.Options ["NestedNamespaces"] ? nsData.Name : nsData.FullName;
+			nodeInfo.Icon = Context.GetIcon (Stock.NameSpace);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

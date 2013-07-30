@@ -48,11 +48,11 @@ namespace MonoDevelop.AssemblyBrowser
 			return "Error";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Error error = (Error)dataObject;
-			label = error.Message;
-			icon = Context.GetIcon (Stock.Error);
+			nodeInfo.Label = error.Message;
+			nodeInfo.Icon = Context.GetIcon (Stock.Error);
 		}
 	}
 }

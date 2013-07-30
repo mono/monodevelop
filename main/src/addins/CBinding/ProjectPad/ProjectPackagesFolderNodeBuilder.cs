@@ -78,11 +78,11 @@ namespace CBinding.ProjectPad
 			return "Packages";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{			
-			label = "Packages";
-			icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Label = "Packages";
+			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

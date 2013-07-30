@@ -119,15 +119,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 	
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
+			base.BuildNode (treeBuilder, dataObject, nodeInfo);
 
 			ProjectFolder folder = (ProjectFolder) dataObject;
 
-			label = GLib.Markup.EscapeText (folder.Name);
-			icon = folderOpenIcon;
-			closedIcon = folderClosedIcon;
+			nodeInfo.Label = GLib.Markup.EscapeText (folder.Name);
+			nodeInfo.Icon = folderOpenIcon;
+			nodeInfo.ClosedIcon = folderClosedIcon;
 		}
 		
 		public override object GetParentObject (object dataObject)

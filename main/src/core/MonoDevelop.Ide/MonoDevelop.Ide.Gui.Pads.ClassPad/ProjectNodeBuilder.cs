@@ -87,11 +87,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((Project)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Project p = dataObject as Project;
-			label = p.Name;
-			icon = Context.GetIcon (p.StockIcon);
+			nodeInfo.Label = p.Name;
+			nodeInfo.Icon = Context.GetIcon (p.StockIcon);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

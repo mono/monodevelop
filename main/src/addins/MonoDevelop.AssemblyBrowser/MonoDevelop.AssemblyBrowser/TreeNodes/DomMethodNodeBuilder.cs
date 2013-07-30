@@ -73,21 +73,21 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return "<span foreground= \"#666666\">" + label + "</span>";	
 		}
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
 			try {
-				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			} catch (Exception) {
-				label = method.Name;
+				nodeInfo.Label = method.Name;
 			}
 
 			if (method.IsPrivate || method.IsInternal)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
+				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
 			
-			icon = Context.GetIcon (resolved.GetStockIcon ());
+			nodeInfo.Icon = Context.GetIcon (resolved.GetStockIcon ());
 		}
 		
 		#region IAssemblyBrowserNodeBuilder

@@ -59,18 +59,18 @@ namespace MonoDevelop.AssemblyBrowser
 			return evt.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var evt = (IUnresolvedEvent)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, evt);
-				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 			} catch (Exception) {
-				label = evt.Name;
+				nodeInfo.Label = evt.Name;
 			}
 			if (evt.IsPrivate || evt.IsInternal)
-				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = Context.GetIcon (evt.GetStockIcon ());
+				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
+			nodeInfo.Icon = Context.GetIcon (evt.GetStockIcon ());
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

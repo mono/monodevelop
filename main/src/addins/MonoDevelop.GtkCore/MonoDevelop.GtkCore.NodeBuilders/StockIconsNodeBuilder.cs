@@ -55,10 +55,10 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return "StockIcons";
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = GettextCatalog.GetString ("Stock Icons");
-			icon = iconsIcon;
+			nodeInfo.Label = GettextCatalog.GetString ("Stock Icons");
+			nodeInfo.Icon = iconsIcon;
 		}
 	}
 	

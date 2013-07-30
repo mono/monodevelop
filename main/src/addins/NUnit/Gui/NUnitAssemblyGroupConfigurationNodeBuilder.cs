@@ -65,11 +65,11 @@ namespace MonoDevelop.NUnit
 			return ((SolutionItemConfiguration)dataObject).Id;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var conf = (SolutionItemConfiguration) dataObject;
-			label = conf.Id;
-			icon = Context.GetIcon (Stock.ClosedFolder);
+			nodeInfo.Label = conf.Id;
+			nodeInfo.Icon = Context.GetIcon (Stock.ClosedFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

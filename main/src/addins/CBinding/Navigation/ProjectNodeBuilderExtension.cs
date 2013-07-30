@@ -94,9 +94,7 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
 			if (!check_ctags)
 				CheckForCtags ();
@@ -107,7 +105,7 @@ namespace CBinding.Navigation
 				return;
 			
 			if (!have_ctags) {
-				label = string.Format ("{0} <span foreground='red' size='small'>(CTags not installed)</span>", p.Name);
+				nodeInfo.Label = string.Format ("{0} <span foreground='red' size='small'>(CTags not installed)</span>", p.Name);
 			}
 		}
 

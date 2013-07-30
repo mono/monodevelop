@@ -65,17 +65,17 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return win.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
-			label = win.Name;
+			nodeInfo.Label = win.Name;
 			
 //			if (win.RootWidget.IsWindow)
 //				icon = ImageService.GetPixbuf ("md-gtkcore-window");
 			if (win.RootWidget.IsWindow)
-				icon = Context.GetIcon ("md-gtkcore-dialog");
+				nodeInfo.Icon = Context.GetIcon ("md-gtkcore-dialog");
 			else
-				icon = Context.GetIcon ("md-gtkcore-widget");
+				nodeInfo.Icon = Context.GetIcon ("md-gtkcore-widget");
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

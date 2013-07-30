@@ -71,11 +71,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.ReferenceRemovedFromProject -= removedHandler;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = GLib.Markup.EscapeText (GettextCatalog.GetString ("References"));
-			icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Label = GLib.Markup.EscapeText (GettextCatalog.GetString ("References"));
+			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)

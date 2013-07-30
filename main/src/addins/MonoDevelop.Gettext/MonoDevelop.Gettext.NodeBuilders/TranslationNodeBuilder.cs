@@ -54,7 +54,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			return translation.IsoCode;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Translation translation = dataObject as Translation;
 			if (translation == null)
@@ -73,14 +73,14 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			
 			if (IsoCodes.IsKnownLanguageCode (language)) {
 				if (IsoCodes.IsKnownCountryCode (country)) {
-					label = IsoCodes.LookupLanguageCode (language).Name + "/" + IsoCodes.LookupCountryCode (country).Name + " (" + translation.IsoCode + ")";
+					nodeInfo.Label = IsoCodes.LookupLanguageCode (language).Name + "/" + IsoCodes.LookupCountryCode (country).Name + " (" + translation.IsoCode + ")";
 				} else {
-					label = IsoCodes.LookupLanguageCode (language).Name +  " (" + translation.IsoCode + ")";
+					nodeInfo.Label = IsoCodes.LookupLanguageCode (language).Name +  " (" + translation.IsoCode + ")";
 				}
 			} else {
-				label = "(" + translation.IsoCode + ")";
+				nodeInfo.Label = "(" + translation.IsoCode + ")";
 			}			
-			icon = Context.GetIcon ("md-gettext-locale");
+			nodeInfo.Icon = Context.GetIcon ("md-gettext-locale");
 		}
 		
 		class TranslationNodeCommandHandler : NodeCommandHandler

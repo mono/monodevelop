@@ -63,17 +63,17 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return "UserInterface";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Project p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
 			if (info.GuiBuilderProject.HasError) {
-				label = GettextCatalog.GetString ("User Interface (GUI project load failed)");
+				nodeInfo.Label = GettextCatalog.GetString ("User Interface (GUI project load failed)");
 			} else {
-				label = GettextCatalog.GetString ("User Interface");
+				nodeInfo.Label = GettextCatalog.GetString ("User Interface");
 			}
-			icon = Context.GetIcon (Stock.OpenResourceFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
+			nodeInfo.Icon = Context.GetIcon (Stock.OpenResourceFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

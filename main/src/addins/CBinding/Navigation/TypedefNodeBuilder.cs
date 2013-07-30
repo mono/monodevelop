@@ -60,14 +60,12 @@ namespace CBinding.Navigation
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
 			Typedef t = (Typedef)dataObject;
 				
-			label = t.Name;
-			icon = Context.GetIcon (Stock.Interface);
+			nodeInfo.Label = t.Name;
+			nodeInfo.Icon = Context.GetIcon (Stock.Interface);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

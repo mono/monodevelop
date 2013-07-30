@@ -60,16 +60,14 @@ namespace CBinding.ProjectPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
-		                                ref string label,
-		                                ref Xwt.Drawing.Image icon,
-		                                ref Xwt.Drawing.Image closedIcon)
+		                                NodeInfo nodeInfo)
 		{
-			label = ((Package)dataObject).Name;
+			nodeInfo.Label = ((Package)dataObject).Name;
 			
 			if (((Package)dataObject).IsProject)
-				icon = Xwt.Drawing.Image.FromResource ("Icons.16x16.ProjectReference");
+				nodeInfo.Icon = Xwt.Drawing.Image.FromResource ("Icons.16x16.ProjectReference");
 			else
-				icon = Context.GetIcon (Stock.Reference);
+				nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}
 	}
 	

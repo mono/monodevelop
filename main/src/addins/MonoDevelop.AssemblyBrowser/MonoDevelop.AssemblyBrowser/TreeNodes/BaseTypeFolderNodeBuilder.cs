@@ -55,11 +55,11 @@ namespace MonoDevelop.AssemblyBrowser
 			return reference.ToString ();
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var reference = dataObject as ITypeReference;
-			label = reference.ToString ();
-			icon = Context.GetIcon (Stock.Class);
+			nodeInfo.Label = reference.ToString ();
+			nodeInfo.Icon = Context.GetIcon (Stock.Class);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
@@ -90,11 +90,11 @@ namespace MonoDevelop.AssemblyBrowser
 			return "Base Types";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label      = MonoDevelop.Core.GettextCatalog.GetString ("Base Types");
-			icon       = Context.GetIcon (Stock.OpenFolder);
-			closedIcon = Context.GetIcon (Stock.ClosedFolder);
+			nodeInfo.Label      = MonoDevelop.Core.GettextCatalog.GetString ("Base Types");
+			nodeInfo.Icon       = Context.GetIcon (Stock.OpenFolder);
+			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedFolder);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

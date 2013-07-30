@@ -76,11 +76,11 @@ namespace MonoDevelop.AssemblyBrowser
 			return ns.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Namespace ns = (Namespace)dataObject;
-			label = GLib.Markup.EscapeText (ns.Name);
-			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.NameSpace);
+			nodeInfo.Label = GLib.Markup.EscapeText (ns.Name);
+			nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.NameSpace);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
