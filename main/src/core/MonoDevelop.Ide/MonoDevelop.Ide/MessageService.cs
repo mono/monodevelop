@@ -332,7 +332,35 @@ namespace MonoDevelop.Ide
 			PlaceDialog (dialog, parent);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
-		
+
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog)
+		{
+			return RunCustomDialog (dialog, null);
+		}
+
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
+		{
+			var dialogBackend = (Xwt.GtkBackend.DialogBackend) Xwt.Toolkit.GetBackend (dialog);
+			if (parent == null) {
+				if (dialog.TransientFor != null)
+					parent = dialog.TransientFor;
+				else {
+					parent = GetDefaultParent (dialog);
+				}
+			}
+			dialog.TransientFor = parent;
+			dialogBackend.Window.DestroyWithParent = true;
+			if (dialog.Title == null)
+				dialog.Title = BrandingService.ApplicationName;
+			PlaceDialog (dialog, parent);
+			return Mono.TextEditor.XwtWorkarounds.RunDialogWithNotification (dialog);
+		}
+
+		static Xwt.WindowFrame GetDefaultParent (Xwt.WindowFrame child)
+		{
+			return Xwt.Toolkit.CurrentEngine.WrapWindow (GetDefaultModalParent ());
+		}
+
 		//make sure modal children are parented on top of other modal children
 		static Window GetDefaultParent (Window child)
 		{
@@ -369,7 +397,23 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
+		/// </summary>
+		public static void PlaceDialog (Xwt.Window child, Xwt.WindowFrame parent)
+		{
+			//HACK: Mac GTK automatic window placement is broken
+			if (Platform.IsMac) {
+				if (parent == null) {
+					parent = GetDefaultParent (child);
+				}
+				if (parent != null) {
+					CenterWindow (child, parent);
+				}
+			}
+		}
+
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window child, Window parent)
 		{
@@ -381,6 +425,19 @@ namespace MonoDevelop.Ide
 			x = Math.Max (0, (winw - w) /2) + winx;
 			y = Math.Max (0, (winh - h) /2) + winy;
 			child.Move (x, y);
+		}
+
+		/// <summary>Centers a window relative to its parent.</summary>
+		static void CenterWindow (Xwt.Window child, Xwt.WindowFrame parent)
+		{
+			child.Content.Show ();
+			var childSize = child.Size;
+			var parentSize = parent.Size;
+			var parentPosition = parent.Location;
+
+			var x = Math.Max (0, (parentSize.Width - childSize.Width) / 2) + parentPosition.X;
+			var y = Math.Max (0, (parentSize.Height - childSize.Height) / 2) + parentPosition.Y;
+			child.Location = new Xwt.Point (x, y);
 		}
 		
 		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, params AlertButton[] buttons)

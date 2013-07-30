@@ -221,7 +221,7 @@ namespace Mono.TextEditor
 			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 		
-		static void MacRequestAttention (bool critical)
+		internal static void MacRequestAttention (bool critical)
 		{
 			int kind = critical?  NSCriticalRequest : NSInformationalRequest;
 			if (IntPtr.Size == 8) {
