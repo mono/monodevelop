@@ -26,6 +26,11 @@
 		<ExtensionNode objectType = "MonoDevelop.Core.Execution.ICommandFactory" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/WebCredentialProviders" name = "Web credential providers">
+		<Description>Platform-specific services used for obtaining proxy credentials.</Description>
+		<ExtensionNode name="CredentialProvider" objectType="MonoDevelop.Core.Web.ICredentialProvider" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
 		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.FileSystem.FileSystemExtension"/>
