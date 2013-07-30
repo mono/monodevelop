@@ -124,9 +124,16 @@ namespace Mono.TextEditor
 			((TextEditor.EditorContainerChild)editor.TextArea[HelpWindow]).FixedPosition = true;
 
 			if (positionWindow) {
-				MoveHelpWindow (null, null);
+				PositionHelpWindow ();
+
+				editor.VScroll += HandleVScroll;
 				editor.SizeAllocated += MoveHelpWindow;
 			}
+		}
+
+		void HandleVScroll (object sender, EventArgs e)
+		{
+			editor.QueueDraw (); 
 		}
 		
 		public virtual void DestroyHelpWindow ()
@@ -135,6 +142,7 @@ namespace Mono.TextEditor
 				return;
 			editor.TextArea.Remove (HelpWindow); 
 			editor.SizeAllocated -= MoveHelpWindow;
+			editor.VScroll -= HandleVScroll;
 			editor.Destroyed -= HandleEditorDestroy;
 			HelpWindow.Destroy ();
 			HelpWindow = null;
@@ -152,8 +160,8 @@ namespace Mono.TextEditor
 				return;
 			editor.Destroyed += HandleEditorDestroy;
 			var req = HelpWindow.SizeRequest ();
-			int x = editor.Allocation.Width - req.Width / 2;
-			int y = editor.Allocation.Height - req.Height / 2;
+			int x = editor.Allocation.Width - req.Width;
+			int y = editor.Allocation.Height - req.Height;
 			editor.TextArea.MoveTopLevelWidget (HelpWindow, x, y);
 		}
 		
@@ -161,14 +169,8 @@ namespace Mono.TextEditor
 		{
 			if (editor == null || HelpWindow == null)
 				return;
-			int ox, oy;
-			editor.GdkWindow.GetOrigin (out ox, out oy);
-			ox += editor.Allocation.X;
-			oy += editor.Allocation.Y;
 			editor.Destroyed += HandleEditorDestroy;
-			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
-			x = System.Math.Min (x, geometry.X + geometry.Width - req.Width);
 			editor.TextArea.MoveTopLevelWidget (HelpWindow, x, y - req.Height / 2);
 		}
 		

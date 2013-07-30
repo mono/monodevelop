@@ -124,11 +124,6 @@ namespace Mono.TextEditor.PopupWindow
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			using (var g = Gdk.CairoHelper.Create (args.Window)) {
-				g.SetSourceRGBA (1, 1, 1, 0);
-				g.Operator = Cairo.Operator.Source;
-				g.Paint ();
-			}
 			Cairo.Color bgColor = new Cairo.Color (1, 1, 1);
 			Cairo.Color titleBgColor = new Cairo.Color (0.88, 0.88, 0.98);
 			Cairo.Color categoryBgColor = new Cairo.Color (0.58, 0.58, 0.98);
@@ -137,6 +132,7 @@ namespace Mono.TextEditor.PopupWindow
 			Cairo.Color gridColor = new Cairo.Color (0.8, 0.8, 0.8);
 			
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
+				g.Translate (Allocation.X, Allocation.Y);
 				g.LineWidth = 1;
 				
 				Gdk.GC gc = new Gdk.GC (args.Window);
@@ -149,9 +145,13 @@ namespace Mono.TextEditor.PopupWindow
 				g.FillPreserve ();
 				g.Color = borderColor;
 				g.Stroke ();
-				gc.RgbFgColor = (HslColor)textColor;
-				args.Window.DrawLayout (gc, xBorder, yBorder, layout);
-				
+
+				g.Save ();
+				g.Color = textColor;
+				g.Translate (xBorder, yBorder);
+				g.ShowLayout (layout);
+				g.Restore ();
+
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, 0.5, height * 2 + yBorder * 2 + 0.5, height, Allocation.Width - 1, Allocation.Height - height * 2 - yBorder * 2 - 1);
 				g.Color = bgColor;
 				g.FillPreserve ();
@@ -187,11 +187,19 @@ namespace Mono.TextEditor.PopupWindow
 					}
 					
 					gc.RgbFgColor = (HslColor)(i == 0 ? bgColor : textColor);
-						
-					args.Window.DrawLayout (gc, xBorder, y, layout);
+					g.Save ();
+					g.Color = textColor;
+					g.Translate (xBorder, y);
+					g.ShowLayout (layout);
+					g.Restore ();
+
+					g.Save ();
+					g.Color = textColor;
+					g.Translate (xSpacer + xBorder, y);
 					layout.SetMarkup (pair.Value);
-					args.Window.DrawLayout (gc, xSpacer + xBorder, y, layout);
-					
+					g.ShowLayout (layout);
+					g.Restore ();
+
 					// draw top line
 					if (i > 0) {
 						g.MoveTo (1, y + 0.5);
@@ -204,8 +212,7 @@ namespace Mono.TextEditor.PopupWindow
 				gc.Dispose ();
 			}
 
-	//		GtkWorkarounds.UpdateNativeShadow (this);
-			return false;
+			return base.OnExposeEvent (args);
 		}
 	}
 
