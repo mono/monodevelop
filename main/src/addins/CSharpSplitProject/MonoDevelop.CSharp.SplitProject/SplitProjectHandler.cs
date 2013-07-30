@@ -57,11 +57,8 @@ namespace MonoDevelop.CSharp.SplitProject
 			ProjectGraph graph = BuildGraph (currentProject);
 
 			if (graph != null) {
-				var nativeWindow = IdeApp.Workbench.RootWindow;
-				Xwt.WindowFrame parentFrame = Xwt.Toolkit.CurrentEngine.WrapWindow (nativeWindow);
-
 				using (var dialog = new SplitProjectDialog (currentProject, graph)) {
-					if (dialog.Run (parentFrame) == Xwt.Command.Ok) {
+					if (MessageService.RunCustomDialog(dialog) == Xwt.Command.Ok) {
 						//Create class library project
 						string classLibraryName = "Testing 123";
 						var classLibraryBasePath = currentProject.BaseDirectory.ParentDirectory.Combine (classLibraryName);
