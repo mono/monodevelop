@@ -1874,7 +1874,6 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\MainStatusBarContextImpl.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectContent.cs" />
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
-    <Compile Include="MonoDevelop.Ide.Navigation\ClosedDocumentNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\IdeFileSystemExtensionExtension.cs" />

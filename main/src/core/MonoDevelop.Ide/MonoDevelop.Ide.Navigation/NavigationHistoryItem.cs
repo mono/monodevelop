@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Navigation
 				if (!NavigationHistoryService.IsCurrent (this))
 					NavigationHistoryService.MoveTo (this);
 			}
-			NavigationPoint.Show ();
+			NavigationPoint.ShowDocument ();
 		}
 		
 		public string DisplayName {
