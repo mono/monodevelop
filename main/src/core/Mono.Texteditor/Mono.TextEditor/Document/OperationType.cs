@@ -1,10 +1,11 @@
 // 
-// AssemblyBrowserHandler.cs
+// TextDocument.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin <http://xamarin.com>
+// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +24,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Mono.TextEditor.Highlighting;
+using Mono.TextEditor.Utils;
 using System.Linq;
+using System.ComponentModel;
+using ICSharpCode.NRefactory.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace MonoDevelop.AssemblyBrowser
+namespace Mono.TextEditor
 {
-	public class AssemblyBrowserHandler : CommandHandler
+	public enum OperationType
 	{
-		protected override void Run ()
-		{
-			foreach (var view in IdeApp.Workbench.Documents) {
-				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
-					view.Window.SelectWindow ();
-					return;
-				}
-			}
-			var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
-			var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
-			assemblyBrowserView.FillWidget ();
-
-			IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-		}
+		Undefined,
+		Format
 	}
 }
-

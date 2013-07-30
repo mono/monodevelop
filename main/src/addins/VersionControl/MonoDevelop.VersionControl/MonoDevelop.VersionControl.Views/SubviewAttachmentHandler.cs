@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (repo == null)
 					return;
 
-				var versionInfo = repo.GetVersionInfo (document.FileName);
+				var versionInfo = repo.GetVersionInfo (document.FileName, VersionInfoQueryFlags.IgnoreCache);
 				if (!versionInfo.IsVersioned)
 					return;
 

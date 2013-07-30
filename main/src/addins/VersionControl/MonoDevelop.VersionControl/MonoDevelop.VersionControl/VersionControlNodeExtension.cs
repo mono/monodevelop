@@ -53,6 +53,7 @@ namespace MonoDevelop.VersionControl
 				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
+					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
 					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, false);
 				}
 				return;
@@ -61,6 +62,7 @@ namespace MonoDevelop.VersionControl
 				if (ce.ParentWorkspaceObject != null) {
 					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null) {
+						rep.GetDirectoryVersionInfo (ce.Path, false, false);
 						AddFolderOverlay (rep, ce.Path, nodeInfo, true);
 					}
 				}

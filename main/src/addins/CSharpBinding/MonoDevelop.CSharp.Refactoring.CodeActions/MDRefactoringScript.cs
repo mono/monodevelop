@@ -91,9 +91,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				return tcs.Task;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
-			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = operation;
-			helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 			mode.HelpWindow = helpWindow;
 			
 			switch (defaultPosition) {
@@ -120,7 +118,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 			operationsRunning++;
 			mode.StartMode ();
-			DesktopService.RemoveWindowShadow (helpWindow);
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
 					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
@@ -181,9 +178,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 
 				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
-				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = operation;
-				helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 				mode.HelpWindow = helpWindow;
 				
 				mode.CurIndex = 0;

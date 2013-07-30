@@ -89,10 +89,6 @@
     <Content Include="subversion-logo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SubversionAddinWindows.exclude.addins">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="..\SharpSvn\SharpSvn-DB44-20-win32.dll">
       <Link>SharpSvn-DB44-20-win32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

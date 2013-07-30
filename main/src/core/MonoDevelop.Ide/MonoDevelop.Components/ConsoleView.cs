@@ -31,6 +31,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using Gtk;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Components
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.Components
 		
 		TextView textView;
 	
-		public ConsoleView()
+		public ConsoleView ()
 		{
 			PromptString = "> ";
 			PromptMultiLineString = ">> ";
@@ -89,6 +90,10 @@ namespace MonoDevelop.Components
 		{
 			textView.ModifyFont (font);
 		}
+
+		protected TextView TextView {
+			get { return textView; }
+		}
 		
 		public string PromptString { get; set; }
 		
@@ -99,14 +104,15 @@ namespace MonoDevelop.Components
 		[GLib.ConnectBeforeAttribute]
 		void TextViewKeyPressEvent (object o, KeyPressEventArgs args)
 		{
-			args.RetVal = ProcessKeyPressEvent (args.Event);
+			if (ProcessKeyPressEvent (args))
+				args.RetVal = true;
 		}
 		
-		bool ProcessKeyPressEvent (Gdk.EventKey ev)
+		protected virtual bool ProcessKeyPressEvent (KeyPressEventArgs args)
 		{
 			// Short circuit to avoid getting moved back to the input line
 			// when paging up and down in the shell output
-			if (ev.Key == Gdk.Key.Page_Up || ev.Key == Gdk.Key.Page_Down)
+			if (args.Event.Key == Gdk.Key.Page_Up || args.Event.Key == Gdk.Key.Page_Down)
 				return false;
 			
 			// Needed so people can copy and paste, but always end up
@@ -119,7 +125,7 @@ namespace MonoDevelop.Components
 //			if (ev.State == Gdk.ModifierType.ControlMask && ev.Key == Gdk.Key.space)
 //				TriggerCodeCompletion ();
 	
-			if (ev.Key == Gdk.Key.Return) {
+			if (args.Event.Key == Gdk.Key.Return) {
 				if (inBlock) {
 					if (InputLine == "") {
 						ProcessInput (blockText);
@@ -131,7 +137,7 @@ namespace MonoDevelop.Components
 						if (AutoIndent) {
 							System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex (@"^(\s+).*");
 							whiteSpace = r.Replace (InputLine, "$1");
-							if (InputLine.EndsWith (BlockStart))
+							if (InputLine.EndsWith (BlockStart, StringComparison.InvariantCulture))
 								whiteSpace += "\t";
 						}
 						Prompt (true, true);
@@ -140,7 +146,7 @@ namespace MonoDevelop.Components
 					}
 				} else {
 					// Special case for start of new code block
-					if (!string.IsNullOrEmpty (BlockStart) && InputLine.Trim().EndsWith (BlockStart)) {
+					if (!string.IsNullOrEmpty (BlockStart) && InputLine.Trim().EndsWith (BlockStart, StringComparison.InvariantCulture)) {
 						inBlock = true;
 						blockText = InputLine;
 						Prompt (true, true);
@@ -172,7 +178,7 @@ namespace MonoDevelop.Components
 			}
 	
 			// The next two cases handle command history	
-			else if (ev.Key == Gdk.Key.Up) {
+			else if (args.Event.Key == Gdk.Key.Up) {
 				if (!inBlock && commandHistoryPast.Count > 0) {
 					if (commandHistoryFuture.Count == 0)
 						commandHistoryFuture.Push (InputLine);
@@ -185,7 +191,7 @@ namespace MonoDevelop.Components
 				}
 				return true;
 			}
-			else if (ev.Key == Gdk.Key.Down) {
+			else if (args.Event.Key == Gdk.Key.Down) {
 				if (!inBlock && commandHistoryFuture.Count > 0) {
 					if (commandHistoryFuture.Count == 1)
 						InputLine = commandHistoryFuture.Pop();
@@ -196,25 +202,25 @@ namespace MonoDevelop.Components
 				}
 				return true;
 			}	
-			else if (ev.Key == Gdk.Key.Left) {
+			else if (args.Event.Key == Gdk.Key.Left) {
 				// Keep our cursor inside the prompt area
 				if (Cursor.Compare (InputLineBegin) <= 0)
 					return true;
 			}
-			else if (ev.Key == Gdk.Key.Home) {
+			else if (args.Event.Key == Gdk.Key.Home) {
 				Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
 				// Move the selection mark too, if shift isn't held
-				if ((ev.State & Gdk.ModifierType.ShiftMask) == ev.State)
+				if ((args.Event.State & Gdk.ModifierType.ShiftMask) == args.Event.State)
 					Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
 				return true;
 			}
-			else if (ev.Key == Gdk.Key.period) {
+			else if (args.Event.Key == Gdk.Key.period) {
 				return false;
 			}
 	
 			// Short circuit to avoid getting moved back to the input line
 			// when paging up and down in the shell output
-			else if (ev.Key == Gdk.Key.Page_Up || ev.Key == Gdk.Key.Page_Down) {
+			else if (args.Event.Key == Gdk.Key.Page_Up || args.Event.Key == Gdk.Key.Page_Down) {
 				return false;
 			}
 			
@@ -224,21 +230,24 @@ namespace MonoDevelop.Components
 		TextMark endOfLastProcessing;
 
 		public TextIter InputLineBegin {
-			get {
-				return Buffer.GetIterAtMark (endOfLastProcessing);
-			}
+			get { return Buffer.GetIterAtMark (endOfLastProcessing); }
 		}
 	
 		public TextIter InputLineEnd {
 			get { return Buffer.EndIter; }
 		}
 		
-		private TextIter Cursor {
+		public TextIter Cursor {
 			get { return Buffer.GetIterAtMark (Buffer.InsertMark); }
 		}
 		
-		Gtk.TextBuffer Buffer {
+		public Gtk.TextBuffer Buffer {
 			get { return textView.Buffer; }
+		}
+
+		protected Gdk.Rectangle GetIterLocation (TextIter iter)
+		{
+			return textView.GetIterLocation (iter);
 		}
 		
 		// The current input line

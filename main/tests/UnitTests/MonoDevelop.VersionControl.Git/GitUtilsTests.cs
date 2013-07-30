@@ -300,7 +300,7 @@ namespace MonoDevelop.VersionControl.Git
 				int zeroBasedStartLine = blame.startLine - 1;
 				
 				for (int i = 0; i < blame.lineCount; i++) {
-					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Text.StartsWith(blame.revID), "Error at line {0}", blame.startLine + i);
+					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Is.StringStarting (blame.revID), "Error at line {0}", blame.startLine + i);
 				}
 			}
 		}

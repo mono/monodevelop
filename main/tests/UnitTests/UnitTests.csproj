@@ -41,10 +41,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\src\addins\NUnit\lib\nunit.framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -231,6 +227,10 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
+      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_0</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

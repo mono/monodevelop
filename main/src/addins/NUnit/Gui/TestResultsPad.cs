@@ -45,7 +45,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.NUnit
 {
-	class TestResultsPad: IPadContent, ITestProgressMonitor
+	public class TestResultsPad: IPadContent, ITestProgressMonitor
 	{
 		NUnitService testService = NUnitService.Instance;
 		

@@ -132,16 +132,19 @@ namespace MonoDevelop.CSharp
 					memberList.AddRange (parent.Children.OfType<Accessor> ());
 				} else if (tag is EntityDeclaration) {
 					var entity = (EntityDeclaration)tag;
-					var type = (TypeDeclaration)entity.Parent;
-					foreach (var member in type.Members) {
-						if (member is FieldDeclaration) {
-							foreach (var variable in ((FieldDeclaration)member).Variables)
-								memberList.Add (variable);
-						} if (member is FixedFieldDeclaration) {
-							foreach (var variable in ((FixedFieldDeclaration)member).Variables)
-								memberList.Add (variable);
-						} else {
-							memberList.Add (member);
+					var type = entity.Parent as TypeDeclaration;
+					if (type != null) {
+						foreach (var member in type.Members) {
+							if (member is FieldDeclaration) {
+								foreach (var variable in ((FieldDeclaration)member).Variables)
+									memberList.Add (variable);
+							}
+							if (member is FixedFieldDeclaration) {
+								foreach (var variable in ((FixedFieldDeclaration)member).Variables)
+									memberList.Add (variable);
+							} else {
+								memberList.Add (member);
+							}
 						}
 					}
 				} 

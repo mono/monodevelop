@@ -267,8 +267,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (Directory.Exists (p)) {
 							if (recursive)
 								versions.AddRange (GetDirectoryVersionInfo (p, getRemoteStatus, true));
-							else
-								versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+							versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 						}
 						else {
 							localFiles.Add (p);
@@ -285,7 +284,14 @@ namespace MonoDevelop.VersionControl.Git
 				
 				localFileNames = localFiles;
 			} else {
-				CollectFiles (existingFiles, localDirectory, recursive);
+				List<FilePath> directories = new List<FilePath> ();
+				CollectFiles (existingFiles, directories, localDirectory, recursive);
+				foreach (var group in GroupByRepository (directories)) {
+					var repository = group.Key;
+					var arev = new GitRevision (this, repository, "");
+					foreach (var p in group)
+						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+				}
 			}
 
 			IEnumerable<FilePath> paths;
@@ -376,15 +382,17 @@ namespace MonoDevelop.VersionControl.Git
 			return ops;
 		}
 
-		void CollectFiles (HashSet<FilePath> files, FilePath dir, bool recursive)
+		void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
 		{
 			if (!Directory.Exists (dir))
 				return;
 			foreach (string file in Directory.GetFiles (dir))
 				files.Add (new FilePath (file).CanonicalPath);
-			if (recursive) {
-				foreach (string sub in Directory.GetDirectories (dir))
-					CollectFiles (files, sub, true);
+
+			foreach (string sub in Directory.GetDirectories (dir)) {
+				directories.Add (new FilePath (sub));
+				if (recursive)
+					CollectFiles (files, directories, sub, true);
 			}
 		}
 
@@ -1484,9 +1492,8 @@ namespace MonoDevelop.VersionControl.Git
 				var commit = result.GetSourceCommit (i);
 				var author = result.GetSourceAuthor (i);
 				if (commit != null && author != null) {
-					string name = string.Format ("{0} <{1}>", author.GetName (), author.GetEmailAddress ());
 					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
-					list.Add (new Annotation (commit.Name, name, commitTime));
+					list.Add (new Annotation (commit.Name, author.GetName (), commitTime, String.Format ("<{0}>", author.GetEmailAddress ())));
 				} else {
 					list.Add (new Annotation (new string ('0', 20), "<uncommitted>", DateTime.Now));
 				}

@@ -121,11 +121,12 @@ namespace Mono.TextEditor
 			}
 			var iter = startNode;
 			iter = iter.GetNextNode ();
+			int lineNumber = iter.LineNumber;
 			TreeNode line;
 			do {
 				line = iter;
 				iter = iter.GetNextNode ();
-				RemoveLine (line);
+				RemoveLine (line, lineNumber);
 			} while (line != endNode);
 			ChangeLength (startNode, startNode.LengthIncludingDelimiter - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
@@ -505,13 +506,13 @@ namespace Mono.TextEditor
 			return result + 1;
 		}
 
-		void RemoveLine (TreeNode line)
+		void RemoveLine (TreeNode line, int lineNumber)
 		{
 			var parent = line.parent;
 			tree.Remove (line);
 			if (parent != null)
 				parent.UpdateAugmentedData ();
-			OnLineRemoved (new LineEventArgs (line));
+			OnLineRemoved (new LineEventArgs (line, lineNumber));
 		}
 
 		TreeNode GetNode (int index)

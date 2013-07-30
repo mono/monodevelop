@@ -786,6 +786,7 @@ namespace MonoDevelop.Debugger
 			switch (flags & ObjectValueFlags.OriginMask) {
 			case ObjectValueFlags.Property: source = "property"; break;
 			case ObjectValueFlags.Type: source = "class"; stic = string.Empty; break;
+			case ObjectValueFlags.Method: source = "method"; break;
 			case ObjectValueFlags.Literal: return "md-literal";
 			case ObjectValueFlags.Namespace: return "md-name-space";
 			case ObjectValueFlags.Group: return "md-open-resource-folder";
@@ -955,14 +956,14 @@ namespace MonoDevelop.Debugger
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			
-			Gtk.Entry e = (Gtk.Entry) args.Editable;
+			var entry = (Gtk.Entry) args.Editable;
 			
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
-			string strVal = val.Value;
+			string strVal = val != null ? val.Value : null;
 			if (!string.IsNullOrEmpty (strVal))
-				e.Text = strVal;
+				entry.Text = strVal;
 			
-			e.GrabFocus ();
+			entry.GrabFocus ();
 			OnStartEditing (args);
 		}
 		
@@ -1012,12 +1013,24 @@ namespace MonoDevelop.Debugger
 			editing = true;
 			editEntry = (Gtk.Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
-			editEntry.KeyReleaseEvent += HandleChanged;
+			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 			if (StartEditing != null)
 				StartEditing (this, EventArgs.Empty);
 		}
 
-		void HandleChanged (object sender, EventArgs e)
+		void OnEndEditing ()
+		{
+			editing = false;
+			editEntry.KeyPressEvent -= OnEditKeyPress;
+			editEntry.KeyReleaseEvent -= OnEditKeyRelease;
+
+			CompletionWindowManager.HideWindow ();
+			currentCompletionData = null;
+			if (EndEditing != null)
+				EndEditing (this, EventArgs.Empty);
+		}
+
+		void OnEditKeyRelease (object sender, EventArgs e)
 		{
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
@@ -1027,17 +1040,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void OnEndEditing ()
-		{
-			editing = false;
-			editEntry.KeyPressEvent -= OnEditKeyPress;
-			editEntry.KeyReleaseEvent -= HandleChanged;
-
-			CompletionWindowManager.HideWindow ();
-			currentCompletionData = null;
-			if (EndEditing != null)
-				EndEditing (this, EventArgs.Empty);
-		}
 		bool wasHandled = false;
 		CodeCompletionContext ctx;
 		Gdk.Key key;
@@ -1053,10 +1055,16 @@ namespace MonoDevelop.Debugger
 			keyChar =  (char)args.Event.Key;
 			modifierState = args.Event.State;
 			keyValue = args.Event.KeyValue;
+
 			if (currentCompletionData != null) {
 				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
-				args.RetVal = wasHandled ;
+				args.RetVal = wasHandled;
 			}
+		}
+
+		static bool IsCompletionChar (char c)
+		{
+			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
 		}
 
 		void PopupCompletion (Entry entry)
@@ -1070,9 +1078,9 @@ namespace MonoDevelop.Debugger
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLength);
 						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-					}
-					else
+					} else {
 						currentCompletionData = null;
+					}
 				}
 			});
 		}
@@ -1503,12 +1511,6 @@ namespace MonoDevelop.Debugger
 			if (PinStatusChanged != null)
 				PinStatusChanged (this, EventArgs.Empty);
 		}
-		
-		bool IsCompletionChar (char c)
-		{
-			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
-		}
-		
 
 		#region ICompletionWidget implementation 
 		
@@ -1570,7 +1572,7 @@ namespace MonoDevelop.Debugger
 			c.TriggerLineOffset = c.TriggerOffset;
 			c.TriggerTextHeight = editEntry.SizeRequest ().Height;
 			c.TriggerWordLength = currentCompletionData.ExpressionLength;
-			
+
 			int x, y;
 			int tx, ty;
 			editEntry.GdkWindow.GetOrigin (out x, out y);
@@ -1579,7 +1581,7 @@ namespace MonoDevelop.Debugger
 			Pango.Rectangle rect = editEntry.Layout.IndexToPos (cp);
 			tx += Pango.Units.ToPixels (rect.X) + x;
 			y += editEntry.Allocation.Height;
-				
+
 			c.TriggerXCoord = tx;
 			c.TriggerYCoord = y;
 			return c;

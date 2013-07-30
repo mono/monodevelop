@@ -105,7 +105,14 @@ namespace DebuggerTooltipTests
 			set {
 				// TEST: make sure that we can resolve the variable being set
 				Console.WriteLine (value);
+
+				// TEST: make sure that we don't resolve method invocations
+				Method (null);
 			}
+		}
+
+		public string Property {
+			get; set;
 		}
 
 		// TEST: make sure that we can resolve parameters...
@@ -121,7 +128,7 @@ namespace DebuggerTooltipTests
 			return base.BaseProperty == 5;
 		}
 
-		public bool AtVariables (Abc abc)
+		public void AtVariables (Abc abc)
 		{
 			// TEST: make sure that we can resolve @variables
 			var @class = ""resolve me"";
@@ -129,6 +136,13 @@ namespace DebuggerTooltipTests
 			result = @double.Length;
 			result = this.@double.Length;
 			result = abc.@double.Length;
+		}
+
+		// TEST: make sure that we can resolve parameters with default values
+		public void DefaultValues (int defaultValue = 5)
+		{
+			if (defaultValue == 5)
+				Console.WriteLine (""it's the default value!!"");
 		}
 	}
 
@@ -142,11 +156,19 @@ namespace DebuggerTooltipTests
 			// TEST: make sure that a .ctor can be resolved
 			var instanceVariable = new Abc ();
 
+			// TEST: make sure that we don't resolve method invocations
+			instanceVariable.Method (null);
+
 			// TEST: make sure that the cast, Text, and Text.Length can be resolved
 			var castingLocalVariable = ((Abc) instanceVariable).Text.Length;
 
 			// TEST: make sure that 'Name' can be resolved
 			var invokingVariable = instanceVariable.GetType ().Name;
+
+			// TEST: make sure that property initializers can be resolved
+			var propertyInitializer = new Abc () {
+				Property = string.Empty
+			};
 		}
 	}
 }
@@ -176,6 +198,17 @@ namespace DebuggerTooltipTests
 			return startOffset + (expr.Length / 2);
 		}
 
+		int GetAssignmentOffset (string expr)
+		{
+			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
+			int length = expr.IndexOf ('=');
+
+			while (expr[length - 1] == ' ')
+				length--;
+
+			return startOffset + (length / 2);
+		}
+
 		int GetCtorOffset (string expr)
 		{
 			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
@@ -184,11 +217,11 @@ namespace DebuggerTooltipTests
 			while (expr[length - 1] == ' ')
 				length--;
 
-			int dot = expr.LastIndexOf ('.', length, length);
+			int dot = expr.LastIndexOf ('.', length, length - 4);
 			if (dot != -1)
 				return startOffset + dot + ((length - dot) / 2);
 
-			return startOffset + (length / 2);
+			return startOffset + 4 + ((length - 4) / 2);
 		}
 
 		int GetPropertyOffset (string expr)
@@ -274,6 +307,25 @@ namespace DebuggerTooltipTests
 			Assert.AreEqual ("@double.Length", ResolveExpression (document, content, GetPropertyOffset ("@double.Length")));
 			Assert.AreEqual ("this.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("this.@double.Length")));
 			Assert.AreEqual ("abc.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.@double.Length")));
+		}
+
+		[Test]
+		public void TestPropertyInitializers ()
+		{
+			Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (document, content, GetAssignmentOffset ("Property = string.Empty")));
+		}
+
+		[Test]
+		public void TestDefaultValueParameters ()
+		{
+			Assert.AreEqual ("defaultValue", ResolveExpression (document, content, GetAssignmentOffset ("defaultValue = 5")));
+		}
+
+		[Test]
+		public void TestMethodInvocations ()
+		{
+			Assert.AreEqual (null, ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.Method")));
+			Assert.AreEqual (null, ResolveExpression (document, content, GetBasicOffset ("Method")));
 		}
 	}
 }

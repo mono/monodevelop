@@ -25,34 +25,27 @@
 // THE SOFTWARE.
 
 using System;
+
+using Mono.Debugging.Client;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Components.Docking;
-using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Debugger
 {
 	public class ImmediatePad: IPadContent
 	{
-		ConsoleView view;
-		bool disposed;
+		ImmediateConsoleView view;
 		
 		public void Initialize (IPadWindow container)
 		{
-			view = new ConsoleView ();
+			view = new ImmediateConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
-			view.SetFont (IdeApp.Preferences.CustomOutputPadFont);
 			view.ShadowType = Gtk.ShadowType.None;
 			view.ShowAll ();
-
-			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomOutputPadFontChanged;
-		}
-
-		void HandleCustomOutputPadFontChanged (object sender, EventArgs e)
-		{
-			view.SetFont (IdeApp.Preferences.CustomOutputPadFont);
 		}
 
 		void OnViewConsoleInput (object sender, ConsoleInputEventArgs e)
@@ -138,13 +131,234 @@ namespace MonoDevelop.Debugger
 				return view;
 			}
 		}
-		
+
 		public void Dispose ()
 		{
-			if (!disposed) {
-				IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomOutputPadFontChanged;
-				disposed = true;
+		}
+	}
+
+	class ImmediateConsoleView : ConsoleView, ICompletionWidget
+	{
+		Mono.Debugging.Client.CompletionData currentCompletionData;
+		CodeCompletionContext ctx;
+		Gdk.ModifierType modifier;
+		bool keyHandled = false;
+		uint keyValue;
+		char keyChar;
+		Gdk.Key key;
+
+		public ImmediateConsoleView ()
+		{
+			SetFont (IdeApp.Preferences.CustomOutputPadFont);
+
+			TextView.KeyReleaseEvent += OnEditKeyRelease;
+
+			IdeApp.Preferences.CustomOutputPadFontChanged += OnCustomOutputPadFontChanged;
+			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
+		}
+
+		static bool IsCompletionChar (char c)
+		{
+			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
+		}
+
+		static Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
+		{
+			if (DebuggingService.CurrentFrame != null)
+				return DebuggingService.CurrentFrame.GetExpressionCompletionData (exp);
+
+			return null;
+		}
+
+		void OnCompletionWindowClosed (object sender, EventArgs e)
+		{
+			currentCompletionData = null;
+		}
+
+		void PopupCompletion ()
+		{
+			Gtk.Application.Invoke (delegate {
+				char c = (char) Gdk.Keyval.ToUnicode (keyValue);
+				if (currentCompletionData == null && IsCompletionChar (c)) {
+					string expr = Buffer.GetText (InputLineBegin, Cursor, false);
+					currentCompletionData = GetCompletionData (expr);
+					if (currentCompletionData != null) {
+						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
+						ctx = ((ICompletionWidget) this).CreateCodeCompletionContext (expr.Length - currentCompletionData.ExpressionLength);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
+					} else {
+						currentCompletionData = null;
+					}
+				}
+			});
+		}
+
+		void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
+		{
+			if (keyHandled)
+				return;
+
+			string text = ctx == null ? InputLine : InputLine.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, InputLine.Length)));
+			CompletionWindowManager.UpdateWordSelection (text);
+			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			PopupCompletion ();
+		}
+
+		protected override bool ProcessKeyPressEvent (Gtk.KeyPressEventArgs args)
+		{
+			keyHandled = false;
+
+			keyChar = (char) args.Event.Key;
+			keyValue = args.Event.KeyValue;
+			modifier = args.Event.State;
+			key = args.Event.Key;
+
+			if ((args.Event.Key == Gdk.Key.Down || args.Event.Key == Gdk.Key.Up)) {
+				keyChar = '\0';
 			}
+
+			if (currentCompletionData != null) {
+				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)))
+					return true;
+			}
+
+			return base.ProcessKeyPressEvent (args);
+		}
+
+		int Position {
+			get { return Cursor.Offset - InputLineBegin.Offset; }
+		}
+
+		#region ICompletionWidget implementation
+
+		CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
+			get {
+				return ((ICompletionWidget) this).CreateCodeCompletionContext (Position);
+			}
+		}
+
+		EventHandler completionContextChanged;
+
+		event EventHandler ICompletionWidget.CompletionContextChanged {
+			add { completionContextChanged += value; }
+			remove { completionContextChanged -= value; }
+		}
+
+		string ICompletionWidget.GetText (int startOffset, int endOffset)
+		{
+			var text = InputLine;
+
+			if (startOffset < 0 || startOffset > text.Length) startOffset = 0;
+			if (endOffset > text.Length) endOffset = text.Length;
+
+			return text.Substring (startOffset, endOffset - startOffset);
+		}
+
+		void ICompletionWidget.Replace (int offset, int count, string text)
+		{
+			if (count > 0)
+				InputLine = InputLine.Remove (offset, count);
+			if (!string.IsNullOrEmpty (text))
+				InputLine = InputLine.Insert (offset, text);
+		}
+
+		int ICompletionWidget.CaretOffset {
+			get {
+				return Position;
+			}
+		}
+
+		char ICompletionWidget.GetChar (int offset)
+		{
+			string text = InputLine;
+
+			if (offset >= text.Length)
+				return (char) 0;
+
+			return text[offset];
+		}
+
+		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+		{
+			CodeCompletionContext c = new CodeCompletionContext ();
+			c.TriggerLine = 0;
+			c.TriggerOffset = triggerOffset;
+			c.TriggerLineOffset = c.TriggerOffset;
+			c.TriggerWordLength = currentCompletionData.ExpressionLength;
+
+			int height, lineY, x, y;
+			TextView.GdkWindow.GetOrigin (out x, out y);
+			TextView.GetLineYrange (Cursor, out lineY, out height);
+
+			var rect = GetIterLocation (Cursor);
+
+			c.TriggerYCoord = y + lineY + height;
+			c.TriggerXCoord = x + rect.X;
+			c.TriggerTextHeight = height;
+
+			return c;
+		}
+
+		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
+		{
+			return InputLine.Substring (ctx.TriggerOffset, ctx.TriggerWordLength);
+		}
+
+		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
+		{
+			int sp = Position - partial_word.Length;
+
+			var start = Buffer.GetIterAtOffset (InputLineBegin.Offset + sp);
+			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
+			Buffer.Delete (ref start, ref end);
+			Buffer.Insert (ref start, complete_word);
+			Buffer.PlaceCursor (start);
+		}
+
+		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int offset)
+		{
+			int sp = Position - partial_word.Length;
+
+			var start = Buffer.GetIterAtOffset (InputLineBegin.Offset + sp);
+			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
+			Buffer.Delete (ref start, ref end);
+			Buffer.Insert (ref start, complete_word);
+
+			var cursor = Buffer.GetIterAtOffset (start.Offset + offset);
+			Buffer.PlaceCursor (cursor);
+		}
+
+		int ICompletionWidget.TextLength {
+			get {
+				return InputLine.Length;
+			}
+		}
+
+		int ICompletionWidget.SelectedLength {
+			get {
+				return 0;
+			}
+		}
+
+		Gtk.Style ICompletionWidget.GtkStyle {
+			get {
+				return Style;
+			}
+		}
+
+		#endregion
+
+		void OnCustomOutputPadFontChanged (object sender, EventArgs e)
+		{
+			SetFont (IdeApp.Preferences.CustomOutputPadFont);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			IdeApp.Preferences.CustomOutputPadFontChanged -= OnCustomOutputPadFontChanged;
+			CompletionWindowManager.WindowClosed -= OnCompletionWindowClosed;
+			CompletionWindowManager.HideWindow ();
+			base.OnDestroyed ();
 		}
 	}
 }

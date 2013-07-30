@@ -627,8 +627,7 @@ namespace MonoDevelop.Ide.Gui
 					foreach (IViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
-							// Don't close files that are removed (potential data loss) see #11380.
-							((SdiWorkspaceWindow)content.WorkbenchWindow).ViewContent.IsDirty = true;
+							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
 							return;
 						}
 					}
