@@ -265,16 +265,19 @@ namespace MonoDevelop.VersionControl.Views
 		public StatusView (string filepath, VersionControlItemList list)
 			: this (filepath, list [0].Repository)
 		{
-			var group = list.GroupBy (v => v.IsDirectory);
-			foreach (var item in group) {
-				// Is directory.
-				if (item.Key) {
-					foreach (var directory in item)
-						changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
-				} else
-					changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
-			}
-			changeSet.AddFiles (list.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
+			ThreadPool.QueueUserWorkItem (delegate {
+				var group = list.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionItem);
+				foreach (var item in group) {
+					// Is directory.
+					if (item.Key) {
+						foreach (var directory in item)
+							changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+					} else
+						changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
+				}
+				changeSet.AddFiles (list.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
+			});
+
 			firstLoad = false;
 		}
 
