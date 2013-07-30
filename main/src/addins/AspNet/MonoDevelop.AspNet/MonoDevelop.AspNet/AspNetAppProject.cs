@@ -798,8 +798,8 @@ namespace MonoDevelop.AspNet
 				if (outWriter == null)
 					outWriter = new LineInterceptingTextWriter (real.Out, delegate {
 						string line = outWriter.GetLine();
-						if (line.StartsWith ("Listening on port: ")) {
-							string port = System.Text.RegularExpressions.Regex.Replace(line, "[^0-9]", "");
+						if (line.Contains ("Listening on port: ")) {
+							string port = System.Text.RegularExpressions.Regex.Match(line, "(?<=port: )[0-9]*(?= )", "").Value;
 							launchBrowser (port);
 							outWriter.FinishedIntercepting = true;
 						} else if (outWriter.LineCount > MAX_WATCHED_LINES) {
