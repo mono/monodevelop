@@ -97,6 +97,44 @@ namespace MonoDevelop.Platform
 			return result;
 		}
 
+		internal class SpecialForm : Form
+		{
+			protected override void WndProc (ref Message m)
+			{
+				if (m.Msg == GotGdkEventsMessage)
+					while (Gtk.Application.EventsPending ())
+						Gtk.Application.RunIteration ();
+				base.WndProc (ref m);
+			}
+		}
+
+		internal static bool RunModalWin32Form (SpecialForm form, Gtk.Window parent)
+		{
+			while (Gtk.Application.EventsPending ())
+				Gtk.Application.RunIteration ();
+
+			IntPtr ph = HgdiobjGet (parent.GdkWindow);
+
+			IntPtr hdlg = IntPtr.Zero;
+			form.Shown += delegate {
+				try {
+					hdlg = form.Handle;
+					SetGtkDialogHook (hdlg, false);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to hook win32 dialog messages", ex);
+				}
+			};
+
+			bool result;
+			try {
+				result = form.ShowDialog () == CommonFileDialogResult.Ok;
+			} finally {
+				if (hdlg != IntPtr.Zero)
+					ClearGtkDialogHook (hdlg);
+			}
+			return result;
+		}
+
 		// logic based on run_mainloop_hook in gtkprintoperation-win32.c
 		static IntPtr GtkWindowProc (IntPtr hdlg, uint uiMsg, IntPtr wParam, IntPtr lParam)
 		{
@@ -120,24 +158,30 @@ namespace MonoDevelop.Platform
 			return handle;
 		}
 
-		static void SetGtkDialogHook (IntPtr hdlg)
+		static void SetGtkDialogHook (IntPtr hdlg, bool overrideWndProc = true)
 		{
-			if (dialogWndProc != IntPtr.Zero)
+			if (dialogHookSet)
 				throw new InvalidOperationException ("There is already an active hook");
 			gdk_win32_set_modal_dialog_libgtk_only (hdlg);
-			dialogWndProc = GetWindowLongPtr (hdlg, DWLP_DLGPROC);
-			SetWindowLongPtr (hdlg, DWLP_DLGPROC, Marshal.GetFunctionPointerForDelegate (GtkWindowProcDelegate));
+			dialogHookSet = true;
+			if (overrideWndProc) {
+				dialogWndProc = GetWindowLongPtr (hdlg, DWLP_DLGPROC);
+				SetWindowLongPtr (hdlg, DWLP_DLGPROC, Marshal.GetFunctionPointerForDelegate (GtkWindowProcDelegate));
+			}
 		}
 
 		static void ClearGtkDialogHook (IntPtr hdlg)
 		{
 			gdk_win32_set_modal_dialog_libgtk_only (IntPtr.Zero);
-			if (dialogWndProc != IntPtr.Zero)
+			if (dialogWndProc != IntPtr.Zero) {
 				SetWindowLongPtr (hdlg, DWLP_DLGPROC, dialogWndProc);
-			dialogWndProc = IntPtr.Zero;
+				dialogWndProc = IntPtr.Zero;
+			}
+			dialogHookSet = false;
 		}
 
 		static IntPtr dialogWndProc;
+		static bool dialogHookSet;
 
 		static readonly WindowProc GtkWindowProcDelegate = GtkWindowProc;
 		static readonly int DWLP_DLGPROC = IntPtr.Size; // DWLP_MSGRESULT + sizeof(LRESULT);
