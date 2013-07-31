@@ -50,6 +50,12 @@ namespace MonoDevelop.MacInterop
 			if (cfRef != IntPtr.Zero)
 				CFReleaseInternal (cfRef);
 		}
+
+		[DllImport (SecurityLib)]
+		static extern unsafe OSStatus SecKeychainItemCopyAttributesAndData (IntPtr itemRef, ref SecKeychainAttributeInfo info,
+		                                                                    IntPtr itemClass,
+		                                                                    SecKeychainAttributeList** attrList,
+		                                                                    ref uint length, ref IntPtr outData);
 		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
@@ -117,6 +123,7 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecCertificateGetData (IntPtr certificate, out CssmData data);
 
+		const uint CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
 
 		[StructLayout (LayoutKind.Sequential)]
 		struct SecKeychainAttributeList
@@ -144,6 +151,14 @@ namespace MonoDevelop.MacInterop
 				Length = length;
 				Data = data;
 			}
+		}
+
+		[StructLayout (LayoutKind.Sequential)]
+		struct SecKeychainAttributeInfo
+		{
+			public UInt32 Count;
+			public UInt32[] Tag;
+			public UInt32[] Format;
 		}
 		
 		struct CssmData
@@ -377,6 +392,33 @@ namespace MonoDevelop.MacInterop
 			return cert.GetNameInfo (X509NameType.SimpleName, false);
 		}
 
+		public static unsafe void AddInternetPassword (Uri uri, string username, string password)
+		{
+			IntPtr itemRef = IntPtr.Zero;
+			IntPtr passwordPtr = IntPtr.Zero;
+			uint passwordLength = 0;
+			var passwordBytes = Encoding.UTF8.GetBytes (password);
+
+			// See if there is already a password there for this uri
+			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
+														  (uint)username.Length, Encoding.UTF8.GetBytes (username), (uint)uri.PathAndQuery.Length, 
+														  Encoding.UTF8.GetBytes (uri.PathAndQuery), (ushort)uri.Port, 
+														  0, 0, out passwordLength, out passwordPtr, ref itemRef);
+			if (result == OSStatus.Ok) {
+				// If there is, replace it with the new one
+				result = SecKeychainItemModifyAttributesAndData (itemRef, null, (uint)passwordBytes.Length, passwordBytes);
+			} else {
+				// Otherwise add a new entry with the password
+				result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
+														 (uint)username.Length, Encoding.UTF8.GetBytes (username), 
+														 (uint)uri.PathAndQuery.Length, Encoding.UTF8.GetBytes (uri.PathAndQuery),
+														 (ushort)uri.Port, 0, 0, (uint)passwordBytes.Length, passwordBytes, ref itemRef);
+			}
+
+			if (result != OSStatus.Ok)
+				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
+		}
+
 		static SecAuthenticationType GetSecAuthenticationType (string query)
 		{
 			if (string.IsNullOrEmpty (query))
@@ -517,6 +559,47 @@ namespace MonoDevelop.MacInterop
 			
 			if (result != OSStatus.Ok)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
+		}
+
+		public static unsafe Tuple<string, string> FindInternetPasswordAndUserName (Uri uri)
+		{
+
+			IntPtr itemRef = IntPtr.Zero;
+			IntPtr password = IntPtr.Zero, username = IntPtr.Zero;
+			uint passwordLength = 0;
+			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null, 0, null,
+			                                              (uint) uri.PathAndQuery.Length, Encoding.UTF8.GetBytes (uri.PathAndQuery),
+			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
+
+			if (result == OSStatus.ItemNotFound)
+				return null;
+
+			if (result != OSStatus.Ok)
+				throw new Exception ("Could not find internet username and password: " + GetError (result));
+
+			uint[] attributeTags = {(uint) SecItemAttr.Account};
+			uint[] formatConstants = {CSSM_DB_ATTRIBUTE_FORMAT_STRING};
+
+			var attributeInfo = new SecKeychainAttributeInfo {
+				Count = 1,
+				Tag = attributeTags,
+				Format = formatConstants
+			};
+
+			SecKeychainAttributeList* attributeList;
+			uint length = 0;
+			IntPtr outData = IntPtr.Zero;
+			OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, IntPtr.Zero, &attributeList, ref length, ref outData);
+
+			if (attributeStatus == OSStatus.ItemNotFound)
+				return null;
+
+			if (attributeStatus != OSStatus.Ok)
+				throw new Exception ("Could not find internet username and password: " + GetError (result));
+
+			SecKeychainAttribute attr = *((SecKeychainAttribute*) attributeList->Attrs);
+			return Tuple.Create (Marshal.PtrToStringAuto (attr.Data, (int) attr.Length),
+			                     Marshal.PtrToStringAuto (password, (int) passwordLength));
 		}
 
 		public static string FindInternetPassword (Uri uri)
