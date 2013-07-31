@@ -407,14 +407,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			if (flatStyle) {
 				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.Color)) {
-					cr.SetSource (pattern);
+					cr.Pattern = pattern;
 					cr.FillPreserve ();
 				}
 			} else {
 				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
 					pattern.AddColorStop (0, darkColor);
 					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.Color);
-					cr.SetSource (pattern);
+					cr.Pattern = pattern;
 					cr.FillPreserve ();
 				}
 			}
@@ -576,14 +576,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					col.L *= 0.95;
 					if (flatStyle) {
 						using (var pattern = new Cairo.SolidPattern (col)) {
-							cr.SetSource (pattern);
+							cr.Pattern = pattern;
 						}
 					} else {
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
 							grad.AddColorStop (0, col);
 							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
 							grad.AddColorStop (1, col);
-							cr.SetSource (grad);
+							cr.Pattern = grad;
 						}
 					}
 				}
