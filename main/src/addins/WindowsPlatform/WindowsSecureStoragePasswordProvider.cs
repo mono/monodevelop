@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 using MonoDevelop.Core;
 using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
@@ -21,18 +23,7 @@ namespace MonoDevelop.Platform.Windows
 
 		public void AddWebUserNameAndPassword (Uri url, string username, string password)
 		{
-			var passwordBytes = Encoding.Unicode.GetBytes (password);
-			var cred = new Credential {
-				CredentialBlob = passwordBytes,
-				CredentialBlobSize = (uint)passwordBytes.Length,
-				Flags = 0,
-				Persist = PersistFlags.LocalMachine,
-				TargetName = url.Host,
-				Type = NativeCredentialType.Generic,
-				UserName = username,
-			};
-
-			var didWrite = NativeMethods.CredWrite (ref cred);
+			var didWrite = WriteCredential (url.Host, username, password);
 			if (didWrite) return;
 
 			var lastError = (ErrorCode)Marshal.GetLastWin32Error ();
@@ -40,14 +31,8 @@ namespace MonoDevelop.Platform.Windows
 				case ErrorCode.NoSuchLogonSession:
 					LoggingService.LogError ("Tried saving credentials, but the logon session does not exist.");
 					break;
-				case ErrorCode.BadUsername:
-					LoggingService.LogError ("Tried saving credentials, but got bad username format.");
-					break;
 				case ErrorCode.InvalidFlags:
 					LoggingService.LogError ("Tried saving credentials, but got invalid flags set on credential.");
-					break;
-				case ErrorCode.InvalidParameter:
-					LoggingService.LogError ("Tried saving credentials, but cannot change protected field in existing credential. ");
 					break;
 				default:
 					LoggingService.LogError ("Tried saving credentials, but got unknown error code 0x{0:X}.", lastError);
@@ -57,11 +42,10 @@ namespace MonoDevelop.Platform.Windows
 
 		public Tuple<string, string> GetWebUserNameAndPassword (Uri url)
 		{
-			var cred = new Credential ();
-			var didRead = NativeMethods.CredRead (url.Host, NativeCredentialType.Generic, 0, ref cred);
+			var read = ReadCredential (url.Host);
 
-			if (didRead)
-				return Tuple.Create (cred.UserName, Encoding.Unicode.GetString (cred.CredentialBlob));
+			if (read != null)
+				return read;
 
 			var lastError = (ErrorCode)Marshal.GetLastWin32Error ();
 			switch (lastError) {
@@ -78,15 +62,66 @@ namespace MonoDevelop.Platform.Windows
 					return null;
 			}
 		}
+
+		static bool WriteCredential (string targetName, string userName, string password)
+		{
+			if (targetName == null)
+				throw new ArgumentNullException ("targetName");
+
+			if (userName == null)
+				throw new ArgumentNullException ("userName");
+
+			if (password == null)
+				throw new ArgumentNullException ("password");
+
+			var passwordBytes = Encoding.Unicode.GetBytes (password);
+			if (passwordBytes.Length > 512)
+				throw new ArgumentException ("The secret message has exceeded 512 bytes.");
+
+			// Go ahead with what we have are stuff it into the CredMan structures.
+			var cred = new Credential {
+				TargetName = targetName,
+				CredentialBlob = password,
+				CredentialBlobSize = (UInt32) passwordBytes.Length,
+				AttributeCount = 0,
+				Attributes = IntPtr.Zero,
+				Comment = null,
+				TargetAlias = null,
+				Type = NativeCredentialType.Generic,
+				Persist = PersistFlags.LocalMachine,
+				UserName = userName,
+			};
+
+			var ncred = NativeCredential.GetNativeCredential (cred);
+			// Write the info into the CredMan storage.
+			var didWrite = NativeMethods.CredWrite (ref ncred, 0);
+
+			Marshal.FreeCoTaskMem (ncred.TargetName);
+			Marshal.FreeCoTaskMem (ncred.CredentialBlob);
+			Marshal.FreeCoTaskMem (ncred.UserName);
+
+			return didWrite;
+		}
+
+		static Tuple<string, string> ReadCredential (string targetName)
+		{
+			IntPtr nCredPtr;
+			bool read = NativeMethods.CredRead (targetName, NativeCredentialType.Generic, 0, out nCredPtr);
+			
+			if (!read) return null;
+
+			using (var critCred = new CriticalCredentialHandle (nCredPtr)) {
+				var cred = critCred.GetCredential ();
+				return Tuple.Create (cred.UserName, cred.CredentialBlob);
+			}
+		}
 	}
 
 	enum ErrorCode
 	{
-		NoSuchLogonSession = 0x520,
-		InvalidParameter = 0x57,
-		InvalidFlags = 0x3ec,
-		BadUsername = 0x490,
-		NotFound = BadUsername, // Not sure WTF is going on here, but this is based on the values I could find
+		NoSuchLogonSession = 1312,
+		InvalidFlags = 1004,
+		NotFound = 1168
 	}
 
 	[Flags]
@@ -115,29 +150,109 @@ namespace MonoDevelop.Platform.Windows
 		Enterprise = 0x3,
 	}
 
+	struct NativeCredential
+	{
+		public UInt32 Flags;
+		public NativeCredentialType Type;
+		public IntPtr TargetName;
+		public IntPtr Comment;
+		public FILETIME LastWritten;
+		public UInt32 CredentialBlobSize;
+		public IntPtr CredentialBlob;
+		public UInt32 Persist;
+		public UInt32 AttributeCount;
+		public IntPtr Attributes;
+		public IntPtr TargetAlias;
+		public IntPtr UserName;
+
+		/// <summary>
+		/// This method derives a NativeCredential instance from a given Credential instance.
+		/// </summary>
+		/// <param name="cred">The managed Credential counterpart containing data to be stored.</param>
+		/// <returns>A NativeCredential instance that is derived from the given Credential
+		/// instance.</returns>
+		internal static NativeCredential GetNativeCredential (Credential cred)
+		{
+			return new NativeCredential {
+				AttributeCount = 0,
+				Attributes = IntPtr.Zero,
+				Comment = IntPtr.Zero,
+				TargetAlias = IntPtr.Zero,
+				Type = NativeCredentialType.Generic,
+				Persist = (UInt32)PersistFlags.LocalMachine,
+				CredentialBlobSize = cred.CredentialBlobSize,
+				TargetName = Marshal.StringToCoTaskMemUni (cred.TargetName),
+				CredentialBlob = Marshal.StringToCoTaskMemUni (cred.CredentialBlob),
+				UserName = Marshal.StringToCoTaskMemUni (cred.UserName)
+			};
+		}
+	}
+
+	[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 	struct Credential
 	{
-		public CredentialFlags Flags;
+		public UInt32 Flags;
 		public NativeCredentialType Type;
 		public string TargetName;
 		public string Comment;
 		public FILETIME LastWritten;
-		public uint CredentialBlobSize;
-		public byte[] CredentialBlob;
+		public UInt32 CredentialBlobSize;
+		public string CredentialBlob;
 		public PersistFlags Persist;
-		public uint AttributeCount;
-		public PersistFlags Attributes;
+		public UInt32 AttributeCount;
+		public IntPtr Attributes;
 		public string TargetAlias;
 		public string UserName;
 	}
 
+	sealed class CriticalCredentialHandle : CriticalHandleZeroOrMinusOneIsInvalid
+	{
+		// Set the handle.
+		internal CriticalCredentialHandle (IntPtr preexistingHandle)
+		{
+			SetHandle (preexistingHandle);
+		}
+
+		internal Credential GetCredential ()
+		{
+			if (IsInvalid) 
+				throw new InvalidOperationException ("Invalid CriticalHandle!");
+
+			var ncred = (NativeCredential)Marshal.PtrToStructure (handle, typeof (NativeCredential));
+			return new Credential {
+				CredentialBlobSize = ncred.CredentialBlobSize,
+				CredentialBlob = Marshal.PtrToStringUni (ncred.CredentialBlob, (int)ncred.CredentialBlobSize / 2),
+				UserName = Marshal.PtrToStringUni (ncred.UserName),
+				TargetName = Marshal.PtrToStringUni (ncred.TargetName),
+				TargetAlias = Marshal.PtrToStringUni (ncred.TargetAlias),
+				Type = ncred.Type,
+				Flags = ncred.Flags,
+				Persist = (PersistFlags)ncred.Persist
+			};
+		}
+
+		override protected bool ReleaseHandle ()
+		{
+			if (IsInvalid) 
+				return false;
+
+			NativeMethods.CredFree (handle);
+			SetHandleAsInvalid ();
+
+			return true;
+		}
+	}
+
 	static class NativeMethods
 	{
-		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode)]
-		internal static extern bool CredWrite (ref Credential credential, uint flags = 0);
+		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredWriteW")]
+		internal static extern bool CredWrite ([In] ref NativeCredential credential, [In] uint flags);
 
-		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode)]
+		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredReadW")]
 		internal static extern bool CredRead (string targetName, NativeCredentialType type, CredentialFlags flags,
-		                                      ref Credential credential);
+			out IntPtr credential);
+
+		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "CredFree")]
+		internal static extern bool CredFree ([In] IntPtr cred);
 	}
 }
