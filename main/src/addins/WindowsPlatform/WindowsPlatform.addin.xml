@@ -29,6 +29,10 @@
 	<Extension path = "/MonoDevelop/Core/WebCredentialProviders">
 		<Class class = "MonoDevelop.Platform.Windows.WindowsProxyCredentialProvider" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/PasswordProvider">
+		<Class class = "MonoDevelop.Platform.Windows.WindowsSecureStoragePasswordProvider" />
+	</Extension>
 <!--
   <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>

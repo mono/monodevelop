@@ -103,6 +103,7 @@
     <Compile Include="WindowsProxyCredentialProvider.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="WindowsSecureStoragePasswordProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dialogs\CustomAddFilesDialog.resx">
