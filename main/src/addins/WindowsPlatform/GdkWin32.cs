@@ -99,6 +99,11 @@ namespace MonoDevelop.Platform
 
 		internal class SpecialForm : Form
 		{
+			public virtual DialogResult ShowMagicDialog ()
+			{
+				return ShowDialog ();
+			}
+
 			protected override void WndProc (ref Message m)
 			{
 				if (m.Msg == GotGdkEventsMessage)
@@ -127,7 +132,7 @@ namespace MonoDevelop.Platform
 
 			bool result;
 			try {
-				result = form.ShowDialog () == CommonFileDialogResult.Ok;
+				result = form.ShowMagicDialog () == DialogResult.OK;
 			} finally {
 				if (hdlg != IntPtr.Zero)
 					ClearGtkDialogHook (hdlg);

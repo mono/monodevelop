@@ -100,7 +100,9 @@
     <Compile Include="WindowsPlatform.cs" />
     <Compile Include="RecentFiles.cs" />
     <Compile Include="JumpList.cs" />
-    <Compile Include="WindowsProxyCredentialProvider.cs" />
+    <Compile Include="WindowsProxyCredentialProvider.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dialogs\CustomAddFilesDialog.resx">
