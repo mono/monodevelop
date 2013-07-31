@@ -85,12 +85,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
-		[Test]
-		[Ignore ("Git pack files are locked by Checkout Command. Fix it")]
-		public override void UpdateIsDone ()
-		{
-		}
-
 		protected override void PostCommit (Repository repo)
 		{
 			GitRepository repo2 = (GitRepository)repo;
