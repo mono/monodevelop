@@ -5,7 +5,7 @@ namespace MonoDevelop.Core.Web
 {
 	static class CredentialProviderExtensions
 	{
-		static readonly string[] authenticationSchemes = new[] { "Basic", "NTLM", "Negotiate" };
+		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
 
 		internal static ICredentials GetCredentials (this ICredentialProvider provider, WebRequest request, CredentialType credentialType, bool retrying = false)
 		{
@@ -31,7 +31,7 @@ namespace MonoDevelop.Core.Web
 			// The reason we're using a credential cache is so that the HttpWebRequest will forward our
 			// credentials if there happened to be any redirects in the chain of requests.
 			var cache = new CredentialCache ();
-			foreach (var scheme in authenticationSchemes)
+			foreach (var scheme in AuthenticationSchemes)
 				cache.Add (uri, scheme, networkCredentials);
 			return cache;
 		}
