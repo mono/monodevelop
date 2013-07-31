@@ -59,7 +59,15 @@ namespace SubversionAddinWindows
 
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
-			return client.GetWorkingCopyRoot (path.FullPath);
+			string wc_path;
+			try {
+				wc_path = client.GetWorkingCopyRoot (path.FullPath);
+				return wc_path;
+			} catch (SvnException e) {
+				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_DIRECTORY)
+					return "";
+				throw;
+			}
 		}
 	}
 
