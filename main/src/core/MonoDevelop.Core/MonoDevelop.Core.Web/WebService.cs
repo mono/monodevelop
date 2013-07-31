@@ -53,7 +53,7 @@ namespace MonoDevelop.Core.Web
 			// We can access extension points now, so we need to get the credential provider, which is platform-specific.
 			// The credential cache and proxy cache are pure managed implementation.
 			Instance.CredentialCache = CredentialStore.Instance;
-			Instance.ProxyCache = MonoDevelop.Core.Web.ProxyCache.Instance;
+			Instance.ProxyCache = Web.ProxyCache.Instance;
 
 			// Get the first registered credential provider
 			Instance.CredentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
