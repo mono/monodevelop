@@ -291,7 +291,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (quickTask == null)
 				return;
-			TextEditor.Caret.Location = quickTask.Location;
+			var line = quickTask.Location.Line;
+			if (line < 1 || line >= TextEditor.LineCount)
+				return;
+			TextEditor.Caret.Location = new TextLocation (line, Math.Max (1, quickTask.Location.Column));
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();
