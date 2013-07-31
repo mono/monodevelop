@@ -173,7 +173,7 @@ namespace MonoDevelop.Core.Web
 
 			public HttpWebResponseWrapper (HttpWebResponse response)
 			{
-				response = response;
+				this.response = response;
 			}
 
 			public string AuthType {
