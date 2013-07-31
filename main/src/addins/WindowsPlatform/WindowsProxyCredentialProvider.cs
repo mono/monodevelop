@@ -70,27 +70,46 @@ namespace MonoDevelop.Platform.Windows
 			};
 
 			var save = false;
-			int authPackage = 0, outputSize;
-			IntPtr output;
-
-			var returnCode = Native.CredUIPromptForWindowsCredentials (ref credUiInfo, 0, ref authPackage, IntPtr.Zero, 0, out output, out outputSize, ref save, Native.CredentialsUiFlags.Generic);
-
-			if (returnCode != Native.CredentialPromptReturnCode.NoError)
-				return DialogResult.Cancel;
-
+			
 			StringBuilder username = new StringBuilder (100), password = new StringBuilder (100), domain = new StringBuilder (100);
 			int maxUsername = 100, maxPassword = 100, maxDomain = 100;
 
-			if (!Native.CredUnPackAuthenticationBuffer (0, output, outputSize, username, ref maxUsername, domain, ref maxDomain, password, ref maxPassword))
-				return DialogResult.Cancel;
+			var windowsVersion = Environment.OSVersion.Version;
 
-			Native.CoTaskMemFree (output);
+			// Vista or higher = 6.x+, XP = 5.x
+			if (windowsVersion.Major >= 6) {
+				int outputSize, authPackage = 0;
+				IntPtr output;
 
-			Username = username.ToString ();
-			Password = password.ToString ();
-			Domain = domain.ToString ();
+				var returnCode = Native.CredUIPromptForWindowsCredentials (ref credUiInfo, 0, ref authPackage, IntPtr.Zero, 0,
+				                                                           out output, out outputSize, ref save,
+				                                                           Native.CredentialsUiWindowsFlags.Generic);
 
-			return DialogResult.OK;
+				if (returnCode != Native.WindowsCredentialPromptReturnCode.NoError)
+					return DialogResult.Cancel;
+
+				if (
+					!Native.CredUnPackAuthenticationBuffer (0, output, outputSize, username, ref maxUsername, domain, ref maxDomain,
+					                                        password, ref maxPassword))
+					return DialogResult.Cancel;
+
+				Native.CoTaskMemFree (output);
+
+				Username = username.ToString ();
+				Password = password.ToString ();
+				Domain = domain.ToString ();
+
+				return DialogResult.OK;
+			} else {
+				const Native.CredentialsUiFlags flags = Native.CredentialsUiFlags.AlwaysShowUi | Native.CredentialsUiFlags.GenericCredentials;
+				var returnCode = Native.CredUIPromptForCredentials (ref credUiInfo, BrandingService.ApplicationName, IntPtr.Zero, 0,
+				                                                    username, maxUsername, password, maxPassword, ref save, flags);
+				Username = username.ToString ();
+				Password = password.ToString ();
+				Domain = string.Empty;
+
+				return returnCode == Native.CredUiReturnCodes.NoError ? DialogResult.OK : DialogResult.Cancel;
+			}
 		}
 	}
 
@@ -99,11 +118,16 @@ namespace MonoDevelop.Platform.Windows
 		[DllImport ("ole32.dll")]
 		internal static extern void CoTaskMemFree (IntPtr ptr);
 
+		[DllImport ("credui.dll")]
+		internal static extern CredUiReturnCodes CredUIPromptForCredentials (ref CredentialUiInfo uiInfo, string targetName,
+			IntPtr reserved1, int iError, StringBuilder userName, int maxUserName, StringBuilder password, int maxPassword,
+			[MarshalAs (UnmanagedType.Bool)] ref bool pfSave, CredentialsUiFlags windowsFlags);
+
 		[DllImport ("credui.dll", CharSet = CharSet.Unicode)]
-		internal static extern CredentialPromptReturnCode CredUIPromptForWindowsCredentials (ref CredentialUiInfo uiInfo,
+		internal static extern WindowsCredentialPromptReturnCode CredUIPromptForWindowsCredentials (ref CredentialUiInfo uiInfo,
 			int authError, ref int authPackage, IntPtr inAuthBuffer, int inAuthBufferSize,
 			out IntPtr refOutAuthBuffer, out int refOutAuthBufferSize, ref bool fSave,
-			CredentialsUiFlags uiFlags);
+			CredentialsUiWindowsFlags uiWindowsFlags);
 
 		[DllImport ("credui.dll", CharSet = CharSet.Auto)]
 		internal static extern bool CredUnPackAuthenticationBuffer (int dwFlags, IntPtr pAuthBuffer,
@@ -121,7 +145,41 @@ namespace MonoDevelop.Platform.Windows
 			public IntPtr BannerBitmap;
 		}
 
+		[Flags]
 		internal enum CredentialsUiFlags
+		{
+			IncorrectPassword = 0x1,
+			DoNotPersist = 0x2,
+			RequestAdministrator = 0x4,
+			ExcludeCertificates = 0x8,
+			RequireCertificate = 0x10,
+			ShowSaveCheckBox = 0x40,
+			AlwaysShowUi = 0x80,
+			RequireSmartcard = 0x100,
+			PasswordOnlyOk = 0x200,
+			ValidateUsername = 0x400,
+			CompleteUsername = 0x800,
+			PERSIST = 0x1000,
+			ServerCredential = 0x4000,
+			ExpectConfirmation = 0x20000,
+			GenericCredentials = 0x40000,
+			UsernameTargetCredentials = 0x80000,
+			KeepUsername = 0x100000,
+		}
+
+		internal enum CredUiReturnCodes
+		{
+			NoError = 0,
+			ErrorCancelled = 1223,
+			ErrorNoSuchLogonSession = 1312,
+			ErrorNotFound = 1168,
+			ErrorInvalidAccountName = 1315,
+			ErrorInsufficientBuffer = 122,
+			ErrorInvalidParameter = 87,
+			ErrorInvalidFlags = 1004,
+		}
+
+		internal enum CredentialsUiWindowsFlags
 		{
 			/// <summary>
 			/// The caller is requesting that the credential provider return the user name and password in plain text.
@@ -162,7 +220,7 @@ namespace MonoDevelop.Platform.Windows
 			ShouldPackTo32BitBoundary = 0x10000000,
 		}
 
-		internal enum CredentialPromptReturnCode
+		internal enum WindowsCredentialPromptReturnCode
 		{
 			NoError = 0,
 			ErrorCancelled = 1223,
