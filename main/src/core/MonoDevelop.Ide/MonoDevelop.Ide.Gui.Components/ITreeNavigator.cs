@@ -67,7 +67,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		// True if the node has been filled with child data.
 		bool Filled { get; }
-		
+
+		/// <summary>
+		/// Scrolls the tree to this node.
+		/// </summary>
+		void ScrollToNode ();
+
 		ITreeNavigator Clone ();
 	}
 	
