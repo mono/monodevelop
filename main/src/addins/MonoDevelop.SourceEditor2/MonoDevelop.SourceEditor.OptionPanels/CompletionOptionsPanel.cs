@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -60,7 +59,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			insertParenthesesCheckbutton.Active = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
 			openingRadiobutton.Active = CompletionTextEditorExtension.AddOpeningOnly;
 			bothRadiobutton.Active = !CompletionTextEditorExtension.AddOpeningOnly;
-			automaticCompletionCheckbutton.Active = CompletionWindowManager.DefaultToAutomaticCompletion;
 			InsertParensToggled (this, EventArgs.Empty);
 			return this;
 		}
@@ -84,7 +82,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			CompletionTextEditorExtension.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
 			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
 			CompletionTextEditorExtension.AddOpeningOnly.Value = openingRadiobutton.Active;
-			CompletionWindowManager.DefaultToAutomaticCompletion.Value = automaticCompletionCheckbutton.Active;
 		}
 
 		#endregion

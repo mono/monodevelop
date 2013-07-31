@@ -61,17 +61,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return wnd.CodeCompletionContext;
 			}
 		}
-
-		public readonly static PropertyWrapper<bool> DefaultToAutomaticCompletion = PropertyService.Wrap ("DefaultToAutomaticCompletion", true);
-
-		static bool? forceSuggestionMode;
-
+		
+		static bool forceSuggestionMode;
 		public static bool ForceSuggestionMode {
-			get { return forceSuggestionMode.HasValue ? forceSuggestionMode.Value : !DefaultToAutomaticCompletion.Value; }
+			get { return forceSuggestionMode; }
 			set {
 				forceSuggestionMode = value; 
 				if (wnd != null) {
-					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !value;
+					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !forceSuggestionMode;
 				}
 			}
 		}
