@@ -51,6 +51,8 @@ namespace MonoDevelop.CSharp.SplitProject
 
 		protected override void Run ()
 		{
+			IdeApp.Workbench.SaveAll ();
+
 			ProjectGraph graph = BuildGraph (currentProject);
 
 			if (graph != null) {
@@ -77,9 +79,26 @@ namespace MonoDevelop.CSharp.SplitProject
 						newProject.CompileTarget = CompileTarget.Library;
 						newProject.References.AddRange (currentProject.References);
 
-						currentProject.ParentFolder.AddItem (newProject);
+						//Copy settings and configurations from old project
+						newProject.Description = currentProject.Description;
+						newProject.TargetFramework = currentProject.TargetFramework;
+						newProject.Version = currentProject.Version;
+						newProject.SyncVersionWithSolution = currentProject.SyncVersionWithSolution;
+						while (newProject.Configurations.Count > 0) {
+							newProject.Configurations.RemoveAt (newProject.Configurations.Count - 1);
+						}
+						foreach (var configuration in currentProject.Configurations) {
+							var newConfiguration = (DotNetProjectConfiguration)configuration.Clone ();
+							newConfiguration.OutputAssembly = newProject.Name;
+							newConfiguration.OutputDirectory = newProject.BaseDirectory.Combine ("bin", newConfiguration.Name);
 
-						currentProject.References.Add (new MonoDevelop.Projects.ProjectReference (newProject));
+							newProject.Configurations.Add (newConfiguration);
+						}
+
+						newProject.Policies.CopyFrom (currentProject.Policies);
+
+						//Add project
+						currentProject.ParentFolder.AddItem (newProject);
 
 						var nodesToMove = dialog.SelectedNodes;
 
@@ -100,8 +119,23 @@ namespace MonoDevelop.CSharp.SplitProject
 							transferFilesMonitor.EndTask ();
 						}
 
-						IdeApp.ProjectOperations.Save (newProject);
-						IdeApp.ProjectOperations.Save (currentProject);
+						ISet<DotNetProject> projectsToSave = new HashSet<DotNetProject> ();
+						projectsToSave.Add (newProject);
+						projectsToSave.Add (currentProject);
+
+						currentProject.References.Add (new MonoDevelop.Projects.ProjectReference (newProject));
+
+						foreach (var project in currentProject.ParentSolution.GetAllProjects().OfType<DotNetProject>()) {
+							if (project.References.Any (reference => reference.ReferenceType == ReferenceType.Project && reference.Reference == currentProject.Name))
+							{
+								//This project references the old project, so just to be safe we make it reference the new library as well
+								project.References.Add (new MonoDevelop.Projects.ProjectReference(newProject));
+
+								projectsToSave.Add (project);
+							}
+						}
+
+						IdeApp.ProjectOperations.Save (projectsToSave);
 						IdeApp.ProjectOperations.Save (currentProject.ParentSolution);
 					}
 				}
