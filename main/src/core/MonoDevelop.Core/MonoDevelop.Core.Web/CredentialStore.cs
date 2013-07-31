@@ -15,40 +15,47 @@ namespace MonoDevelop.Core.Web
 			}
 		}
 
-		public ICredentials GetCredentials (Uri proxy, Uri uri)
+		public ICredentials GetCredentials (Uri uri, CredentialType credentialType)
 		{
-			Uri rootUri = GetRootUri (uri);
-
-			// Check our cache first
 			ICredentials credentials;
-			if (credentialCache.TryGetValue (uri, out credentials) ||
-				credentialCache.TryGetValue (rootUri, out credentials)) {
+			if (!credentialCache.TryGetValue (uri, out credentials)) {
+				if (credentialType == CredentialType.RequestCredentials &&
+				    credentialCache.TryGetValue (GetRootUri (uri), out credentials))
+					return credentials;
+			} else {
 				return credentials;
 			}
 
 			// Then go to the keychain
-			var creds = PasswordService.GetWebUserNameAndPassword (proxy);
-
-			return creds != null ? new NetworkCredential(creds.Item1, creds.Item2).AsCredentialCache (uri) : null;
+			var creds = PasswordService.GetWebUserNameAndPassword (uri);
+			return creds != null ? new NetworkCredential (creds.Item1, creds.Item2).AsCredentialCache (uri) : null;
 		}
 
 		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
 
-		public void Add (Uri requestUri, Uri proxy, ICredentials credentials)
+		public void Add (Uri requestUri, ICredentials credentials, CredentialType credentialType)
 		{
-			Uri rootUri = GetRootUri (requestUri);
 			credentialCache.TryAdd (requestUri, credentials);
-			credentialCache.AddOrUpdate (rootUri, credentials, (u, c) => credentials);
+			if (credentialType == CredentialType.RequestCredentials) {
+				var rootUri = GetRootUri (requestUri);
+				credentialCache.AddOrUpdate (rootUri, credentials, (u, c) => credentials);
+			}
 
+			var cred = GetCredentialsForUriFromICredentials (requestUri, credentials);
+			if (cred != null)
+				PasswordService.AddWebUserNameAndPassword (requestUri, cred.UserName, cred.Password);
+		}
+
+		static NetworkCredential GetCredentialsForUriFromICredentials (Uri uri, ICredentials credentials)
+		{
 			NetworkCredential cred = null;
 			foreach (var scheme in AuthenticationSchemes) {
-				cred = credentials.GetCredential (requestUri, scheme);
+				cred = credentials.GetCredential (uri, scheme);
 				if (cred != null)
 					break;
 			}
 
-			if (cred != null)
-				PasswordService.AddWebUserNameAndPassword (proxy, cred.UserName, cred.Password);
+			return cred;
 		}
 
 		static Uri GetRootUri (Uri uri)

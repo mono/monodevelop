@@ -22,14 +22,16 @@ namespace MonoDevelop.Core.Web
 				// Create the request
 				var request = (HttpWebRequest)createRequest ();
 				request.Proxy = proxyCache.GetProxy (request.RequestUri);
-				var proxyAddress = ((WebProxy) request.Proxy).Address;
 
-				if (request.Proxy != null && request.Proxy.Credentials == null)
-					request.Proxy.Credentials = CredentialCache.DefaultCredentials;
+				if (request.Proxy != null && request.Proxy.Credentials == null) {
+					var proxyAddress = ((WebProxy)request.Proxy).Address;
+					request.Proxy.Credentials = credentialCache.GetCredentials (proxyAddress, CredentialType.ProxyCredentials) ??
+					                            CredentialCache.DefaultCredentials;
+				}
 
 				if (previousResponse == null || ShouldKeepAliveBeUsedInRequest (previousRequest, previousResponse)) {
 					// Try to use the cached credentials (if any, for the first request)
-					request.Credentials = credentialCache.GetCredentials (proxyAddress, request.RequestUri);
+					request.Credentials = credentialCache.GetCredentials (request.RequestUri, CredentialType.RequestCredentials);
 
 					// If there are no cached credentials, use the default ones
 					if (request.Credentials == null)
@@ -66,13 +68,14 @@ namespace MonoDevelop.Core.Web
 
 					// Cache the proxy and credentials
 					proxyCache.Add (request.Proxy);
+					credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
 
-					credentialCache.Add (request.RequestUri, proxyAddress, credentials);
-					credentialCache.Add (response.ResponseUri, proxyAddress, credentials);
+					credentialCache.Add (request.RequestUri, credentials, CredentialType.RequestCredentials);
+					credentialCache.Add (response.ResponseUri, credentials, CredentialType.RequestCredentials);
 
 					return response;
 				} catch (WebException ex) {
-					using (IHttpWebResponse response = GetResponse(ex.Response)) {
+					using (var response = GetResponse(ex.Response)) {
 						if (response == null && ex.Status != WebExceptionStatus.SecureChannelFailure) {
 							// No response, something went wrong so just rethrow
 							throw;
@@ -80,21 +83,21 @@ namespace MonoDevelop.Core.Web
 
 						// Special case https connections that might require authentication
 						if (ex.Status == WebExceptionStatus.SecureChannelFailure) {
-							if (continueIfFailed) {
-								// Act like we got a 401 so that we prompt for credentials on the next request
-								previousStatusCode = HttpStatusCode.Unauthorized;
-								continue;
-							}
-							throw;
+							if (!continueIfFailed) throw;
+
+							// Act like we got a 401 so that we prompt for credentials on the next request
+							previousStatusCode = HttpStatusCode.Unauthorized;
+							continue;
 						}
 
 						// If we were trying to authenticate the proxy or the request and succeeded, cache the result.
 						if (previousStatusCode == HttpStatusCode.ProxyAuthenticationRequired && response.StatusCode != HttpStatusCode.ProxyAuthenticationRequired) {
 							proxyCache.Add (request.Proxy);
+							credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
 						} else if (previousStatusCode == HttpStatusCode.Unauthorized &&
 							response.StatusCode != HttpStatusCode.Unauthorized) {
-							credentialCache.Add (request.RequestUri, proxyAddress, request.Credentials);
-							credentialCache.Add (response.ResponseUri, proxyAddress, request.Credentials);
+							credentialCache.Add (request.RequestUri, request.Credentials, CredentialType.RequestCredentials);
+							credentialCache.Add (response.ResponseUri, request.Credentials, CredentialType.RequestCredentials);
 						}
 
 						if (!IsAuthenticationResponse (response) || !continueIfFailed)
