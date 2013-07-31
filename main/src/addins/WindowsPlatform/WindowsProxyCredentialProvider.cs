@@ -39,7 +39,7 @@ namespace MonoDevelop.Platform.Windows
 	{
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
-			var form = new PlaceholderForm (uri);
+			var form = new PlaceholderForm (credentialType, uri);
 			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
 			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
 		}
@@ -52,10 +52,12 @@ namespace MonoDevelop.Platform.Windows
 		internal string Username, Password, Domain;
 
 		readonly Uri uri;
+		readonly CredentialType type;
 
-		internal PlaceholderForm (Uri uri)
+		internal PlaceholderForm (CredentialType type, Uri uri)
 		{
 			this.uri = uri;
+			this.type = type;
 			Size = new Size (0, 0);
 			Visible = false;
 		}
@@ -63,8 +65,8 @@ namespace MonoDevelop.Platform.Windows
 		public override DialogResult ShowMagicDialog ()
 		{
 			var credUiInfo = new Native.CredentialUiInfo {
-				MessageText = GettextCatalog.GetString ("{1} needs proxy credentials to access {0}.", uri.Host, BrandingService.ApplicationName),
-				CaptionText = GettextCatalog.GetString ("{0} needs proxy credentials", BrandingService.ApplicationName),
+				MessageText = GettextCatalog.GetString ("{1} needs {2} credentials to access {0}.", uri.Host, BrandingService.ApplicationName, type == CredentialType.ProxyCredentials ? "proxy" : "request"),
+				CaptionText = GettextCatalog.GetString ("{0} needs {1} credentials", BrandingService.ApplicationName, type == CredentialType.ProxyCredentials ? "proxy" : "request"),
 				StructureSize = Marshal.SizeOf (typeof (Native.CredentialUiInfo)),
 				ParentWindow = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow)
 			};
@@ -113,7 +115,7 @@ namespace MonoDevelop.Platform.Windows
 		}
 	}
 
-	static class Native
+	static partial class Native
 	{
 		[DllImport ("ole32.dll")]
 		internal static extern void CoTaskMemFree (IntPtr ptr);
