@@ -62,4 +62,8 @@
 			<Class class="MonoDevelop.MacIntegration.MacExceptionDialogHandler" />
 		</Condition>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/PasswordProvider">
+		<Class class = "MonoDevelop.MacIntegration.MacKeychainPasswordProvider" />
+	</Extension>
 </ExtensionModel>

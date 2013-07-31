@@ -77,6 +77,7 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MacKeychainPasswordProvider.cs" />
     <Compile Include="MacPlatform.cs" />
     <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
