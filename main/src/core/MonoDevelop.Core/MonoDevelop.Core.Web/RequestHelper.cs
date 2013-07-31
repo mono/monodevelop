@@ -67,8 +67,11 @@ namespace MonoDevelop.Core.Web
 					WebResponse response = request.GetResponse ();
 
 					// Cache the proxy and credentials
-					proxyCache.Add (request.Proxy);
-					credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
+					if (request.Proxy != null) {
+						proxyCache.Add (request.Proxy);
+						credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials,
+						                     CredentialType.ProxyCredentials);
+					}
 
 					credentialCache.Add (request.RequestUri, credentials, CredentialType.RequestCredentials);
 					credentialCache.Add (response.ResponseUri, credentials, CredentialType.RequestCredentials);
