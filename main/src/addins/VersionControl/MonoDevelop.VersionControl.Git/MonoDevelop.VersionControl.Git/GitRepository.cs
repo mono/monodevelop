@@ -56,14 +56,8 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		static readonly byte[] EmptyContent = new byte[0];
 
-		LocalGitRepository TryStartOperation ()
-		{
-			return new LocalGitRepository (RootPath.Combine (Constants.DOT_GIT));
-		}
-
-		static void TryEndOperation (NGit.Repository repo)
-		{
-			repo.Close ();
+		LocalGitRepository RootRepository {
+			get; set;
 		}
 
 		public static event EventHandler BranchSelectionChanged;
@@ -76,6 +70,7 @@ namespace MonoDevelop.VersionControl.Git
 		public GitRepository (FilePath path, string url)
 		{
 			RootPath = path;
+			RootRepository = new LocalGitRepository (path.Combine (Constants.DOT_GIT));
 			Url = url;
 		}
 		
@@ -123,6 +118,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			GitRepository r = (GitRepository)other;
 			RootPath = r.RootPath;
+			if (!RootPath.IsNullOrEmpty)
+				RootRepository = new LocalGitRepository (RootPath);
 		}
 
 		public override string LocationDescription {
@@ -152,13 +149,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		public StashCollection GetStashes ()
 		{
-			var RootRepository = TryStartOperation ();
-			var stashes = GetStashes (RootRepository);
-			TryEndOperation (RootRepository);
-			return stashes;
+			return GetStashes (RootRepository);
 		}
 
-		public static StashCollection GetStashes (NGit.Repository repository)
+		public StashCollection GetStashes (NGit.Repository repository)
 		{
 			return new StashCollection (repository);
 		}
@@ -168,7 +162,6 @@ namespace MonoDevelop.VersionControl.Git
 		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
 			get {
 				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
-				var RootRepository = TryStartOperation ();
 				if (cachedSubmoduleTime != submoduleWriteTime) {
 					cachedSubmoduleTime = submoduleWriteTime;
 					cachedSubmodules = new NGit.Api.Git (RootRepository)
@@ -177,7 +170,6 @@ namespace MonoDevelop.VersionControl.Git
 					.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
 					.ToArray ();
 				}
-				TryEndOperation (RootRepository);
 				return cachedSubmodules;
 			}
 		}
@@ -191,16 +183,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var cache = CachedSubmodules;
 			return files.GroupBy (f => {
-				var RootRepository = TryStartOperation ();
-				var ret = cache
+				return cache
 					.Where (s => {
 						var fullPath = s.Item1.ToAbsolute (RootPath);
 						return f.IsChildPathOf (fullPath) || f.CanonicalPath == fullPath.CanonicalPath;
 					})
 					.Select (s => s.Item2)
 					.FirstOrDefault () ?? RootRepository;
-				TryEndOperation (RootRepository);
-				return ret;
 			});
 		}
 
@@ -410,7 +399,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
 		{
 			// Initialize the repository
-			var RootRepository = GitUtil.Init (localPath, Url, monitor);
+			RootRepository = GitUtil.Init (localPath, Url, monitor);
 			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			try {
 				var refs = git.Fetch ().Call ().GetAdvertisedRefs ();
@@ -419,12 +408,13 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} catch {
 				try {
-					TryEndOperation (RootRepository);
+					RootRepository.Close ();
 				} catch {
 				
 				}
 				if (Directory.Exists (RootRepository.Directory))
 					Directory.Delete (RootRepository.Directory, true);
+				RootRepository = null;
 				throw;
 			}
 
@@ -445,13 +435,11 @@ namespace MonoDevelop.VersionControl.Git
 			// Push to remote repo
 			Push (monitor, "origin", "master");
 
-			TryEndOperation (RootRepository);
 			return this;
 		}
 		
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			var RootRepository = TryStartOperation ();
 			IEnumerable<DiffEntry> statusList = null;
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
@@ -474,7 +462,6 @@ namespace MonoDevelop.VersionControl.Git
 				NotifyFileChanges (monitor, statusList);
 			
 			monitor.EndTask ();
-			TryEndOperation (RootRepository);
 		}
 
 		public void Fetch (IProgressMonitor monitor)
@@ -483,19 +470,16 @@ namespace MonoDevelop.VersionControl.Git
 			if (remote == null)
 				throw new InvalidOperationException ("No remotes defined");
 
-			var RootRepository = TryStartOperation ();
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
 			Transport tn = Transport.Open (RootRepository, remoteConfig);
 			using (var gm = new GitMonitor (monitor))
 				tn.Fetch (gm, null);
 			monitor.Step (1);
-			TryEndOperation (RootRepository);
 		}
 
 		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
 		{
-			var RootRepository = TryStartOperation ();
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
 			
@@ -571,13 +555,11 @@ namespace MonoDevelop.VersionControl.Git
 					stashes.Remove (stash);
 					monitor.EndTask ();
 				}
-				TryEndOperation (RootRepository);
 			}			
 		}
 		
 		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor)
 		{
-			var RootRepository = TryStartOperation ();
 			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = GetStashes (RootRepository);
@@ -632,8 +614,8 @@ namespace MonoDevelop.VersionControl.Git
 					using (var gm = new GitMonitor (monitor))
 						stash.Apply (gm);
 					stashes.Remove (stash);
+					monitor.EndTask ();
 				}
-				TryEndOperation (RootRepository);
 			}
 			monitor.Step (1);
 			
@@ -678,8 +660,7 @@ namespace MonoDevelop.VersionControl.Git
 			string message = changeSet.GlobalComment;
 			if (string.IsNullOrEmpty (message))
 				throw new ArgumentException ("Commit message must not be null or empty!", "message");
-
-			var RootRepository = TryStartOperation ();
+			
 			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			NGit.Api.CommitCommand commit = git.Commit ();
 			commit.SetMessage (message);
@@ -687,29 +668,28 @@ namespace MonoDevelop.VersionControl.Git
 			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName")) {
 				commit.SetAuthor ((string)changeSet.ExtendedProperties ["Git.AuthorName"], (string)changeSet.ExtendedProperties ["Git.AuthorEmail"]);
 			}
-
-			foreach (string path in GetFilesInPaths (changeSet.Items.Select (i => i.LocalPath), RootRepository))
+			
+			foreach (string path in GetFilesInPaths (changeSet.Items.Select (i => i.LocalPath)))
 				commit.SetOnly (path);
 			
 			commit.Call ();
-			TryEndOperation (RootRepository);
 		}
 		
-		List<string> GetFilesInPaths (IEnumerable<FilePath> paths, NGit.Repository RootRepository)
+		List<string> GetFilesInPaths (IEnumerable<FilePath> paths)
 		{
 			// Expand directory paths into file paths. Convert paths to full paths.
 			List<string> filePaths = new List<string> ();
 			foreach (var path in paths) {
 				DirectoryInfo dir = new DirectoryInfo (path);
 				if (dir.Exists)
-					filePaths.AddRange (GetDirectoryFiles (dir, RootRepository));
+					filePaths.AddRange (GetDirectoryFiles (dir));
 				else
 					filePaths.Add (RootRepository.ToGitPath (path));
 			}
 			return filePaths;
 		}
 		
-		IEnumerable<string> GetDirectoryFiles (DirectoryInfo dir, NGit.Repository RootRepository)
+		IEnumerable<string> GetDirectoryFiles (DirectoryInfo dir)
 		{
 			FileTreeIterator iter = new FileTreeIterator (dir.FullName, RootRepository.FileSystem, WorkingTreeOptions.KEY.Parse(RootRepository.GetConfig()));
 			while (!iter.Eof) {
@@ -722,29 +702,23 @@ namespace MonoDevelop.VersionControl.Git
 
 		public bool IsUserInfoDefault ()
 		{
-			var RootRepository = TryStartOperation ();
 			UserConfig config = RootRepository.GetConfig ().Get (UserConfig.KEY);
-			TryEndOperation (RootRepository);
 			return config.IsCommitterNameImplicit () && config.IsCommitterEmailImplicit ();
 		}
 		
 		public void GetUserInfo (out string name, out string email)
 		{
-			var RootRepository = TryStartOperation ();
 			UserConfig config = RootRepository.GetConfig ().Get (UserConfig.KEY);
 			name = config.GetCommitterName ();
 			email = config.GetCommitterEmail ();
-			TryEndOperation (RootRepository);
 		}
 
 		public void SetUserInfo (string name, string email)
 		{
-			var RootRepository = TryStartOperation ();
-			StoredConfig config = RootRepository.GetConfig ();
+			NGit.StoredConfig config = RootRepository.GetConfig ();
 			config.SetString ("user", null, "name", name);
 			config.SetString ("user", null, "email", email);
 			config.Save ();
-			TryEndOperation (RootRepository);
 		}
 
 		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
@@ -757,8 +731,7 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetCloneSubmodules (true);
 			using (var gm = new GitMonitor (monitor, 4)) {
 				cmd.SetProgressMonitor (gm);
-				var git = cmd.Call ();
-				TryEndOperation (git.GetRepository ());
+				cmd.Call ();
 			}
 		}
 
@@ -892,18 +865,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			var RootRepository = TryStartOperation ();
 			NGit.Repository repo = GetRepository (localPath);
 			NGit.Api.Git git = new NGit.Api.Git (repo);
 			GitRevision gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.
-			foreach (var path in GetFilesInPaths (new FilePath[] { localPath }, RootRepository)) {
+			foreach (var path in GetFilesInPaths (new FilePath[] { localPath })) {
 				MonoDevelop.Projects.Text.TextFile.WriteFile (path, GetCommitTextContent (gitRev.Commit, path), null);
 			}
 
 			monitor.ReportSuccess (GettextCatalog.GetString ("Successfully reverted {0} to revision {1}", localPath, gitRev));
-			TryEndOperation (RootRepository);
 		}
 
 
@@ -1145,7 +1116,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
 		{
-			var RootRepository = TryStartOperation ();
 			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
 			Transport tp = Transport.Open (RootRepository, remoteConfig);
 			
@@ -1174,7 +1144,6 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.ReportError (msg, null);
 				break;
 			}
-			TryEndOperation (RootRepository);
 		}
 
 		public void CreateBranch (string name, string trackSource)
@@ -1185,86 +1154,70 @@ namespace MonoDevelop.VersionControl.Git
 			if (string.IsNullOrEmpty (trackSource))
 				trackSource = Constants.HEAD;
 
-			var RootRepository = TryStartOperation ();
 			ObjectId headId = RootRepository.Resolve (trackSource);
 			RefUpdate updateRef = RootRepository.UpdateRef (Constants.R_HEADS + name);
 			updateRef.SetNewObjectId(headId);
 			updateRef.Update();
 			GitUtil.SetUpstreamSource (RootRepository, name, trackSource);
-			TryEndOperation (RootRepository);
 		}
 
 		public void SetBranchTrackSource (string name, string trackSource)
 		{
-			var RootRepository = TryStartOperation ();
 			GitUtil.SetUpstreamSource (RootRepository, name, trackSource);
-			TryEndOperation (RootRepository);
 		}
 
 		public void RemoveBranch (string name)
 		{
-			var RootRepository = TryStartOperation ();
 			var git = new NGit.Api.Git (RootRepository);
 			git.BranchDelete ().SetBranchNames (name).SetForce (true).Call ();
-			TryEndOperation (RootRepository);
 		}
 
 		public void RenameBranch (string name, string newName)
 		{
-			var RootRepository = TryStartOperation ();
 			var git = new NGit.Api.Git (RootRepository);
 			git.BranchRename ().SetOldName (name).SetNewName (newName).Call ();
-			TryEndOperation (RootRepository);
 		}
 
 		public IEnumerable<RemoteSource> GetRemotes ()
 		{
-			var RootRepository = TryStartOperation ();
 			StoredConfig cfg = RootRepository.GetConfig ();
 			foreach (RemoteConfig rc in RemoteConfig.GetAllRemoteConfigs (cfg))
 				yield return new RemoteSource (cfg, rc);
-			TryEndOperation (RootRepository);
 		}
 		
 		public bool IsBranchMerged (string branchName)
 		{
 			// check if a branch is merged into HEAD
-			var RootRepository = TryStartOperation ();
 			RevWalk walk = new RevWalk(RootRepository);
 			RevCommit tip = walk.ParseCommit(RootRepository.Resolve(Constants.HEAD));
 			Ref currentRef = RootRepository.GetRef(branchName);
 			if (currentRef == null)
 				return true;
 			RevCommit @base = walk.ParseCommit(RootRepository.Resolve(branchName));
-			TryEndOperation (RootRepository);
 			return walk.IsMergedInto(@base, tip);
 		}
 
 		public void RenameRemote (string name, string newName)
 		{
-			var RootRepository = TryStartOperation ();
 			StoredConfig cfg = RootRepository.GetConfig ();
 			RemoteConfig rem = RemoteConfig.GetAllRemoteConfigs (cfg).FirstOrDefault (r => r.Name == name);
 			if (rem != null) {
 				rem.Name = newName;
 				rem.Update (cfg);
 			}
-			TryEndOperation (RootRepository);
 		}
 
 		public void AddRemote (RemoteSource remote, bool importTags)
 		{
 			if (string.IsNullOrEmpty (remote.Name))
 				throw new InvalidOperationException ("Name not set");
-
-			var RootRepository = TryStartOperation ();
+			
 			StoredConfig c = RootRepository.GetConfig ();
 			RemoteConfig rc = new RemoteConfig (c, remote.Name);
 			c.Save ();
 			remote.RepoRemote = rc;
 			remote.cfg = c;
 			UpdateRemote (remote);
-			TryEndOperation (RootRepository);
 		}
 
 		public void UpdateRemote (RemoteSource remote)
@@ -1281,19 +1234,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void RemoveRemote (string name)
 		{
-			var RootRepository = TryStartOperation ();
 			StoredConfig cfg = RootRepository.GetConfig ();
 			RemoteConfig rem = RemoteConfig.GetAllRemoteConfigs (cfg).FirstOrDefault (r => r.Name == name);
 			if (rem != null) {
 				cfg.UnsetSection ("remote", name);
 				cfg.Save ();
 			}
-			TryEndOperation (RootRepository);
 		}
 
 		public IEnumerable<Branch> GetBranches ()
 		{
-			var RootRepository = TryStartOperation ();
 			IDictionary<string, NGit.Ref> refs = RootRepository.RefDatabase.GetRefs (Constants.R_HEADS);
 			foreach (var pair in refs) {
 				string name = NGit.Repository.ShortenRefName (pair.Key);
@@ -1302,40 +1252,30 @@ namespace MonoDevelop.VersionControl.Git
 				br.Tracking = GitUtil.GetUpstreamSource (RootRepository, name);
 				yield return br;
 			}
-			TryEndOperation (RootRepository);
 		}
 
 		public IEnumerable<string> GetTags ()
 		{
-			var RootRepository = TryStartOperation ();
-			var ret = RootRepository.GetTags ().Keys;
-			TryEndOperation (RootRepository);
-			return ret;
+			return RootRepository.GetTags ().Keys;
 		}
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
-			var RootRepository = TryStartOperation ();
 			var refs = RootRepository.RefDatabase.GetRefs (Constants.R_REMOTES);
 			foreach (var pair in refs) {
 				string name = NGit.Repository.ShortenRefName (pair.Key);
 				if (name.StartsWith (remoteName + "/"))
 					yield return name.Substring (remoteName.Length + 1);
 			}
-			TryEndOperation (RootRepository);
 		}
 
 		public string GetCurrentBranch ()
 		{
-			var RootRepository = TryStartOperation ();
-			var ret = RootRepository.GetBranch ();
-			TryEndOperation (RootRepository);
-			return ret;
+			return RootRepository.GetBranch ();
 		}
 
 		public void SwitchToBranch (IProgressMonitor monitor, string branch)
 		{
-			var RootRepository = TryStartOperation ();
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 			
 			// Get a list of files that are different in the target branch
@@ -1384,7 +1324,6 @@ namespace MonoDevelop.VersionControl.Git
 						stash.Apply (gm);
 					stashes.Remove (stash);
 				}
-				TryEndOperation (RootRepository);
 				throw;
 			}
 			
@@ -1408,7 +1347,6 @@ namespace MonoDevelop.VersionControl.Git
 				BranchSelectionChanged (this, EventArgs.Empty);
 			
 			monitor.EndTask ();
-			TryEndOperation (RootRepository);
 		}
 
 		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<DiffEntry> statusList)
@@ -1455,7 +1393,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		public ChangeSet GetPushChangeSet (string remote, string branch)
 		{
-			var RootRepository = TryStartOperation ();
 			ChangeSet cset = CreateChangeSet (RootPath);
 			ObjectId cid1 = RootRepository.Resolve (remote + "/" + branch);
 			ObjectId cid2 = RootRepository.Resolve (RootRepository.GetBranch ());
@@ -1479,13 +1416,11 @@ namespace MonoDevelop.VersionControl.Git
 				VersionInfo vi = new VersionInfo (RootRepository.FromGitPath (change.GetNewPath ()), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 				cset.AddFile (vi);
 			}
-			TryEndOperation (RootRepository);
 			return cset;
 		}
 
 		public DiffInfo[] GetPushDiff (string remote, string branch)
 		{
-			var RootRepository = TryStartOperation ();
 			ObjectId cid1 = RootRepository.Resolve (remote + "/" + branch);
 			ObjectId cid2 = RootRepository.Resolve (RootRepository.GetBranch ());
 			RevWalk rw = new RevWalk (RootRepository);
@@ -1509,7 +1444,6 @@ namespace MonoDevelop.VersionControl.Git
 				DiffInfo di = new DiffInfo (RootPath, RootRepository.FromGitPath (change.GetNewPath ()), diff);
 				diffs.Add (di);
 			}
-			TryEndOperation (RootRepository);
 			return diffs.ToArray ();
 		}
 
@@ -1577,7 +1511,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnIgnore (FilePath[] paths)
 		{
-			var RootRepository = TryStartOperation ();
 			List<FilePath> ignored = new List<FilePath> ();
 			string txt;
 			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
@@ -1591,12 +1524,10 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			TryEndOperation (RootRepository);
 		}
 
 		protected override void OnUnignore (FilePath[] paths)
 		{
-			var RootRepository = TryStartOperation ();
 			List<string> ignored = new List<string> ();
 			string txt;
 			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
@@ -1610,7 +1541,6 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (path);
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			TryEndOperation (RootRepository);
 		}
 	}
 	
