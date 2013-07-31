@@ -154,7 +154,6 @@ namespace MonoDevelop.CSharp.SplitProject
 				}
 				var row = dataSource.GetNavigatorAt (rowPosition);
 				var checkState = row.GetValue (selectedField);
-				var node = row.GetValue (nodeField);
 
 				ISet<ProjectGraph.Node> descendentNodes = GetNodeAndDescendents(row);
 
