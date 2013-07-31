@@ -39,6 +39,8 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -123,11 +125,10 @@ namespace MonoDevelop.CodeIssues
 						}
 						monitor.BeginTask ("Analyzing solution", work);
 						var processedFiles = new ConcurrentDictionary<string, object> ();
-						//TypeSystemParser parser = null;
 						foreach (var project in solution.GetAllProjects ()) {
 							if (tokenSource.IsCancellationRequested)
 								break;
-							var compilation = TypeSystemService.GetCompilation (project);
+							var content = TypeSystemService.GetProjectContext (project);
 							Parallel.ForEach (project.Files, file => {
 								var me = new object();
 								var owner = processedFiles.AddOrUpdate(file.Name, me, (key, old) => old);
@@ -137,17 +138,11 @@ namespace MonoDevelop.CodeIssues
 									return;
 
 								var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-
-								//if (lastMime != editor.MimeType || parser == null)
-									var parser = TypeSystemService.GetParser (editor.MimeType);
-								if (parser == null)
-									return;
-								var reader = new StreamReader (editor.OpenStream ());
-								var document = parser.Parse (true, editor.FileName, reader, project);
-								reader.Close ();
+								var document = TypeSystemService.ParseFile (project, editor);
 								if (document == null) 
 									return;
 
+								var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 								var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 								var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
@@ -157,27 +152,8 @@ namespace MonoDevelop.CodeIssues
 									if (severity == Severity.None || tokenSource.IsCancellationRequested)
 										return;
 									try {
-										foreach (var r in provider.GetIssues (context, tokenSource.Token)) {
-											var issue = new IssueSummary {
-												IssueDescription = r.Description,
-												Region = r.Region,
-												ProviderTitle = provider.Title,
-												ProviderDescription = provider.Description,
-												ProviderCategory = provider.Category,
-												Severity = provider.GetSeverity (),
-												IssueMarker = provider.IssueMarker,
-												File = file,
-												Project = project,
-												InspectorIdString = r.InspectorIdString
-											};
-											issue.Actions = r.Actions.Select (a => new ActionSummary {
-												Batchable = a.SupportsBatchRunning,
-												SiblingKey = a.SiblingKey,
-												Title = a.Title,
-												Region = a.DocumentRegion,
-												IssueSummary = issue
-											}).ToList ();
-											IssueSink.AddIssue (issue);
+										foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
+											AddIssue (file, provider, issue);
 										}
 									} catch (OperationCanceledException) {
 										// The operation was cancelled, no-op as the user-visible parts are
@@ -208,6 +184,30 @@ namespace MonoDevelop.CodeIssues
 					}
 				});
 			}
+		}
+
+		void AddIssue (ProjectFile file, CodeIssueProvider provider, CodeIssue r)
+		{
+			var issue = new IssueSummary {
+				IssueDescription = r.Description,
+				Region = r.Region,
+				ProviderTitle = provider.Title,
+				ProviderDescription = provider.Description,
+				ProviderCategory = provider.Category,
+				Severity = provider.GetSeverity (),
+				IssueMarker = provider.IssueMarker,
+				File = file,
+				Project = file.Project,
+				InspectorIdString = r.InspectorIdString
+			};
+			issue.Actions = r.Actions.Select (a => new ActionSummary {
+				Batchable = a.SupportsBatchRunning,
+				SiblingKey = a.SiblingKey,
+				Title = a.Title,
+				Region = a.DocumentRegion,
+				IssueSummary = issue
+			}).ToList ();
+			IssueSink.AddIssue (issue);
 		}
 		
 		public void Stop() {
