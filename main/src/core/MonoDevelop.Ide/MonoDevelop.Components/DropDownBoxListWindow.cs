@@ -498,7 +498,6 @@ namespace MonoDevelop.Components
 				else
 					newHeight = (rowHeight * this.win.DataProvider.IconCount) + margin * 2;
 				listWidth = Math.Min (450, CalcWidth ());
-				Console.WriteLine ("new height:"+newHeight);
 				this.SetSizeRequest (listWidth, newHeight);
 			} 
 			internal int CalcWidth ()
