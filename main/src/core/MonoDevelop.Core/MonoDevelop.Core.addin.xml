@@ -28,7 +28,7 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/WebCredentialProviders" name = "Web credential providers">
 		<Description>Platform-specific services used for obtaining proxy credentials.</Description>
-		<ExtensionNode name="CredentialProvider" objectType="MonoDevelop.Core.Web.ICredentialProvider" />
+		<ExtensionNode name="Class" objectType="MonoDevelop.Core.Web.ICredentialProvider" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
