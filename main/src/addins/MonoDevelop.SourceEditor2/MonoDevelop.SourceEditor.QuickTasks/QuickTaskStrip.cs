@@ -33,6 +33,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using System.Linq;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -247,6 +249,54 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			 ScrollBarMode = ScrollBarMode.Minimap; 
 		}
+
+		internal enum HoverMode { NextMessage, NextWarning, NextError }
+		internal QuickTask SearchNextTask (HoverMode mode)
+		{
+			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			QuickTask firstTask = null;
+			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
+				bool isNextTask = task.Location > curLoc;
+				if (mode == HoverMode.NextMessage ||
+				    mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
+				    mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					if (isNextTask)
+						return task;
+					if (firstTask == null)
+						firstTask = task;
+				}
+			}
+			return firstTask;
+		}
+
+		internal QuickTask SearchPrevTask (HoverMode mode)
+		{
+			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			QuickTask firstTask = null;
+			foreach (var task in AllTasks.OrderByDescending (t => t.Location) ) {
+				bool isNextTask = task.Location < curLoc;
+				if (mode == HoverMode.NextMessage ||
+				    mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
+				    mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					if (isNextTask)
+						return task;
+					if (firstTask == null)
+						firstTask = task;
+				}
+			}
+			return firstTask;
+		}
+
+		internal void GotoTask (QuickTask quickTask)
+		{
+			if (quickTask == null)
+				return;
+			TextEditor.Caret.Location = quickTask.Location;
+			TextEditor.CenterToCaret ();
+			TextEditor.StartCaretPulseAnimation ();
+			TextEditor.GrabFocus ();
+		}
+
 		#endregion
 	}
 }

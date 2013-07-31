@@ -72,6 +72,28 @@
 		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
 		         _label = "MarkerOperations"
 		         type = "array"/> 
+		<Category _name = "Code Navigation" id = "CodeNavigation">
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue"
+						_label = "Next Issue in File" 
+						shortcut = "Alt|Page_Down"
+						macShortcut = "Alt|Page_Down"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue"
+						_label = "Previous Issue in File" 
+						shortcut = "Alt|Page_Up"
+						macShortcut = "Alt|Page_Up"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError"
+						_label = "Next Error" 
+						shortcut = "Alt|Shift|Page_Down"
+						macShortcut = "Alt|Shift|Page_Down"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError"
+						_label = "Previous Error" 
+						shortcut = "Alt|Shift|Page_Up"
+						macShortcut = "Alt|Shift|Page_Up"
+			/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
@@ -182,6 +204,15 @@
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues" />
+		</ItemSet>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
+		<ItemSet id = "Inspect" _label = "Inspect" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" insertbefore="Separator3">
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" />
 		</ItemSet>
 	</Extension>
 

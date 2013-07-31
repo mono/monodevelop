@@ -127,10 +127,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		internal CodeSegmentPreviewWindow previewWindow;
 
-		enum HoverMode { NextMessage, NextWarning, NextError }
 
 		bool hoverOverIndicator;
-		HoverMode currentHoverMode;
+		QuickTaskStrip.HoverMode currentHoverMode;
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
@@ -176,13 +175,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 					if (errors > 0) {
 						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
-						currentHoverMode = HoverMode.NextError;
+						currentHoverMode = QuickTaskStrip.HoverMode.NextError;
 					} else if (warnings > 0) {
 						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
-						currentHoverMode = HoverMode.NextWarning;
+						currentHoverMode = QuickTaskStrip.HoverMode.NextWarning;
 					} else if (warnings + hints > 0) {
 						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
-						currentHoverMode = HoverMode.NextMessage;
+						currentHoverMode = QuickTaskStrip.HoverMode.NextMessage;
 					}
 
 					TooltipText = text;
@@ -344,23 +343,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected uint button;
 
-		QuickTask SearchNextTask ()
-		{
-			var curLoc = (TextLocation)TextEditor.Caret.Location;
-			QuickTask firstTask = null;
-			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
-				bool isNextTask = task.Location > curLoc;
-				if (currentHoverMode == HoverMode.NextMessage ||
-				    currentHoverMode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-				    currentHoverMode == HoverMode.NextError && task.Severity == Severity.Error) {
-					if (isNextTask)
-						return task;
-					if (firstTask == null)
-						firstTask = task;
-				}
-			}
-			return firstTask;
-		}
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
@@ -368,14 +350,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && evnt.Type == EventType.ButtonPress) {
 				if (hoverOverIndicator) {
-					var foundTask = SearchNextTask ();
-					if (foundTask != null) {
-						TextEditor.Caret.Location = foundTask.Location;
-						TextEditor.CenterToCaret ();
-						TextEditor.StartCaretPulseAnimation ();
-						TextEditor.GrabFocus ();
-						return base.OnButtonPressEvent (evnt);
-					}
+					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
+					return base.OnButtonPressEvent (evnt);
 				} else  if (hoverTask != null) {
 					TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
 					TextEditor.CenterToCaret ();
