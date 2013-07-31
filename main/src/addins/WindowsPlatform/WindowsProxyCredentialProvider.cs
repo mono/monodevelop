@@ -94,7 +94,7 @@ namespace MonoDevelop.Platform.Windows
 		}
 	}
 
-	class Native
+	static class Native
 	{
 		[DllImport ("ole32.dll")]
 		internal static extern void CoTaskMemFree (IntPtr ptr);
