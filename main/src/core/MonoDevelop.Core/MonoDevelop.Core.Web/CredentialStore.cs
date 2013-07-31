@@ -15,27 +15,43 @@ namespace MonoDevelop.Core.Web
 			}
 		}
 
-		public ICredentials GetCredentials (Uri uri)
+		public ICredentials GetCredentials (Uri proxy, Uri uri)
 		{
 			Uri rootUri = GetRootUri (uri);
 
+			// Check our cache first
 			ICredentials credentials;
 			if (credentialCache.TryGetValue (uri, out credentials) ||
 				credentialCache.TryGetValue (rootUri, out credentials)) {
 				return credentials;
 			}
 
-			return null;
+			// Then go to the keychain
+			var creds = PasswordService.GetWebUserNameAndPassword (proxy);
+
+			return creds != null ? new NetworkCredential(creds.Item1, creds.Item2).AsCredentialCache (uri) : null;
 		}
 
-		public void Add (Uri uri, ICredentials credentials)
+		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
+
+		public void Add (Uri requestUri, Uri proxy, ICredentials credentials)
 		{
-			Uri rootUri = GetRootUri (uri);
-			credentialCache.TryAdd (uri, credentials);
+			Uri rootUri = GetRootUri (requestUri);
+			credentialCache.TryAdd (requestUri, credentials);
 			credentialCache.AddOrUpdate (rootUri, credentials, (u, c) => credentials);
+
+			NetworkCredential cred = null;
+			foreach (var scheme in AuthenticationSchemes) {
+				cred = credentials.GetCredential (requestUri, scheme);
+				if (cred != null)
+					break;
+			}
+
+			if (cred != null)
+				PasswordService.AddWebUserNameAndPassword (proxy, cred.UserName, cred.Password);
 		}
 
-		internal static Uri GetRootUri (Uri uri)
+		static Uri GetRootUri (Uri uri)
 		{
 			return new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
 		}

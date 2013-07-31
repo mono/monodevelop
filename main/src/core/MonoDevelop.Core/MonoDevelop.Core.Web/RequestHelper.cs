@@ -22,13 +22,14 @@ namespace MonoDevelop.Core.Web
 				// Create the request
 				var request = (HttpWebRequest)createRequest ();
 				request.Proxy = proxyCache.GetProxy (request.RequestUri);
+				var proxyAddress = ((WebProxy) request.Proxy).Address;
 
 				if (request.Proxy != null && request.Proxy.Credentials == null)
 					request.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
 				if (previousResponse == null || ShouldKeepAliveBeUsedInRequest (previousRequest, previousResponse)) {
 					// Try to use the cached credentials (if any, for the first request)
-					request.Credentials = credentialCache.GetCredentials (request.RequestUri);
+					request.Credentials = credentialCache.GetCredentials (proxyAddress, request.RequestUri);
 
 					// If there are no cached credentials, use the default ones
 					if (request.Credentials == null)
@@ -61,8 +62,8 @@ namespace MonoDevelop.Core.Web
 					// Cache the proxy and credentials
 					proxyCache.Add (request.Proxy);
 
-					credentialCache.Add (request.RequestUri, credentials);
-					credentialCache.Add (response.ResponseUri, credentials);
+					credentialCache.Add (request.RequestUri, proxyAddress, credentials);
+					credentialCache.Add (response.ResponseUri, proxyAddress, credentials);
 
 					return response;
 				} catch (WebException ex) {
@@ -87,8 +88,8 @@ namespace MonoDevelop.Core.Web
 							proxyCache.Add (request.Proxy);
 						} else if (previousStatusCode == HttpStatusCode.Unauthorized &&
 							response.StatusCode != HttpStatusCode.Unauthorized) {
-							credentialCache.Add (request.RequestUri, request.Credentials);
-							credentialCache.Add (response.ResponseUri, request.Credentials);
+							credentialCache.Add (request.RequestUri, proxyAddress, request.Credentials);
+							credentialCache.Add (response.ResponseUri, proxyAddress, request.Credentials);
 						}
 
 						if (!IsAuthenticationResponse (response) || !continueIfFailed)

@@ -5,8 +5,8 @@ namespace MonoDevelop.Core.Web
 {
 	public interface ICredentialCache
 	{
-		void Add (Uri uri, ICredentials credentials);
+		void Add (Uri requestUri, Uri proxy, ICredentials credentials);
 
-		ICredentials GetCredentials (Uri uri);
+		ICredentials GetCredentials (Uri proxy, Uri uri);
 	}
 }
