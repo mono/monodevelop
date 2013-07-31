@@ -139,7 +139,11 @@ namespace MonoDevelop.Debugger
 
 	class ImmediateConsoleView : ConsoleView, ICompletionWidget
 	{
+		const string tokenBeginChars = "([<,";
+
 		Mono.Debugging.Client.CompletionData currentCompletionData;
+		bool isLiteralString = false;
+		Gtk.TextMark tokenBeginMark;
 		CodeCompletionContext ctx;
 		Gdk.ModifierType modifier;
 		bool keyHandled = false;
@@ -155,6 +159,8 @@ namespace MonoDevelop.Debugger
 
 			IdeApp.Preferences.CustomOutputPadFontChanged += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
+
+			tokenBeginMark = Buffer.CreateMark (null, Buffer.EndIter, true);
 		}
 
 		static bool IsCompletionChar (char c)
@@ -180,7 +186,7 @@ namespace MonoDevelop.Debugger
 			Gtk.Application.Invoke (delegate {
 				char c = (char) Gdk.Keyval.ToUnicode (keyValue);
 				if (currentCompletionData == null && IsCompletionChar (c)) {
-					string expr = Buffer.GetText (InputLineBegin, Cursor, false);
+					string expr = Buffer.GetText (TokenBegin, Cursor, false);
 					currentCompletionData = GetCompletionData (expr);
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
@@ -195,10 +201,17 @@ namespace MonoDevelop.Debugger
 
 		void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
 		{
+			if (!isLiteralString && (tokenBeginChars.IndexOf (keyChar) != -1 || (keyChar == ' ' && TokenBegin.Offset + 1 == Cursor.Offset)))
+				Buffer.MoveMark (tokenBeginMark, Cursor);
+
 			if (keyHandled)
 				return;
 
-			string text = ctx == null ? InputLine : InputLine.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, InputLine.Length)));
+			string text = TokenText;
+
+			if (ctx != null)
+				text = text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, text.Length)));
+
 			CompletionWindowManager.UpdateWordSelection (text);
 			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 			PopupCompletion ();
@@ -213,6 +226,9 @@ namespace MonoDevelop.Debugger
 			modifier = args.Event.State;
 			key = args.Event.Key;
 
+			if (keyChar == '"')
+				isLiteralString = !isLiteralString;
+
 			if ((args.Event.Key == Gdk.Key.Down || args.Event.Key == Gdk.Key.Up)) {
 				keyChar = '\0';
 			}
@@ -225,8 +241,35 @@ namespace MonoDevelop.Debugger
 			return base.ProcessKeyPressEvent (args);
 		}
 
+		protected override void UpdateInputLineBegin ()
+		{
+			Buffer.MoveMark (tokenBeginMark, Buffer.EndIter);
+			base.UpdateInputLineBegin ();
+			isLiteralString = false;
+		}
+
+		string TokenText {
+			get { return Buffer.GetText (TokenBegin, TokenEnd, false); }
+			set {
+				var start = TokenBegin;
+				var end = TokenEnd;
+
+				Buffer.Delete (ref start, ref end);
+				start = TokenBegin;
+				Buffer.Insert (ref start, value);
+			}
+		}
+
+		Gtk.TextIter TokenBegin {
+			get { return Buffer.GetIterAtMark (tokenBeginMark); }
+		}
+
+		Gtk.TextIter TokenEnd {
+			get { return InputLineEnd; }
+		}
+
 		int Position {
-			get { return Cursor.Offset - InputLineBegin.Offset; }
+			get { return Cursor.Offset - TokenBegin.Offset; }
 		}
 
 		#region ICompletionWidget implementation
@@ -246,7 +289,7 @@ namespace MonoDevelop.Debugger
 
 		string ICompletionWidget.GetText (int startOffset, int endOffset)
 		{
-			var text = InputLine;
+			var text = TokenText;
 
 			if (startOffset < 0 || startOffset > text.Length) startOffset = 0;
 			if (endOffset > text.Length) endOffset = text.Length;
@@ -257,9 +300,9 @@ namespace MonoDevelop.Debugger
 		void ICompletionWidget.Replace (int offset, int count, string text)
 		{
 			if (count > 0)
-				InputLine = InputLine.Remove (offset, count);
+				TokenText = TokenText.Remove (offset, count);
 			if (!string.IsNullOrEmpty (text))
-				InputLine = InputLine.Insert (offset, text);
+				TokenText = TokenText.Insert (offset, text);
 		}
 
 		int ICompletionWidget.CaretOffset {
@@ -270,7 +313,7 @@ namespace MonoDevelop.Debugger
 
 		char ICompletionWidget.GetChar (int offset)
 		{
-			string text = InputLine;
+			string text = TokenText;
 
 			if (offset >= text.Length)
 				return (char) 0;
@@ -301,14 +344,14 @@ namespace MonoDevelop.Debugger
 
 		string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
 		{
-			return InputLine.Substring (ctx.TriggerOffset, ctx.TriggerWordLength);
+			return TokenText.Substring (ctx.TriggerOffset, ctx.TriggerWordLength);
 		}
 
 		void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
 		{
 			int sp = Position - partial_word.Length;
 
-			var start = Buffer.GetIterAtOffset (InputLineBegin.Offset + sp);
+			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + sp);
 			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
 			Buffer.Delete (ref start, ref end);
 			Buffer.Insert (ref start, complete_word);
@@ -319,7 +362,7 @@ namespace MonoDevelop.Debugger
 		{
 			int sp = Position - partial_word.Length;
 
-			var start = Buffer.GetIterAtOffset (InputLineBegin.Offset + sp);
+			var start = Buffer.GetIterAtOffset (TokenBegin.Offset + sp);
 			var end = Buffer.GetIterAtOffset (start.Offset + partial_word.Length);
 			Buffer.Delete (ref start, ref end);
 			Buffer.Insert (ref start, complete_word);
@@ -330,7 +373,7 @@ namespace MonoDevelop.Debugger
 
 		int ICompletionWidget.TextLength {
 			get {
-				return InputLine.Length;
+				return TokenText.Length;
 			}
 		}
 

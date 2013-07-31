@@ -41,10 +41,11 @@ namespace MonoDevelop.Components
 		
 		Stack<string> commandHistoryPast = new Stack<string> ();
 		Stack<string> commandHistoryFuture = new Stack<string> ();
-		
+
 		bool inBlock = false;
 		string blockText = "";
-		
+
+		TextMark inputBeginMark;
 		TextView textView;
 	
 		public ConsoleView ()
@@ -59,7 +60,9 @@ namespace MonoDevelop.Components
 			textView.WrapMode = Gtk.WrapMode.Word;
 			textView.KeyPressEvent += TextViewKeyPressEvent;
 			textView.PopulatePopup += TextViewPopulatePopup;
-			
+
+			inputBeginMark = Buffer.CreateMark (null, Buffer.EndIter, true);
+
 			// The 'Freezer' tag is used to keep everything except
 			// the input line from being editable
 			TextTag tag = new TextTag ("Freezer");
@@ -263,11 +266,9 @@ namespace MonoDevelop.Components
 			
 			return false;
 		}
-		
-		TextMark endOfLastProcessing;
 
 		public TextIter InputLineBegin {
-			get { return Buffer.GetIterAtMark (endOfLastProcessing); }
+			get { return Buffer.GetIterAtMark (inputBeginMark); }
 		}
 	
 		public TextIter InputLineEnd {
@@ -334,12 +335,17 @@ namespace MonoDevelop.Components
 			Buffer.PlaceCursor (Buffer.EndIter);
 			textView.ScrollMarkOnscreen (Buffer.InsertMark);
 	
-			// Record the end of where we processed, used to calculate start
-			// of next input line
-			endOfLastProcessing = Buffer.CreateMark (null, Buffer.EndIter, true);
+			UpdateInputLineBegin ();
 	
 			// Freeze all the text except our input line
 			Buffer.ApplyTag(Buffer.TagTable.Lookup("Freezer"), Buffer.StartIter, InputLineBegin);
+		}
+
+		protected virtual void UpdateInputLineBegin ()
+		{
+			// Record the end of where we processed, used to calculate start
+			// of next input line
+			Buffer.MoveMark (inputBeginMark, Buffer.EndIter);
 		}
 		
 		public void Clear ()
