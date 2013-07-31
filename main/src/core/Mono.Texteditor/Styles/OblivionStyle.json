@@ -128,7 +128,8 @@
 
 		{ "name": "Number", "fore":"butter2"},
 
-		{ "name": "Preprocessor", "fore":"skyblue1", "style":"italic"  },
+		{ "name": "Preprocessor", "fore":"skyblue1", "style":"italic" },
+		{ "name": "Preprocessor(Region Name)", "fore":"skyblue1", "style":"italic" },
 
 		{ "name": "Xml Text", "fore":"aluminium2" },
 		{ "name": "Xml Delimiter", "fore":"aluminium2" },
