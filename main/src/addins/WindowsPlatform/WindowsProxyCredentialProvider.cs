@@ -39,6 +39,9 @@ namespace MonoDevelop.Platform.Windows
 	{
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
+			if (uri == null)
+				throw new ArgumentNullException ("uri");
+
 			var form = new PlaceholderForm (credentialType, uri);
 			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
 			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
