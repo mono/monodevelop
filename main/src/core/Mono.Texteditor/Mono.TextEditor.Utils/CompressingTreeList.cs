@@ -47,34 +47,6 @@ namespace Mono.TextEditor.Utils
 				this.totalCount = count;
 			}
 
-			public CompressingNode Successor {
-				get {
-					if (Right != null)
-						return Right.GetOuterLeft ();
-					CompressingNode lastNode;
-					CompressingNode node = this;
-					do {
-						lastNode = node;
-						node = node.Parent;
-					} while (node != null && node.Right == lastNode);
-					return node;
-				}
-			}
-
-			public CompressingNode Predecessor {
-				get {
-					if (Left != null)
-						return Left.GetOuterRight ();
-					CompressingNode lastNode;
-					CompressingNode node = this;
-					do {
-						lastNode = node;
-						node = node.Parent;
-					} while (node != null && node.Left == lastNode);
-					return node;
-				}
-			}
-
 			#region IRedBlackTreeNode implementation
 
 			public void UpdateAugmentedData ()
@@ -200,7 +172,7 @@ namespace Mono.TextEditor.Utils
 					// insert before:
 					// maybe we can put the value in the previous node?
 
-					var p = n.Predecessor;
+					var p = n.GetPrevNode ();
 					if (p != null && comparisonFunc (p.value, item)) {
 						p.count += count;
 						p.UpdateAugmentedData ();
@@ -255,14 +227,14 @@ namespace Mono.TextEditor.Utils
 					n.count = index;
 					n.UpdateAugmentedData ();
 					firstNodeBeforeDeletedRange = n;
-					n = n.Successor;
+					n = n.GetNextNode ();
 				} else {
 					Debug.Assert (index == 0);
-					firstNodeBeforeDeletedRange = n.Predecessor;
+					firstNodeBeforeDeletedRange = n.GetPrevNode ();
 				}
 				while (n != null && count >= n.count) {
 					count -= n.count;
-					var s = n.Successor;
+					var s = n.GetNextNode ();
 					tree.Remove (n);
 					n = s;
 				}
@@ -272,7 +244,7 @@ namespace Mono.TextEditor.Utils
 					n.UpdateAugmentedData ();
 				}
 				if (n != null) {
-					Debug.Assert (n.Predecessor == firstNodeBeforeDeletedRange);
+					Debug.Assert (n.GetPrevNode () == firstNodeBeforeDeletedRange);
 					if (firstNodeBeforeDeletedRange != null && comparisonFunc (firstNodeBeforeDeletedRange.value, n.value)) {
 						firstNodeBeforeDeletedRange.count += n.count;
 						tree.Remove (n);
@@ -325,7 +297,7 @@ namespace Mono.TextEditor.Utils
 					if (comparisonFunc (n.value, item))
 						return index;
 					index += n.count;
-					n = n.Successor;
+					n = n.GetNextNode ();
 				}
 			}
 			return -1;
@@ -413,15 +385,8 @@ namespace Mono.TextEditor.Utils
 
 		public IEnumerator<T> GetEnumerator ()
 		{
-			if (tree.Root != null) {
-				var n = tree.Root.GetOuterLeft ();
-				while (n != null) {
-					for (int i = 0; i < n.count; i++) {
-						yield return n.value;
-					}
-					n = n.Successor;
-				}
-			}
+			foreach (var item in tree)
+				yield return item.value;
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()

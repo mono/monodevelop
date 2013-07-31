@@ -325,8 +325,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (data == null)
 						continue;
 					// Force syntax mode reparse (required for #if directives)
-					doc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
-					doc.ReparseDocument ();
+					var editor = doc.Editor;
+					if (editor != null) {
+						editor.Parent.TextViewMargin.PurgeLayoutCache ();
+						doc.ReparseDocument ();
+					}
 				}
 			};
 			CommentTag.SpecialCommentTagsChanged += (sender, e) => {

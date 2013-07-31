@@ -68,24 +68,37 @@ namespace Mono.TextEditor
 		{
 			if (lineStates == null) 
 				return;
-			lineStates.RemoveAt (e.LineNumber);
+			try {
+
+				lineStates.RemoveAt (e.LineNumber);
+			} catch (Exception ex) {
+				Console.WriteLine ("error while DiffTracker.HandleLineRemoved:" + ex);
+			}
 		}
 
 		void HandleLineInserted (object sender, LineEventArgs e)
 		{
 			if (lineStates == null) 
 				return;
-			lineStates.Insert(e.Line.LineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+			try {
+				lineStates.Insert(e.Line.LineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+			} catch (Exception ex) {
+				Console.WriteLine ("error while DiffTracker.HandleLineInserted:" + ex);
+			}
 		}
 
 		void HandleLineChanged (object sender, LineEventArgs e)
 		{
 			var lineNumber = e.Line.LineNumber;
-			if (lineStates [lineNumber].state == Mono.TextEditor.TextDocument.LineState.Dirty)
-				return;
-			lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
-			if (trackDocument != null)
-				trackDocument.CommitLineUpdate (lineNumber); 
+			try {
+				if (lineStates [lineNumber].state == Mono.TextEditor.TextDocument.LineState.Dirty)
+					return;
+				lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
+				if (trackDocument != null)
+					trackDocument.CommitLineUpdate (lineNumber); 
+			} catch (Exception ex) {
+				Console.WriteLine ("error while DiffTracker.HandleLineChanged:" + ex);
+			}
 		}
 
 		public void SetBaseDocument (TextDocument document)

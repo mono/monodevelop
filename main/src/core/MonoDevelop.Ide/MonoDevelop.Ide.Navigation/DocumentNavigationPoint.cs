@@ -79,15 +79,19 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			DoShow ();
 		}
+
+		public override Document ShowDocument ()
+		{
+			return DoShow ();
+		}
 		
 		protected virtual Document DoShow ()
 		{
 			if (doc != null) {
 				doc.Select ();
 				return doc;
-			} else {
-				return IdeApp.Workbench.OpenDocument (fileName, true);
 			}
+			return IdeApp.Workbench.OpenDocument (fileName, true);
 		}
 		
 		public override string DisplayName {

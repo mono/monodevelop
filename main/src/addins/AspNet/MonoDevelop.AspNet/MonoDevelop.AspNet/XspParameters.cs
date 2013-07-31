@@ -139,8 +139,11 @@ namespace MonoDevelop.AspNet
 		public string GetXspParameters ()
 		{
 			System.Text.StringBuilder opt = new System.Text.StringBuilder ();
-			
-			opt.AppendFormat (" --port {0}", port);
+
+			if (port == 0)
+				opt.Append (" --random-port");
+			else
+				opt.AppendFormat (" --port {0}", port);
 			opt.AppendFormat (" --address {0}", address);
 			
 			switch (sslMode) {

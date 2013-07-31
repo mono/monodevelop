@@ -229,6 +229,7 @@
     <Compile Include="Mono.TextEditor\Document\DiffTracker.cs" />
     <Compile Include="Mono.TextEditor.Utils\CompressingTreeList.cs" />
     <Compile Include="Mono.TextEditor\Gui\XwtWorkarounds.cs" />
+    <Compile Include="Mono.TextEditor.Utils\AvlTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

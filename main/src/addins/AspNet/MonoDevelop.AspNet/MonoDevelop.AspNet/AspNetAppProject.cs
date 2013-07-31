@@ -246,13 +246,14 @@ namespace MonoDevelop.AspNet
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
 					console = context.ConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
-				
-				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
+
+				// The running Port value is now captured in the XspBrowserLauncherConsole object
+				string url = String.Format ("http://{0}", this.XspParameters.Address);
 				
 				
 				if (isXsp) {
-					console = new XspBrowserLauncherConsole (console, delegate {
-						BrowserLauncher.LaunchDefaultBrowser (url);
+					console = new XspBrowserLauncherConsole (console, delegate (string port) {
+						BrowserLauncher.LaunchDefaultBrowser (String.Format("{0}:{1}", url, port));
 					});
 				}
 			
@@ -768,11 +769,11 @@ namespace MonoDevelop.AspNet
 	{
 		IConsole real;
 		LineInterceptingTextWriter outWriter;
-		Action launchBrowser;
+		Action <string> launchBrowser;
 		
 		const int MAX_WATCHED_LINES = 30;
 		
-		public XspBrowserLauncherConsole (IConsole real, Action launchBrowser)
+		public XspBrowserLauncherConsole (IConsole real, Action <string> launchBrowser)
 		{
 			this.real = real;
 			this.launchBrowser = launchBrowser;
@@ -796,8 +797,10 @@ namespace MonoDevelop.AspNet
 			get {
 				if (outWriter == null)
 					outWriter = new LineInterceptingTextWriter (real.Out, delegate {
-						if (outWriter.GetLine ().StartsWith ("Listening on port: ")) {
-							launchBrowser ();
+						string line = outWriter.GetLine();
+						if (line.Contains ("Listening on port: ")) {
+							string port = System.Text.RegularExpressions.Regex.Match (line, "(?<=port: )[0-9]*(?= )").Value;
+							launchBrowser (port);
 							outWriter.FinishedIntercepting = true;
 						} else if (outWriter.LineCount > MAX_WATCHED_LINES) {
 							outWriter.FinishedIntercepting = true;

@@ -450,6 +450,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void ShowPage (OptionsDialogSection section)
 		{
+			if (!IsRealized) {
+				// Defer this until the dialog is realized due to the sizing logic in CreatePageWidget.
+				EventHandler deferredShowPage = null;
+				deferredShowPage = delegate {
+					ShowPage (section);
+					Realized -= deferredShowPage;
+				};
+				Realized += deferredShowPage;
+				return;
+			}
 			SectionPage page;
 			if (!pages.TryGetValue (section, out page))
 				return;
