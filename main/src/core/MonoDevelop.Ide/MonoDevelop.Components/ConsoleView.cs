@@ -27,11 +27,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using MonoDevelop.Core;
+
 using Gtk;
-using MonoDevelop.Ide.CodeCompletion;
+
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -107,6 +107,93 @@ namespace MonoDevelop.Components
 			if (ProcessKeyPressEvent (args))
 				args.RetVal = true;
 		}
+
+		bool ProcessReturn ()
+		{
+			if (inBlock) {
+				if (InputLine == "") {
+					ProcessInput (blockText);
+					blockText = "";
+					inBlock = false;
+				} else {
+					blockText += "\n" + InputLine;
+					string whiteSpace = null;
+					if (AutoIndent) {
+						System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex (@"^(\s+).*");
+						whiteSpace = r.Replace (InputLine, "$1");
+						if (InputLine.EndsWith (BlockStart, StringComparison.InvariantCulture))
+							whiteSpace += "\t";
+					}
+					Prompt (true, true);
+					if (AutoIndent)
+						InputLine += whiteSpace;
+				}
+			} else {
+				// Special case for start of new code block
+				if (!string.IsNullOrEmpty (BlockStart) && InputLine.Trim().EndsWith (BlockStart, StringComparison.InvariantCulture)) {
+					inBlock = true;
+					blockText = InputLine;
+					Prompt (true, true);
+					if (AutoIndent)
+						InputLine += "\t";
+					return true;
+				}
+
+				// Bookkeeping
+				if (InputLine != "") {
+					// Everything but the last item (which was input),
+					//in the future stack needs to get put back into the
+					// past stack
+					while (commandHistoryFuture.Count > 1)
+						commandHistoryPast.Push (commandHistoryFuture.Pop());
+					// Clear the pesky junk input line
+					commandHistoryFuture.Clear();
+
+					// Record our input line
+					commandHistoryPast.Push(InputLine);
+					if (scriptLines == "")
+						scriptLines += InputLine;
+					else
+						scriptLines += "\n" + InputLine;
+
+					ProcessInput (InputLine);
+				}
+			}
+
+			return true;
+		}
+
+		bool ProcessCommandHistoryUp ()
+		{
+			if (!inBlock && commandHistoryPast.Count > 0) {
+				if (commandHistoryFuture.Count == 0) {
+					commandHistoryFuture.Push (InputLine);
+				} else {
+					if (commandHistoryPast.Count == 1)
+						return true;
+
+					commandHistoryFuture.Push (commandHistoryPast.Pop ());
+				}
+
+				InputLine = commandHistoryPast.Peek ();
+			}
+
+			return true;
+		}
+
+		bool ProcessCommandHistoryDown ()
+		{
+			if (!inBlock && commandHistoryFuture.Count > 0) {
+				if (commandHistoryFuture.Count == 1) {
+					InputLine = commandHistoryFuture.Pop ();
+				} else {
+					commandHistoryPast.Push (commandHistoryFuture.Pop ());
+					InputLine = commandHistoryPast.Peek ();
+				}
+			}
+
+			return true;
+		}
 		
 		protected virtual bool ProcessKeyPressEvent (KeyPressEventArgs args)
 		{
@@ -124,103 +211,53 @@ namespace MonoDevelop.Components
 			
 //			if (ev.State == Gdk.ModifierType.ControlMask && ev.Key == Gdk.Key.space)
 //				TriggerCodeCompletion ();
-	
-			if (args.Event.Key == Gdk.Key.Return) {
-				if (inBlock) {
-					if (InputLine == "") {
-						ProcessInput (blockText);
-						blockText = "";
-						inBlock = false;
-					} else {
-						blockText += "\n" + InputLine;
-						string whiteSpace = null;
-						if (AutoIndent) {
-							System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex (@"^(\s+).*");
-							whiteSpace = r.Replace (InputLine, "$1");
-							if (InputLine.EndsWith (BlockStart, StringComparison.InvariantCulture))
-								whiteSpace += "\t";
-						}
-						Prompt (true, true);
-						if (AutoIndent)
-							InputLine += whiteSpace;
-					}
-				} else {
-					// Special case for start of new code block
-					if (!string.IsNullOrEmpty (BlockStart) && InputLine.Trim().EndsWith (BlockStart, StringComparison.InvariantCulture)) {
-						inBlock = true;
-						blockText = InputLine;
-						Prompt (true, true);
-						if (AutoIndent)
-							InputLine += "\t";
-						return true;
-					}
-					// Bookkeeping
-					if (InputLine != "") {
-						// Everything but the last item (which was input),
-						//in the future stack needs to get put back into the
-						// past stack
-						while (commandHistoryFuture.Count > 1)
-							commandHistoryPast.Push (commandHistoryFuture.Pop());
-						// Clear the pesky junk input line
-						commandHistoryFuture.Clear();
-	
-						// Record our input line
-						commandHistoryPast.Push(InputLine);
-						if (scriptLines == "")
-							scriptLines += InputLine;
-						else
-							scriptLines += "\n" + InputLine;
-					
-						ProcessInput (InputLine);
-					}
+
+			switch (args.Event.Key) {
+			case Gdk.Key.Return:
+				return ProcessReturn ();
+			case Gdk.Key.Up:
+				return ProcessCommandHistoryUp ();
+			case Gdk.Key.Down:
+				return ProcessCommandHistoryDown ();
+			case Gdk.Key.Left:
+				// On Mac, when using a small keyboard, Home is Command+Left
+				if (Platform.IsMac && args.Event.State.HasFlag (Gdk.ModifierType.MetaMask)) {
+					Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
+
+					// Move the selection mark too, if shift isn't held
+					if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
+						Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
+
+					return true;
 				}
-				return true;
-			}
-	
-			// The next two cases handle command history	
-			else if (args.Event.Key == Gdk.Key.Up) {
-				if (!inBlock && commandHistoryPast.Count > 0) {
-					if (commandHistoryFuture.Count == 0)
-						commandHistoryFuture.Push (InputLine);
-					else {
-						if (commandHistoryPast.Count == 1)
-							return true;
-						commandHistoryFuture.Push (commandHistoryPast.Pop());
-					}
-					InputLine = commandHistoryPast.Peek();
-				}
-				return true;
-			}
-			else if (args.Event.Key == Gdk.Key.Down) {
-				if (!inBlock && commandHistoryFuture.Count > 0) {
-					if (commandHistoryFuture.Count == 1)
-						InputLine = commandHistoryFuture.Pop();
-					else {
-						commandHistoryPast.Push (commandHistoryFuture.Pop ());
-						InputLine = commandHistoryPast.Peek ();
-					}
-				}
-				return true;
-			}	
-			else if (args.Event.Key == Gdk.Key.Left) {
+
 				// Keep our cursor inside the prompt area
 				if (Cursor.Compare (InputLineBegin) <= 0)
 					return true;
-			}
-			else if (args.Event.Key == Gdk.Key.Home) {
+
+				break;
+			case Gdk.Key.Home:
 				Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
+
 				// Move the selection mark too, if shift isn't held
-				if ((args.Event.State & Gdk.ModifierType.ShiftMask) == args.Event.State)
+				if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
 					Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
+
 				return true;
-			}
-			else if (args.Event.Key == Gdk.Key.period) {
+			case Gdk.Key.a:
+				if (args.Event.State.HasFlag (Gdk.ModifierType.ControlMask)) {
+					Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
+
+					// Move the selection mark too, if shift isn't held
+					if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
+						Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
+
+					return true;
+				}
+				break;
+			case Gdk.Key.period:
 				return false;
-			}
-	
-			// Short circuit to avoid getting moved back to the input line
-			// when paging up and down in the shell output
-			else if (args.Event.Key == Gdk.Key.Page_Up || args.Event.Key == Gdk.Key.Page_Down) {
+			default:
 				return false;
 			}
 			
