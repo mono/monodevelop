@@ -23,29 +23,96 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Core.Web;
 using System;
+using System.Drawing;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Web;
 using MonoDevelop.Ide;
-using System.Net;
-using System.Drawing;
 
 namespace MonoDevelop.Platform.Windows
 {
 	public class WindowsProxyCredentialProvider : ICredentialProvider
 	{
-		[DllImport("credui")]
-		static extern CredUIReturnCodes CredUIPromptForCredentials (ref CredentialUIInfo creditUR, string targetName,
-		                                                            IntPtr reserved1, int iError, StringBuilder userName,
-		                                                            int maxUserName, StringBuilder password, int maxPassword,
-		                                                            [MarshalAs (UnmanagedType.Bool)] ref bool pfSave,
-		                                                            CredentialUIFlags flags);
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
+		{
+			var form = new PlaceholderForm (uri);
+			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
+			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
+		}
+	}
 
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-		private struct CredentialUIInfo
+	//Thar be dragons below here...
+
+	class PlaceholderForm : GdkWin32.SpecialForm
+	{
+		internal string Username, Password, Domain;
+
+		readonly Uri uri;
+
+		internal PlaceholderForm (Uri uri)
+		{
+			this.uri = uri;
+			Size = new Size (0, 0);
+			Visible = false;
+		}
+
+		public override DialogResult ShowMagicDialog ()
+		{
+			var credUiInfo = new Native.CredentialUiInfo {
+				MessageText = GettextCatalog.GetString ("{1} needs proxy credentials to access {0}.", uri.Host, BrandingService.ApplicationName),
+				CaptionText = GettextCatalog.GetString ("{0} needs proxy credentials", BrandingService.ApplicationName),
+				StructureSize = Marshal.SizeOf (typeof (Native.CredentialUiInfo)),
+				ParentWindow = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow)
+			};
+
+			var save = false;
+			int authPackage = 0, outputSize;
+			IntPtr output;
+
+			var returnCode = Native.CredUIPromptForWindowsCredentials (ref credUiInfo, 0, ref authPackage, IntPtr.Zero, 0, out output, out outputSize, ref save, Native.CredentialsUiFlags.Generic);
+
+			if (returnCode != Native.CredentialPromptReturnCode.NoError)
+				return DialogResult.Cancel;
+
+			StringBuilder username = new StringBuilder (100), password = new StringBuilder (100), domain = new StringBuilder (100);
+			int maxUsername = 100, maxPassword = 100, maxDomain = 100;
+
+			if (!Native.CredUnPackAuthenticationBuffer (0, output, outputSize, username, ref maxUsername, domain, ref maxDomain, password, ref maxPassword))
+				return DialogResult.Cancel;
+
+			Native.CoTaskMemFree (output);
+
+			Username = username.ToString ();
+			Password = password.ToString ();
+			Domain = domain.ToString ();
+
+			return DialogResult.OK;
+		}
+	}
+
+	class Native
+	{
+		[DllImport ("ole32.dll")]
+		internal static extern void CoTaskMemFree (IntPtr ptr);
+
+		[DllImport ("credui.dll", CharSet = CharSet.Unicode)]
+		internal static extern CredentialPromptReturnCode CredUIPromptForWindowsCredentials (ref CredentialUiInfo uiInfo,
+			int authError, ref int authPackage, IntPtr inAuthBuffer, int inAuthBufferSize,
+			out IntPtr refOutAuthBuffer, out int refOutAuthBufferSize, ref bool fSave,
+			CredentialsUiFlags uiFlags);
+
+		[DllImport ("credui.dll", CharSet = CharSet.Auto)]
+		internal static extern bool CredUnPackAuthenticationBuffer (int dwFlags, IntPtr pAuthBuffer,
+			int cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName,
+			StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword,
+			ref int pcchMaxPassword);
+
+		[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+		internal struct CredentialUiInfo
 		{
 			public int StructureSize;
 			public IntPtr ParentWindow;
@@ -54,81 +121,57 @@ namespace MonoDevelop.Platform.Windows
 			public IntPtr BannerBitmap;
 		}
 
-		[Flags]
-		enum CredentialUIFlags
+		internal enum CredentialsUiFlags
 		{
-			IncorrectPassword         = 0x1,
-			DoNotPersist              = 0x2,
-			RequestAdministrator      = 0x4,
-			ExcludeCertificates       = 0x8,
-			RequireCertificate        = 0x10,
-			ShowSaveCheckBox          = 0x40,
-			AlwaysShowUi              = 0x80,
-			RequireSmartcard          = 0x100,
-			PasswordOnlyOk            = 0x200,
-			ValidateUsername          = 0x400,
-			CompleteUsername          = 0x800,
-			Persist                   = 0x1000,
-			ServerCredential          = 0x4000,
-			ExpectConfirmation        = 0x20000,
-			GenericCredentials        = 0x40000,
-			UsernameTargetCredentials = 0x80000,
-			KeepUsername              = 0x100000,
+			/// <summary>
+			/// The caller is requesting that the credential provider return the user name and password in plain text.
+			/// This value cannot be combined with SECURE_PROMPT.
+			/// </summary>
+			Generic = 0x1,
+			/// <summary>
+			/// The Save check box is displayed in the dialog box.
+			/// </summary>
+			Checkbox = 0x2,
+			/// <summary>
+			/// Only credential providers that support the authentication package specified by the authPackage parameter should be enumerated.
+			/// This value cannot be combined with InputCredentialsOnly.
+			/// </summary>
+			AuthenticationPackageOnly = 0x10,
+			/// <summary>
+			/// Only the credentials specified by the InAuthBuffer parameter for the authentication package specified by the authPackage parameter should be enumerated.
+			/// If this flag is set, and the InAuthBuffer parameter is NULL, the function fails.
+			/// This value cannot be combined with AuthenticationPackageOnly.
+			/// </summary>
+			InputCredentialsOnly = 0x20,
+			/// <summary>
+			/// Credential providers should enumerate only administrators. This value is intended for User Account Control (UAC) purposes only. We recommend that external callers not set this flag.
+			/// </summary>
+			EnumerateOnlyAdministrators = 0x100,
+			/// <summary>
+			/// Only the incoming credentials for the authentication package specified by the authPackage parameter should be enumerated.
+			/// </summary>
+			EnumerateOnlyCurrentUser = 0x200,
+			/// <summary>
+			/// The credential dialog box should be displayed on the secure desktop. This value cannot be combined with Generic.
+			/// Windows Vista: This value is not supported until Windows Vista with SP1.
+			/// </summary>
+			ShowOnSecureDesktop = 0x1000,
+			/// <summary>
+			/// The credential provider should align the credential BLOB pointed to by the refOutAuthBuffer parameter to a 32-bit boundary, even if the provider is running on a 64-bit system.
+			/// </summary>
+			ShouldPackTo32BitBoundary = 0x10000000,
 		}
 
-		public enum CredUIReturnCodes
+		internal enum CredentialPromptReturnCode
 		{
-			NoError                 = 0,
-			ErrorCancelled          = 1223,
+			NoError = 0,
+			ErrorCancelled = 1223,
 			ErrorNoSuchLogonSession = 1312,
-			ErrorNotFound           = 1168,
+			ErrorNotFound = 1168,
 			ErrorInvalidAccountName = 1315,
 			ErrorInsufficientBuffer = 122,
-			ErrorInvalidParameter   = 87,
-			ErrorInvalidFlags       = 1004,
-		}
-
-		// ICKY CODE BEGINS HERE
-
-		internal class PlaceholderForm : GdkWin32.SpecialForm
-		{
-			internal string Username, Password;
-
-			Uri uri;
-
-			internal PlaceholderForm (Uri uri)
-			{
-				this.uri = uri;
-				Size = new Size (0, 0);
-				Visible = false;
-			}
-
-			public new DialogResult ShowDialog ()
-			{
-				StringBuilder password = new StringBuilder (), username = new StringBuilder ();
-				var credUiInfo = new CredentialUIInfo ();
-				credUiInfo.MessageText = string.Format ("Xamarin Studio needs proxy credentials to access {0}.", uri.Host);
-				credUiInfo.StructureSize = Marshal.SizeOf (credUiInfo);
-				credUiInfo.ParentWindow = Handle;
-				var save = false;
-				var flags = CredentialUIFlags.AlwaysShowUi | CredentialUIFlags.GenericCredentials;
-
-				var returnCode = CredUIPromptForCredentials (ref credUiInfo, "Xamarin Studio", IntPtr.Zero, 0, username, 100, password, 100, ref save, flags);
-				Username = username.ToString ();
-				Password = password.ToString ();
-
-				return returnCode == CredUIReturnCodes.NoError ? DialogResult.OK : DialogResult.Cancel;
-			}
-		}
-
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
-		{
-			var form = new PlaceholderForm (uri);
-
-			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
-			string userName = form.Username, password = form.Password;
-
-			return result ? new NetworkCredential (userName, password) : null;
+			ErrorInvalidParameter = 87,
+			ErrorInvalidFlags = 1004,
 		}
 	}
 }
