@@ -159,8 +159,6 @@ namespace MonoDevelop.Debugger
 
 			IdeApp.Preferences.CustomOutputPadFontChanged += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
-
-			tokenBeginMark = Buffer.CreateMark (null, Buffer.EndIter, true);
 		}
 
 		static bool IsCompletionChar (char c)
@@ -243,7 +241,11 @@ namespace MonoDevelop.Debugger
 
 		protected override void UpdateInputLineBegin ()
 		{
-			Buffer.MoveMark (tokenBeginMark, Buffer.EndIter);
+			if (tokenBeginMark == null)
+				tokenBeginMark = Buffer.CreateMark (null, Buffer.EndIter, true);
+			else
+				Buffer.MoveMark (tokenBeginMark, Buffer.EndIter);
+
 			base.UpdateInputLineBegin ();
 			isLiteralString = false;
 		}
