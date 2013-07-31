@@ -220,21 +220,22 @@ namespace MonoDevelop.Ide.FindInFiles
 			case Accessibility.Public:
 			case Accessibility.Protected:
 			case Accessibility.ProtectedOrInternal:
+			case Accessibility.Internal:
+			case Accessibility.ProtectedAndInternal:
+
 				if (declaringType != null)
 					Collect (sourceProject, entity.DeclaringTypeDefinition, searchInProject);
 				else if (searchProject != null || searchInProject)
 					AddProject (sourceProject);
 				else {
-					foreach (var project in ReferenceFinder.GetAllReferencingProjects (solution, sourceProject))
+					foreach (var project in ReferenceFinder.GetAllReferencingProjects (solution, sourceProject)) {
+						if (entity.Accessibility == Accessibility.Internal || entity.Accessibility == Accessibility.ProtectedAndInternal) {
+							if (!entity.ParentAssembly.InternalsVisibleTo (TypeSystemService.GetProjectContentWrapper (project).Compilation.MainAssembly))
+								continue;
+						}
 						AddProject (project);
+					}
 				}
-				break;
-			case Accessibility.Internal:
-			case Accessibility.ProtectedAndInternal:
-				if (!projectOnly && declaringType != null)
-					Collect (sourceProject, entity.DeclaringTypeDefinition, true);
-				else
-					AddProject (sourceProject);
 				break;
 			default: // private
 				if (projectOnly)
