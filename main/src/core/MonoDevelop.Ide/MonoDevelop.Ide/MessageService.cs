@@ -333,12 +333,12 @@ namespace MonoDevelop.Ide
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
-		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog)
+		public static Xwt.Command RunCustomXwtDialog (Xwt.Dialog dialog)
 		{
-			return RunCustomDialog (dialog, null);
+			return RunCustomXwtDialog (dialog, null);
 		}
 
-		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
+		public static Xwt.Command RunCustomXwtDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
 		{
 			var dialogBackend = (Xwt.GtkBackend.DialogBackend) Xwt.Toolkit.GetBackend (dialog);
 			if (parent == null) {
