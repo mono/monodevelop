@@ -1282,7 +1282,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		[CommandHandler (EditCommands.SelectAll)]
-		protected void OnSelectAll ()
+		protected new void OnSelectAll ()
 		{
 			Selection.SelectAll ();
 		}
