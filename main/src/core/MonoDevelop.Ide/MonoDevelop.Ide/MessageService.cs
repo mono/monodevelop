@@ -340,20 +340,9 @@ namespace MonoDevelop.Ide
 
 		public static Xwt.Command RunCustomXwtDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
 		{
-			var dialogBackend = (Xwt.GtkBackend.DialogBackend) Xwt.Toolkit.GetBackend (dialog);
-			if (parent == null) {
-				if (dialog.TransientFor != null)
-					parent = dialog.TransientFor;
-				else {
-					parent = GetDefaultParent (dialog);
-				}
-			}
-			dialog.TransientFor = parent;
-			dialogBackend.Window.DestroyWithParent = true;
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
-			PlaceDialog (dialog, parent);
-			return Mono.TextEditor.XwtWorkarounds.RunDialogWithNotification (dialog);
+			return dialog.Run (parent ?? GetDefaultParent(dialog));
 		}
 
 		static Xwt.WindowFrame GetDefaultParent (Xwt.WindowFrame child)
