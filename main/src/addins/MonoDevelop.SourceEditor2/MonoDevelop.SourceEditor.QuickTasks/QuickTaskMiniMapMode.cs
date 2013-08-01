@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			protected override void MouseMove (double y)
 			{
-				if (button != 1)
+				if ((button & 1) == 0)
 					return;
 				var ph = (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount));
 				double position = vadjustment.Upper * (Math.Min (GetBufferYOffset () + y, ph) / (double)ph) - vadjustment.PageSize / 2;

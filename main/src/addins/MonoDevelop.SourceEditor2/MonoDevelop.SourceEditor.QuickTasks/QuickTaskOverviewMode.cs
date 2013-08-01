@@ -133,7 +133,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
-			
 			if (button != 0)
 				MouseMove (evnt.Y);
 			
@@ -332,7 +331,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected virtual void MouseMove (double y)
 		{
-			if (button != 1)
+			if ((button & 1) == 0)
 				return;
 			double position = ((y - IndicatorHeight) / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
 			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
