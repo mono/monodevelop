@@ -78,16 +78,7 @@ namespace MonoDevelop.CodeIssues
 								batchAction = () => a.BatchRun (input, loc);
 							return new GenericFix (
 								a.Title,
-								() => {
-									var scriptProvider = context as IScriptProvider;
-									if (scriptProvider != null) {
-										using (var script = scriptProvider.CreateScript ()) {
-											a.Run (context, script);
-										}
-									} else {
-										a.Run (context, null);
-									}
-								},
+								() => RefactoringService.ApplyFix (a, context),
 								batchAction) {
 								DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
 							};

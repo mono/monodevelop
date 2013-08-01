@@ -295,6 +295,7 @@ namespace MonoDevelop.Refactoring
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
 			if (refactoringInfo.validActions != null) {
+				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 				foreach (var fix_ in refactoringInfo.validActions) {
 					var fix = fix_;
 					if (first) {
@@ -302,14 +303,7 @@ namespace MonoDevelop.Refactoring
 						if (ciset.CommandInfos.Count > 0)
 							ciset.CommandInfos.AddSeparator ();
 					}
-					var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-					if (context is IScriptProvider) {
-						using (var script = ((IScriptProvider)context).CreateScript ()) {
-							ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (context, script)));
-						}
-					} else {
-						ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (context, null)));
-					}
+					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
 				}
 			}
 

@@ -269,6 +269,17 @@ namespace MonoDevelop.Refactoring
 				return RunAll (allFixes, refactoringContext, script);
 			}
 		}
+		
+		public static void ApplyFix (CodeAction action, object context)
+		{
+			if (context is IScriptProvider) {
+				using(var script = ((IScriptProvider)context).CreateScript ()) {
+					action.Run (context, script);
+				}
+			} else {
+				action.Run (context, null);
+			}
+		}
 
 		static List<CodeAction> RunAll (IEnumerable<CodeAction> allFixes, object refactoringContext, object script)
 		{
