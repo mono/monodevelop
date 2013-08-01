@@ -183,6 +183,9 @@ namespace MonoDevelop.CSharp
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
 						menu.Add (menuItem);
 					}
+					menuItem = new MenuItem ("_Select in Test Pad");
+					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+					menu.Add (menuItem);
 				} else {
 					if (unitTest.TestCases.Count == 0) {
 						var menuItem = new MenuItem ("_Run");
@@ -193,6 +196,9 @@ namespace MonoDevelop.CSharp
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
 							menu.Add (menuItem);
 						}
+						menuItem = new MenuItem ("_Select in Test Pad");
+						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+						menu.Add (menuItem);
 					} else {
 						var menuItem = new MenuItem ("_Run All");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
@@ -224,6 +230,11 @@ namespace MonoDevelop.CSharp
 									label += "!";
 								}
 							}
+
+							menuItem = new MenuItem ("_Select in Test Pad");
+							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Select;
+							submenu.Add (menuItem);
+
 
 							var subMenuItem = new MenuItem (label);
 							if (!string.IsNullOrEmpty (tooltip))
@@ -278,6 +289,19 @@ namespace MonoDevelop.CSharp
 						RemoveHandler ();
 						timeoutHandler = GLib.Timeout.Add (200, TimeoutHandler);
 					};
+				}
+
+				internal void Select (object sender, EventArgs e)
+				{
+					menu.Destroy ();
+					menu = null;
+					var test = NUnitService.Instance.SearchTestById (testCase);
+					if (test == null)
+						return;
+					var pad = IdeApp.Workbench.GetPad<TestPad> ();
+					pad.BringToFront ();
+					var content = (TestPad)pad.Content;
+					content.SelectTest (test);
 				}
 
 				void RunTest (UnitTest test)
