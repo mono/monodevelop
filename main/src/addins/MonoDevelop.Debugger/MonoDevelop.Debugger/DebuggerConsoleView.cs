@@ -105,7 +105,7 @@ namespace MonoDevelop.Debugger
 			if (index >= text.Length)
 				return false;
 
-			while (index < text.Length && char.IsLetterOrDigit (text[index]))
+			while (index < text.Length && (char.IsLetterOrDigit (text[index]) || text[index] == '_'))
 				index++;
 
 			return index > startIndex;
@@ -114,6 +114,12 @@ namespace MonoDevelop.Debugger
 		static bool EatLiteralString (string text, ref int index)
 		{
 			// skip over the '@'
+			index++;
+
+			if (index >= text.Length || text[index] != '"')
+				return false;
+
+			// skip over the double quotes
 			index++;
 
 			while (index < text.Length) {
