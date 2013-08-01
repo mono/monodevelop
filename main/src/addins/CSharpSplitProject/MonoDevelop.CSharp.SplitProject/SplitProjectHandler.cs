@@ -30,8 +30,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using System.Threading;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -43,8 +41,7 @@ using System.IO;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core.Assemblies;
-using System.Runtime.InteropServices;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -140,7 +137,10 @@ namespace MonoDevelop.CSharp.SplitProject
 					if (progress.IsCancelRequested) {
 						return null;
 					}
-					projectGraph.AddNode (new ProjectGraph.Node (file));
+
+					if (file.Subtype == Subtype.Code) {
+						projectGraph.AddNode (new ProjectGraph.Node (file));
+					}
 				}
 
 				progress.EndTask ();
@@ -159,9 +159,6 @@ namespace MonoDevelop.CSharp.SplitProject
 					progress.BeginStepTask (GettextCatalog.GetString ("Analyzing {0}", node), 4, 1);
 
 					var file = node.File;
-
-					if (file.Subtype != Subtype.Code)
-						continue;
 
 					if (file.BuildAction != "Compile")
 						continue;
@@ -192,6 +189,10 @@ namespace MonoDevelop.CSharp.SplitProject
 
 					progress.Step (1);
 
+					if (ctx.IsInvalid) {
+						throw new ProjectHasErrorsException ();
+					}
+
 					//Step 1. Find all type declarations and identify which are partial
 					var typeDeclarations = ctx.RootNode.Descendants.OfType<TypeDeclaration> ();
 					foreach (var typeDeclaration in typeDeclarations) {
@@ -208,11 +209,19 @@ namespace MonoDevelop.CSharp.SplitProject
 						if (!typeDefinitions.ContainsKey (type)) {
 							typeDefinitions [type] = new List<ProjectGraph.Node> ();
 						}
+
 						typeDefinitions [type].Add (node);
 						node.AddTypeDependency (type);
 					}
 
 					progress.Step (1);
+
+					foreach (var ident in ctx.RootNode.Descendants.OfType<IdentifierExpression>()) {
+						var typeResolveResult = ctx.Resolve (ident) as TypeResolveResult;
+						if (typeResolveResult != null) {
+							node.AddTypeDependency (typeResolveResult.Type);
+						}
+					}
 
 					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
 						if (progress.IsCancelRequested) {
