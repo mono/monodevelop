@@ -28,18 +28,20 @@ using System.Linq;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
 	public class ProjectGraph
 	{
-		public class Node
+		public sealed class Node : IEquatable<Node>
 		{
 			public readonly ProjectFile File;
 			public bool Visited { get; set; }
 			ISet<IType> typeDependencies = new HashSet<IType>();
 			List<Node> destinationNodes = new List<Node>();
 			List<Node> sourceNodes = new List<Node>();
+			List<Node> activeDependentNodes = new List<Node>();
 
 			public Node(ProjectFile file) {
 				File = file;
@@ -60,12 +62,16 @@ namespace MonoDevelop.CSharp.SplitProject
 				get { return typeDependencies; }
 			}
 
-			public IEnumerable<Node> DestinationNodes {
+			public ReadOnlyCollection<Node> DestinationNodes {
 				get { return destinationNodes.AsReadOnly (); }
 			}
 
-			public IEnumerable<Node> SourceNodes {
+			public ReadOnlyCollection<Node> SourceNodes {
 				get { return sourceNodes.AsReadOnly (); }
+			}
+
+			public List<Node> ActiveDependentNodes {
+				get { return activeDependentNodes; }
 			}
 
 			internal void AddDestination(Node node) {
@@ -93,6 +99,21 @@ namespace MonoDevelop.CSharp.SplitProject
 				if (lastSlash == -1)
 					return File.Name;
 				return File.Name.Substring (lastSlash + 1);
+			}
+
+			public override bool Equals (object obj)
+			{
+				return Equals (obj as Node);
+			}
+
+			public bool Equals (Node node)
+			{
+				return node != null && File == node.File;
+			}
+
+			public override int GetHashCode ()
+			{
+				return File == null ? 0 : File.GetHashCode ();
 			}
 		}
 
@@ -124,7 +145,7 @@ namespace MonoDevelop.CSharp.SplitProject
 			return node;
 		}
 
-		public IEnumerable<Node> Nodes {
+		public ReadOnlyCollection<Node> Nodes {
 			get {
 				return nodes.AsReadOnly ();
 			}
