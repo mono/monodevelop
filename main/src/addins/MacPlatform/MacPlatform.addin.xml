@@ -66,4 +66,8 @@
 	<Extension path = "/MonoDevelop/Core/PasswordProvider">
 		<Class class = "MonoDevelop.MacIntegration.MacKeychainPasswordProvider" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/WebCredentialProviders">
+		<Class class = "MonoDevelop.MacIntegration.MacProxyCredentialProvider" />
+	</Extension>
 </ExtensionModel>

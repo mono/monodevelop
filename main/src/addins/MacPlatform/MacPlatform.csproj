@@ -108,6 +108,7 @@
     <Compile Include="MacMenu\MDServicesMenuItem.cs" />
     <Compile Include="MacMenu\MDSubMenuItem.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MacProxyCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
