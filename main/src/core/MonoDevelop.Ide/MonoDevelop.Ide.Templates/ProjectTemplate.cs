@@ -48,7 +48,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class ProjectTemplate
+	internal class ProjectTemplate
 	{
 		public static List<ProjectTemplate> ProjectTemplates = new List<ProjectTemplate> ();
 
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Templates
 		private ProjectCreateInformation createdProjectInformation = null;
 
 		private SolutionDescriptor solutionDescriptor = null;
-		internal SolutionDescriptor SolutionDescriptor
+		public SolutionDescriptor SolutionDescriptor
 		{
 			get { return solutionDescriptor; }
 		}
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Templates
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplates", OnExtensionChanged);
 		}
 
-		ProjectTemplate (RuntimeAddin addin, string id, ProjectTemplateCodon codon, string overrideLanguage)
+		protected ProjectTemplate (RuntimeAddin addin, string id, ProjectTemplateCodon codon, string overrideLanguage)
 		{
 			XmlDocument xmlDocument = codon.GetTemplate ();
 
@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		ProjectTemplate (RuntimeAddin addin, string id, ProjectTemplateCodon codon)
+		protected ProjectTemplate (RuntimeAddin addin, string id, ProjectTemplateCodon codon)
 			: this (addin, id, codon, null)
 		{
 		}

@@ -71,8 +71,7 @@ namespace MonoDevelop.CSharp.SplitProject
 						info.SolutionName = currentProject.ParentSolution.Name;
 						info.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 
-						var template = ProjectTemplate.ProjectTemplates.Single (t => t.Id == "CSharpEmptyProject");
-						var newProject = (DotNetProject) template.CreateProject (currentProject, info);
+						var newProject = (DotNetProject) IdeApp.ProjectOperations.CreateProject("CSharpEmptyProject", currentProject.ParentFolder, info);
 						newProject.FileFormat = currentProject.ParentSolution.FileFormat;
 
 						newProject.TargetFramework = currentProject.TargetFramework;
