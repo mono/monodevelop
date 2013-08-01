@@ -80,6 +80,7 @@ namespace MonoDevelop.VersionControl.Views
 		bool updatingComment;
 		ChangeSet changeSet;
 		bool firstLoad = true;
+		VersionControlItemList fileList;
 		
 		const int ColIcon = 0;
 		const int ColStatus = 1;
@@ -102,13 +103,19 @@ namespace MonoDevelop.VersionControl.Views
 		public static bool Show (VersionControlItemList items, bool test)
 		{
 			FilePath path = items.FindMostSpecificParent ();
+			bool isSingleDirectory = false;
+
+			if (!path.IsDirectory)
+				path = path.ParentDirectory;
+			else if (items.Count == 1)
+				isSingleDirectory = true;
 
 			if (items.Any (v => v.VersionInfo.IsVersioned)) {
 				if (test)
 					return true;
 
 				if (!BringStatusViewToFront (path)) {
-					StatusView d = new StatusView (path, items);
+					StatusView d = new StatusView (path, items [0].Repository, isSingleDirectory ? null : items);
 					IdeApp.Workbench.OpenDocument (d, true);
 				}
 				return true;
@@ -262,30 +269,16 @@ namespace MonoDevelop.VersionControl.Views
 			StartUpdate();
 		}
 
-		public StatusView (string filepath, VersionControlItemList list)
-			: this (filepath, list [0].Repository)
-		{
-			ThreadPool.QueueUserWorkItem (delegate {
-				var group = list.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionItem);
-				foreach (var item in group) {
-					// Is directory.
-					if (item.Key) {
-						foreach (var directory in item)
-							changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
-					} else
-						changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
-				}
-				changeSet.AddFiles (list.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
-			});
-
-			firstLoad = false;
-		}
-
-		public StatusView (string filepath, Repository vc)
+		public StatusView (string filepath, Repository vc, VersionControlItemList list)
 			: base (Path.GetFileName (filepath) + " Status")
 		{
 			this.vc = vc;
 			this.filepath = Directory.Exists (filepath) ? filepath : Path.GetDirectoryName (filepath);
+
+			fileList = list;
+			if (list != null)
+				firstLoad = false;
+
 			changeSet = vc.CreateChangeSet (filepath);
 			Init ();
 		}
@@ -434,10 +427,26 @@ namespace MonoDevelop.VersionControl.Views
 			
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
-			
+
+			if (fileList != null) {
+				ThreadPool.QueueUserWorkItem (delegate {
+					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionItem);
+					foreach (var item in group) {
+						// Is directory.
+						if (item.Key) {
+							foreach (var directory in item)
+								changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+						} else
+							changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
+					}
+					changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
+					fileList = null;
+				});
+			}
+
 			ThreadPool.QueueUserWorkItem (delegate {
 				List<VersionInfo> newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
+				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
 					if (!disposed)
 						LoadStatus (newList);

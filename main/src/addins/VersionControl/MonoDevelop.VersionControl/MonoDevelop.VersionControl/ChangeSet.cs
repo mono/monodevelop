@@ -19,6 +19,13 @@ namespace MonoDevelop.VersionControl
 		internal protected ChangeSet (Repository repo, FilePath basePath)
 		{
 			this.repo = repo;
+
+			// Make sure the path has a trailing slash or the ChangeLogWriter's
+			// call to GetDirectoryName will take us one extra directory up.
+			string bp = basePath.ToString ();
+			if (bp [bp.Length - 1] != System.IO.Path.DirectorySeparatorChar)
+				basePath = bp + System.IO.Path.DirectorySeparatorChar;
+
 			this.basePath = basePath;
 		}
 		
