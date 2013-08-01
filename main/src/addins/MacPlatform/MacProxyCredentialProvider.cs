@@ -50,6 +50,7 @@ namespace MonoDevelop.MacIntegration
 					                             credentialType == CredentialType.ProxyCredentials ? "proxy" : "request", uri.Host);
 
 					NSAlert alert = NSAlert.WithMessage ("Credentials Required", "OK", "Cancel", null, message);
+					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
 					NSView view = new NSView (new RectangleF (0, 0, 310, 84));
 
