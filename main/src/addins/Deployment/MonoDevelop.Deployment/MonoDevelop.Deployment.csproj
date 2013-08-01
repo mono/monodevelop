@@ -53,7 +53,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
