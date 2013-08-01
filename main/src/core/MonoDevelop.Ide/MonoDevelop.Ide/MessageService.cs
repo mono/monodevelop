@@ -333,12 +333,12 @@ namespace MonoDevelop.Ide
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
-		public static Xwt.Command RunCustomXwtDialog (Xwt.Dialog dialog)
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog)
 		{
-			return RunCustomXwtDialog (dialog, null);
+			return RunCustomDialog (dialog, null);
 		}
 
-		public static Xwt.Command RunCustomXwtDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
 		{
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
