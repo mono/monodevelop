@@ -119,7 +119,7 @@ namespace MonoDevelop.MacInterop
 		static extern OSStatus SecCertificateGetData (IntPtr certificate, out CssmData data);
 
 		const string SecAccountItemAttr = "acct";
-		const uint CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
+		const int CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
 
 		[StructLayout (LayoutKind.Sequential)]
 		struct SecKeychainAttributeList
@@ -136,11 +136,11 @@ namespace MonoDevelop.MacInterop
 			public IntPtr data;
 		}
 
-		struct SecKeychainAttributeInfo
+		unsafe struct SecKeychainAttributeInfo
 		{
 			public UInt32 Count;
-			public UInt32[] Tag;
-			public UInt32[] Format;
+			public int* Tag;
+			public int* Format;
 		}
 		
 		struct CssmData
@@ -428,8 +428,8 @@ namespace MonoDevelop.MacInterop
 		{
 
 			IntPtr itemRef = IntPtr.Zero;
-			IntPtr password = IntPtr.Zero, username = IntPtr.Zero;
-			uint passwordLength = 0;
+			IntPtr password;
+			uint passwordLength;
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null, 0, null,
 			                                              (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
 			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
@@ -440,29 +440,34 @@ namespace MonoDevelop.MacInterop
 			if (result != OSStatus.Ok)
 				throw new Exception ("Could not find internet username and password: " + GetError (result));
 
-			uint[] attributeTags = {(uint) Carbon.ConvertCharCode (SecAccountItemAttr)};
-			uint[] formatConstants = {CSSM_DB_ATTRIBUTE_FORMAT_STRING};
+			int[] attributeTags = {Carbon.ConvertCharCode (SecAccountItemAttr)};
+			int[] formatConstants = {CSSM_DB_ATTRIBUTE_FORMAT_STRING};
 
-			var attributeInfo = new SecKeychainAttributeInfo {
-				Count = 1,
-				Tag = attributeTags,
-				Format = formatConstants
-			};
+			fixed (int* tags = attributeTags) {
+				fixed (int* formats = formatConstants) {
+					var attributeInfo = new SecKeychainAttributeInfo {
+						Count = 1,
+						Tag = tags,
+						Format = formats
+					};
 
-			SecKeychainAttributeList* attributeList;
-			uint length = 0;
-			IntPtr outData = IntPtr.Zero;
-			OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, IntPtr.Zero, &attributeList, ref length, ref outData);
+					SecKeychainAttributeList* attributeList;
+					uint length = 0;
+					IntPtr outData = IntPtr.Zero;
+					OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, IntPtr.Zero, &attributeList, ref length, ref outData);
 
-			if (attributeStatus == OSStatus.ItemNotFound)
-				return null;
+					if (attributeStatus == OSStatus.ItemNotFound)
+						return null;
 
-			if (attributeStatus != OSStatus.Ok)
-				throw new Exception ("Could not find internet username and password: " + GetError (result));
+					if (attributeStatus != OSStatus.Ok)
+						throw new Exception ("Could not find internet username and password: " + GetError (result));
 
-			SecKeychainAttribute attr = *((SecKeychainAttribute*) attributeList->attr);
-			return Tuple.Create (Marshal.PtrToStringAuto (attr.data, (int) attr.length),
-			                     Marshal.PtrToStringAuto (password, (int) passwordLength));
+					SecKeychainAttribute attr = *((SecKeychainAttribute*) attributeList->attr);
+					return Tuple.Create (Marshal.PtrToStringAuto (attr.data, (int) attr.length),
+					                     Marshal.PtrToStringAuto (password, (int) passwordLength));
+				}
+			}
+
 		}
 
 		public static string FindInternetPassword (Uri uri)
