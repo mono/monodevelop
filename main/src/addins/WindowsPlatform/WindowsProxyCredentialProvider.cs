@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Web;
 using MonoDevelop.Ide;
 
@@ -37,12 +38,16 @@ namespace MonoDevelop.Platform.Windows
 {
 	public class WindowsProxyCredentialProvider : ICredentialProvider
 	{
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredential, bool retrying)
 		{
 			if (uri == null)
 				throw new ArgumentNullException ("uri");
 
-			var form = new PlaceholderForm (credentialType, uri);
+			NetworkCredential currentCredentials = null;
+			if (existingCredential != null)
+				currentCredentials = Utility.GetCredentialsForUriFromICredentials (uri, existingCredential);
+
+			var form = new PlaceholderForm (credentialType, uri, currentCredentials);
 			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
 			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
 		}
@@ -56,11 +61,13 @@ namespace MonoDevelop.Platform.Windows
 
 		readonly Uri uri;
 		readonly CredentialType type;
+		readonly NetworkCredential current;
 
-		internal PlaceholderForm (CredentialType type, Uri uri)
+		internal PlaceholderForm (CredentialType type, Uri uri, NetworkCredential currentCredential)
 		{
 			this.uri = uri;
 			this.type = type;
+			current = currentCredential;
 			Size = new Size (0, 0);
 			Visible = false;
 		}
@@ -75,8 +82,10 @@ namespace MonoDevelop.Platform.Windows
 			};
 
 			var save = false;
-			
-			StringBuilder username = new StringBuilder (100), password = new StringBuilder (100), domain = new StringBuilder (100);
+
+			StringBuilder username = new StringBuilder (current != null ? current.UserName : string.Empty, 100), 
+			              password = new StringBuilder (current != null ? current.Password : string.Empty, 100),
+			              domain = new StringBuilder (100);
 			int maxUsername = 100, maxPassword = 100, maxDomain = 100;
 
 			var windowsVersion = Environment.OSVersion.Version;
@@ -86,16 +95,35 @@ namespace MonoDevelop.Platform.Windows
 				int outputSize, authPackage = 0;
 				IntPtr output;
 
-				var returnCode = Native.CredUIPromptForWindowsCredentials (ref credUiInfo, 0, ref authPackage, IntPtr.Zero, 0,
-				                                                           out output, out outputSize, ref save,
-				                                                           Native.CredentialsUiWindowsFlags.Generic);
+				var pinnedArray = new GCHandle ();
+				uint packedAuthBufferLength = 0;
+
+				if (current != null) {
+					// Have creds? Pack them into the buffer and predisplay them.
+					const int credPackGenericCredentials = 4;
+					Native.CredPackAuthenticationBuffer (credPackGenericCredentials, current.UserName, current.Password,
+						IntPtr.Zero, ref packedAuthBufferLength);
+					// Now we know the size of the buffer, allocate a byte[] and pin it
+					var packedAuthBufferBytes = new byte[packedAuthBufferLength];
+					// Free the dummy handle from before
+					if (pinnedArray.IsAllocated)
+						pinnedArray.Free ();
+					pinnedArray = GCHandle.Alloc (packedAuthBufferBytes, GCHandleType.Pinned);
+					Native.CredPackAuthenticationBuffer (credPackGenericCredentials, current.UserName, current.Password, pinnedArray.AddrOfPinnedObject (), ref packedAuthBufferLength);
+				}
+
+				var authBuffer = current == null ? IntPtr.Zero : pinnedArray.AddrOfPinnedObject (); ;
+				var returnCode = Native.CredUIPromptForWindowsCredentials (ref credUiInfo, 0, ref authPackage, authBuffer, packedAuthBufferLength,
+					out output, out outputSize, ref save, Native.CredentialsUiWindowsFlags.Generic);
+
+				// Unpin the array if we held it before
+				if (authBuffer != IntPtr.Zero)
+					pinnedArray.Free ();
 
 				if (returnCode != Native.WindowsCredentialPromptReturnCode.NoError)
 					return DialogResult.Cancel;
 
-				if (
-					!Native.CredUnPackAuthenticationBuffer (0, output, outputSize, username, ref maxUsername, domain, ref maxDomain,
-					                                        password, ref maxPassword))
+				if (!Native.CredUnPackAuthenticationBuffer (0, output, outputSize, username, ref maxUsername, domain, ref maxDomain, password, ref maxPassword))
 					return DialogResult.Cancel;
 
 				Native.CoTaskMemFree (output);
@@ -108,7 +136,7 @@ namespace MonoDevelop.Platform.Windows
 			} else {
 				const Native.CredentialsUiFlags flags = Native.CredentialsUiFlags.AlwaysShowUi | Native.CredentialsUiFlags.GenericCredentials;
 				var returnCode = Native.CredUIPromptForCredentials (ref credUiInfo, BrandingService.ApplicationName, IntPtr.Zero, 0,
-				                                                    username, maxUsername, password, maxPassword, ref save, flags);
+					username, maxUsername, password, maxPassword, ref save, flags);
 				Username = username.ToString ();
 				Password = password.ToString ();
 				Domain = string.Empty;
@@ -130,7 +158,7 @@ namespace MonoDevelop.Platform.Windows
 
 		[DllImport ("credui.dll", CharSet = CharSet.Unicode)]
 		internal static extern WindowsCredentialPromptReturnCode CredUIPromptForWindowsCredentials (ref CredentialUiInfo uiInfo,
-			int authError, ref int authPackage, IntPtr inAuthBuffer, int inAuthBufferSize,
+			int authError, ref int authPackage, IntPtr inAuthBuffer, uint inAuthBufferSize,
 			out IntPtr refOutAuthBuffer, out int refOutAuthBufferSize, ref bool fSave,
 			CredentialsUiWindowsFlags uiWindowsFlags);
 
@@ -139,6 +167,10 @@ namespace MonoDevelop.Platform.Windows
 			int cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName,
 			StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword,
 			ref int pcchMaxPassword);
+
+		[DllImport ("credui.dll", CharSet = CharSet.Auto)]
+		internal static extern bool CredPackAuthenticationBuffer (int dwFlags, string pszUserName, string pszPassword,
+																  IntPtr packedCredentials, ref uint packedCredentialsLength);
 
 		[StructLayout (LayoutKind.Sequential, CharSet = CharSet.Unicode)]
 		internal struct CredentialUiInfo

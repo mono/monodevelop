@@ -4,8 +4,7 @@ using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
-	static class RequestHelper
-	{
+	public static class RequestHelper {
 		/// <summary>
 		/// Keeps sending requests until a response code that doesn't require authentication happens or if
 		/// the request requires authentication and the user has stopped trying to enter them (i.e. they hit cancel when they are prompted).
@@ -15,7 +14,7 @@ namespace MonoDevelop.Core.Web
 			HttpWebRequest previousRequest = null;
 			IHttpWebResponse previousResponse = null;
 			HttpStatusCode? previousStatusCode = null;
-			bool continueIfFailed = true;
+			var continueIfFailed = true;
 			int proxyCredentialsRetryCount = 0, credentialsRetryCount = 0;
 
 			while (true) {
@@ -48,7 +47,7 @@ namespace MonoDevelop.Core.Web
 						break;
 					case HttpStatusCode.Unauthorized:
 						oldCredentials = previousRequest != null ? previousRequest.Credentials : null;
-						request.Credentials = credentialProvider.GetCredentials (request, previousRequest.Credentials, CredentialType.RequestCredentials, retrying: retrying);
+						request.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.RequestCredentials, retrying: retrying);
 						continueIfFailed = request.Credentials != null;
 						credentialsRetryCount++;
 						break;
@@ -67,7 +66,7 @@ namespace MonoDevelop.Core.Web
 					// and credentials need to be kept around.
 					request.Credentials = request.Credentials.AsCredentialCache (request.RequestUri);
 
-					WebResponse response = request.GetResponse ();
+					var response = request.GetResponse ();
 
 					// Cache the proxy and credentials
 					if (request.Proxy != null) {
@@ -120,15 +119,10 @@ namespace MonoDevelop.Core.Web
 		static IHttpWebResponse GetResponse (WebResponse response)
 		{
 			var httpWebResponse = response as IHttpWebResponse;
-			if (httpWebResponse == null) {
-				var webResponse = response as HttpWebResponse;
-				if (webResponse == null) {
-					return null;
-				}
-				return new HttpWebResponseWrapper (webResponse);
-			}
+			if (httpWebResponse != null) return httpWebResponse;
 
-			return httpWebResponse;
+			var webResponse = response as HttpWebResponse;
+			return webResponse == null ? null : new HttpWebResponseWrapper (webResponse);
 		}
 
 		static bool IsAuthenticationResponse (IHttpWebResponse response)
@@ -142,11 +136,11 @@ namespace MonoDevelop.Core.Web
 			// KeepAlive is required for NTLM and Kerberos authentication. If we've never been authenticated or are 
 			// using a different auth, we should not require KeepAlive.
 			// REVIEW: The WWW-Authenticate header is tricky to parse so a Equals might not be correct. 
-			if (previousResponse == null || !IsNtlmOrKerberos (previousResponse.AuthType)) {
-				// This is to work around the "The underlying connection was closed: An unexpected error occurred on a receive." exception.
-				request.KeepAlive = false;
-				request.ProtocolVersion = HttpVersion.Version10;
-			}
+			if (previousResponse != null && IsNtlmOrKerberos (previousResponse.AuthType)) return;
+
+			// This is to work around the "The underlying connection was closed: An unexpected error occurred on a receive." exception.
+			request.KeepAlive = false;
+			request.ProtocolVersion = HttpVersion.Version10;
 		}
 
 		static bool ShouldKeepAliveBeUsedInRequest (HttpWebRequest request, IHttpWebResponse response)
