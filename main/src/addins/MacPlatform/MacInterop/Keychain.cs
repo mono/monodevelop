@@ -565,8 +565,8 @@ namespace MonoDevelop.MacInterop
 		{
 
 			IntPtr itemRef = IntPtr.Zero;
-			IntPtr password = IntPtr.Zero, username = IntPtr.Zero;
-			uint passwordLength = 0;
+			IntPtr password;
+			uint passwordLength;
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null, 0, null,
 			                                              (uint) uri.PathAndQuery.Length, Encoding.UTF8.GetBytes (uri.PathAndQuery),
 			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
@@ -591,11 +591,30 @@ namespace MonoDevelop.MacInterop
 			IntPtr outData = IntPtr.Zero;
 			OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, IntPtr.Zero, &attributeList, ref length, ref outData);
 
-			if (attributeStatus == OSStatus.ItemNotFound)
-				return null;
+			fixed (int* tags = attributeTags) {
+				fixed (int* formats = formatConstants) {
+					var attributeInfo = new SecKeychainAttributeInfo {
+						Count = 1,
+						Tag = tags,
+						Format = formats
+					};
 
-			if (attributeStatus != OSStatus.Ok)
-				throw new Exception ("Could not find internet username and password: " + GetError (result));
+					SecKeychainAttributeList* attributeList;
+					uint length = 0;
+					IntPtr outData = IntPtr.Zero;
+					OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, IntPtr.Zero, &attributeList, ref length, ref outData);
+
+					if (attributeStatus == OSStatus.ItemNotFound)
+						return null;
+
+					if (attributeStatus != OSStatus.Ok)
+						throw new Exception ("Could not find internet username and password: " + GetError (result));
+
+					SecKeychainAttribute attr = *((SecKeychainAttribute*) attributeList->attr);
+					return Tuple.Create (Marshal.PtrToStringAuto (attr.data, (int) attr.length),
+					                     Marshal.PtrToStringAuto (password, (int) passwordLength));
+				}
+			}
 
 			SecKeychainAttribute attr = *((SecKeychainAttribute*) attributeList->Attrs);
 			return Tuple.Create (Marshal.PtrToStringAuto (attr.Data, (int) attr.Length),
