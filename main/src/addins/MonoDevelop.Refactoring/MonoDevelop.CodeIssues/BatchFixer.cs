@@ -105,33 +105,21 @@ namespace MonoDevelop.CodeIssues
 
 		IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out object refactoringContext)
 		{
-			refactoringContext = null;
 			var issues = new List<CodeIssue> ();
-			lastMime = null;
-			IList<CodeIssueProvider> codeIssueProviders = null;
-
-			TypeSystemParser parser = null;
-			if (lastMime != data.MimeType)
-				parser = TypeSystemService.GetParser (data.MimeType);
-			if (parser == null)
+			
+			var document = TypeSystemService.ParseFile (file.Project, data);
+			if (document == null) {
+				refactoringContext = null;
 				return issues;
-			ParsedDocument document;
-			using (var stream = data.OpenStream ()) {
-				using (var reader = new StreamReader (stream)) {
-					document = parser.Parse (true, data.FileName, reader, file.Project);
-				}
 			}
-			if (document == null) 
-				return issues;
-			
-			if (lastMime != data.MimeType || codeIssueProviders == null)
-				codeIssueProviders = GetInspectors (data, inspectorIds);
-			
-			var compilation = TypeSystemService.GetCompilation (file.Project);
+
+			var content = TypeSystemService.GetProjectContext (file.Project);
+			var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+			
 			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
 			var context = refactoringContext;
-			foreach (var provider in codeIssueProviders) {
+			foreach (var provider in GetInspectors (data, inspectorIds)) {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None)
 					continue;
