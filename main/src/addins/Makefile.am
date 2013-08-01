@@ -29,5 +29,4 @@ SUBDIRS = \
 	MonoDevelop.Debugger.Soft \
 	WindowsPlatform \
 	MonoDevelop.HexEditor \
-	MonoDevelop.DocFood \
-	CSharpSplitProject
+	MonoDevelop.DocFood
