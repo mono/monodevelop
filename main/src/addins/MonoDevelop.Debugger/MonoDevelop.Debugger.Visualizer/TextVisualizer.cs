@@ -37,7 +37,9 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		TextView textView;
 		RawValueString raw;
+#pragma warning disable 414
 		ObjectValue val;
+#pragma warning restore 414
 		uint idle_id;
 		int length;
 		int offset;
