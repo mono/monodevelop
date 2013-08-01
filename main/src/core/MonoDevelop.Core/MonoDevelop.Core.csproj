@@ -78,6 +78,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.Core.Web\Utility.cs" />
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
     <Compile Include="MonoDevelop.Core\UserException.cs" />
     <Compile Include="MonoDevelop.Core\Runtime.cs" />

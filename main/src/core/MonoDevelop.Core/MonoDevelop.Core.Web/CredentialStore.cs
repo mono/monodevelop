@@ -31,8 +31,6 @@ namespace MonoDevelop.Core.Web
 			return creds != null ? new NetworkCredential (creds.Item1, creds.Item2).AsCredentialCache (uri) : null;
 		}
 
-		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
-
 		public void Add (Uri requestUri, ICredentials credentials, CredentialType credentialType)
 		{
 			credentialCache.TryAdd (requestUri, credentials);
@@ -41,21 +39,9 @@ namespace MonoDevelop.Core.Web
 				credentialCache.AddOrUpdate (rootUri, credentials, (u, c) => credentials);
 			}
 
-			var cred = GetCredentialsForUriFromICredentials (requestUri, credentials);
+			var cred = Utility.GetCredentialsForUriFromICredentials (requestUri, credentials);
 			if (cred != null)
 				PasswordService.AddWebUserNameAndPassword (requestUri, cred.UserName, cred.Password);
-		}
-
-		static NetworkCredential GetCredentialsForUriFromICredentials (Uri uri, ICredentials credentials)
-		{
-			NetworkCredential cred = null;
-			foreach (var scheme in AuthenticationSchemes) {
-				cred = credentials.GetCredential (uri, scheme);
-				if (cred != null)
-					break;
-			}
-
-			return cred;
 		}
 
 		static Uri GetRootUri (Uri uri)
