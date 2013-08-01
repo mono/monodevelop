@@ -188,27 +188,38 @@ namespace MonoDevelop.Ide.Tasks
 			foreach (var sln in wob.GetAllSolutions ())
 				LoadSolutionContents (sln);
 		}
+
+		void UpdateCommentTagsForProject (Solution solution, Project project)
+		{
+			var ctx = TypeSystemService.GetProjectContentWrapper (project);
+			if (ctx == null)
+				return;
+			var tags = ctx.GetExtensionObject<ProjectCommentTags> ();
+			if (tags == null) {
+				tags = new ProjectCommentTags ();
+				ctx.UpdateExtensionObject (tags);
+				tags.Update (ctx.Project);
+			} else {
+				foreach (var kv in tags.Tags) {
+					UpdateCommentTags (solution, kv.Key, kv.Value);
+				}
+			}
+		}
 		
 		void LoadSolutionContents (Solution sln)
 		{
 			loadedSlns.Add (sln);
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				sln.SolutionItemAdded += delegate(object sender, SolutionItemChangeEventArgs e) {
+					var newProject = e.SolutionItem as Project;
+					if (newProject == null)
+						return;
+					UpdateCommentTagsForProject (sln, newProject);
+				};
+
 				// Load all tags that are stored in pidb files
 				foreach (Project p in sln.GetAllProjects ()) {
-					var pContext = TypeSystemService.GetProjectContentWrapper (p);
-					if (pContext == null) {
-						continue;
-					}
-					var tags = pContext.GetExtensionObject<ProjectCommentTags> ();
-					if (tags == null) {
-						tags = new ProjectCommentTags ();
-						pContext.UpdateExtensionObject (tags);
-						tags.Update (pContext.Project);
-					} else {
-						foreach (var kv in tags.Tags) {
-							UpdateCommentTags (sln, kv.Key, kv.Value);
-						}
-					}
+					UpdateCommentTagsForProject (sln, p);
 				}
 			});
 		}
