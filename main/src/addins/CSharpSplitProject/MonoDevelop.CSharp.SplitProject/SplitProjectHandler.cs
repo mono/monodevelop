@@ -106,6 +106,12 @@ namespace MonoDevelop.CSharp.SplitProject
 							transferFilesMonitor.BeginStepTask (GettextCatalog.GetString ("Moving files"), nodesToMove.Count, 1);
 
 							foreach (var node in nodesToMove) {
+								var parentNode = graph.Nodes.FirstOrDefault (potentialDependency => potentialDependency.File.DependentChildren.Contains(node.File));
+								if (parentNode != null && !nodesToMove.Contains(parentNode)) {
+									//Dependent file will be moved, but parent won't
+									node.File.DependsOn = "";
+								}
+
 								Console.WriteLine ("move = {0}", node.File.FilePath);
 
 								var newPath = newProject.BaseDirectory.Combine (node.File.ProjectVirtualPath.ToRelative (currentProject.BaseDirectory));
