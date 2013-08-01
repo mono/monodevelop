@@ -44,6 +44,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
@@ -301,7 +302,14 @@ namespace MonoDevelop.Refactoring
 						if (ciset.CommandInfos.Count > 0)
 							ciset.CommandInfos.AddSeparator ();
 					}
-					ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (doc, loc)));
+					var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
+					if (context is IScriptProvider) {
+						using (var script = ((IScriptProvider)context).CreateScript ()) {
+							ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (context, script)));
+						}
+					} else {
+						ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (context, null)));
+					}
 				}
 			}
 

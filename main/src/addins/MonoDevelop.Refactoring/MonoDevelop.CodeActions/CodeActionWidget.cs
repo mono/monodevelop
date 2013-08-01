@@ -42,6 +42,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory.Refactoring;
+using System.Threading;
 
 namespace MonoDevelop.CodeActions
 {
@@ -312,7 +313,14 @@ namespace MonoDevelop.CodeActions
 			
 			public void Run (object sender, EventArgs e)
 			{
-				act.Run (document, loc);
+				var context = document.ParsedDocument.CreateRefactoringContext (document, CancellationToken.None);
+				if (context is IScriptProvider) {
+					using(var script = ((IScriptProvider)context).CreateScript ()) {
+						act.Run (context, script);
+					}
+				} else {
+					act.Run (context, null);
+				}
 			}
 			
 			public void BatchRun (object sender, EventArgs e)
