@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.SplitProject
 			ProjectGraph graph = BuildGraph (currentProject);
 
 			if (graph != null) {
-				using (var dialog = new SplitProjectDialog (currentProject, graph)) {
+				using (var dialog = new SplitProjectDialog (graph)) {
 					if (MessageService.RunCustomDialog(dialog) == Xwt.Command.Ok) {
 						//Create class library project
 						string classLibraryName = dialog.NewProjectName;

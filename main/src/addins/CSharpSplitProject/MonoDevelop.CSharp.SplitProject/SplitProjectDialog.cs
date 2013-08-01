@@ -24,36 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xwt;
-using Mono.TextEditor;
 using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
-using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
 	public class SplitProjectDialog : Dialog
 	{
-		DotNetProject project;
 		ProjectGraph graph;
 
-		DataField<bool> selectedField = new DataField<bool> ();
+		DataField<CheckBoxState> selectedField = new DataField<CheckBoxState> ();
 		DataField<ProjectGraph.Node> nodeField = new DataField<ProjectGraph.Node> ();
 		DataField<string> nameField = new DataField<string> ();
+		DataField<string> dependentsField = new DataField<string>();
 
 		TextEntry newProjectNameField;
 		TreeStore dataSource;
@@ -69,7 +56,7 @@ namespace MonoDevelop.CSharp.SplitProject
 					var node = keyValue.Key;
 					var navigator = keyValue.Value;
 
-					if (navigator.GetValue (selectedField)) {
+					if (navigator.GetValue (selectedField) != CheckBoxState.Off) {
 						nodes.Add (node);
 					}
 				}
@@ -85,9 +72,8 @@ namespace MonoDevelop.CSharp.SplitProject
 			}
 		}
 
-		public SplitProjectDialog (DotNetProject project, ProjectGraph graph)
+		public SplitProjectDialog (ProjectGraph graph)
 		{
-			this.project = project;
 			this.graph = graph;
 
 			VBox layout = new VBox ();
@@ -96,14 +82,18 @@ namespace MonoDevelop.CSharp.SplitProject
 			projectNameBox.PackStart (new Label (GettextCatalog.GetString ("Class Library Name:")));
 			newProjectNameField = new TextEntry ();
 			newProjectNameField.Changed += (object sender, EventArgs e) => ValidateSplitProposal ();
-			projectNameBox.PackStart (newProjectNameField);
+			projectNameBox.PackStart (newProjectNameField, true, true);
 			layout.PackStart (projectNameBox);
+
+			layout.PackStart (new Label(GettextCatalog.GetString ("Files to move to new class library project")));
+
 			var tree = BuildTree (graph);
 			layout.PackStart (tree, true, true);
 
 			Content = layout;
 
-			Title = "Split Project";
+			Title = GettextCatalog.GetString("Split Project");
+			Size = new Size (400, 300);
 
 			Buttons.Add (okButton = new Xwt.DialogButton (Command.Ok));
 			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
@@ -121,14 +111,18 @@ namespace MonoDevelop.CSharp.SplitProject
 			if (!FileService.IsValidFileName (NewProjectName))
 				return false;
 
-			return true;
+			if (SelectedNodes.Count == graph.Nodes.Count)
+				return false;
+
+			if (SelectedNodes.Count == 0)
+				return false;
 
 			return true;
 		}
 
 		TreeView BuildTree (ProjectGraph graph)
 		{
-			var dataSource = new TreeStore (selectedField, nodeField, nameField);
+			dataSource = new TreeStore (selectedField, nodeField, nameField, dependentsField);
 
 			nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
 			var navigators = new Dictionary<string, TreeNavigator> ();
@@ -151,36 +145,165 @@ namespace MonoDevelop.CSharp.SplitProject
 			TreeView tree = new TreeView ();
 			var cellView = new CheckBoxCellView (selectedField) {
 				Editable = true
-			}
-			;
+			};
+
 			cellView.Toggled += (object sender, WidgetEventArgs e) =>  {
 				var rowPosition = tree.CurrentEventRow;
 				if (rowPosition == null) {
-					Console.WriteLine ("<null>");
 					return;
 				}
 				var row = dataSource.GetNavigatorAt (rowPosition);
-				var selected = row.GetValue (selectedField);
+				var checkState = row.GetValue (selectedField);
 				var node = row.GetValue (nodeField);
-				Console.WriteLine ("node={0}", node);
-				graph.ResetVisitedNodes ();
-				if (node == null) {
-					//TODO: Handle folders
+
+				ISet<ProjectGraph.Node> descendentNodes = GetNodeAndDescendents(row);
+
+				if (checkState == CheckBoxState.On) {
+					foreach (var descendent in descendentNodes) {
+						graph.ResetVisitedNodes();
+
+						VisitReversed (descendent, visitedNode => {
+							nodePositions[visitedNode].SetValue(selectedField, CheckBoxState.Off);
+						});
+					}
+
+					foreach (var nodeToUpdate in graph.Nodes) {
+						nodeToUpdate.ActiveDependentNodes.RemoveAll(candidateToRemove => nodePositions[candidateToRemove].GetValue(selectedField) == CheckBoxState.Off);
+						UpdateDependentsText(nodeToUpdate, nodePositions[nodeToUpdate]);
+					}
 				}
 				else {
-					if (selected) {
-						DeselectNode (node);
-					}
-					else {
-						SelectNode (node);
+					foreach (var descendent in descendentNodes) {
+						var descendentPosition = nodePositions[descendent];
+						descendentPosition.SetValue(selectedField, CheckBoxState.On);
+
+						graph.ResetVisitedNodes ();
+
+						Visit (descendent, visitedNode => {
+							if (!visitedNode.Equals (descendent)) {
+								AddActiveDependentNode(visitedNode, descendent);
+							}
+						});
 					}
 				}
+
+				UpdateFolderStates();
+				ValidateSplitProposal();
 				e.Handled = true;
 			};
-			tree.Columns.Add (new ListViewColumn ("Move to new project", cellView));
-			tree.Columns.Add ("Name", nameField);
+			tree.Columns.Add (new ListViewColumn (GettextCatalog.GetString("Move"), cellView));
+			tree.Columns.Add (GettextCatalog.GetString("Name"), nameField);
+			tree.Columns.Add (GettextCatalog.GetString("Dependents"), dependentsField);
 			tree.DataSource = dataSource;
 			return tree;
+		}
+
+		void UpdateFolderStates ()
+		{
+			TreeNavigator navigator = dataSource.GetFirstNode ();
+			if (navigator.CurrentPosition == null) {
+				return;
+			}
+
+			do {
+				UpdateFolderState (navigator);
+			} while (navigator.MoveNext());
+		}
+
+		CheckBoxState UpdateFolderState (TreeNavigator navigator) {
+			if (!navigator.MoveToChild()) {
+				//Already a leaf (file)
+				return navigator.GetValue (selectedField);
+			}
+
+			bool allSelected = true;
+			bool allDeselected = true;
+
+			do {
+				var childState = UpdateFolderState(navigator);
+
+				if (childState != CheckBoxState.On)
+					allSelected = false;
+
+				if (childState != CheckBoxState.Off)
+					allDeselected = false;
+
+			} while (navigator.MoveNext());
+
+			navigator.MoveToParent ();
+
+			var newState = allSelected ? CheckBoxState.On :
+				allDeselected ? CheckBoxState.Off : CheckBoxState.Mixed;
+
+			navigator.SetValue (selectedField, newState);
+
+			return newState;
+		}
+
+		void AddActiveDependentNode (ProjectGraph.Node dependency, ProjectGraph.Node dependent)
+		{
+			if (dependency == dependent) {
+				return;
+			}
+
+			dependency.ActiveDependentNodes.Add (dependent);
+
+			var dependencyPosition = nodePositions [dependency];
+
+			dependencyPosition.SetValue (selectedField, CheckBoxState.On);
+			UpdateDependentsText (dependency, dependencyPosition);
+		}
+
+		void UpdateDependentsText (ProjectGraph.Node dependency, TreeNavigator dependencyPosition)
+		{
+			dependencyPosition.SetValue (dependentsField, string.Join (", ", dependency.ActiveDependentNodes));
+		}
+
+		/// <summary>
+		/// Gets the set of all nodes that are in the given position or descendents
+		/// of the given position.
+		/// </summary>
+		/// <returns>The set of nodes in the position or descendent positions.</returns>
+		/// <param name="navigator">The starting position to search.</param>
+		/// <remarks>
+		/// If navigator is set to the root of the tree, then this method will return all nodes in the tree.
+		/// If navigator is a leaf, then this method will return a set with only the node in that leaf.
+		/// Project tree nodes without associated ProjectGraph.Node instances (folders) are excluded from
+		/// the result.
+		/// </remarks>
+		ISet<ProjectGraph.Node> GetNodeAndDescendents (TreeNavigator navigator)
+		{
+			ISet<ProjectGraph.Node> nodesToSelect = new HashSet<ProjectGraph.Node> ();
+
+			int depth = 0;
+
+			//Depth-first search of the project tree
+			// depth is zero when navigator is in the starting position
+			do {
+				//Step 1. Add the current node
+				var traversalNode = navigator.GetValue (nodeField);
+				if (traversalNode != null) {
+					nodesToSelect.Add (traversalNode);
+				}
+
+				//Step 2. Move to the first child (and continue to the first step)
+				if (navigator.MoveToChild ()) {
+					depth++;
+				} else {
+					//Step 3. Try to move to the next unvisited sibling.
+					// if the node has no unvisited siblings, then move to unvisited sibling
+					// of ancestor.
+					//Then continue to the first step
+					//If depth == 0, then we've reached our base node, so we won't try
+					// to visit siblings nor ancestors anymore
+					while (depth > 0 && !navigator.MoveNext()) {
+						navigator.MoveToParent ();
+						depth--;
+					}
+				}
+			} while (depth > 0);
+
+			return nodesToSelect;
 		}
 
 		TreeNavigator BuildDirectories (TreeStore dataSource, Dictionary<string, TreeNavigator> directories, FilePath directory)
@@ -206,18 +329,11 @@ namespace MonoDevelop.CSharp.SplitProject
 		void DeselectNode (ProjectGraph.Node node)
 		{
 			VisitReversed (node, foundNode =>  {
-				nodePositions [foundNode].SetValue (selectedField, false);
-			});
-		}
-
-		void SelectNode (ProjectGraph.Node node)
-		{
-			Visit (node, foundNode =>  {
-				nodePositions [foundNode].SetValue (selectedField, true);
+				nodePositions [foundNode].SetValue (selectedField, CheckBoxState.Off);
 			});
 		}
 		
-		void Visit (ProjectGraph.Node node, Action<ProjectGraph.Node> callback)
+		void Visit (ProjectGraph.Node node,Action<ProjectGraph.Node> callback)
 		{
 			callback (node);
 
