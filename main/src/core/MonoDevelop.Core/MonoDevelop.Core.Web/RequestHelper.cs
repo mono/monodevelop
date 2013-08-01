@@ -38,14 +38,17 @@ namespace MonoDevelop.Core.Web
 						request.UseDefaultCredentials = true;
 				} else {
 					var retrying = proxyCredentialsRetryCount > 0;
+					ICredentials oldCredentials;
 					switch (previousStatusCode) {
-					case HttpStatusCode.ProxyAuthenticationRequired:;
-						request.Proxy.Credentials = credentialProvider.GetCredentials (request, CredentialType.ProxyCredentials, retrying: retrying);
+					case HttpStatusCode.ProxyAuthenticationRequired:
+						oldCredentials = previousRequest != null && previousRequest.Proxy != null ? previousRequest.Proxy.Credentials : null;
+						request.Proxy.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.ProxyCredentials, retrying: retrying);
 						continueIfFailed = request.Proxy.Credentials != null;
 						proxyCredentialsRetryCount++;
 						break;
 					case HttpStatusCode.Unauthorized:
-						request.Credentials = credentialProvider.GetCredentials (request, CredentialType.RequestCredentials, retrying: retrying);
+						oldCredentials = previousRequest != null ? previousRequest.Credentials : null;
+						request.Credentials = credentialProvider.GetCredentials (request, previousRequest.Credentials, CredentialType.RequestCredentials, retrying: retrying);
 						continueIfFailed = request.Credentials != null;
 						credentialsRetryCount++;
 						break;

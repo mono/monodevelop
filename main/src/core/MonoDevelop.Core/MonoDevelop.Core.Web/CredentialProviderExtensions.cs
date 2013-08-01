@@ -7,9 +7,9 @@ namespace MonoDevelop.Core.Web
 	{
 		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
 
-		internal static ICredentials GetCredentials (this ICredentialProvider provider, WebRequest request, CredentialType credentialType, bool retrying = false)
+		internal static ICredentials GetCredentials (this ICredentialProvider provider, WebRequest request, ICredentials currentCredentials, CredentialType credentialType, bool retrying = false)
 		{
-			return provider.GetCredentials (request.RequestUri, request.Proxy, credentialType, retrying);
+			return provider.GetCredentials (request.RequestUri, request.Proxy, credentialType, currentCredentials, retrying);
 		}
 
 		internal static ICredentials AsCredentialCache (this ICredentials credentials, Uri uri)

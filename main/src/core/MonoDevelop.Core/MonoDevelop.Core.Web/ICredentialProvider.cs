@@ -16,6 +16,6 @@ namespace MonoDevelop.Core.Web
 		/// The proxy instance if passed will be used to ensure that the request goes through the proxy
 		/// to ensure successful connection to the destination Uri.
 		/// </summary>
-		ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying);
+		ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying);
 	}
 }
