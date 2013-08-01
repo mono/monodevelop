@@ -126,26 +126,13 @@ namespace MonoDevelop.CodeActions
 				var label = (mnemonic <= 10)
 					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
-				var menuItem = new Gtk.MenuItem (label);
-				var subMenu = new Gtk.Menu ();
-				var thisInstanceMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("This instance"));
+				var thisInstanceMenuItem = new Gtk.MenuItem (label);
 				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
 				thisInstanceMenuItem.Activated += delegate {
 					ConfirmUsage (fix.IdString);
 					menu.Destroy ();
 				};
-				subMenu.Add (thisInstanceMenuItem);
-				if (fix.SupportsBatchRunning) {
-					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("All in this file"));
-					batchRunMenuItem.Activated += delegate {
-						ConfirmUsage (fix.IdString);
-						menu.Destroy ();
-					};
-					batchRunMenuItem.Activated += new ContextActionRunner (fix, document, loc).BatchRun;
-					subMenu.Add (batchRunMenuItem);
-				}
-				menuItem.Submenu = subMenu;
-				menu.Add (menuItem);
+				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
 			var first = true;
@@ -164,13 +151,27 @@ namespace MonoDevelop.CodeActions
 					continue;
 				alreadyInserted.Add (ir.Inspector);
 				
+				var subMenu = new Gtk.Menu ();
+				if (analysisFix.SupportsBatchRunning) {
+					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Fix all in this file"));
+					batchRunMenuItem.Activated += delegate {
+						ConfirmUsage (analysisFix.IdString);
+						menu.Destroy ();
+					};
+					batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, loc).BatchRun;
+					subMenu.Add (batchRunMenuItem);
+					subMenu.Add (new Gtk.SeparatorMenuItem ());
+				}
 				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
-				var menuItem = new Gtk.MenuItem (label);
-				menuItem.Activated += analysisFix.ShowOptions;
-				menuItem.Activated += delegate {
+				var optionsMenuItem = new Gtk.MenuItem (label);
+				optionsMenuItem.Activated += analysisFix.ShowOptions;
+				optionsMenuItem.Activated += delegate {
 					menu.Destroy ();
 				};
-				menu.Add (menuItem);
+				subMenu.Add (optionsMenuItem);
+				var subMenuItem = new Gtk.MenuItem (ir.Inspector.Title);
+				subMenuItem.Submenu = subMenu;
+				menu.Add (subMenuItem);
 				items++;
 			}
 
