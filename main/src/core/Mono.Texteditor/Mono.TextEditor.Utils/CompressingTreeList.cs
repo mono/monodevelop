@@ -385,8 +385,11 @@ namespace Mono.TextEditor.Utils
 
 		public IEnumerator<T> GetEnumerator ()
 		{
-			foreach (var item in tree)
-				yield return item.value;
+			foreach (var n in tree) {
+				for (int i = 0; i < n.count; i++) {
+					yield return n.value;
+				}
+			}
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
