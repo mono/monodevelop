@@ -806,7 +806,7 @@ namespace Mono.TextEditor
 			textEditorData.RemoveTooltipProvider (provider);
 		}
 
-		internal void RedrawMargin (Margin margin)
+		public void RedrawMargin (Margin margin)
 		{
 			if (isDisposed)
 				return;

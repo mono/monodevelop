@@ -100,7 +100,7 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
-			return RunTest (test, context, IdeApp.Preferences.BuildBeforeExecuting);
+			return RunTest (test, context, true);
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)

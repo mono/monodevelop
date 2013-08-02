@@ -44,14 +44,32 @@ namespace MonoDevelop.CSharp
 {
 	class UnitTestTextEditorExtension : TextEditorExtension
 	{
+		TestPad testPad;
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentParsed; 
+
+			var pad = IdeApp.Workbench.GetPad<TestPad> ();
+			testPad = (TestPad)pad.Content;
+			if (testPad != null)
+				testPad.TestSessionCompleted += HandleTestSessionCompleted;
+		}
+
+		void HandleTestSessionCompleted (object sender, EventArgs e)
+		{
+			if (document.Editor == null)
+				return;
+			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
 		}
 
 		public override void Dispose ()
 		{
+			if (testPad != null) {
+				testPad.TestSessionCompleted -= HandleTestSessionCompleted;
+			}
+
 			RemoveHandler ();
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
@@ -274,7 +292,7 @@ namespace MonoDevelop.CSharp
 					return false;
 				}
 
-
+				List<NUnitProjectTestSuite> testSuites = new List<NUnitProjectTestSuite>();
 				internal void Run (object sender, EventArgs e)
 				{
 					menu.Destroy ();
@@ -282,13 +300,50 @@ namespace MonoDevelop.CSharp
 					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
 					    IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
-					var buildOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
-					buildOperation.Completed += delegate {
-						if (!buildOperation.Success)
-							return;
-						RemoveHandler ();
-						timeoutHandler = GLib.Timeout.Add (200, TimeoutHandler);
-					};
+
+					var foundTest = NUnitService.Instance.SearchTestById (testCase);
+					if (foundTest != null) {
+						RunTest (foundTest);
+						return;
+					}
+
+					Stack<UnitTest> tests = new Stack<UnitTest> ();
+					foreach (var test in NUnitService.Instance.RootTests) {
+						tests.Push (test);
+					}
+					while (tests.Count > 0) {
+						var test = tests.Pop ();
+
+						if (test is SolutionFolderTestGroup) {
+							foreach (var test2 in ((SolutionFolderTestGroup)test).Tests) {
+								tests.Push (test2); 
+							}
+							continue;
+						}
+						if (test is NUnitProjectTestSuite)
+							testSuites.Add ((NUnitProjectTestSuite)test); 
+					}
+
+					foreach (var test in testSuites) {
+						test.TestChanged += HandleTestChanged;
+						test.ProjectBuiltWithoutTestChange += HandleTestChanged;
+					}
+
+					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				}
+
+				void HandleTestChanged (object sender, EventArgs e)
+				{
+					var foundTest = NUnitService.Instance.SearchTestById (testCase);
+					if (foundTest != null) {
+						foreach (var test in testSuites) {
+							test.TestChanged -= HandleTestChanged;
+							test.ProjectBuiltWithoutTestChange -= HandleTestChanged;
+						}
+						testSuites.Clear ();
+
+						RunTest (foundTest); 
+					}
 				}
 
 				internal void Select (object sender, EventArgs e)
@@ -306,7 +361,6 @@ namespace MonoDevelop.CSharp
 
 				void RunTest (UnitTest test)
 				{
-					NUnitService.ResetResult (test.RootTest);
 					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 					MonoDevelop.Core.Execution.IExecutionHandler ctx = null;
 					if (debug && debugModeSet != null) {
@@ -317,14 +371,11 @@ namespace MonoDevelop.CSharp
 							}
 						}
 					}
-					NUnitService.Instance.RunTest (test, ctx).Completed += delegate {
-						Application.Invoke (delegate {
-							doc.Editor.Parent.QueueDraw ();
-						});
-					};
+
+					var pad = IdeApp.Workbench.GetPad<TestPad> ();
+					var content = (TestPad)pad.Content;
+					content.RunTest (test, ctx);
 				}
-
-
 			}
 
 			bool isFailed;
