@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool CanDrawForeground (Margin margin)
 		{
-			return true;
+			return margin is IconMargin;
 		}
 
 		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
@@ -69,9 +69,6 @@ namespace MonoDevelop.Debugger
 
 		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			if (!(metrics.Margin is IconMargin))
-				return;
-
 			double size = metrics.Margin.Width;
 			double borderLineWidth = cr.LineWidth;
 
