@@ -408,12 +408,14 @@ namespace MonoDevelop.Ide.Gui
 						if (vcFound != null) {
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 							if (line >= 1 && ipos != null) {
-								ipos.SetCaretTo (
-									line,
-									column >= 1 ? column : 1,
-									options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-									options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-								);
+								doc.RunWhenLoaded (() => {
+									ipos.SetCaretTo (
+										line,
+										column >= 1 ? column : 1,
+										options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+										options.HasFlag (OpenDocumentOptions.CenterCaretLine)
+									);
+								});
 							}
 							
 							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
