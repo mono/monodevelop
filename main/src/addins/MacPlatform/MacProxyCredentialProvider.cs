@@ -68,7 +68,7 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (usernameLabel);
 
-					var usernameInput = new NSTextField (new RectangleF (93, 20, 200, 22));
+					var usernameInput = new NSTextField (new RectangleF (93, 52, 200, 22));
 					usernameInput.StringValue = creds != null ? creds.UserName : string.Empty;
 					view.AddSubview (usernameInput);
 
@@ -83,7 +83,7 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (passwordLabel);
 
-					var passwordInput = new NSSecureTextField (new RectangleF (93, 52, 200, 22));
+					var passwordInput = new NSSecureTextField (new RectangleF (93, 20, 200, 22));
 					passwordInput.StringValue = creds != null ? creds.Password : string.Empty;
 					view.AddSubview (passwordInput);
 
