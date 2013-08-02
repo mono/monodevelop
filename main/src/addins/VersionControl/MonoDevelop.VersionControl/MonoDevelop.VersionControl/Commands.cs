@@ -19,7 +19,6 @@ namespace MonoDevelop.VersionControl
 		Publish,
 		Checkout,
 		Repository,
-		Commit,
 		Revert,
 		Lock,
 		Unlock,
@@ -128,19 +127,11 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	class StatusCommandHandler: SolutionVersionControlCommandHandler
+	class StatusCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
 			return StatusView.Show (items, test);
-		}
-	}
-
-	class CommitCommandHandler: FileVersionControlCommandHandler
-	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
-		{
-			return CommitCommand.Commit (items, test);
 		}
 	}
 

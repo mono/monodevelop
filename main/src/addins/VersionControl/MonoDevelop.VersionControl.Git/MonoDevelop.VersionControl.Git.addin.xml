@@ -56,7 +56,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/VersionControl">
-		<SeparatorItem insertafter="MonoDevelop.VersionControl.Commands.CommitSolution"/>
+		<SeparatorItem insertafter="MonoDevelop.VersionControl.Commands.SolutionStatus"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" />
 		<ItemSet id = "SwitchToBranch" _label = "Switch to Branch" autohide="true">
 			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>
