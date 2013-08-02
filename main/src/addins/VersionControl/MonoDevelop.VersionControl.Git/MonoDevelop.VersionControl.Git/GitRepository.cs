@@ -52,6 +52,15 @@ using NGit.Submodule;
 
 namespace MonoDevelop.VersionControl.Git
 {
+	[Flags]
+	public enum GitUpdateOptions
+	{
+		None = 0x0,
+		SaveLocalChanges = 0x1,
+		UpdateSubmodules = 0x2,
+		NormalUpdate = SaveLocalChanges | UpdateSubmodules,
+	}
+
 	public class GitRepository : UrlBasedRepository
 	{
 		static readonly byte[] EmptyContent = new byte[0];
@@ -449,11 +458,12 @@ namespace MonoDevelop.VersionControl.Git
 			string upstreamRef = GitUtil.GetUpstreamSource (RootRepository, GetCurrentBranch ());
 			if (upstreamRef == null)
 				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
-			
+
+			GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 			if (GitService.UseRebaseOptionWhenPulling)
-				Rebase (upstreamRef, GitService.StashUnstashWhenUpdating, monitor);
+				Rebase (upstreamRef, options, monitor);
 			else
-				Merge (upstreamRef, GitService.StashUnstashWhenUpdating, monitor);
+				Merge (upstreamRef, options, monitor);
 
 			monitor.Step (1);
 			
@@ -478,22 +488,86 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
+		bool GetSubmodulesToUpdate (List<string> UpdateSubmodules)
+		{
+			List<string> DirtySubmodules = new List<string> ();
+
+			// Iterate submodules and do status.
+			// SubmoduleStatus does not report changes for dirty submodules.
+			foreach (var submodule in CachedSubmodules) {
+				var submoduleGit = new NGit.Api.Git (submodule.Item2);
+				var statusCommand = submoduleGit.Status ();
+				var status = statusCommand.Call ();
+
+				if (status.IsClean ())
+					UpdateSubmodules.Add (submodule.Item1);
+				else
+					DirtySubmodules.Add (submodule.Item1);
+			}
+
+			if (DirtySubmodules.Count != 0) {
+				StringBuilder submodules = new StringBuilder (Environment.NewLine + Environment.NewLine);
+				foreach (var item in DirtySubmodules)
+					submodules.AppendLine (item);
+
+				AlertButton response = MessageService.GenericAlert (
+					MonoDevelop.Ide.Gui.Stock.Question,
+					GettextCatalog.GetString ("You have local changes in the submodules below"),
+					GettextCatalog.GetString ("Do you want continue? Detached HEADs will have their changes lost.{0}", submodules.ToString ()),
+					new AlertButton[] {
+							AlertButton.No,
+							new AlertButton ("Only unchanged"),
+							AlertButton.Yes
+						}
+				);
+
+				if (response == AlertButton.No)
+					return false;
+
+				if (response == AlertButton.Yes)
+					UpdateSubmodules.AddRange (DirtySubmodules);
+			}
+			return true;
+		}
+
+		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
 		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
+		{
+			Rebase (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+		}
+
+		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
-			
+			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			try
 			{
-				if (saveLocalChanges) {
-					monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 3);
+				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
+				List<string> UpdateSubmodules = new List<string> ();
+
+				// TODO: Fix stash so we don't have to do update before the main repo update.
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
+					if (!GetSubmodulesToUpdate (UpdateSubmodules))
+						return;
+
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in UpdateSubmodules)
+						submoduleUpdate.AddPath (submodule);
+
+					submoduleUpdate.Call ();
+					monitor.Step (1);
+				}
+
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 
-				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 				RebaseCommand rebase = git.Rebase ();
 				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
 				rebase.SetUpstream (upstreamRef);
@@ -531,6 +605,16 @@ namespace MonoDevelop.VersionControl.Git
 						}
 						result = rebase.Call ();
 					}
+
+					if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+						var submoduleUpdate = git.SubmoduleUpdate ();
+						foreach (var submodule in UpdateSubmodules)
+							submoduleUpdate.AddPath (submodule);
+
+						submoduleUpdate.Call ();
+						monitor.Step (1);
+					}
 				} catch {
 					if (!aborted) {
 						rebase = git.Rebase ();
@@ -544,7 +628,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				
 			} finally {
-				if (saveLocalChanges)
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
 					monitor.Step (1);
 				
 				// Restore local changes
@@ -553,25 +637,48 @@ namespace MonoDevelop.VersionControl.Git
 					using (var gm = new GitMonitor (monitor))
 						stash.Apply (gm);
 					stashes.Remove (stash);
-					monitor.EndTask ();
 				}
-			}			
+				monitor.EndTask ();
+			}
 		}
-		
-		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor)
+
+		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
+		public void Merge (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
+		{
+			Merge (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+		}
+
+		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = GetStashes (RootRepository);
-			monitor.BeginTask (null, 4);
-			
+			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
+
 			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
+				List<string> UpdateSubmodules = new List<string> ();
+
+				// TODO: Fix stash so we don't have to do update before the main repo update.
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
+					if (!GetSubmodulesToUpdate (UpdateSubmodules))
+						return;
+
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in UpdateSubmodules)
+						submoduleUpdate.AddPath (submodule);
+
+					submoduleUpdate.Call ();
+					monitor.Step (1);
+				}
+
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
 				monitor.Step (1);
 				
-				if (saveLocalChanges) {
-					monitor.BeginTask (GettextCatalog.GetString ("Merging"), 3);
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
@@ -581,8 +688,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Apply changes
 				
 				ObjectId branchId = RootRepository.Resolve (branch);
-				
-				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
+
 				MergeCommandResult mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (branchId).Call ();
 				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED) {
 					var conflicts = mergeResult.GetConflicts ();
@@ -603,9 +709,18 @@ namespace MonoDevelop.VersionControl.Git
 					if (commit)
 						git.Commit ().Call ();
 				}
-				
+
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+					monitor.Step (1);
+				}
 			} finally {
-				if (saveLocalChanges)
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
 					monitor.Step (1);
 				
 				// Restore local changes
@@ -614,16 +729,14 @@ namespace MonoDevelop.VersionControl.Git
 					using (var gm = new GitMonitor (monitor))
 						stash.Apply (gm);
 					stashes.Remove (stash);
-					monitor.EndTask ();
+					monitor.Step (1);
 				}
+				monitor.EndTask ();
 			}
-			monitor.Step (1);
 			
 			// Notify changes
 			if (statusList != null)
 				NotifyFileChanges (monitor, statusList);
-			
-			monitor.EndTask ();
 		}
 
 		ConflictResult ResolveConflict (string file)
