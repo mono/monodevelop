@@ -534,7 +534,7 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
 
 		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
@@ -563,7 +563,7 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
 
 		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
