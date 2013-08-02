@@ -274,8 +274,8 @@ namespace MonoDevelop.SourceEditor
 					InformAutoSave ();
 				}
 			}
+
 			int startIndex = args.Offset;
-			int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
 			foreach (var marker in currentErrorMarkers) {
 				if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
 					markersToRemove.Enqueue (marker);
@@ -623,7 +623,7 @@ namespace MonoDevelop.SourceEditor
 				AutoSave.RemoveAutoSaveFile (ContentName);
 
 			if (ContentName != fileName) {
-				FileService.RequestFileEdit (fileName);
+				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
 				writeAccessChecked = true;
 			}

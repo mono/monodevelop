@@ -539,7 +539,9 @@ namespace MonoDevelop.VersionControl
 
 		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
+#pragma warning disable 618
 			OnDeleteFiles (localPaths, force, monitor);
+#pragma warning restore 618
 		}
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
@@ -568,7 +570,9 @@ namespace MonoDevelop.VersionControl
 
 		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
+#pragma warning disable 618
 			OnDeleteDirectories (localPaths, force, monitor);
+#pragma warning restore 618
 		}
 		
 		// Creates a local directory.

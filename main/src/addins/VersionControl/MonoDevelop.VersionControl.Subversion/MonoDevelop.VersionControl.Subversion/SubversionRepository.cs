@@ -450,6 +450,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteFiles (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 		}
@@ -482,6 +483,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteDirectories (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 		}

@@ -40,7 +40,9 @@ namespace MonoDevelop.Ide.Navigation
 
 		public virtual Document ShowDocument ()
 		{
+#pragma warning disable 618
 			Show ();
+#pragma warning restore 618
 			return null;
 		}
 		

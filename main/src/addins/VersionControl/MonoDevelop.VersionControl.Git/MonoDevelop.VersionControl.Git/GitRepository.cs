@@ -739,7 +739,7 @@ namespace MonoDevelop.VersionControl.Git
 				NotifyFileChanges (monitor, statusList);
 		}
 
-		ConflictResult ResolveConflict (string file)
+		static ConflictResult ResolveConflict (string file)
 		{
 			ConflictResult res = ConflictResult.Abort;
 			DispatchService.GuiSyncDispatch (delegate {
@@ -950,11 +950,12 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		bool IsSubpath (string basePath, string childPath)
+		static bool IsSubpath (string basePath, string childPath)
 		{
+			// FIXME: use FilePath?
 			if (basePath [basePath.Length - 1] == '/')
-				return childPath.StartsWith (basePath);
-			return childPath.StartsWith (basePath + "/");
+				return childPath.StartsWith (basePath, StringComparison.InvariantCulture);
+			return childPath.StartsWith (basePath + "/", StringComparison.InvariantCulture);
 		}
 
 		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
@@ -1005,6 +1006,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
 		{
 		}
@@ -1029,6 +1031,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
 		{
 		}
@@ -1142,7 +1145,7 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 		
-		byte[] GetFileContent (string file)
+		static byte[] GetFileContent (string file)
 		{
 			return File.ReadAllBytes (file);
 		}
@@ -1165,7 +1168,7 @@ namespace MonoDevelop.VersionControl.Git
 			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		
-		string GenerateDiff (byte[] data1, byte[] data2)
+		static string GenerateDiff (byte[] data1, byte[] data2)
 		{
 			if (RawText.IsBinary (data1) || RawText.IsBinary (data2)) {
 				if (data1.Length != data2.Length)
@@ -1223,8 +1226,8 @@ namespace MonoDevelop.VersionControl.Git
 			
 			if (remotes.Contains ("origin"))
 				return "origin";
-			else
-				return remotes[0];
+
+			return remotes[0];
 		}
 
 		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
@@ -1490,15 +1493,15 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (stashName.StartsWith ("__MD_", StringComparison.Ordinal))
 				return stashName.Substring (5);
-			else
-				return null;
+
+			return null;
 		}
 
-		Stash GetStashForBranch (StashCollection stashes, string branchName)
+		static Stash GetStashForBranch (StashCollection stashes, string branchName)
 		{
 			string sn = GetStashName (branchName);
 			foreach (Stash ss in stashes) {
-				if (ss.Comment.IndexOf (sn) != -1)
+				if (ss.Comment.IndexOf (sn, StringComparison.InvariantCulture) != -1)
 					return ss;
 			}
 			return null;
