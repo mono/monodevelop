@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp
 							var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + id);
 							if (test != null) {
 								var result = test.GetLastResult ();
-								if (result.IsFailure) {
+								if (result != null && result.IsFailure) {
 									if (!string.IsNullOrEmpty (result.Message)) {
 										toolTip += Environment.NewLine + "Test" + id +":";
 										toolTip += Environment.NewLine + result.Message.TrimEnd ();
@@ -553,7 +553,6 @@ namespace MonoDevelop.CSharp
 				var method = result.Member as IMethod;
 
 				UnitTest test = null;
-				bool isIgnored = false;
 				foreach (var attr in method.Attributes) {
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestAttribute") {
 						if (test == null) {
@@ -561,14 +560,17 @@ namespace MonoDevelop.CSharp
 							test.UnitTestIdentifier = GetFullName ((TypeDeclaration)methodDeclaration.Parent) + "." + methodDeclaration.Name;
 							foundTests.Add (test);
 						}
-					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
-						test.TestCases.Add ("(" + BuildArguments (attr) + ")");
-					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
-						isIgnored = true;
 					}
 				}
-				if (test != null)
-					test.IsIgnored = isIgnored;
+				if (test != null) {
+					foreach (var attr in method.Attributes) {
+						if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
+							test.TestCases.Add ("(" + BuildArguments (attr) + ")");
+						} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
+							test.IsIgnored = true;
+						}
+					}
+				}
 			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
