@@ -255,7 +255,7 @@ namespace MonoDevelop.Debugger
 			
 			DocumentLocation loc = editor.PointToLocation (0, 0);
 			DocumentLocation loc2 = editor.PointToLocation (0, editor.Allocation.Height);
-			bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
+			//bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
 			
 			if (firstLine != int.MinValue && loc.Line < FillMarginLines) {
 				int num = (FillMarginLines - loc.Line) * 2;
