@@ -428,8 +428,8 @@ namespace MonoDevelop.VersionControl.Views
 			showRemoteStatus.Sensitive = false;
 			buttonCommit.Sensitive = false;
 
-			if (fileList != null) {
-				ThreadPool.QueueUserWorkItem (delegate {
+			ThreadPool.QueueUserWorkItem (delegate {
+				if (fileList != null) {
 					var group = fileList.GroupBy (v => v.IsDirectory || v.WorkspaceObject is SolutionItem);
 					foreach (var item in group) {
 						// Is directory.
@@ -441,10 +441,7 @@ namespace MonoDevelop.VersionControl.Views
 					}
 					changeSet.AddFiles (fileList.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
 					fileList = null;
-				});
-			}
-
-			ThreadPool.QueueUserWorkItem (delegate {
+				}
 				List<VersionInfo> newList = new List<VersionInfo> ();
 				newList.AddRange (vc.GetDirectoryVersionInfo (filepath, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
