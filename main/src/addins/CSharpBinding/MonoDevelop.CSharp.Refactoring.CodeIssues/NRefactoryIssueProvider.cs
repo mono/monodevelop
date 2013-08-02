@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
 		{
 			var context = ctx as MDRefactoringContext;
-			if (context == null || context.IsInvalid || context.RootNode == null)
+			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
 				yield break;
 			foreach (var action in issueProvider.GetIssues (context)) {
 				if (cancellationToken.IsCancellationRequested)
