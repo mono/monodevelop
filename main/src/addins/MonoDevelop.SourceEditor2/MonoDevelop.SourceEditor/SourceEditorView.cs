@@ -1301,25 +1301,24 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (DebuggingService.PinnedWatches.IsWatcherBreakpoint (bp))
 				return;
+
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				DocumentLine line = widget.TextEditor.Document.GetLine (bp.Line);
 				var status = bp.GetStatus (DebuggingService.DebuggerSession);
-				
+				bool tracepoint = bp.HitAction != HitAction.Break;
+
 				if (line == null)
 					return;
+
 				if (!bp.Enabled) {
-					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, false));
-					else
-						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, true));
+					widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, tracepoint));
 				} else if (status == BreakEventStatus.Bound || status == BreakEventStatus.Disconnected) {
-					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, false));
-					else
-						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, true));
-				} else
-					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor));
+					widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, tracepoint));
+				} else {
+					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor, tracepoint));
+				}
+
 				widget.TextEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}
