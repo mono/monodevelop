@@ -52,11 +52,12 @@ namespace MonoDevelop.MacIntegration
 					NSAlert alert = NSAlert.WithMessage ("Credentials Required", "OK", "Cancel", null, message);
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
-					NSView view = new NSView (new RectangleF (0, 0, 310, 84));
+					NSView view = new NSView (new RectangleF (0, 0, 313, 91));
 
 					var creds = Utility.GetCredentialsForUriFromICredentials (uri, existingCredentials);
 
-					var usernameLabel = new NSTextField (new RectangleF (10, 44, 80, 24)) {
+					var usernameLabel = new NSTextField (new RectangleF (17, 55, 71, 17)) {
+						Identifier = "usernameLabel",
 						StringValue = "Username:",
 						Alignment = NSTextAlignment.Right,
 						Editable = false,
@@ -67,11 +68,11 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (usernameLabel);
 
-					var usernameInput = new NSTextField (new RectangleF (100, 48, 200, 24));
+					var usernameInput = new NSTextField (new RectangleF (93, 20, 200, 22));
 					usernameInput.StringValue = creds != null ? creds.UserName : string.Empty;
 					view.AddSubview (usernameInput);
 
-					var passwordLabel = new NSTextField (new RectangleF (10, 8, 80, 24)) {
+					var passwordLabel = new NSTextField (new RectangleF (22, 23, 66, 17)) {
 						StringValue = "Password:",
 						Alignment = NSTextAlignment.Right,
 						Editable = false,
@@ -82,7 +83,7 @@ namespace MonoDevelop.MacIntegration
 					};
 					view.AddSubview (passwordLabel);
 
-					var passwordInput = new NSSecureTextField (new RectangleF (100, 12, 200, 24));
+					var passwordInput = new NSSecureTextField (new RectangleF (93, 52, 200, 22));
 					passwordInput.StringValue = creds != null ? creds.Password : string.Empty;
 					view.AddSubview (passwordInput);
 
