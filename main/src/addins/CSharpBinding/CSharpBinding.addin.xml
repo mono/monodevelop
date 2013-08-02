@@ -21,6 +21,14 @@
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				_label = "S_how Code Generation Window"
 				shortcut = "Alt|Insert" />
+		<Command id="MonoDevelop.CSharp.SplitProject.SplitProjectCommands.SplitProject"
+				_label="Split Project..."
+				_description="Split the current project"
+				defaultHandler="MonoDevelop.CSharp.SplitProject.SplitProjectHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<CommandItem id="MonoDevelop.CSharp.SplitProject.SplitProjectCommands.SplitProject" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

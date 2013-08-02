@@ -308,6 +308,11 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.SplitProject\SplitProjectCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.SplitProject\SplitProjectHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.SplitProject\SplitProjectDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.SplitProject\ProjectGraph.cs" />
+    <Compile Include="MonoDevelop.CSharp.SplitProject\ProjectHasErrorsException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
