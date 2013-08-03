@@ -321,11 +321,22 @@ namespace MonoDevelop.CSharp.Completion
 				editorCompletion.RunParameterCompletionCommand ();
 		}
 
+		bool ContainsType (IType testType, IType searchType)
+		{
+			if (testType == searchType)
+				return true;
+			foreach (var arg in testType.TypeArguments)
+				if (ContainsType (arg, searchType))
+					return true;
+			return false;
+		}
+
 		bool RequireGenerics (IMethod method)
 		{
 			if (method.SymbolKind == SymbolKind.Constructor)
 				return method.DeclaringType.TypeParameterCount > 0;
-			return method.TypeArguments.Any (t => !method.Parameters.Any (p => p.Type == t));
+			var testMethod = method.ReducedFrom ?? method;
+			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type, t)));
 		}
 
 		void SetMember (IEntity entity)
