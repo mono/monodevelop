@@ -325,6 +325,33 @@ class MyClass
 			Assert.AreEqual ("MyClass (|)", completion); 
 		}
 
+		[Test]
+		public void TestGenericCase1 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar<|> ();", completion); 
+		}
+
+		[Test]
+		public void TestGenericCase2 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> (T t)
+	{
+		$
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar (|);", completion); 
+		}
+
+
 	}
 }
 

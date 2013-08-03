@@ -201,9 +201,8 @@ namespace MonoDevelop.CSharp.Completion
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				var end = line.Offset + line.Length;
 				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
-				if (Policy.BeforeMethodCallParentheses && CSharpTextEditorIndentation.OnTheFlyFormatting)
-					text += " ";
-				
+				bool addSpace = Policy.BeforeMethodCallParentheses && CSharpTextEditorIndentation.OnTheFlyFormatting;
+
 				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
 				while (exprStart > line.Offset) {
 					char ch = Editor.GetCharAt (exprStart);
@@ -218,76 +217,61 @@ namespace MonoDevelop.CSharp.Completion
 				if (Entity.SymbolKind == SymbolKind.Constructor)
 					insertSemicolon = false;
 				int pos;
-//				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
-//					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
-//					ka |= KeyActions.Ignore;
-//					int bracketOffset = pos + text.Length - partialWord.Length;
-//					
-//					if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
-//						// correct white space before method call.
-//						char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
-//						if (Policy.BeforeMethodCallParentheses) {
-//							if (charBeforeBracket != ' ') {
-//								Editor.Insert (bracketOffset - 1, " ");
-//								bracketOffset++;
-//							}
-//						} else { 
-//							if (char.IsWhiteSpace (charBeforeBracket)) {
-//								while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
-//									Editor.Remove (bracketOffset - 1, 1);
-//									bracketOffset--;
-//								}
-//							}
-//						}
-//					}
-//
-//					Editor.Caret.Offset = bracketOffset;
-//// Currently broken/needs fine tuning:
-////					if (insertSemicolon && Editor.GetCharAt (bracketOffset - 1) == '(') {
-////						Editor.Insert (bracketOffset + 1, ";");
-////						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
-////						// when an insert after the skip char position occur.
-////						Editor.SetSkipChar (bracketOffset, ')');
-////						Editor.SetSkipChar (bracketOffset + 1, ';');
-////					}
-//					if (runParameterCompletionCommand)
-//						editorCompletion.RunParameterCompletionCommand ();
-//					return;
-//				}
+
 				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
 				if (keys.Contains (closeChar) || keyChar == '.') {
 					if (HasAnyOverloadWithParameters (method)) {
 						if (addOpeningOnly) {
-							text += "(|";
+							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += "()";
+								text += addSpace ? " ()" : "()";
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
-									text += "(|);";
-									skipChars = 2;
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ();" : "<|>();";
+										skipChars = addSpace ? 5 : 4;
+									} else {
+										text += addSpace ? " (|);" : "(|);";
+										skipChars = 2;
+									}
 								} else {
-									text += "(|)";
-									skipChars = 1;
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ()" :  "<|>()";
+										skipChars = addSpace ? 4 : 3;
+									} else {
+										text += addSpace ? " (|)" : "(|)";
+										skipChars = 1;
+									}
 								}
 							}
 						}
 						runParameterCompletionCommand = true;
 					} else {
 						if (addOpeningOnly) {
-							text += "(|";
+							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += "().|";
+								text += addSpace ? " ().|" : "().|";
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
-									text += "();|";
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ();" : "<|>();";
+									} else {
+										text += addSpace ? " ();|" : "();|";
+									}
+
 								} else {
-									text += "()|";
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|>()" : "<|> ()";
+									} else {
+										text += addSpace ? " ()|" : "()|";
+									}
+
 								}
 							}
 						}
@@ -322,6 +306,11 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (runParameterCompletionCommand)
 				editorCompletion.RunParameterCompletionCommand ();
+		}
+
+		bool RequireGenerics (IMethod method)
+		{
+			return method.TypeArguments.Any (t => !method.Parameters.Any (p => p.Type == t));
 		}
 
 		void SetMember (IEntity entity)
