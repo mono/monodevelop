@@ -351,7 +351,18 @@ class MyClass
 			Assert.AreEqual ("FooBar (|);", completion); 
 		}
 
-
+		[Test]
+		public void TestGenericDotCompletion ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$
+	}
+}", "MyClass", "FooBar", (Gdk.Key)'.');
+			Assert.AreEqual ("FooBar<> ().|", completion); 
+		}
 	}
 }
 

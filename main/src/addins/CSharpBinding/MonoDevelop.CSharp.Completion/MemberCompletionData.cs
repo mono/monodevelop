@@ -226,7 +226,11 @@ namespace MonoDevelop.CSharp.Completion
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += addSpace ? " ()" : "()";
+								if (RequireGenerics (method)) {
+									text += addSpace ? "<> ()" : "<>()";
+								} else {
+									text += addSpace ? " ()" : "()";
+								}
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
@@ -255,7 +259,11 @@ namespace MonoDevelop.CSharp.Completion
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += addSpace ? " ().|" : "().|";
+								if (RequireGenerics (method)) {
+									text += addSpace ? "<> ().|" : "<>().|";
+								} else {
+									text += addSpace ? " ().|" : "().|";
+								}
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
