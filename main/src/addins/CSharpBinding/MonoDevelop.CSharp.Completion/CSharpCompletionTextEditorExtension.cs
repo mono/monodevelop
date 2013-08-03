@@ -1114,7 +1114,7 @@ namespace MonoDevelop.CSharp.Completion
 								text = type.Namespace + "." + text;
 							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
 						}
-
+					
 						if (!window.WasShiftPressed && generateUsing) {
 							var generator = CodeGenerator.CreateGenerator (doc);
 							if (generator != null) {
@@ -1124,6 +1124,7 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
+					ka |= KeyActions.Ignore;
 				}
 				#endregion
 
