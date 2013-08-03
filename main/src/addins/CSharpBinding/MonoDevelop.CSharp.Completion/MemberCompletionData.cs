@@ -180,7 +180,13 @@ namespace MonoDevelop.CSharp.Completion
 			int offset = Editor.Caret.Offset;
 			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
-				if (!char.IsLetterOrDigit (ch) && !char.IsWhiteSpace (ch)) {
+				if (!char.IsLetterOrDigit (ch))
+					break;
+				offset++;
+			}
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch)) {
 					return ch == '(';
 				}
 				offset++;
@@ -194,7 +200,6 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
-
 			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted ()) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
@@ -275,7 +280,7 @@ namespace MonoDevelop.CSharp.Completion
 
 								} else {
 									if (RequireGenerics (method)) {
-										text += addSpace ? "<|>()" : "<|> ()";
+										text += addSpace ? "<|> ()" : "<|>()";
 									} else {
 										text += addSpace ? " ()|" : "()|";
 									}
@@ -318,6 +323,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		bool RequireGenerics (IMethod method)
 		{
+			if (method.SymbolKind == SymbolKind.Constructor)
+				return method.DeclaringType.TypeParameterCount > 0;
 			return method.TypeArguments.Any (t => !method.Parameters.Any (p => p.Type == t));
 		}
 

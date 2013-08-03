@@ -180,6 +180,7 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Document);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+
 			var t = ext.Document.Compilation.FindType (new FullTypeName (type)); 
 			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
@@ -362,6 +363,36 @@ class MyClass
 	}
 }", "MyClass", "FooBar", (Gdk.Key)'.');
 			Assert.AreEqual ("FooBar<> ().|", completion); 
+		}
+
+		[Test]
+		public void TestInsertionBug ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		$
+		if (true) { }
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ();|", completion); 
+		}
+
+		
+		[Test]
+		public void TestGenericConstructor ()
+		{
+			string completion = Test (@"class MyClass<T>
+{
+	public MyClass () {}
+
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass`1", null);
+			Assert.AreEqual ("MyClass<|> ()", completion); 
 		}
 	}
 }
