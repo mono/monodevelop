@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Utils
 			this.comparisonFunc = comparisonFunc;
 		}
 
-		public void InsertLeft (IAvlNode parentNode, T newNode)
+		public void InsertLeft (IAvlNode parentNode, IAvlNode newNode)
 		{
 			if (parentNode == null)
 				throw new ArgumentNullException ("parentNode");
@@ -80,7 +80,7 @@ namespace Mono.TextEditor.Utils
 			Count++;
 		}
 
-		public void InsertRight (IAvlNode parentNode, T newNode)
+		public void InsertRight (IAvlNode parentNode, IAvlNode newNode)
 		{
 			if (parentNode == null)
 				throw new ArgumentNullException ("parentNode");
@@ -93,7 +93,7 @@ namespace Mono.TextEditor.Utils
 			Count++;
 		}
 
-		public void InsertBefore (T node, T newNode)
+		public void InsertBefore (IAvlNode node, IAvlNode newNode)
 		{
 			if (node == null)
 				throw new ArgumentNullException ("node");
@@ -102,11 +102,11 @@ namespace Mono.TextEditor.Utils
 			if (node.Left == null) {
 				InsertLeft (node, newNode);
 			} else {
-				InsertRight ((T)node.Left.AvlGetOuterRight (), newNode);
+				InsertRight (node.Left.AvlGetOuterRight (), newNode);
 			}
 		}
 
-		public void InsertAfter (T node, T newNode)
+		public void InsertAfter (IAvlNode node, T newNode)
 		{
 			if (node == null)
 				throw new ArgumentNullException ("node");
@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Utils
 			if (node.Right == null) {
 				InsertRight (node, newNode);
 			} else {
-				InsertLeft ((T)node.Right.AvlGetOuterLeft (), newNode);
+				InsertLeft (node.Right.AvlGetOuterLeft (), newNode);
 			}
 		}
 
@@ -173,13 +173,18 @@ namespace Mono.TextEditor.Utils
 				array [i++] = value;
 		}
 
-		public bool Remove (T node)
+		bool ICollection<T>.Remove (T node)
+		{
+			return Remove (node);
+		}
+
+		public bool Remove (IAvlNode node)
 		{
 			if (node == null)
 				throw new ArgumentNullException ("node");
-			IAvlNode left = node.Left;
-			IAvlNode right = node.Right;
-			IAvlNode parent = node.Parent;
+			var left = node.Left;
+			var right = node.Right;
+			var parent = node.Parent;
 
 			if (left == null) {
 				if (right == null) {
@@ -240,6 +245,7 @@ namespace Mono.TextEditor.Utils
 				parent.UpdateAugmentedData ();
 			}
 			Count--;
+			OnNodeRemoved (new TreeNodeEventArgs ((T)node));
 			return true;
 		}
 
@@ -254,6 +260,24 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
+		protected virtual void OnNodeRemoved (TreeNodeEventArgs e)
+		{
+			var handler = this.NodeRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<TreeNodeEventArgs> NodeRemoved;
+
+		public class TreeNodeEventArgs : EventArgs
+		{
+			public T Node { get; private set; }
+
+			public TreeNodeEventArgs (T node)
+			{
+				Node = node;
+			}
+		}
 		#endregion
 
 		#region IEnumerable implementation
