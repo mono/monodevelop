@@ -129,11 +129,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			} else if (result.InspectionMark == IssueMarker.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
 			} else if (result.InspectionMark == IssueMarker.DottedLine) {
+				cr.Save ();
 				cr.LineWidth = 1;
 				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - 1 + 0.5);
 				cr.RelLineTo (System.Math.Min (drawTo - drawFrom, 4 * 3), 0);
 				cr.SetDash (new double[] { 2, 2 }, 0);
 				cr.Stroke ();
+				cr.Restore ();
 			} else {
 				cr.MoveTo (drawFrom, y + editor.LineHeight - 1);
 				cr.LineTo (drawTo, y + editor.LineHeight - 1);
