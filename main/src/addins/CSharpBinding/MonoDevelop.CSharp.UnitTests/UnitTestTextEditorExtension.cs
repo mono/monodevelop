@@ -98,19 +98,27 @@ namespace MonoDevelop.CSharp
 				if (token.IsCancellationRequested)
 					return;
 				Application.Invoke (delegate {
-					if (document.Editor.Parent.ActionMargin.IsVisible ^ (visitor.FoundTests.Count > 0))
-						document.Editor.Parent.QueueDraw ();
-					document.Editor.Parent.ActionMargin.IsVisible = visitor.FoundTests.Count > 0;
-
+					var editor = document.Editor;
+					if (editor == null)
+						return;
+					var textEditor = editor.Parent;
+					if (textEditor == null)
+						return;
+					var actionMargin = textEditor.ActionMargin;
+					if (actionMargin == null)
+						return;
+					if (actionMargin.IsVisible ^ (visitor.FoundTests.Count > 0))
+						textEditor.QueueDraw ();
+					actionMargin.IsVisible = visitor.FoundTests.Count > 0;
 					foreach (var oldMarker in currentMarker)
-						document.Editor.Document.RemoveMarker (oldMarker);
+						editor.Document.RemoveMarker (oldMarker);
 
 					foreach (var foundTest in visitor.FoundTests) {
 						if (token.IsCancellationRequested)
 							return;
 						var unitTestMarker = new UnitTestMarker (foundTest, document);
 						currentMarker.Add (unitTestMarker);
-						document.Editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
+						editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
 					}
 				});
 			});
