@@ -7,6 +7,10 @@
        description = "CSS Language Binding"
        category    = "Language bindings"
        version     = "4.1.4">
+       
+    <Runtime>
+		<Import assembly="CSSBinding.dll" />
+	</Runtime>
 	
 	<Dependencies>
 		<Addin id="Core" version="4.1.4"/>
