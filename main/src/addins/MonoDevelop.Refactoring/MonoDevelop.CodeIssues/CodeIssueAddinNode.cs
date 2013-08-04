@@ -52,7 +52,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		[NodeAttribute ("mark", Required=false, Localizable=false,  Description="The severity of this action.")]
-		IssueMarker inspectionMark = IssueMarker.Underline;
+		IssueMarker inspectionMark = IssueMarker.WavedLine;
 		public IssueMarker IssueMarker {
 			get {
 				return inspectionMark;
