@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 	public class HeightTree : IDisposable
 	{
 		// TODO: Add support for line word wrap to the text editor - with the height tree this is possible.
-		internal RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();
+		internal AvlTree<HeightNode> tree = new AvlTree<HeightNode> ();
 		readonly TextEditorData editor;
 
 		public double TotalHeight {
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 
 				try {
 					if (line == tree.Root.totalCount + 1) {
-						tree.InsertAfter (tree.Root.GetOuterRight (), newLine);
+						tree.InsertAfter (tree.Root.AvlGetOuterRight (), newLine);
 						return;
 					}
 					var node = GetNodeByLine (line);
@@ -297,7 +297,7 @@ namespace Mono.TextEditor
 				}
 				if (ln == 0 || node == null)
 					return 0;
-				double result = node.Left != null ? ((HeightNode)node.Left).totalHeight : 0;
+				double result = node.left != null ? ((HeightNode)node.left).totalHeight : 0;
 				
 				while (node.parent != null) {
 					if (node == node.parent.right) {
@@ -526,7 +526,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public class HeightNode : IRedBlackTreeNode
+		public class HeightNode : IAvlNode
 		{
 			public double totalHeight;
 			public double height;
@@ -591,7 +591,7 @@ namespace Mono.TextEditor
 				return string.Format (GetLineNumber () + "[HeightNode: totalHeight={0}, height={1}, totalVisibleCount = {5}, totalCount={2}, count={3}, foldLevel={4}]", totalHeight, height, totalCount, count, foldLevel, totalVisibleCount);
 			}
 			
-			#region IRedBlackTreeNode implementation
+			#region IAvlNode implementation
 			public void UpdateAugmentedData ()
 			{
 				double newHeight;
@@ -623,12 +623,12 @@ namespace Mono.TextEditor
 					this.totalCount = newCount;
 					this.totalVisibleCount = newvisibleCount;
 					
-					if (Parent != null)
-						Parent.UpdateAugmentedData ();
+					if (parent != null)
+						parent.UpdateAugmentedData ();
 				}
 			}
 			public HeightNode parent;
-			public Mono.TextEditor.Utils.IRedBlackTreeNode Parent {
+			IAvlNode IAvlNode.Parent {
 				get {
 					return parent;
 				}
@@ -638,7 +638,7 @@ namespace Mono.TextEditor
 			}
 			
 			public HeightNode left;
-			public Mono.TextEditor.Utils.IRedBlackTreeNode Left {
+			IAvlNode IAvlNode.Left {
 				get {
 					return left;
 				}
@@ -648,7 +648,7 @@ namespace Mono.TextEditor
 			}
 			
 			public HeightNode right;
-			public Mono.TextEditor.Utils.IRedBlackTreeNode Right {
+			IAvlNode IAvlNode.Right {
 				get {
 					return right;
 				}
@@ -657,7 +657,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public RedBlackColor Color {
+			public sbyte Balance {
 				get;
 				set;
 			}
