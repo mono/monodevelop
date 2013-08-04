@@ -241,7 +241,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			bool result;
 			try {
 				result = base.KeyPress (key, keyChar, modifier);
-				if (EnableParameterInsight && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+				if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
 				    base.RunParameterCompletionCommand ();
 			} finally {
 				SwitchToReal ();
@@ -390,8 +390,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 			char completionChar, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 
 			char previousChar = defaultDocument.Editor.Caret.Offset > 1 ? defaultDocument.Editor.GetCharAt (
 				defaultDocument.Editor.Caret.Offset - 2) : ' ';
@@ -468,8 +468,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 			bool forced, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 
 			var currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Buffer.GetCharAt (completionContext.TriggerOffset - 1);

@@ -316,10 +316,6 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion; }
 		}
 
-		public bool EnableCodeCompletion {
-			get { return DefaultSourceEditorOptions.Instance.EnableCodeCompletion; }
-		}
-
 		public bool EnableSemanticHighlighting {
 			get { return DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting; }
 		}
