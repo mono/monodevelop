@@ -118,11 +118,12 @@ namespace MonoDevelop.CodeIssues
 								if (severity == Severity.None)
 									return;
 								try {
-									foreach (var r in provider.GetIssues (context, CancellationToken.None)) {
-										lock (codeIssues) {
-											codeIssues.Add (r);
-										}
-									}
+// TODO: Handle sub issues (note: this code is not used atm therefore it's not important.)
+//								  	foreach (var r in provider.GetIssues (context, CancellationToken.None)) {
+//										lock (codeIssues) {
+//											codeIssues.Add (r);
+//										}
+//									}
 								} catch (Exception ex) {
 									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
 								}

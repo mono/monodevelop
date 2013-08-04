@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	class NRefactoryIssueProvider : CodeIssueProvider
 	{
-		readonly ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
+		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
 		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
 
@@ -49,7 +49,41 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
+		public override bool HasSubIssues {
+			get {
+				return issueProvider.HasSubIssues;
+			}
+		}
+
+		List<BaseCodeIssueProvider> subIssues;
+		public override IEnumerable<BaseCodeIssueProvider> SubIssues {
+			get {
+				if (subIssues == null) {
+					subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
+				}
+				return subIssues;
+			}
+		}
+
+		public ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider IssueProvider {
+			get {
+				return issueProvider;
+			}
+		}
+
+		public string ProviderIdString {
+			get {
+				return providerIdString;
+			}
+		}
+
+		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
+			get {
+				return attr.IssueMarker;
+			}
+		}
+
+		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
 			this.attr = attr;
@@ -58,8 +92,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
-			IssueMarker = attr.IssueMarker;
-			MimeType = "text/x-csharp";
+			SetMimeType ("text/x-csharp");
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)

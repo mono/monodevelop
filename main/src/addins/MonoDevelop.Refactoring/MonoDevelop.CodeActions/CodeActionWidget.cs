@@ -135,7 +135,7 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 			var first = true;
-			var alreadyInserted = new HashSet<CodeIssueProvider> ();
+			var alreadyInserted = new HashSet<BaseCodeIssueProvider> ();
 			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
 				var analysisFix = analysisFix_;
 				var ir = analysisFix.Result as InspectorResults;
@@ -150,7 +150,7 @@ namespace MonoDevelop.CodeActions
 					continue;
 				alreadyInserted.Add (ir.Inspector);
 				
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", ir.Inspector.Title);
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
 				var subMenuItem = new Gtk.MenuItem (label);
 				Gtk.Menu subMenu = new Gtk.Menu ();
 
@@ -208,7 +208,7 @@ namespace MonoDevelop.CodeActions
 						continue;
 					alreadyInserted.Add (inspector);
 					
-					var label = GettextCatalog.GetString ("_Options for \"{0}\"", inspector.Title);
+					var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (inspector));
 					var subMenuItem = new Gtk.MenuItem (label);
 					Gtk.Menu subMenu = new Gtk.Menu ();
 					if (inspector.CanSuppressWithAttribute) {
