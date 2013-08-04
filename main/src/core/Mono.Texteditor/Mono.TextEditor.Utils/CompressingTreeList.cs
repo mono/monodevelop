@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Utils
 	{
 		readonly Func<T, T, bool> comparisonFunc;
 
-		internal class CompressingNode : IRedBlackTreeNode
+		internal class CompressingNode : IAvlNode
 		{
 			internal readonly T value;
 			internal int count, totalCount;
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Utils
 				this.totalCount = count;
 			}
 
-			#region IRedBlackTreeNode implementation
+			#region IAvlNode implementation
 
 			public void UpdateAugmentedData ()
 			{
@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Utils
 				set;
 			}
 
-			IRedBlackTreeNode IRedBlackTreeNode.Parent {
+			IAvlNode IAvlNode.Parent {
 				get {
 					return Parent;
 				}
@@ -83,7 +83,7 @@ namespace Mono.TextEditor.Utils
 				set;
 			}
 
-			IRedBlackTreeNode IRedBlackTreeNode.Left {
+			IAvlNode IAvlNode.Left {
 				get {
 					return Left;
 				}
@@ -97,7 +97,7 @@ namespace Mono.TextEditor.Utils
 				set;
 			}
 
-			IRedBlackTreeNode IRedBlackTreeNode.Right {
+			IAvlNode IAvlNode.Right {
 				get {
 					return Right;
 				}
@@ -106,7 +106,7 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 
-			RedBlackColor IRedBlackTreeNode.Color {
+			sbyte IAvlNode.Balance {
 				get;
 				set;
 			}
@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Utils
 
 		}
 
-		internal RedBlackTree<CompressingNode> tree = new RedBlackTree<CompressingNode> ();
+		internal AvlTree<CompressingNode> tree = new AvlTree<CompressingNode> ();
 
 		/// <summary>
 		/// Creates a new CompressingTreeList instance.
@@ -172,7 +172,7 @@ namespace Mono.TextEditor.Utils
 					// insert before:
 					// maybe we can put the value in the previous node?
 
-					var p = n.GetPrevNode ();
+					var p = n.AvlGetPrevNode ();
 					if (p != null && comparisonFunc (p.value, item)) {
 						p.count += count;
 						p.UpdateAugmentedData ();
@@ -218,14 +218,14 @@ namespace Mono.TextEditor.Utils
 					n.count = index;
 					n.UpdateAugmentedData ();
 					firstNodeBeforeDeletedRange = n;
-					n = n.GetNextNode ();
+					n = n.AvlGetNextNode ();
 				} else {
 					Debug.Assert (index == 0);
-					firstNodeBeforeDeletedRange = n.GetPrevNode ();
+					firstNodeBeforeDeletedRange = n.AvlGetPrevNode ();
 				}
 				while (n != null && count >= n.count) {
 					count -= n.count;
-					var s = n.GetNextNode ();
+					var s = n.AvlGetNextNode ();
 					tree.Remove (n);
 					n = s;
 				}
@@ -235,7 +235,7 @@ namespace Mono.TextEditor.Utils
 					n.UpdateAugmentedData ();
 				}
 				if (n != null) {
-					Debug.Assert (n.GetPrevNode () == firstNodeBeforeDeletedRange);
+					Debug.Assert (n.AvlGetPrevNode () == firstNodeBeforeDeletedRange);
 					if (firstNodeBeforeDeletedRange != null && comparisonFunc (firstNodeBeforeDeletedRange.value, n.value)) {
 						firstNodeBeforeDeletedRange.count += n.count;
 						tree.Remove (n);
@@ -283,12 +283,12 @@ namespace Mono.TextEditor.Utils
 		{
 			int index = 0;
 			if (tree.Root != null) {
-				var n = tree.Root.GetOuterLeft ();
+				var n = tree.Root.AvlGetOuterLeft ();
 				while (n != null) {
 					if (comparisonFunc (n.value, item))
 						return index;
 					index += n.count;
-					n = n.GetNextNode ();
+					n = n.AvlGetNextNode ();
 				}
 			}
 			return -1;
