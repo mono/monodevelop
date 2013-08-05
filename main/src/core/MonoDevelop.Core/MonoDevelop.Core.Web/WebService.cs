@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.Web
 
 		static readonly Lazy<WebService> instance = new Lazy<WebService> (() => new WebService ());
 
-		internal static WebService Instance {
+		public static WebService Instance {
 			get {
 				return instance.Value;
 			}
