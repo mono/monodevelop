@@ -454,7 +454,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			cr.Save ();
 			cr.Translate (
-				metrics.X + 0.5  + (metrics.Width - cache.errorPixbuf.Width) / 2,
+				metrics.X + 0.5 + (metrics.Width - 2 - cache.errorPixbuf.Width) / 2,
 				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
 				);
 			Gdk.CairoHelper.SetSourcePixbuf (
