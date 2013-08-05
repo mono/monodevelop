@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Completion
 			InsertCompletionText (window, ref ka, closeChar, keyChar, modifier, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
 		}
 
-		bool IsBracketAlreadyInserted ()
+		bool IsBracketAlreadyInserted (IMethod method)
 		{
 			int offset = Editor.Caret.Offset;
 			while (offset < Editor.Length) {
@@ -186,9 +186,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
-				if (!char.IsWhiteSpace (ch)) {
-					return ch == '(';
-				}
+				if (!char.IsWhiteSpace (ch))
+					return ch == '(' || ch == '<' && RequireGenerics (method);
 				offset++;
 			}
 			return false;
@@ -200,9 +199,9 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
-			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted ()) {
+			var method = (IMethod)Entity;
+			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
-				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				var end = line.Offset + line.Length;
 				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";

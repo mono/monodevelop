@@ -394,6 +394,20 @@ class MyClass
 }", "MyClass`1", null);
 			Assert.AreEqual ("MyClass<|> ()", completion); 
 		}
+
+		[Test]
+		public void TestBracketAlreadyThereGenericCase ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$<string>();
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar", completion); 
+		}
+
 	}
 }
 
