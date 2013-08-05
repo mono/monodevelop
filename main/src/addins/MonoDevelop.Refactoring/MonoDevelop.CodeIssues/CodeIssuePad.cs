@@ -488,16 +488,20 @@ namespace MonoDevelop.CodeIssues
 				var actionMenuItem = new MenuItem (actionGroup.First ().Title);
 				actionMenuItem.Clicked += delegate {
 					ThreadPool.QueueUserWorkItem (delegate {
-						using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Applying fixes", null, false)) {
-							var fixer = new BatchFixer (new ExactIssueMatcher (), monitor);
-							var appliedActions = fixer.TryFixIssues (actionGroup);
-							foreach (var action in appliedActions) {
-								((IIssueTreeNode)action.IssueSummary).Visible = false;
+						try {
+							using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Applying fixes", null, false)) {
+								var fixer = new BatchFixer (new ExactIssueMatcher (), monitor);
+								var appliedActions = fixer.TryFixIssues (actionGroup);
+								foreach (var action in appliedActions) {
+									((IIssueTreeNode)action.IssueSummary).Visible = false;
+								}
 							}
+							Application.Invoke (delegate {
+								ProcessUpdateQueue ();
+							});
+						} catch (Exception e) {
+							MessageService.ShowException (e);
 						}
-						Application.Invoke (delegate {
-							ProcessUpdateQueue ();
-						});
 					});
 				};
 				issueSubMenu.Items.Add (actionMenuItem);
