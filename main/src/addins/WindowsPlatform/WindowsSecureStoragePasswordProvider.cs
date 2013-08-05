@@ -112,7 +112,10 @@ namespace MonoDevelop.Platform.Windows
 
 			using (var critCred = new CriticalCredentialHandle (nCredPtr)) {
 				var cred = critCred.GetCredential ();
-				return Tuple.Create (cred.UserName, cred.CredentialBlob);
+
+				if (cred.HasValue)
+					return Tuple.Create (cred.Value.UserName, cred.Value.CredentialBlob);
+				return Tuple.Create (string.Empty, string.Empty);
 			}
 		}
 	}
@@ -213,18 +216,22 @@ namespace MonoDevelop.Platform.Windows
 			SetHandle (preexistingHandle);
 		}
 
-		internal Credential GetCredential ()
+		internal Credential? GetCredential ()
 		{
 			if (IsInvalid) 
 				throw new InvalidOperationException ("Invalid CriticalHandle!");
 
 			var ncred = (NativeCredential)Marshal.PtrToStructure (handle, typeof (NativeCredential));
+
+			if (ncred.CredentialBlob == IntPtr.Zero || ncred.UserName == IntPtr.Zero || ncred.TargetName == IntPtr.Zero)
+				return null;
+
 			return new Credential {
 				CredentialBlobSize = ncred.CredentialBlobSize,
 				CredentialBlob = Marshal.PtrToStringUni (ncred.CredentialBlob, (int)ncred.CredentialBlobSize / 2),
 				UserName = Marshal.PtrToStringUni (ncred.UserName),
 				TargetName = Marshal.PtrToStringUni (ncred.TargetName),
-				TargetAlias = Marshal.PtrToStringUni (ncred.TargetAlias),
+				TargetAlias = ncred.TargetAlias == IntPtr.Zero ? string.Empty : Marshal.PtrToStringUni (ncred.TargetAlias),
 				Type = ncred.Type,
 				Flags = ncred.Flags,
 				Persist = (PersistFlags)ncred.Persist
