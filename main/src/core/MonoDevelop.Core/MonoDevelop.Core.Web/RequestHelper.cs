@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
+using MonoDevelop.Core.Web;
 
-namespace MonoDevelop.Core.Web
+namespace Xamarin.Components.Ide.Web
 {
-	public static class RequestHelper {
+	public static class RequestHelper
+	{
 		/// <summary>
 		/// Keeps sending requests until a response code that doesn't require authentication happens or if
 		/// the request requires authentication and the user has stopped trying to enter them (i.e. they hit cancel when they are prompted).
 		/// </summary>
-		internal static WebResponse GetResponse (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest, IProxyCache proxyCache, ICredentialCache credentialCache, ICredentialProvider credentialProvider)
+		internal static WebResponse GetResponse (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest)
 		{
+			var proxyCache = WebService.Instance.ProxyCache;
+			var credentialCache = WebService.Instance.CredentialCache;
+			var credentialProvider = WebService.Instance.CredentialProvider;
+
 			HttpWebRequest previousRequest = null;
 			IHttpWebResponse previousResponse = null;
 			HttpStatusCode? previousStatusCode = null;
@@ -25,33 +31,29 @@ namespace MonoDevelop.Core.Web
 				if (request.Proxy != null && request.Proxy.Credentials == null) {
 					var proxyAddress = ((WebProxy)request.Proxy).Address;
 					request.Proxy.Credentials = credentialCache.GetCredentials (proxyAddress, CredentialType.ProxyCredentials) ??
-					                            CredentialCache.DefaultCredentials;
+						CredentialCache.DefaultCredentials;
 				}
 
-				if (previousResponse == null || ShouldKeepAliveBeUsedInRequest (previousRequest, previousResponse)) {
+				var retrying = proxyCredentialsRetryCount > 0;
+				ICredentials oldCredentials;
+				if (!previousStatusCode.HasValue && (previousResponse == null || ShouldKeepAliveBeUsedInRequest (previousRequest, previousResponse))) {
 					// Try to use the cached credentials (if any, for the first request)
 					request.Credentials = credentialCache.GetCredentials (request.RequestUri, CredentialType.RequestCredentials);
 
 					// If there are no cached credentials, use the default ones
 					if (request.Credentials == null)
 						request.UseDefaultCredentials = true;
-				} else {
-					var retrying = proxyCredentialsRetryCount > 0;
-					ICredentials oldCredentials;
-					switch (previousStatusCode) {
-					case HttpStatusCode.ProxyAuthenticationRequired:
-						oldCredentials = previousRequest != null && previousRequest.Proxy != null ? previousRequest.Proxy.Credentials : null;
-						request.Proxy.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.ProxyCredentials, retrying: retrying);
-						continueIfFailed = request.Proxy.Credentials != null;
-						proxyCredentialsRetryCount++;
-						break;
-					case HttpStatusCode.Unauthorized:
-						oldCredentials = previousRequest != null ? previousRequest.Credentials : null;
-						request.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.RequestCredentials, retrying: retrying);
-						continueIfFailed = request.Credentials != null;
-						credentialsRetryCount++;
-						break;
-				}}
+				} else if (previousStatusCode == HttpStatusCode.ProxyAuthenticationRequired) {
+					oldCredentials = previousRequest != null && previousRequest.Proxy != null ? previousRequest.Proxy.Credentials : null;
+					request.Proxy.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.ProxyCredentials, retrying: retrying);
+					continueIfFailed = request.Proxy.Credentials != null;
+					proxyCredentialsRetryCount++;
+				} else if (previousStatusCode == HttpStatusCode.Unauthorized) {
+					oldCredentials = previousRequest != null ? previousRequest.Credentials : null;
+					request.Credentials = credentialProvider.GetCredentials (request, oldCredentials, CredentialType.RequestCredentials, retrying: retrying);
+					continueIfFailed = request.Credentials != null;
+					credentialsRetryCount++;
+				}
 
 				try {
 					ICredentials credentials = request.Credentials;
@@ -71,8 +73,7 @@ namespace MonoDevelop.Core.Web
 					// Cache the proxy and credentials
 					if (request.Proxy != null) {
 						proxyCache.Add (request.Proxy);
-						credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials,
-						                     CredentialType.ProxyCredentials);
+						credentialCache.Add (((WebProxy)request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
 					}
 
 					credentialCache.Add (request.RequestUri, credentials, CredentialType.RequestCredentials);
@@ -80,7 +81,7 @@ namespace MonoDevelop.Core.Web
 
 					return response;
 				} catch (WebException ex) {
-					using (var response = GetResponse(ex.Response)) {
+					using (var response = GetResponse (ex.Response)) {
 						if (response == null && ex.Status != WebExceptionStatus.SecureChannelFailure) {
 							// No response, something went wrong so just rethrow
 							throw;
@@ -88,19 +89,24 @@ namespace MonoDevelop.Core.Web
 
 						// Special case https connections that might require authentication
 						if (ex.Status == WebExceptionStatus.SecureChannelFailure) {
-							if (!continueIfFailed) throw;
+							if (continueIfFailed) {
+								if (ex.Message.Contains ("407"))
+									previousStatusCode = HttpStatusCode.ProxyAuthenticationRequired;
+								else if (ex.Message.Contains ("401"))
+									previousStatusCode = HttpStatusCode.Unauthorized;
+								else
+									previousStatusCode = null;
+								continue;
+							}
 
-							// Act like we got a 401 so that we prompt for credentials on the next request
-							previousStatusCode = HttpStatusCode.Unauthorized;
-							continue;
+							throw;
 						}
 
 						// If we were trying to authenticate the proxy or the request and succeeded, cache the result.
 						if (previousStatusCode == HttpStatusCode.ProxyAuthenticationRequired && response.StatusCode != HttpStatusCode.ProxyAuthenticationRequired) {
 							proxyCache.Add (request.Proxy);
-							credentialCache.Add (((WebProxy) request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
-						} else if (previousStatusCode == HttpStatusCode.Unauthorized &&
-							response.StatusCode != HttpStatusCode.Unauthorized) {
+							credentialCache.Add (((WebProxy)request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
+						} else if (previousStatusCode == HttpStatusCode.Unauthorized && response.StatusCode != HttpStatusCode.Unauthorized) {
 							credentialCache.Add (request.RequestUri, request.Credentials, CredentialType.RequestCredentials);
 							credentialCache.Add (response.ResponseUri, request.Credentials, CredentialType.RequestCredentials);
 						}
@@ -119,7 +125,8 @@ namespace MonoDevelop.Core.Web
 		static IHttpWebResponse GetResponse (WebResponse response)
 		{
 			var httpWebResponse = response as IHttpWebResponse;
-			if (httpWebResponse != null) return httpWebResponse;
+			if (httpWebResponse != null)
+				return httpWebResponse;
 
 			var webResponse = response as HttpWebResponse;
 			return webResponse == null ? null : new HttpWebResponseWrapper (webResponse);
@@ -136,7 +143,8 @@ namespace MonoDevelop.Core.Web
 			// KeepAlive is required for NTLM and Kerberos authentication. If we've never been authenticated or are 
 			// using a different auth, we should not require KeepAlive.
 			// REVIEW: The WWW-Authenticate header is tricky to parse so a Equals might not be correct. 
-			if (previousResponse != null && IsNtlmOrKerberos (previousResponse.AuthType)) return;
+			if (previousResponse != null && IsNtlmOrKerberos (previousResponse.AuthType))
+				return;
 
 			// This is to work around the "The underlying connection was closed: An unexpected error occurred on a receive." exception.
 			request.KeepAlive = false;
@@ -173,26 +181,34 @@ namespace MonoDevelop.Core.Web
 				this.response = response;
 			}
 
-			public string AuthType {
-				get {
-					return response.Headers [HttpResponseHeader.WwwAuthenticate];
+			public string AuthType
+			{
+				get
+				{
+					return response.Headers[HttpResponseHeader.WwwAuthenticate];
 				}
 			}
 
-			public HttpStatusCode StatusCode {
-				get {
+			public HttpStatusCode StatusCode
+			{
+				get
+				{
 					return response.StatusCode;
 				}
 			}
 
-			public Uri ResponseUri {
-				get {
+			public Uri ResponseUri
+			{
+				get
+				{
 					return response.ResponseUri;
 				}
 			}
 
-			public NameValueCollection Headers {
-				get {
+			public NameValueCollection Headers
+			{
+				get
+				{
 					return response.Headers;
 				}
 			}
