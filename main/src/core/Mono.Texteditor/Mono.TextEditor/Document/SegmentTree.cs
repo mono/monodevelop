@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public class SegmentTree<T> : TextSegmentTree where T : TreeSegment
 	{
-		internal readonly AvlTree<T> tree = new AvlTree<T> ();
+		internal readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
 		
 		public int Count {
 			get {
@@ -54,10 +54,10 @@ namespace Mono.TextEditor
 				var root = tree.Root;
 				if (root == null)
 					yield break;
-				var node = root.AvlGetOuterLeft ();
+				var node = root.GetOuterLeft ();
 				while (node != null) {
 					yield return node;
-					node = node.AvlGetNextNode ();
+					node = node.GetNextNode ();
 				}
 			}
 		}
@@ -157,7 +157,7 @@ namespace Mono.TextEditor
 			}
 			
 			node.DistanceToPrevNode = node.TotalLength = insertionOffset - tree.Root.TotalLength;
-			tree.InsertRight (tree.Root.AvlGetOuterRight (), node);
+			tree.InsertRight (tree.Root.GetOuterRight (), node);
 		}
 		
 		public bool Remove (TreeSegment node)
@@ -167,7 +167,7 @@ namespace Mono.TextEditor
 			if (node.segmentTree != this)
 				throw new InvalidOperationException ("Tried to remove tree segment from wrong tree.");
 			var calculatedOffset = node.Offset;
-			var next = node.AvlGetNextNode ();
+			var next = node.GetNextNode ();
 			if (next != null)
 				next.DistanceToPrevNode += node.DistanceToPrevNode;
 			tree.Remove (node);
@@ -184,10 +184,10 @@ namespace Mono.TextEditor
 			if (tree.Root == null)
 				return null;
 			if (startOffset <= 0)
-				return tree.Root.AvlGetOuterLeft ();
+				return tree.Root.GetOuterLeft ();
 			var result = SearchNode (ref startOffset);
 			while (startOffset == 0) {
-				var pre = result == null ? tree.Root.AvlGetOuterRight () : result.AvlGetPrevNode ();
+				var pre = result == null ? tree.Root.GetOuterRight () : result.GetPrevNode ();
 				if (pre == null)
 					return null;
 				startOffset += pre.DistanceToPrevNode;
@@ -291,7 +291,7 @@ namespace Mono.TextEditor
 		bool Remove (TreeSegment segment);
 	}
 	
-	public class TreeSegment : IAvlNode
+	public class TreeSegment : IRedBlackTreeNode
 	{
 		internal TextSegmentTree segmentTree;
 
@@ -372,7 +372,7 @@ namespace Mono.TextEditor
 			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}
 
-		#region IAvlNode implementation
+		#region IRedBlackTreeNode implementation
 		public void UpdateAugmentedData ()
 		{
 			int totalLength = DistanceToPrevNode;
@@ -406,7 +406,7 @@ namespace Mono.TextEditor
 
 		internal TreeSegment parent, left, right;
 
-		Mono.TextEditor.Utils.IAvlNode Mono.TextEditor.Utils.IAvlNode.Parent {
+		Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Parent {
 			get {
 				return parent;
 			}
@@ -415,7 +415,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Mono.TextEditor.Utils.IAvlNode Mono.TextEditor.Utils.IAvlNode.Left {
+		Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Left {
 			get {
 				return left;
 			}
@@ -425,7 +425,7 @@ namespace Mono.TextEditor
 		}
 
 		
-		IAvlNode Mono.TextEditor.Utils.IAvlNode.Right {
+		IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Right {
 			get {
 				return right;
 			}
@@ -434,7 +434,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		sbyte Mono.TextEditor.Utils.IAvlNode.Balance {
+		RedBlackColor Mono.TextEditor.Utils.IRedBlackTreeNode.Color {
 			get;
 			set;
 		}

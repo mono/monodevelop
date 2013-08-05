@@ -137,7 +137,7 @@ namespace Mono.TextEditor
 			this.diffTracker.SetTrackDocument (this); 
 		}
 
-		void HandleFoldSegmentTreetreeNodeRemoved (object sender, AvlTree<FoldSegment>.TreeNodeEventArgs e)
+		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
 			if (e.Node.IsFolded)
 				foldedSegments.Remove (e.Node);
