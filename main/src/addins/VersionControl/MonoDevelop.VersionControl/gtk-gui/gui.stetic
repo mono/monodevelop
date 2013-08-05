@@ -1004,6 +1004,7 @@
             <property name="IsEditable">True</property>
             <property name="InvisibleChar">●</property>
             <signal name="Changed" handler="OnRepositoryUrlEntryChanged" />
+            <signal name="ClipboardPasted" handler="OnRepositoryUrlEntryClipboardPasted" />
           </widget>
           <packing>
             <property name="LeftAttach">1</property>

@@ -27,10 +27,11 @@
 using System;
 using Gtk;
 using Gdk;
+using Xwt.Motion;
 
 namespace MonoDevelop.Components
 {
-	public class PopoverWidget: Gtk.EventBox, Animatable
+	public class PopoverWidget: Gtk.EventBox, IAnimatable
 	{
 		PopoverWindowTheme theme;
 
@@ -66,6 +67,9 @@ namespace MonoDevelop.Components
 
 			UpdatePadding ();
 		}
+		
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
 
 		public bool EnableAnimation { get; set; }
 
@@ -125,13 +129,13 @@ namespace MonoDevelop.Components
 
 			targetSize = size;
 			Gdk.Size start = paintSize;
-			Func<float, Gdk.Size> transform = x => new Gdk.Size ((int)(start.Width + (size.Width - start.Width) * x),
+			Func<double, Gdk.Size> transform = x => new Gdk.Size ((int)(start.Width + (size.Width - start.Width) * x),
 			                                                     (int)(start.Height + (size.Height - start.Height) * x));
 			this.Animate ("Resize",
+			              transform,
+			              s => paintSize = s,
 			              length: 150,
 			              easing: Easing.SinInOut,
-			              transform: transform,
-			              callback: s => paintSize = s,
 			              finished: (x, aborted) => { if (!aborted) MaybeReanimate(); });
 			QueueResize ();
 		}

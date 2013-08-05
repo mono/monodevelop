@@ -114,6 +114,7 @@
     <Compile Include="ChangeLogService.cs" />
     <Compile Include="ChangeLogPolicy.cs" />
     <Compile Include="OldChangeLogData.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ChangeLogAddIn.addin.xml">

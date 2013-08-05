@@ -267,9 +267,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal void InternalWriteSolutionItem (IProgressMonitor monitor, string file, SolutionEntityItem item)
+		internal void InternalWriteSolutionItem (IProgressMonitor monitor, FilePath file, SolutionEntityItem item)
 		{
-			string newFile = WriteFile (monitor, file, item, null);
+			var newFile = WriteFile (monitor, file, item, null);
 			if (newFile != null)
 				item.FileName = newFile;
 			else
@@ -290,9 +290,9 @@ namespace MonoDevelop.Projects
 			return item;
 		}
 		
-		internal void InternalWriteWorkspaceItem (IProgressMonitor monitor, string file, WorkspaceItem item)
+		internal void InternalWriteWorkspaceItem (IProgressMonitor monitor, FilePath file, WorkspaceItem item)
 		{
-			string newFile = WriteFile (monitor, file, item, item.FileFormat);
+			var newFile = WriteFile (monitor, file, item, item.FileFormat);
 			if (newFile != null)
 				item.FileName = newFile;
 			else
@@ -314,7 +314,7 @@ namespace MonoDevelop.Projects
 			return obj;
 		}
 		
-		string WriteFile (IProgressMonitor monitor, string file, object item, FileFormat format)
+		FilePath WriteFile (IProgressMonitor monitor, FilePath file, object item, FileFormat format)
 		{
 			if (format == null) {
 				if (defaultFormat.CanWrite (item))
@@ -326,6 +326,7 @@ namespace MonoDevelop.Projects
 				
 				if (format == null)
 					return null;
+
 				file = format.GetValidFileName (item, file);
 			}
 			

@@ -117,7 +117,7 @@ namespace MonoDevelop.Components.MainToolbar
 			int text_x = progress_bar_x + Styles.ProgressBarInnerPadding;
 			int text_width = progress_bar_width - (Styles.ProgressBarInnerPadding * 2);
 
-			float textTweenValue = arg.TextAnimationProgress;
+			double textTweenValue = arg.TextAnimationProgress;
 
 			if (arg.LastText != null) {
 				double opacity = Math.Max (0.0f, 1.0f - textTweenValue);
@@ -140,7 +140,7 @@ namespace MonoDevelop.Components.MainToolbar
 			CairoExtensions.RoundedRectangle (context, region.X + .5, region.Y + .5, region.Width - 1, region.Height - 1, rounding);
 		}
 
-		void DrawBuildEffect (Cairo.Context context, Gdk.Rectangle area, float progress, float opacity)
+		void DrawBuildEffect (Cairo.Context context, Gdk.Rectangle area, double progress, double opacity)
 		{
 			context.Save ();
 			LayoutRoundedRectangle (context, area);
@@ -159,12 +159,12 @@ namespace MonoDevelop.Components.MainToolbar
 				new { Radius = 215, Thickness = 20, Speed = 2, ArcLength = Math.PI * 1.25 }
 			};
 
-			float zmod = 1.0f;
-			float zporg = progress;
+			double zmod = 1.0d;
+			double zporg = progress;
 			foreach (var arc in circles) {
-				float zoom = 1.0f;
-				zoom = (float) Math.Sin (zporg * Math.PI * 2 + zmod);
-				zoom = ((zoom + 1) / 6.0f) + .05f;
+				double zoom = 1.0d;
+				zoom = (double) Math.Sin (zporg * Math.PI * 2 + zmod);
+				zoom = ((zoom + 1) / 6.0d) + .05d;
 
 				context.Rotate (Math.PI * 2 * progress * arc.Speed);
 				context.MoveTo (arc.Radius * zoom, 0);
@@ -260,15 +260,15 @@ namespace MonoDevelop.Components.MainToolbar
 		void DrawErrorAnimation (Cairo.Context context, StatusArea.RenderArg arg)
 		{
 			const int surfaceWidth = 2000;
-			float opacity;
+			double opacity;
 			int progress;
 
 			if (arg.ErrorAnimationProgress < .5f) {
 				progress = (int) (arg.ErrorAnimationProgress * arg.Allocation.Width * 2.4);
-				opacity = 1.0f;
+				opacity = 1.0d;
 			} else {
 				progress = (int) (arg.ErrorAnimationProgress * arg.Allocation.Width * 2.4);
-				opacity = 1.0f - (arg.ErrorAnimationProgress - .5f) * 2;
+				opacity = 1.0d - (arg.ErrorAnimationProgress - .5d) * 2;
 			}
 
 			LayoutRoundedRectangle (context, arg.Allocation);
@@ -277,7 +277,7 @@ namespace MonoDevelop.Components.MainToolbar
 			context.CachedDraw (surface: ref errorSurface,
 			                    position: new Gdk.Point (arg.Allocation.X - surfaceWidth + progress, arg.Allocation.Y),
 			                    size: new Gdk.Size (surfaceWidth, arg.Allocation.Height),
-			                    opacity: opacity,
+			                    opacity: (float)opacity,
 			                    draw: (c, o) => {
 				// The smaller the pixel range of our gradient the less error there will be in it.
 				using (var lg = new LinearGradient (surfaceWidth - 250, 0, surfaceWidth, 0)) {

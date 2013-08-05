@@ -224,8 +224,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
-				IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
-				IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw ();
+				var editor = IdeApp.Workbench.ActiveDocument.Editor;
+				if (editor != null) {
+					editor.Parent.TextViewMargin.PurgeLayoutCache ();
+					editor.Parent.QueueDraw ();
+				}
 			}
 		}
 		

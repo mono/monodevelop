@@ -1601,7 +1601,7 @@ namespace MonoDevelop.Ide
 						// Grab all the child nodes of the folder we just dragged/dropped
 						filesToRemove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
 						// Add the folder itself so we can remove it from the soruce project if its a Move operation
-						var folder = sourceProject.Files.Where (f => f.ProjectVirtualPath == virtualPath).FirstOrDefault ();
+						var folder = sourceProject.Files.FirstOrDefault (f => f.ProjectVirtualPath == virtualPath);
 						if (folder != null)
 							filesToRemove.Add (folder);
 					} else {

@@ -123,6 +123,12 @@ namespace MonoDevelop.CSharp.Completion
 				return policy;
 			}
 		}
+
+		public override string CompletionLanguage {
+			get {
+				return "C#";
+			}
+		}
 		
 		public CSharpCompletionTextEditorExtension ()
 		{
@@ -222,7 +228,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			bool result = base.KeyPress (key, keyChar, modifier);
 			
-			if (EnableParameterInsight && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+			if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
 				base.RunParameterCompletionCommand ();
 			
 //			if (IsInsideComment ())
@@ -232,8 +238,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
 				return null;
 
@@ -290,9 +296,11 @@ namespace MonoDevelop.CSharp.Completion
 					return rctx;
 				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
 				var foundMember = GetMemberAt (offset);
-				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
-				if (curMember != null)
-					rctx = rctx.WithCurrentMember (curMember);
+				if (foundMember != null) {
+					var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
+					if (curMember != null)
+						rctx = rctx.WithCurrentMember (curMember);
+				}
 			}
 
 			return rctx;
@@ -324,7 +332,7 @@ namespace MonoDevelop.CSharp.Completion
 			);
 			completionDataFactory.Engine = engine;
 			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
-			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
+			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
 			if (FilterCompletionListByEditorBrowsable) {
 				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
 			} else {
@@ -538,8 +546,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			try {
@@ -668,7 +676,8 @@ namespace MonoDevelop.CSharp.Completion
 			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
 //				this.state = state;
-				builder = new TypeSystemAstBuilder(state);
+				if (state != null)
+					builder = new TypeSystemAstBuilder(state);
 				this.ext = ext;
 			}
 			
@@ -814,12 +823,13 @@ namespace MonoDevelop.CSharp.Completion
 					return result;
 				}
 
-				public TypeCompletionData (IType type, CSharpCompletionTextEditorExtension ext, Lazy<string> displayText, string icon) : base (null, displayText, icon)
+				public TypeCompletionData (IType type, CSharpCompletionTextEditorExtension ext, Lazy<string> displayText, string icon, bool addConstructors) : base (null, displayText, icon)
 				{
 					this.type = type;
 					this.ext = ext;
 					this.file = ext.CSharpUnresolvedFile;
 					this.compilation = ext.UnresolvedFileCompilation;
+
 				}
 
 				Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> addedDatas = new Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> ();
@@ -854,8 +864,20 @@ namespace MonoDevelop.CSharp.Completion
 				return new GenericTooltipCompletionData ((list, sw) => MemberCompletionData.CreateTooltipInformation (ext, list.Resolver, entity, sw), text, entity.GetStockIcon ());
 			}
 
-			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext)
+			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext, bool addConstructors)
 			{
+				if (addConstructors) {
+					ICompletionData constructorResult = null;
+					foreach (var ctor in type.GetConstructors ()) {
+						if (constructorResult != null) {
+							constructorResult.AddOverload (((ICompletionDataFactory)this).CreateEntityCompletionData (ctor));
+						} else {
+							constructorResult = ((ICompletionDataFactory)this).CreateEntityCompletionData (ctor);
+						}
+					}
+					return constructorResult;
+				}
+
 				Lazy<string> displayText = new Lazy<string> (delegate {
 					string name = showFullName ? builder.ConvertType(type).ToString() : type.Name; 
 					if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
@@ -866,7 +888,8 @@ namespace MonoDevelop.CSharp.Completion
 
 				var result = new TypeCompletionData (type, ext,
 					displayText, 
-					type.GetStockIcon ());
+					type.GetStockIcon (),
+					addConstructors);
 				return result;
 			}
 
@@ -892,6 +915,55 @@ namespace MonoDevelop.CSharp.Completion
 					sig.BreakLineAfterReturnType = smartWrap;
 					return sig.GetKeywordTooltip (title, null);
 				}, title, "md-keyword", description, insertText ?? title);
+			}
+
+			class XmlDocCompletionData : CompletionData, IListData
+			{
+				readonly CSharpCompletionTextEditorExtension ext;
+				readonly string title;
+
+				#region IListData implementation
+
+				CSharpCompletionDataList list;
+				public CSharpCompletionDataList List {
+					get {
+						return list;
+					}
+					set {
+						list = value;
+					}
+				}
+
+				#endregion
+
+				public XmlDocCompletionData (CSharpCompletionTextEditorExtension ext, string title, string description, string insertText) : base (title, "md-keyword", description, insertText ?? title)
+				{
+					this.ext = ext;
+					this.title = title;
+				}
+
+				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+				{
+					var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
+					sig.BreakLineAfterReturnType = smartWrap;
+					return sig.GetKeywordTooltip (title, null);
+				}
+
+
+
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				{
+					var currentWord = GetCurrentWord (window);
+					var text = CompletionText;
+					if (keyChar != '>')
+						text += ">";
+					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+				}
+			}
+
+			ICompletionData ICompletionDataFactory.CreateXmlDocCompletionData (string title, string description, string insertText)
+			{
+				return new XmlDocCompletionData (ext, title, description, insertText);
 			}
 
 			ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
@@ -926,7 +998,9 @@ namespace MonoDevelop.CSharp.Completion
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
 			{
 				var result = new CompletionDataList ();
-				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+				if (EnableAutoCodeCompletion || IncludeCodeSnippetsInCompletionList.Value) {
+					CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+				}
 				return result;
 			}
 			
@@ -1008,17 +1082,19 @@ namespace MonoDevelop.CSharp.Completion
 				ParsedDocument unit;
 				MonoDevelop.Ide.Gui.Document doc;
 				bool useFullName;
+				bool addConstructors;
 
 				public IType Type {
 					get { return this.type; }
 				}
 
-				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type)
+				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type, bool addConstructors)
 				{
 					this.doc = doc;
 					this.useFullName = useFullName;
 					this.type = type;
 					this.unit = doc.ParsedDocument;
+					this.addConstructors = addConstructors;
 				}
 
 				bool initialized = false;
@@ -1046,7 +1122,7 @@ namespace MonoDevelop.CSharp.Completion
 								text = type.Namespace + "." + text;
 							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
 						}
-
+					
 						if (!window.WasShiftPressed && generateUsing) {
 							var generator = CodeGenerator.CreateGenerator (doc);
 							if (generator != null) {
@@ -1056,6 +1132,7 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
+					ka |= KeyActions.Ignore;
 				}
 				#endregion
 
@@ -1111,9 +1188,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 
-			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addConstructors)
 			{
-				return new ImportSymbolCompletionData (ext.Document, useFullName, type);
+				return new ImportSymbolCompletionData (ext.Document, useFullName, type, addConstructors);
 			}
 
 		}

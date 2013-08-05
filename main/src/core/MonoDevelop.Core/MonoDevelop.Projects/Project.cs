@@ -60,7 +60,6 @@ namespace MonoDevelop.Projects
 	public abstract class Project : SolutionEntityItem
 	{
 		string[] buildActions;
-		bool isDirty;
 
 		public Project ()
 		{
@@ -425,9 +424,7 @@ namespace MonoDevelop.Projects
 			StringParserService.Properties["Project"] = Name;
 			
 			if (UsingMSBuildEngine ()) {
-				var r = DoBuild (monitor, configuration);
-				isDirty = false;
-				return r;
+				return DoBuild (monitor, configuration);
 			}
 			
 			string outputDir = conf.OutputDirectory;
@@ -446,8 +443,6 @@ namespace MonoDevelop.Projects
 			monitor.Log.WriteLine ("Performing main compilation...");
 			
 			BuildResult res = DoBuild (monitor, configuration);
-
-			isDirty = false;
 
 			if (res != null) {
 				string errorString = GettextCatalog.GetPluralString ("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
@@ -648,8 +643,6 @@ namespace MonoDevelop.Projects
 
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			SetDirty ();
-			
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", config.Id, Name), null);
@@ -725,26 +718,6 @@ namespace MonoDevelop.Projects
 
 		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
-			if (!isDirty) {
-				if (CheckNeedsBuild (configuration))
-					SetDirty ();
-			}
-			return isDirty;
-		}
-
-		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
-		{
-			isDirty = value;
-		}
-
-		void SetDirty ()
-		{
-			if (!Loading)
-				isDirty = true;
-		}
-
-		internal bool InternalCheckNeedsBuild (ConfigurationSelector configuration)
-		{
 			return CheckNeedsBuild (configuration);
 		}
 
@@ -807,7 +780,6 @@ namespace MonoDevelop.Projects
 			foreach (FileEventInfo fi in e) {
 				ProjectFile file = GetProjectFile (fi.FileName);
 				if (file != null) {
-					SetDirty ();
 					try {
 						NotifyFileChangedInProject (file);
 					} catch {
@@ -878,7 +850,6 @@ namespace MonoDevelop.Projects
 					file.DependsOnFile = null;
 				}
 			}
-			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRemovedFromProject (args);
 		}
@@ -898,7 +869,6 @@ namespace MonoDevelop.Projects
 				ResolveDependencies (file);
 			}
 
-			SetDirty ();
 			NotifyModified ("Files");
 			OnFileAddedToProject (args);
 		}
@@ -953,7 +923,6 @@ namespace MonoDevelop.Projects
 
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
-			SetDirty ();
 			NotifyModified ("Files");
 			OnFileRenamedInProject (args);
 		}

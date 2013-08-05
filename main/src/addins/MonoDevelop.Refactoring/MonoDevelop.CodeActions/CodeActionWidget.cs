@@ -148,7 +148,7 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 			var first = true;
-			var alreadyInserted = new HashSet<CodeIssueProvider> ();
+			var alreadyInserted = new HashSet<BaseCodeIssueProvider> ();
 			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
 				var analysisFix = analysisFix_;
 				var ir = analysisFix.Result as InspectorResults;
@@ -163,13 +163,46 @@ namespace MonoDevelop.CodeActions
 					continue;
 				alreadyInserted.Add (ir.Inspector);
 				
-				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
-				var menuItem = new Gtk.MenuItem (label);
-				menuItem.Activated += analysisFix.ShowOptions;
-				menuItem.Activated += delegate {
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
+				var subMenuItem = new Gtk.MenuItem (label);
+				Gtk.Menu subMenu = new Gtk.Menu ();
+
+				var inspector = ir.Inspector;
+				if (inspector.CanDisableWithPragma) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
+					menuItem.Activated += delegate {
+						inspector.DisableWithPragma (document, loc); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				if (inspector.CanDisableOnce) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
+					menuItem.Activated += delegate {
+						inspector.DisableOnce (document, loc); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				if (inspector.CanDisableAndRestore) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
+					menuItem.Activated += delegate {
+						inspector.DisableAndRestore (document, loc); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection severity"));
+				optionsMenuItem.Activated += analysisFix.ShowOptions;
+				optionsMenuItem.Activated += delegate {
 					menu.Destroy ();
 				};
-				menu.Add (menuItem);
+				subMenu.Add (optionsMenuItem);
+				subMenu.ShowAll (); 
+
+				subMenuItem.Submenu = subMenu;
+				menu.Add (subMenuItem);
+
 				items++;
 			}
 
@@ -188,13 +221,51 @@ namespace MonoDevelop.CodeActions
 						continue;
 					alreadyInserted.Add (inspector);
 					
-					var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", inspector.Title);
-					var menuItem = new Gtk.MenuItem (label);
-					menuItem.Activated += delegate {
+					var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (inspector));
+					var subMenuItem = new Gtk.MenuItem (label);
+					Gtk.Menu subMenu = new Gtk.Menu ();
+					if (inspector.CanSuppressWithAttribute) {
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
+						menuItem.Activated += delegate {
+							inspector.SuppressWithAttribute (document, loc); 
+						};
+						subMenu.Add (menuItem);
+					}
+
+					if (inspector.CanDisableWithPragma) {
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
+						menuItem.Activated += delegate {
+							inspector.DisableWithPragma (document, loc); 
+						};
+						subMenu.Add (menuItem);
+					}
+
+					if (inspector.CanDisableOnce) {
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
+						menuItem.Activated += delegate {
+							inspector.DisableOnce (document, loc); 
+						};
+						subMenu.Add (menuItem);
+					}
+
+					if (inspector.CanDisableAndRestore) {
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
+						menuItem.Activated += delegate {
+							inspector.DisableAndRestore (document, loc); 
+						};
+						subMenu.Add (menuItem);
+					}
+
+					var confItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection severity"));
+					confItem.Activated += delegate {
 						MessageService.RunCustomDialog (new CodeIssueOptionsDialog (inspector), MessageService.RootWindow);
 						menu.Destroy ();
 					};
-					menu.Add (menuItem);
+					subMenu.Add (confItem);
+
+					subMenuItem.Submenu = subMenu;
+					subMenu.ShowAll (); 
+					menu.Add (subMenuItem);
 					break;
 				}
 

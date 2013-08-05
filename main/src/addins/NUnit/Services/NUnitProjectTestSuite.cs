@@ -28,6 +28,7 @@
 
 
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
@@ -63,7 +64,7 @@ namespace MonoDevelop.NUnit
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
 			foreach (var p in project.References)
-				if (p.Reference.IndexOf ("MacUnit") != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
+				if (p.Reference.IndexOf ("GuiUnit") != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
 		}
@@ -111,8 +112,13 @@ namespace MonoDevelop.NUnit
 		
 		void OnProjectBuilt (object s, BuildEventArgs args)
 		{
-			if (RefreshRequired)
+			if (RefreshRequired) {
 				UpdateTests ();
+			} else {
+				Gtk.Application.Invoke (delegate {
+					OnProjectBuiltWithoutTestChange (EventArgs.Empty);
+				});
+			}
 		}
 
 		public override void GetCustomTestRunner (out string assembly, out string type)
@@ -127,6 +133,12 @@ namespace MonoDevelop.NUnit
 			var r = project.ExtendedProperties ["TestRunnerCommand"];
 			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
 			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
+			if (command == null && args == null) {
+				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && Path.GetFileName (pref.Reference) == "GuiUnit.exe");
+				if (guiUnit != null) {
+					command = guiUnit.Reference;
+				}
+			}
 		}
 
 		protected override string AssemblyPath {
@@ -150,6 +162,15 @@ namespace MonoDevelop.NUnit
 					}
 				}
 			}
+		}
+
+		public event EventHandler ProjectBuiltWithoutTestChange;
+
+		protected virtual void OnProjectBuiltWithoutTestChange (EventArgs e)
+		{
+			var handler = ProjectBuiltWithoutTestChange;
+			if (handler != null)
+				handler (this, e);
 		}
 	}
 }

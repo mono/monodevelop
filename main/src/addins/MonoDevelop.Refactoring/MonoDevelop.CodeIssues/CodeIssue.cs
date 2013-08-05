@@ -83,6 +83,7 @@ namespace MonoDevelop.CodeIssues
 			Actions = actions;
 			InspectorIdString = inspectorIdString;
 		}
+
 	}
 }
 

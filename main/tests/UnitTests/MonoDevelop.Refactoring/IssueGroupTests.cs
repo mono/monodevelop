@@ -26,7 +26,6 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.CodeIssues;
-using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -209,8 +208,9 @@ namespace MonoDevelop.Refactoring
 			localNode.ChildAdded += Forbidden<IssueTreeNodeEventArgs> ("node.ChildAdded");
 			var issue = new IssueSummary ();
 			localGroup.AddIssue (issue);
+
 			var children = localNode.Children;
-			CollectionAssert.Contains (children, issue);
+			Assert.That (children.Contains (node));
 			Assert.AreEqual (1, children.Count, "The number of children was incorrect.");
 		}
 
@@ -222,8 +222,9 @@ namespace MonoDevelop.Refactoring
 			var issue = new IssueSummary ();
 			leafGroup.AddIssue (issue);
 			
-			CollectionAssert.Contains (leafNode.Children, issue);
-			Assert.AreEqual (1, leafNode.Children.Count, "The group contained too many issues.");
+			var children = leafNode.Children;
+			Assert.That (children.Contains (node));
+			Assert.AreEqual (1, children.Count, "The group contained too many issues.");
 		}
 	}
 }

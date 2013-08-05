@@ -81,7 +81,12 @@ namespace CBinding
 		};
 		
 		protected Mono.TextEditor.TextEditorData textEditorData{ get; set; }
-		
+
+		public override string CompletionLanguage {
+			get {
+				return "C/C++";
+			}
+		}
 		static bool IsOpenBrace (char c)
 		{
 			return c == '(' || c == '{' || c == '<' || c == '[';

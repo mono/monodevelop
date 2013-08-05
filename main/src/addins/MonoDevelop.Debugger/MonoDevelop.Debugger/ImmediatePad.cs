@@ -1,10 +1,11 @@
 // 
 // ImmediatePad.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,57 +26,47 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
+
+using Mono.Debugging.Client;
+
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Components.Docking;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
 	public class ImmediatePad: IPadContent
 	{
-		ConsoleView view;
-		bool disposed;
+		static object locker = new object();
+		DebuggerConsoleView view;
 		
 		public void Initialize (IPadWindow container)
 		{
-			view = new ConsoleView ();
+			view = new DebuggerConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
-			view.SetFont (IdeApp.Preferences.CustomOutputPadFont);
 			view.ShadowType = Gtk.ShadowType.None;
 			view.ShowAll ();
-
-			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomOutputPadFontChanged;
-		}
-
-		void HandleCustomOutputPadFontChanged (object sender, EventArgs e)
-		{
-			view.SetFont (IdeApp.Preferences.CustomOutputPadFont);
 		}
 
 		void OnViewConsoleInput (object sender, ConsoleInputEventArgs e)
 		{
 			if (!DebuggingService.IsDebugging) {
-				view.WriteOutput ("Debug session not started.");
+				view.WriteOutput (GettextCatalog.GetString ("Debug session not started."));
+				FinishPrinting ();
 			} else if (DebuggingService.IsRunning) {
-				view.WriteOutput ("The expression can't be evaluated while the application is running.");
+				view.WriteOutput (GettextCatalog.GetString ("The expression can't be evaluated while the application is running."));
+				FinishPrinting ();
 			} else {
-				EvaluationOptions ops = EvaluationOptions.DefaultOptions;
 				var frame = DebuggingService.CurrentFrame;
-				string expression = e.Text;
-
-				ops.AllowMethodEvaluation = true;
-				ops.AllowToStringCalls = true;
-				ops.AllowTargetInvoke = true;
-				ops.EvaluationTimeout = 20000;
-				ops.EllipsizeStrings = false;
+				var ops = GetEvaluationOptions ();
+				var expression = e.Text;
 
 				var vres = frame.ValidateExpression (expression, ops);
 				if (!vres) {
 					view.WriteOutput (vres.Message);
-					view.Prompt (true);
+					FinishPrinting ();
 					return;
 				}
 
@@ -87,47 +78,180 @@ namespace MonoDevelop.Debugger
 
 				PrintValue (val);
 			}
-			view.Prompt (true);
+		}	
+
+		static EvaluationOptions GetEvaluationOptions ()
+		{
+			var ops = EvaluationOptions.DefaultOptions;
+			ops.AllowMethodEvaluation = true;
+			ops.AllowToStringCalls = true;
+			ops.AllowTargetInvoke = true;
+			ops.EvaluationTimeout = 20000;
+			ops.EllipsizeStrings = false;
+			ops.MemberEvaluationTimeout = 20000;
+			return ops;
 		}
-		
-		void PrintValue (ObjectValue val)
+
+		static string GetErrorText (ObjectValue val)
+		{
+			if (val.IsNotSupported)
+				return string.IsNullOrEmpty(val.Value) ? GettextCatalog.GetString ("Expression not supported.") : val.Value;
+
+			if (val.IsError || val.IsUnknown)
+				return string.IsNullOrEmpty(val.Value) ? GettextCatalog.GetString ("Evaluation failed.") : val.Value;
+
+			return string.Empty;
+		}
+
+		void PrintValue (ObjectValue val) 
 		{
 			string result = val.Value;
-			if (string.IsNullOrEmpty (result)) {
-				if (val.IsNotSupported)
-					result = GettextCatalog.GetString ("Expression not supported.");
-				else if (val.IsError || val.IsUnknown)
-					result = GettextCatalog.GetString ("Evaluation failed.");
-				else
-					result = string.Empty;
+
+			if (string.IsNullOrEmpty (result) || val.IsError || val.IsUnknown || val.IsNotSupported) {
+				view.WriteOutput (GetErrorText (val));
+				FinishPrinting ();
+			} else {
+				var ops = GetEvaluationOptions ();
+				var children = val.GetAllChildren (ops);
+				var hasMore = false;
+
+				view.WriteOutput (result);
+
+				if (children.Length > 0 && string.Equals (children[0].Name, "[0..99]")) {
+					// Big Arrays Hack
+					children = children [0].GetAllChildren ();
+					hasMore = true;
+				}
+
+				var evaluating = new Dictionary<ObjectValue, bool> ();
+				foreach (var child in children) {
+					if (child.IsEvaluating) {
+						evaluating.Add (child, false);
+					} else {
+						PrintChildValue (child);
+					}
+				}
+
+				if (evaluating.Count > 0) {
+					foreach (var eval in evaluating)
+						WaitChildForCompleted (eval.Key, evaluating, hasMore);
+				} else {
+					FinishPrinting (hasMore);
+				}
 			}
-			view.WriteOutput (result);
 		}
-		
+
+		void PrintChildValue (ObjectValue val)
+		{
+			string prefix = "\t" + val.Name + ": ";
+			string result = val.Value;
+
+			view.WriteOutput (Environment.NewLine);
+
+			if (string.IsNullOrEmpty (result) || val.IsError || val.IsUnknown || val.IsNotSupported) {
+				view.WriteOutput (prefix + GetErrorText (val));
+			} else {
+				view.WriteOutput (prefix + result);
+			}
+		}
+
+		void PrintChildValueAtMark (ObjectValue val, Gtk.TextMark mark) 
+		{
+			string prefix = "\t" + val.Name + ": ";
+			string result = val.Value; 
+
+			if (string.IsNullOrEmpty (result) || val.IsError || val.IsUnknown || val.IsNotSupported) {
+				SetLineText (prefix + GetErrorText (val), mark);
+			} else {
+				SetLineText (prefix + result, mark);
+			}
+		}
+
+		void FinishPrinting (bool hasMore = false)
+		{
+			if (hasMore)
+				view.WriteOutput ("\n\t" + GettextCatalog.GetString ("< More... (The first {0} items were displayed.) >", 100));
+
+			view.Prompt (true);
+		}
+
+		Gtk.TextIter DeleteLineAtMark (Gtk.TextMark mark)
+		{
+			var start = view.Buffer.GetIterAtMark (mark);
+			var end = view.Buffer.GetIterAtMark (mark);
+			end.ForwardLine ();
+
+			view.Buffer.Delete (ref start, ref end);
+
+			return start;
+		}
+
+		void SetLineText (string text, Gtk.TextMark mark)
+		{
+			var start = DeleteLineAtMark (mark);
+
+			view.Buffer.Insert (ref start, text + "\n");
+		}
+
 		void WaitForCompleted (ObjectValue val)
 		{
-			int iteration = 0;
-			
-			GLib.Timeout.Add (100, delegate {
+			var mark = view.Buffer.CreateMark (null, view.InputLineEnd, true);
+			var iteration = 0;
+
+			GLib.Timeout.Add (100, () => {
 				if (!val.IsEvaluating) {
 					if (iteration >= 5)
-						view.WriteOutput ("\n");
+						DeleteLineAtMark (mark);
+
 					PrintValue (val);
-					view.Prompt (true);
+
 					return false;
 				}
-				if (++iteration == 5)
-					view.WriteOutput (GettextCatalog.GetString ("Evaluating") + " ");
-				else if (iteration > 5 && (iteration - 5) % 10 == 0)
-					view.WriteOutput (".");
-				else if (iteration > 300) {
-					view.WriteOutput ("\n" + GettextCatalog.GetString ("Timed out."));
-					view.Prompt (true);
-					return false;
+
+				if (++iteration == 5) {
+					SetLineText (GettextCatalog.GetString ("Evaluating"), mark);
+				} else if (iteration > 5 && (iteration - 5) % 10 == 0) {
+					string points = string.Join ("", Enumerable.Repeat (".", iteration / 10));
+					SetLineText (GettextCatalog.GetString ("Evaluating") + " " + points, mark);
 				}
+
 				return true;
 			});
 		}
+
+		void WaitChildForCompleted (ObjectValue val, IDictionary<ObjectValue, bool> evaluatingList, bool hasMore)
+		{
+			view.WriteOutput ("\n ");
+
+			var mark = view.Buffer.CreateMark (null, view.InputLineEnd, true);
+			var iteration = 0;
+
+			GLib.Timeout.Add (100, () => {
+				if (!val.IsEvaluating) {
+					PrintChildValueAtMark (val, mark);
+
+					lock (locker) {
+						// Maybe We don't need this lock because children evaluation is done synchronously
+						evaluatingList[val] = true;
+						if (evaluatingList.All (x => x.Value))
+							FinishPrinting (hasMore);
+					}
+
+					return false;
+				}
+
+				string prefix = "\t" + val.Name + ": ";
+
+				if (++iteration == 5) {
+					SetLineText (prefix + GettextCatalog.GetString ("Evaluating"), mark);
+				} else if (iteration > 5 && (iteration - 5) % 10 == 0) {
+					string points = string.Join ("", Enumerable.Repeat (".", iteration / 10));
+					SetLineText (prefix + GettextCatalog.GetString ("Evaluating") + " " + points, mark);
+				}
+
+				return true;
+			});
+		}	
 
 		public void RedrawContent ()
 		{
@@ -138,13 +262,9 @@ namespace MonoDevelop.Debugger
 				return view;
 			}
 		}
-		
+
 		public void Dispose ()
 		{
-			if (!disposed) {
-				IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomOutputPadFontChanged;
-				disposed = true;
-			}
 		}
 	}
 }

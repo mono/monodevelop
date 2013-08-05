@@ -47,6 +47,13 @@ namespace MonoDevelop.CodeIssues
 {
 	public static class CodeAnalysisRunner
 	{
+		static IEnumerable<BaseCodeIssueProvider> EnumerateProvider (CodeIssueProvider p)
+		{
+			if (p.HasSubIssues)
+				return p.SubIssues;
+			return new BaseCodeIssueProvider[] { p };
+		}
+
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
@@ -65,41 +72,43 @@ namespace MonoDevelop.CodeIssues
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
 				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
 //			Console.WriteLine ("start check:"+ (DateTime.Now - now).TotalMilliseconds);
-			Parallel.ForEach (codeIssueProvider, (provider) => {
+			Parallel.ForEach (codeIssueProvider, (parentProvider) => {
 				try {
-					var severity = provider.GetSeverity ();
-					if (severity == Severity.None)
-						return;
-//					var now2 = DateTime.Now;
-					foreach (var r in provider.GetIssues (context, cancellationToken)) {
-						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
-							Action batchAction = null;
-							if (a.SupportsBatchRunning)
-								batchAction = () => a.BatchRun (input, loc);
-							return new GenericFix (
-								a.Title,
-								() => {
-									var scriptProvider = context as IScriptProvider;
-									if (scriptProvider != null) {
-										using (var script = scriptProvider.CreateScript ()) {
-											a.Run (context, script);
+					foreach (var provider in EnumerateProvider (parentProvider)) {
+						var severity = provider.GetSeverity ();
+						if (severity == Severity.None)
+							return;
+	//					var now2 = DateTime.Now;
+						foreach (var r in provider.GetIssues (context, cancellationToken)) {
+							var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
+								Action batchAction = null;
+								if (a.SupportsBatchRunning)
+									batchAction = () => a.BatchRun (input, loc);
+								return new GenericFix (
+									a.Title,
+									() => {
+										var scriptProvider = context as IScriptProvider;
+										if (scriptProvider != null) {
+											using (var script = scriptProvider.CreateScript ()) {
+												a.Run (context, script);
+											}
+										} else {
+											a.Run (context, null);
 										}
-									} else {
-										a.Run (context, null);
-									}
-								},
-								batchAction) {
-								DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
-							};
-						}));
-						result.Add (new InspectorResults (
-							provider, 
-							r.Region, 
-							r.Description,
-							severity, 
-							provider.IssueMarker,
-							fixes.ToArray ()
-						));
+									},
+									batchAction) {
+									DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
+								};
+							}));
+							result.Add (new InspectorResults (
+								provider, 
+								r.Region, 
+								r.Description,
+								severity, 
+								provider.IssueMarker,
+								fixes.ToArray ()
+							));
+						}
 					}
 /*					var ms = (DateTime.Now - now2).TotalMilliseconds;
 					if (ms > 1000)
@@ -107,7 +116,7 @@ namespace MonoDevelop.CodeIssues
 				} catch (OperationCanceledException) {
 					//ignore
 				} catch (Exception e) {
-					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
+					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + parentProvider + "'", e);
 				}
 			});
 //			Console.WriteLine ("END check:"+ (DateTime.Now - now).TotalMilliseconds);

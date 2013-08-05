@@ -288,7 +288,6 @@ namespace MonoDevelop.Refactoring
 			var project = doc.Project;
 			if (project == null)
 				yield break;
-
 			int tc = GetTypeParameterCount (node);
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
 			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
@@ -301,6 +300,11 @@ namespace MonoDevelop.Refactoring
 				foreach (var curProject in solution.GetAllProjects ()) {
 					if (curProject == project || referencedItems.Contains (curProject))
 						continue;
+
+					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+					if (otherRefes.Contains (project))
+						continue;
+
 					var comp = TypeSystemService.GetCompilation (curProject);
 					if (comp == null)
 						continue;
@@ -358,7 +362,7 @@ namespace MonoDevelop.Refactoring
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
 					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
 					foreach (var typeDefinition in allTypes) {
-						if (typeDefinition.Name == possibleAttributeName && typeDefinition.TypeParameterCount == tc && 
+						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc && 
 							lookup.IsAccessible (typeDefinition, false)) {
 							if (typeDefinition.DeclaringTypeDefinition != null) {
 								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
@@ -376,7 +380,7 @@ namespace MonoDevelop.Refactoring
 					var umResult = (UnknownMemberResolveResult)resolveResult;
 					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : umResult.MemberName;
 					foreach (var typeDefinition in allTypes.Where (t => t.HasExtensionMethods)) {
-						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == possibleAttributeName)) {
+						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == possibleAttributeName || m.Name == umResult.MemberName))) {
 							IType[] inferredTypes;
 							if (CSharpResolver.IsEligibleExtensionMethod (
 								compilation.Import (umResult.TargetType),
@@ -400,7 +404,7 @@ namespace MonoDevelop.Refactoring
 						if (uiResult != null) {
 							string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
 							foreach (var typeDefinition in allTypes) {
-								if ((identifier.Name == possibleAttributeName) && 
+								if ((identifier.Name == possibleAttributeName || identifier.Name == uiResult.Identifier) && 
 									typeDefinition.TypeParameterCount == tc && 
 									lookup.IsAccessible (typeDefinition, false))
 									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);

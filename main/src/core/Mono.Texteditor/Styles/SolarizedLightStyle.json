@@ -118,6 +118,7 @@
 		{ "name": "Number", "fore":"violet"},
 
 		{ "name": "Preprocessor", "fore":"orange" },
+		{ "name": "Preprocessor(Region Name)", "fore":"orange" },
 
 		{ "name": "Xml Text", "fore":"base00" },
 		{ "name": "Xml Delimiter", "fore":"base00" },

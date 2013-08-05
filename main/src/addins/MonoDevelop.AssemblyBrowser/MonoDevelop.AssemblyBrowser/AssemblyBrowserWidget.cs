@@ -587,6 +587,7 @@ namespace MonoDevelop.AssemblyBrowser
 					inspectEditor.ClearSelection ();
 					nav.ExpandToNode ();
 					nav.Selected = nav.Expanded = true;
+					nav.ScrollToNode ();
 					return nav;
 				}
 				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
@@ -1284,6 +1285,7 @@ namespace MonoDevelop.AssemblyBrowser
 				if (nav.DataItem == cu) {
 					nav.ExpandToNode ();
 					nav.Selected = true;
+					nav.ScrollToNode ();
 					return;
 				}
 			} while (nav.MoveNext());

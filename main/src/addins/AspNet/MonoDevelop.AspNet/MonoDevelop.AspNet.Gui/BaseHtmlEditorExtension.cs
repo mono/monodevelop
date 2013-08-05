@@ -74,7 +74,12 @@ namespace MonoDevelop.AspNet.Gui
 				return schema;
 			}
 		}
-		
+
+		public override string CompletionLanguage {
+			get {
+				return "Html";
+			}
+		}
 		protected override void OnDocTypeChanged ()
 		{
 			resolvedDocType = false;

@@ -86,6 +86,10 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -172,6 +176,8 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionAppearancePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

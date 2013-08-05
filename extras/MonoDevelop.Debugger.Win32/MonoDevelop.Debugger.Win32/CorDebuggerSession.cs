@@ -713,7 +713,9 @@ namespace MonoDevelop.Debugger.Win32
 						}
 					}
 				}
-				return null;
+
+				binfo.SetStatus (BreakEventStatus.Invalid, null);
+				return binfo;
 			});
 		}
 

@@ -454,7 +454,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			cr.Save ();
 			cr.Translate (
-				metrics.X + 0.5  + (metrics.Width - cache.errorPixbuf.Width) / 2,
+				metrics.X + 0.5 + (metrics.Width - 2 - cache.errorPixbuf.Width) / 2,
 				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
 				);
 			Gdk.CairoHelper.SetSourcePixbuf (
@@ -577,7 +577,8 @@ namespace MonoDevelop.SourceEditor
 			var o = metrics.LineSegment.Offset;
 
 			foreach (var task in errors.Select (t => t.Task)) {
-				int index = (int)metrics.Layout.TranslateToUTF8Index ((uint)(task.Column - 1), ref curIndex, ref byteIndex);
+				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.LineSegment.Length));
+				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;
 				g.Color = GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd);

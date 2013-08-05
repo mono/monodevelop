@@ -447,7 +447,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		static int GetElementIndentDepth (NodeStack nodes)
 		{
-			return nodes.OfType<XElement> ().Where (el => !el.IsClosed).Count ();
+			return nodes.OfType<XElement> ().Count (el => !el.IsClosed);
 		}
 		
 		static int GetAttributeIndentDepth (NodeStack nodes)

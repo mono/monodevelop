@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			get {
 				if (Resolver == null || TextEditor == null)
 					return true;
-				return ParsedDocument == null || ParsedDocument.HasErrors;
+				return ParsedDocument == null;
 			}
 		}
 

@@ -264,6 +264,8 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs args)
 		{
+			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
+				return;
 			if (!inLoad) {
 				if (widget.TextEditor.Document.IsInAtomicUndo) {
 					wasEdited = true;
@@ -272,8 +274,8 @@ namespace MonoDevelop.SourceEditor
 					InformAutoSave ();
 				}
 			}
+
 			int startIndex = args.Offset;
-			int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
 			foreach (var marker in currentErrorMarkers) {
 				if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
 					markersToRemove.Enqueue (marker);
@@ -621,7 +623,7 @@ namespace MonoDevelop.SourceEditor
 				AutoSave.RemoveAutoSaveFile (ContentName);
 
 			if (ContentName != fileName) {
-				FileService.RequestFileEdit (fileName);
+				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
 				writeAccessChecked = true;
 			}
@@ -826,6 +828,7 @@ namespace MonoDevelop.SourceEditor
 					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				Document.Text = text;
+				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 				inLoad = false;
 				didLoadCleanly = true;
 			}
@@ -1298,25 +1301,24 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (DebuggingService.PinnedWatches.IsWatcherBreakpoint (bp))
 				return;
+
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
 				DocumentLine line = widget.TextEditor.Document.GetLine (bp.Line);
 				var status = bp.GetStatus (DebuggingService.DebuggerSession);
-				
+				bool tracepoint = bp.HitAction != HitAction.Break;
+
 				if (line == null)
 					return;
+
 				if (!bp.Enabled) {
-					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, false));
-					else
-						widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, true));
+					widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, tracepoint));
 				} else if (status == BreakEventStatus.Bound || status == BreakEventStatus.Disconnected) {
-					if (bp.HitAction == HitAction.Break)
-						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, false));
-					else
-						widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, true));
-				} else
-					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor));
+					widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, tracepoint));
+				} else {
+					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor, tracepoint));
+				}
+
 				widget.TextEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}
@@ -1908,23 +1910,24 @@ namespace MonoDevelop.SourceEditor
 		
 		#region commenting and indentation
 
-		[CommandHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
+		[CommandHandler (DebugCommands.ExpressionEvaluator)]
 		protected void ShowExpressionEvaluator ()
 		{
 			string expression = "";
-			if (TextEditor.IsSomethingSelected)
+
+			if (TextEditor.IsSomethingSelected) {
 				expression = TextEditor.SelectedText;
-			else {
+			} else {
 				DomRegion region;
 				var rr = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
 				if (rr != null && !rr.IsError)
 					expression = TextEditor.GetTextBetween (region.Begin, region.End);
 			}
-			if (!string.IsNullOrEmpty (expression))
-				DebuggingService.ShowExpressionEvaluator (expression);
+
+			DebuggingService.ShowExpressionEvaluator (expression);
 		}
 
-		[CommandUpdateHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
+		[CommandUpdateHandler (DebugCommands.ExpressionEvaluator)]
 		protected void UpdateShowExpressionEvaluator (CommandInfo cinfo)
 		{
 			if (DebuggingService.IsDebugging)
@@ -2500,6 +2503,33 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
 		}
+
+		[CommandHandler (SourceEditorCommands.NextIssue)]
+		void NextIssue ()
+		{
+			widget.NextIssue ();
+		}	
+
+		[CommandHandler (SourceEditorCommands.PrevIssue)]
+		void PrevIssue ()
+		{
+			widget.PrevIssue ();
+		}
+
+		[CommandHandler (SourceEditorCommands.NextIssueError)]
+		void NextIssueError ()
+		{
+			widget.NextIssueError ();
+		}	
+
+		[CommandHandler (SourceEditorCommands.PrevIssueError)]
+		void PrevIssueError ()
+		{
+			widget.PrevIssueError ();
+		}
+
+
+
 		#endregion
 	}
 } 

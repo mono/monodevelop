@@ -36,21 +36,29 @@ namespace MonoDevelop.AnalysisCore.Fixes
 {
 	public class InspectorResults : GenericResults
 	{
-		public CodeIssueProvider Inspector { get; private set; }
+		public BaseCodeIssueProvider Inspector { get; private set; }
 
-		public InspectorResults (CodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
+		public InspectorResults (BaseCodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
 			: base (region, message, level, mark, fixes)
 		{
 			this.Inspector = inspector;
 		}
 
 		public override bool HasOptionsDialog { get { return true; } }
-		public override string OptionsTitle { get { return Inspector.Title; } }
+		public override string OptionsTitle { get { return GetTitle (Inspector); } }
 		public override void ShowResultOptionsDialog ()
 		{
 			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (Inspector), MessageService.RootWindow);
 		}
-		
+
+		public static string GetTitle (BaseCodeIssueProvider inspector)
+		{
+			if (inspector.Parent == null)
+				return inspector.Title;
+			return inspector.Parent.Title + " -> " + inspector.Title;
+		}
+
+
 	}
 
 	public class GenericResults : FixableResult

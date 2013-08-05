@@ -154,6 +154,7 @@
 		{ "name": "Number", "fore":"NumberVim"},
 
 		{ "name": "Preprocessor", "fore":"PreProcVim" },
+		{ "name": "Preprocessor(Region Name)", "fore":"PreProcVim" },
 
 		{ "name": "Xml Text", "fore":"NormalVim" },
 		{ "name": "Xml Delimiter", "fore":"NormalVim" },

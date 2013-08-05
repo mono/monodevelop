@@ -1,24 +1,5 @@
-<Addin id          = "SourceEditor2"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Source Editor"
-       author      = "Mike Krüger"
-       copyright   = ""
-       url         = ""
-       description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
-       category    = "MonoDevelop Core"
-       flags       = "Hidden"
-       version     = "4.1.7">
+<ExtensionModel>
 	
-	<Runtime>
-		<Import assembly="MonoDevelop.SourceEditor2.dll"/>
-	</Runtime>
-
-	<Dependencies>
-	    <Addin id="Core" version="4.1.7"/>
-	    <Addin id="Ide" version="4.1.7"/>
-	    <Addin id="Debugger" version="4.1.7"/>
-	</Dependencies>
-
 	<!-- Extension points -->
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
@@ -91,6 +72,28 @@
 		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
 		         _label = "MarkerOperations"
 		         type = "array"/> 
+		<Category _name = "Code Navigation" id = "CodeNavigation">
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue"
+						_label = "Next Issue in File" 
+						shortcut = "Alt|Page_Down"
+						macShortcut = "Alt|Page_Down"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue"
+						_label = "Previous Issue in File" 
+						shortcut = "Alt|Page_Up"
+						macShortcut = "Alt|Page_Up"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError"
+						_label = "Next Error" 
+						shortcut = "Alt|Shift|Page_Down"
+						macShortcut = "Alt|Shift|Page_Down"
+			/>
+			<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError"
+						_label = "Previous Error" 
+						shortcut = "Alt|Shift|Page_Up"
+						macShortcut = "Alt|Shift|Page_Up"
+			/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
@@ -191,6 +194,7 @@
 		<Section id = "Markers" _label = "Markers and Rulers" icon="md-markers-rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
 		<Section id = "Behavior" _label = "Behavior" icon="md-text-editor-behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
 		<Section id = "CompletionBehavior" _label = "Completion Behavior" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel"/>
+<!--		<Section id = "CompletionCharacters" _label = "Completion Characters" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel"/> -->
 		<Section id = "CompletionAppearance" _label = "Completion Appearance" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel"/>
 		<Section id = "SyntaxHighlighting" _label = "Syntax Highlighting" fill="true" icon="md-syntax-highlighting" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
 	</Extension>
@@ -201,6 +205,15 @@
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues" />
+		</ItemSet>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
+		<ItemSet id = "Inspect" _label = "Inspect" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" insertbefore="Separator3">
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" />
 		</ItemSet>
 	</Extension>
 
@@ -215,4 +228,4 @@
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
 	</Extension>
-</Addin>
+</ExtensionModel>

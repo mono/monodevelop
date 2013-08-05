@@ -408,12 +408,14 @@ namespace MonoDevelop.Ide.Gui
 						if (vcFound != null) {
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 							if (line >= 1 && ipos != null) {
-								ipos.SetCaretTo (
-									line,
-									column >= 1 ? column : 1,
-									options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-									options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-								);
+								doc.RunWhenLoaded (() => {
+									ipos.SetCaretTo (
+										line,
+										column >= 1 ? column : 1,
+										options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+										options.HasFlag (OpenDocumentOptions.CenterCaretLine)
+									);
+								});
 							}
 							
 							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -612,7 +614,7 @@ namespace MonoDevelop.Ide.Gui
 			if (activeLocationList != null) {
 				NavigationPoint next = activeLocationList.GetNextLocation ();
 				if (next != null)
-					next.Show ();
+					next.ShowDocument ();
 			}
 		}
 		
@@ -623,7 +625,7 @@ namespace MonoDevelop.Ide.Gui
 			if (activeLocationList != null) {
 				NavigationPoint next = activeLocationList.GetPreviousLocation ();
 				if (next != null)
-					next.Show ();
+					next.ShowDocument ();
 			}
 		}
 		
@@ -715,6 +717,7 @@ namespace MonoDevelop.Ide.Gui
 						window.ViewContent.DiscardChanges ();
 				}
 			}
+			OnDocumentClosing (FindDocument (window));
 		}
 		
 		void OnWindowClosed (object sender, WorkbenchWindowEventArgs args)
@@ -1101,8 +1104,21 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		void OnDocumentClosing (Document doc)
+		{
+			try {
+				var e = new DocumentEventArgs (doc);
+				EventHandler<DocumentEventArgs> handler = this.DocumentClosing;
+				if (handler != null)
+					handler (this, e);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception before closing documents", ex);
+			}
+		}
+
 		public event EventHandler<DocumentEventArgs> DocumentOpened;
 		public event EventHandler<DocumentEventArgs> DocumentClosed;
+		public event EventHandler<DocumentEventArgs> DocumentClosing;
 
 		public void ReparseOpenDocuments ()
 		{

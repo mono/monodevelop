@@ -1376,6 +1376,26 @@ namespace MonoDevelop.CSharp.Formatting
 				options.BlankLinesBetweenMembers = value;
 			}
 		}
+
+		[ItemProperty]
+		public int BlankLinesAroundRegion {
+			get {
+				return options.BlankLinesAroundRegion;
+			}
+			set {
+				options.BlankLinesAroundRegion = value;
+			}
+		}
+
+		[ItemProperty]
+		public int BlankLinesInsideRegion {
+			get {
+				return options.BlankLinesInsideRegion;
+			}
+			set {
+				options.BlankLinesInsideRegion = value;
+			}
+		}
 		#endregion
 
 		#region Wrapping

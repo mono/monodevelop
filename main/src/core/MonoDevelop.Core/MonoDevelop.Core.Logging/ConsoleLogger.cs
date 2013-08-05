@@ -33,7 +33,7 @@ namespace MonoDevelop.Core.Logging
 	
 	public class ConsoleLogger : ILogger
 	{
-		EnabledLoggingLevel enabledLevel = EnabledLoggingLevel.UpToWarn;
+		EnabledLoggingLevel enabledLevel = EnabledLoggingLevel.UpToInfo;
 		bool useColour = false;
 		
 		public ConsoleLogger ()

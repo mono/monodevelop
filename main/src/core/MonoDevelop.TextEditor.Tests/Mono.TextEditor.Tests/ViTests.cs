@@ -122,12 +122,12 @@ qrstu",
 		}
 
 		[Test]
-		[TestCase(0, Result = " foo.bar[20]->baz_bay")]
-		[TestCase(2, Result = "iffoo.bar[20]->baz_bay")]
-		[TestCase(3, Result = "if .bar[20]->baz_bay")]
-		[TestCase(5, Result = "if .bar[20]->baz_bay")]
-		[TestCase(6, Result = "if foobar[20]->baz_bay")]
-		[TestCase(16, Result = "if foo.bar[20]->")]
+		[TestCase(0, ExpectedResult = " foo.bar[20]->baz_bay")]
+		[TestCase(2, ExpectedResult = "iffoo.bar[20]->baz_bay")]
+		[TestCase(3, ExpectedResult = "if .bar[20]->baz_bay")]
+		[TestCase(5, ExpectedResult = "if .bar[20]->baz_bay")]
+		[TestCase(6, ExpectedResult = "if foobar[20]->baz_bay")]
+		[TestCase(16, ExpectedResult = "if foo.bar[20]->")]
 		public string ChangeInnerWord(int column) 
 		{
 			var mode = new TestViEditMode { Text = "if foo.bar[20]->baz_bay" };
@@ -152,18 +152,18 @@ qrstu",
 		}
 
 		[Test]
-		[TestCase(0, Result = "if (foo(baz) == bar) ")]
-		[TestCase(2, Result = "if (foo(baz) == bar) ")]
-		[TestCase(3, Result = "if () ")]
-		[TestCase(6, Result = "if () ")]
-		[TestCase(7, Result = "if (foo() == bar) ", Ignore = true)] // IBracketMatcher is misbehaving for test mode
-		[TestCase(9, Result = "if (foo() == bar) ")]
-		[TestCase(10, Result = "if (foo() == bar) ")]
-		[TestCase(11, Result = "if (foo() == bar) ")]
-		[TestCase(12, Result = "if () ")]
-		[TestCase(18, Result = "if () ")]
-		[TestCase(19, Result = "if () ")]
-		[TestCase(20, Result = "if (foo(baz) == bar) ")]
+		[TestCase(0, ExpectedResult = "if (foo(baz) == bar) ")]
+		[TestCase(2, ExpectedResult = "if (foo(baz) == bar) ")]
+		[TestCase(3, ExpectedResult = "if () ")]
+		[TestCase(6, ExpectedResult = "if () ")]
+		[TestCase(7, ExpectedResult = "if (foo() == bar) ", Ignore = true)] // IBracketMatcher is misbehaving for test mode
+		[TestCase(9, ExpectedResult = "if (foo() == bar) ")]
+		[TestCase(10, ExpectedResult = "if (foo() == bar) ")]
+		[TestCase(11, ExpectedResult = "if (foo() == bar) ")]
+		[TestCase(12, ExpectedResult = "if () ")]
+		[TestCase(18, ExpectedResult = "if () ")]
+		[TestCase(19, ExpectedResult = "if () ")]
+		[TestCase(20, ExpectedResult = "if (foo(baz) == bar) ")]
 		public string ChangeInnerParen(int column) 
 		{
 			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
@@ -173,12 +173,12 @@ qrstu",
 		}
 
 		[Test]
-		[TestCase(0, 2, Result = "do { \n\tfoo\n} forever;")]
-		[TestCase(0, 3, Result = "do {\n} forever;")]
-		[TestCase(0, 4, Result = "do {\n} forever;")]
-		[TestCase(1, 0, Result = "do {\n} forever;")]
-		[TestCase(2, 0, Result = "do {\n} forever;")]
-		[TestCase(2, 1, Result = "do { \n\tfoo\n} forever;")]
+		[TestCase(0, 2, ExpectedResult = "do { \n\tfoo\n} forever;")]
+		[TestCase(0, 3, ExpectedResult = "do {\n} forever;")]
+		[TestCase(0, 4, ExpectedResult = "do {\n} forever;")]
+		[TestCase(1, 0, ExpectedResult = "do {\n} forever;")]
+		[TestCase(2, 0, ExpectedResult = "do {\n} forever;")]
+		[TestCase(2, 1, ExpectedResult = "do { \n\tfoo\n} forever;")]
 		public string ChangeInnerBrace (int row, int column)
 		{
 			var mode = new TestViEditMode { Text = 
@@ -192,15 +192,15 @@ qrstu",
 		}
 
 		[Test]
-		[TestCase(0, 0, Result = "{\n}")]
-		[TestCase(1, 0, Result = "{\n}")]
-		[TestCase(2, 0, Result = "{\n}")]
-		[TestCase(3, 0, Result = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
-		[TestCase(4, 0, Result = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
-		[TestCase(5, 0, Result = "{\n}")]
-		[TestCase(6, 0, Result = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
-		[TestCase(7, 0, Result = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
-		[TestCase(8, 0, Result = "{\n}")]
+		[TestCase(0, 0, ExpectedResult = "{\n}")]
+		[TestCase(1, 0, ExpectedResult = "{\n}")]
+		[TestCase(2, 0, ExpectedResult = "{\n}")]
+		[TestCase(3, 0, ExpectedResult = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
+		[TestCase(4, 0, ExpectedResult = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
+		[TestCase(5, 0, ExpectedResult = "{\n}")]
+		[TestCase(6, 0, ExpectedResult = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
+		[TestCase(7, 0, ExpectedResult = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
+		[TestCase(8, 0, ExpectedResult = "{\n}")]
 		public string ChangeInnerBrace_WithNestedMatchingBraces(int row, int column)
 		{
 			var mode = new TestViEditMode { Text = 
@@ -285,22 +285,22 @@ qrstu",
 		}
 
 		[Test]
-		[TestCase(0, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
-		[TestCase(1, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
-		[TestCase(5, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
-		[TestCase(6, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
-		[TestCase(7, '\'', Result = @"'hello''world\'s' 'worlder\\'s'")]
-		[TestCase(8, '\'', Result = @"'hello' '' 'worlder\\'s'", IgnoreReason = "Advanced scenario")]
-		[TestCase(9, '\'', Result = @"'hello' '' 'worlder\\'s'")]
-		[TestCase(16, '\'', Result = @"'hello' '' 'worlder\\'s'")]
-		[TestCase(17, '\'', Result = @"'hello' '' 'worlder\\'s'")]
-		[TestCase(18, '\'', Result = @"'hello' 'world\'s''worlder\\'s'")]
-		[TestCase(19, '\'', Result = @"'hello' 'world\'s' ''", IgnoreReason = "Advanced scenario")]
-		[TestCase(29, '\'', Result = @"'hello' 'world\'s' ''")]
-		[TestCase(30, '\'', Result = @"'hello' 'world\'s' ''")]
-		[TestCase(31, '\'', Result = @"'hello' 'world\'s' ''")]
-		[TestCase(1, '"', Result = @""""" ""world\""s"" ""worlder\\""s""")]
-		[TestCase(31, '`', Result = @"`hello` `world\`s` ``")]
+		[TestCase(0, '\'', ExpectedResult = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(1, '\'', ExpectedResult = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(5, '\'', ExpectedResult = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(6, '\'', ExpectedResult = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(7, '\'', ExpectedResult = @"'hello''world\'s' 'worlder\\'s'")]
+		[TestCase(8, '\'', ExpectedResult = @"'hello' '' 'worlder\\'s'", IgnoreReason = "Advanced scenario")]
+		[TestCase(9, '\'', ExpectedResult = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(16, '\'', ExpectedResult = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(17, '\'', ExpectedResult = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(18, '\'', ExpectedResult = @"'hello' 'world\'s''worlder\\'s'")]
+		[TestCase(19, '\'', ExpectedResult = @"'hello' 'world\'s' ''", IgnoreReason = "Advanced scenario")]
+		[TestCase(29, '\'', ExpectedResult = @"'hello' 'world\'s' ''")]
+		[TestCase(30, '\'', ExpectedResult = @"'hello' 'world\'s' ''")]
+		[TestCase(31, '\'', ExpectedResult = @"'hello' 'world\'s' ''")]
+		[TestCase(1, '"', ExpectedResult = @""""" ""world\""s"" ""worlder\\""s""")]
+		[TestCase(31, '`', ExpectedResult = @"`hello` `world\`s` ``")]
 		public string ChangeInnerQuote (int col, char quote)
 		{
 			var mode = new TestViEditMode { Text = @"'hello' 'world\'s' 'worlder\\'s'".Replace ('\'', quote) };
