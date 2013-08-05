@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
+using MonoDevelop.CSharp.Refactoring;
 using Mono.TextEditor;
 using System.Text;
 using System.Collections.Generic;
@@ -38,6 +39,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -60,12 +62,13 @@ namespace MonoDevelop.CSharpBinding
 			return data;
 		}
 
-		DocumentStateTracker<CSharpIndentEngine> CreateTracker (TextEditorData data)
+		IStateMachineIndentEngine CreateTracker (TextEditorData data)
 		{
-			var policy = PolicyService.InvariantPolicies.Get <CSharpFormattingPolicy> ("text/x-csharp");
-			var textStylePolicy = PolicyService.InvariantPolicies.Get <TextStylePolicy> ("text/x-csharp");
-			var result = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), data);
-			result.UpdateEngine ();
+			var policy = PolicyService.InvariantPolicies.Get <CSharpFormattingPolicy> ("text/x-csharp").CreateOptions();
+			var textStylePolicy = data.CreateNRefactoryTextEditorOptions();
+			textStylePolicy.IndentBlankLines = true;
+			var result = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(data.Document, textStylePolicy, policy));
+			result.Update (data.Caret.Offset);
 			return result;
 		}
 
