@@ -44,7 +44,7 @@ using System.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
+	public class CSharpTextEditorIndentation : TextEditorExtension, Mono.TextEditor.ITextPasteHandler
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Formatting
 			VerbatimString = 2
 		}
 
-		byte[] ITextPasteHandler.GetCopyData (TextSegment segment)
+		byte[] Mono.TextEditor.ITextPasteHandler.GetCopyData(TextSegment segment)
 		{
 			stateTracker.UpdateEngine (segment.Offset);
 			if (stateTracker.Engine.IsInsideStringLiteral)
@@ -350,7 +350,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.ToString ();
 		}
 
-		string ITextPasteHandler.FormatPlainText (int insertionOffset, string text, byte[] copyData)
+		string Mono.TextEditor.ITextPasteHandler.FormatPlainText(int insertionOffset, string text, byte[] copyData)
 		{
 			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
 			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
