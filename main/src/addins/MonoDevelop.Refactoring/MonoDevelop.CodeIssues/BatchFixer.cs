@@ -34,7 +34,6 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using System.Threading;
 using MonoDevelop.Projects;
-using System.IO;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor.Utils;
@@ -48,8 +47,6 @@ namespace MonoDevelop.CodeIssues
 		IActionMatcher matcher;
 
 		IProgressMonitor monitor;
-
-		string lastMime;
 
 		public BatchFixer (IActionMatcher matcher, IProgressMonitor monitor)
 		{
@@ -134,7 +131,7 @@ namespace MonoDevelop.CodeIssues
 			return issues;
 		}
 
-		static IList<CodeIssueProvider> GetInspectors (Mono.TextEditor.TextEditorData editor, ICollection<string> inspectorIds)
+		static IList<CodeIssueProvider> GetInspectors (TextEditorData editor, ICollection<string> inspectorIds)
 		{
 			var inspectors = RefactoringService.GetInspectors (editor.MimeType).ToList ();
 			return inspectors
