@@ -92,7 +92,8 @@ namespace MonoDevelop.CodeIssues
 			view.RowActivated += OnRowActivated;
 			view.RowExpanding += OnRowExpanding;
 			view.ButtonPressed += HandleButtonPressed;
-			PackStart (view, BoxMode.FillAndExpand);
+			view.ButtonReleased += HandleButtonReleased;
+			PackStart (view, true);
 			
 			IIssueTreeNode node = rootGroup;
 			node.ChildrenInvalidated += (sender, group) => {
@@ -397,12 +398,47 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void HandleButtonPressed (object sender, ButtonEventArgs e)
+		#region Button event handlers
+		// Event handling of right click on the TreeView is split in two parts
+		// This is because no single handler can support intuitive behavior regarding
+		// what happens to the selection when the right mouse button is pressed:
+		// if only a single row is selected: change the selection and then show menu
+		// if multiple rows are selected: show the menu directly
+
+		void HandleButtonReleased (object sender, ButtonEventArgs e)
 		{
-			if (e.Button == PointerButton.Right) {
-				ShowBatchFixContextMenu (e.X, e.Y);
+			if (e.Button != PointerButton.Right || handledByPress)
+				return;
+
+			var rows = view.SelectedRows;
+			if (rows.Length <= 1) {
+				// Single row or no row
+				ShowBatchFixContextMenu (e.X, e.Y, view.SelectedRows);
 			}
 		}
+
+		bool handledByPress;
+
+		void HandleButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (e.Button != PointerButton.Right)
+				return;
+
+			var rows = view.SelectedRows;
+			if (rows.Length > 1) {
+				// this is a multiple selection
+				// waiting in this case means the selection disappears
+				ShowBatchFixContextMenu (e.X, e.Y, rows);
+
+				// Don't let the selection be reset
+				e.Handled = true;
+				handledByPress = true;
+			} else {
+				handledByPress = false;
+			}
+		}
+
+		#endregion
 
 		void UpdateParents (TreeNavigator navigator)
 		{
@@ -412,40 +448,49 @@ namespace MonoDevelop.CodeIssues
 			} while (navigator.MoveToParent ());
 		}
 
-		void ShowBatchFixContextMenu (double x, double y)
+		void ShowBatchFixContextMenu (double x, double y, IEnumerable<TreePosition> rows)
 		{
-			var issues = view.SelectedRows
+			var possibleFixes = rows
 				.Select (row => store.GetNavigatorAt (row).GetValue (nodeField))
 				.Where (node1 => node1 != null)
 				.SelectMany (node2 => node2.AllChildren.Union (new [] { node2 }))
 				.Where (node3 => node3.Visible)
-				.OfType<IssueSummary> ();
-			var possibleFixes = issues
-				.SelectMany (issue => issue.Actions.Select (a => new { Issue = issue, Action = a }))
-				.Where (item1 => item1.Action.Batchable)
-				// I'm using the ProviderTitle to distiguish between different providers because it is easy
-				// TODO: Don't use the free-form ProviderTitle property to distiguish between providers
-				.GroupBy (item2 => Tuple.Create (item2.Action.SiblingKey, item2.Issue.ProviderTitle))
-				.OrderBy (fixGroup => -fixGroup.Count ())
-				.Select (fixGroup2 => new {
-					SiblingKey = fixGroup2.Key.Item1,
-					Title = fixGroup2.First ().Action.Title,
-					Actions = fixGroup2.Select (item => item.Action).ToList ()
-				});
+				.OfType<IssueSummary> ()
+				.Where (issue => issue.Actions.Any (a => a.Batchable))
+				.Distinct()
+				.GroupBy(issue => issue.InspectorIdString)
+				.OrderBy (group => -group.Count ());
 				
-			var choices = possibleFixes.Take (BatchChoiceCount).ToList ();
-			if (!choices.Any ())
+			var groups = possibleFixes.Take (BatchChoiceCount).ToList ();
+			if (!groups.Any ())
 				return;
 			
 			var menu = new Menu ();
-			foreach (var _choice in choices) {
-				var choice = _choice;
-				var menuItem = new MenuItem (choice.Title);
-				menuItem.Clicked += delegate {
+			foreach (var g in groups) {
+				menu.Items.Add (CreateIssueMenuItem (g));
+			}
+			menu.Popup (view, x, y);
+		}
+
+		MenuItem CreateIssueMenuItem (IEnumerable<IssueSummary> issues)
+		{
+			var allIssues = issues as IList<IssueSummary> ?? issues.ToList ();
+			var issueMenuItem = new MenuItem (allIssues.First ().ProviderTitle);
+			var issueSubMenu = new Menu ();
+			issueMenuItem.SubMenu = issueSubMenu;
+			
+			var actionGroups = allIssues
+				.SelectMany (issue => issue.Actions)
+				.GroupBy (action => action.SiblingKey);
+			foreach (var _actionGroup in actionGroups) {
+				var actionGroup = _actionGroup;
+				
+				var actionMenuItem = new MenuItem (actionGroup.First ().Title);
+				actionMenuItem.Clicked += delegate {
 					ThreadPool.QueueUserWorkItem (delegate {
 						using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Applying fixes", null, false)) {
 							var fixer = new BatchFixer (new ExactIssueMatcher (), monitor);
-							var appliedActions = fixer.TryFixIssues (choice.Actions);
+							var appliedActions = fixer.TryFixIssues (actionGroup);
 							foreach (var action in appliedActions) {
 								((IIssueTreeNode)action.IssueSummary).Visible = false;
 							}
@@ -455,10 +500,11 @@ namespace MonoDevelop.CodeIssues
 						});
 					});
 				};
-				menu.Items.Add (menuItem);
+				issueSubMenu.Items.Add (actionMenuItem);
 			}
-			menu.Popup (view, x, y);
+			return issueMenuItem;
 		}
+		
 	}
 
 	public class CodeIssuePad : AbstractPadContent
@@ -469,7 +515,7 @@ namespace MonoDevelop.CodeIssues
 			get {
 				if (issueControl == null)
 					issueControl = new CodeIssuePadControl ();
-				return (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (issueControl);
+				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (issueControl);
 			}
 		}
 	}
