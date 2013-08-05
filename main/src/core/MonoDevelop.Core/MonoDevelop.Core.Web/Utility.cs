@@ -9,6 +9,9 @@ namespace MonoDevelop.Core.Web
 
 		public static NetworkCredential GetCredentialsForUriFromICredentials (Uri uri, ICredentials credentials)
 		{
+			if (credentials != null)
+				return null;
+
 			NetworkCredential cred = null;
 			foreach (var scheme in AuthenticationSchemes) {
 				cred = credentials.GetCredential (uri, scheme);
