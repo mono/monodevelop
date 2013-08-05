@@ -216,32 +216,30 @@ namespace MonoDevelop.Debugger
 					continue;
 				}
 
-				if ((token = ReadSyntaxToken (text, ref index)) == null)
-					continue;
+				while ((token = ReadSyntaxToken (text, ref index)) != null) {
+					EatWhitespace (text, ref index);
 
-				EatWhitespace (text, ref index);
-
-				switch (token) {
-				case ")": case "]":
-					if (tokens.Contains (token)) {
-						do {
-							stack.Pop ();
-						} while (tokens.Pop () != token);
-						stack.Pop ();
+					switch (token) {
+					case ")": case "]":
+						if (tokens.Contains (token)) {
+							do {
+								stack.Pop ();
+							} while (tokens.Pop () != token);
+						}
+						break;
+					case "(":
+						tokens.Push (")");
+						stack.Push (index);
+						break;
+					case "[":
+						tokens.Push ("]");
+						stack.Push (index);
+						break;
+					default:
+						tokens.Push (token);
+						stack.Push (index);
+						break;
 					}
-					break;
-				case "(":
-					tokens.Push (")");
-					stack.Push (index);
-					break;
-				case "[":
-					tokens.Push ("]");
-					stack.Push (index);
-					break;
-				default:
-					tokens.Push (token);
-					stack.Push (index);
-					break;
 				}
 			}
 
