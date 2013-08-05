@@ -26,26 +26,35 @@
 //
 
 using System;
+
 using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class BookmarkMarker: TextLineMarker, IIconBarMarker
+	public class BookmarkMarker : MarginMarker
 	{
 		internal static BookmarkMarker Instance = new BookmarkMarker ();
 		
-		public BookmarkMarker()
+		public BookmarkMarker ()
 		{
 		}
 
-		public bool CanDrawBackground { get { return false; } }
-
-		public void DrawBackground (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height)
+		public override bool CanDrawBackground (Margin margin)
 		{
-			throw new NotSupportedException ();
+			return false;
 		}
 
-		public void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, int lineNumber, double x, double y, double width, double height)
+		public override bool CanDrawForeground (Margin margin)
+		{
+			return margin is IconMargin;
+		}
+
+		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			DrawIcon (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
+		}
+
+		static void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height)
 		{
 			if (lineSegment.IsBookmarked) {
 				var color1 = editor.ColorStyle.Bookmarks.Color;
@@ -68,7 +77,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public static void DrawRoundRectangle (Cairo.Context cr, double x, double y, double r, double w, double h)
+		static void DrawRoundRectangle (Cairo.Context cr, double x, double y, double r, double w, double h)
 		{
 			const double ARC_TO_BEZIER = 0.55228475;
 			double radius_x = r;
@@ -96,18 +105,6 @@ namespace Mono.TextEditor
 			cr.RelLineTo (0, -h + 2 * radius_y);
 			cr.RelCurveTo (0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
 			cr.ClosePath ();
-		}
-		
-		public void MousePress (MarginMouseEventArgs args)
-		{
-		}
-		
-		public void MouseRelease (MarginMouseEventArgs args)
-		{
-		}
-		
-		public void MouseHover (MarginMouseEventArgs args)
-		{
 		}
 	}
 }

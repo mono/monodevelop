@@ -101,6 +101,7 @@
     <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.RegexToolkitWidget.cs" />
     <Compile Include="MonoDevelop.RegexToolkit\ElementHelpWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.RegexToolkit.ElementHelpWidget.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

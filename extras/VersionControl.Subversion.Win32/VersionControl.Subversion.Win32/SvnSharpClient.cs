@@ -9,7 +9,6 @@ using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
-using System.Text;
 
 namespace SubversionAddinWindows
 {
@@ -33,7 +32,7 @@ namespace SubversionAddinWindows
 		{
 			return new SvnSharpBackend ();
 		}
-			
+
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
@@ -55,6 +54,19 @@ namespace SubversionAddinWindows
 					}
 				}
 				return !installError;
+			}
+		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			string wc_path;
+			try {
+				wc_path = client.GetWorkingCopyRoot (path.FullPath);
+				return wc_path;
+			} catch (SvnException e) {
+				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_DIRECTORY)
+					return "";
+				throw;
 			}
 		}
 	}
@@ -383,6 +395,7 @@ namespace SubversionAddinWindows
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 
+			// TODO: Fix remote status for Win32 Svn.
 			if (ent.IsRemoteUpdated) {
 				rs = ConvertStatus (SvnSchedule.Normal, ent.RemoteContentStatus);
 				rr = new SvnRevision (repo, (int) ent.RemoteUpdateRevision, ent.RemoteUpdateCommitTime,

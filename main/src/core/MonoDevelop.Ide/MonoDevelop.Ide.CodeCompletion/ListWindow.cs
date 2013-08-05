@@ -64,7 +64,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public CompletionTextEditorExtension Extension {
 			get;
 			set;
-		}		
+		}
+
+		public CompletionCharacters CompletionCharacters {
+			get {
+				var ext = Extension;
+				if (ext == null) // May happen in unit tests.
+					return MonoDevelop.Ide.CodeCompletion.CompletionCharacters.FallbackCompletionCharacters;
+				return MonoDevelop.Ide.CodeCompletion.CompletionCharacters.Get (ext.CompletionLanguage);
+			}
+		}
 		
 		public List<int> FilteredItems {
 			get {
@@ -133,12 +142,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			list.CompletionString = PartialWord;
 			
-			if (IsRealized && !Visible)
+			var allocWidth = Allocation.Width;
+			if (IsRealized && !Visible) {
+				allocWidth = list.WidthRequest = WindowWidth;
 				Show ();
+			}
 
-			int width = Math.Max (Allocation.Width, list.WidthRequest + Theme.CornerRadius * 2);
+			int width = Math.Max (allocWidth, list.WidthRequest + Theme.CornerRadius * 2);
 			int height = Math.Max (Allocation.Height, list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + Theme.CornerRadius * 2);
-			
 			SetSizeRequest (width, height);
 			if (IsRealized) 
 				Resize (width, height);
@@ -303,12 +314,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (keyChar == '.')
 					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
-				if (list.SelectionEnabled) {
+
+				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {
 					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
 					    return KeyActions.CloseWindow | KeyActions.Process;
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				}
-			    return KeyActions.CloseWindow | KeyActions.Process;
+				return KeyActions.CloseWindow | KeyActions.Process;
 			}
 			
 			return KeyActions.Process;

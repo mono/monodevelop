@@ -122,26 +122,43 @@ namespace MonoDevelop.Projects
 			root = new ProjectFileNode ();
 		}
 
-		void ProjectFileLinkChanged (object sender, ProjectFileLinkChangedEventArgs e)
+		void ProjectVirtualPathChanged (object sender, ProjectFileVirtualPathChangedEventArgs e)
 		{
-			var node = root.Find (e.OldLink, false);
-			if (node != null) {
-				node.Parent.Children.Remove (node.FileName);
-				PruneEmptyParents (node.Parent);
+			ProjectFileNode node;
+
+			// Note: if the OldVirtualPath is null, then it means that a Project was just set on the ProjectFile
+			// which means that it hasn't yet been added to our VirtualProjectPath tree.
+			if (e.OldVirtualPath.IsNotNull) {
+				node = root.Find (e.OldVirtualPath, false);
+				if (node != null) {
+					node.Parent.Children.Remove (node.FileName);
+					PruneEmptyParents (node.Parent);
+				}
 			}
 
-			node = root.Find (e.NewLink, true);
+			node = root.Find (e.NewVirtualPath, true);
 			node.ProjectFile = e.ProjectFile;
+		}
+
+		void FilePathChanged (object sender, ProjectFilePathChangedEventArgs e)
+		{
+			ProjectVirtualPathChanged (sender, e);
+			files.Remove (e.OldPath);
+			files.Add (e.NewPath, e.ProjectFile);
 		}
 
 		void AddProjectFile (ProjectFile item)
 		{
-			var node = root.Find (item.ProjectVirtualPath, true);
-			node.ProjectFile = item;
+			item.VirtualPathChanged += ProjectVirtualPathChanged;
+			item.PathChanged += FilePathChanged;
+
+			if (item.Project != null) {
+				// Note: the ProjectVirtualPath is useless unless a Project is specified.
+				var node = root.Find (item.ProjectVirtualPath, true);
+				node.ProjectFile = item;
+			}
 
 			files[item.FilePath] = item;
-
-			item.LinkChanged += ProjectFileLinkChanged;
 		}
 
 		void PruneEmptyParents (ProjectFileNode node)
@@ -163,7 +180,8 @@ namespace MonoDevelop.Projects
 
 			files.Remove (item.FilePath);
 
-			item.LinkChanged -= ProjectFileLinkChanged;
+			item.VirtualPathChanged -= ProjectVirtualPathChanged;
+			item.PathChanged -= FilePathChanged;
 		}
 
 		#region ItemCollection<T>
@@ -246,8 +264,8 @@ namespace MonoDevelop.Projects
 		public void Remove (string fileName)
 		{
 			fileName = FileService.GetFullPath (fileName);
-			for (int n=0; n<Count; n++) {
-				if (Items [n].Name == fileName) {
+			for (int n = 0; n < Count; n++) {
+				if (Items[n].Name == fileName) {
 					RemoveAt (n);
 					break;
 				}

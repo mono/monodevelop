@@ -58,13 +58,17 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Gtk.Bin
 	{
 		readonly string mimeType;
-		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(CodeIssueProvider));
+		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(BaseCodeIssueProvider));
 
-		Dictionary<CodeIssueProvider, Severity> severities = new Dictionary<CodeIssueProvider, Severity> ();
+		Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
 		void GetAllSeverities ()
 		{
 			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
 				severities [node] = node.GetSeverity ();
+				if (node.HasSubIssues) {
+					foreach (var subIssue in node.SubIssues)
+						severities [subIssue] = subIssue.GetSeverity ();
+				}
 			}
 		}
 
@@ -108,7 +112,10 @@ namespace MonoDevelop.CodeIssues
 		{
 			categories.Clear ();
 			treeStore.Clear ();
-			foreach (var node in severities.Keys) {
+			foreach (var k in severities.Keys) {
+				var node = k as CodeIssueProvider;
+				if (node == null)
+					continue;
 				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 				Gtk.TreeIter iter;
@@ -121,7 +128,19 @@ namespace MonoDevelop.CodeIssues
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
 				}
-				treeStore.AppendValues (iter, title, node);
+				var nodeIter = treeStore.AppendValues (iter, title, node);
+
+				if (node.HasSubIssues) {
+					foreach (var subIssue in node.SubIssues) {
+						title = subIssue.Title;
+						if (!string.IsNullOrEmpty (filter)) {
+							var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
+							title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+						}
+						treeStore.AppendValues (nodeIter, title, subIssue);
+					}
+				}
+
 			}
 			treeviewInspections.ExpandAll ();
 		}
@@ -168,7 +187,7 @@ namespace MonoDevelop.CodeIssues
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						var provider = (CodeIssueProvider)treeStore.GetValue (iter, 1);
+						var provider = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
 						var severity = (Severity)comboBoxStore.GetValue (storeIter, 1);
 						severities[provider] = severity;
 						return;
@@ -177,7 +196,7 @@ namespace MonoDevelop.CodeIssues
 			};
 			
 			col.SetCellDataFunc (comboRenderer, delegate (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
-				var provider = (CodeIssueProvider)model.GetValue (iter, 1);
+				var provider = (BaseCodeIssueProvider)model.GetValue (iter, 1);
 				if (provider == null) {
 					comboRenderer.Visible = false;
 					return;
@@ -207,7 +226,7 @@ namespace MonoDevelop.CodeIssues
 			Gtk.TreeIter iter;
 			if (!treeviewInspections.Selection.GetSelected (out iter))
 				return;
-			var actionNode = (CodeIssueProvider)treeStore.GetValue (iter, 1);
+			var actionNode = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
 			if (actionNode != null)
 				labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}

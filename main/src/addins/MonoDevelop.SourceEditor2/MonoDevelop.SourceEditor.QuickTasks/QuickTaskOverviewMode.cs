@@ -32,6 +32,8 @@ using Gdk;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -124,20 +126,25 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		internal CodeSegmentPreviewWindow previewWindow;
+
+
+		bool hoverOverIndicator;
+		QuickTaskStrip.HoverMode currentHoverMode;
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
-			
 			if (button != 0)
 				MouseMove (evnt.Y);
 			
-			int h = Allocation.Height - Allocation.Width - 3;
+			var h = IndicatorHeight;
 			if (TextEditor.HighlightSearchPattern) {
-				if (evnt.Y > h)
+				hoverOverIndicator = false;
+				if (evnt.Y < h)
 					this.TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
-			} else { 
-				if (evnt.Y > h) {
-					int errors = 0, warnings = 0;
+			} else {
+				hoverOverIndicator = evnt.Y < h;
+				if (hoverOverIndicator) {
+					int errors = 0, warnings = 0, hints = 0, suggestions = 0;
 					foreach (var task in AllTasks) {
 						switch (task.Severity) {
 						case Severity.Error:
@@ -145,6 +152,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 							break;
 						case Severity.Warning:
 							warnings++;
+							break;
+						case Severity.Hint:
+							hints++;
+							break;
+						case Severity.Suggestion:
+							suggestions++;
 							break;
 						}
 					}
@@ -158,7 +171,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					} else {
 						text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
 					}
-					this.TooltipText = text;
+
+					if (errors > 0) {
+						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
+						currentHoverMode = QuickTaskStrip.HoverMode.NextError;
+					} else if (warnings > 0) {
+						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
+						currentHoverMode = QuickTaskStrip.HoverMode.NextWarning;
+					} else if (warnings + hints > 0) {
+						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
+						currentHoverMode = QuickTaskStrip.HoverMode.NextMessage;
+					}
+
+					TooltipText = text;
 				} else {
 //					TextEditorData editorData = TextEditor.GetTextEditorData ();
 					foreach (var task in AllTasks) {
@@ -285,21 +310,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				throw new ArgumentOutOfRangeException ();
 			}
 		}
-		
-		Cairo.Color GetIndicatorColor (Severity severity)
+
+		Gdk.Pixbuf GetIndicatorIcon (Severity severity)
 		{
-			var style = this.TextEditor.ColorStyle;
-			if (style == null)
-				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
 			case Severity.Error:
-				return style.UnderlineError.Color;
+				return ImageService.GetPixbuf ("md-issuestatus-error", IconSize.Menu);
 			case Severity.Warning:
-				return style.UnderlineWarning.Color;
+				return ImageService.GetPixbuf ("md-issuestatus-warning", IconSize.Menu);
 			default:
-				return style.UnderlineSuggestion.Color;
+				return ImageService.GetPixbuf ("md-issuestatus-ok", IconSize.Menu);
 			}
 		}
+
 		protected virtual double IndicatorHeight  {
 			get {
 				return Allocation.Width;
@@ -308,9 +331,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected virtual void MouseMove (double y)
 		{
-			if (button != 1)
+			if ((button & 1) == 0)
 				return;
-			double position = (y / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
+			double position = ((y - IndicatorHeight) / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
 			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 			vadjustment.Value = position;
 		}
@@ -319,18 +342,25 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected uint button;
 
+
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			button |= evnt.Button;
-			
-			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && hoverTask != null) {
-				TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
-				TextEditor.CenterToCaret ();
-				TextEditor.StartCaretPulseAnimation ();
-				TextEditor.GrabFocus ();
-			} 
-			
-			MouseMove (evnt.Y);
+
+			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && evnt.Type == EventType.ButtonPress) {
+				if (hoverOverIndicator) {
+					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
+					return base.OnButtonPressEvent (evnt);
+				} else  if (hoverTask != null) {
+					TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
+					TextEditor.CenterToCaret ();
+					TextEditor.StartCaretPulseAnimation ();
+					TextEditor.GrabFocus ();
+				} 
+			}
+
+			if (evnt.Type == EventType.ButtonPress)
+				MouseMove (evnt.Y);
 			
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -343,32 +373,27 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Rectangle (
-				indicatorPadding + 0.5,
-				Allocation.Height - IndicatorHeight + indicatorPadding + 0.5,
-				Allocation.Width - indicatorPadding * 2,
-				IndicatorHeight - indicatorPadding * 2
+			cr.Save ();
+			var pixbuf = GetIndicatorIcon (severity);
+			cr.Translate (
+				1 + (Allocation.Width - pixbuf.Width) / 2,
+				1
 			);
-			
-			var darkColor = (HslColor)GetIndicatorColor (severity);
-			darkColor.L *= 0.5;
-			
-			using (var pattern = new Cairo.LinearGradient (0, 0, Allocation.Width - 3, IndicatorHeight)) {
-				pattern.AddColorStop (0, darkColor);
-				pattern.AddColorStop (1, GetIndicatorColor (severity));
-				cr.Pattern = pattern;
-				cr.FillPreserve ();
-			}
-			
-			cr.Color = darkColor;
-			cr.Stroke ();
+
+			CairoHelper.SetSourcePixbuf (
+				cr,
+				pixbuf,
+				0, 0
+			);
+			cr.Paint ();
+			cr.Restore ();
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
 		{
 			int diameter = Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2;
 			var x1 = Math.Round (Allocation.Width / 2d);
-			var y1 = Allocation.Height - Math.Floor (IndicatorHeight / 2d);
+			double y1 = indicatorPadding;
 			if (diameter % 2 == 0) {
 				x1 += 0.5;
 				y1 += 0.5;
@@ -400,7 +425,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = 15;
+			requisition.Width = 17;
 		}
 		
 		double LineToY (int logicalLine)
@@ -409,12 +434,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			var p = TextEditor.LocationToPoint (logicalLine, 1, true).Y;
 			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height - IndicatorHeight);
 
-			return h * p / q;
+			return IndicatorHeight  + h * p / q;
 		}
 		
 		int YToLine (double y)
 		{
-			var line = 0.5 + y / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
+			var line = 0.5 + (y - IndicatorHeight) / (Allocation.Height - IndicatorHeight) * (double)(TextEditor.GetTextEditorData ().VisibleLineCount);
 			return TextEditor.GetTextEditorData ().VisualToLogicalLine ((int)line);
 		}
 		
@@ -505,7 +530,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			int barWidth = Allocation.Width - barPadding - barPadding;
 			var allocH = Allocation.Height - (int) IndicatorHeight;
 			var adjUpper = vadjustment.Upper;
-			var barY = Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
+			var barY = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
 			const int minBarHeight = 16;
 			var barH = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
 

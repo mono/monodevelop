@@ -37,7 +37,9 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		TextView textView;
 		RawValueString raw;
+#pragma warning disable 414
 		ObjectValue val;
+#pragma warning restore 414
 		uint idle_id;
 		int length;
 		int offset;
@@ -75,11 +77,11 @@ namespace MonoDevelop.Debugger.Visualizer
 			return false;
 		}
 
-		public Gtk.Widget GetVisualizerWidget (ObjectValue val)
+		public Widget GetVisualizerWidget (ObjectValue val)
 		{
 			VBox box = new VBox (false, 6);
 			textView = new TextView () { WrapMode = WrapMode.Char };
-			Gtk.ScrolledWindow scrolled = new Gtk.ScrolledWindow ();
+			ScrolledWindow scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
 			scrolled.ShadowType = ShadowType.In;
@@ -99,12 +101,12 @@ namespace MonoDevelop.Debugger.Visualizer
 			EvaluationOptions ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.ChunkRawStrings = true;
 			
-			this.raw = val.GetRawValue (ops) as RawValueString;
-			this.length = raw.Length;
-			this.offset = 0;
+			raw = val.GetRawValue (ops) as RawValueString;
+			length = raw.Length;
 			this.val = val;
+			offset = 0;
 			
-			if (this.length > 0) {
+			if (length > 0) {
 				idle_id = GLib.Idle.Add (GetNextStringChunk);
 				textView.Destroyed += delegate {
 					if (idle_id != 0) {

@@ -34,8 +34,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 {
 	class ResultMarker : UnderlineTextSegmentMarker
 	{
-		Result result;
-		
+		readonly Result result;
+
 		public ResultMarker (Result result, TextSegment segment) : base ("", segment)
 		{
 			this.result = result;
@@ -105,7 +105,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
-				
+
 				x_pos = layout.IndexToPos (start - startOffset).X;
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				x_pos = layout.IndexToPos (end - startOffset).X;
@@ -126,8 +126,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 				color.A = 0.6;
 				cr.Color = color;
 				cr.Fill ();
-			} else if (Wave) {	
+			} else if (result.InspectionMark == IssueMarker.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
+			} else if (result.InspectionMark == IssueMarker.DottedLine) {
+				cr.Save ();
+				cr.LineWidth = 1;
+				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - 1 + 0.5);
+				cr.RelLineTo (System.Math.Min (drawTo - drawFrom, 4 * 3), 0);
+				cr.SetDash (new double[] { 2, 2 }, 0);
+				cr.Stroke ();
+				cr.Restore ();
 			} else {
 				cr.MoveTo (drawFrom, y + editor.LineHeight - 1);
 				cr.LineTo (drawTo, y + editor.LineHeight - 1);
@@ -153,7 +161,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
-			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
+			if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
 				return;
 
 			var bgc = editor.ColorStyle.PlainText.Background;

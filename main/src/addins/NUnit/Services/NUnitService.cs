@@ -100,7 +100,7 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
-			return RunTest (test, context, IdeApp.Preferences.BuildBeforeExecuting);
+			return RunTest (test, context, true);
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
@@ -333,12 +333,15 @@ namespace MonoDevelop.NUnit
 		bool success;
 		ManualResetEvent waitEvent;
 		IExecutionHandler context;
-		
+		TestResultsPad resultsPad;
+
 		public TestSession (UnitTest test, IExecutionHandler context, TestResultsPad resultsPad)
 		{
 			this.test = test;
 			this.context = context;
 			this.monitor = new TestMonitor (resultsPad);
+			this.resultsPad = resultsPad;
+			resultsPad.InitializeTestRun (test);
 		}
 		
 		public void Start ()
@@ -353,8 +356,8 @@ namespace MonoDevelop.NUnit
 		{
 			try {
 				NUnitService.ResetResult (test);
-				monitor.InitializeTestRun (test);
-				TestContext ctx = new TestContext (monitor, context, DateTime.Now);
+
+				TestContext ctx = new TestContext (monitor, resultsPad, context, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
 				success = true;

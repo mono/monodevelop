@@ -114,6 +114,7 @@
 		{ "name": "Number", "fore":"monokai-constant"},
 
 		{ "name": "Preprocessor", "fore":"monokai-classname" },
+		{ "name": "Preprocessor(Region Name)", "fore":"monokai-classname" },
 
 		{ "name": "Xml Text", "fore":"monokai-white" },
 		{ "name": "Xml Delimiter", "fore":"monokai-white" },

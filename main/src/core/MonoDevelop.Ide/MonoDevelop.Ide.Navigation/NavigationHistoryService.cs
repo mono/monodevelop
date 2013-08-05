@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Navigation
 	public static class NavigationHistoryService
 	{
 		static HistoryList history = new HistoryList ();
-		static HistoryList closedHistory = new HistoryList ();
-		
+		static Stack<Tuple<NavigationPoint, int>> closedHistory = new Stack<Tuple<NavigationPoint, int>> ();
+
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
 		
@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Navigation
 				OnHistoryChanged ();
 			};
 
-			IdeApp.Workbench.DocumentClosed += delegate(object sender, DocumentEventArgs e) {
-				ClosedDocumentNavigationPoint point = new ClosedDocumentNavigationPoint (
-					e.Document.FileName, IdeApp.Workbench.Documents.IndexOf (IdeApp.Workbench.ActiveDocument)
-				);
-				NavigationHistoryItem item = new NavigationHistoryItem (point);
-				closedHistory.AddPoint (item);
+			IdeApp.Workbench.DocumentClosing += delegate(object sender, DocumentEventArgs e) {
+				NavigationPoint point = GetNavPointForDoc (e.Document);
+				if (point == null)
+					return;
+
+				closedHistory.Push (new Tuple<NavigationPoint, int> (point, IdeApp.Workbench.Documents.IndexOf (e.Document)));
 				OnClosedHistoryChanged ();
 			};
 
@@ -216,12 +216,14 @@ namespace MonoDevelop.Ide.Navigation
 		#region Closed Document List
 
 		public static bool HasClosedDocuments {
-			get { return closedHistory.Current != null; }
+			get { return closedHistory.Count != 0; }
 		}
 
 		public static void OpenLastClosedDocument () {
-			if (closedHistory.Current != null) {
-				closedHistory.Current.Show ();
+			if (HasClosedDocuments) {
+				var tuple = closedHistory.Pop ();
+				var doc = tuple.Item1.ShowDocument ();
+				IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
 			}
 		}
 
@@ -346,7 +348,7 @@ namespace MonoDevelop.Ide.Navigation
 					historyChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
 				}
 				foreach (NavigationHistoryItem point in history) {
-					ClosedDocumentNavigationPoint cdp = point.NavigationPoint as ClosedDocumentNavigationPoint;
+					DocumentNavigationPoint cdp = point.NavigationPoint as DocumentNavigationPoint;
 					closedHistoryChanged &= (cdp != null && cdp.HandleRenameEvent (args.OldName, args.NewName));
 				}
 			}

@@ -70,11 +70,14 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			IEditableTextBuffer buf = window.CompletionWidget as IEditableTextBuffer;
 			if (buf != null) {
+				//completion context gets nulled from window as soon as we alter the buffer
+				var codeCompletionContext = window.CodeCompletionContext;
+
 				using (var undo = buf.OpenUndoGroup ()) {
 					buf.InsertText (buf.CursorPosition, element);
 					
 					// Move caret into the middle of the tags
-					buf.CursorPosition = window.CodeCompletionContext.TriggerOffset + cursorOffset;
+					buf.CursorPosition = codeCompletionContext.TriggerOffset + cursorOffset;
 					buf.Select (buf.CursorPosition, buf.CursorPosition);
 				}
 			}

@@ -36,6 +36,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build ();
 			insertParenthesesCheckbutton.Toggled += InsertParensToggled;
+			autoCodeCompletionCheckbutton.Toggled += AutomaticCompletionToggled;
+
 		}
 
 		void InsertParensToggled (object sender, EventArgs e)
@@ -51,16 +53,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
 		{
-			codeCompletioncheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableCodeCompletion;
-			enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableParameterInsight;
 			autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			showImportsCheckbutton.Active = CompletionTextEditorExtension.AddImportedItemsToCompletionList;
 			includeKeywordsCheckbutton.Active = CompletionTextEditorExtension.IncludeKeywordsInCompletionList;
+			includeCodeSnippetsCheckbutton.Active = CompletionTextEditorExtension.IncludeCodeSnippetsInCompletionList;
+
 			insertParenthesesCheckbutton.Active = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
 			openingRadiobutton.Active = CompletionTextEditorExtension.AddOpeningOnly;
 			bothRadiobutton.Active = !CompletionTextEditorExtension.AddOpeningOnly;
+
 			InsertParensToggled (this, EventArgs.Empty);
+			AutomaticCompletionToggled (this, EventArgs.Empty);
 			return this;
+		}
+
+		void AutomaticCompletionToggled (object sender, EventArgs e)
+		{
+			includeKeywordsCheckbutton.Sensitive = includeCodeSnippetsCheckbutton.Sensitive = !autoCodeCompletionCheckbutton.Active;
 		}
 
 		bool IOptionsPanel.IsVisible ()
@@ -75,11 +84,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void IOptionsPanel.ApplyChanges ()
 		{
-			DefaultSourceEditorOptions.Instance.EnableCodeCompletion = codeCompletioncheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = autoCodeCompletionCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableParameterInsight = enableParameterInsightCheckbutton.Active;
 			CompletionTextEditorExtension.AddImportedItemsToCompletionList.Value = showImportsCheckbutton.Active;
 			CompletionTextEditorExtension.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
+			CompletionTextEditorExtension.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
+
 			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
 			CompletionTextEditorExtension.AddOpeningOnly.Value = openingRadiobutton.Active;
 		}

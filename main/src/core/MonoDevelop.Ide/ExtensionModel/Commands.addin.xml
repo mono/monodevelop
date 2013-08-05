@@ -78,6 +78,7 @@
 			icon = "gtk-redo" 
 			_description = "Redo last undone action" 
 			shortcut = "Control|Shift|Z"
+			winShortcut = "Control|Y"
 			macShortcut = "Meta|Shift|Z" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
 			_label = "Select _All" 
@@ -843,9 +844,7 @@
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
-			_label = "Toggle Completion Suggestion Mode" 
-			macShortcut="Alt|Shift|space"
-			shortcut = "Alt|Shift|space" />
+			_label = "Toggle Completion Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 			_description="Inserts a template or when something is selected surrounds selection with a template"
 			_label = "I_nsert Template..."/>

@@ -42,12 +42,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		#region ICodeIssueProviderSource implementation
 		public IEnumerable<CodeIssueProvider> GetProviders ()
 		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider).Assembly.GetTypes ()) {
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider).Assembly.GetTypes ()) {
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
 				yield return new NRefactoryIssueProvider (
-					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider)Activator.CreateInstance (t),
+					(ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute)attr [0]);
 			}
 		}

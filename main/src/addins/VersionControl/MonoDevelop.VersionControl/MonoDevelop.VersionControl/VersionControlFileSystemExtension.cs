@@ -6,6 +6,7 @@ using MonoDevelop.Core.FileSystem;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
@@ -16,11 +17,11 @@ namespace MonoDevelop.VersionControl
 			// FIXME: don't load this extension if the ide is not loaded.
 			if (IdeApp.ProjectOperations == null || !IdeApp.Workspace.IsOpen)
 				return false;
-			else
-				return GetRepository (path) != null;
+
+			return GetRepository (path) != null;
 		}
 		
-		Repository GetRepository (FilePath path)
+		static Repository GetRepository (FilePath path)
 		{
 			path = path.FullPath;
 			
@@ -53,7 +54,7 @@ namespace MonoDevelop.VersionControl
 		public override void MoveFile (FilePath source, FilePath dest)
 		{
 			IProgressMonitor monitor = new NullProgressMonitor ();
-			
+
 			Repository srcRepo = GetRepository (source);
 			Repository dstRepo = GetRepository (dest);
 			
@@ -61,7 +62,7 @@ namespace MonoDevelop.VersionControl
 				srcRepo.MoveFile (source, dest, true, monitor);
 			else {
 				CopyFile (source, dest, true);
-				srcRepo.DeleteFile (source, true, monitor);
+				srcRepo.DeleteFile (source, true, monitor, false);
 			}
 		}
 		
@@ -78,7 +79,7 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
-			repo.DeleteFile (file, true, new NullProgressMonitor ());
+			repo.DeleteFile (file, true, new NullProgressMonitor (), false);
 		}
 		
 		public override void CreateDirectory (FilePath path)
@@ -99,16 +100,17 @@ namespace MonoDevelop.VersionControl
 				srcRepo.MoveDirectory (sourcePath, destPath, true, monitor);
 			else {
 				CopyDirectory (sourcePath, destPath);
-				srcRepo.DeleteDirectory (sourcePath, true, monitor);
+				srcRepo.DeleteDirectory (sourcePath, true, monitor, false);
 			}
 		}
-		
+
 		public override void DeleteDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
-			repo.DeleteDirectory (path, true, new NullProgressMonitor ());
+			repo.DeleteDirectory (path, true, new NullProgressMonitor (), false);
 		}
-		
+
+		[Obsolete ("This will be removed. Override RequestFileEdit (IEnumerable<FilePath>) instead")]
 		public override bool RequestFileEdit (FilePath file)
 		{
 			Repository repo = GetRepository (file);

@@ -19,6 +19,7 @@ obj/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
+/main/tests/TestResult.xml
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files

@@ -1357,6 +1357,11 @@ namespace Mono.TextEditor
 		{
 			return Document.OpenUndoGroup ();
 		}
+
+		public IDisposable OpenUndoGroup(OperationType operationType)
+		{
+			return Document.OpenUndoGroup (operationType);
+		}
 		#endregion
 		
 		#region Parent functions

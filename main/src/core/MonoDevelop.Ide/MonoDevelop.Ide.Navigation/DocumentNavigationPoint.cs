@@ -74,10 +74,16 @@ namespace MonoDevelop.Ide.Navigation
 		FilePath FileName {
 			get { return doc != null? doc.FileName : fileName; }
 		}
-		
+
+		[Obsolete ("Will be removed. Please use ShowDocument.")]
 		public override void Show ()
 		{
 			DoShow ();
+		}
+
+		public override Document ShowDocument ()
+		{
+			return DoShow ();
 		}
 		
 		protected virtual Document DoShow ()
@@ -85,9 +91,8 @@ namespace MonoDevelop.Ide.Navigation
 			if (doc != null) {
 				doc.Select ();
 				return doc;
-			} else {
-				return IdeApp.Workbench.OpenDocument (fileName, true);
 			}
+			return IdeApp.Workbench.OpenDocument (fileName, true);
 		}
 		
 		public override string DisplayName {

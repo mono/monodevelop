@@ -44,11 +44,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
 
 		#region Completion related IDE
-		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
-		public readonly static PropertyWrapper<bool> EnableParameterInsight = PropertyService.Wrap ("EnableParameterInsight", true);
+//		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
+//		public readonly static PropertyWrapper<bool> EnableParameterInsight = PropertyService.Wrap ("EnableParameterInsight", true);
 		public readonly static PropertyWrapper<bool> EnableAutoCodeCompletion = PropertyService.Wrap ("EnableAutoCodeCompletion", true);
 		public readonly static PropertyWrapper<bool> AddImportedItemsToCompletionList = PropertyService.Wrap ("AddImportedItemsToCompletionList", false);
 		public readonly static PropertyWrapper<bool> IncludeKeywordsInCompletionList = PropertyService.Wrap ("IncludeKeywordsInCompletionList", true);
+		public readonly static PropertyWrapper<bool> IncludeCodeSnippetsInCompletionList = PropertyService.Wrap ("IncludeCodeSnippetsInCompletionList", true);
 		public readonly static PropertyWrapper<bool> AddParenthesesAfterCompletion = PropertyService.Wrap ("AddParenthesesAfterCompletion", false);
 		public readonly static PropertyWrapper<bool> AddOpeningOnly = PropertyService.Wrap ("AddOpeningOnly", false);
 		public readonly static PropertyWrapper<int>  CompletionListRows = PropertyService.Wrap ("CompletionListRows", 7);
@@ -63,6 +64,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			set;
 		}
 
+
+		public virtual string CompletionLanguage {
+			get {
+				return "Other";
+			}
+		}
 
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
@@ -120,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				return res;
 			
 			// don't complete on block selection
-			if (!EnableCodeCompletion || Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (/*!EnableCodeCompletion ||*/ Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
 				return res;
 			
 			// Handle code completion
@@ -143,7 +150,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				}
 			}
 			
-			if (EnableParameterInsight && CompletionWidget != null) {
+			if (/*EnableParameterInsight &&*/ CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
 				var paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)

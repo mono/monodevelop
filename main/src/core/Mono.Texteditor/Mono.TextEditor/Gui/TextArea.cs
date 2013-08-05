@@ -290,7 +290,6 @@ namespace Mono.TextEditor
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = true;
 			base.CanFocus = true;
 
 			// This is required to properly handle resizing and rendering of children
@@ -374,10 +373,6 @@ namespace Mono.TextEditor
 				//Console.WriteLine ("redraw from :" + e.Line);
 				RedrawFromLine (e.Line);
 			};
-			this.Document.Splitter.LineChanged += delegate(object sender, LineEventArgs e) {
-				RedrawLine (e.Line.LineNumber);
-			};
-
 #if ATK
 			TextEditorAccessible.Factory.Init (this);
 #endif
@@ -389,6 +384,7 @@ namespace Mono.TextEditor
 			}
 			OptionsChanged (this, EventArgs.Empty);
 		}
+
 
 		public void RunAction (Action<TextEditorData> action)
 		{
@@ -810,7 +806,7 @@ namespace Mono.TextEditor
 			textEditorData.RemoveTooltipProvider (provider);
 		}
 
-		internal void RedrawMargin (Margin margin)
+		public void RedrawMargin (Margin margin)
 		{
 			if (isDisposed)
 				return;
@@ -3020,10 +3016,13 @@ namespace Mono.TextEditor
 
 		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
 		{
+			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
+				return;
 			if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
 				return;
 			var line = e.Line.LineNumber;
 			textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
+			RedrawLine (line);
 		}
 
 		class SetCaret 

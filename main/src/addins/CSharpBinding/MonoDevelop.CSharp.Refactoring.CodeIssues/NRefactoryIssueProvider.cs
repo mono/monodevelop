@@ -33,12 +33,14 @@ using System.Threading;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	class NRefactoryIssueProvider : CodeIssueProvider
 	{
-		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
+		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
+		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
 
 		public override string IdString {
@@ -47,22 +49,56 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
+		public override bool HasSubIssues {
+			get {
+				return issueProvider.HasSubIssues;
+			}
+		}
+
+		List<BaseCodeIssueProvider> subIssues;
+		public override IEnumerable<BaseCodeIssueProvider> SubIssues {
+			get {
+				if (subIssues == null) {
+					subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
+				}
+				return subIssues;
+			}
+		}
+
+		public ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider IssueProvider {
+			get {
+				return issueProvider;
+			}
+		}
+
+		public string ProviderIdString {
+			get {
+				return providerIdString;
+			}
+		}
+
+		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
+			get {
+				return attr.IssueMarker;
+			}
+		}
+
+		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
+			this.attr = attr;
 			providerIdString = issueProvider.GetType ().FullName;
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
-			IssueMarker = attr.IssueMarker;
-			MimeType = "text/x-csharp";
+			SetMimeType ("text/x-csharp");
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
 		{
 			var context = ctx as MDRefactoringContext;
-			if (context == null || context.IsInvalid || context.RootNode == null)
+			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
 				yield break;
 				
 			// Holds all the actions in a particular sibling group.
@@ -105,6 +141,42 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				);
 				yield return issue;
 			}
+		}
+	
+
+		public override bool CanDisableOnce { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
+
+		public override bool CanDisableAndRestore { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
+
+		public override bool CanDisableWithPragma { get { return attr.PragmaWarning > 0; } }
+
+		public override bool CanSuppressWithAttribute { get { return !string.IsNullOrEmpty (attr.SuppressMessageCheckId); } }
+
+		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+		}
+
+		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			using (document.Editor.OpenUndoGroup ()) {
+				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+			}
+		}
+
+		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			using (document.Editor.OpenUndoGroup ()) {
+				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker); 
+				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker); 
+			}
+		}
+
+		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			var member = document.ParsedDocument.GetMember (loc);
+			document.Editor.Insert (document.Editor.LocationToOffset (member.Region.BeginLine, 1), string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)); 
 		}
 	}
 }

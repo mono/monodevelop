@@ -31,19 +31,19 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="nunit-console-runner">
       <HintPath>..\..\external\mdtestharness\lib\nunit-console-runner.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\..\external\mdtestharness\lib\nunit.core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\external\mdtestharness\framework\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,6 +60,10 @@
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
+      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_0</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

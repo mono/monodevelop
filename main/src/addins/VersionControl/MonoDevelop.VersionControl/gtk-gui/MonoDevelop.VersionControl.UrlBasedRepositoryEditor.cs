@@ -228,6 +228,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryServerEntry.Changed += new global::System.EventHandler (this.OnRepositoryServerEntryChanged);
 			this.repositoryPathEntry.Changed += new global::System.EventHandler (this.OnRepositoryPathEntryChanged);
 			this.repositoryPortSpin.ValueChanged += new global::System.EventHandler (this.OnRepositoryPortSpinValueChanged);
+			this.repositoryUrlEntry.ClipboardPasted += new global::System.EventHandler (this.OnRepositoryUrlEntryClipboardPasted);
 			this.comboProtocol.Changed += new global::System.EventHandler (this.OnComboProtocolChanged);
 		}
 	}

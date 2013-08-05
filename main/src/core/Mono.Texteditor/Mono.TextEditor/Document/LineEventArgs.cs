@@ -37,10 +37,16 @@ namespace Mono.TextEditor
 				return line;
 			}
 		}
+
+		public int LineNumber {
+			get;
+			private set;
+		}
 		
-		public LineEventArgs (DocumentLine line)
+		public LineEventArgs (DocumentLine line, int lineNumber = -1)
 		{
 			this.line = line;
+			this.LineNumber = lineNumber;
 		}
 	}
 }

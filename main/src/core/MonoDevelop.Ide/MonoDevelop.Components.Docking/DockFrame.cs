@@ -34,10 +34,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using Xwt.Motion;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox, Animatable
+	public class DockFrame: HBox, IAnimatable
 	{
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
@@ -167,19 +168,23 @@ namespace MonoDevelop.Components.Docking
 
 		int currentOverlayPosition;
 
-		void ShowOverlayWidgetAnimation (float value)
+		void ShowOverlayWidgetAnimation (double value)
 		{
-			currentOverlayPosition = Allocation.Y + (int)((float)Allocation.Height * (1f - value));
+			currentOverlayPosition = Allocation.Y + (int)((double)Allocation.Height * (1f - value));
 			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
 		}
 
-		void HideOverlayWidgetAnimation (float value)
+		void HideOverlayWidgetAnimation (double value)
 		{
-			currentOverlayPosition = Allocation.Y + (int)((float)Allocation.Height * value);
+			currentOverlayPosition = Allocation.Y + (int)((double)Allocation.Height * value);
 			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
 		}
 
-		void Animatable.QueueDraw ()
+		void IAnimatable.BatchBegin ()
+		{
+		}
+
+		void IAnimatable.BatchCommit ()
 		{
 		}
 

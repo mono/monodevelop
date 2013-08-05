@@ -26,8 +26,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -35,8 +34,17 @@ namespace MonoDevelop.Ide.Navigation
 	{
 		public abstract string DisplayName { get; }
 		//public abstract string Tooltip { get; }
-		
+
+		[Obsolete ("Will be removed. Please use ShowDocument.")]
 		public abstract void Show ();
+
+		public virtual Document ShowDocument ()
+		{
+#pragma warning disable 618
+			Show ();
+#pragma warning restore 618
+			return null;
+		}
 		
 		// used for fuzzy matching to decide whether to replace an existing nav point
 		// e.g if user just moves around a little, we don't want to add too many points

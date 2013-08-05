@@ -1,23 +1,5 @@
-<Addin id          = "Ide"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Ide"
-       author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
-       copyright   = "LGPL"
-       url         = "http://www.monodevelop.com"
-       description = "The MonoDevelop IDE application."
-       category    = "MonoDevelop Core"
-       isroot      = "true"
-       version     = "4.1.7"
-       compatVersion = "4.0">
+<ExtensionModel>
 	
-	<Runtime>
-		<Import assembly="MonoDevelop.Ide.dll"/>
-	</Runtime>
-	
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-	</Dependencies>
-
 	<!-- Extension ponts -->
 	
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
@@ -97,6 +79,12 @@
 		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/CompletionCharacters" name = "Code completion commit characters">
+		<Description>Code completion commit characters</Description>
+		<ExtensionNode name="Complete" type="MonoDevelop.Ide.CodeCompletion.CompletionCharacterCodon"/>
+	</ExtensionPoint>
+
 
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">
 		<ExtensionNode name="Class"/>
@@ -308,4 +296,9 @@
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
 		<Class id="Ide" class = "MonoDevelop.Ide.Projects.IdeFileSystemExtensionExtension" insertafter = "FinalStep"/>
 	</Extension>
-</Addin>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+	
+</ExtensionModel>

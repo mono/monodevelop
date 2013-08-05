@@ -28,46 +28,156 @@ using NUnit.Framework;
 using System.IO;
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.VersionControl;
 
 namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
 	public abstract class BaseRepoUtilsTest
 	{
-		protected FilePath repoLocation = "";
+		protected string repoLocation = "";
 		protected FilePath rootUrl = "";
 		protected FilePath rootCheckout;
+		protected Repository repo;
+		protected Repository repo2;
+		protected string DOT_DIR;
 
 		[SetUp]
 		public abstract void Setup ();
 
 		[TearDown]
-		public abstract void TearDown ();
+		public virtual void TearDown ()
+		{
+			DeleteDirectory (rootUrl);
+			DeleteDirectory (rootCheckout);
+		}
 
 		[Test]
-		public abstract void CheckoutExists ();
+		public virtual void CheckoutExists ()
+		{
+			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));
+		}
 
 		[Test]
-		public abstract void FileIsAdded ();
+		public virtual void FileIsAdded ()
+		{
+			FilePath added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
+			Assert.IsFalse (vi.CanAdd);
+		}
 
 		[Test]
-		public abstract void FileIsCommitted ();
+		public virtual void FileIsCommitted ()
+		{
+			FilePath added = rootCheckout + "testfile";
+
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			PostCommit (repo);
+
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.RemoteStatus));
+		}
+
+		protected virtual void PostCommit (Repository repo)
+		{
+		}
 
 		[Test]
-		public abstract void UpdateIsDone ();
+		public virtual void UpdateIsDone ()
+		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			PostCommit (repo);
+
+			// Checkout a second repository.
+			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			Checkout (second, repoLocation);
+			repo2 = GetRepo (second, repoLocation);
+			added = second + "testfile2";
+			File.Create (added).Close ();
+			repo2.Add (added, false, new NullProgressMonitor ());
+			changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test2";
+			repo2.Commit (changes, new NullProgressMonitor ());
+
+			PostCommit (repo2);
+
+			repo.Update (repo.RootPath, true, new NullProgressMonitor ());
+			Assert.True (File.Exists (rootCheckout + "testfile2"));
+
+			DeleteDirectory (second);
+		}
 
 		[Test]
-		public abstract void LogIsProper ();
+		public virtual void LogIsProper ()
+		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
+			foreach (Revision rev in repo.GetHistory (added, null)) {
+				Assert.AreEqual ("File committed", rev.Message);
+			}
+		}
 
 		[Test]
 		public abstract void DiffIsProper ();
 
 		[Test]
-		public abstract void Reverts ();
+		public virtual void Reverts ()
+		{
+			string added = rootCheckout + "testfile";
+			string content = "text";
+
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			// Revert to head.
+			File.WriteAllText (added, content);
+			repo.Revert (added, false, new NullProgressMonitor ());
+			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
+		}
 
 		#region Util
 
-		public abstract void Checkout (string path);
+		public virtual void Checkout (string path, string url)
+		{
+			Repository _repo = GetRepo (path, url);
+			_repo.Checkout (path, true, new NullProgressMonitor ());
+			if (repo == null)
+				repo = _repo;
+			else
+				repo2 = _repo;
+		}
+
+		protected abstract Repository GetRepo (string path, string url);
 
 		public static void DeleteDirectory (string path)
 		{

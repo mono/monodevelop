@@ -123,8 +123,14 @@ namespace MonoDevelop.CSharp
 			sb.AppendLine ();
 			
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
-				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
-					continue;
+				if (lib.ReferenceType == ReferenceType.Project) {
+					var ownerProject = lib.OwnerProject;
+					if (ownerProject != null) {
+						var parentSolution = ownerProject.ParentSolution;
+						if (parentSolution != null && !(parentSolution.FindProjectByName (lib.Reference) is DotNetProject))
+							continue;
+					}
+				} 
 				string refPrefix = string.IsNullOrEmpty (lib.Aliases) ? "" : lib.Aliases + "=";
 				foreach (string fileName in lib.GetReferencedFileNames (configSelector)) {
 					switch (lib.ReferenceType) {

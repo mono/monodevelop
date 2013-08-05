@@ -208,8 +208,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			if (e.RemovalLength != 1)
+			if (e.RemovalLength != 1 || textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format) {
 				return;
+			}
 			stateTracker.UpdateEngine (Math.Min (textEditorData.Document.TextLength, e.Offset + e.InsertionLength + 1));
 			if (wasInVerbatimString && !stateTracker.Engine.IsInsideVerbatimString) {
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;
@@ -609,7 +610,6 @@ namespace MonoDevelop.CSharp.Formatting
 				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
-
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					stateTracker.UpdateEngine ();
 
@@ -625,8 +625,14 @@ namespace MonoDevelop.CSharp.Formatting
 
 					stateTracker.UpdateEngine ();
 					automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
-					if (key == Gdk.Key.Return && (reIndent || automaticReindent))
-						DoReSmartIndent ();
+					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
+						if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
+							if (textEditorData.GetLine (textEditorData.Caret.Line).Length == 0)
+								textEditorData.Caret.Column = textEditorData.IndentationTracker.GetVirtualIndentationColumn (textEditorData.Caret.Location);
+						} else {
+							DoReSmartIndent ();
+						}
+					}
 				}
 
 				if (key != Gdk.Key.Return && (reIndent || automaticReindent)) {
@@ -935,6 +941,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (stateTracker.Engine.LineBeganInsideVerbatimString || stateTracker.Engine.LineBeganInsideMultiLineComment)
 				return;
 			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
+
 //			stateTracker.UpdateEngine (line.Offset);
 			// Get context to the end of the line w/o changing the main engine's state
 			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
