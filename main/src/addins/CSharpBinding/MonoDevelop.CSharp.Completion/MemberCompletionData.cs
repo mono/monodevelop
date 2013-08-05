@@ -199,8 +199,8 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
-			var method = (IMethod)Entity;
-			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
+			var method = Entity as IMethod;
+			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				var end = line.Offset + line.Length;
