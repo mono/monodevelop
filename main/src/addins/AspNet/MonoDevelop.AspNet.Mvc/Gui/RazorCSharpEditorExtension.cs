@@ -72,6 +72,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return new RazorFreeState ();
 		}
 
+		public override string CompletionLanguage {
+			get {
+				return "Razor";
+			}
+		}
 		public override void Initialize ()
 		{
 			base.Initialize ();

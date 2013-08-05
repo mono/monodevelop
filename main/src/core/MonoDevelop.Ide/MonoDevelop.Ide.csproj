@@ -1890,6 +1890,8 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\IdeFileSystemExtensionExtension.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacters.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacterCodon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

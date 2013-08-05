@@ -65,6 +65,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 
 
+		public virtual string CompletionLanguage {
+			get {
+				return "Other";
+			}
+		}
+
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);

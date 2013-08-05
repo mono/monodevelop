@@ -177,6 +177,7 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionAppearancePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

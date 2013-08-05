@@ -80,6 +80,12 @@
 		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/CompletionCharacters" name = "Code completion commit characters">
+		<Description>Code completion commit characters</Description>
+		<ExtensionNode name="Complete" type="MonoDevelop.Ide.CodeCompletion.CompletionCharacterCodon"/>
+	</ExtensionPoint>
+
+
 	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
@@ -290,4 +296,9 @@
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
 		<Class id="Ide" class = "MonoDevelop.Ide.Projects.IdeFileSystemExtensionExtension" insertafter = "FinalStep"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+	
 </ExtensionModel>

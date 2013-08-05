@@ -123,6 +123,12 @@ namespace MonoDevelop.CSharp.Completion
 				return policy;
 			}
 		}
+
+		public override string CompletionLanguage {
+			get {
+				return "C#";
+			}
+		}
 		
 		public CSharpCompletionTextEditorExtension ()
 		{
