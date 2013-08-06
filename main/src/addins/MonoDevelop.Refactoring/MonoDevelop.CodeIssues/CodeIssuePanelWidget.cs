@@ -126,7 +126,8 @@ namespace MonoDevelop.CodeIssues
 				var title = node.Title;
 				if (!string.IsNullOrEmpty (filter)) {
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
-					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+					if (idx >= 0)
+						title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
 				}
 				var nodeIter = treeStore.AppendValues (iter, title, node);
 
@@ -135,7 +136,8 @@ namespace MonoDevelop.CodeIssues
 						title = subIssue.Title;
 						if (!string.IsNullOrEmpty (filter)) {
 							var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
-							title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+							if (idx >= 0)
+								title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
 						}
 						treeStore.AppendValues (nodeIter, title, subIssue);
 					}
