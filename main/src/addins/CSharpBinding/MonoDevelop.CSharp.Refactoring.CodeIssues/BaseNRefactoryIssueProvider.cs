@@ -110,6 +110,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					context.TextEditor.FileName,
 					action.Start,
 					action.End,
+					IdString,
 					actions
 				);
 				yield return issue;

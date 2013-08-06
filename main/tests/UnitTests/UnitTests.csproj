@@ -282,6 +282,12 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
+    <Compile Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
@@ -314,4 +320,7 @@
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Refactoring\" />
+  </ItemGroup>
 </Project>

@@ -74,11 +74,13 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class GenericFix : IAnalysisFix, IAnalysisFixAction
 	{
 		Action fix;
+		Action batchFix;
 		string label;
 		public DocumentRegion DocumentRegion { get; set; }
 
-		public GenericFix (string label, Action fix)
+		public GenericFix (string label, Action fix, Action batchFix = null)
 		{
+			this.batchFix = batchFix;
 			this.fix = fix;
 			this.label = label;
 		}
@@ -96,6 +98,19 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public void Fix ()
 		{
 			fix ();
+		}
+		
+		public bool SupportsBatchFix {
+			get {
+				return batchFix != null;
+			}
+		}
+		
+		public void BatchFix () {
+			if (!SupportsBatchFix) {
+				throw new InvalidOperationException ("Batch fixing is not supported.");
+			}
+			batchFix ();
 		}
 
 		public string Label {

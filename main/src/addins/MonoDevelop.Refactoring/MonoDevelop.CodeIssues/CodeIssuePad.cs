@@ -28,132 +28,487 @@ using MonoDevelop.Ide.Gui;
 using Xwt;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.TypeSystem;
-using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using MonoDevelop.Refactoring;
-using System.Linq;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
-using System.IO;
-using ICSharpCode.NRefactory.Refactoring;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class CodeIssuePadControl : VBox
 	{
-		TreeView view = new TreeView ();
-		DataField<string> text = new DataField<string> ();
-		DataField<DomRegion> region = new DataField<DomRegion> ();
-		Button runButton = new Button ("Run");
+		const int UpdatePeriod = 500;
+		const int BatchChoiceCount = 5;
 
+		TreeView view = new TreeView ();
+		DataField<string> textField = new DataField<string> ();
+		DataField<IIssueTreeNode> nodeField = new DataField<IIssueTreeNode> ();
+		Button runButton = new Button ("Run");
+		Button cancelButton = new Button ("Cancel");
+		CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+		
+		IssueGroup rootGroup;
 		TreeStore store;
+		
+		ISet<IIssueTreeNode> syncedNodes = new HashSet<IIssueTreeNode> ();
+		Dictionary<IIssueTreeNode, TreePosition> nodePositions = new Dictionary<IIssueTreeNode, TreePosition> ();
+
+		bool runPeriodicUpdate;
+		object queueLock = new object ();
+		Queue<IIssueTreeNode> updateQueue = new Queue<IIssueTreeNode> ();
+		
+		static Type[] groupingProviders = new[] {
+			typeof(CategoryGroupingProvider),
+			typeof(ProviderGroupingProvider),
+			typeof(SeverityGroupingProvider)
+		};
 
 		public CodeIssuePadControl ()
 		{
+			var buttonRow = new HBox();
 			runButton.Clicked += StartAnalyzation;
-			PackStart (runButton, BoxMode.None);
+			buttonRow.PackStart (runButton);
+			
+			cancelButton.Clicked += StopAnalyzation;
+			cancelButton.Sensitive = false;
+			buttonRow.PackStart (cancelButton);
+			
+			var groupingProvider = new CategoryGroupingProvider {
+				Next = new ProviderGroupingProvider()
+			};
+			rootGroup = new IssueGroup (groupingProvider, "root group");
+			var groupingProviderControl = new GroupingProviderChainControl (rootGroup, groupingProviders);
+			buttonRow.PackStart (groupingProviderControl);
+			
+			PackStart (buttonRow);
 
-			store = new TreeStore (text, region);
+			store = new TreeStore (textField, nodeField);
 			view.DataSource = store;
 			view.HeadersVisible = false;
-
-			view.Columns.Add ("Name", text);
-			PackStart (view, BoxMode.FillAndExpand);
-
+			view.Columns.Add ("Name", textField);
+			view.SelectionMode = SelectionMode.Multiple;
+			
+			view.RowActivated += OnRowActivated;
+			view.RowExpanding += OnRowExpanding;
+			view.ButtonPressed += HandleButtonPressed;
+			view.ButtonReleased += HandleButtonReleased;
+			PackStart (view, true);
+			
+			IIssueTreeNode node = rootGroup;
+			node.ChildrenInvalidated += (sender, group) => {
+				Application.Invoke (delegate {
+					ClearSiblingNodes (store.GetFirstNode ());
+					store.Clear ();
+					SyncStateToUi (runner.State);
+					foreach(var child in ((IIssueTreeNode)rootGroup).Children) {
+						var navigator = store.AddNode ();
+						SetNode (navigator, child);
+						SyncNode (navigator);
+					}
+				});
+			};
+			node.ChildAdded += HandleRootChildAdded;
+			
+			runner.IssueSink = rootGroup;
+			runner.AnalysisStateChanged += HandleAnalysisStateChanged;
 		}
 		
+		void ClearState ()
+		{
+			store.Clear ();
+			rootGroup.ClearStatistics ();
+			rootGroup.EnableProcessing ();
+			
+			syncedNodes.Clear ();
+			nodePositions.Clear ();
+			lock (queueLock) {
+				updateQueue.Clear ();
+			}
+		}
 
+		void HandleAnalysisStateChanged (object sender, AnalysisStateChangeEventArgs e)
+		{
+			Application.Invoke (delegate {
+				SyncStateToUi (e.NewState);
+				if (e.NewState == AnalysisState.Running) {
+					StartPeriodicUpdate ();
+				} else if (e.NewState == AnalysisState.Completed || e.NewState == AnalysisState.Cancelled) {
+					EndPeriodicUpdate ();
+				}
+			});
+		}
+
+		void StartPeriodicUpdate ()
+		{
+			Debug.Assert (!runPeriodicUpdate);
+			runPeriodicUpdate = true;
+			Application.TimeoutInvoke (UpdatePeriod, RunPeriodicUpdate);
+		}
+
+		void ProcessUpdateQueue ()
+		{
+			IList<IIssueTreeNode> nodes;
+			lock (queueLock) {
+				nodes = new List<IIssueTreeNode> (updateQueue);
+				updateQueue.Clear ();
+			}
+			foreach (var node in nodes) {
+				TreePosition position;
+				if (!nodePositions.TryGetValue (node, out position)) {
+					// This might be an event for a group that has been invalidated and removed
+					continue;
+				}
+				var navigator = store.GetNavigatorAt (position);
+				if (!node.Visible) {
+					// Check above means node is always in nodePositions
+					nodePositions.Remove (node);
+					if (syncedNodes.Contains (node)) {
+						syncedNodes.Remove (node);
+					}
+					ClearChildNodes (navigator);
+					navigator.Remove ();
+					continue;
+				}
+				UpdateText (navigator, node);
+				if (!syncedNodes.Contains (node) && node.HasVisibleChildren) {
+					if (navigator.MoveToChild ()) {
+						navigator.MoveToParent ();
+					}
+					else {
+						AddDummyChild (navigator);
+					}
+				}
+			}
+		}
+		
+		bool RunPeriodicUpdate ()
+		{
+			ProcessUpdateQueue ();
+			return runPeriodicUpdate;
+		}
+
+		void EndPeriodicUpdate ()
+		{
+			runPeriodicUpdate = false;
+		}
+
+		void HandleRootChildAdded (object sender, IssueTreeNodeEventArgs e)
+		{
+			Application.Invoke (delegate {
+				Debug.Assert (e.Parent == rootGroup);
+				var navigator = store.AddNode ();
+				SetNode (navigator, e.Child);
+				SyncNode (navigator);
+			});
+		}
+
+		void SyncStateToUi (AnalysisState state)
+		{
+			// Update the top row
+			string text;
+			switch (state) {
+			case AnalysisState.Running:
+				text = "Running...";
+				break;
+			case AnalysisState.Cancelled:
+				text = string.Format ("Found issues: {0} (Cancelled)", rootGroup.IssueCount);
+				break;
+			case AnalysisState.Completed:
+				text = string.Format ("Found issues: {0}", rootGroup.IssueCount);
+				break;
+			}
+			if (text != null) {
+				var topRow = store.GetFirstNode ();
+				// Weird way to check if the store was empty during the call above.
+				// Might not be portable...
+				if (topRow.CurrentPosition == null) {
+					topRow = store.AddNode ();
+				}
+				topRow.SetValue (textField, text);
+			}
+			
+			// Set button sensitivity
+			bool running = state == AnalysisState.Running;
+			runButton.Sensitive = !running;
+			cancelButton.Sensitive = running;
+		}
+		
 		void StartAnalyzation (object sender, EventArgs e)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
-			runButton.Sensitive = false;
-			store.Clear ();
-			var rootNode = store.AddNode ();
-			rootNode.SetValue (text, "Analyzing...");
-			ThreadPool.QueueUserWorkItem (delegate {
-
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
-					int work = 0;
-					foreach (var project in solution.GetAllProjects ()) {
-						work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
-					}
-					monitor.BeginTask ("Analyzing solution", work);
-					int allIssues = 0;
-					TypeSystemParser parser = null;
-					string lastMime = null;
-					CodeIssueProvider[] codeIssueProvider = null;
-					foreach (var project in solution.GetAllProjects ()) {
-						var compilation = TypeSystemService.GetCompilation (project);
-						List<CodeIssue> codeIssues = new List<CodeIssue> ();
-						Parallel.ForEach (project.Files, file => {
-							if (file.BuildAction != BuildAction.Compile)
-								return;
-
-							var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-
-							if (lastMime != editor.MimeType || parser == null)
-								parser = TypeSystemService.GetParser (editor.MimeType);
-							if (parser == null)
-								return;
-							var reader = new StreamReader (editor.OpenStream ());
-							var document = parser.Parse (true, editor.FileName, reader, project);
-							reader.Close ();
-							if (document == null) 
-								return;
-
-							var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as CSharpUnresolvedFile);
-							var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
-
-							if (lastMime != editor.MimeType || codeIssueProvider == null)
-								codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
-							Parallel.ForEach (codeIssueProvider, (provider) => { 
-								var severity = provider.GetSeverity ();
-								if (severity == Severity.None)
-									return;
-								try {
-// TODO: Handle sub issues (note: this code is not used atm therefore it's not important.)
-//								  	foreach (var r in provider.GetIssues (context, CancellationToken.None)) {
-//										lock (codeIssues) {
-//											codeIssues.Add (r);
-//										}
-//									}
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
-								}
-							});
-							lastMime = editor.MimeType;
-							monitor.Step (1);
-						});
-						Application.Invoke (delegate {
-							var projectNode = store.AddNode ();
-							projectNode.SetValue (text, project.Name + "( " + codeIssues.Count + " issues)");
-							foreach (var issue in codeIssues) {
-								var child = projectNode.AddChild ();
-								child.SetValue (text, issue.Description + " - " + issue.Region);
-								child.SetValue (region, issue.Region);
-								child.MoveToParent ();
-							}
-							projectNode.MoveToParent ();
-							allIssues += codeIssues.Count;
-						});
-
-					}
-					Application.Invoke (delegate {
-						rootNode.SetValue (text, "Found issues :" + allIssues);
-						runButton.Sensitive = true;
-					});
-					monitor.EndTask ();
-				}
-			});
-
+				
+			ClearState ();
+			
+			runner.StartAnalysis (solution);
 		}
+
+		void StopAnalyzation (object sender, EventArgs e)
+		{
+			runner.Stop ();
+		}
+
+		void SetNode (TreeNavigator navigator, IIssueTreeNode node)
+		{
+			if (navigator == null)
+				throw new ArgumentNullException ("navigator");
+			if (node == null)
+				throw new ArgumentNullException ("node");
+			
+			navigator.SetValue (nodeField, node);
+			Debug.Assert (!nodePositions.ContainsKey (node));
+			var position = navigator.CurrentPosition;
+			nodePositions.Add (node, position);
+			
+			node.ChildAdded += (sender, e) => {
+				Debug.Assert (e.Parent == node);
+				Application.Invoke (delegate {
+					var newNavigator = store.GetNavigatorAt (position);
+					newNavigator.AddChild ();
+					SetNode (newNavigator, e.Child);
+					SyncNode (newNavigator);
+				});
+			};
+			node.ChildrenInvalidated += (sender, e) => {
+				Application.Invoke (delegate {
+					SyncNode (store.GetNavigatorAt (position));
+				});
+			};
+			node.TextChanged += (sender, e) => {
+				lock (queueLock) {
+					if (!updateQueue.Contains (e.Node)) {
+						updateQueue.Enqueue (e.Node);
+					}
+				}
+			};
+			node.VisibleChanged += (sender, e) => {
+				lock (queueLock) {
+					if (!updateQueue.Contains (e.Node)) {
+						updateQueue.Enqueue (e.Node);
+					}
+				}
+			};
+		}
+
+		void ClearSiblingNodes (TreeNavigator navigator)
+		{
+			do {
+				var node = navigator.GetValue (nodeField);
+				if (node != null) {
+					if (syncedNodes.Contains (node)) {
+						syncedNodes.Remove (node);
+					}
+					if (nodePositions.ContainsKey (node)) {
+						nodePositions.Remove (node);
+					}
+				}
+				ClearChildNodes (navigator);
+			} while (navigator.MoveNext ());
+		}
+		
+		void ClearChildNodes (TreeNavigator navigator)
+		{
+			if (navigator.MoveToChild ()) {
+				ClearSiblingNodes (navigator);
+				navigator.MoveToParent ();
+			}
+		}
+		
+		void SyncNode (TreeNavigator navigator, bool forceExpansion = false)
+		{
+			var node = navigator.GetValue (nodeField);
+			UpdateText (navigator, node);
+			bool isExpanded = forceExpansion || view.IsRowExpanded (navigator.CurrentPosition);
+			ClearChildNodes (navigator);
+			syncedNodes.Remove (node);
+			navigator.RemoveChildren ();
+			if (!node.HasVisibleChildren) 
+				return;
+			if (isExpanded) {
+				foreach (var childNode in node.Children.Where (child => child.Visible)) {
+					navigator.AddChild ();
+					SetNode (navigator, childNode);
+					SyncNode (navigator);
+					navigator.MoveToParent ();
+				}
+			} else {
+				AddDummyChild (navigator);
+			}
+			
+			if (isExpanded) {
+				syncedNodes.Add (node);
+				view.ExpandRow (navigator.CurrentPosition, false);
+			}
+			
+		}
+
+		void UpdateText (TreeNavigator navigator, IIssueTreeNode node)
+		{
+			navigator.SetValue (textField, node.Text);
+		}
+
+		void AddDummyChild (TreeNavigator navigator)
+		{
+			navigator.AddChild ();
+			navigator.SetValue (textField, "Loading...");
+			navigator.MoveToParent ();
+		}
+
+		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (TreePosition position)
+		{
+			return (sender, eventArgs) => {
+				Application.Invoke(delegate {
+					var expanded = view.IsRowExpanded (position);
+					var newNavigator = store.GetNavigatorAt (position);
+					newNavigator.RemoveChildren ();
+					SyncNode (newNavigator, expanded);
+					if (expanded) {
+						view.ExpandRow (position, false);
+					}
+				});
+			};
+		}
+		
+		void OnRowActivated (object sender, TreeViewRowEventArgs e)
+		{
+			var position = e.Position;
+			var node = store.GetNavigatorAt (position).GetValue (nodeField);
+			
+			var issueSummary = node as IssueSummary;
+			if (issueSummary != null) {
+				var region = issueSummary.Region;
+				IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+			} else {
+				if (!view.IsRowExpanded (position)) {
+					view.ExpandRow (position, false);
+				} else {
+					view.CollapseRow (position);
+				}
+			}
+		}
+
+		void OnRowExpanding (object sender, TreeViewRowEventArgs e)
+		{
+			var navigator = store.GetNavigatorAt (e.Position);
+			var node = navigator.GetValue (nodeField);
+			if (!syncedNodes.Contains (node)) {
+				SyncNode (navigator, true);
+			}
+		}
+
+		#region Button event handlers
+		// Event handling of right click on the TreeView is split in two parts
+		// This is because no single handler can support intuitive behavior regarding
+		// what happens to the selection when the right mouse button is pressed:
+		// if only a single row is selected: change the selection and then show menu
+		// if multiple rows are selected: show the menu directly
+
+		void HandleButtonReleased (object sender, ButtonEventArgs e)
+		{
+			if (e.Button != PointerButton.Right || handledByPress)
+				return;
+
+			var rows = view.SelectedRows;
+			if (rows.Length <= 1) {
+				// Single row or no row
+				ShowBatchFixContextMenu (e.X, e.Y, view.SelectedRows);
+			}
+		}
+
+		bool handledByPress;
+
+		void HandleButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (e.Button != PointerButton.Right)
+				return;
+
+			var rows = view.SelectedRows;
+			if (rows.Length > 1) {
+				// this is a multiple selection
+				// waiting in this case means the selection disappears
+				ShowBatchFixContextMenu (e.X, e.Y, rows);
+
+				// Don't let the selection be reset
+				e.Handled = true;
+				handledByPress = true;
+			} else {
+				handledByPress = false;
+			}
+		}
+
+		#endregion
+
+		void UpdateParents (TreeNavigator navigator)
+		{
+			do {
+				var node = navigator.GetValue (nodeField);
+				UpdateText (navigator, node);
+			} while (navigator.MoveToParent ());
+		}
+
+		void ShowBatchFixContextMenu (double x, double y, IEnumerable<TreePosition> rows)
+		{
+			var possibleFixes = rows
+				.Select (row => store.GetNavigatorAt (row).GetValue (nodeField))
+				.Where (node1 => node1 != null)
+				.SelectMany (node2 => node2.AllChildren.Union (new [] { node2 }))
+				.Where (node3 => node3.Visible)
+				.OfType<IssueSummary> ()
+				.Where (issue => issue.Actions.Any (a => a.Batchable))
+				.Distinct()
+				.GroupBy(issue => issue.InspectorIdString)
+				.OrderBy (group => -group.Count ());
+				
+			var groups = possibleFixes.Take (BatchChoiceCount).ToList ();
+			if (!groups.Any ())
+				return;
+			
+			var menu = new Menu ();
+			foreach (var g in groups) {
+				menu.Items.Add (CreateIssueMenuItem (g));
+			}
+			menu.Popup (view, x, y);
+		}
+
+		MenuItem CreateIssueMenuItem (IEnumerable<IssueSummary> issues)
+		{
+			var allIssues = issues as IList<IssueSummary> ?? issues.ToList ();
+			var issueMenuItem = new MenuItem (allIssues.First ().ProviderTitle);
+			var issueSubMenu = new Menu ();
+			issueMenuItem.SubMenu = issueSubMenu;
+			
+			var actionGroups = allIssues
+				.SelectMany (issue => issue.Actions)
+				.GroupBy (action => action.SiblingKey);
+			foreach (var _actionGroup in actionGroups) {
+				var actionGroup = _actionGroup;
+				
+				var actionMenuItem = new MenuItem (actionGroup.First ().Title);
+				actionMenuItem.Clicked += delegate {
+					ThreadPool.QueueUserWorkItem (delegate {
+						try {
+							using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Applying fixes", null, false)) {
+								var fixer = new BatchFixer (new ExactIssueMatcher (), monitor);
+								var appliedActions = fixer.TryFixIssues (actionGroup);
+								foreach (var action in appliedActions) {
+									((IIssueTreeNode)action.IssueSummary).Visible = false;
+								}
+							}
+							Application.Invoke (delegate {
+								ProcessUpdateQueue ();
+							});
+						} catch (Exception e) {
+							MessageService.ShowException (e);
+						}
+					});
+				};
+				issueSubMenu.Items.Add (actionMenuItem);
+			}
+			return issueMenuItem;
+		}
+		
 	}
 
 	public class CodeIssuePad : AbstractPadContent
@@ -164,7 +519,7 @@ namespace MonoDevelop.CodeIssues
 			get {
 				if (issueControl == null)
 					issueControl = new CodeIssuePadControl ();
-				return (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (issueControl);
+				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (issueControl);
 			}
 		}
 	}

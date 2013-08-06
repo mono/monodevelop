@@ -60,22 +60,28 @@ namespace MonoDevelop.CodeIssues
 			get;
 			private set;
 		}
+		
+		public string InspectorIdString {
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (string description, string fileName, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (fileName, start, end), actions)
+		public CodeIssue (string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (fileName, start, end), inspectorIdString, actions)
 		{
 		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (string description, DomRegion region, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
+		public CodeIssue (string description, DomRegion region, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
 		{
 			Description = description;
 			Region = region;
 			Actions = actions;
+			InspectorIdString = inspectorIdString;
 		}
 
 	}

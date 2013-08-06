@@ -20,9 +20,9 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActionSource" name = "CodeActionSource">
 		<ExtensionNode name="Source"/>
 	</ExtensionPoint>
-
+	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
-		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
+		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeActions.CodeIssueAddinNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">
@@ -53,11 +53,11 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
-	<!--
+	
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>
 	</Extension>
--->
+	
 	<!-- Text editor integration -->
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />

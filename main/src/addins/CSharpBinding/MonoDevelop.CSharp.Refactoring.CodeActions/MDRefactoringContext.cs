@@ -39,10 +39,11 @@ using MonoDevelop.CSharp.Refactoring.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MDRefactoringContext : RefactoringContext
+	public class MDRefactoringContext : RefactoringContext, IScriptProvider
 	{
 		public TextEditorData TextEditor {
 			get;
@@ -146,11 +147,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return TextEditor.GetLineByOffset (offset);
 		}
 
-		readonly TextLocation location;
+		readonly Document document;
+
+		TextLocation location;
 		public override TextLocation Location {
 			get {
 				return location;
 			}
+		}
+		
+		internal void SetLocation (TextLocation loc)
+		{
+			location = RefactoringService.GetCorrectResolveLocation (document, loc);
 		}
 
 		CSharpFormattingOptions formattingOptions;
@@ -159,11 +167,17 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			return new MDRefactoringScript (this, formattingOptions);
 		}
+		
+		public IDisposable CreateScript ()
+		{
+			return StartScript ();
+		}
 
 		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
+			this.document = document;
 			this.TextEditor = document.Editor;
 			this.ParsedDocument = document.ParsedDocument;
 			this.Project = document.Project as DotNetProject;

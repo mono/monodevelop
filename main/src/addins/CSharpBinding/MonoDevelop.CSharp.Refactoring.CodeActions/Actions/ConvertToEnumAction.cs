@@ -97,13 +97,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			foreach (var prefix in GetCommonPrefixes (currentName, names)) {
 				string title = string.Format(GettextCatalog.GetString("Create enum '{0}'"), prefix);
 
-				yield return new DefaultCodeAction(title, (newDocument, newLoc) => {
-					PrepareToRunAction (prefix, baseType, containerType, constVariables, cancellationToken, newDocument, newLoc);
+				yield return new DefaultCodeAction(title, (ctx, script) => {
+					PrepareToRunAction (prefix, baseType, containerType, constVariables, cancellationToken, ctx, script);
 				});
 			}
 		}
 
-		void PrepareToRunAction (string prefix, PrimitiveType baseType, TypeDeclaration containerType, List<VariableInitializer> variables, CancellationToken cancellationToken, MonoDevelop.Ide.Gui.Document newDocument, TextLocation newLoc)
+		void PrepareToRunAction (string prefix, PrimitiveType baseType, TypeDeclaration containerType, List<VariableInitializer> variables, CancellationToken cancellationToken, RefactoringContext context, Script script)
 		{
 			List<string> names = variables.Select(variable => variable.Name).ToList();
 			Dictionary<string, string> newNames = names.ToDictionary(originalName => originalName, originalName => {
@@ -117,8 +117,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				return originalName.Substring(startName);
 			});
 
-			MDRefactoringContext context = new MDRefactoringContext (newDocument, newLoc, cancellationToken);
-
 			string enumName;
 			using (var dialog = new ConvertToEnumDialog (prefix, variables, variables.Where(variable => variable.Name.StartsWith(prefix, StringComparison.InvariantCulture)
 			                                                                                               && VariableHasSpecifiedIntegerType(context, variable, baseType)).ToList(), newNames))
@@ -130,8 +128,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				variables = dialog.SelectedVariables;
 				newNames = dialog.NewNames;
 			}
-
-			Script script = context.StartScript ();
 
 			RunAction (context, baseType, enumName, newNames, containerType, variables, script);
 			

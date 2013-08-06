@@ -79,9 +79,20 @@ namespace MonoDevelop.CodeActions
 				Result = result;
 			}
 	
-			public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			public override void Run (object context, object script)
 			{
 				Action.Fix ();
+			}
+			
+			public override bool SupportsBatchRunning {
+				get {
+					return Action.SupportsBatchFix;
+				}
+			}
+			
+			public override void BatchRun (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			{
+				Action.BatchFix ();
 			}
 
 			public void ShowOptions (object sender, EventArgs e)

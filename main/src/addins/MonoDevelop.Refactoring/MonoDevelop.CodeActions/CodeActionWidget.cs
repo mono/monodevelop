@@ -42,6 +42,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory.Refactoring;
+using System.Threading;
 
 namespace MonoDevelop.CodeActions
 {
@@ -125,13 +126,13 @@ namespace MonoDevelop.CodeActions
 				var label = (mnemonic <= 10)
 					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
-				var menuItem = new Gtk.MenuItem (label);
-				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
-				menuItem.Activated += delegate {
+				var thisInstanceMenuItem = new Gtk.MenuItem (label);
+				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
+				thisInstanceMenuItem.Activated += delegate {
 					ConfirmUsage (fix.IdString);
 					menu.Destroy ();
 				};
-				menu.Add (menuItem);
+				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
 			var first = true;
@@ -150,9 +151,17 @@ namespace MonoDevelop.CodeActions
 					continue;
 				alreadyInserted.Add (ir.Inspector);
 				
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
-				var subMenuItem = new Gtk.MenuItem (label);
-				Gtk.Menu subMenu = new Gtk.Menu ();
+				var subMenu = new Gtk.Menu ();
+				if (analysisFix.SupportsBatchRunning) {
+					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Fix all in this file"));
+					batchRunMenuItem.Activated += delegate {
+						ConfirmUsage (analysisFix.IdString);
+						menu.Destroy ();
+					};
+					batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, loc).BatchRun;
+					subMenu.Add (batchRunMenuItem);
+					subMenu.Add (new Gtk.SeparatorMenuItem ());
+				}
 
 				var inspector = ir.Inspector;
 				if (inspector.CanDisableWithPragma) {
@@ -178,6 +187,8 @@ namespace MonoDevelop.CodeActions
 					};
 					subMenu.Add (menuItem);
 				}
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
+				var subMenuItem = new Gtk.MenuItem (label);
 
 				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection severity"));
 				optionsMenuItem.Activated += analysisFix.ShowOptions;
@@ -185,11 +196,8 @@ namespace MonoDevelop.CodeActions
 					menu.Destroy ();
 				};
 				subMenu.Add (optionsMenuItem);
-				subMenu.ShowAll (); 
-
 				subMenuItem.Submenu = subMenu;
 				menu.Add (subMenuItem);
-
 				items++;
 			}
 
@@ -370,7 +378,13 @@ namespace MonoDevelop.CodeActions
 			
 			public void Run (object sender, EventArgs e)
 			{
-				act.Run (document, loc);
+				var context = document.ParsedDocument.CreateRefactoringContext (document, CancellationToken.None);
+				RefactoringService.ApplyFix (act, context);
+			}
+			
+			public void BatchRun (object sender, EventArgs e)
+			{
+				act.BatchRun (document, loc);
 			}
 		}
 		
