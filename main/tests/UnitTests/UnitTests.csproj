@@ -61,6 +61,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="GuiUnit">
+      <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -227,10 +230,6 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
-      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
-      <Name>GuiUnit_NET_4_0</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
