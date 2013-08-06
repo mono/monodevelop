@@ -23,7 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -53,5 +56,104 @@ namespace MonoDevelop.Core.Execution
 			return Id.GetHashCode ();
 		}
 	}
-}
 
+	public class ExecutionTargetGroup : ExecutionTarget, IList<ExecutionTarget>
+	{
+		List<ExecutionTarget> targets;
+		string name, id;
+
+		public ExecutionTargetGroup (string name, string id)
+		{
+			targets = new List<ExecutionTarget> ();
+			this.name = name;
+			this.id = id;
+		}
+
+		public override string Name {
+			get { return name; }
+		}
+
+		public override string Id {
+			get { return id; }
+		}
+
+		#region IList implementation
+
+		public int IndexOf (ExecutionTarget target)
+		{
+			return targets.IndexOf (target);
+		}
+
+		public void Insert (int index, ExecutionTarget target)
+		{
+			targets.Insert (index, target);
+		}
+
+		public void RemoveAt (int index)
+		{
+			targets.RemoveAt (index);
+		}
+
+		public ExecutionTarget this [int index] {
+			get { return targets[index]; }
+			set { targets[index] = value; }
+		}
+
+		#endregion
+
+		#region ICollection implementation
+
+		public void Add (ExecutionTarget target)
+		{
+			targets.Add (target);
+		}
+
+		public void Clear ()
+		{
+			targets.Clear ();
+		}
+
+		public bool Contains (ExecutionTarget target)
+		{
+			return targets.Contains (target);
+		}
+
+		public void CopyTo (ExecutionTarget[] array, int arrayIndex)
+		{
+			targets.CopyTo (array, arrayIndex);
+		}
+
+		public bool Remove (ExecutionTarget target)
+		{
+			return targets.Remove (target);
+		}
+
+		public int Count {
+			get { return targets.Count; }
+		}
+
+		public bool IsReadOnly {
+			get { return false; }
+		}
+
+		#endregion
+
+		#region IEnumerable implementation
+
+		public IEnumerator<ExecutionTarget> GetEnumerator ()
+		{
+			return targets.GetEnumerator ();
+		}
+
+		#endregion
+
+		#region IEnumerable implementation
+
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			return targets.GetEnumerator ();
+		}
+
+		#endregion
+	}
+}

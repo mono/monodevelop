@@ -50,6 +50,8 @@ namespace MonoDevelop.Components.MainToolbar
 	class MainToolbar: Gtk.EventBox, ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+		const int RuntimeExecutionTarget = 0;
+		const int RuntimeIsIndented = 1;
 
 		EventHandler executionTargetsChanged;
 
@@ -61,7 +63,7 @@ namespace MonoDevelop.Components.MainToolbar
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(string), typeof (ExecutionTarget));
+		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool));
 
 		StatusArea statusArea;
 
@@ -117,6 +119,22 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
+		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
+			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
+			var renderer = (CellRendererText) cell;
+
+			if (target != null) {
+				renderer.Sensitive = !(target is ExecutionTargetGroup);
+				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
+				renderer.Text = target.Name;
+			} else {
+				renderer.Text = string.Empty;
+				renderer.Sensitive = false;
+			}
+		}
+
 		public MainToolbar ()
 		{
 			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler (HandleExecutionTargetsChanged));
@@ -148,8 +166,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
+			ctx = new Gtk.CellRendererText ();
 			runtimeCombo.PackStart (ctx, true);
-			runtimeCombo.AddAttribute (ctx, "text", 0);
+			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 
 			var runtimeComboVBox = new VBox ();
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
@@ -478,7 +497,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (!runtimeCombo.GetActiveIter (out iter))
 				return null;
 
-			return (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+			return (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
@@ -557,38 +576,59 @@ namespace MonoDevelop.Components.MainToolbar
 			SelectActiveRuntime ();
 		}
 
+		bool SelectActiveRuntime (TreeIter iter, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
+		{
+			bool selected = false;
+
+			do {
+				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
+				if (target is ExecutionTargetGroup) {
+					TreeIter child;
+
+					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter))
+						selected = SelectActiveRuntime (child, ref defaultTarget, ref defaultIter);
+
+					continue;
+				}
+
+				if (defaultTarget == null) {
+					defaultTarget = target;
+					defaultIter = iter;
+				}
+
+				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+					IdeApp.Workspace.ActiveExecutionTarget = target;
+					runtimeCombo.SetActiveIter (iter);
+					UpdateBuildConfiguration ();
+					return true;
+				}
+
+				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+					runtimeCombo.SetActiveIter (iter);
+					UpdateBuildConfiguration ();
+					selected = true;
+				}
+			} while (runtimeStore.IterNext (ref iter));
+
+			return selected;
+		}
+
 		void SelectActiveRuntime ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
+
 			try {
 				TreeIter iter;
 
 				if (runtimeStore.GetIterFirst (out iter)) {
-					var defaultTarget = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
-					bool selected = false;
-					int i = 0;
+					ExecutionTarget defaultTarget = null;
+					TreeIter defaultIter = TreeIter.Zero;
 
-					do {
-						var target = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
-						if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-							IdeApp.Workspace.ActiveExecutionTarget = target;
-							runtimeCombo.Active = i;
-							UpdateBuildConfiguration ();
-							selected = true;
-							break;
+					if (!SelectActiveRuntime (iter, ref defaultTarget, ref defaultIter)) {
+						if (defaultTarget != null) {
+							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
+							runtimeCombo.SetActiveIter (defaultIter);
 						}
-
-						if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
-							runtimeCombo.Active = i;
-							UpdateBuildConfiguration ();
-							selected = true;
-						}
-						i++;
-					} while (runtimeStore.IterNext (ref iter));
-
-					if (!selected) {
-						IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
-						runtimeCombo.Active = 0;
 						UpdateBuildConfiguration ();
 					}
 				}
@@ -641,8 +681,28 @@ namespace MonoDevelop.Components.MainToolbar
 
 				int runtimes = 0;
 				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
-					runtimeStore.AppendValues (target.Name, target.Name, target);
-					runtimes++;
+					if (target is ExecutionTargetGroup) {
+						var devices = (ExecutionTargetGroup) target;
+
+						runtimeStore.AppendValues (target, false);
+						foreach (var device in devices) {
+							if (device is ExecutionTargetGroup) {
+								var iter = runtimeStore.AppendValues (device, true);
+								var versions = (ExecutionTargetGroup) device;
+
+								foreach (var version in versions) {
+									runtimeStore.AppendValues (iter, version, false);
+									runtimes++;
+								}
+							} else {
+								runtimeStore.AppendValues (device, true);
+								runtimes++;
+							}
+						}
+					} else {
+						runtimeStore.AppendValues (target, false);
+						runtimes++;
+					}
 				}
 
 				runtimeCombo.Sensitive = runtimes > 1;
