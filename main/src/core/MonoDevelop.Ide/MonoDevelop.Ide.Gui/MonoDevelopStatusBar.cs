@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide
 
 			resizeGrip.ButtonPressEvent += delegate (object o, ButtonPressEventArgs args) {
 				if (args.Event.Button == 1) {
-					BeginResize (args);
+					GdkWindow.BeginResizeDrag (Gdk.WindowEdge.SouthEast, (int)args.Event.Button, (int)args.Event.XRoot, (int)args.Event.YRoot, args.Event.Time);
 				}
 			};
 
@@ -273,10 +273,6 @@ namespace MonoDevelop.Ide
 				Gtk.Style.PaintResizeGrip (Style, GdkWindow, State, evnt.Area, this, "statusbar", edge, rect.X, rect.Y, w, h);
 			}
  			return ret;
-		}
-
-		private void BeginResize (ButtonPressEventArgs args) {
-			GdkWindow.BeginResizeDrag (Gdk.WindowEdge.SouthEast, (int)args.Event.Button, (int)args.Event.XRoot, (int)args.Event.YRoot, args.Event.Time);
 		}
 	}
 }
