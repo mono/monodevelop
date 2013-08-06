@@ -601,10 +601,10 @@ namespace MonoDevelop.CSharp
 						isIgnored = true;
 					}
 				}
-				if (unitTest != null)
+				if (unitTest != null) {
 					unitTest.IsIgnored = isIgnored;
-
-				base.VisitTypeDeclaration (typeDeclaration);
+					base.VisitTypeDeclaration (typeDeclaration);
+				}
 			}
 
 			public override void VisitBlockStatement (BlockStatement blockStatement)
