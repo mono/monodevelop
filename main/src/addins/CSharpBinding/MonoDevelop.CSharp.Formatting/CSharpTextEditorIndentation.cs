@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.ToString ();
 		}
 
-		static string ConvertToStringLiteral (string text)
+		internal static string ConvertToStringLiteral (string text)
 		{
 			var result = new StringBuilder ();
 			foreach (var ch in text) {

@@ -624,7 +624,37 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendReturnType (result, options, p.Type);
 				result.Append (" ");
 				result.Append (CSharpAmbience.FilterName (p.Name));
+				if (p.ConstantValue != null) {
+					result.Append (" = ");
+					if (p.Type.Kind == TypeKind.Enum) {
+						bool found = false;
+						var enumType = GetShortTypeString (options.Document, p.Type);
+						foreach (var literal in GetEnumLiterals(p.Type)) {
+							if (literal.ConstantValue.Equals (p.ConstantValue)) {
+								result.Append (enumType + "."+ literal.Name);
+								found = true;
+								break;
+							}
+						}
+						if (!found)
+							result.Append ("("+enumType+")" + p.ConstantValue); 
+					} else if (p.ConstantValue is char) {
+						result.Append ("'" + p.ConstantValue + "'");
+					} else if (p.ConstantValue is string)  {
+						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ConstantValue) + "\"");
+					} else {
+						result.Append (p.ConstantValue);
+					}
+				} 
 			}
+		}
+
+		public IEnumerable<IField> GetEnumLiterals(IType type)
+		{
+			if (type.Kind != TypeKind.Enum)
+				throw new ArgumentException ("Type is no enum.");
+			foreach (var field in type.GetFields (f => f.IsConst && f.IsPublic))
+				yield return field;
 		}
 		
 		static string GetModifiers (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IMember member)
