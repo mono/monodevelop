@@ -206,7 +206,8 @@ namespace MonoDevelop.CodeIssues
 		void SyncStateToUi (AnalysisState state)
 		{
 			// Update the top row
-			string text;
+			string text = null;
+
 			switch (state) {
 			case AnalysisState.Running:
 				text = "Running...";
@@ -218,6 +219,7 @@ namespace MonoDevelop.CodeIssues
 				text = string.Format ("Found issues: {0}", rootGroup.IssueCount);
 				break;
 			}
+
 			if (text != null) {
 				var topRow = store.GetFirstNode ();
 				// Weird way to check if the store was empty during the call above.
