@@ -96,6 +96,7 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		[Platform (Exclude = "Win")]
 		public virtual void UpdateIsDone ()
 		{
 			string added = rootCheckout + "testfile";
