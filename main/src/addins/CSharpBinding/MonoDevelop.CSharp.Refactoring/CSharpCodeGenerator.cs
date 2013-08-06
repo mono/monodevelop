@@ -628,16 +628,19 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (" = ");
 					if (p.Type.Kind == TypeKind.Enum) {
 						bool found = false;
-						var enumType = GetShortTypeString (options.Document, p.Type);
 						foreach (var literal in GetEnumLiterals(p.Type)) {
 							if (literal.ConstantValue.Equals (p.ConstantValue)) {
-								result.Append (enumType + "."+ literal.Name);
+								AppendReturnType (result, options, p.Type);
+								result.Append ("."+ literal.Name);
 								found = true;
 								break;
 							}
 						}
-						if (!found)
-							result.Append ("("+enumType+")" + p.ConstantValue); 
+						if (!found) {
+							result.Append ("(");
+							AppendReturnType (result, options, p.Type);
+							result.Append (")" + p.ConstantValue); 
+						}
 					} else if (p.ConstantValue is char) {
 						result.Append ("'" + p.ConstantValue + "'");
 					} else if (p.ConstantValue is string)  {
