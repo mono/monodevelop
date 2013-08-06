@@ -40,7 +40,7 @@ namespace MonoDevelop.Core.Web
 			}
 
 			var cred = Utility.GetCredentialsForUriFromICredentials (requestUri, credentials);
-			if (cred != null)
+			if (cred != null && !string.IsNullOrWhiteSpace (cred.UserName) && !string.IsNullOrWhiteSpace (cred.Password))
 				PasswordService.AddWebUserNameAndPassword (requestUri, cred.UserName, cred.Password);
 		}
 
