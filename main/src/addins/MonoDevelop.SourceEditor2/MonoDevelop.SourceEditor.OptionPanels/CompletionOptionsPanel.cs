@@ -37,12 +37,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.Build ();
 			insertParenthesesCheckbutton.Toggled += InsertParensToggled;
 			autoCodeCompletionCheckbutton.Toggled += AutomaticCompletionToggled;
+			includeKeywordsCheckbutton.Visible = includeCodeSnippetsCheckbutton.Visible = false;
+			hbox4.Visible = hbox5.Visible = false;
 
 		}
 
 		void InsertParensToggled (object sender, EventArgs e)
 		{
-			openingRadiobutton.Sensitive = bothRadiobutton.Sensitive = insertParenthesesCheckbutton.Active;
+			openingRadiobutton.Sensitive = bothRadiobutton.Sensitive = false;//insertParenthesesCheckbutton.Active;
 		}
 
 		#region IOptionsPanel implementation
