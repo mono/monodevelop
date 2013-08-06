@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring
 			localGroup.AddIssue (issue);
 
 			var children = localNode.Children;
-			Assert.That (children.Contains (node));
+			Assert.That (children.Contains (issue));
 			Assert.AreEqual (1, children.Count, "The number of children was incorrect.");
 		}
 
@@ -223,7 +223,7 @@ namespace MonoDevelop.Refactoring
 			leafGroup.AddIssue (issue);
 			
 			var children = leafNode.Children;
-			Assert.That (children.Contains (node));
+			Assert.That (children.Contains (issue));
 			Assert.AreEqual (1, children.Count, "The group contained too many issues.");
 		}
 	}
