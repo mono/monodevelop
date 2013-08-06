@@ -15,6 +15,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using MonoDevelop.Components;
+using System.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -1081,6 +1082,26 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 			return false;
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			TreeIter iter;
+			foreach (var p in filelist.Selection.GetSelectedRows ()) {
+				if (!filestore.GetIter (out iter, p))
+					continue;
+
+				string[] data = (string[])filestore.GetValue (iter, ColPath);
+				foreach (var line in data)
+					sb.AppendLine (line);
+			}
+
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = sb.ToString ();
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = sb.ToString ();
 		}
 	}
 
