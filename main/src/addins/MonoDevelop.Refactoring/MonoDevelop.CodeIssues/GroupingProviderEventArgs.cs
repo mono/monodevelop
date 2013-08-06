@@ -1,21 +1,21 @@
-// 
-// ICodeIssueProviderSource.cs
-//  
+//
+// IGroupingProvider.cs
+//
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
-// 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-// 
+//       Simon Lindgren <simon.n.lindgren@gmail.com>
+//
+// Copyright (c) 2013 Simon Lindgren
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,23 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.Generic;
-using System.Threading;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
-using Mono.TextEditor;
+using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	/// <summary>
-	/// A code issue provider source provides a way for language backends to add a set of generated code issue providers.
-	/// </summary>
-	public interface ICodeIssueProviderSource
+	public class GroupingProviderEventArgs : EventArgs
 	{
+		public GroupingProviderEventArgs(IGroupingProvider provider, IGroupingProvider oldNext)
+		{
+			GroupingProvider = provider;
+			OldNext = oldNext;
+		}
+
 		/// <summary>
-		/// Gets the providers.
+		/// The <see cref="IGroupingProvider"/> whose Next reference has changed.
 		/// </summary>
-		IEnumerable<CodeIssueProvider> GetProviders ();
+		/// <value>The grouping provider.</value>
+		public IGroupingProvider GroupingProvider { get; private set; }
+
+		/// <summary>
+		/// The old value of the Next reference.
+		/// </summary>
+		/// <value>The old value.</value>
+		public IGroupingProvider OldNext { get; private set; }
 	}
+
 }
 
