@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide
 		Label modeLabel;
 		Label cursorLabel;
 		MiniButton feedbackButton;
-		Gtk.Widget resizeGrip = new Gtk.Label ("");
+		Gtk.EventBox resizeGrip = new Gtk.EventBox ();
 
 		const int ResizeGripWidth = 14;
 
@@ -137,7 +137,14 @@ namespace MonoDevelop.Ide
 
 			resizeGrip.WidthRequest = ResizeGripWidth;
 			resizeGrip.HeightRequest = 0;
+			resizeGrip.VisibleWindow = false;
 			mainBox.PackStart (resizeGrip, false, false, 0);
+
+			resizeGrip.ButtonPressEvent += delegate (object o, ButtonPressEventArgs args) {
+				if (args.Event.Button == 1) {
+					GdkWindow.BeginResizeDrag (Gdk.WindowEdge.SouthEast, (int)args.Event.Button, (int)args.Event.XRoot, (int)args.Event.YRoot, args.Event.Time);
+				}
+			};
 
 			// Status panels
 
