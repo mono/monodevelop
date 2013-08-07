@@ -463,7 +463,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
-			IntPtr localpool = newpool (pool);
+			IntPtr localpool = TryStartOperation (null);
 			List<DirectoryEntry> items = new List<DirectoryEntry> ();
 
 			try {
