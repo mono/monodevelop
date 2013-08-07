@@ -41,6 +41,11 @@ namespace MonoDevelop.Core.Execution
 		public abstract string Name { get; }
 
 		/// <summary>
+		/// The display name of the item when it is selected
+		/// </summary>
+		public virtual string FullName { get { return Name; } }
+
+		/// <summary>
 		/// Unique identifier of the target
 		/// </summary>
 		public abstract string Id { get; }
@@ -54,6 +59,11 @@ namespace MonoDevelop.Core.Execution
 		public override int GetHashCode ()
 		{
 			return Id.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ExecutionTarget: Name={0}, FullName={1}, Id={2}]", Name, FullName, Id);
 		}
 	}
 

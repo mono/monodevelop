@@ -126,7 +126,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return target == null;
 		}
 
-		static void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
+		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
 			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
@@ -140,7 +140,11 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			renderer.Xpad = indent ? (uint) 18 : (uint) 3;
-			renderer.Text = target.Name;
+
+			if (!runtimeCombo.PopupShown)
+				renderer.Text = target.FullName;
+			else
+				renderer.Text = target.Name;
 		}
 
 		public MainToolbar ()
@@ -585,10 +589,8 @@ namespace MonoDevelop.Components.MainToolbar
 			SelectActiveRuntime ();
 		}
 
-		bool SelectActiveRuntime (TreeIter iter, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
+		bool SelectActiveRuntime (TreeIter iter, ref bool selected, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
 		{
-			bool selected = false;
-
 			do {
 				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 
@@ -598,8 +600,10 @@ namespace MonoDevelop.Components.MainToolbar
 				if (target is ExecutionTargetGroup) {
 					TreeIter child;
 
-					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter))
-						selected = SelectActiveRuntime (child, ref defaultTarget, ref defaultIter);
+					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter)) {
+						if (SelectActiveRuntime (child, ref selected, ref defaultTarget, ref defaultIter))
+							return true;
+					}
 
 					continue;
 				}
@@ -613,6 +617,7 @@ namespace MonoDevelop.Components.MainToolbar
 					IdeApp.Workspace.ActiveExecutionTarget = target;
 					runtimeCombo.SetActiveIter (iter);
 					UpdateBuildConfiguration ();
+					selected = true;
 					return true;
 				}
 
@@ -623,7 +628,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			} while (runtimeStore.IterNext (ref iter));
 
-			return selected;
+			return false;
 		}
 
 		void SelectActiveRuntime ()
@@ -636,8 +641,9 @@ namespace MonoDevelop.Components.MainToolbar
 				if (runtimeStore.GetIterFirst (out iter)) {
 					ExecutionTarget defaultTarget = null;
 					TreeIter defaultIter = TreeIter.Zero;
+					bool selected = false;
 
-					if (!SelectActiveRuntime (iter, ref defaultTarget, ref defaultIter)) {
+					if (!SelectActiveRuntime (iter, ref selected, ref defaultTarget, ref defaultIter) && !selected) {
 						if (defaultTarget != null) {
 							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
 							runtimeCombo.SetActiveIter (defaultIter);
