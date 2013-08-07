@@ -46,7 +46,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		ManualResetEvent doneEvent = new ManualResetEvent (false);
 		Dictionary<string,Engine> engines = new Dictionary<string, Engine> ();
-		Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
 
 		public void Dispose ()
 		{
@@ -93,9 +92,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void UnloadProject (string file)
 		{
-			lock (unsavedProjects)
-				unsavedProjects.Remove (file);
-
 			RunSTA (delegate {
 				foreach (var engine in engines.Values) {
 					var loadedProj = engine.GetLoadedProject (file);
@@ -103,21 +99,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						engine.UnloadProject (loadedProj);
 				}
 			});
-		}
-
-		internal void SetUnsavedProjectContent (string file, string content)
-		{
-			lock (unsavedProjects)
-				unsavedProjects [file] = content;
-		}
-
-		internal string GetUnsavedProjectContent (string file)
-		{
-			lock (unsavedProjects) {
-				string content;
-				unsavedProjects.TryGetValue (file, out content);
-				return content;
-			}
 		}
 
 		internal static void RunSTA (ThreadStart ts)

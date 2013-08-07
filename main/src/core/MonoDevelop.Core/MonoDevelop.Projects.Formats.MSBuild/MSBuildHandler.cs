@@ -135,10 +135,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new NotSupportedException ();
 		}
 		
-		public virtual void OnModified (string hint)
-		{
-		}
-
 		public virtual void Dispose ()
 		{
 		}
