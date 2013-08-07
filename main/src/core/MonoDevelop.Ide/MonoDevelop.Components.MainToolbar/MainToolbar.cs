@@ -119,20 +119,28 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
-		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
+		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
+		{
+			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
+
+			return target == null;
+		}
+
+		static void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
 			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
 			var renderer = (CellRendererText) cell;
 
-			if (target != null) {
-				renderer.Sensitive = !(target is ExecutionTargetGroup);
-				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
-				renderer.Text = target.Name;
-			} else {
-				renderer.Text = string.Empty;
-				renderer.Sensitive = false;
+			renderer.Sensitive = !(target is ExecutionTargetGroup);
+
+			if (target == null) {
+				renderer.Xpad = (uint) 0;
+				return;
 			}
+
+			renderer.Xpad = indent ? (uint) 18 : (uint) 3;
+			renderer.Text = target.Name;
 		}
 
 		public MainToolbar ()
@@ -169,6 +177,7 @@ namespace MonoDevelop.Components.MainToolbar
 			ctx = new Gtk.CellRendererText ();
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
+			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
 
 			var runtimeComboVBox = new VBox ();
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
@@ -582,6 +591,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 			do {
 				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
+
+				if (target == null)
+					continue;
+
 				if (target is ExecutionTargetGroup) {
 					TreeIter child;
 
@@ -679,10 +692,15 @@ namespace MonoDevelop.Components.MainToolbar
 				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
 					return;
 
+				ExecutionTarget previous = null;
 				int runtimes = 0;
+
 				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
 					if (target is ExecutionTargetGroup) {
 						var devices = (ExecutionTargetGroup) target;
+
+						if (previous != null)
+							runtimeStore.AppendValues (null, false);
 
 						runtimeStore.AppendValues (target, false);
 						foreach (var device in devices) {
@@ -700,9 +718,14 @@ namespace MonoDevelop.Components.MainToolbar
 							}
 						}
 					} else {
+						if (previous is ExecutionTargetGroup)
+							runtimeStore.AppendValues (null, false);
+
 						runtimeStore.AppendValues (target, false);
 						runtimes++;
 					}
+
+					previous = target;
 				}
 
 				runtimeCombo.Sensitive = runtimes > 1;
