@@ -6,11 +6,11 @@
        description = "Test runner for the MonoDevelop unit tests"
        category    = "MonoDevelop Core"
        isroot      = "false"
-       version     = "4.0.11"
+       version     = "4.0.12"
        compatVersion = "4.0">
 
 	<Dependencies>
-		<Addin id="Core" version="4.0.11"/>
+		<Addin id="Core" version="4.0.12"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
