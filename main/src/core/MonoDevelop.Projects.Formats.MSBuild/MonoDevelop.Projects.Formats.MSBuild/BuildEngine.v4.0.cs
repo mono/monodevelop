@@ -48,7 +48,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		ManualResetEvent doneEvent = new ManualResetEvent (false);
 		Dictionary<string,ProjectCollection> engines = new Dictionary<string, ProjectCollection> ();
-		Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
 
 		public void Dispose ()
 		{
@@ -68,21 +67,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			((ProjectBuilder)pb).Dispose ();
 			RemotingServices.Disconnect ((MarshalByRefObject) pb);
-		}
-
-		internal void SetUnsavedProjectContent (string file, string content)
-		{
-			lock (unsavedProjects)
-				unsavedProjects[file] = content;
-		}
-
-		internal string GetUnsavedProjectContent (string file)
-		{
-			lock (unsavedProjects) {
-				string content;
-				unsavedProjects.TryGetValue (file, out content);
-				return content;
-			}
 		}
 		
 		public override object InitializeLifetimeService ()
@@ -110,11 +94,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void UnloadProject (string file)
 		{
-			lock (unsavedProjects)
-				unsavedProjects.Remove (file);
-
-			RunSTA (delegate
-			{
+			RunSTA (delegate {
 				foreach (var engine in engines.Values) {
 					//unloading projects modifies the collection, so copy it
 					var projects = engine.GetLoadedProjects (file).ToArray ();
