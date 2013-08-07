@@ -141,12 +141,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public void Save (string fileName)
 		{
-			string content = SaveToString ();
-			TextFile.WriteFile (fileName, content, bom, true);
-		}
-		
-		public string SaveToString ()
-		{
 			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the
 			// XmlDocument will write the UTF8 header.
 			ProjectWriter sw = new ProjectWriter (bom);
@@ -157,7 +151,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (endsWithEmptyLine && !content.EndsWith (newLine))
 				content += newLine;
 
-			return content;
+			TextFile.WriteFile (fileName, content, bom, true);
 		}
 
 		public string DefaultTargets {

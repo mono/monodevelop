@@ -63,12 +63,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildEngine.UnloadProject (file);
 		}
 		
-		public void RefreshWithContent (string projectContent)
-		{
-			buildEngine.UnloadProject (file);
-			buildEngine.SetUnsavedProjectContent (file, projectContent);
-		}
-
 		void LogWriteLine (string txt)
 		{
 			if (currentLogWriter != null)
@@ -151,11 +145,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var p = engine.GetLoadedProject (pc.ProjectFile);
 				if (p == null) {
 					p = new Project (engine);
-					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
-					if (content == null)
-						p.Load (pc.ProjectFile);
-					else
-						p.Load (new StringReader (content));
+					p.Load (pc.ProjectFile);
 				}
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
