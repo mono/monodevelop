@@ -309,12 +309,7 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
-
-						// This is a workaround to a GTK+ bug. The HasTopLevelFocus flag is not properly
-						// set when the main window is restored. The workaround is to hide and re-show it.
-						// Since this happens before the next mainloop cycle, the window isn't actually affected.
-						IdeApp.Workbench.RootWindow.Hide ();
-						IdeApp.Workbench.RootWindow.Show ();
+						IdeApp.Workbench.RootWindow.Visible = true;
 
 						IdeApp.Workbench.RootWindow.Present ();
 						e.Handled = true;
