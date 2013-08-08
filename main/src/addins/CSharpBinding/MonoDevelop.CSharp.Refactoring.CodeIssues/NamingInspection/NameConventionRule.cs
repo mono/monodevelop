@@ -101,7 +101,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			set { wrappedRule.IncludeStaticEntities = value;} 
 		}
 
-		
+		[ItemProperty]
+		public ICSharpCode.NRefactory.CSharp.UnderscoreHandling UnderscoreHandling {
+			get { return wrappedRule.UnderscoreHandling; } 
+			set { wrappedRule.UnderscoreHandling = value;} 
+		}
+
+
 		internal NameConventionRule (ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule wrappedRule)
 		{
 			this.wrappedRule = wrappedRule;

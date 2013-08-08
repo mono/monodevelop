@@ -148,6 +148,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 			checkbuttonStatic.Active = rule.IncludeStaticEntities;
 			checkbuttonInstanceMembers.Active = rule.IncludeInstanceMembers;
+
+			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Forbid"));
+			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow"));
+			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow with lower following letter"));
+			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow with upper following letter"));
+			comboboxentryUnderscoreAllowance.Active = (int)rule.UnderscoreHandling;
 		}
 
 		public void Apply ()
@@ -210,6 +216,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			rule.VisibilityMask = mod;
 			rule.IncludeStaticEntities = checkbuttonStatic.Active;
 			rule.IncludeInstanceMembers = checkbuttonInstanceMembers.Active;
+			rule.UnderscoreHandling = (UnderscoreHandling)comboboxentryUnderscoreAllowance.Active;
 		}
 	}
 }
