@@ -305,7 +305,7 @@ namespace MonoDevelop.Refactoring
 				var type = item as IType;
 				if (type != null && type.GetDefinition ().Parts.Count > 1) {
 					var declSet = new CommandInfoSet ();
-					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
+					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					var ct = type.GetDefinition ();
 					foreach (var part in ct.Parts)
 						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (new JumpTo (part).Run));
@@ -319,7 +319,7 @@ namespace MonoDevelop.Refactoring
 			if (item is IMember) {
 				var member = (IMember)item;
 				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
-					ainfo.Add (GettextCatalog.GetString ("Go to _base symbol"), new System.Action (new GotoBase (member).Run));
+					ainfo.Add (GettextCatalog.GetString ("Go to _Base Symbol"), new System.Action (new GotoBase (member).Run));
 					added = true;
 				}
 			}
@@ -334,7 +334,14 @@ namespace MonoDevelop.Refactoring
 			if (item is IMember) {
 				var member = (IMember)item;
 				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-					ainfo.Add (GettextCatalog.GetString ("Find derived symbols"), new System.Action (new FindDerivedSymbolsHandler (doc, member).Run));
+					ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (new FindDerivedSymbolsHandler (doc, member).Run));
+					added = true;
+				}
+			}
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
+					ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (new FindMemberOverloadsHandler (doc, member).Run));
 					added = true;
 				}
 			}
@@ -345,7 +352,7 @@ namespace MonoDevelop.Refactoring
 				ITypeDefinition cls = (ITypeDefinition)item;
 				foreach (var bc in cls.DirectBaseTypes) {
 					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
+						ainfo.Add (GettextCatalog.GetString ("Go to _Base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
 						break;
 					}
 				}

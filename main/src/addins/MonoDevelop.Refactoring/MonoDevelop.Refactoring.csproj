@@ -136,6 +136,7 @@
     <Compile Include="MonoDevelop.CodeActions\IScriptProvider.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

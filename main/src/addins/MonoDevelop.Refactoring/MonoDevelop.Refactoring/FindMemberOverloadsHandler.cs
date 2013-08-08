@@ -1,5 +1,5 @@
 //
-// FindDerivedSymbolsHandler.cs
+// FindMemberOverloadsHandler.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -32,12 +32,12 @@ using ICSharpCode.NRefactory.Analysis;
 
 namespace MonoDevelop.Refactoring
 {
-	public class FindDerivedSymbolsHandler 
+	public class FindMemberOverloadsHandler
 	{
 		Ide.Gui.Document doc;
 		IMember entity;
 
-		public FindDerivedSymbolsHandler (Ide.Gui.Document doc, IMember entity)
+		public FindMemberOverloadsHandler (Ide.Gui.Document doc, IMember entity)
 		{
 			this.doc = doc;
 			this.entity = entity;
@@ -45,22 +45,17 @@ namespace MonoDevelop.Refactoring
 
 		public void Run ()
 		{
-			TypeGraph tg = new TypeGraph (doc.Compilation.Assemblies);
-			var node = tg.GetNode (entity.DeclaringTypeDefinition); 
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var derived in node.DerivedTypes) {
-					var derivedMember = InheritanceHelper.GetDerivedMember (entity, derived.TypeDefinition);
-					if (derivedMember == null)
-						continue;
-					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
-					var start = tf.LocationToOffset (derivedMember.Region.Begin); 
-					tf.SearchRequest.SearchPattern = derivedMember.Name;
+				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
+					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (overloadedMember.Region.FileName);
+					var start = tf.LocationToOffset (overloadedMember.Region.Begin); 
+					tf.SearchRequest.SearchPattern = overloadedMember.Name;
 					var sr = tf.SearchForward (start); 
 					if (sr != null) {
 						start = sr.Offset;
 					}
 
-					monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
+					monitor.ReportResult (new MemberReference (overloadedMember, overloadedMember.Region, start, overloadedMember.Name.Length));
 				}
 			}
 		}
