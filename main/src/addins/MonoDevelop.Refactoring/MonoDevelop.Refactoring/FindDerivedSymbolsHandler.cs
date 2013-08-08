@@ -29,6 +29,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Analysis;
+using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -45,22 +48,48 @@ namespace MonoDevelop.Refactoring
 
 		public void Run ()
 		{
-			TypeGraph tg = new TypeGraph (doc.Compilation.Assemblies);
+			var assemblies = new HashSet<IAssembly> ();
+			foreach (var project in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+				var comp = TypeSystemService.GetCompilation (project); 
+				if (comp == null)
+					continue;
+				assemblies.Add (comp.MainAssembly);
+			}
+
+			TypeGraph tg = new TypeGraph (assemblies);
 			var node = tg.GetNode (entity.DeclaringTypeDefinition); 
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var derived in node.DerivedTypes) {
-					var derivedMember = InheritanceHelper.GetDerivedMember (entity, derived.TypeDefinition);
-					if (derivedMember == null)
-						continue;
-					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
-					var start = tf.LocationToOffset (derivedMember.Region.Begin); 
-					tf.SearchRequest.SearchPattern = derivedMember.Name;
-					var sr = tf.SearchForward (start); 
-					if (sr != null) {
-						start = sr.Offset;
-					}
+				Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
+				derivedTypes.Push (node.DerivedTypes); 
+				HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
+				while (derivedTypes.Count > 0) {
+					foreach (var derived in derivedTypes.Pop ()) {
+						if (visitedType.Contains (derived.TypeDefinition))
+							continue;
+						derivedTypes.Push (tg.GetNode (derived.TypeDefinition).DerivedTypes);
+						visitedType.Add (derived.TypeDefinition);
+						var impMember = derived.TypeDefinition.Compilation.Import (entity);
+						if (impMember == null)
+							continue;
+						IMember derivedMember;
+						if (entity.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+							derivedMember = derived.TypeDefinition.GetMembers (null, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault (
+								m => m.ImplementedInterfaceMembers.Any (im => im.Region == entity.Region)
+							);
+						} else {
+							derivedMember = InheritanceHelper.GetDerivedMember (impMember, derived.TypeDefinition);
+						}
+						if (derivedMember == null)
+							continue;
+						var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
+						var start = tf.LocationToOffset (derivedMember.Region.Begin); 
+						tf.SearchRequest.SearchPattern = derivedMember.Name;
+						var sr = tf.SearchForward (start); 
+						if (sr != null)
+							start = sr.Offset;
 
-					monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
+						monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
+					}
 				}
 			}
 		}
