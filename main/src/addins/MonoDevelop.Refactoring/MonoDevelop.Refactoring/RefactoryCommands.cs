@@ -152,22 +152,11 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				
-				var method = item as IMethod;
+				var method = item as IMember;
 				if (method != null) {
-					foreach (var def in method.DeclaringTypeDefinition.DirectBaseTypes) {
-						if (def != null && def.Kind != TypeKind.Interface && !def.GetDefinition ().Region.IsEmpty) {
-							IMethod baseMethod = null;
-							foreach (var m in def.GetMethods ()) {
-								if (m.Name == method.Name && ParameterListComparer.Instance.Equals (m.Parameters, method.Parameters)) {
-									baseMethod = m;
-									break;
-								}
-							}
-							if (baseMethod != null)
-								IdeApp.Workbench.OpenDocument (baseMethod.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.EndLine);
-							return;
-						}
-					}
+					var baseMethod = InheritanceHelper.GetBaseMember (method); 
+					if (baseMethod != null)
+						IdeApp.Workbench.OpenDocument (baseMethod.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.EndLine);
 					return;
 				}
 			}
@@ -327,20 +316,23 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
+					ainfo.Add (GettextCatalog.GetString ("Go to _base symbol"), new System.Action (new GotoBase (member).Run));
+					added = true;
+				}
+			}
+
 			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
 				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
 				added = true;
 			}
-			
-			if (item is IMethod) {
-				IMethod method = item as IMethod;
-				if (method.IsOverride) {
-					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((IMethod)item).Run));
-					added = true;
-				}
-			} else if (item is ITypeDefinition) {
+
+		
+			if (item is ITypeDefinition) {
 				ITypeDefinition cls = (ITypeDefinition)item;
 				foreach (var bc in cls.DirectBaseTypes) {
 					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
