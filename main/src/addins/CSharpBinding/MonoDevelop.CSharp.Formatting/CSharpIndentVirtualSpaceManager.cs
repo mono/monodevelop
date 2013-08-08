@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		string GetIndentationString (int offset, DocumentLocation loc)
 		{
-			stateTracker.Update (Math.Min (data.Length, offset + 1));
+			stateTracker.Update (Math.Min (data.Length, offset));
 			DocumentLine line = data.Document.GetLine (loc.Line);
 			if (line == null)
 				return "";
