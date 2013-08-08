@@ -1,5 +1,5 @@
 //
-// FindMemberOverloadsHandler.cs
+// FindExtensionMethodHandler.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,21 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Analysis;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.Refactoring
 {
-	public class FindMemberOverloadsHandler
+	public class FindExtensionMethodHandler 
 	{
 		Ide.Gui.Document doc;
-		IMember entity;
+		ITypeDefinition entity;
 
-		public FindMemberOverloadsHandler (Ide.Gui.Document doc, IMember entity)
+		public FindExtensionMethodHandler (Ide.Gui.Document doc, ITypeDefinition entity)
 		{
 			this.doc = doc;
 			this.entity = entity;
@@ -46,14 +48,24 @@ namespace MonoDevelop.Refactoring
 		public void Run ()
 		{
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
-					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (overloadedMember.Region.FileName);
-					var start = tf.LocationToOffset (overloadedMember.Region.Begin); 
-					tf.SearchRequest.SearchPattern = overloadedMember.Name;
-					var sr = tf.SearchForward (start); 
-					if (sr != null)
-						start = sr.Offset;
-					monitor.ReportResult (new MemberReference (overloadedMember, overloadedMember.Region, start, overloadedMember.Name.Length));
+				foreach (var type in doc.Compilation.GetAllTypeDefinitions ()) {
+					if (!type.IsStatic)
+						continue;
+					foreach (var method in type.GetMethods (m => m.IsStatic)) {
+						if (!method.IsExtensionMethod)
+							continue;
+						IType[] ifTypes;
+						if (!CSharpResolver.IsEligibleExtensionMethod (this.entity, method, true, out ifTypes))
+							continue;
+
+						var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (method.Region.FileName);
+						var start = tf.LocationToOffset (method.Region.Begin); 
+						tf.SearchRequest.SearchPattern = method.Name;
+						var sr = tf.SearchForward (start); 
+						if (sr != null)
+							start = sr.Offset;
+						monitor.ReportResult (new MemberReference (method, method.Region, start, method.Name.Length));
+					}
 				}
 			}
 		}

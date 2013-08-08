@@ -346,8 +346,6 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-
-		
 			if (item is ITypeDefinition) {
 				ITypeDefinition cls = (ITypeDefinition)item;
 				foreach (var bc in cls.DirectBaseTypes) {
@@ -359,6 +357,9 @@ namespace MonoDevelop.Refactoring
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
 					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
+				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
+				added = true;
+
 			}
 
 			if (added)
