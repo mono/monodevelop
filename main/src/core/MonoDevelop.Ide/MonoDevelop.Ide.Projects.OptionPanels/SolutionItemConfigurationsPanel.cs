@@ -69,14 +69,16 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			store = new TreeStore (typeof(object), typeof(string));
 			configsList.Model = store;
 			configsList.HeadersVisible = true;
+			store.SetSortColumnId (1, SortType.Ascending);
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRendererText sr = new CellRendererText ();
 			col.PackStart (sr, true);
 			col.AddAttribute (sr, "text", 1);
 			col.Title = GettextCatalog.GetString ("Configuration");
+			col.SortColumnId = 1;
 			configsList.AppendColumn (col);
-			
+
 			foreach (ItemConfiguration cc in configData.Configurations)
 				store.AppendValues (cc, cc.Id);
 
