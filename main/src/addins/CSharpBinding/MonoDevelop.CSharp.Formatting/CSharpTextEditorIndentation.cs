@@ -46,7 +46,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpTextEditorIndentation : TextEditorExtension, Mono.TextEditor.ITextPasteHandler
+	public class CSharpTextEditorIndentation : TextEditorExtension
 	{
 		IStateMachineIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
@@ -175,14 +175,15 @@ namespace MonoDevelop.CSharp.Formatting
 				var policy = Policy.CreateOptions();
 				var options = Editor.CreateNRefactoryTextEditorOptions();
 				options.IndentBlankLines = true;
+				var engine = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(Editor.Document, options, policy));
 				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
 					textEditorData,
-					new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(Editor.Document, options, policy))
+					engine
 				);
 
 				textEditorData.Document.TextReplacing += HandleTextReplacing;
 				textEditorData.Document.TextReplaced += HandleTextReplaced;;
-				textEditorData.TextPasteHandler = this;
+				textEditorData.TextPasteHandler = new TextPasteIndentEngine(engine.Clone(), options);
 				textEditorData.Paste += HandleTextPaste;
 			}
 
@@ -244,187 +245,12 @@ namespace MonoDevelop.CSharp.Formatting
 			wasInVerbatimString = stateTracker.IsInsideVerbatimString;
 		}
 
-		#region ITextPasteHandler implementation
-		enum CopySource : byte
-		{
-			Text = 0,
-			StringLiteral = 1,
-			VerbatimString = 2
-		}
-
-		byte[] Mono.TextEditor.ITextPasteHandler.GetCopyData(TextSegment segment)
-		{
-			stateTracker.Update (segment.Offset);
-			if (stateTracker.IsInsideStringLiteral)
-				return new [] { (byte)CopySource.StringLiteral };
-			if (stateTracker.IsInsideVerbatimString)
-				return new [] { (byte)CopySource.VerbatimString };
-			return null;
-		}
-		
-		static string ConvertFromString (string nonVerbatimStringContent)
-		{
-			var result = new StringBuilder ();
-			for (int i = 0; i < nonVerbatimStringContent.Length; i++) {
-				var ch = nonVerbatimStringContent [i];
-				switch (ch) {
-				case '\\':
-					i++;
-					switch (nonVerbatimStringContent [i]) {
-					case '\\':
-						result.Append ('\\');
-						break;
-					case 'r':
-						result.Append ('\r');
-						break;
-					case 'n':
-						result.Append ('\n');
-						break;
-					case 't':
-						result.Append ('\t');
-						break;
-					case '"':
-						result.Append ('"');
-						break;
-					}
-					break;
-				default:
-					result.Append (ch);
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-		
-		static string ConvertFromVerbatimString (string verbatimStringContent)
-		{
-			var result = new StringBuilder ();
-			for (int i = 0; i < verbatimStringContent.Length; i++) {
-				var ch = verbatimStringContent [i];
-
-				switch (ch) {
-				case '"':
-					if (i + 1 < verbatimStringContent.Length && verbatimStringContent [i + 1] == '"') {
-						result.Append ("\"");
-						i++;
-					}
-					break;
-				default:
-					result.Append (ch);
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-
-		static string ConvertToStringLiteral (string text)
-		{
-			var result = new StringBuilder ();
-			foreach (var ch in text) {
-				switch (ch) {
-				case '\t':
-					result.Append ("\\t");
-					break;
-				case '"':
-					result.Append ("\\\"");
-					break;
-				case '\n':
-					result.Append ("\\n");
-					break;
-				case '\r':
-					result.Append ("\\r");
-					break;
-				case '\\':
-					result.Append ("\\\\");
-					break;
-				default:
-					result.Append (ch);
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-
-		static string ConvertToVerbatimLiteral (string text)
-		{
-			var result = new StringBuilder ();
-			foreach (var ch in text) {
-				switch (ch) {
-					case '"':
-					result.Append ("\"\"");
-					break;
-					default:
-					result.Append (ch);
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-
-		string Mono.TextEditor.ITextPasteHandler.FormatPlainText(int insertionOffset, string text, byte[] copyData)
-		{
-			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
-			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
-				return text;
-
-			if (copyData != null && copyData.Length == 1) {
-				CopySource src = (CopySource)copyData [0];
-				switch (src) {
-				case CopySource.VerbatimString:
-					text = ConvertFromVerbatimString (text);
-					break;
-				case CopySource.StringLiteral:
-					text = ConvertFromString (text);
-					break;
-				}
-			}
-
-			stateTracker.Update (insertionOffset);
-			var engine = stateTracker.Clone ();
-
-			var result = new StringBuilder ();
-
-			if (engine.IsInsideStringLiteral)
-				return ConvertToStringLiteral (text);
-
-			if (engine.IsInsideVerbatimString)
-				return ConvertToVerbatimLiteral (text);
-
-			bool inNewLine = false;
-			foreach (var ch in text) {
-				if (!engine.IsInsideOrdinaryCommentOrString) {
-					if (inNewLine && (ch == ' ' || ch == '\t')) {
-						engine.Push (ch);
-						continue;
-					}
-				}
-
-				if (inNewLine && ch != '\n' && ch != '\r') {
-					if (!engine.IsInsideOrdinaryCommentOrString) {
-						if (ch != '#')
-							engine.Push (ch);
-						result.Append (engine.ThisLineIndent);
-						if (ch == '#')
-							engine.Push (ch);
-					}
-					inNewLine = false;
-				} else {
-					engine.Push (ch);
-				}
-				result.Append (ch);
-				if (ch == '\n' || ch == '\r')
-					inNewLine = true;
-			}
-			return result.ToString ();
-		}
-		#endregion
-
 		void ConvertNormalToVerbatimString (TextEditorData textEditorData, int offset)
 		{
 			var endOffset = offset;
 			while (endOffset < textEditorData.Length) {
 				char ch = textEditorData.GetCharAt (endOffset);
-				if (ch == '\\' && (endOffset + 1 < textEditorData.Length && textEditorData.GetCharAt (endOffset + 1) == '"'))  {
+				if (ch == '\\' && (endOffset + 1 < textEditorData.Length && textEditorData.GetCharAt (endOffset + 1) == '"')) {
 					endOffset += 2;
 					continue;
 				}
@@ -432,7 +258,9 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				endOffset++;
 			}
-			textEditorData.Replace (offset, endOffset - offset, ConvertToVerbatimLiteral (ConvertFromString (textEditorData.GetTextAt (offset, endOffset - offset))));
+
+			var newText = TextPasteUtils.VerbatimStringStrategy.Encode(textEditorData.GetTextAt(offset, endOffset - offset));
+			textEditorData.Replace(offset, endOffset - offset, newText);
 		}
 
 		void ConvertVerbatimStringToNormal (TextEditorData textEditorData, int offset)
@@ -448,7 +276,9 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				endOffset++;
 			}
-			textEditorData.Replace (offset, endOffset - offset, ConvertToStringLiteral (ConvertFromVerbatimString (textEditorData.GetTextAt (offset, endOffset - offset))));
+
+			var newText = TextPasteUtils.VerbatimStringStrategy.Decode(textEditorData.GetTextAt(offset, endOffset - offset));
+			textEditorData.Replace(offset, endOffset - offset, newText);
 		}
 
 		#region Sharing the tracker
