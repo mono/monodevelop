@@ -331,6 +331,15 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
+					ainfo.Add (GettextCatalog.GetString ("Find derived symbols"), new System.Action (new FindDerivedSymbolsHandler (doc, member).Run));
+					added = true;
+				}
+			}
+
+
 		
 			if (item is ITypeDefinition) {
 				ITypeDefinition cls = (ITypeDefinition)item;
