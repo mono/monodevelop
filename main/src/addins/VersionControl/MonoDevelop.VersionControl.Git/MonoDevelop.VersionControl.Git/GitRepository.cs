@@ -30,10 +30,8 @@ using System;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 using System.Text;
-using System.Globalization;
 using MonoDevelop.Ide;
 using NGit;
 using NGit.Storage.File;
@@ -43,11 +41,8 @@ using NGit.Treewalk;
 using NGit.Treewalk.Filter;
 using NGit.Dircache;
 using NGit.Transport;
-using NGit.Errors;
-using NGit.Api.Errors;
 using NGit.Diff;
 using NGit.Merge;
-using Mono.TextEditor;
 using NGit.Submodule;
 
 namespace MonoDevelop.VersionControl.Git
@@ -147,7 +142,7 @@ namespace MonoDevelop.VersionControl.Git
 			return GetCommitTextContent (c, localFile);
 		}
 				
-		RevCommit GetHeadCommit (NGit.Repository repository)
+		static RevCommit GetHeadCommit (NGit.Repository repository)
 		{
 			RevWalk rw = new RevWalk (repository);
 			ObjectId headId = repository.Resolve (Constants.HEAD);
@@ -161,7 +156,7 @@ namespace MonoDevelop.VersionControl.Git
 			return GetStashes (RootRepository);
 		}
 
-		public StashCollection GetStashes (NGit.Repository repository)
+		public static StashCollection GetStashes (NGit.Repository repository)
 		{
 			return new StashCollection (repository);
 		}
@@ -561,6 +556,25 @@ namespace MonoDevelop.VersionControl.Git
 					monitor.Step (1);
 				}
 
+				if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
+					VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
+					bool modified = false;
+					if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
+						modified = true;
+
+					if (modified) {
+						if (MessageService.GenericAlert (
+							MonoDevelop.Ide.Gui.Stock.Question,
+							GettextCatalog.GetString ("You have uncommitted changes"),
+							GettextCatalog.GetString ("What do you want to do?"),
+							AlertButton.Cancel,
+							new AlertButton ("Stash")) == AlertButton.Cancel)
+							return;
+
+						options |= GitUpdateOptions.SaveLocalChanges;
+					}
+				}
+
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
@@ -677,7 +691,26 @@ namespace MonoDevelop.VersionControl.Git
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
 				monitor.Step (1);
-				
+
+				if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
+					VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
+					bool modified = false;
+					if (GetDirectoryVersionInfo (RootPath, false, true).Any (v => (v.Status & unclean) != VersionStatus.Unversioned))
+						modified = true;
+
+					if (modified) {
+						if (MessageService.GenericAlert (
+							MonoDevelop.Ide.Gui.Stock.Question,
+							GettextCatalog.GetString ("You have uncommitted changes"),
+							GettextCatalog.GetString ("What do you want to do?"),
+							AlertButton.Cancel,
+							new AlertButton ("Stash")) == AlertButton.Cancel)
+							return;
+
+						options |= GitUpdateOptions.SaveLocalChanges;
+					}
+				}
+
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
