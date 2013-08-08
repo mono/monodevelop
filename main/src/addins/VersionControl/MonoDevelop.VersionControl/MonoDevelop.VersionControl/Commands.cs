@@ -127,11 +127,11 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	class StatusCommandHandler: FileVersionControlCommandHandler
+	class StatusCommandHandler: SolutionVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
-			return StatusView.Show (items, test);
+			return StatusView.Show (items, test, true);
 		}
 	}
 

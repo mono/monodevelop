@@ -451,7 +451,7 @@ namespace MonoDevelop.VersionControl
 					res = LogCommand.Show (items, test);
 					break;
 				case Commands.Status:
-					res = StatusView.Show (items, test);
+					res = StatusView.Show (items, test, false);
 					break;
 				case Commands.Add:
 					res = AddCommand.Add (items, test);

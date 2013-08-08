@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		delegate void DiffDataHandler (List<DiffData> diffdata);
 		
-		public static bool Show (VersionControlItemList items, bool test)
+		public static bool Show (VersionControlItemList items, bool test, bool solution)
 		{
 			FilePath path = items.FindMostSpecificParent ();
 			bool isSingleDirectory = false;
@@ -116,7 +116,7 @@ namespace MonoDevelop.VersionControl.Views
 					return true;
 
 				if (!BringStatusViewToFront (path)) {
-					StatusView d = new StatusView (path, items [0].Repository, isSingleDirectory ? null : items);
+					StatusView d = new StatusView (path, items [0].Repository, isSingleDirectory || solution ? null : items);
 					IdeApp.Workbench.OpenDocument (d, true);
 				}
 				return true;
