@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		private global::Gtk.TextView textview;
 		private global::Gtk.Button button29;
 		private global::Gtk.Button buttonCommit;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("1/1");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("?/?");
 			this.hbox1.Add (this.label3);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w6.PackType = ((global::Gtk.PackType)(1));
@@ -143,27 +143,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonCommit.CanFocus = true;
 			this.buttonCommit.Name = "buttonCommit";
 			this.buttonCommit.UseUnderline = true;
-			// Container child buttonCommit.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w14 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w15 = new global::Gtk.HBox ();
-			w15.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w16 = new global::Gtk.Image ();
-			w16.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "vc-commit", global::Gtk.IconSize.Menu);
-			w15.Add (w16);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w18 = new global::Gtk.Label ();
-			w18.LabelProp = global::Mono.Unix.Catalog.GetString ("C_ommit");
-			w18.UseUnderline = true;
-			w15.Add (w18);
-			w14.Add (w15);
-			this.buttonCommit.Add (w14);
+			this.buttonCommit.Label = global::Mono.Unix.Catalog.GetString ("C_ommit");
 			w12.Add (this.buttonCommit);
-			global::Gtk.ButtonBox.ButtonBoxChild w22 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCommit]));
-			w22.Position = 1;
-			w22.Expand = false;
-			w22.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCommit]));
+			w14.Position = 1;
+			w14.Expand = false;
+			w14.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
