@@ -133,7 +133,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			radiobuttonAllLower.Active = rule.NamingStyle == NamingStyle.AllLower;
 			radiobuttonAllUpper.Active = rule.NamingStyle == NamingStyle.AllUpper;
 			radiobuttonFirstUpper.Active = rule.NamingStyle == NamingStyle.FirstUpper;
-			
+			radiobuttonPascalCaseU1.Active = rule.NamingStyle == NamingStyle.PascalCaseWithUpperLetterUnderscore;
+			radiobuttonPascalCaseU2.Active = rule.NamingStyle == NamingStyle.PascalCaseWithLowerLetterUnderscore;
+			radiobuttonCamelCaseU1.Active = rule.NamingStyle == NamingStyle.CamelCaseWithUpperLetterUnderscore;
+			radiobuttonCamelCaseU2.Active = rule.NamingStyle == NamingStyle.CamelCaseWithLowerLetterUnderscore;
+
 			foreach (AffectedEntity ae in Enum.GetValues (typeof (AffectedEntity))) {
 				if (!EntityName.ContainsKey (ae))
 					continue;
@@ -149,11 +153,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			checkbuttonStatic.Active = rule.IncludeStaticEntities;
 			checkbuttonInstanceMembers.Active = rule.IncludeInstanceMembers;
 
-			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Forbid"));
-			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow"));
-			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow with lower following letter"));
-			comboboxentryUnderscoreAllowance.AppendText (GettextCatalog.GetString ("Allow with upper following letter"));
-			comboboxentryUnderscoreAllowance.Active = (int)rule.UnderscoreHandling;
 		}
 
 		public void Apply ()
@@ -169,6 +168,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				rule.NamingStyle = NamingStyle.AllUpper;
 			} else if (radiobuttonFirstUpper.Active) {
 				rule.NamingStyle = NamingStyle.FirstUpper;
+			} else if (radiobuttonPascalCaseU1.Active) {
+				rule.NamingStyle = NamingStyle.PascalCaseWithUpperLetterUnderscore;
+			} else if (radiobuttonPascalCaseU2.Active) {
+				rule.NamingStyle = NamingStyle.PascalCaseWithLowerLetterUnderscore;
+			} else if (radiobuttonCamelCaseU1.Active) {
+				rule.NamingStyle = NamingStyle.CamelCaseWithUpperLetterUnderscore;
+			} else if (radiobuttonCamelCaseU2.Active) {
+				rule.NamingStyle = NamingStyle.CamelCaseWithLowerLetterUnderscore;
 			}
 
 			var prefix = entryPrefix.Text.Trim ();
@@ -216,7 +223,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			rule.VisibilityMask = mod;
 			rule.IncludeStaticEntities = checkbuttonStatic.Active;
 			rule.IncludeInstanceMembers = checkbuttonInstanceMembers.Active;
-			rule.UnderscoreHandling = (UnderscoreHandling)comboboxentryUnderscoreAllowance.Active;
 		}
 	}
 }
