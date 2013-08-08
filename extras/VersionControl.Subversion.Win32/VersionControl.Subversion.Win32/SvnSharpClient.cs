@@ -64,8 +64,11 @@ namespace SubversionAddinWindows
 				wc_path = client.GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
 			} catch (SvnException e) {
-				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_DIRECTORY)
+				switch (e.SvnErrorCode) {
+				case SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY:
+				case SvnErrorCode.SVN_ERR_WC_NOT_FILE:
 					return "";
+				}
 				throw;
 			}
 		}
