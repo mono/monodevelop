@@ -39,9 +39,11 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
+using System.Collections.Generic;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -190,7 +192,12 @@ namespace MonoDevelop.CodeIssues
 				return;
 
 			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
-			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+
+			CSharpAstResolver resolver;
+			using (var timer = ExtensionMethods.ResolveCounter.BeginTiming ()) {
+				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+				resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+			}
 			var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
 			CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();

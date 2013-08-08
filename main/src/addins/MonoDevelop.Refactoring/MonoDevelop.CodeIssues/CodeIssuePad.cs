@@ -215,6 +215,9 @@ namespace MonoDevelop.CodeIssues
 			case AnalysisState.Cancelled:
 				text = string.Format ("Found issues: {0} (Cancelled)", rootGroup.IssueCount);
 				break;
+			case AnalysisState.Error:
+				text = string.Format ("Found issues: {0} (Failed)", rootGroup.IssueCount);
+				break;
 			case AnalysisState.Completed:
 				text = string.Format ("Found issues: {0}", rootGroup.IssueCount);
 				break;
