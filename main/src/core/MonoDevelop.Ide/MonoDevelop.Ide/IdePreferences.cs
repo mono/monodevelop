@@ -318,6 +318,8 @@ namespace MonoDevelop.Ide
 			add { PropertyService.AddPropertyHandler ("ColorScheme", value); }
 			remove { PropertyService.RemovePropertyHandler ("ColorScheme", value); }
 		}
+
+		public readonly PropertyWrapper<bool> BuildBeforeRunningTests = new PropertyWrapper<bool> ("BuildBeforeRunningTests", true);
 	}
 	
 	public enum BeforeCompileAction {

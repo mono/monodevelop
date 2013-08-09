@@ -8,6 +8,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.CheckButton buildBeforeRunCheckBox;
 		private global::Gtk.CheckButton runWithWarningsCheckBox;
 		private global::Gtk.CheckButton checkXBuild;
+		private global::Gtk.CheckButton buildBeforeTestCheckBox;
 		private global::Gtk.Alignment alignment1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
@@ -67,6 +68,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
+			this.buildBeforeTestCheckBox = new global::Gtk.CheckButton ();
+			this.buildBeforeTestCheckBox.CanFocus = true;
+			this.buildBeforeTestCheckBox.Name = "buildBeforeTestCheckBox";
+			this.buildBeforeTestCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build solution before executing unit tests");
+			this.buildBeforeTestCheckBox.DrawIndicator = true;
+			this.buildBeforeTestCheckBox.UseUnderline = true;
+			this.vbox66.Add (this.buildBeforeTestCheckBox);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildBeforeTestCheckBox]));
+			w4.Position = 3;
+			w4.Expand = false;
+			w4.Fill = false;
+			// Container child vbox66.Gtk.Box+BoxChild
 			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(36));
@@ -80,10 +93,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Log _verbosity:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.verbosityCombo = global::Gtk.ComboBox.NewText ();
 			this.verbosityCombo.AppendText (global::Mono.Unix.Catalog.GetString ("Quiet"));
@@ -94,16 +107,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.verbosityCombo.Name = "verbosityCombo";
 			this.verbosityCombo.Active = 2;
 			this.hbox1.Add (this.verbosityCombo);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.verbosityCombo]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.verbosityCombo]));
+			w6.Position = 1;
+			w6.Expand = false;
+			w6.Fill = false;
 			this.alignment1.Add (this.hbox1);
 			this.vbox66.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.alignment1]));
-			w7.Position = 3;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.alignment1]));
+			w8.Position = 4;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.buildAndRunOptionsLabel = new global::Gtk.Label ();
 			this.buildAndRunOptionsLabel.Name = "buildAndRunOptionsLabel";
@@ -112,11 +125,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildAndRunOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>File Save Options Before Building</b>");
 			this.buildAndRunOptionsLabel.UseMarkup = true;
 			this.vbox66.Add (this.buildAndRunOptionsLabel);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildAndRunOptionsLabel]));
-			w8.Position = 4;
-			w8.Expand = false;
-			w8.Fill = false;
-			w8.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildAndRunOptionsLabel]));
+			w9.Position = 5;
+			w9.Expand = false;
+			w9.Fill = false;
+			w9.Padding = ((uint)(6));
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.hbox44 = new global::Gtk.HBox ();
 			this.hbox44.Name = "hbox44";
@@ -128,10 +141,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label71.Yalign = 0F;
 			this.label71.LabelProp = "    ";
 			this.hbox44.Add (this.label71);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.label71]));
-			w9.Position = 0;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.label71]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child hbox44.Gtk.Box+BoxChild
 			this.vbox67 = new global::Gtk.VBox ();
 			this.vbox67.Name = "vbox67";
@@ -139,15 +152,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.saveChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Save changes to open documents"));
 			this.saveChangesRadioButton.Name = "saveChangesRadioButton";
-			this.saveChangesRadioButton.Active = true;
 			this.saveChangesRadioButton.DrawIndicator = true;
 			this.saveChangesRadioButton.UseUnderline = true;
 			this.saveChangesRadioButton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox67.Add (this.saveChangesRadioButton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.saveChangesRadioButton]));
-			w10.Position = 0;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.saveChangesRadioButton]));
+			w11.Position = 0;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.promptChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Prompt to save changes to open documents"));
 			this.promptChangesRadioButton.Name = "promptChangesRadioButton";
@@ -155,10 +167,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.promptChangesRadioButton.UseUnderline = true;
 			this.promptChangesRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add (this.promptChangesRadioButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.promptChangesRadioButton]));
-			w11.Position = 1;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.promptChangesRadioButton]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.noSaveRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Don't save changes to open documents "));
 			this.noSaveRadioButton.Name = "noSaveRadioButton";
@@ -166,17 +178,17 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.noSaveRadioButton.UseUnderline = true;
 			this.noSaveRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add (this.noSaveRadioButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.noSaveRadioButton]));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
-			this.hbox44.Add (this.vbox67);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.vbox67]));
-			w13.Position = 1;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.noSaveRadioButton]));
+			w13.Position = 2;
 			w13.Expand = false;
+			w13.Fill = false;
+			this.hbox44.Add (this.vbox67);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.vbox67]));
+			w14.Position = 1;
+			w14.Expand = false;
 			this.vbox66.Add (this.hbox44);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.hbox44]));
-			w14.Position = 5;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.hbox44]));
+			w15.Position = 6;
 			this.Add (this.vbox66);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
