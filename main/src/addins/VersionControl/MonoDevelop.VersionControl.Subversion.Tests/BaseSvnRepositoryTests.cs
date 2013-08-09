@@ -81,6 +81,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			repo = GetRepo (rootCheckout, repoLocation);
 			DOT_DIR = ".svn";
 		}
+
+		[Test]
+		public override void RightRepositoryDetection ()
+		{
+			Repository repo = VersionControlService.GetRepositoryReference (rootCheckout + DOT_DIR, null);
+			Assert.True (repo is SubversionRepository);
+		}
 	}
 }
 

@@ -54,6 +54,9 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		public abstract void RightRepositoryDetection ();
+
+		[Test]
 		public virtual void CheckoutExists ()
 		{
 			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));

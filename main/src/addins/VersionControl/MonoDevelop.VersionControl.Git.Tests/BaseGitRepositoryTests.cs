@@ -68,6 +68,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
+		public override void RightRepositoryDetection ()
+		{
+			Repository repo = VersionControlService.GetRepositoryReference (rootCheckout + DOT_DIR, null);
+			Assert.True (repo is GitRepository);
+		}
+
+		[Test]
 		public override void DiffIsProper ()
 		{
 			string added = rootCheckout + "testfile";
