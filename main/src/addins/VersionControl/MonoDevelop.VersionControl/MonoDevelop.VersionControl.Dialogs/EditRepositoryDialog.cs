@@ -68,19 +68,19 @@ namespace MonoDevelop.VersionControl.Dialogs
 			entryName.Sensitive = true;
 		}
 
-		protected virtual void OnVersionControlTypeChanged(object sender, System.EventArgs e)
+		protected virtual void OnVersionControlTypeChanged(object sender, EventArgs e)
 		{
 			UpdateEditor ();
 		}
 
-		protected virtual void OnEntryNameChanged(object sender, System.EventArgs e)
+		protected virtual void OnEntryNameChanged(object sender, EventArgs e)
 		{
 			repo.NameChanged -= OnNameChanged;
 			repo.Name = entryName.Text;
 			repo.NameChanged += OnNameChanged;
 		}
 		
-		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonOkClicked (object sender, EventArgs e)
 		{
 			if (editor.Validate ())
 				Respond (Gtk.ResponseType.Ok);
