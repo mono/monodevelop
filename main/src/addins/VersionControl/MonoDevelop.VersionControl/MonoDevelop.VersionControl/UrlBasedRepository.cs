@@ -91,8 +91,7 @@ namespace MonoDevelop.VersionControl
 			get {
 				if (uri != null)
 					return uri.Scheme;
-				else
-					return null;
+				return null;
 			}
 		}
 

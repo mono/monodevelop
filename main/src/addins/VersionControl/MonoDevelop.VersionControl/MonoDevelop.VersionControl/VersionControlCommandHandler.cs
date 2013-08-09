@@ -47,8 +47,7 @@ namespace MonoDevelop.VersionControl
 			get {
 				if (items != null)
 					return items.Count > 1;
-				else
-					return base.MultipleSelectedNodes;
+				return base.MultipleSelectedNodes;
 			}
 		}
 		
@@ -68,7 +67,7 @@ namespace MonoDevelop.VersionControl
 			return nodeItems;
 		}
 		
-		public VersionControlItem CreateItem (object obj, bool projRecurse = true)
+		public static VersionControlItem CreateItem (object obj, bool projRecurse = true)
 		{
 			string path;
 			bool isDir;

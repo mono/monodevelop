@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Update (list.Paths, true, Monitor);
 				}
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Update operation completed."));
-				Gtk.Application.Invoke (delegate {
+				Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});
 			}

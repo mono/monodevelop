@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl
 
 		public bool Equals (VersionInfo obj)
 		{
-			VersionInfo other = obj as VersionInfo;
+			VersionInfo other = obj;
 			if (other == null)
 				return false;
 			return localPath == other.localPath &&

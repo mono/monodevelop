@@ -216,17 +216,19 @@ namespace MonoDevelop.VersionControl
 		{
 			lock (commentsLock) {
 				Hashtable doc = GetCommitComments ();
-				if (comment == null || comment.Length == 0) {
+				if (String.IsNullOrEmpty (comment)) {
 					if (doc.ContainsKey (file)) {
 						doc.Remove (file);
-						if (save) SaveComments ();
+						if (save)
+							SaveComments ();
 					}
 				} else {
 					CommitComment cm = new CommitComment ();
 					cm.Comment = comment;
 					cm.Date = DateTime.Now;
 					doc [file] = cm;
-					if (save) SaveComments ();
+					if (save)
+						SaveComments ();
 				}
 			}
 		}
@@ -240,15 +242,13 @@ namespace MonoDevelop.VersionControl
 					cm.Date = DateTime.Now;
 					return cm.Comment;
 				}
-				else
-					return null;
+				return null;
 			}
 		}
 		
 		static string CommitMessagesFile {
 			get {
 				return UserProfile.Current.CacheDir.Combine ("version-control-commit-msg");
-				
 			}
 		}
 		
@@ -491,7 +491,7 @@ namespace MonoDevelop.VersionControl
 		static void SolutionItemAddFile (string rootPath, HashSet<string> files, string file)
 		{
 			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar))
-			    return;
+				return;
 			if (!File.Exists (file))
 				return;
 			if (files.Add (file)) {

@@ -45,8 +45,7 @@ namespace MonoDevelop.VersionControl
 					return shortMessage;
 				if (Message.Length > 80)
 					return Message.Substring (0, 80);
-				else
-					return Message;
+				return Message;
 			}
 			set {
 				shortMessage = value;
