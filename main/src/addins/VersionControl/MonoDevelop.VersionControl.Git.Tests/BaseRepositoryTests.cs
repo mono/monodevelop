@@ -180,6 +180,31 @@ namespace MonoDevelop.VersionControl.Tests
 				repo2 = _repo;
 		}
 
+		public void AddFile (string path, string contents)
+		{
+			AddToRepository (path, contents ?? "");
+		}
+
+		public void AddDirectory (string path)
+		{
+			AddToRepository (path, null);
+		}
+
+		void AddToRepository (string relativePath, string contents)
+		{
+			string added = Path.Combine (rootCheckout, relativePath);
+			if (contents == null)
+				Directory.CreateDirectory (added);
+			else
+				File.WriteAllText (added, contents);
+
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+		}
+
 		protected abstract Repository GetRepo (string path, string url);
 
 		public static void DeleteDirectory (string path)

@@ -29,6 +29,7 @@ using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System;
 using MonoDevelop.VersionControl;
 
@@ -37,12 +38,31 @@ namespace VersionControl.Subversion.Unix.Tests
 	[TestFixture]
 	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
+		SubversionBackend SvnClient {
+			get { return repo.Svn; }
+		}
+
+		new SubversionRepository repo {
+			get { return (SubversionRepository) base.repo; }
+		}
+
 		[SetUp]
 		public override void Setup ()
 		{
 			rootUrl = new FilePath (FileService.CreateTempDirectory ());
 			repoLocation = "file://" + rootUrl + "/repo";
 			base.Setup ();
+		}
+
+		[Test]
+		public void ListUrls ()
+		{
+			AddFile ("test", "data");
+			AddDirectory ("foo");
+			var items = SvnClient.ListUrl (repo.Url, false).ToArray ();
+			Assert.AreEqual (2, items.Length, "#1");
+			Assert.IsTrue (items.Any (item => item.Name == "test" && !item.IsDirectory), "#2a");
+			Assert.IsTrue (items.Any (item => item.Name == "foo" && item.IsDirectory), "#2b");
 		}
 
 		[Test]
