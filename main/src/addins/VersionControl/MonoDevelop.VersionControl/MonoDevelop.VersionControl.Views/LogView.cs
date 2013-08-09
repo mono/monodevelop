@@ -104,7 +104,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		
-		public override Gtk.Widget Control { 
+		public override Widget Control { 
 			get {
 				if (widget == null)
 					CreateControlFromInfo ();

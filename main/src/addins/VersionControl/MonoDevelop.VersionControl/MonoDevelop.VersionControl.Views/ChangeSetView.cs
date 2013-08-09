@@ -78,7 +78,7 @@ namespace MonoDevelop.VersionControl.Views
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
-			colCommit.Widget = new Gtk.Image ("vc-commit", Gtk.IconSize.Menu);
+			colCommit.Widget = new Image ("vc-commit", IconSize.Menu);
 			colCommit.Widget.Show ();
 			colCommit.PackStart (cellToggle, false);
 			colCommit.PackStart (crc, false);
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string[]), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(string));
 			filelist.Model = filestore;
-			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
+			filelist.TestExpandRow += new TestExpandRowHandler (OnTestExpandRow);
 			
 			ShowAll();
 			
@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl.Views
 			filestore.SetSortFunc (2, CompareNodes);
 			colFile.SortColumnId = 2;
 			
-			filestore.SetSortColumnId (2, Gtk.SortType.Ascending);
+			filestore.SetSortColumnId (2, SortType.Ascending);
 		}
 		
 		public void Load (ChangeSet changeSet)
@@ -144,7 +144,7 @@ namespace MonoDevelop.VersionControl.Views
 			Update ();
 		}
 		
-		int CompareNodes (Gtk.TreeModel model, Gtk.TreeIter a, Gtk.TreeIter b)
+		int CompareNodes (TreeModel model, TreeIter a, TreeIter b)
 		{
 			int col, val=0;
 			SortType type;
@@ -162,9 +162,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			if (o1 == null && o2 == null)
 				return 0;
-			else if (o1 == null)
+			if (o1 == null)
 				return 1;
-			else if (o2 == null)
+			if (o2 == null)
 				return -1;
 			
 			return ((IComparable)o1).CompareTo (o2);
@@ -184,9 +184,9 @@ namespace MonoDevelop.VersionControl.Views
 				filestore.Dispose ();
 				filestore = null;
 			}
-			if (this.diffRenderer != null) {
-				this.diffRenderer.Destroy ();
-				this.diffRenderer = null;
+			if (diffRenderer != null) {
+				diffRenderer.Destroy ();
+				diffRenderer = null;
 			}
 		}
 		
@@ -237,9 +237,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			Gdk.Pixbuf fileIcon;
 			if (n.IsDirectory)
-				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
+				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, IconSize.Menu);
 			
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, scolor);
 			if (!n.IsDirectory)
@@ -279,7 +279,7 @@ namespace MonoDevelop.VersionControl.Views
 			OnOpen (null, null);
 		}
 		
-		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
+		private void OnTestExpandRow (object sender, TestExpandRowArgs args)
 		{
 			bool filled = (bool) filestore.GetValue (args.Iter, ColFilled);
 			if (!filled) {
@@ -296,14 +296,13 @@ namespace MonoDevelop.VersionControl.Views
 			string[] files = GetCurrentFiles ();
 			if (files.Length == 0)
 				return;
-			else if (files.Length == 1) {
+			if (files.Length == 1) {
 				TreePath[] rows = filelist.Selection.GetSelectedRows ();
 				int line = -1;
 				if (rows.Length == 1 && rows [0].Depth == 2)
 					line = diffRenderer.GetSelectedLine (rows[0]);
 				IdeApp.Workbench.OpenDocument (files [0], line, 0);
-			}
-			else {
+			} else {
 				AlertButton openAll = new AlertButton (GettextCatalog.GetString ("_Open All")); 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length), AlertButton.Cancel, openAll) == openAll) {
 					for (int n=0; n<files.Length; n++)
@@ -338,7 +337,7 @@ namespace MonoDevelop.VersionControl.Views
 						ddata.diffRequested = true;
 						ddata.diffRunning = false;
 						if (null != DiffDataLoaded) {
-							Gtk.Application.Invoke (delegate {
+							Application.Invoke (delegate {
 								DiffDataLoaded (ddata);
 								DiffDataLoaded = null;
 							});
@@ -408,7 +407,7 @@ namespace MonoDevelop.VersionControl.Views
 			while (filestore.IterNext (ref it));
 		}
 		
-		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void SetDiffCellData (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (disposed)
 				return;

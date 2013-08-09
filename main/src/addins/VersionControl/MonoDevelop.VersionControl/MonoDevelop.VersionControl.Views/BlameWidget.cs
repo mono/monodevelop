@@ -48,10 +48,10 @@ namespace MonoDevelop.VersionControl.Views
 	public class BlameWidget : Bin
 	{
 		Adjustment vAdjustment;
-		Gtk.VScrollbar vScrollBar;
+		VScrollbar vScrollBar;
 		
 		Adjustment hAdjustment;
-		Gtk.HScrollbar hScrollBar;
+		HScrollbar hScrollBar;
 		
 		BlameRenderer overview;
 		
@@ -59,11 +59,11 @@ namespace MonoDevelop.VersionControl.Views
 		List<ContainerChild> children = new List<ContainerChild> ();
 		
 		public Adjustment Vadjustment {
-			get { return this.vAdjustment; }
+			get { return vAdjustment; }
 		}
 
 		public Adjustment Hadjustment {
-			get { return this.hAdjustment; }
+			get { return hAdjustment; }
 		}
 		
 		public override ContainerChild this [Widget w] {
@@ -152,7 +152,7 @@ namespace MonoDevelop.VersionControl.Views
 		void ShowPopup (EventButton evt)
 		{
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/BlameView/ContextMenu");
-			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			menu.Destroyed += delegate {
 				this.QueueDraw ();
 			};
@@ -161,14 +161,14 @@ namespace MonoDevelop.VersionControl.Views
 				GtkWorkarounds.ShowContextMenu (menu, this, evt);
 			} else {
 				var pt = editor.LocationToPoint (editor.Caret.Location);
-				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)editor.LineHeight));
+				GtkWorkarounds.ShowContextMenu (menu, editor, new Rectangle (pt.X, pt.Y, 1, (int)editor.LineHeight));
 			}
 		}
 		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
 			Adjustment adjustment = (Adjustment)sender;
-			Scrollbar scrollbar = adjustment == vAdjustment ? (Scrollbar)vScrollBar : hScrollBar;
+			Scrollbar scrollbar = adjustment == vAdjustment ? vScrollBar : hScrollBar;
 			bool newVisible = adjustment.Upper - adjustment.Lower > adjustment.PageSize;
 			if (scrollbar.Visible != newVisible) {
 				scrollbar.Visible = newVisible;
@@ -178,10 +178,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override GLib.GType ChildType ()
 		{
-			return Gtk.Widget.GType;
+			return Widget.GType;
 		}
 		
-		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
 			
@@ -189,7 +189,7 @@ namespace MonoDevelop.VersionControl.Views
 				children.ForEach (child => callback (child.Child));
 		}
 		
-		void AddChild (Gtk.Widget child)
+		void AddChild (Widget child)
 		{
 			child.Parent = this;
 			children.Add (new ContainerChild (this, child));
@@ -239,7 +239,7 @@ namespace MonoDevelop.VersionControl.Views
 				int vChildTopHeight = -1;
 				int v = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
 				vScrollBar.SizeAllocate (new Rectangle (right, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
-				vScrollBar.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
+				vScrollBar.Value = Math.Max (Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vScrollBar.Value), vAdjustment.Lower);
 			}
 			int overviewWidth = overview.WidthRequest;
 			overview.SizeAllocate (new Rectangle (childRectangle.Right - overviewWidth, childRectangle.Top, overviewWidth, childRectangle.Height));
@@ -247,7 +247,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 			if (hScrollBar.Visible) {
 				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Y + childRectangle.Height, childRectangle.Width, hheight));
-				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
+				hScrollBar.Value = Math.Max (Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}
 		
@@ -332,7 +332,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			int lastFold = -1;
 			foreach (FoldSegment fs in Editor.Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
-				lastFold = System.Math.Max (fs.EndOffset, lastFold);
+				lastFold = Math.Max (fs.EndOffset, lastFold);
 			}
 			if (lastFold > 0) 
 				line = Editor.Document.OffsetToLineNumber (lastFold);
@@ -468,13 +468,12 @@ namespace MonoDevelop.VersionControl.Views
 					opset.AddItem (BlameCommands.CopyRevision);
 					IdeApp.CommandService.ShowContextMenu (this, evnt, opset, this);
 					return true;
-				} else {
-					if (evnt.X < leftSpacer) {
-						grabTime = evnt.Time;
-						var status = Gdk.Pointer.Grab (this.GdkWindow, false, EventMask.PointerMotionHintMask | EventMask.Button1MotionMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask, null, null, grabTime);
-						if (status == GrabStatus.Success) {
-							dragPosition = evnt.X;
-						}
+				}
+				if (evnt.X < leftSpacer) {
+					grabTime = evnt.Time;
+					var status = Pointer.Grab (GdkWindow, false, EventMask.PointerMotionHintMask | EventMask.Button1MotionMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask, null, null, grabTime);
+					if (status == GrabStatus.Success) {
+						dragPosition = evnt.X;
 					}
 				}
 				return base.OnButtonPressEvent (evnt);
@@ -485,10 +484,10 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (highlightAnnotation == null)
 					return;
-				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = highlightAnnotation.Revision.ToString ();
-				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = highlightAnnotation.Revision.ToString ();
+				var clipboard = Clipboard.Get (Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = highlightAnnotation.Revision;
+				clipboard = Clipboard.Get (Atom.Intern ("PRIMARY", false));
+				clipboard.Text = highlightAnnotation.Revision;
 			}
 		
 			[CommandHandler (BlameCommands.ShowDiff)]
@@ -536,7 +535,7 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
 				if (dragPosition >= 0) {
-					Gdk.Pointer.Ungrab (grabTime);
+					Pointer.Ungrab (grabTime);
 					dragPosition = -1;
 				}
 				return base.OnButtonReleaseEvent (evnt);
@@ -576,7 +575,7 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Marks a line as locally modified
 			/// </summary>
-			private void EditorDocumentLineChanged (object sender, LineEventArgs e)
+			void EditorDocumentLineChanged (object sender, LineEventArgs e)
 			{
 				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Line.Offset);
 				SetAnnotation (startLine, locallyModified);
@@ -585,7 +584,7 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Marks necessary lines modified when text is replaced
 			/// </summary>
-			private void EditorDocumentTextReplacing (object sender, DocumentChangeEventArgs e)
+			void EditorDocumentTextReplacing (object sender, DocumentChangeEventArgs e)
 			{
 				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
 					endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.RemovalLength, e.InsertionLength)),
@@ -605,13 +604,14 @@ namespace MonoDevelop.VersionControl.Views
 							annotations.Insert (startLine - 1, locallyModified);
 					}
 					return;
-				} else if (0 == e.RemovalLength) {
+				}
+				if (0 == e.RemovalLength) {
 					// insert
-					tokens = e.InsertedText.Text.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
-						lineCount = tokens.Length - 1;
-						for (int i=0; i<lineCount; ++i) {
-							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);
-						}
+					tokens = e.InsertedText.Text.Split (new string[] { Environment.NewLine }, StringSplitOptions.None);
+					lineCount = tokens.Length - 1;
+					for (int i=0; i<lineCount; ++i) {
+						annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);
+					}
 				} else if (startLine > endLine) {
 					// revert
 					UpdateAnnotations (null, null);
@@ -703,9 +703,9 @@ namespace MonoDevelop.VersionControl.Views
 			const int margin = 4;
 
 			
-			protected override bool OnExposeEvent (Gdk.EventExpose e)
+			protected override bool OnExposeEvent (EventExpose e)
 			{
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+				using (Cairo.Context cr = CairoHelper.Create (e.Window)) {
 					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
 					cr.Rectangle (leftSpacer, 0, Allocation.Width, Allocation.Height);

@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Views
 	//FIXME: re-merge this with MonoDevelop.Components.DropDownBox
 	[Category ("Widgets")]
 	[ToolboxItem (true)]
-	public class DropDownBox : Gtk.Button
+	public class DropDownBox : Button
 	{
 		Pango.Layout layout;
 		const int pixbufSpacing = 2;
@@ -156,9 +156,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			if (Pixbuf != null) {
 				width += Pixbuf.Width + pixbufSpacing * 2;
-				height = System.Math.Max (height, Pixbuf.Height);
+				height = Math.Max (height, Pixbuf.Height);
 			} else {
-				height = System.Math.Max (height, defaultIconHeight);
+				height = Math.Max (height, defaultIconHeight);
 			}
 			
 //			if (DrawRightBorder)
