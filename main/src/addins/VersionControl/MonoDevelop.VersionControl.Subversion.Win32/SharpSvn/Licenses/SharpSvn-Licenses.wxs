@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="SharpSvnImport_LICENSES">
+      <ComponentRef Id="C_SSVNLICENSE_Apr" />
+      <ComponentRef Id="C_SSVNLICENSE_AprUtil" />
+      <ComponentRef Id="C_SSVNLICENSE_Apr" />
+      <ComponentRef Id="C_SSVNLICENSE_BerkeleyDB" />
+      <ComponentRef Id="C_SSVNLICENSE_Cyrus_Sasl"/>
+      <ComponentRef Id="C_SSVNLICENSE_Neon" />
+      <ComponentRef Id="C_SSVNLICENSE_OpenSsl" />
+      <ComponentRef Id="C_SSVNLICENSE_Serf" />
+      <ComponentRef Id="C_SSVNLICENSE_SharpSvn" />
+      <ComponentRef Id="C_SSVNLICENSE_Subversion" />
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="SharpSvn_LICENSES">
+      <ComponentGroupRef Id="SharpSvnImport_LICENSES" />
+      <ComponentRef Id="C_SSVNLICENSE_Putty" />
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="SharpSvnGettext_LICENSE">
+      <ComponentRef Id="C_SSVNLICENSE_GetTextRuntime" />
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvnLicenses" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_SSVNLICENSE_Apr" Guid="9CEF71AD-9910-4798-B64F-EE61479038DA">
+        <File Id="CF_SSVNLICENSE_Apr" Name="Apr-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_AprUtil" Guid="F7BA2B8B-4CDA-4F51-BD5C-E39759E5D2C8">
+        <File Id="CF_SSVNLICENSE_AprUtil" Name="Apr-Util-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_BerkeleyDB" Guid="271A137D-097C-429C-9705-4140E658659C">
+        <File Id="CF_SSVNLICENSE_BerkeleyDB" Name="BerkeleyDB-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_Cyrus_Sasl" Guid="A14954AB-3D8E-499A-80A9-D74407844058">
+        <File Id="CF_SSVNLICENSE_Cyrus_Sasl" Name="Cyrus-Sasl-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_Neon" Guid="EF33BA74-B1AF-4B14-A3AB-245CC0AEC39F">
+        <File Id="CF_SSVNLICENSE_Neon" Name="Neon-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_OpenSsl" Guid="A0CCDA71-2C18-4617-90BA-FC5B761E8252">
+        <File Id="CF_SSVNLICENSE_OpenSsl" Name="OpenSsl-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_Serf" Guid="B47454F7-A069-4669-9254-8AC4881A5E18">
+        <File Id="CF_SSVNLICENSE_Serf" Name="Serf-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_SharpSvn" Guid="7EC7B1C2-090B-499B-932B-495D14DCF1BD">
+        <File Id="CF_SSVNLICENSE_SharpSvn" Name="SharpSvn-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+      <Component Id="C_SSVNLICENSE_Subversion" Guid="F54C1220-3835-4262-9193-FDC31055BD95">
+        <File Id="CF_SSVNLICENSE_Subversion" Name="Subversion-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvnLicenses" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_SSVNLICENSE_Putty" Guid="729355F8-CC28-4948-8CDB-625A49C40D6E">
+        <File Id="CF_SSVNLICENSE_Putty" Name="Putty-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvnLicenses" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_SSVNLICENSE_GetTextRuntime" Guid="247F2A80-E402-4395-9165-F2479E5689C9">
+        <File Id="CF_SSVNLICENSE_GetTextRuntime" Name="GetText-Runtime-License.txt" Vital="yes" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
