@@ -30,6 +30,8 @@
     <Import      file="SharpSvn-Sasl21-23-win32.dll" />
     <ScanExclude path="SharpSvn-Sasl21-23-win32.dll" />
     <ScanExclude path="SharpSvn-Sasl21-23-Win32.dll" />
+    <ScanExclude path="SharpSvn-SASL21-23-win32.dll" />
+    <ScanExclude path="SharpSvn-SASL21-23-Win32.dll" />
   </Runtime>
 
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
