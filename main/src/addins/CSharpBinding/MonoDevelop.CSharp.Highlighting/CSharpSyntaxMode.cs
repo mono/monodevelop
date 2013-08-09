@@ -345,8 +345,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					// Force syntax mode reparse (required for #if directives)
 					var editor = doc.Editor;
 					if (editor != null) {
+						if (data.Document.SyntaxMode is SyntaxMode) {
+							((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
+							SyntaxModeService.WaitUpdate (data.Document);
+						}
 						editor.Parent.TextViewMargin.PurgeLayoutCache ();
 						doc.ReparseDocument ();
+						editor.Parent.QueueDraw ();
 					}
 				}
 			};

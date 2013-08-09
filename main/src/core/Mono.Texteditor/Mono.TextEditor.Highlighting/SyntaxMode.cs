@@ -65,11 +65,16 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxModeService.StartUpdate (doc, this, e.Offset, e.Offset + e.InsertionLength);
 		}
 
-		void HandleTextSet (object sender, EventArgs e)
+		public void UpdateDocumentHighlighting ()
 		{
 			if (doc == null || doc.SuppressHighlightUpdate)
 				return;
 			SyntaxModeService.StartUpdate (doc, this, 0, doc.TextLength);
+		}
+
+		void HandleTextSet (object sender, EventArgs e)
+		{
+			UpdateDocumentHighlighting ();
 		}
 		
 		public event EventHandler DocumentSet;
