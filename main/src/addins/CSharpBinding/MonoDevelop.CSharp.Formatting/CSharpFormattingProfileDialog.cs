@@ -656,6 +656,16 @@ namespace TestSpace {
 			AddOption (newLineOptions, "FinallyNewLinePlacement", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
 			AddOption (newLineOptions, "WhileNewLinePlacement", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
 			AddOption (newLineOptions, "ArrayInitializerWrapping", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
+			AddOption (newLineOptions, "EmbeddedStatementPlacement", GettextCatalog.GetString ("Place embedded statements on new line"), @"class Test
+{
+	public void Example ()
+	{
+		if (true)
+			Call ();
+		
+		foreach (var o in col) DoSomething (o);
+	}
+}");
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			
@@ -959,7 +969,25 @@ delegate void BarFoo ();
 			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*, /, %) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (<<, >>) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
-			
+			AddOption (whiteSpaceOptions, category, "SpaceAfterUnsafeAddressOfOperator", GettextCatalog.GetString ("Unsafe addressof operator (&)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		int* a = &x;
+	}
+}");
+			AddOption (whiteSpaceOptions, category, "SpaceAfterUnsafeAsteriskOfOperator", GettextCatalog.GetString ("Unsafe asterisk operator (*)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		int a = *x;
+	}
+}");
+			AddOption (whiteSpaceOptions, category, "SpaceAroundUnsafeArrowOperator", GettextCatalog.GetString ("Unsafe arrow operator (->)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		x->Foo();
+	}
+}");
+
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Conditional Operator (?:)"), condOpExample);
 			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'"), condOpExample);
 			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'"), condOpExample);

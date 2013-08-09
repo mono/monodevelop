@@ -489,6 +489,18 @@ namespace MonoDevelop.CSharp.Formatting
 				options.WhileNewLinePlacement = value;
 			}
 		}
+
+		[ItemProperty]
+		public NewLinePlacement EmbeddedStatementPlacement {
+			get {
+				return options.EmbeddedStatementPlacement;
+			}
+			set {
+				options.EmbeddedStatementPlacement = value;
+			}
+		}
+
+
 		
 		[ItemProperty]
 		public Wrapping ArrayInitializerWrapping {
@@ -500,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		[ItemProperty]
+	[ItemProperty]
 		public BraceStyle ArrayInitializerBraceStyle {
 			get {
 				return options.ArrayInitializerBraceStyle;
@@ -994,7 +1006,38 @@ namespace MonoDevelop.CSharp.Formatting
 				options.SpaceAroundNullCoalescingOperator = value;
 			}
 		}
-		
+
+		[ItemProperty]
+		public bool SpaceAfterUnsafeAddressOfOperator {
+			get {
+				return options.SpaceAfterUnsafeAddressOfOperator;
+			}
+			set {
+				options.SpaceAfterUnsafeAddressOfOperator = value;
+			}
+		}
+
+
+		[ItemProperty]
+		public bool SpaceAfterUnsafeAsteriskOfOperator {
+			get {
+				return options.SpaceAfterUnsafeAsteriskOfOperator;
+			}
+			set {
+				options.SpaceAfterUnsafeAsteriskOfOperator = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool SpaceAroundUnsafeArrowOperator {
+			get {
+				return options.SpaceAroundUnsafeArrowOperator;
+			}
+			set {
+				options.SpaceAroundUnsafeArrowOperator = value;
+			}
+		}
+
 		[ItemProperty]
 		public bool WithinParentheses {
 			get {
