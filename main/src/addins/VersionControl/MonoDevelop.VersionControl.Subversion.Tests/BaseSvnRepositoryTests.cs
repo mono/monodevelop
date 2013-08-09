@@ -86,7 +86,8 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		public override void RightRepositoryDetection ()
 		{
 			var path = ((string)rootCheckout).TrimEnd (Path.DirectorySeparatorChar);
- 			Assert.That (VersionControlService.GetRepositoryReference (path, null), Is.InstanceOf<SubversionRepository> (), "#1");
+			var repo = VersionControlService.GetRepositoryReference (path, null);
+ 			Assert.That (repo, Is.InstanceOf<SubversionRepository> (), "#1");
 
 			while (!string.IsNullOrEmpty (path)) {
 				path = Path.GetDirectoryName (path);
@@ -94,6 +95,35 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 					return;
 				Assert.IsNull (VersionControlService.GetRepositoryReference (path, null), "#2." + path);
 			}
+
+			// Versioned file
+			AddFile ("foo", "contents");
+			path = Path.Combine (rootCheckout, "foo");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#2");
+
+			// Versioned directory
+			AddDirectory ("bar");
+			path = Path.Combine (rootCheckout, "bar");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#3");
+
+			// Unversioned file
+			path = Path.Combine (rootCheckout, "bip");
+			File.WriteAllText (path, "contents");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#4");
+
+			// Unversioned directory
+			path = Path.Combine (rootCheckout, "bop");
+			Directory.CreateDirectory (path);
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#5");
+
+			// Nonexistent file
+			path = Path.Combine (rootCheckout, "do_i_exist");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
+
+			// Nonexistent directory
+			path = Path.Combine (rootCheckout, "do", "i", "exist");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
+
 		}
 	}
 }
