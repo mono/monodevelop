@@ -85,8 +85,15 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		[Test]
 		public override void RightRepositoryDetection ()
 		{
-			Repository repo = VersionControlService.GetRepositoryReference (rootCheckout + DOT_DIR, null);
-			Assert.True (repo is SubversionRepository);
+			var path = ((string)rootCheckout).TrimEnd (Path.DirectorySeparatorChar);
+ 			Assert.That (VersionControlService.GetRepositoryReference (path, null), Is.InstanceOf<SubversionRepository> (), "#1");
+
+			while (!string.IsNullOrEmpty (path)) {
+				path = Path.GetDirectoryName (path);
+				if (path == null)
+					return;
+				Assert.IsNull (VersionControlService.GetRepositoryReference (path, null), "#2." + path);
+			}
 		}
 	}
 }
