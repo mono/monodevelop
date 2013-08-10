@@ -55,7 +55,11 @@ namespace MonoDevelop.Refactoring
 						return null;
 					try {
 						return underlyingTask.Result;
-					} catch (TaskCanceledException) {
+					} catch (AggregateException ae) {
+						if (ae.InnerException is TaskCanceledException)
+							return null;
+						throw;
+					}  catch (TaskCanceledException) {
 						return null;
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Exception while getting shared AST resolver.", e);
