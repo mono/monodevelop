@@ -22,6 +22,7 @@
     </Execution>
     <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
     <GenerateDocumentation>true</GenerateDocumentation>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
