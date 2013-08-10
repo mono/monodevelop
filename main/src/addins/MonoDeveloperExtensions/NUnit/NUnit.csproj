@@ -21,6 +21,7 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -33,6 +34,7 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AssemblyName>NUnit</AssemblyName>
+    <GenerateDocumentation>true</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDeveloperExtensions.csproj">
