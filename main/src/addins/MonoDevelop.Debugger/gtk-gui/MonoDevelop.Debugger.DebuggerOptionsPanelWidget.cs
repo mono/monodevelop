@@ -23,7 +23,7 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.Label labelPriorityList;
 		private global::MonoDevelop.Ide.Gui.Components.PriorityList prioritylist;
 		private global::Gtk.Label labelPreferredDebuggers;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

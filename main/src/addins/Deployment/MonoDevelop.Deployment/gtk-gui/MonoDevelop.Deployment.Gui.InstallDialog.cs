@@ -12,7 +12,7 @@ namespace MonoDevelop.Deployment.Gui
 		private global::Gtk.Entry nameEntry;
 		private global::Gtk.Button button19;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

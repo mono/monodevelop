@@ -11,7 +11,7 @@ namespace MonoDevelop.AspNet.Deployment
 		private global::Gtk.Button addButton;
 		private global::Gtk.Button editButton;
 		private global::Gtk.Button removeButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

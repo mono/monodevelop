@@ -65,7 +65,7 @@ namespace CBinding
 		private global::Gtk.Button includePathBrowseButton;
 		private global::Gtk.Button includePathRemoveButton;
 		private global::Gtk.Label label3;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

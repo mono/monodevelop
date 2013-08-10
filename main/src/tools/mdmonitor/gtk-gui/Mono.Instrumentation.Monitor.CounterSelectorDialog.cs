@@ -8,7 +8,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.TreeView treeCounters;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

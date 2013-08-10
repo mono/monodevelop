@@ -1,2 +1,300 @@
 <objects attr-sync="on">
+  <object type="MonoDevelop.VersionControl.CommitMessageStylePanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="CommitMessageStylePanelWidget Signals">
+        <signal name="Changed" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.VersionControl.Views.ComparisonWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.VersionControl.Views.DropDownBox" palette-category="General" allow-children="false" base-type="Gtk.Button">
+    <itemgroups>
+      <itemgroup label="DropDownBox Properties">
+        <property name="Text" />
+        <property name="DefaultIconHeight" />
+        <property name="DefaultIconWidth" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.VersionControl.Views.ChangeSetView" palette-category="General" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.VersionControl.Views.LogWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.ExtensibleTreeView" palette-category="General" allow-children="false" base-type="MonoDevelop.Components.CompactScrolledWindow">
+    <itemgroups>
+      <itemgroup label="ExtensibleTreeView Properties">
+        <property name="Id" />
+        <property name="Zoom" />
+        <property name="ShowSelectionPopupButton" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="ExtensibleTreeView Signals">
+        <signal name="CurrentItemActivated" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="ExecutionModeComboBox Signals">
+        <signal name="SelectionChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.LogView" palette-category="General" allow-children="false" base-type="MonoDevelop.Components.CompactScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.FileEntry" palette-category="General" allow-children="false" base-type="Gtk.HBox">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.FolderEntry" palette-category="General" allow-children="false" base-type="Gtk.HBox">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.IconView" palette-category="General" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals>
+      <itemgroup label="IconView Signals">
+        <signal name="IconSelected" />
+        <signal name="IconDoubleClicked" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.NotebookButtonBar" palette-category="General" allow-children="false" base-type="Gtk.Toolbar">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.MenuButton" palette-category="General" allow-children="false" base-type="Gtk.Button">
+    <itemgroups>
+      <itemgroup label="MenuButton Properties">
+        <property name="Label" />
+        <property name="UseUnderline" />
+        <property name="UseMarkup" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.FixedWidthWrapLabel" palette-category="General" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups>
+      <itemgroup label="FixedWidthWrapLabel Properties">
+        <property name="MaxWidth" />
+        <property name="Markup" />
+        <property name="Text" />
+        <property name="Indent" />
+        <property name="BreakOnPunctuation" />
+        <property name="BreakOnCamelCasing" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.ListView" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups>
+      <itemgroup label="ListView Properties">
+        <property name="AllowMultipleSelection" />
+        <property name="SelectedRow" />
+        <property name="SelectionDisabled" />
+        <property name="Page" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="ListView Signals">
+        <signal name="SelectionChanged" />
+        <signal name="ItemActivated" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.FolderListSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.SearchEntry" palette-category="General" allow-children="false" base-type="Gtk.EventBox">
+    <itemgroups>
+      <itemgroup label="SearchEntry Properties">
+        <property name="ForceFilterButtonVisible" />
+        <property name="HasFrame" />
+        <property name="RoundedShape" />
+        <property name="IsCheckMenu" />
+        <property name="ActiveFilterID" />
+        <property name="EmptyMessage" />
+        <property name="Query" />
+        <property name="Ready" />
+        <property name="HasFocus" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="SearchEntry Signals">
+        <signal name="Changed" />
+        <signal name="Activated" />
+        <signal name="FilterChanged" />
+        <signal name="RequestMenu" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.PropertyGrid.PropertyGrid" palette-category="General" allow-children="false" base-type="Gtk.VBox">
+    <itemgroups>
+      <itemgroup label="PropertyGrid Properties">
+        <property name="ShowToolbar" />
+        <property name="ShowHelp" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="PropertyGrid Signals">
+        <signal name="Changed" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.MenuButtonEntry" palette-category="General" allow-children="false" base-type="Gtk.HBox">
+    <itemgroups>
+      <itemgroup label="MenuButtonEntry Properties">
+        <property name="Text" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" palette-category="General" allow-children="false" base-type="Gtk.HBox">
+    <itemgroups>
+      <itemgroup label="ProjectFileEntry Properties">
+        <property name="DialogTitle" />
+        <property name="DefaultFilter" />
+        <property name="VerifyFileExistsInProject" />
+        <property name="EntryIsEditable" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="ProjectFileEntry Signals">
+        <signal name="Changed" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Ide.Projects.CombineEntryFeatureSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="BaseDirectoryPanelWidget Properties">
+        <property name="BaseDirectory" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.EnvVarList" palette-category="General" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.StringTagSelectorButton" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.CompactScrolledWindow" palette-category="General" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups>
+      <itemgroup label="CompactScrolledWindow Properties">
+        <property name="ShowBorderLine" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.DropDownBox" palette-category="General" allow-children="false" base-type="Gtk.Button">
+    <itemgroups>
+      <itemgroup label="DropDownBox Properties">
+        <property name="Text" />
+        <property name="DrawRightBorder" />
+        <property name="DefaultIconHeight" />
+        <property name="DefaultIconWidth" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="ProjectSelectorWidget Properties">
+        <property name="ShowCheckboxes" />
+        <property name="CascadeCheckboxSelection" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="ProjectSelectorWidget Signals">
+        <signal name="SelectionChanged" />
+        <signal name="ActiveChanged" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups>
+      <itemgroup label="ProgressBarMonitor Properties">
+        <property name="AllowCancel" />
+        <property name="ShowErrorsDialog" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Gui.Components.PriorityList" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.ProgressControl" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="Mono.TextEditor.PopupWindow.TooltipWindow.FixedWidthWrapLabel" palette-category="General" allow-children="false" base-type="Gtk.Widget">
+    <itemgroups>
+      <itemgroup label="FixedWidthWrapLabel Properties">
+        <property name="MaxWidth" />
+        <property name="Markup" />
+        <property name="Text" />
+        <property name="Indent" />
+        <property name="BreakOnPunctuation" />
+        <property name="BreakOnCamelCasing" />
+      </itemgroup>
+    </itemgroups>
+    <signals />
+  </object>
+  <object type="Mono.TextEditor.Theatrics.AnimatedVBox" palette-category="General" allow-children="false" base-type="Gtk.Container">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="Mono.TextEditor.TextEditor" palette-category="General" allow-children="false" base-type="Gtk.Container">
+    <itemgroups>
+      <itemgroup label="TextEditor Properties">
+        <property name="TabsToSpaces" />
+        <property name="IMModule" />
+        <property name="LineHeight" />
+        <property name="SelectedText" />
+        <property name="SelectionAnchor" />
+        <property name="Text" />
+        <property name="SearchPattern" />
+        <property name="HighlightSearchPattern" />
+        <property name="IsCaseSensitive" />
+        <property name="IsWholeWordOnly" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="TextEditor Signals">
+        <signal name="VScroll" />
+        <signal name="HScroll" />
+        <signal name="SelectionChanged" />
+        <signal name="Painted" />
+        <signal name="LinkRequest" />
+        <signal name="EditorOptionsChanged" />
+        <signal name="HighlightSearchPatternChanged" />
+        <signal name="BeginHover" />
+      </itemgroup>
+    </signals>
+  </object>
 </objects>

@@ -8,7 +8,7 @@ namespace MonoDevelop.RegexToolkit
 		private global::Gtk.Label label11;
 		private global::Gtk.ScrolledWindow elementsscrolledwindow;
 		private global::Gtk.TreeView elementsTreeview;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
