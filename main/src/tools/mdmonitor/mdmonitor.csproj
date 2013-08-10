@@ -9,6 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mono.Instrumentation.Monitor</RootNamespace>
     <AssemblyName>mdmonitor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

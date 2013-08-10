@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>ChangeLogAddIn</AssemblyName>
     <RootNamespace>ChangeLogAddIn</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

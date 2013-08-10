@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.DocFood</RootNamespace>
     <AssemblyName>MonoDevelop.DocFood</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
