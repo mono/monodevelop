@@ -1,5 +1,5 @@
 //
-// CSSParsedDocument.cs
+// MyClass.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -23,50 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Collections.Generic;
-using Antlr.Runtime;
 
-namespace Parser 
+namespace MonoDevelop.CSSBinding
 {
-	public class CSSParsedDocument : ParsedDocument
+	public class MyClass
 	{
-		string fileName;
-		IList<Error> errors;
-
-		public override string FileName {
-			get 
-			{
-				return fileName;
-			}
-		}
-
-		public CSSParsedDocument (string fileName, IList<Error> errors)
+		public MyClass ()
 		{
-			this.fileName = fileName;
-			this.errors = errors;
 		}
-
-
-		public override IList<Error> Errors {
-			get 
-			{
-				return errors;
-			}
-		}
-
-		//public override IEnumerable<FoldingRegion> Foldings 
-		//{
-
-		//}
-
-
 	}
-
-
-
 }
 

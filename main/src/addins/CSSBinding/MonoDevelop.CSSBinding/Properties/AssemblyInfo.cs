@@ -1,5 +1,5 @@
 //
-// CSSParsedDocument.cs
+// AssemblyInfo.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -23,50 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-using System;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Collections.Generic;
-using Antlr.Runtime;
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-namespace Parser 
-{
-	public class CSSParsedDocument : ParsedDocument
-	{
-		string fileName;
-		IList<Error> errors;
+[assembly: AssemblyTitle("MonoDevelop.CSSBinding")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("Diyoda Sajjana")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
-		public override string FileName {
-			get 
-			{
-				return fileName;
-			}
-		}
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-		public CSSParsedDocument (string fileName, IList<Error> errors)
-		{
-			this.fileName = fileName;
-			this.errors = errors;
-		}
+[assembly: AssemblyVersion("1.0.*")]
 
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
 
-		public override IList<Error> Errors {
-			get 
-			{
-				return errors;
-			}
-		}
-
-		//public override IEnumerable<FoldingRegion> Foldings 
-		//{
-
-		//}
-
-
-	}
-
-
-
-}
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]
 

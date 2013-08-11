@@ -10,16 +10,45 @@
        
     <Runtime>
 		<Import assembly="CSSBinding.dll" />
+		<Import assembly="Antlr.Runtime.dll" />
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-		<Addin id="SourceEditor2" version="4.1.4"/>
+		<Addin id = "Core" version = "4.1.4"/>
+		<Addin id = "Ide" version = "4.1.4"/>
+		<Addin id = "Deployment" version = "4.1.4"/>
+		<Addin id = "SourceEditor2" version = "4.1.4" />
+		<Addin id = "DesignerSupport" version = "4.1.4" />
+		<Addin id = "Refactoring" version = "4.1.4" />
 	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="CssSyntaxMode.xml" />
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "Stylesheet" file = "Templates/EmptyCSSFile.xft.xml"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id    = "CSS"
+		                 supportedextensions = ".css"
+		                 class = "CSSBinding.CSSLanguageBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "md-c-file" resource = "text-x-csrc.16x16.png" size="Menu" />
+	</Extension>
+	
+	
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-css" icon="md-c-file" isText="true">
+			<File pattern="*.css" />
+		</MimeType>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="CSSBinding.Parser.CSSParserAdapter" mimeType = "text/x-css" />
 	</Extension>
 
 	

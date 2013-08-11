@@ -3,11 +3,11 @@
 	
 	<TemplateConfiguration>
 		<_Name>Stylesheet</_Name>
-		<Icon>md-text-file-icon</Icon>
+		<Icon></Icon> <!--res:css-icon-32.png-->
 		<_Category>Web</_Category>
-		<LanguageName>*</LanguageName>
+		<LanguageName>CSS</LanguageName>
 		<_Description>Creates an empty CSS file.</_Description>
-		<DefaultFilename>Spreadsheet.css</DefaultFilename>
+		<DefaultFilename>Spreadsheet</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
