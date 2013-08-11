@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using Xwt.Drawing;
 
 namespace Mono.MHex
 {
@@ -44,7 +45,7 @@ namespace Mono.MHex
 		int GroupBytes {get; set;}
 		
 		string FontName { get;  set; }
-		Pango.FontDescription Font { get;  }
+		Font Font { get;  }
 		
 		void RaiseChanged ();
 		event EventHandler Changed;

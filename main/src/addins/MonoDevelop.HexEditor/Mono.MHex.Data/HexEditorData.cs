@@ -25,19 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
+using Xwt;
 using System.Collections.Generic;
 
 namespace Mono.MHex.Data
 {
 	public class HexEditorData
 	{
-		public Adjustment HAdjustment {
+		public ScrollAdjustment HAdjustment {
 			get;
 			set;
 		}
 		
-		public Adjustment VAdjustment {
+		public ScrollAdjustment VAdjustment {
 			get;
 			set;
 		}
@@ -52,7 +52,7 @@ namespace Mono.MHex.Data
 			set;
 		}
 		
-		public int LineHeight {
+		public double LineHeight {
 			get;
 			set;
 		}
@@ -108,6 +108,8 @@ namespace Mono.MHex.Data
 		public HexEditorData ()
 		{
 			Caret = new Caret (this);
+			VAdjustment = new ScrollAdjustment ();
+			HAdjustment = new ScrollAdjustment ();
 		}
 		
 		PieceTable pieceTable = new PieceTable ();
