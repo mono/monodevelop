@@ -123,9 +123,9 @@ namespace Mono.MHex.Rendering
 			ctx.Fill ();
 
 			LayoutWrapper layout = GetLayout (line);
-			
+			char ch;
 			if (!Data.IsSomethingSelected && Caret.InTextEditor && line == Data.Caret.Line) {
-				ctx.Rectangle (CalculateCaretXPos (false), y, byteWidth, Editor.LineHeight);
+				ctx.Rectangle (CalculateCaretXPos (false, out ch), y, byteWidth, Editor.LineHeight);
 				ctx.SetColor (Style.HighlightOffset); 
 				ctx.Fill ();
 
@@ -136,11 +136,11 @@ namespace Mono.MHex.Rendering
 				layout.Dispose ();
 		}
 		
-		public double CalculateCaretXPos ()
+		public double CalculateCaretXPos (out char ch)
 		{
-			return CalculateCaretXPos (true);
+			return CalculateCaretXPos (true, out ch);
 		}
-		double CalculateCaretXPos (bool useSubPositon)
+		double CalculateCaretXPos (bool useSubPositon, out char ch)
 		{
 			int byteInRow = (int)Caret.Offset % BytesInRow;
 			int groupNumber = byteInRow / Editor.Options.GroupBytes;
@@ -150,6 +150,7 @@ namespace Mono.MHex.Rendering
 				caretIndex += Caret.SubPosition;
 			LayoutWrapper layout = GetLayout ((int)Caret.Line);
 			var rectangle = layout.Layout.GetCoordinateFromIndex (caretIndex);
+			ch = layout.Layout.Text [caretIndex];
 			if (layout.IsUncached)
 				layout.Dispose ();
 			return XOffset + rectangle.X / 1024.0; // FIX XWT !!!! Pango.Scale bug

@@ -472,7 +472,7 @@ namespace Mono.MHex
 					StopCaretThread ();
 				
 				if (caretTimer == null) {
-					caretTimer = new Timer (400);
+					caretTimer = new Timer (800);
 					caretTimer.Elapsed += UpdateCaret;
 				}
 				caretBlink = true; 
@@ -516,17 +516,13 @@ namespace Mono.MHex
 		{
 			if (!caretBlink || HexEditorData.IsSomethingSelected) 
 				return;
-			/*if (caretGc == null) {
-				caretGc = new Gdk.GC (win);
-				caretGc.RgbFgColor = new Color (255, 255, 255);
-				caretGc.Function = Gdk.Function.Xor;
-			}*/
 			long caretY = HexEditorData.Caret.Line * LineHeight - (long)HexEditorData.VAdjustment.Value;
 			double caretX;
+			char ch;
 			if (HexEditorData.Caret.InTextEditor) {
-				caretX = textEditorMargin.CalculateCaretXPos ();
+				caretX = textEditorMargin.CalculateCaretXPos (out ch);
 			} else {
-				caretX = hexEditorMargin.CalculateCaretXPos ();
+				caretX = hexEditorMargin.CalculateCaretXPos (out ch);
 			}
 
 			if (!area.Contains (caretX, (int)caretY))
@@ -537,8 +533,16 @@ namespace Mono.MHex
 			} else {
 				ctx.Rectangle (caretX, (int)caretY, textEditorMargin.charWidth, LineHeight);
 			}
-			ctx.SetColor (new Color (0, 0, 0)); 
+
+			ctx.SetColor (HexEditorStyle.HexDigit); 
 			ctx.Fill ();
+
+			using (var layout = new TextLayout (this)) {
+				layout.Font = Options.Font;
+				layout.Text = ch.ToString ();
+				ctx.SetColor (HexEditorStyle.HexDigitBg);
+				ctx.DrawTextLayout (layout, caretX, caretY); 
+			}
 		}
 		
 		public void ScrollToCaret ()

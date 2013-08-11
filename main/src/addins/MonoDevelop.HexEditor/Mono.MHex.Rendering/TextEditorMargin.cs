@@ -111,8 +111,16 @@ namespace Mono.MHex.Rendering
 				layout.Dispose ();
 		}
 
-		public double CalculateCaretXPos ()
+		public double CalculateCaretXPos (out char ch)
 		{
+			byte b = Data.GetByte (Caret.Offset);
+			ch = (char)b;
+			if (b < 128 && (Char.IsLetterOrDigit (ch) || Char.IsPunctuation (ch))) {
+				// ok
+			} else {
+				ch = '.';
+			}
+
 			return XOffset + (Caret.Offset % BytesInRow) * charWidth;
 		}
 		
