@@ -112,7 +112,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				Theme.BorderColor = marker.TagColor.Color;
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				g.Color = marker.TagColor.Color;
+				g.SetSourceColor (marker.TagColor.Color);
 				g.Fill ();
 
 				double y = 8;
@@ -120,7 +120,7 @@ namespace MonoDevelop.SourceEditor
 				foreach (var layout in marker.Layouts) {
 					g.Save ();
 					g.Translate (x, y);
-					g.Color = marker.TagColor.SecondColor;
+					g.SetSourceColor (marker.TagColor.SecondColor);
 					g.ShowLayout (layout.Layout);
 					g.Restore ();
 					y += layout.Height;

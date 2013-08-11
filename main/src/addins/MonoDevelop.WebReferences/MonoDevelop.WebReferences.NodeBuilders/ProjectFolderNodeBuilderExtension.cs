@@ -12,7 +12,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 	public class ProjectFolderNodeBuilderExtension : NodeBuilderExtension
 	{
 		/// <summary>Checks if the node can be build for the current data type.</summary>
-		/// <param name="Type">A Type containing the data type of the current node.</param>
+		/// <param name="dataType">A Type containing the data type of the current node.</param>
 		/// <returns>True if the node can be build, otherwise false.</returns>
 		public override bool CanBuildNode (Type dataType)
 		{

@@ -109,7 +109,7 @@ namespace Mono.TextEditor.Vi
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
-				cr.Color = editor.ColorStyle.PlainText.Background;
+				cr.SetSourceColor (editor.ColorStyle.PlainText.Background);
 				cr.Fill ();
 				using (var layout = PangoUtil.CreateLayout (editor)) {
 					layout.FontDescription = editor.Options.Font;
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Vi
 					statusw += 8;
 					cr.MoveTo (Allocation.Width - statusw, 0);
 					statusw += 8;
-					cr.Color = editor.ColorStyle.PlainText.Foreground;
+					cr.SetSourceColor (editor.ColorStyle.PlainText.Foreground);
 					cr.ShowLayout (layout);
 
 					layout.SetText (statusText ?? "");
@@ -143,7 +143,7 @@ namespace Mono.TextEditor.Vi
 					layout.GetPixelSize (out w, out h);
 					var x = System.Math.Min (0, -w + Allocation.Width - editor.TextViewMargin.CharWidth - statusw);
 					cr.MoveTo (x, 0);
-					cr.Color = editor.ColorStyle.PlainText.Foreground;
+					cr.SetSourceColor (editor.ColorStyle.PlainText.Foreground);
 					cr.ShowLayout (layout);
 					if (ShowCaret) {
 						if (editor.TextViewMargin.caretBlink) {

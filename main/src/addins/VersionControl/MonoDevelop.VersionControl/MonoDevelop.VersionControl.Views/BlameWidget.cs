@@ -294,7 +294,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (ann != null && overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
 					} else {
 						cr.Rectangle (Editor.TextViewMargin.XOffset, curStart + cr.LineWidth, Editor.Allocation.Width - Editor.TextViewMargin.XOffset, curY - curStart - cr.LineWidth);
-						cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
+						cr.SetSourceRGBA (color.Red / (double)ushort.MaxValue,
 							color.Green / (double)ushort.MaxValue,
 							color.Blue / (double)ushort.MaxValue,
 							0.1);
@@ -306,10 +306,10 @@ namespace MonoDevelop.VersionControl.Views
 					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
 					cr.LineTo (Editor.Allocation.Width, curY + 0.5);
 					
-					cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
-					                            color.Green / (double)ushort.MaxValue,
-					                            color.Blue / (double)ushort.MaxValue,
-					                            0.2);
+					cr.SetSourceRGBA (color.Red / (double)ushort.MaxValue,
+						color.Green / (double)ushort.MaxValue,
+						color.Blue / (double)ushort.MaxValue,
+						0.2);
 					cr.Stroke ();
 				}
 			}
@@ -709,7 +709,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
 					cr.Rectangle (leftSpacer, 0, Allocation.Width, Allocation.Height);
-					cr.Color = new Cairo.Color (0.95, 0.95, 0.95);
+					cr.SetSourceRGB (0.95, 0.95, 0.95);
 					cr.Fill ();
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
@@ -735,7 +735,7 @@ namespace MonoDevelop.VersionControl.Views
 							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
-								cr.Color = new Cairo.Color (1, 1, 1);
+								cr.SetSourceRGB (1, 1, 1);
 								cr.Fill ();
 							}
 
@@ -814,16 +814,16 @@ namespace MonoDevelop.VersionControl.Views
 							HslColor color = new Cairo.Color (0.90, 0.90, 1);
 							color.L = 0.4 + a / 2;
 							color.S = 1 - a / 2;
-							cr.Color = color;
+							cr.SetSourceColor (color);
 						} else {
-							cr.Color = ann != null ? new Cairo.Color (1, 1, 0) : new Cairo.Color (0.95, 0.95, 0.95);
+							cr.SetSourceColor (ann != null ? new Cairo.Color (1, 1, 0) : new Cairo.Color (0.95, 0.95, 0.95));
 						}
 						cr.Fill ();
 
 						if (ann != null) {
 							cr.MoveTo (0, curY + 0.5);
 							cr.LineTo (Allocation.Width, curY + 0.5);
-							cr.Color = new Cairo.Color (0.6, 0.6, 0.6);
+							cr.SetSourceRGB (0.6, 0.6, 0.6);
 							cr.Stroke ();
 						}
 					}

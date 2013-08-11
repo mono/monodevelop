@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components;
 using System.Linq;
+using Mono.TextEditor;
 
 namespace Mono.Instrumentation.Monitor
 {
@@ -367,9 +368,9 @@ namespace Mono.Instrumentation.Monitor
 			
 			ctx.NewPath ();
 			ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth/2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
-			HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
+			Mono.TextEditor.HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
 			hsl.L = 0.8;
-			ctx.Color = hsl;
+			ctx.SetSourceColor (hsl);
 			ctx.Fill ();
 			
 			// Draw values
@@ -392,7 +393,7 @@ namespace Mono.Instrumentation.Monitor
 				int y = ytop + (int) (n * scale) + baseTime;
 				ctx.MoveTo (markerX, y + 0.5);
 				ctx.LineTo (markerX + MarkerWidth, y + 0.5);
-				ctx.Color = Style.Foreground (Gtk.StateType.Normal).ToCairoColor ();
+				ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
 				ctx.Stroke ();
 				
 				y += 2;
@@ -464,9 +465,9 @@ namespace Mono.Instrumentation.Monitor
 				ctx.NewPath ();
 				double dx = val == focusedValue ? 0 : 2;
 				ctx.Rectangle (lx + 0.5 + dx - SelectedValuePadding, ytime + 0.5, LineEndWidth - dx*2 + SelectedValuePadding, ((val.Duration.TotalMilliseconds * scale) / 1000));
-				HslColor hsl = color;
+				Mono.TextEditor.HslColor hsl = color;
 				hsl.L = val == focusedValue ? 0.9 : 0.8;
-				ctx.Color = hsl;
+				ctx.SetSourceColor (hsl);
 				ctx.Fill ();
 			}
 			
@@ -476,7 +477,7 @@ namespace Mono.Instrumentation.Monitor
 			ctx.LineTo (lx + LineEndWidth + 0.5, ytime + 0.5);
 			ctx.LineTo (tx - 3 - LineEndWidth + 0.5, ty + (th / 2) + 0.5);
 			ctx.LineTo (tx + indent - 3 + 0.5, ty + (th / 2) + 0.5);
-			ctx.Color = color.ToCairoColor ();
+			ctx.SetSourceColor (color.ToCairoColor ());
 			ctx.Stroke ();
 			
 			// Expander
@@ -522,11 +523,11 @@ namespace Mono.Instrumentation.Monitor
 			ctx.LineWidth = 1;
 			ctx.Rectangle (ex, ey, ExpanderSize, ExpanderSize);
 			if (hilight)
-				ctx.Color = Style.Background (Gtk.StateType.Normal).ToCairoColor ();
+				ctx.SetSourceColor (Style.Background (Gtk.StateType.Normal).ToCairoColor ());
 			else
-				ctx.Color = Style.White.ToCairoColor ();
+				ctx.SetSourceColor (Style.White.ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.Color = Style.Foreground (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.SetSourceColor (Style.Foreground (Gtk.StateType.Normal).ToCairoColor ());
 			ctx.Stroke ();
 			ctx.NewPath ();
 			ctx.MoveTo (ex + 2, ey + (ExpanderSize/2));

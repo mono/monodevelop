@@ -50,7 +50,7 @@ namespace MonoDevelop.Debugger
 		/// The value
 		/// </param>
 		/// <remarks>
-		/// This method must check the value and return <c>true</v> if it is able to display that value.
+		/// This method must check the value and return <c>true</c> if it is able to display that value.
 		/// Typically, this method will check the TypeName of the value.
 		/// </remarks>
 		bool CanVisualize (ObjectValue val);

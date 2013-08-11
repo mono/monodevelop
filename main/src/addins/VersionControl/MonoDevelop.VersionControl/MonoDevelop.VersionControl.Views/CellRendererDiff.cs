@@ -6,6 +6,7 @@ using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Text;
+using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -269,11 +270,11 @@ namespace MonoDevelop.VersionControl.Views
 						double xrow = cell_area.X + LeftPaddingBlock;
 						int wrow = cell_area.Width - 1 - LeftPaddingBlock;
 						if (block.Type == BlockType.Added)
-							ctx.Color = baseAddColor.AddLight (0.1).ToCairoColor ();
+							ctx.SetSourceColor (baseAddColor.AddLight (0.1).ToCairoColor ());
 						else if (block.Type == BlockType.Removed)
-							ctx.Color = baseRemoveColor.AddLight (0.1).ToCairoColor ();
+							ctx.SetSourceColor (baseRemoveColor.AddLight (0.1).ToCairoColor ());
 						else {
-							ctx.Color = widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ();
+							ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ());
 							xrow -= LeftPaddingBlock;
 							wrow += LeftPaddingBlock;
 						}
@@ -356,16 +357,16 @@ namespace MonoDevelop.VersionControl.Views
 			int bottomSpacing = (lineHeight - spacing) / 2;
 			
 			ctx.Rectangle (x + shadowSize + 0.5, firstBlock.YStart + bottomSpacing + spacing - shadowSize + 0.5, width - shadowSize*2, shadowSize);
-			ctx.Color = new Cairo.Color (0.9, 0.9, 0.9);
+			ctx.SetSourceRGB (0.9, 0.9, 0.9);
 			ctx.LineWidth = 1;
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + shadowSize + 0.5, lastBlock.YEnd + bottomSpacing + 0.5, width - shadowSize*2, shadowSize);
-			ctx.Color = new Cairo.Color (0.9, 0.9, 0.9);
+			ctx.SetSourceRGB (0.9, 0.9, 0.9);
 			ctx.Fill ();
 			
 			ctx.Rectangle (x + 0.5, firstBlock.YStart + bottomSpacing + spacing + 0.5, width, lastBlock.YEnd - firstBlock.YStart - spacing);
-			ctx.Color = new Cairo.Color (0.7,0.7,0.7);
+			ctx.SetSourceRGB (0.7,0.7,0.7);
 			ctx.Stroke ();
 			
 			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
@@ -381,9 +382,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ctx.Rectangle (x + 2 + LeftPaddingBlock - 1 + 0.5, firstBlock.YStart + dy - 1 + 0.5, tw + 2, th + 2);
 			ctx.LineWidth = 1;
-			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.SetSourceColor (widget.Style.Base (StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
+			ctx.SetSourceRGB (0.7, 0.7, 0.7);
 			ctx.Stroke ();
 				
 			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
@@ -401,9 +402,9 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ctx.Rectangle (right - tw - 2 + 0.5, top + dy - 1 + 0.5, tw + 2, th + 2);
 			ctx.LineWidth = 1;
-			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.SetSourceColor (widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
+			ctx.SetSourceRGB (0.7, 0.7, 0.7);
 			ctx.Stroke ();
 
 			window.DrawLayout (gc, right - tw - 1, top + dy, layout);
@@ -440,14 +441,14 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				ctx.LineTo (x, y);
 			}
-			ctx.Color = color.AddLight (0.1).ToCairoColor ();
+			ctx.SetSourceColor (color.AddLight (0.1).ToCairoColor ());
 			ctx.Fill ();
 			
 			ctx.Rectangle (markerx, y, width - markerx, height);
 			using (Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y)) {
 				pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
 				pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
-				ctx.Pattern = pat;
+				ctx.SetSource (pat);
 				ctx.Fill ();
 			}
 		}
@@ -495,9 +496,9 @@ namespace MonoDevelop.VersionControl.Views
 				ctx.ClosePath ();
 			}
 			
-			ctx.Color = color.ToCairoColor ();
+			ctx.SetSourceColor (color.ToCairoColor ());
 			ctx.FillPreserve ();
-			ctx.Color = color.AddLight (-0.2).ToCairoColor ();;
+			ctx.SetSourceColor (color.AddLight (-0.2).ToCairoColor ());
 			ctx.LineWidth = 1;
 			ctx.Stroke ();
 		}

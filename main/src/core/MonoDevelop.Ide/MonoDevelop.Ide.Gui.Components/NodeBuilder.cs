@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// Compares two nodes. Used when sorting the nodes in the tree.
 		/// </summary>
 		/// <returns>
-		/// A value < 0 if thisNode is less than otherNode, 0 if equal, 1 if greater, <c>DefaultSort</c>
+		/// A value &lt; 0 if thisNode is less than otherNode, 0 if equal, 1 if greater, <c>DefaultSort</c>
 		/// if the default sort order has to be used.
 		/// </returns>
 		/// <param name='thisNode'>

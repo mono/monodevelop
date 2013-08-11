@@ -8,7 +8,6 @@ namespace Stetic
 		internal Application app;
 		bool initialized;
 		Gtk.Socket socket;
-		bool customWidget;
 		Gtk.Notebook book;
 		
 		public PluggableWidget (Application app)
@@ -39,12 +38,10 @@ namespace Stetic
 			}
 			else
 				initialized = true;
-			customWidget = true;
 		}
 		
 		protected void ResetCustomWidget ()
 		{
-			customWidget = false;
 		}
 		
 		protected override void OnRealized ()

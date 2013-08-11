@@ -145,7 +145,7 @@ namespace MonoDevelop.Debugger
 			using (var pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4)) {
 				pat.AddColorStop (0, color1);
 				pat.AddColorStop (1, color2);
-				cr.Pattern = pat;
+				cr.SetSource (pat);
 				cr.FillPreserve ();
 			}
 		}
@@ -154,7 +154,7 @@ namespace MonoDevelop.Debugger
 		{
 			using (var pat = new Cairo.LinearGradient (x, y + size, x + size, y)) {
 				pat.AddColorStop (0, color);
-				cr.Pattern = pat;
+				cr.SetSource (pat);
 				cr.Stroke ();
 			}
 		}

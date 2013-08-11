@@ -216,7 +216,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			cr.Rectangle (x, y, Width, lineHeight);
-			cr.Color = lineNumberBgGC;
+			cr.SetSourceColor (lineNumberBgGC);
 			cr.Fill ();
 		}
 
@@ -246,7 +246,7 @@ namespace Mono.TextEditor
 					layout.SetText (line.ToString ());
 					cr.Save ();
 					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y + (lineHeight - fontHeight) / 2);
-					cr.Color = lineNumberGC;
+					cr.SetSourceColor (lineNumberGC);
 					cr.ShowLayout (layout);
 					cr.Restore ();
 				}

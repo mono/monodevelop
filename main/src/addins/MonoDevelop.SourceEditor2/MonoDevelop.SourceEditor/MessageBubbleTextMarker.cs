@@ -396,11 +396,11 @@ namespace MonoDevelop.SourceEditor
 			bubbleDrawY = y;
 			bubbleWidth = width;
 			g.RoundedRectangle (sx, y + 1, width, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
-			g.Color = TagColor.Color;
+			g.SetSourceColor (TagColor.Color);
 			g.Fill ();
 			if (errorCounterWidth > 0 && errorCountLayout != null) {
 				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
-				g.Color = CounterColor.Color;
+				g.SetSourceColor (CounterColor.Color);
 				g.Fill ();
 
 				g.Save ();
@@ -409,7 +409,7 @@ namespace MonoDevelop.SourceEditor
 				errorCountLayout.GetPixelSize (out ew, out eh);
 
 				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
-				g.Color = CounterColor.SecondColor;
+				g.SetSourceColor (CounterColor.SecondColor);
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
 			}
@@ -417,7 +417,7 @@ namespace MonoDevelop.SourceEditor
 			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
 				g.Save ();
 				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + layouts [0].Height % 2);
-				g.Color = TagColor.SecondColor;
+				g.SetSourceColor (TagColor.SecondColor);
 				g.ShowLayout (drawLayout);
 				g.Restore ();
 			}
@@ -442,15 +442,15 @@ namespace MonoDevelop.SourceEditor
 		void DrawIconMarginBackground (TextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-			cr.Color = IconMarginColor.Color;
+			cr.SetSourceColor (IconMarginColor.Color);
 			cr.Fill ();
 			cr.MoveTo (metrics.Right - 0.5, metrics.Y);
 			cr.LineTo (metrics.Right - 0.5, metrics.Bottom);
-			cr.Color = IconMarginColor.BorderColor;
+			cr.SetSourceColor (IconMarginColor.BorderColor);
 			cr.Stroke ();
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
 				cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-				cr.Color = new Cairo.Color (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
+				cr.SetSourceRGBA (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
 				cr.Fill ();
 			}
 		}
@@ -486,7 +486,7 @@ namespace MonoDevelop.SourceEditor
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this)
 				return false;
 			cr.Rectangle (x, y, margin.Width, lineHeight);
-			cr.Color = LineColor.Color;
+			cr.SetSourceColor (LineColor.Color);
 			cr.Fill ();
 			return true;
 		}
@@ -521,7 +521,7 @@ namespace MonoDevelop.SourceEditor
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
 				DrawRectangle (g, x, y, right, editor.LineHeight);
-				g.Color = LineColor.Color;
+				g.SetSourceColor (LineColor.Color);
 				g.Fill ();
 
 				if (metrics.Layout.StartSet || metrics.SelectionStart == metrics.TextEndOffset) {
@@ -548,7 +548,7 @@ namespace MonoDevelop.SourceEditor
 						endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
 					if (startX < endX) {
 						DrawRectangle (g, startX, y, endX - startX, editor.LineHeight);
-						g.Color = GetLineColor (highlighted, true);
+						g.SetSourceColor (GetLineColor (highlighted, true));
 						g.Fill ();
 					}
 				}
@@ -567,7 +567,7 @@ namespace MonoDevelop.SourceEditor
 				if (divider >= x2) {
 					g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
 					g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
-					g.Color = GetLineColorBorder (highlighted, selected);
+					g.SetSourceColor (GetLineColorBorder (highlighted, selected));
 					g.Stroke ();
 				}
 			}
@@ -586,7 +586,7 @@ namespace MonoDevelop.SourceEditor
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;
-				g.Color = GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd);
+				g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
 				g.MoveTo (
 					metrics.TextRenderStartPosition + editor.TextViewMargin.TextStartPosition + pos.X / Pango.Scale.PangoScale,
 					y + editor.LineHeight - 3

@@ -211,9 +211,9 @@ namespace Mono.TextEditor.Utils
 			var dataB = new DiffData<T> (changedArray);
 
 			int MAX = dataA.Length + dataB.Length + 1;
-			/// vector for the (0,0) to (x,y) search
+			// vector for the (0,0) to (x,y) search
 			int[] downVector = new int[2 * MAX + 2];
-			/// vector for the (u,v) to (N,M) search
+			// vector for the (u,v) to (N,M) search
 			int[] upVector = new int[2 * MAX + 2];
 
 			LCS (dataA, 0, dataA.Length, dataB, 0, dataB.Length, downVector, upVector);
@@ -552,7 +552,7 @@ namespace Mono.TextEditor.Utils
 		/// <summary>
 		/// Initialize the Diff-Data buffer.
 		/// </summary>
-		/// <param name="data">reference to the buffer</param>
+		/// <param name="initData">reference to the buffer</param>
 		public DiffData (T[] initData)
 		{
 			Data = initData;
