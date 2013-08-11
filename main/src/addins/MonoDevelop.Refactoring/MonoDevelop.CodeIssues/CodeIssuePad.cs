@@ -207,7 +207,6 @@ namespace MonoDevelop.CodeIssues
 		{
 			// Update the top row
 			string text = null;
-
 			switch (state) {
 			case AnalysisState.Running:
 				text = "Running...";
