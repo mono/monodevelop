@@ -58,12 +58,12 @@
 		<End>"</End>
 	</Span>
 
-	<Span color = "String" rule="String" stopateol = "true">
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "String" rule="String" stopateol = "true">
+	<Span color = "String" rule="String" stopateol = "true" escape="\'">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
