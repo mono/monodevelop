@@ -537,11 +537,13 @@ namespace Mono.MHex
 			ctx.SetColor (HexEditorStyle.HexDigit); 
 			ctx.Fill ();
 
-			using (var layout = new TextLayout (this)) {
-				layout.Font = Options.Font;
-				layout.Text = ch.ToString ();
-				ctx.SetColor (HexEditorStyle.HexDigitBg);
-				ctx.DrawTextLayout (layout, caretX, caretY); 
+			if (!HexEditorData.Caret.IsInsertMode) {
+				using (var layout = new TextLayout (this)) {
+					layout.Font = Options.Font;
+					layout.Text = ch.ToString ();
+					ctx.SetColor (HexEditorStyle.HexDigitBg);
+					ctx.DrawTextLayout (layout, caretX, caretY); 
+				}
 			}
 		}
 		

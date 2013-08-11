@@ -38,7 +38,7 @@ namespace Mono.MHex.Data
 				return offset; 
 			}
 			set { 
-				value = System.Math.Min (data.Length + 1, System.Math.Max (0, value));
+				value = System.Math.Min (data.Length, System.Math.Max (0, value));
 				if (offset != value) {
 					long old = offset;
 					offset = value; 

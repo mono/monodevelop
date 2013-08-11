@@ -150,7 +150,9 @@ namespace Mono.MHex.Rendering
 				caretIndex += Caret.SubPosition;
 			LayoutWrapper layout = GetLayout ((int)Caret.Line);
 			var rectangle = layout.Layout.GetCoordinateFromIndex (caretIndex);
-			ch = layout.Layout.Text [caretIndex];
+			var text = layout.Layout.Text;
+
+			ch = caretIndex < text.Length ? text [caretIndex] : ' ';
 			if (layout.IsUncached)
 				layout.Dispose ();
 			return XOffset + rectangle.X / 1024.0; // FIX XWT !!!! Pango.Scale bug
