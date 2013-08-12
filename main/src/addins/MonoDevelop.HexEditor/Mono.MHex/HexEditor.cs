@@ -42,7 +42,7 @@ namespace Mono.MHex
 {
 	[System.ComponentModel.Category ("Mono.HexEditor")]
 	[System.ComponentModel.ToolboxItem (true)]
-	public class HexEditor : Canvas
+	class HexEditor : Canvas
 	{
 		public HexEditorData HexEditorData {
 			get;
@@ -99,12 +99,6 @@ namespace Mono.MHex
 			}
 		}
 
-		public Font Font {
-			get {
-				return Font.FromName ("Mono 10");
-			}
-		}
-		
 		public HexEditor ()
 		{
 			CanGetFocus = true;
@@ -271,7 +265,7 @@ namespace Mono.MHex
 			oldHAdjustment = curHAdjustment;
 		}
 		
-		double oldVadjustment = -1;
+//		double oldVadjustment = -1;
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
 			if (HexEditorData.VAdjustment.Value != System.Math.Ceiling (HexEditorData.VAdjustment.Value)) {
@@ -282,8 +276,8 @@ namespace Mono.MHex
 			long lastVisibleLine  = (long)((HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight);
 			margins.ForEach (margin => margin.SetVisibleWindow (firstVisibleLine, lastVisibleLine));
 			
-			int delta = (int)(HexEditorData.VAdjustment.Value - this.oldVadjustment);
-			oldVadjustment = HexEditorData.VAdjustment.Value;
+//			int delta = (int)(HexEditorData.VAdjustment.Value - this.oldVadjustment);
+//			oldVadjustment = HexEditorData.VAdjustment.Value;
 			
 			// update pending redraws
 

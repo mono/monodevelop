@@ -34,7 +34,7 @@ using Xwt;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorView : AbstractXwtViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
+	class HexEditorView : AbstractXwtViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
 		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
 		ScrollView window ;

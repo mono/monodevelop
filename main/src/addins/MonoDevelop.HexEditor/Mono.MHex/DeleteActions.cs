@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class DeleteActions
+	static class DeleteActions
 	{
 		public static void Backspace (HexEditorData data)
 		{

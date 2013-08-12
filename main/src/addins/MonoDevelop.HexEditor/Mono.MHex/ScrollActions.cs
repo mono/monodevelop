@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class ScrollActions
+	static class ScrollActions
 	{
 		public static void Up (HexEditorData data)
 		{

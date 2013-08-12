@@ -30,7 +30,7 @@ using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class IconMargin : Margin
+	class IconMargin : Margin
 	{
 		double marginWidth;
 		public override double Width {
@@ -53,7 +53,7 @@ namespace Mono.MHex.Rendering
 			var layout = new TextLayout (Editor);
 			layout.Font = Editor.Options.Font;
 			layout.Text = "!";
-			int tmp;
+//			int tmp;
 			this.marginWidth = layout.GetSize ().Height;
 			marginWidth *= 12;
 			marginWidth /= 10;
@@ -62,9 +62,6 @@ namespace Mono.MHex.Rendering
 		
 		internal protected override void Draw (Context win, Rectangle area, long line, double x, double y)
 		{
-			if (Style.IconBarBg == null)
-				OptionsChanged ();
-		
 			win.Rectangle (x, y, Width, Editor.LineHeight);
 			win.SetColor (Style.IconBarBg);
 			win.Fill ();

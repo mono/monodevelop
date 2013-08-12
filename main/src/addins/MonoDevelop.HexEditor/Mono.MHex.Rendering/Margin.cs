@@ -33,7 +33,7 @@ using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public abstract class Margin : IDisposable
+	abstract class Margin : IDisposable
 	{
 		protected HexEditor Editor {
 			get;
@@ -251,7 +251,7 @@ namespace Mono.MHex.Rendering
 		public event EventHandler MouseLeave;
 	}
 	
-	public class MarginMouseEventArgs : EventArgs
+	class MarginMouseEventArgs : EventArgs
 	{
 		Margin margin;
 
@@ -297,7 +297,7 @@ namespace Mono.MHex.Rendering
 		}
 	}
 
-	public class MarginMouseMovedEventArgs : EventArgs
+	class MarginMouseMovedEventArgs : EventArgs
 	{
 		public double X {
 			get {

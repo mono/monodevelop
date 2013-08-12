@@ -32,7 +32,7 @@ using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class HexEditorMargin : Margin
+	class HexEditorMargin : Margin
 	{
 		double groupWidth, byteWidth;
 			

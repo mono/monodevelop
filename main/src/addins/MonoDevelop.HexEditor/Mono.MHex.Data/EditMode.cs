@@ -30,7 +30,7 @@ using Xwt;
 
 namespace Mono.MHex.Data
 {
-	public abstract class EditMode
+	abstract class EditMode
 	{
 		protected HexEditor Editor {
 			get;

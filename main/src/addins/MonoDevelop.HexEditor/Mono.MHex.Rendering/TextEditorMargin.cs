@@ -32,7 +32,7 @@ using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class TextEditorMargin : Margin
+	class TextEditorMargin : Margin
 	{
 		internal double charWidth;
 		public override double Width {
@@ -55,7 +55,7 @@ namespace Mono.MHex.Rendering
 			var layout = new TextLayout (Editor);
 			layout.Font = Editor.Options.Font;
 			layout.Text = ".";
-			int height;
+//			int height;
 			charWidth = layout.GetSize ().Width;
 			layout.Dispose ();
 		}

@@ -31,7 +31,7 @@ using Xwt;
 
 namespace Mono.MHex
 {
-	public class SimpleEditMode : EditMode
+	class SimpleEditMode : EditMode
 	{
 		Dictionary<int, Action<HexEditorData>> keyBindings = new Dictionary<int, Action<HexEditorData>> ();
 		

@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class CaretMoveActions
+	static class CaretMoveActions
 	{
 		public static void SwitchSide (HexEditorData data)
 		{

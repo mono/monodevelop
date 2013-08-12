@@ -30,7 +30,7 @@ using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class GutterMargin : Margin
+	class GutterMargin : Margin
 	{
 		double width;
 		public override double Width {
@@ -53,7 +53,7 @@ namespace Mono.MHex.Rendering
 			var layout = new TextLayout (Editor);
 			layout.Font = Editor.Options.Font;
 			layout.Text = string.Format ("0{0:X}", Data.Length) + "_";
-			int height;
+//			int height;
 			width = layout.GetSize ().Width;
 			layout.Dispose ();
 		}

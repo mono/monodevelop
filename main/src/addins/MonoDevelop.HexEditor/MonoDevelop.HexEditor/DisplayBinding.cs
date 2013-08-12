@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorDisplayBinding : IViewDisplayBinding
+	class HexEditorDisplayBinding : IViewDisplayBinding
 	{
 		public string Name {
 			get {

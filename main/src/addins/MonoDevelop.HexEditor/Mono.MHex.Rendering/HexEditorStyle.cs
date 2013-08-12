@@ -30,7 +30,7 @@ using Xwt.Drawing;
 
 namespace Mono.MHex.Rendering
 {
-	public class HexEditorStyle
+	class HexEditorStyle
 	{
 		public virtual Color HexOffset {
 			get {

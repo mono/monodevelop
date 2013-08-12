@@ -35,7 +35,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.HexEditor
 {
-	public class MonoDevelopHexEditorStyle : HexEditorStyle
+	class MonoDevelopHexEditorStyle : HexEditorStyle
 	{
 		ColorScheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;

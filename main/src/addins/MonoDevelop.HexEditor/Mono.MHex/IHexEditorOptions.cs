@@ -29,7 +29,7 @@ using Xwt.Drawing;
 
 namespace Mono.MHex
 {
-	public interface IHexEditorOptions
+	interface IHexEditorOptions
 	{
 		double Zoom { get; set; }
 		bool CanZoomIn { get; }

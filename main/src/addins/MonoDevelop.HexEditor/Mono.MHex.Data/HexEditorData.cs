@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace Mono.MHex.Data
 {
-	public class HexEditorData
+	class HexEditorData
 	{
 		public ScrollAdjustment HAdjustment {
 			get;

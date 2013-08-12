@@ -32,11 +32,11 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.HexEditor
 {
-	public enum Commands {
+	enum Commands {
 		ShowHexEditor
 	}
 	
-	public class HexEditorNodeExtension : NodeBuilderExtension
+	class HexEditorNodeExtension : NodeBuilderExtension
 	{
 		public override Type CommandHandlerType {
 			get { return typeof(HexEditorCommandHandler); }

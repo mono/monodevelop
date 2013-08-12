@@ -29,7 +29,7 @@ using Xwt.Drawing;
 
 namespace Mono.MHex
 {
-	public class HexEditorOptions : IHexEditorOptions, IDisposable
+	class HexEditorOptions : IHexEditorOptions, IDisposable
 	{
 		public const string DEFAULT_FONT = "Mono 10";
 		static HexEditorOptions options = new HexEditorOptions ();
