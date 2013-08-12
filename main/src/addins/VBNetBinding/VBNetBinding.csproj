@@ -83,7 +83,6 @@
     <Compile Include="VBCodeGenerator.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Project\VBNetResourceIdBuilder.cs" />
-    <Compile Include="Parser\DomParser.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs" />
     <Compile Include="Gui\ProjectOptionsPanelWidget.cs" />
