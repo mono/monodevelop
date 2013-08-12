@@ -97,8 +97,8 @@
 		{ "name": "Quick Diff(Changed)", "color":"StringVim" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5" },
-		{ "name": "Usages(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5" },
-		{ "name": "Changing usages(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5" },
+		{ "name": "Usages(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5", "bordercolor":"aluminium5" },
+		{ "name": "Changing usages(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5", "bordercolor":"aluminium5" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },

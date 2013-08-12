@@ -57,8 +57,8 @@
 		{ "name": "Quick Diff(Changed)", "color":"#A4E22E" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"#6699CC", "secondcolor":"#AACCEE" },
-		{ "name": "Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99" },
-		{ "name": "Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75" },
+		{ "name": "Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
+		{ "name": "Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#762C2C" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#eddcdc" },
