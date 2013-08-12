@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext
 {
-	public interface IFileScanner
+	interface IFileScanner
 	{
 		bool CanScan (TranslationProject project, Catalog catalog, string fileName, string mimeType);
 		void UpdateCatalog (TranslationProject project, Catalog catalog, IProgressMonitor monitor, string fileName);	

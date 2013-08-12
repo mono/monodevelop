@@ -31,7 +31,7 @@ using Mono.Addins;
 namespace MonoDevelop.Gettext
 {
 	[ExtensionNode ("Transform", Description="Specifies a regular expression to use to transform extracted strings.")]
-	public class TransformExtensionNode: ExtensionNode
+	class TransformExtensionNode: ExtensionNode
 	{
 		[NodeAttribute ("regex", Required=true, Description="Regular expression")]
 		string regexValue = null;

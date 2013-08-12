@@ -31,7 +31,7 @@ using Mono.Addins;
 namespace MonoDevelop.Gettext.ExtensionNodes
 {
 	[ExtensionNode ("XmlRegexScanner", Description="Specifies an xml file scanner which can extract strings to be translated using regular expressions.")]
-	public class XmlRegexScannerExtensionNode: RegexScannerExtensionNode
+	class XmlRegexScannerExtensionNode: RegexScannerExtensionNode
 	{
 		public override object CreateInstance ()
 		{

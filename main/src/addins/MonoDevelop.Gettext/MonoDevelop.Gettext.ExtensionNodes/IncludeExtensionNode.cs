@@ -32,7 +32,7 @@ using Mono.Addins;
 namespace MonoDevelop.Gettext.ExtensionNodes
 {
 	[ExtensionNode ("Include", Description="Specifies a regular expression to use to extract translatable strings.")]
-	public class IncludeExtensionNode: ExtensionNode
+	class IncludeExtensionNode: ExtensionNode
 	{
 		[NodeAttribute ("regex", Required=true, Description="Regular expression")]
 		string regexValue = null;

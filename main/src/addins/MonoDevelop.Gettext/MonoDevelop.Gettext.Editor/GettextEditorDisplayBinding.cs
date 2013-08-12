@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Gettext
 {	
-	public class GettextEditorDisplayBinding : IViewDisplayBinding
+	class GettextEditorDisplayBinding : IViewDisplayBinding
 	{
 		public  string Name {
 			get { return GettextCatalog.GetString ("Gettext Editor"); }

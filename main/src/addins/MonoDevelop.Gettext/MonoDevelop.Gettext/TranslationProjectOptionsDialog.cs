@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
-	public partial class TranslationProjectOptionsDialog : Gtk.Dialog
+	partial class TranslationProjectOptionsDialog : Gtk.Dialog
 	{
 		TranslationProject project;
 		public TranslationProjectOptionsDialog (TranslationProject project)

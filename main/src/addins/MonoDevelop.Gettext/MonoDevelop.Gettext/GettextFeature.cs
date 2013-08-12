@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext
 {
-	public class GettextFeature : ISolutionItemFeature
+	class GettextFeature : ISolutionItemFeature
 	{
 		public string Title {
 			get { return GettextCatalog.GetString ("Translation"); }

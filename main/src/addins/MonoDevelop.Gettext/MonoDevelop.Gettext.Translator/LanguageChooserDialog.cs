@@ -31,7 +31,7 @@ using Gtk;
 
 namespace MonoDevelop.Gettext.Translator
 {
-	public partial class LanguageChooserDialog : Gtk.Dialog
+	partial class LanguageChooserDialog : Gtk.Dialog
 	{
 		ListStore languagesStore, countriesStore;
 		

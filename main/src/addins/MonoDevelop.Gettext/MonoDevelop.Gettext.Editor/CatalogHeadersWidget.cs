@@ -31,7 +31,6 @@ using Gtk;
 
 namespace MonoDevelop.Gettext.Editor
 {
-	
 	partial class CatalogHeadersWidget : Bin
 	{
 		Catalog headers;

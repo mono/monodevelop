@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Gettext
 {
-	public class TranslationCollection: Collection<Translation>
+	class TranslationCollection: Collection<Translation>
 	{
 		TranslationProject project;
 		

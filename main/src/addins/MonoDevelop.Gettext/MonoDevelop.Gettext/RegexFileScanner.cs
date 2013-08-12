@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Gettext
 {
-	public class RegexFileScanner: IFileScanner
+	class RegexFileScanner: IFileScanner
 	{
 		List<RegexInfo> regexes = new List<RegexInfo> ();
 		List<Regex> excluded = new List<Regex> ();
