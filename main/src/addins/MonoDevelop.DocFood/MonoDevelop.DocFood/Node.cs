@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.DocFood
 {
-	public abstract class Node
+	abstract class Node
 	{
 		public List<KeyValuePair<string, string>> Attributes {
 			get;

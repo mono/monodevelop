@@ -28,7 +28,7 @@ using System.Xml;
 
 namespace MonoDevelop.DocFood
 {
-	public class IfStatement : Node
+	class IfStatement : Node
 	{
 		public const string XmlTag = "If";
 		
