@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class NRefactoryCodeActionSource : ICodeActionProviderSource
+	class NRefactoryCodeActionSource : ICodeActionProviderSource
 	{
 		#region ICodeActionProviderSource implementation
 		public IEnumerable<CodeActionProvider> GetProviders ()

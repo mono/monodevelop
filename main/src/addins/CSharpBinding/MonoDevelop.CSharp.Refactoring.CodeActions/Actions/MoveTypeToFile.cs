@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
+	class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{

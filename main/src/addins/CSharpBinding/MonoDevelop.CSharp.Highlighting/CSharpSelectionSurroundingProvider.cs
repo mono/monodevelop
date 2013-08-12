@@ -29,7 +29,7 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class CSharpSelectionSurroundingProvider : DefaultSelectionSurroundingProvider
+	class CSharpSelectionSurroundingProvider : DefaultSelectionSurroundingProvider
 	{
 		MonoDevelop.Ide.Gui.Document document;
 

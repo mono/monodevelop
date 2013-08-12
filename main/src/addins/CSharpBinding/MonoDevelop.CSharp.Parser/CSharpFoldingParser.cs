@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public unsafe class CSharpFoldingParser : IFoldingParser
+	unsafe class CSharpFoldingParser : IFoldingParser
 	{
 		#region IFoldingParser implementation
 

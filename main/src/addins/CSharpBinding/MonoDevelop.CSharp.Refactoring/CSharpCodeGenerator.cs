@@ -47,7 +47,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public class CSharpCodeGenerator : CodeGenerator
+	class CSharpCodeGenerator : CodeGenerator
 	{
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		

@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Project
 		}
 	}
 	
-	public class CodeGenerationPanel : MultiConfigItemOptionsPanel
+	class CodeGenerationPanel : MultiConfigItemOptionsPanel
 	{
 		CodeGenerationPanelWidget widget;
 		

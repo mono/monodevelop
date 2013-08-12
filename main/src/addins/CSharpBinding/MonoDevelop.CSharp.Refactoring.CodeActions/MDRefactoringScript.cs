@@ -47,7 +47,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MDRefactoringScript : DocumentScript
+	class MDRefactoringScript : DocumentScript
 	{
 		readonly MDRefactoringContext context;
 		readonly IDisposable undoGroup;

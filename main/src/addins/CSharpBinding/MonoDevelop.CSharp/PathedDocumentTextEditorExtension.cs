@@ -39,7 +39,7 @@ using System.Text;
 
 namespace MonoDevelop.CSharp
 {
-	public class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
+	class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
 	{
 		public override void Dispose ()
 		{

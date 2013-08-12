@@ -38,7 +38,7 @@ using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class ToStringGenerator : ICodeGenerator
+	class ToStringGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

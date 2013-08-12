@@ -35,7 +35,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
+	class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
 	{
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
 		

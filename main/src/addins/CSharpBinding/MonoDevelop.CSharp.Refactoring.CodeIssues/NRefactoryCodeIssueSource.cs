@@ -37,7 +37,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public class NRefactoryCodeIssueSource : ICodeIssueProviderSource
+	class NRefactoryCodeIssueSource : ICodeIssueProviderSource
 	{
 		#region ICodeIssueProviderSource implementation
 		public IEnumerable<CodeIssueProvider> GetProviders ()

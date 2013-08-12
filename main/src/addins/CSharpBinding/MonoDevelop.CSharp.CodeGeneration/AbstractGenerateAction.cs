@@ -37,7 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public abstract class AbstractGenerateAction : IGenerateAction
+	abstract class AbstractGenerateAction : IGenerateAction
 	{
 		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(object));
 		CodeGenerationOptions options;

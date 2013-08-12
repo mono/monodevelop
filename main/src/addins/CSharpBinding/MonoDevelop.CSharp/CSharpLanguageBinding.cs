@@ -47,7 +47,7 @@ using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.CSharp
 {
-	public class CSharpLanguageBinding : IDotNetLanguageBinding
+	class CSharpLanguageBinding : IDotNetLanguageBinding
 	{
 		CSharpCodeProvider provider;
 		

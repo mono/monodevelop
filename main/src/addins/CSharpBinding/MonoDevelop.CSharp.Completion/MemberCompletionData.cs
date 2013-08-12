@@ -220,7 +220,7 @@ namespace MonoDevelop.CSharp.Completion
 					insertSemicolon = true;
 				if (Entity.SymbolKind == SymbolKind.Constructor)
 					insertSemicolon = false;
-				int pos;
+				//int pos;
 
 				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
 				if (keys.Contains (closeChar) || keyChar == '.') {

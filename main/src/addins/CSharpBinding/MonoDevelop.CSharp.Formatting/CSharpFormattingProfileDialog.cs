@@ -33,7 +33,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 namespace MonoDevelop.CSharp.Formatting
 {
-	public partial class CSharpFormattingProfileDialog : Gtk.Dialog
+	partial class CSharpFormattingProfileDialog : Gtk.Dialog
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 		CSharpFormattingPolicy profile;

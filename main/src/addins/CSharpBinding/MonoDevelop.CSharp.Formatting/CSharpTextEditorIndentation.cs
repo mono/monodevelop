@@ -44,7 +44,7 @@ using System.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
+	class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;

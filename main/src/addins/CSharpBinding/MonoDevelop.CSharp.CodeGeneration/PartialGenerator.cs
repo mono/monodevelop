@@ -32,7 +32,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class PartialGenerator : ICodeGenerator
+	class PartialGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

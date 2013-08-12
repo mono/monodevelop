@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	/// <summary>
 	/// Generates an enumeration from const fields
 	/// </summary>
-	public class ConvertToEnumAction : MonoDevelop.CodeActions.CodeActionProvider
+	class ConvertToEnumAction : MonoDevelop.CodeActions.CodeActionProvider
 	{
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions(MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{

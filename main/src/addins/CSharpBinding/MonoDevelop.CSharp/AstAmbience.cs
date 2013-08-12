@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp
 {
-	public class AstAmbience
+	class AstAmbience
 	{
 		CSharpFormattingOptions options;
 		

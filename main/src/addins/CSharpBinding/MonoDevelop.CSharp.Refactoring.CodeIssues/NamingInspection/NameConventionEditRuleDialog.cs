@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public partial class NameConventionEditRuleDialog : Gtk.Dialog
+	partial class NameConventionEditRuleDialog : Gtk.Dialog
 	{
 		static readonly Dictionary<AffectedEntity, string> EntityName = new Dictionary<AffectedEntity, string> ();
 		static readonly Dictionary<Modifiers, string> AccessibilityName = new Dictionary<Modifiers, string> ();

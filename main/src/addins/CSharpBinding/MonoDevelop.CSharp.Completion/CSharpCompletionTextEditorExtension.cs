@@ -52,7 +52,6 @@ using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
 		internal Mono.TextEditor.TextEditorData TextEditorData {
@@ -1079,10 +1078,10 @@ namespace MonoDevelop.CSharp.Completion
 			class ImportSymbolCompletionData : CompletionData
 			{
 				IType type;
-				ParsedDocument unit;
+//				ParsedDocument unit;
 				MonoDevelop.Ide.Gui.Document doc;
 				bool useFullName;
-				bool addConstructors;
+//				bool addConstructors;
 
 				public IType Type {
 					get { return this.type; }
@@ -1093,8 +1092,8 @@ namespace MonoDevelop.CSharp.Completion
 					this.doc = doc;
 					this.useFullName = useFullName;
 					this.type = type;
-					this.unit = doc.ParsedDocument;
-					this.addConstructors = addConstructors;
+//					this.unit = doc.ParsedDocument;
+//					this.addConstructors = addConstructors;
 				}
 
 				bool initialized = false;

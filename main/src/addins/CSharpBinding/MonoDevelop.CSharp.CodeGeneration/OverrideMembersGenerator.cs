@@ -34,7 +34,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class OverrideMembersGenerator : ICodeGenerator
+	class OverrideMembersGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

@@ -51,7 +51,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp
 {
-	public static class HelperMethods
+	static class HelperMethods
 	{
 		public static void SetText (this CompletionData data, string text)
 		{
@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp
 //			}
 //		}
 		
-		public static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
+		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
 		{
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);

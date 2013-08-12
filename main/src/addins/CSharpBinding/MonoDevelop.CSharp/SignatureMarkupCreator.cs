@@ -43,7 +43,7 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp
 {
-	public class SignatureMarkupCreator
+	class SignatureMarkupCreator
 	{
 		const double optionalAlpha = 0.7;
 		readonly CSharpResolver resolver;

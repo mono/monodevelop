@@ -377,7 +377,7 @@ namespace MonoDevelop.CSharp.Parser
 		public static ICSharpCode.NRefactory.CSharp.CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
 			var compilerArguments = new ICSharpCode.NRefactory.CSharp.CompilerSettings ();
-	///		compilerArguments.TabSize = 1;
+	//		compilerArguments.TabSize = 1;
 
 			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null) {
 				compilerArguments.AllowUnsafeBlocks = true;

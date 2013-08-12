@@ -277,13 +277,13 @@ namespace MonoDevelop.CSharp
 
 			class TestRunner
 			{
-				readonly MonoDevelop.Ide.Gui.Document doc;
+//				readonly MonoDevelop.Ide.Gui.Document doc;
 				readonly string testCase;
 				readonly bool debug;
 
 				public TestRunner (MonoDevelop.Ide.Gui.Document doc, string testCase, bool debug)
 				{
-					this.doc = doc;
+//					this.doc = doc;
 					this.testCase = testCase;
 					this.debug = debug;
 				}
