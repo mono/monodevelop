@@ -362,8 +362,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			EnsureLayoutCreated (editor);
 			int errorCounterWidth = 0, eh = 0;
-			if (errorCountLayout != null) 
+			if (errorCountLayout != null) {
 				errorCountLayout.GetPixelSize (out errorCounterWidth, out eh);
+				errorCounterWidth = Math.Max (errorCounterWidth + 3, (int)(editor.LineHeight * 3 / 4));
+			}
 
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
@@ -396,14 +398,17 @@ namespace MonoDevelop.SourceEditor
 			g.RoundedRectangle (sx, y + 1, width, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
 			g.Color = TagColor.Color;
 			g.Fill ();
-
 			if (errorCounterWidth > 0 && errorCountLayout != null) {
 				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
 				g.Color = CounterColor.Color;
 				g.Fill ();
 
 				g.Save ();
-				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - errorCounterWidth) / 2, y + 1);
+
+				int ew;
+				errorCountLayout.GetPixelSize (out ew, out eh);
+
+				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
 				g.Color = CounterColor.SecondColor;
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
