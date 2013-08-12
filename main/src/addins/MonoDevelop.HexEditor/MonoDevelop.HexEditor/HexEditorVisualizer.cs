@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 
 using Gtk;
 
@@ -46,13 +47,16 @@ namespace MonoDevelop.HexEditor
 		#region IValueVisualizer implementation
 
 		public string Name {
-			get { return GettextCatalog.GetString ("HexEditor"); }
+			get { return GettextCatalog.GetString ("HexEdit"); }
 		}
 
 		public bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
+			case "sbyte[]": return true;
 			case "byte[]": return true;
+			case "char[]": return true;
+			case "string": return true;
 			default: return false;
 			}
 		}
@@ -68,13 +72,36 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor = new Mono.MHex.HexEditor ();
 
-			var raw = val.GetRawValue () as RawValueArray;
-			var buf = raw.ToArray () as byte[];
+			byte[] buf = null;
 
-			var buffer = new byte[buf.LongLength];
-			Array.Copy (buf, buffer, buf.Length);
+			if (val.TypeName != "string") {
+				var raw = val.GetRawValue () as RawValueArray;
+				sbyte[] sbuf;
 
-			hexEditor.HexEditorData.Buffer = new ArrayBuffer (buffer);
+				switch (val.TypeName) {
+				case "sbyte[]":
+					sbuf = raw.ToArray () as sbyte[];
+					buf = new byte[sbuf.Length];
+					for (int i = 0; i < sbuf.Length; i++)
+						buf[i] = (byte) sbuf[i];
+					break;
+				case "char[]":
+					buf = Encoding.UTF8.GetBytes (new string (raw.ToArray () as char[]));
+					break;
+				case "byte[]":
+					buf = raw.ToArray () as byte[];
+					break;
+				}
+			} else {
+				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+				ops.ChunkRawStrings = true;
+
+				var raw = val.GetRawValue (ops) as RawValueString;
+
+				buf = Encoding.UTF8.GetBytes (raw.Value);
+			}
+
+			hexEditor.HexEditorData.Buffer = new ArrayBuffer (buf);
 
 			var scrolled = new ScrolledWindow () {
 				HscrollbarPolicy = PolicyType.Automatic,
@@ -94,13 +121,21 @@ namespace MonoDevelop.HexEditor
 
 		public bool StoreValue (ObjectValue val)
 		{
-			val.SetRawValue (hexEditor.HexEditorData.Bytes);
-			return true;
+			switch (val.TypeName) {
+			case "byte[]":
+				val.SetRawValue (hexEditor.HexEditorData.Bytes);
+				return true;
+			default:
+				return false;
+			}
 		}
 
 		public bool CanEdit (ObjectValue val)
 		{
-			return true;
+			switch (val.TypeName) {
+			case "byte[]": return true;
+			default: return false;
+			}
 		}
 
 		#endregion

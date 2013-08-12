@@ -73,12 +73,12 @@ namespace Mono.MHex.Data
 		
 		public static IBuffer Load (Stream stream)
 		{
-			long count = stream.Length;
-			byte[] buffer = new byte[count];
+			int count = (int) stream.Length;
+			byte[] buf= new byte[count];
 
-			stream.Read (buffer, 0, (int) count);
+			stream.Read (buf, 0, count);
 
-			return new ArrayBuffer (buffer);
+			return new ArrayBuffer (buf);
 		}
 		
 		public static IBuffer Load (string fileName)
