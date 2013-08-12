@@ -600,11 +600,12 @@ namespace MonoDevelop.Ide
 				Gtk.Application.Invoke (delegate {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
 					Items.Add (item);
-				});
-				
-				timer.Trace ("Searching for new files");
-				SearchForNewFiles ();
 
+					// We must call SearchForNewFiles on the main loop as it iterates over the 'Items'
+					// collection which we are modifying on the main loop
+					timer.Trace ("Searching for new files");
+					SearchForNewFiles ();
+				});
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
 				
