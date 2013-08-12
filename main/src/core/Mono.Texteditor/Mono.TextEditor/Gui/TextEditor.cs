@@ -1103,7 +1103,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Initiate a pulse at the specified document location
 		/// </summary>
-		/// <param name="pulseStart">
+		/// <param name="pulseLocation">
 		/// A <see cref="DocumentLocation"/>
 		/// </param>
 		public void PulseCharacter (DocumentLocation pulseStart)

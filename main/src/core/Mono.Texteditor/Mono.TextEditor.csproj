@@ -132,6 +132,7 @@
     <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\CloneableStack.cs" />
     <Compile Include="Mono.TextEditor.Utils\Diff.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\HighlightingPartitioner.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViEditorActions.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViBuilderContext.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViBuilders.cs" />

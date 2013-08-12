@@ -454,13 +454,13 @@ namespace MonoDevelop.Components.Docking
 				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
 					g.AddColorStop (0, Styles.DockTabBarGradientStart);
 					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
-					ctx.SetSource (g);
+					ctx.Pattern = g;
 					ctx.Fill ();
 				}
 
 				ctx.MoveTo (x + 0.5, y + 0.5);
 				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
-				ctx.SetSourceColor (Styles.DockTabBarGradientTop);
+				ctx.Color = Styles.DockTabBarGradientTop;
 				ctx.Stroke ();
 
 				if (active) {
@@ -470,7 +470,7 @@ namespace MonoDevelop.Components.Docking
 						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
 						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
 						g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
-						ctx.SetSource (g);
+						ctx.Pattern = g;
 						ctx.Fill ();
 					}
 

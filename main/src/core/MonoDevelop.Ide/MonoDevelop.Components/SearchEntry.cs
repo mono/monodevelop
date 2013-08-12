@@ -30,7 +30,6 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -394,14 +393,14 @@ namespace MonoDevelop.Components
 			else if (!roundedShape) {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					CairoExtensions.RoundedRectangle (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1, 4);
-					ctx.SetSourceColor (entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
+					ctx.Color = entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
 					ctx.Fill ();
 				}
 			}
 			else {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
-					ctx.SetSourceColor (entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ());
+					ctx.Color = entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
 					ctx.Fill ();
 				}
 			}
@@ -411,7 +410,7 @@ namespace MonoDevelop.Components
 			if (hasFrame && roundedShape && customRoundedShapeDrawing) {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
-					ctx.SetSourceColor (Styles.WidgetBorderColor);
+					ctx.Color = Styles.WidgetBorderColor;
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}

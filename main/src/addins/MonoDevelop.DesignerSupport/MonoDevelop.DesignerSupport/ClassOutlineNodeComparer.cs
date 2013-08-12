@@ -41,7 +41,7 @@ namespace MonoDevelop.DesignerSupport
 	/// This implementation uses a primary sort key (int based on node's group) and
 	/// a secondary sort key (string based on node's name) for comparison.
 	/// </remarks>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
 	class ClassOutlineNodeComparer : IComparer<TreeIter>
 	{
 		const string DEFAULT_REGION_NAME = "region";
@@ -54,12 +54,13 @@ namespace MonoDevelop.DesignerSupport
 		/// <param name="ambience">
 		/// The ambience used on retrieval of node names.
 		/// </param>
-		/// <param name="settings">
+		/// <param name="properties">
 		/// The properties used on retrieval of node sort keys and sorting settings.
 		/// </param>
 		/// <param name="model">
 		/// The model containing the nodes to compare.
 		/// </param>
+
 		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSettings settings, TreeModel model)
 		{
 			this.ambience = ambience;
@@ -90,9 +91,9 @@ namespace MonoDevelop.DesignerSupport
 		/// The second tree node that will be compared.
 		/// </param>
 		/// <returns>
-		/// Less than zero if nodeA &lt; nodeB
+		/// Less than zero if nodeA < nodeB
 		/// Zero if nodeA == nodeB.
-		/// Greater than zero if nodeA &gt; nodeB.
+		/// Greater than zero if nodeA > nodeB.
 		/// </returns>
 		public int CompareNodes (TreeModel model, TreeIter node1, TreeIter node2)
 		{

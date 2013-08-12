@@ -227,11 +227,11 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var lg = new LinearGradient (0, centerY - rad, 0, centerY +rad)) {
 				lg.AddColorStop (0, new Cairo.Color (high, high, high));
 				lg.AddColorStop (1, new Cairo.Color (low, low, low));
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.FillPreserve ();
 			}
 
-			context.SetSourceRGBA (0, 0, 0, 0.4);
+			context.Color = new Cairo.Color (0, 0, 0, 0.4);
 			context.LineWidth = 1;
 			context.Stroke ();
 		}

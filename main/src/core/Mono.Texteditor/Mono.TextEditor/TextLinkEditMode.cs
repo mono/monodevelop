@@ -628,10 +628,10 @@ namespace Mono.TextEditor
 
 						cr.Rectangle (x1 + 0.5, y + 0.5, x2 - x1, editor.LineHeight - 1);
 						
-						cr.SetSourceColor (fillGc);
+						cr.Color = fillGc;
 						cr.FillPreserve ();
 						
-						cr.SetSourceColor (rectangleGc);
+						cr.Color = rectangleGc;
 						cr.Stroke ();
 					}
 				}
@@ -656,7 +656,7 @@ namespace Mono.TextEditor
 
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
 			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
-			cr.SetSourceColor (editor.Caret.Line == metrics.LineNumber ? editor.ColorStyle.LineMarker.Color : lineNumberGC);
+			cr.Color = editor.Caret.Line == metrics.LineNumber ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
 			cr.Fill ();
 
 			return true;
@@ -677,7 +677,7 @@ namespace Mono.TextEditor
 					layout.SetText (metrics.LineNumber.ToString ());
 					cr.Save ();
 					cr.Translate (metrics.X + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), metrics.Y);
-					cr.SetSourceColor (lineNumberBgGC);
+					cr.Color = lineNumberBgGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();
 				}

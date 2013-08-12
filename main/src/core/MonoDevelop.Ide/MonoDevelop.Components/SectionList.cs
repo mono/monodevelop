@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Cairo;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -296,7 +295,7 @@ namespace MonoDevelop.Components
 				cr.Translate (alloc.X + bw, alloc.Y + bw);
 				
 				var borderCol = Convert (Style.Dark (StateType.Normal));
-				cr.SetSourceColor (borderCol);
+				cr.Color = borderCol;
 				cr.Rectangle (halfLineWidth, halfLineWidth, w - borderLineWidth, h - borderLineWidth);
 				cr.LineWidth = borderLineWidth;
 				cr.Stroke ();
@@ -336,10 +335,10 @@ namespace MonoDevelop.Components
 						bool isHover = hoverIndex == i;
 						
 						cr.Rectangle (0, 0, w, headerHeight);
-						cr.SetSource (isActive? selectedGrad : (isHover? hoverGrad : unselectedGrad));
+						cr.Pattern = isActive? selectedGrad : (isHover? hoverGrad : unselectedGrad);
 						cr.Fill ();
 						
-						cr.SetSourceColor (isActive? selectedTextCol : (isHover? hoverTextCol : unselectedTextCol));
+						cr.Color = isActive? selectedTextCol : (isHover? hoverTextCol : unselectedTextCol);
 						layout.SetText (section.Title);
 						layout.Ellipsize = Pango.EllipsizeMode.End;
 						layout.Width = (int) ((w - headerPadding - headerPadding) * Pango.Scale.PangoScale);
@@ -348,7 +347,7 @@ namespace MonoDevelop.Components
 						
 						cr.MoveTo (-halfLineWidth, i > activeIndex? -halfLineWidth : headerHeight + halfLineWidth);
 						cr.RelLineTo (w + borderLineWidth, 0.0);
-						cr.SetSourceColor (borderCol);
+						cr.Color = borderCol;
 						cr.Stroke ();
 						
 						cr.Translate (0, headerHeight + borderLineWidth);

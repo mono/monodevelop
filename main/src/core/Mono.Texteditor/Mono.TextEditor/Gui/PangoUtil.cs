@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		internal const string LIBPANGOCAIRO   = "libpangocairo-1.0-0.dll";
 		
 		/// <summary>
-		/// This doesn't leak Pango layouts, unlike some other ways to create them in GTK# &lt;= 2.12.11
+		/// This doesn't leak Pango layouts, unlike some other ways to create them in GTK# <= 2.12.11
 		/// </summary>
 		public static Pango.Layout CreateLayout (Widget widget)
 		{

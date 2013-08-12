@@ -424,7 +424,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int width = alloc.Width;
 				int height = alloc.Height;
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
-				context.SetSourceColor (backgroundColor);
+				context.Color = this.backgroundColor;
 				context.Fill ();
 
 				int xpos = iconTextSpacing;
@@ -433,12 +433,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				//when there are no matches, display a message to indicate that the completion list is still handling input
 				if (filteredItems.Count == 0) {
 					context.Rectangle (0, yPos, width, height - yPos);
-					context.SetSourceColor (backgroundColor);
+					context.Color = backgroundColor;
 					context.Stroke ();
 					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
-					context.SetSourceColor (textColor);
+					context.Color = textColor;
 					context.MoveTo ((width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight);
 					PangoCairoHelper.ShowLayout (context, noMatchLayout);
 					return false;
@@ -460,7 +460,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						x = icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-					context.SetSourceColor (backgroundColor);
+					context.Color = backgroundColor;
 					context.Fill ();
 
 
@@ -471,7 +471,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					int px, py;
 					categoryLayout.GetPixelSize (out px, out py);
 					context.MoveTo (x, ypos + (rowHeight - py) / 2);
-					context.SetSourceColor (textColor);
+					context.Color = textColor;
 					PangoCairoHelper.ShowLayout (context, categoryLayout);
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
 					if (ypos >= height)
@@ -527,16 +527,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						context.SetSourceColor (SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Background);
+						context.Color = SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Background;
 						context.Fill ();
 						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
-						context.SetSourceColor (SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background);
+						context.Color = SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background;
 						context.Fill ();
 
 						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
 						if (!SelectionEnabled)
 							context.SetDash (new double[] {4, 4}, 0);
-						context.SetSourceColor (SelectionEnabled ? selectionBorderColor : selectionBorderInactiveColor);
+						context.Color = SelectionEnabled ? selectionBorderColor : selectionBorderInactiveColor;
 						context.Stroke ();
 					} 
 
@@ -545,7 +545,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.Paint ();
 						xpos += iconTextSpacing;
 					}
-					context.SetSourceColor (textColor);
+					context.Color = textColor;
 					context.MoveTo (xpos + iconWidth + 2, typos);
 					PangoCairoHelper.ShowLayout (context, layout);
 

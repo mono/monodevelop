@@ -249,7 +249,7 @@ namespace MonoDevelop.Core
 		/// <summary>
 		/// Requests permission for modifying a file
 		/// </summary>
-		/// <param name="fileName">The file to be modified</param>
+		/// <param name="fileNames">Files</param>
 		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
 		public static bool RequestFileEdit (FilePath fileName, bool throwIfFails = true)
 		{

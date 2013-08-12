@@ -846,7 +846,7 @@ namespace MonoDevelop.Components.MainToolbar
 					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
 					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));
 					gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-					ctx.SetSource (gr);
+					ctx.Pattern = gr;
 					ctx.Fill ();
 				}
 			}

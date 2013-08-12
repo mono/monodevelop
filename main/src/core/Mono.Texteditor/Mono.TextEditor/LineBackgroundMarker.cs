@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 		{
 			if (metrics.SelectionStart > 0)
 				return true;
-			cr.SetSourceColor (color);
+			cr.Color = color;
 			cr.Rectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, editor.LineHeight);
 			cr.Fill ();
 			return true;

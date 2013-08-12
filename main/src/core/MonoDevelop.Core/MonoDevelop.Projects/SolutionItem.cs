@@ -529,7 +529,7 @@ namespace MonoDevelop.Projects
 		/// <param name='monitor'>
 		/// A progress monitor
 		/// </param>
-		/// <param name='solutionConfiguration'>
+		/// <param name='configuration'>
 		/// Configuration to use to build the project
 		/// </param>
 		/// <param name='buildReferences'>

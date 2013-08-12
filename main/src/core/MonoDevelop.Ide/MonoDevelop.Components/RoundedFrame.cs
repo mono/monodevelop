@@ -150,11 +150,16 @@ namespace MonoDevelop.Components
 				return false;
 			}
 			
-			using (Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+			Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window);
+			
+			try {
 				DrawFrame (cr, evnt.Area);
 				if (child != null) 
 					PropagateExpose (child, evnt);
 				return false;
+			} finally {
+				((IDisposable)cr.Target).Dispose ();
+				((IDisposable)cr).Dispose ();
 			}
 		}
 

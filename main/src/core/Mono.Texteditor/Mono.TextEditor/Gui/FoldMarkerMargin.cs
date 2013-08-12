@@ -265,9 +265,9 @@ namespace Mono.TextEditor
 			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
 			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
 			ctx.Rectangle (drawArea);
-			ctx.SetSourceColor (isOpen ? foldBgGC : foldToggleMarkerBackground);
+			ctx.Color = isOpen ? foldBgGC : foldToggleMarkerBackground;
 			ctx.FillPreserve ();
-			ctx.SetSourceColor (isSelected ? foldLineHighlightedGC  : foldLineGC);
+			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
 			ctx.Stroke ();
 			
 			ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
@@ -353,18 +353,18 @@ namespace Mono.TextEditor
 					}
 					
 					cr.Rectangle (drawArea);
-					cr.SetSourceColor (bgGC);
+					cr.Color = bgGC;
 					cr.Fill ();
 				}
 			}
 
 			if (editor.Options.EnableQuickDiff) {
 				if (state == TextDocument.LineState.Changed) {
-					cr.SetSourceColor (lineStateChangedGC);
+					cr.Color = lineStateChangedGC;
 					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 					cr.Fill ();
 				} else if (state == TextDocument.LineState.Dirty) {
-					cr.SetSourceColor (lineStateDirtyGC);
+					cr.Color = lineStateDirtyGC;
 					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 					cr.Fill ();
 				}

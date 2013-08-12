@@ -43,7 +43,6 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -781,19 +780,19 @@ namespace MonoDevelop.Components.MainToolbar
 					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
 						lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
 						lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
-						context.SetSource (lg);
+						context.Pattern = lg;
 					}
 					context.Fill ();
 
 				}
 				context.MoveTo (0, Allocation.Height - 0.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomBorderColor);
+				context.Color = Styles.ToolbarBottomBorderColor;
 				context.Stroke ();
 
 				context.MoveTo (0, Allocation.Height - 1.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomGlowColor);
+				context.Color = Styles.ToolbarBottomGlowColor;
 				context.Stroke ();
 
 			}

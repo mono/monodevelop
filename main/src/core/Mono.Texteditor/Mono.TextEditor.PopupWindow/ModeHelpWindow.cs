@@ -141,28 +141,28 @@ namespace Mono.TextEditor.PopupWindow
 				layout.GetPixelSize (out width, out height);
 				width += xBorder * 2;
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, 0.5, 0.5, height + yBorder * 2 + 1.5, width, height + yBorder * 2);
-				g.SetSourceColor (titleBgColor);
+				g.Color = titleBgColor;
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.Color = borderColor;
 				g.Stroke ();
 
 				g.Save ();
-				g.SetSourceColor (textColor);
+				g.Color = textColor;
 				g.Translate (xBorder, yBorder);
 				g.ShowLayout (layout);
 				g.Restore ();
 
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, 0.5, height * 2 + yBorder * 2 + 0.5, height, Allocation.Width - 1, Allocation.Height - height * 2 - yBorder * 2 - 1);
-				g.SetSourceColor (bgColor);
+				g.Color = bgColor;
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.Color = borderColor;
 				g.Stroke ();
 				
 				
 				
 				g.MoveTo (xSpacer + 0.5, height * 2 + yBorder * 2);
 				g.LineTo (xSpacer + 0.5, Allocation.Height - 1);
-				g.SetSourceColor (gridColor);
+				g.Color = gridColor;
 				g.Stroke ();
 				
 				int y = height + yBorder * 2;
@@ -175,26 +175,26 @@ namespace Mono.TextEditor.PopupWindow
 					
 					if (i == 0) {
 						FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, false, false, 0, y + 0.5, height + 1.5, Allocation.Width, height);
-						g.SetSourceColor (categoryBgColor);
+						g.Color = categoryBgColor;
 						g.FillPreserve ();
-						g.SetSourceColor (borderColor);
+						g.Color = borderColor;
 						g.Stroke ();
 						
 						g.MoveTo (xSpacer + 0.5, height + yBorder * 2 + 1);
 						g.LineTo (xSpacer + 0.5, height * 2 + yBorder * 2 + 1);
-						g.SetSourceColor (gridColor);
+						g.Color = gridColor;
 						g.Stroke ();
 					}
 					
 					gc.RgbFgColor = (HslColor)(i == 0 ? bgColor : textColor);
 					g.Save ();
-					g.SetSourceColor (textColor);
+					g.Color = textColor;
 					g.Translate (xBorder, y);
 					g.ShowLayout (layout);
 					g.Restore ();
 
 					g.Save ();
-					g.SetSourceColor (textColor);
+					g.Color = textColor;
 					g.Translate (xSpacer + xBorder, y);
 					layout.SetMarkup (pair.Value);
 					g.ShowLayout (layout);
@@ -204,7 +204,7 @@ namespace Mono.TextEditor.PopupWindow
 					if (i > 0) {
 						g.MoveTo (1, y + 0.5);
 						g.LineTo (Allocation.Width - 1, y + 0.5);
-						g.SetSourceColor (gridColor);
+						g.Color = gridColor;
 						g.Stroke ();
 					}
 					y += height;
@@ -297,14 +297,14 @@ namespace Mono.TextEditor.PopupWindow
 				} else {
 					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
 				}
-				g.SetSourceColor (titleBgColor);
+				g.Color = titleBgColor;
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.Color = borderColor;
 				g.Stroke ();
 				
 
 				g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
-				g.SetSourceColor (titleTextColor);
+				g.Color = titleTextColor;
 				g.ShowLayout (titleLayout);
 
 				if (SupportsAlpha) {
@@ -312,9 +312,9 @@ namespace Mono.TextEditor.PopupWindow
 				} else {
 					g.Rectangle (0, height + yTitleBorder * 2, Allocation.Width, Allocation.Height - height - yTitleBorder * 2);
 				}
-				g.SetSourceColor (bgColor);
+				g.Color = bgColor;
 				g.FillPreserve ();
-				g.SetSourceColor (borderColor);
+				g.Color = borderColor;
 				g.Stroke ();
 
 				if (SupportsAlpha) {
@@ -325,19 +325,19 @@ namespace Mono.TextEditor.PopupWindow
 					g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
 					g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
 					g.ClosePath ();
-					g.SetSourceColor (bgColor);
+					g.Color = bgColor;
 					g.Fill ();
 					
 					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
 					g.LineTo (0, Allocation.Height / 2);
 					g.LineTo (tw, Allocation.Height / 2 + th / 2);
-					g.SetSourceColor (borderColor);
+					g.Color = borderColor;
 					g.Stroke ();
 				}
 
 				int y = height + yTitleBorder * 2 + yDescriptionBorder;
 				g.MoveTo (tw + xDescriptionBorder, y);
-				g.SetSourceColor (textColor);
+				g.Color = textColor;
 				g.ShowLayout (descriptionLayout);
 			}
 			return base.OnExposeEvent (args);

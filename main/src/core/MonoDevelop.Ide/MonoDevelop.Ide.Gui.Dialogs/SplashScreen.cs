@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			var extents = c.TextExtents (text);
 			c.MoveTo (bottomRight.X - extents.Width - 1, bottomRight.Y - extents.Height);
 			
-			c.SetSourceRGB (1, 1, 1);
+			c.Color = new Cairo.Color (1, 1, 1);
 			c.ShowText (text);
 		}
 		
@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			c.MoveTo (x, y);
 			
 			// Draw the text
-			c.SetSourceRGB (1, 1, 1);
+			c.Color = new Cairo.Color (1, 1, 1);
 			c.ShowText (text);
 			
 			bottomRight.Y -= rectangle.Height - 2;
@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			c.Arc (x + radius, y + height - radius, radius, Math.PI / 2, Math.PI);
 			c.ClosePath ();
 			
-			c.SetSourceRGB (161 / 255.0, 40 / 255.0, 48 / 255.0);
+			c.Color = new Cairo.Color (161 / 255.0, 40 / 255.0, 48 / 255.0);
 			c.Fill ();
 		}
 		

@@ -315,7 +315,8 @@ namespace MonoDevelop.Core.Assemblies
 		//FIXME: this is totally broken. assemblies can't just belong to one framework
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
-			var universe = new IKVM.Reflection.Universe (IKVM.Reflection.UniverseOptions.ResolveMissingMembers);
+			var universe = new IKVM.Reflection.Universe ();
+			universe.EnableMissingMemberResolution ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>

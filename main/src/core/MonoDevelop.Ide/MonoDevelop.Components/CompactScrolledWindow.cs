@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -140,7 +139,7 @@ namespace MonoDevelop.Components
 				Gdk.CairoHelper.Region (cr, evnt.Region);
 				cr.Clip ();
 				
-				cr.SetSourceColor ((HslColor)Style.Dark (Gtk.StateType.Normal));
+				cr.Color = (HslColor)Style.Dark (Gtk.StateType.Normal);
 				cr.LineWidth = lineWidth;
 				cr.Translate (rect.X, rect.Y);
 

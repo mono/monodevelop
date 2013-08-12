@@ -216,7 +216,7 @@ namespace Mono.TextEditor.Utils
 		}
 
 		/// <summary>
-		/// Returns a byte array containing the text encoded by a specified encoding &amp; bom.
+		/// Returns a byte array containing the text encoded by a specified encoding & bom.
 		/// </summary>
 		/// <param name="text">The text to encode.</param>
 		/// <param name="encoding">The encoding.</param>

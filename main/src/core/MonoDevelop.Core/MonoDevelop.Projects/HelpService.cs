@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects
 		/// <remarks>
 		/// The tree is background-loaded the help service, and accessing the property will block until it is finished 
 		/// loading. If you don't wish to block, check the <see cref="TreeInitialized"/> property first.
-		///  </remarks>
+		//  </remarks>
 		public static RootTree HelpTree {
 			get {
 				lock (helpTreeLock) {

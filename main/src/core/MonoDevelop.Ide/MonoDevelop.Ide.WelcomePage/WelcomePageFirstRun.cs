@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				lg.AddColorStop (0, new Cairo.Color (.36, .53, .73));
 				lg.AddColorStop (1, new Cairo.Color (.21, .37, .54));
 
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.FillPreserve ();
 			}
 
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			context.Restore ();
 
 			context.LineWidth = 1;
-			context.SetSourceRGB (.29, .47, .67);
+			context.Color = new Cairo.Color (.29, .47, .67);
 			context.Stroke ();
 
 		}
@@ -175,11 +175,11 @@ namespace MonoDevelop.Ide.WelcomePage
 		void RenderShadowedText (Cairo.Context context, Gdk.Point position, double opacity, Pango.Layout layout)
 		{
 			context.MoveTo (position.X, position.Y + 2);
-			context.SetSourceRGBA (0, 0, 0, 0.3 * opacity);
+			context.Color = new Cairo.Color (0, 0, 0, 0.3 * opacity);
 			Pango.CairoHelper.ShowLayout (context, layout);
 			
 			context.MoveTo (position.X, position.Y);
-			context.SetSourceRGBA (1, 1, 1, opacity);
+			context.Color = new Cairo.Color (1, 1, 1, opacity);
 			Pango.CairoHelper.ShowLayout (context, layout);
 		}
 
@@ -215,11 +215,11 @@ namespace MonoDevelop.Ide.WelcomePage
 					lg.AddColorStop (1, new Cairo.Color (.15, .76, .09, opacity));
 				}
 
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.FillPreserve ();
 			}
 
-			context.SetSourceRGBA (.29, .79, .28, opacity);
+			context.Color = new Cairo.Color (.29, .79, .28, opacity);
 			context.LineWidth = 1;
 			context.Stroke ();
 
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				lg.AddColorStop (0.9, new Cairo.Color (0, 0, 0, 0));
 				lg.AddColorStop (1, new Cairo.Color (0, 0, 0, .34 * opacity));
 
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.Stroke ();
 			}
 

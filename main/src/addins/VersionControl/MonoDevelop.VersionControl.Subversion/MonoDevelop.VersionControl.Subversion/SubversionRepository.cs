@@ -249,6 +249,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				}
 				else {
+					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (!IsVersioned (path.ParentDirectory)) {
 						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository

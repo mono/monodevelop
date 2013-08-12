@@ -282,7 +282,7 @@ namespace MonoDevelop.Components.Docking
 						if (gcol.L < 0)
 							gcol.L = 0;
 						pat.AddColorStop (1, gcol);
-						cr.SetSource (pat);
+						cr.Pattern = pat;
 						cr.Fill ();
 					}
 				} else {
@@ -298,7 +298,7 @@ namespace MonoDevelop.Components.Docking
 			base.OnExposeEvent (evnt);
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.SetSourceColor ((HslColor) Style.Dark (Gtk.StateType.Normal));
+				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;

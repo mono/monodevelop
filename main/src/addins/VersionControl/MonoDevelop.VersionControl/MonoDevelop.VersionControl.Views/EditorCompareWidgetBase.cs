@@ -556,7 +556,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (y1 == y2)
 					y2 = y1 + 1;
 				cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
-				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, false, 0.15));
+				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.15);
 				cr.Fill ();
 				
 				var paths = GetDiffPaths (diff, editors[0], hunk);
@@ -567,11 +567,11 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Rectangle (rect);
 				}
 				
-				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, false, 0.3));
+				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.3);
 				cr.Fill ();
 				cr.Restore ();
 				
-				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, true, 0.15));
+				cr.Color = GetColor (hunk, paintRemoveSide, true, 0.15);
 				cr.MoveTo (0, y1);
 				cr.LineTo (editor.Allocation.Width, y1);
 				cr.Stroke ();
@@ -860,10 +860,10 @@ namespace MonoDevelop.VersionControl.Views
 								x1 + (x2 - x1) / 4, z2,
 								x1, z2);
 							cr.ClosePath ();
-							cr.SetSourceColor (GetColor (hunk, this.useLeft, false, 1.0));
+							cr.Color = GetColor (hunk, this.useLeft, false, 1.0);
 							cr.Fill ();
 	
-							cr.SetSourceColor (GetColor (hunk, this.useLeft, true, 1.0));
+							cr.Color = GetColor (hunk, this.useLeft, true, 1.0);
 							cr.MoveTo (x1, z1);
 							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
 								x1 + (x2 - x1) * 3 / 4, y1,
@@ -895,17 +895,17 @@ namespace MonoDevelop.VersionControl.Views
 										gradient.AddColorStop (0, color);
 										color.L *= 1.07;
 										gradient.AddColorStop (1, color);
-										cr.SetSource (gradient);
+										cr.Pattern = gradient;
 									}
 								} else {
-									cr.SetSourceColor ((Mono.TextEditor.HslColor)Style.Mid (StateType.Normal));
+									cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
 								}
 								cr.FillPreserve ();
 								
-								cr.SetSourceColor ((Mono.TextEditor.HslColor)Style.Dark (StateType.Normal));
+								cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 								cr.Stroke ();
 								cr.LineWidth = 1;
-								cr.SetSourceRGB (0, 0, 0);
+								cr.Color = new Cairo.Color (0, 0, 0);
 								if (drawArrow) {
 									DrawArrow (cr, x + w / 1.5, y + h / 2);
 									DrawArrow (cr, x + w / 2.5, y + h / 2);
@@ -1025,7 +1025,7 @@ namespace MonoDevelop.VersionControl.Views
 						curY = start;
 						double height = Math.Max (cr.LineWidth, count * Allocation.Height);
 						cr.Rectangle (0.5, 0.5 + curY, Allocation.Width, height);
-						cr.SetSourceColor (GetColor (hunk, !paintInsert, false, 1.0));
+						cr.Color = GetColor (hunk, !paintInsert, false, 1.0);
 						cr.Fill ();
 						curY += height;
 					}
@@ -1040,7 +1040,7 @@ namespace MonoDevelop.VersionControl.Views
 					DrawBar (cr, barY, barH);
 					
 					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
-					cr.SetSourceColor ((Mono.TextEditor.HslColor)Style.Dark (StateType.Normal));
+					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 					cr.Stroke ();
 				}
 				return true;
@@ -1055,7 +1055,7 @@ namespace MonoDevelop.VersionControl.Views
 					grad.AddColorStop (0, col);
 					grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
 					grad.AddColorStop (1, col);
-					cr.SetSource (grad);
+					cr.Pattern = grad;
 					cr.Fill ();
 				}
 			}
@@ -1076,7 +1076,7 @@ namespace MonoDevelop.VersionControl.Views
 				color.L = 0.5;
 				var c = (Cairo.Color)color;
 				c.A = 0.6;
-				cr.SetSourceColor (c);
+				cr.Color = c;
 				cr.Fill ();
 			}
 	

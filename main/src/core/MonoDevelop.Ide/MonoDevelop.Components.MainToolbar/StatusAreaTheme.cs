@@ -37,7 +37,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -86,7 +85,7 @@ namespace MonoDevelop.Components.MainToolbar
 					gradient.AddColorStop (0.5, targetColor);
 					gradient.AddColorStop (1.0, transparentColor);
 
-					context.SetSource (gradient);
+					context.Pattern = gradient;
 
 					context.Rectangle (x1, arg.Allocation.Y, x2 - x1, arg.Allocation.Height);
 					context.Fill ();
@@ -171,7 +170,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.MoveTo (arc.Radius * zoom, 0);
 				context.Arc (0, 0, arc.Radius * zoom, 0, arc.ArcLength);
 				context.LineWidth = arc.Thickness * zoom;
-				context.SetSourceColor (CairoExtensions.ParseColor ("B1DDED", 0.35 * opacity));
+				context.Color = CairoExtensions.ParseColor ("B1DDED", 0.35 * opacity);
 				context.Stroke ();
 				context.Rotate (Math.PI * 2 * -progress * arc.Speed);
 
@@ -198,12 +197,12 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			LayoutRoundedRectangle (context, region, -1, -1);
 			context.LineWidth = 1;
-			context.SetSourceColor (Styles.StatusBarInnerColor);
+			context.Color = Styles.StatusBarInnerColor;
 			context.Stroke ();
 
 			LayoutRoundedRectangle (context, region);
 			context.LineWidth = 1;
-			context.SetSourceColor (Styles.StatusBarBorderColor);
+			context.Color = Styles.StatusBarBorderColor;
 			context.StrokePreserve ();
 		}
 
@@ -216,7 +215,7 @@ namespace MonoDevelop.Components.MainToolbar
 				lg.AddColorStop (0, Styles.StatusBarFill1Color);
 				lg.AddColorStop (1, Styles.StatusBarFill4Color);
 
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.FillPreserve ();
 			}
 
@@ -230,7 +229,7 @@ namespace MonoDevelop.Components.MainToolbar
 				rg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarFill1Color, 0));
 
 				context.Scale (region.Width / (double)region.Height, 1.0);
-				context.SetSource (rg);
+				context.Pattern = rg;
 				context.Fill ();
 			}
 			context.Restore ();
@@ -241,7 +240,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				LayoutRoundedRectangle (context, region, 0, -1);
 				context.LineWidth = 1;
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.Stroke ();
 			}
 
@@ -251,7 +250,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				LayoutRoundedRectangle (context, region, 0, -2);
 				context.LineWidth = 1;
-				context.SetSource (lg);
+				context.Pattern = lg;
 				context.Stroke ();
 			}
 
@@ -287,7 +286,7 @@ namespace MonoDevelop.Components.MainToolbar
 					lg.AddColorStop (0.88, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.30 * o));
 					lg.AddColorStop (1.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.00 * o));
 
-					c.SetSource (lg);
+					c.Pattern = lg;
 					c.Paint ();
 				}
 			});
@@ -300,12 +299,12 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Clip ();
 
 			LayoutRoundedRectangle (context, bounding);
-			context.SetSourceColor (Styles.WithAlpha (Styles.StatusBarProgressBackgroundColor, Styles.StatusBarProgressBackgroundColor.A * arg.ProgressBarAlpha));
+			context.Color = Styles.WithAlpha (Styles.StatusBarProgressBackgroundColor, Styles.StatusBarProgressBackgroundColor.A * arg.ProgressBarAlpha);
 			context.FillPreserve ();
 
 			context.ResetClip ();
 
-			context.SetSourceColor (Styles.WithAlpha (Styles.StatusBarProgressOutlineColor, Styles.StatusBarProgressOutlineColor.A * arg.ProgressBarAlpha));
+			context.Color = Styles.WithAlpha (Styles.StatusBarProgressOutlineColor, Styles.StatusBarProgressOutlineColor.A * arg.ProgressBarAlpha);
 			context.LineWidth = 1;
 			context.Stroke ();
 		}
@@ -344,7 +343,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
 			context.MoveTo (x, y - h / 2 - (h % 2));
-			context.SetSourceColor (Styles.WithAlpha (FontColor (), opacity));
+			context.Color = Styles.WithAlpha (FontColor (), opacity);
 
 			Pango.CairoHelper.ShowLayout (context, pl);
 			pl.Dispose ();

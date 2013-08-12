@@ -497,9 +497,11 @@ namespace MonoDevelop.Components.Docking
 					lg.AddColorStop (1.0, transparent);
 
 					context.Rectangle (alloc.ToCairoRect ());
-					context.SetSource (lg);
+					context.Pattern = lg;
 				}
 				context.Fill ();
+
+				lg.Destroy ();
 			}
 			return base.OnExposeEvent (evnt);
 		}
