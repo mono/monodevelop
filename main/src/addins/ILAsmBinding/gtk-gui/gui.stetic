@@ -11,6 +11,7 @@
   <widget class="Gtk.Bin" id="ILAsmBinding.CompilerParametersPanelWidget" design-size="340 110">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
