@@ -35,13 +35,11 @@ using System.Threading.Tasks;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
-using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Refactoring;
 
@@ -138,8 +136,12 @@ namespace MonoDevelop.CodeIssues
 									break;
 								var content = TypeSystemService.GetProjectContext (project);
 								Parallel.ForEach (project.Files, file => {
-									AnalyzeFile (file, content);
-									monitor.Step (1);
+									try {
+										AnalyzeFile (file, content);
+										monitor.Step (1);
+									} catch (Exception ex) {
+										LoggingService.LogError ("Error while running code issue on:" + file.Name, ex);
+									}
 								});
 							}
 							// Cleanup
@@ -201,7 +203,7 @@ namespace MonoDevelop.CodeIssues
 			var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
 			CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
-			Parallel.ForEach (codeIssueProvider, provider =>  {
+			foreach (var provider in codeIssueProvider) {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None || tokenSource.IsCancellationRequested)
 					return;
@@ -209,15 +211,11 @@ namespace MonoDevelop.CodeIssues
 					foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
 						AddIssue (file, provider, issue);
 					}
-				}
-				catch (OperationCanceledException) {
+				} catch (OperationCanceledException) {
 					// The operation was cancelled, no-op as the user-visible parts are
 					// handled elsewhere
 				}
-				catch (Exception ex) {
-					LoggingService.LogError ("Error while running code issue on:" + editor.FileName, ex);
-				}
-			});
+			}
 		}
 
 		void AddIssue (ProjectFile file, CodeIssueProvider provider, CodeIssue r)
