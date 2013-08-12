@@ -38,7 +38,7 @@ namespace MonoDevelop.Debugger.Visualizer
 		TextView textView;
 		RawValueString raw;
 #pragma warning disable 414
-		ObjectValue val;
+		ObjectValue value;
 #pragma warning restore 414
 		uint idle_id;
 		int length;
@@ -103,7 +103,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			
 			raw = val.GetRawValue (ops) as RawValueString;
 			length = raw.Length;
-			this.val = val;
+			value = val;
 			offset = 0;
 			
 			if (length > 0) {
@@ -131,4 +131,3 @@ namespace MonoDevelop.Debugger.Visualizer
 		}
 	}
 }
-
