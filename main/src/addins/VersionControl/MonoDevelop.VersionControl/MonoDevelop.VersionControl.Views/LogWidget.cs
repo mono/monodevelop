@@ -37,9 +37,9 @@ using MonoDevelop.Components;
 namespace MonoDevelop.VersionControl.Views
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class LogWidget : Gtk.Bin
+	public partial class LogWidget : Bin
 	{
-		MonoDevelop.VersionControl.Revision[] history;
+		Revision[] history;
 		public Revision[] History {
 			get {
 				return history;
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore = new ListStore (typeof (Revision));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.Button revertButton, revertToButton, refreshButton;
+		Button revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool currentRevisionShortened;
 		
-		class RevisionGraphCellRenderer : Gtk.CellRenderer
+		class RevisionGraphCellRenderer : CellRenderer
 		{
 			public bool FirstNode {
 				get;
@@ -223,7 +223,7 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewFiles.TestExpandRow += HandleTreeviewFilesTestExpandRow;
 			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
 			
-			textviewDetails.WrapMode = Gtk.WrapMode.Word;
+			textviewDetails.WrapMode = WrapMode.Word;
 			
 			labelAuthor.Text = "";
 			labelDate.Text = "";
@@ -259,7 +259,7 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (revertToButton);
 			toolbar.Add (refreshButton);
 
-			Gtk.HBox a = new Gtk.HBox ();
+			HBox a = new HBox ();
 			a.PackEnd (searchEntry, false, false, 0);
 			toolbar.Add (a, true);
 
@@ -457,7 +457,7 @@ namespace MonoDevelop.VersionControl.Views
 			textRenderer.Dispose ();
 		}
 		
-		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void DateFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -474,10 +474,10 @@ namespace MonoDevelop.VersionControl.Views
 			renderer.Text = day + " " + time;
 		}	
 		
-		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void GraphFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var renderer = (RevisionGraphCellRenderer)cell;
-			Gtk.TreeIter node;
+			TreeIter node;
 			model.GetIterFirst (out node);
 			
 			renderer.FirstNode = node.Equals (iter);
@@ -485,7 +485,7 @@ namespace MonoDevelop.VersionControl.Views
 			renderer.LastNode =  node.Equals (iter);
 		}
 		
-		void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void MessageFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -503,15 +503,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void AuthorFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
 			string author = rev.Author;
 			if (string.IsNullOrEmpty (author))
 				return;
-			int idx = author.IndexOf ("<");
-			if (idx >= 0 && idx < author.IndexOf (">"))
+			int idx = author.IndexOf ("<", StringComparison.Ordinal);
+			if (idx >= 0 && idx < author.IndexOf (">", StringComparison.Ordinal))
 				author = author.Substring (0, idx).Trim ();
 			if (string.IsNullOrEmpty (currentFilter))
 				renderer.Text = author;
@@ -519,7 +519,7 @@ namespace MonoDevelop.VersionControl.Views
 				renderer.Markup = EscapeWithFilterMarker (author);
 		}
 		
-		void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void AuthorIconFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererPixbuf renderer = (CellRendererPixbuf)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -531,7 +531,7 @@ namespace MonoDevelop.VersionControl.Views
 			else {
 				renderer.Pixbuf = null;
 				img.LoadOperation.Completed += delegate {
-					Gtk.Application.Invoke (delegate {
+					Application.Invoke (delegate {
 						if (logstore.IterIsValid (iter))
 							model.EmitRowChanged (model.GetPath (iter), iter);
 					});
@@ -539,7 +539,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void RevisionFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = model.GetValue (iter, 0).ToString ();
@@ -549,7 +549,7 @@ namespace MonoDevelop.VersionControl.Views
 				renderer.Markup = EscapeWithFilterMarker (rev);
 		}
 		
-		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void SetDiffCellData (TreeViewColumn tree_column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			CellRendererDiff rc = (CellRendererDiff)cell;
 			string[] lines = (string[])changedpathstore.GetValue (iter, colDiff);
@@ -597,28 +597,28 @@ namespace MonoDevelop.VersionControl.Views
 			
 			if (d == null)
 				return;
-			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
+			TreeIter selectIter = TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
 				Gdk.Pixbuf actionIcon;
 				string action = null;
 				if (rp.Action == RevisionAction.Add) {
 					action = GettextCatalog.GetString ("Add");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Delete) {
 					action = GettextCatalog.GetString ("Delete");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Remove, IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Modify) {
 					action = GettextCatalog.GetString ("Modify");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf ("gtk-edit", IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Replace) {
 					action = GettextCatalog.GetString ("Replace");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf ("gtk-edit", IconSize.Menu);
 				} else {
 					action = rp.ActionDescription;
-					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, IconSize.Menu);
 				}
-				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
+				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, IconSize.Menu);
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
 				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {
@@ -705,7 +705,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		[GLib.ConnectBeforeAttribute]
-		protected virtual void OnLabelRevisionButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		protected virtual void OnLabelRevisionButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
 			if (currentRevisionShortened) {
 				Revision d = SelectedRevision;

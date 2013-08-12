@@ -86,35 +86,35 @@ namespace MonoDevelop.VersionControl
 			textview.Buffer.Text = writer.ToString ();
 		}
 
-		protected virtual void OnCheckIndentToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckIndentToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			UpdateBullets ();
 			OnChanged ();
 		}
 
-		protected virtual void OnCheckLineSepToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckLineSepToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			format.Style.InterMessageLines = checkLineSep.Active ? 1 : 0;
 			OnChanged ();
 		}
 
-		protected virtual void OnCheckOneLinePerFileToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckOneLinePerFileToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			UpdateBullets ();
 			OnChanged ();
 		}
 
-		protected virtual void OnCheckMsgInNewLineToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckMsgInNewLineToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			UpdateBullets ();
 			OnChanged ();
 		}
 
-		protected virtual void OnEntryHeaderChanged (object sender, System.EventArgs e)
+		protected virtual void OnEntryHeaderChanged (object sender, EventArgs e)
 		{
 			if (updating) return;
 			format.Style.Header = !string.IsNullOrEmpty (entryHeader.Text) ? FromCString (entryHeader.Text) + "\n\n" : "";
@@ -145,7 +145,7 @@ namespace MonoDevelop.VersionControl
 				Changed (this, EventArgs.Empty);
 		}
 		
-		protected virtual void OnCheckUseBulletsToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckUseBulletsToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			if (checkUseBullets.Active)
@@ -156,21 +156,21 @@ namespace MonoDevelop.VersionControl
 			OnChanged ();
 		}
 
-		protected virtual void OnCheckIndentEntriesToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckIndentEntriesToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			format.Style.Indent = checkIndentEntries.Active ? "\t" : "";
 			OnChanged ();
 		}
 		
-		protected virtual void OnCheckIncludeDirsToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckIncludeDirsToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			format.Style.IncludeDirectoryPaths = checkIncludeDirs.Active;
 			OnChanged ();
 		}
 		
-		protected virtual void OnCheckWrapToggled (object sender, System.EventArgs e)
+		protected virtual void OnCheckWrapToggled (object sender, EventArgs e)
 		{
 			if (updating) return;
 			format.Style.Wrap = checkWrap.Active;

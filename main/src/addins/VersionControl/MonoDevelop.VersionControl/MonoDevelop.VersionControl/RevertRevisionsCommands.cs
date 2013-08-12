@@ -91,8 +91,7 @@ namespace MonoDevelop.VersionControl
 			protected override string GetDescription() {
 				if (toRevision)
 					return GettextCatalog.GetString ("Reverting to revision {0}...", revision);
-				else
-					return GettextCatalog.GetString ("Reverting revision {0}...", revision);
+				return GettextCatalog.GetString ("Reverting revision {0}...", revision);
 			}
 			
 			protected override void Run ()

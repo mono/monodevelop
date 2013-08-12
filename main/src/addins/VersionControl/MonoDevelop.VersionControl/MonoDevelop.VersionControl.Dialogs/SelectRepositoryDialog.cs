@@ -14,11 +14,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 		Publish
 	}
 	
-	internal partial class SelectRepositoryDialog : Gtk.Dialog
+	internal partial class SelectRepositoryDialog : Dialog
 	{
 		Repository repo;
 		ArrayList systems = new ArrayList ();
-		Gtk.TreeStore store;
+		TreeStore store;
 		SelectRepositoryMode mode;
 		ArrayList loadingRepos = new ArrayList ();
 		IRepositoryEditor currentEditor;
@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repCombo.Active = 0;
 			this.mode = mode;
 			
-			store = new Gtk.TreeStore (typeof(object), typeof(string), typeof(string), typeof(bool), typeof(string));
+			store = new TreeStore (typeof(object), typeof(string), typeof(string), typeof(bool), typeof(string));
 			repoTree.Model = store;
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Repository");
@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			col.AddAttribute (crt, "text", RepoNameCol);
 			repoTree.AppendColumn (col);
 			repoTree.AppendColumn (GettextCatalog.GetString ("Type"), new CellRendererText (), "text", VcsName);
-			repoTree.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
+			repoTree.TestExpandRow += new TestExpandRowHandler (OnTestExpandRow);
 			LoadRepositories ();
 			
 			if (mode == SelectRepositoryMode.Checkout) {
@@ -104,7 +104,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				labelRepository.Text = "";
 		}
 
-		protected virtual void OnRepComboChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepComboChanged(object sender, EventArgs e)
 		{
 			if (repoContainer.Child != null)
 				repoContainer.Remove (repoContainer.Child);
@@ -127,11 +127,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			store.Clear ();
 			foreach (Repository r in VersionControlService.GetRepositories ()) {
-				LoadRepositories (r, Gtk.TreeIter.Zero);
+				LoadRepositories (r, TreeIter.Zero);
 			}
 		}
 		
-		public void LoadRepositories (Repository r, Gtk.TreeIter parent)
+		public void LoadRepositories (Repository r, TreeIter parent)
 		{
 			if (r.VersionControlSystem == null)
 				return;
@@ -151,21 +151,21 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 		}
 
-		protected virtual void OnButtonAddClicked(object sender, System.EventArgs e)
+		protected virtual void OnButtonAddClicked(object sender, EventArgs e)
 		{
 			EditRepositoryDialog dlg = new EditRepositoryDialog (null);
 			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok && dlg.Repository != null) {
 					VersionControlService.AddRepository (dlg.Repository);
 					VersionControlService.SaveConfiguration ();
-					LoadRepositories (dlg.Repository, Gtk.TreeIter.Zero);
+					LoadRepositories (dlg.Repository, TreeIter.Zero);
 				}
 			} finally {
 				dlg.Destroy ();
 			}
 		}
 
-		protected virtual void OnButtonRemoveClicked(object sender, System.EventArgs e)
+		protected virtual void OnButtonRemoveClicked(object sender, EventArgs e)
 		{
 			TreeIter iter;
 			TreeModel model;
@@ -177,14 +177,14 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 		}
 
-		protected virtual void OnButtonEditClicked(object sender, System.EventArgs e)
+		protected virtual void OnButtonEditClicked(object sender, EventArgs e)
 		{
 			Repository rep = GetSelectedRepository ();
 			if (rep != null) {
 				Repository repCopy = rep.Clone ();
 				EditRepositoryDialog dlg = new EditRepositoryDialog (repCopy);
 				try {
-					if (MessageService.RunCustomDialog (dlg, this) != (int) Gtk.ResponseType.Ok) {
+					if (MessageService.RunCustomDialog (dlg, this) != (int) ResponseType.Ok) {
 						VersionControlService.ResetConfiguration ();
 						return;
 					}
@@ -269,10 +269,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 				ex = e;
 			}
 				
-			Gtk.Application.Invoke (delegate {
+			Application.Invoke (delegate {
 				if (ex != null) {
 					store.AppendValues (piter, null, "ERROR: " + ex.Message, "", true);
-					MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
+					LoggingService.LogError (ex.ToString ());
 				}
 				else {
 					foreach (Repository rep in repos)
@@ -284,7 +284,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			});
 		}
 		
-		protected virtual void OnRepoTreeCursorChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepoTreeCursorChanged(object sender, EventArgs e)
 		{
 			UpdateControls ();
 			UpdateRepoDescription ();
@@ -309,7 +309,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			buttonEdit.Sensitive = false;
 		}
 
-		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
+		protected virtual void OnButtonBrowseClicked(object sender, EventArgs e)
 		{
 			var dlg = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Select target directory"));
 			if (dlg.Run ()) {
@@ -318,18 +318,18 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 		}
 
-		protected virtual void OnNotebookChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)
+		protected virtual void OnNotebookChangeCurrentPage(object o, ChangeCurrentPageArgs args)
 		{
 			UpdateRepoDescription ();
 		}
 
-		protected virtual void OnEntryFolderChanged(object sender, System.EventArgs e)
+		protected virtual void OnEntryFolderChanged(object sender, EventArgs e)
 		{
 			if (mode == SelectRepositoryMode.Checkout)
 				buttonOk.Sensitive = entryFolder.Text.Length > 0;
 		}
 		
-		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonOkClicked (object sender, EventArgs e)
 		{
 			if (notebook.Page == 0 && Repository != null) {
 				if (!currentEditor.Validate ())

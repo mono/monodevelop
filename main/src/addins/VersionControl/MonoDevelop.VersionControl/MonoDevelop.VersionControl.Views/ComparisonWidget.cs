@@ -69,9 +69,9 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected override void CreateComponents ()
 		{
-			this.editors = new [] {
-				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
+			editors = new [] {
+				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
 			};
 
 			if (!viewOnly) {
@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Views
 				diffComboBox.Text = "Base";
 				diffComboBox.Tag = editors[0];
 			
-				this.headerWidgets = new [] { diffComboBox, originalComboBox };
+				headerWidgets = new [] { diffComboBox, originalComboBox };
 			}
 		}
 		
@@ -101,16 +101,16 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void GotoPrev () 
 		{
-			if (this.Diff == null)
+			if (Diff == null)
 				return;
 			MainEditor.GrabFocus ();
 			
 			int line = MainEditor.Caret.Line;
 			int max  = -1, searched = -1;
 			foreach (var hunk in LeftDiff) {
-				max = System.Math.Max (hunk.InsertStart, max);
+				max = Math.Max (hunk.InsertStart, max);
 				if (hunk.InsertStart < line)
-					searched = System.Math.Max (hunk.InsertStart, searched);
+					searched = Math.Max (hunk.InsertStart, searched);
 			}
 			if (max >= 0) {
 				MainEditor.Caret.Line = searched < 0 ? max : searched;
@@ -120,16 +120,16 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void GotoNext ()
 		{
-			if (this.Diff == null)
+			if (Diff == null)
 				return;
 			MainEditor.GrabFocus ();
 				
 			int line = MainEditor.Caret.Line;
 			int min  = Int32.MaxValue, searched = Int32.MaxValue;
-			foreach (var hunk in this.LeftDiff) {
-				min = System.Math.Min (hunk.InsertStart, min);
+			foreach (var hunk in LeftDiff) {
+				min = Math.Min (hunk.InsertStart, min);
 				if (hunk.InsertStart > line)
-					searched = System.Math.Min (hunk.InsertStart, searched);
+					searched = Math.Min (hunk.InsertStart, searched);
 			}
 			if (min < Int32.MaxValue) {
 				MainEditor.Caret.Line = searched == Int32.MaxValue ? min : searched;

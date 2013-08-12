@@ -261,10 +261,6 @@ namespace MonoDevelop.VersionControl
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
 		HashSet<FilePath> directoriesInQueryQueue = new HashSet<FilePath> ();
 
-		void QueueVersionInfoQuery (IEnumerable<FilePath> paths, bool getRemoteStatus)
-		{
-		}
-
 		void AddQuery (object query)
 		{
 			lock (queryLock) {
@@ -619,7 +615,7 @@ namespace MonoDevelop.VersionControl
 		// Locks a file in the repository so no other users can change it
 		protected virtual void OnLock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 		
 		// Unlocks a file in the repository so other users can change it
@@ -631,7 +627,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected virtual void OnUnlock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 		
 		public virtual DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)

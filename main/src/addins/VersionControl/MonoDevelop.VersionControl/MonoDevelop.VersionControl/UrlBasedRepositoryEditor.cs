@@ -39,9 +39,8 @@ namespace MonoDevelop.VersionControl
 			if (!repo.IsUrlValid (repositoryUrlEntry.Text)) {
 				labelError.Show ();
 				return false;
-			} else {
-				return true;
 			}
+			return true;
 		}
 
 		public string RelativePath {
@@ -76,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		protected virtual void OnRepositoryUrlEntryChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepositoryUrlEntryChanged(object sender, EventArgs e)
 		{
 			if (!updating) {
 				updating = true;
@@ -128,28 +127,28 @@ namespace MonoDevelop.VersionControl
 			repo.Url = ub.ToString ();
 		}
 
-		protected virtual void OnRepositoryServerEntryChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepositoryServerEntryChanged(object sender, EventArgs e)
 		{
 			if (updating) return;
 			SetRepoUrl ();
 			UpdateUrl ();
 		}
 
-		protected virtual void OnRepositoryPathEntryChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepositoryPathEntryChanged(object sender, EventArgs e)
 		{
 			if (updating) return;
 			SetRepoUrl ();
 			UpdateUrl ();
 		}
 
-		protected virtual void OnRepositoryUserEntryChanged(object sender, System.EventArgs e)
+		protected virtual void OnRepositoryUserEntryChanged(object sender, EventArgs e)
 		{
 			if (updating) return;
 			SetRepoUrl ();
 			UpdateUrl ();
 		}
 
-		protected virtual void OnComboProtocolChanged(object sender, System.EventArgs e)
+		protected virtual void OnComboProtocolChanged(object sender, EventArgs e)
 		{
 			if (updating) return;
 			SetRepoUrl ();
@@ -157,7 +156,7 @@ namespace MonoDevelop.VersionControl
 			UpdateControls ();
 		}
 
-		protected virtual void OnRepositoryPortSpinValueChanged (object sender, System.EventArgs e)
+		protected virtual void OnRepositoryPortSpinValueChanged (object sender, EventArgs e)
 		{
 			if (updating) return;
 			SetRepoUrl ();

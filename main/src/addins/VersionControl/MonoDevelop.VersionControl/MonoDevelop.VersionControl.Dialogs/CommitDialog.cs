@@ -11,7 +11,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
-	partial class CommitDialog : Gtk.Dialog
+	partial class CommitDialog : Dialog
 	{
 		ListStore store;
 		ArrayList selected = new ArrayList ();
@@ -114,18 +114,18 @@ namespace MonoDevelop.VersionControl.Dialogs
 			bool allowCommit = true;
 			foreach (CommitDialogExtension ext in extensions)
 				allowCommit &= ext.AllowCommit;
-			SetResponseSensitive (Gtk.ResponseType.Ok, allowCommit);
+			SetResponseSensitive (ResponseType.Ok, allowCommit);
 		}
 		
-		protected override void OnResponse (Gtk.ResponseType type)
+		protected override void OnResponse (ResponseType type)
 		{
-			if (type != Gtk.ResponseType.Ok) {
+			if (type != ResponseType.Ok) {
 				changeSet.GlobalComment = oldMessage;
 			}
 			base.OnResponse (type);
 		}
 
-		protected void OnButtonCommitClicked (object sender, System.EventArgs e)
+		protected void OnButtonCommitClicked (object sender, EventArgs e)
 		{
 			// In case we have local unsaved files with changes, throw a dialog for the user.
 			System.Collections.Generic.List<Document> docList = new System.Collections.Generic.List<Document> ();
@@ -189,7 +189,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					MessageService.ShowException (ex);
 					res = false;
 				}
-				System.Console.WriteLine ("RES: " + res);
+				Console.WriteLine ("RES: " + res);
 				if (!res) {
 					// Commit failed. Rollback the previous extensions
 					for (int m=0; m<n; m++) {
@@ -202,7 +202,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 				Hide ();
 			}
-			Respond (Gtk.ResponseType.Ok);
+			Respond (ResponseType.Ok);
 		}
 
 		void UpdatePositionLabel (TextIter iter)

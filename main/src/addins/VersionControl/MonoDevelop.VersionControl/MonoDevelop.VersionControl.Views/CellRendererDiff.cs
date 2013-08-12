@@ -9,7 +9,7 @@ using System.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class CellRendererDiff: Gtk.CellRendererText
+	class CellRendererDiff: CellRendererText
 	{
 		Pango.Layout layout;
 		Pango.FontDescription font;
@@ -21,10 +21,10 @@ namespace MonoDevelop.VersionControl.Views
 		TreePath path;
 		int RightPadding = 4;
 		
-//		Gdk.Color baseAddColor = new Gdk.Color (133, 168, 133);
-//		Gdk.Color baseRemoveColor = new Gdk.Color (178, 140, 140);
-		Gdk.Color baseAddColor = new Gdk.Color (123, 200, 123).AddLight (0.1);
-		Gdk.Color baseRemoveColor = new Gdk.Color (200, 140, 140).AddLight (0.1);
+//		Color baseAddColor = new Color (133, 168, 133);
+//		Color baseRemoveColor = new Color (178, 140, 140);
+		Color baseAddColor = new Color (123, 200, 123).AddLight (0.1);
+		Color baseRemoveColor = new Color (200, 140, 140).AddLight (0.1);
 		
 		int RoundedSectionRadius = 4;
 		int LeftPaddingBlock = 19;
@@ -110,17 +110,17 @@ namespace MonoDevelop.VersionControl.Views
 			return layout;
 		}
 		
-		string ProcessLine (string line)
+		static string ProcessLine (string line)
 		{
 			if (line == null)
 				return null;
-			return line.Replace ("\t","    ");
+			return line.Replace ("\t", "    ");
 		}
 		
 		const int leftSpace = 16;
 		public bool DrawLeft { get; set; }
 		
-		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+		protected override void Render (Drawable window, Widget widget, Rectangle background_area, Rectangle cell_area, Rectangle expose_area, CellRendererState flags)
 		{
 			if (isDisposed)
 				return;
@@ -142,7 +142,7 @@ namespace MonoDevelop.VersionControl.Views
 				
 				cell_area.Width -= RightPadding;
 				
-				window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Normal), true, cell_area.X, cell_area.Y, cell_area.Width - 1, cell_area.Height);
+				window.DrawRectangle (widget.Style.BaseGC (StateType.Normal), true, cell_area.X, cell_area.Y, cell_area.Width - 1, cell_area.Height);
 				
 				Gdk.GC normalGC = widget.Style.TextGC (StateType.Normal);
 				Gdk.GC removedGC = new Gdk.GC (window);
@@ -181,7 +181,7 @@ namespace MonoDevelop.VersionControl.Views
 					
 					char tag = line [0];
 	
-					if (line.StartsWith ("---") || line.StartsWith ("+++")) {
+					if (line.StartsWith ("---", StringComparison.Ordinal) || line.StartsWith ("+++", StringComparison.Ordinal)) {
 						// Ignore this part of the header.
 						currentBlock = null;
 						y -= lineHeight;
@@ -210,7 +210,7 @@ namespace MonoDevelop.VersionControl.Views
 						if (currentBlock != null && IsChangeBlock (currentBlock.Type) && !IsChangeBlock (type))
 							currentBlock.SectionEnd = true;
 						
-						currentBlock = new BlockInfo () {
+						currentBlock = new BlockInfo {
 							YStart = y,
 							FirstLine = n,
 							Type = type,
@@ -273,7 +273,7 @@ namespace MonoDevelop.VersionControl.Views
 						else if (block.Type == BlockType.Removed)
 							ctx.Color = baseRemoveColor.AddLight (0.1).ToCairoColor ();
 						else {
-							ctx.Color = widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ();
+							ctx.Color = widget.Style.Base (StateType.Prelight).AddLight (0.1).ToCairoColor ();
 							xrow -= LeftPaddingBlock;
 							wrow += LeftPaddingBlock;
 						}
@@ -311,7 +311,7 @@ namespace MonoDevelop.VersionControl.Views
 				// Draw the source line number at the current selected line. It must be done at the end because it must
 				// be drawn over the source code text and segment borders.
 				if (selectedLineRowTop != -1)
-					DrawLineBox (normalGC, ctx, ((Gtk.TreeView)widget).VisibleRect.Right - 4, selectedLineRowTop, selectedLine, widget, window);
+					DrawLineBox (normalGC, ctx, ((TreeView)widget).VisibleRect.Right - 4, selectedLineRowTop, selectedLine, widget, window);
 				
 				((IDisposable)ctx).Dispose ();
 				removedGC.Dispose ();
@@ -381,7 +381,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ctx.Rectangle (x + 2 + LeftPaddingBlock - 1 + 0.5, firstBlock.YStart + dy - 1 + 0.5, tw + 2, th + 2);
 			ctx.LineWidth = 1;
-			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.Color = widget.Style.Base (StateType.Normal).ToCairoColor ();
 			ctx.FillPreserve ();
 			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
 			ctx.Stroke ();
@@ -389,7 +389,7 @@ namespace MonoDevelop.VersionControl.Views
 			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
 		}
 		
-		void DrawLineBox (Gdk.GC gc, Cairo.Context ctx, int right, int top, int line, Gtk.Widget widget, Gdk.Drawable window)
+		void DrawLineBox (Gdk.GC gc, Cairo.Context ctx, int right, int top, int line, Widget widget, Drawable window)
 		{
 			layout.SetText ("");
 			layout.SetMarkup ("<small>" + line.ToString () + "</small>");
@@ -401,7 +401,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ctx.Rectangle (right - tw - 2 + 0.5, top + dy - 1 + 0.5, tw + 2, th + 2);
 			ctx.LineWidth = 1;
-			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.Color = widget.Style.Base (StateType.Normal).ToCairoColor ();
 			ctx.FillPreserve ();
 			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
 			ctx.Stroke ();
@@ -414,7 +414,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
+			Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
 			double y = block.YStart;
 			int height = block.YEnd - block.YStart;
 			
@@ -457,7 +457,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!IsChangeBlock (block.Type))
 				return;
 			
-			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
+			Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
 
 			int ssize = 8;
 			int barSize = 3;
@@ -515,24 +515,25 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		StateType GetState (Gtk.Widget widget, CellRendererState flags)
+		static StateType GetState (Widget widget, CellRendererState flags)
 		{
 			if ((flags & CellRendererState.Selected) != 0)
 				return widget.HasFocus ? StateType.Selected : StateType.Active;
-			else
-				return StateType.Normal;
+			return StateType.Normal;
 		}
 		
-		int ParseCurrentLine (string line)
+		static int ParseCurrentLine (string line)
 		{
 			int i = line.IndexOf ('+');
-			if (i == -1) return -1;
+			if (i == -1)
+				return -1;
 			i++;
 			int j = line.IndexOf (',', i);
-			if (j == -1) return -1;
+			if (j == -1)
+				return -1;
 			int cline;
 			if (!int.TryParse (line.Substring (i, j - i), out cline))
-			    return -1;
+				return -1;
 			return cline;
 		}
 		
@@ -540,8 +541,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (cpath.Equals (selctedPath))
 				return selectedLine;
-			else
-				return -1;
+			return -1;
 		}
 	}
 }
