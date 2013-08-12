@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyResourceFolder
+	class AssemblyResourceFolder
 	{
 		AssemblyDefinition definition;
 		

@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyResourceFolderNodeBuilder : TypeNodeBuilder
+	class AssemblyResourceFolderNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(AssemblyResourceFolder); }

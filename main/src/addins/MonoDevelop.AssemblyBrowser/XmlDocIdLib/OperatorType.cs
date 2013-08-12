@@ -5,7 +5,7 @@ using System.Text;
 namespace XmlDocIdLib
 {
     #region OperatorType enumeration
-    public enum OperatorType
+    enum OperatorType
     {
         None,
         op_Implicit,

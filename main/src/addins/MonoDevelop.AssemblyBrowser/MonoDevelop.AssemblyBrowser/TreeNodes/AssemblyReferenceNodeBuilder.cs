@@ -90,7 +90,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 	}
 	
-	public class ReferenceNodeCommandHandler : NodeCommandHandler
+	class ReferenceNodeCommandHandler : NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{

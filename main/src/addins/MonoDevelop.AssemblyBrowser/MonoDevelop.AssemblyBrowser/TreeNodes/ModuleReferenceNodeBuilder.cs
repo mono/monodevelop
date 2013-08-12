@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ModuleReferenceNodeBuilder : TypeNodeBuilder
+	class ModuleReferenceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ModuleReference); }

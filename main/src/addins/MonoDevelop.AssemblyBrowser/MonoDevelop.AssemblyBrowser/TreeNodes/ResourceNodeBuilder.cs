@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ResourceNodeBuilder : TypeNodeBuilder
+	class ResourceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(Mono.Cecil.Resource); }
