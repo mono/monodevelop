@@ -18,7 +18,7 @@ namespace Mono.Instrumentation.Monitor
 		private global::Gtk.Label label2;
 		private global::Gtk.Button buttonResetScale;
 		private global::Gtk.VScale vscaleScale;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -106,25 +106,15 @@ namespace Mono.Instrumentation.Monitor
 			this.button3.CanFocus = true;
 			this.button3.Name = "button3";
 			this.button3.UseUnderline = true;
-			// Container child button3.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w10 = new global::Gtk.HBox ();
-			w10.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-100", global::Gtk.IconSize.Menu);
-			w10.Add (w11);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w13 = new global::Gtk.Label ();
-			w10.Add (w13);
-			w9.Add (w10);
-			this.button3.Add (w9);
+			this.button3.Label = "";
+			global::Gtk.Image w9 = new global::Gtk.Image ();
+			w9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-zoom-100", global::Gtk.IconSize.Menu);
+			this.button3.Image = w9;
 			this.vbox1.Add (this.button3);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.button3]));
-			w17.Position = 0;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.button3]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.vscaleZoom = new global::Gtk.VScale (null);
 			this.vscaleZoom.HeightRequest = 150;
@@ -139,42 +129,32 @@ namespace Mono.Instrumentation.Monitor
 			this.vscaleZoom.Digits = 0;
 			this.vscaleZoom.ValuePos = ((global::Gtk.PositionType)(2));
 			this.vbox1.Add (this.vscaleZoom);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleZoom]));
-			w18.Position = 1;
-			w18.Expand = false;
-			w18.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleZoom]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.vbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
-			w19.Position = 2;
-			w19.Expand = false;
-			w19.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
+			w12.Position = 2;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.buttonResetScale = new global::Gtk.Button ();
 			this.buttonResetScale.CanFocus = true;
 			this.buttonResetScale.Name = "buttonResetScale";
 			this.buttonResetScale.UseUnderline = true;
-			// Container child buttonResetScale.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w21 = new global::Gtk.HBox ();
-			w21.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w22 = new global::Gtk.Image ();
-			w22.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "stock_draw-dimension-line", global::Gtk.IconSize.Menu);
-			w21.Add (w22);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w24 = new global::Gtk.Label ();
-			w21.Add (w24);
-			w20.Add (w21);
-			this.buttonResetScale.Add (w20);
+			this.buttonResetScale.Label = "";
+			global::Gtk.Image w13 = new global::Gtk.Image ();
+			w13.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "stock_draw-dimension-line", global::Gtk.IconSize.Menu);
+			this.buttonResetScale.Image = w13;
 			this.vbox1.Add (this.buttonResetScale);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonResetScale]));
-			w28.Position = 3;
-			w28.Expand = false;
-			w28.Fill = false;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonResetScale]));
+			w14.Position = 3;
+			w14.Expand = false;
+			w14.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.vscaleScale = new global::Gtk.VScale (null);
 			this.vscaleScale.HeightRequest = 150;
@@ -189,18 +169,18 @@ namespace Mono.Instrumentation.Monitor
 			this.vscaleScale.Digits = 0;
 			this.vscaleScale.ValuePos = ((global::Gtk.PositionType)(2));
 			this.vbox1.Add (this.vscaleScale);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleScale]));
-			w29.Position = 4;
-			w29.Expand = false;
-			w29.Fill = false;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleScale]));
+			w15.Position = 4;
+			w15.Expand = false;
+			w15.Fill = false;
 			this.hbox2.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox1]));
-			w30.Position = 1;
-			w30.Expand = false;
-			w30.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox1]));
+			w16.Position = 1;
+			w16.Expand = false;
+			w16.Fill = false;
 			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
-			w31.Position = 1;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
+			w17.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
