@@ -44,6 +44,11 @@ namespace Mono.MHex.Data
 	class ArrayBuffer : IBuffer
 	{
 		byte[] content;
+
+		public ArrayBuffer (byte[] buffer)
+		{
+			content = buffer;
+		}
 		
 		public long Length {
 			get {
@@ -68,11 +73,12 @@ namespace Mono.MHex.Data
 		
 		public static IBuffer Load (Stream stream)
 		{
-			ArrayBuffer result = new ArrayBuffer ();
 			long count = stream.Length;
-			result.content = new byte[count];
-			stream.Read (result.content, 0, (int)count);
-			return result;
+			byte[] buffer = new byte[count];
+
+			stream.Read (buffer, 0, (int) count);
+
+			return new ArrayBuffer (buffer);
 		}
 		
 		public static IBuffer Load (string fileName)
