@@ -13,6 +13,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.RegexToolkit.RegexToolkitWidget" design-size="544 603">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />

@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.RegexToolkit
 {
-	public enum Commands
+	enum Commands
 	{
 		ShowRegexToolkit
 	}
@@ -87,7 +87,7 @@ namespace MonoDevelop.RegexToolkit
 		}
 	}
 	
-	public class ShowRegexToolkitHandler : CommandHandler
+	class ShowRegexToolkitHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

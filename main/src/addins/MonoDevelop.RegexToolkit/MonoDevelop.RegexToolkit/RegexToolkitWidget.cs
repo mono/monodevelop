@@ -35,7 +35,7 @@ using System.Xml;
 namespace MonoDevelop.RegexToolkit
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class RegexToolkitWidget : Gtk.Bin
+	partial class RegexToolkitWidget : Gtk.Bin
 	{
 		ListStore optionsStore;
 		TreeStore resultStore;
