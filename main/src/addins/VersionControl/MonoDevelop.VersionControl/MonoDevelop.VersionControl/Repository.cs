@@ -167,8 +167,8 @@ namespace MonoDevelop.VersionControl
 		/// <param name='paths'>
 		/// A list of files or directories
 		/// </param>
-		/// <param name='getRemoteStatus'>
-		/// True if remote status information has to be included
+		/// <param name='queryFlags'>
+		/// Use VersionInfoQueryFlags enum for options.
 		/// </param>
 		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
