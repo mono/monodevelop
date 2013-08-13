@@ -118,7 +118,7 @@ namespace Mono.TextEditor
 		
 		public static void DrawLine (this Cairo.Context cr, Cairo.Color color, double x1, double y1, double x2, double y2)
 		{
-			cr.Color = color;
+			cr.SetSourceColor (color);
 			cr.MoveTo (x1, y1);
 			cr.LineTo (x2, y2);
 			cr.Stroke ();
@@ -142,6 +142,9 @@ namespace Mono.TextEditor
 			cr.LineTo (x2, y2 + 0.5);
 		}
 
-
+		public static void SetSourceColor (this Cairo.Context cr, Cairo.Color color)
+		{
+			cr.SetSourceRGBA (color.R, color.G, color.B, color.A);
+		}
 	}
 }

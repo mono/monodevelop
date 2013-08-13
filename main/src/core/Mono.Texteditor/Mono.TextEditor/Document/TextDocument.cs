@@ -38,7 +38,7 @@ using System.Threading;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument : AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
+	public class TextDocument : ICSharpCode.NRefactory.AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		readonly IBuffer buffer;
 		readonly ILineSplitter splitter;

@@ -81,7 +81,7 @@ namespace MonoDevelop.XmlEditor
 		/// </summary>
 		/// <param name='val'>The <see cref='QualifiedName'/> to add.</param>
 		/// <returns>The index at which the new element was inserted.</returns>
-		/// <seealso cref='QualifiedNameCollection.AddRange'/>
+		/// <seealso cref='QualifiedNameCollection.AddRange(QualifiedName[])'/>
 		public int Add(QualifiedName val)
 		{
 			return List.Add(val);

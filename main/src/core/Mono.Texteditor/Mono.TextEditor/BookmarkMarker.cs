@@ -64,14 +64,14 @@ namespace Mono.TextEditor
 				using (var pat = new Cairo.LinearGradient (x + width / 4, y, x + width / 2, y + height - 4)) {
 					pat.AddColorStop (0, color1);
 					pat.AddColorStop (1, color2);
-					cr.Pattern = pat;
+					cr.SetSource (pat);
 					cr.FillPreserve ();
 				}
 				
 				using (var pat = new Cairo.LinearGradient (x, y + height, x + width, y)) {
 					pat.AddColorStop (0, color2);
 					//pat.AddColorStop (1, color1);
-					cr.Pattern = pat;
+					cr.SetSource (pat);
 					cr.Stroke ();
 				}
 			}

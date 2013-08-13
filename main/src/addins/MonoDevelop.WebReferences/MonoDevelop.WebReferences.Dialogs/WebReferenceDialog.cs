@@ -133,7 +133,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		}
 		
 		/// <summary>Gets or Sets the the base path of the where the web reference.</summary>
-		/// <value>A string containing the base path where all the web references are stored in.</summary>
+		/// <value>A string containing the base path where all the web references are stored in.</value>
 		public string BasePath
 		{
 			get { return basePath; }
@@ -141,7 +141,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		}
 		
 		/// <summary>Gets the the base path for the current reference.</summary>
-		/// <value>A string containing the base path for the current reference.</summary>
+		/// <value>A string containing the base path for the current reference.</value>
 		public string ReferencePath
 		{
 			get { return System.IO.Path.Combine(BasePath, ReferenceName); }
@@ -224,10 +224,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 //				Destroy();
 //			}
 //		}
-		
-		/// <summary>Execute the event when the Browser Go button has been clicked</summary>
-		/// <param name="sender">An object that contains the sender data.</param>
-		/// <param name="e">An EventArgs object that contains the event data.</param>
+
 		private void Browser_GoButtonClicked (object sender, EventArgs e)
 		{
 			modified = true;

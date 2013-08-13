@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
+using MonoDevelop.Components;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Ide.Gui
@@ -162,13 +164,13 @@ namespace MonoDevelop.Ide.Gui
 					using (Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
 						g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
 						g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
-						ctx.Pattern = g;
+						ctx.SetSource (g);
 						ctx.Fill ();
 					}
 
 					ctx.MoveTo (0.5, Allocation.Height - 0.5);
 					ctx.RelLineTo (Allocation.Width, 0);
-					ctx.Color = Styles.BreadcrumbBottomBorderColor;
+					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor);
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			return formatter.FormatText (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain, input);
 		}
 		
-		/// <summary>Formats a subrange of the input text.
+		/// <summary>Formats a subrange of the input text.</summary>
 		/// <returns>The formatted text of the range.</returns>
 		public string FormatText (PolicyContainer policyParent, string input, int fromOffset, int toOffset)
 		{
@@ -81,18 +81,6 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// <summary>
 		/// Formats a text document directly with insert/remove operations.
 		/// </summary>
-		/// <param name="textEditorData">
-		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
-		/// </param>
-		/// <param name="dom">
-		/// A <see cref="ITypeResolveContext"/>
-		/// </param>
-		/// <param name="unit">
-		/// A <see cref="IUnresolvedFile"/>
-		/// </param>
-		/// <param name="caretLocation">
-		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
-		/// </param>
 		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;

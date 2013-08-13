@@ -406,19 +406,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			if (flatStyle) {
 				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.Color)) {
-					cr.Pattern = pattern;
+					cr.SetSource (pattern);
 					cr.FillPreserve ();
 				}
 			} else {
 				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
 					pattern.AddColorStop (0, darkColor);
 					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.Color);
-					cr.Pattern = pattern;
+					cr.SetSource (pattern);
 					cr.FillPreserve ();
 				}
 			}
 			
-			cr.Color = darkColor;
+			cr.SetSourceColor (darkColor);
 			cr.Stroke ();
 		}
 
@@ -452,7 +452,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (7, y);
 			cr.LineTo (0, y + 4);
 			cr.ClosePath ();
-			cr.Color = TextEditor.ColorStyle.PlainText.Foreground;
+			cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Foreground);
 			cr.Fill ();
 		}
 
@@ -485,7 +485,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			foreach (var task in AllTasks) {
 				double y = GetYPosition (task.Location.Line);
 
-				cr.Color = GetBarColor (task.Severity);
+				cr.SetSourceColor (GetBarColor (task.Severity));
 				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
 				cr.Fill ();
 
@@ -511,7 +511,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (!flatStyle) {
 					col.L *= 0.88;
 				}
-				cr.Color = col;
+				cr.SetSourceColor (col);
 			}
 			cr.Stroke ();
 		}
@@ -544,7 +544,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			color.L = flatStyle? 0.7 : 0.5;
 			var c = (Cairo.Color)color;
 			c.A = 0.6;
-			cr.Color = c;
+			cr.SetSourceColor (c);
 			cr.Fill ();
 		}
 		
@@ -556,7 +556,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				bool isMainSelection = false;
 				if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
-				cr.Color = isMainSelection ? TextEditor.ColorStyle.SearchResultMain.Color : TextEditor.ColorStyle.SearchResult.Color;
+				cr.SetSourceColor (isMainSelection ? TextEditor.ColorStyle.SearchResultMain.Color : TextEditor.ColorStyle.SearchResult.Color);
 				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
 				cr.Fill ();
 			}
@@ -575,14 +575,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					col.L *= 0.95;
 					if (flatStyle) {
 						using (var pattern = new Cairo.SolidPattern (col)) {
-							cr.Pattern = pattern;
+							cr.SetSource (pattern);
 						}
 					} else {
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
 							grad.AddColorStop (0, col);
 							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
 							grad.AddColorStop (1, col);
-							cr.Pattern = grad;
+							cr.SetSource (grad);
 						}
 					}
 				}

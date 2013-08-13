@@ -148,12 +148,12 @@ namespace Mono.TextEditor
 
 			if (!backgroundIsDrawn) {
 				ctx.Rectangle (x, y, Width, lineHeight);
-				ctx.Color = backgroundColor;
+				ctx.SetSourceColor (backgroundColor);
 				ctx.Fill ();
 				
 				ctx.MoveTo (x + Width - 0.5, y);
 				ctx.LineTo (x + Width - 0.5, y + lineHeight);
-				ctx.Color = separatorColor;
+				ctx.SetSourceColor (separatorColor);
 				ctx.Stroke ();
 			}
 

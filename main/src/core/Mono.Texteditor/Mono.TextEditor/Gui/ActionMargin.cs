@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			cr.Rectangle (x, y, Width, lineHeight);
-			cr.Color = editor.ColorStyle.LineNumbers.Background;
+			cr.SetSourceColor (editor.ColorStyle.LineNumbers.Background);
 			cr.Fill ();
 		}
 

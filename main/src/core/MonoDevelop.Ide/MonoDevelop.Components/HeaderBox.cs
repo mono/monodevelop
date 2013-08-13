@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -177,20 +178,20 @@ namespace MonoDevelop.Components
 						if (gcol.L < 0)
 							gcol.L = 0;
 						pat.AddColorStop (1, gcol);
-						cr.Pattern = pat;
+						cr.SetSource (pat);
 						cr.FillPreserve ();
 					}
 				}
 			} else if (BackgroundColor != null) {
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-					cr.Color = BackgroundColor.Value.ToCairoColor ();
+					cr.SetSourceColor (BackgroundColor.Value.ToCairoColor ());
 					cr.Fill ();
 				}
 			} else if (useChildBackgroundColor && Child != null) {
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-					cr.Color = Child.Style.Base (StateType.Normal).ToCairoColor ();
+					cr.SetSourceColor (Child.Style.Base (StateType.Normal).ToCairoColor ());
 					cr.Fill ();
 				}
 			}
@@ -219,7 +220,7 @@ namespace MonoDevelop.Components
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + shadowSize)) {
 						pat.AddColorStop (0, new Cairo.Color (0, 0, 0, shadowStrengh));
 						pat.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-						cr.Pattern = pat;
+						cr.SetSource (pat);
 						cr.Fill ();
 					}
 				}

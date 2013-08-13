@@ -30,6 +30,7 @@ using System;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Components.Commands
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Color = (HslColor)Style.Light (StateType.Normal);
+				context.SetSourceColor ((HslColor)Style.Light (StateType.Normal));
 				context.Paint ();
 			}
 

@@ -57,7 +57,7 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		/// <summary>Generate a text description for the a DiscoverDocument.</summary>
-		/// <param name="discovery">A DiscoveryDocument containing the details for the disco services.</param>
+		/// <param name="doc">A DiscoveryDocument containing the details for the disco services.</param>
 		/// <returns>An XmlDocument containing the generated xml for the specified discovery document.</returns>
 		public static void GenerateDiscoXml (StringBuilder text, DiscoveryDocument doc)
 		{
@@ -163,7 +163,7 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		/// <summary>Gets the path where all web references will be stored for the specified project.</summary>
-		/// <param name="project">A Project containing the root project information.</project>
+		/// <param name="project">A Project containing the root project information.</param>
 		/// <returns>A string containing the base path for web references.</returns>
 		public static FilePath GetWebReferencePath (Project project)
 		{
