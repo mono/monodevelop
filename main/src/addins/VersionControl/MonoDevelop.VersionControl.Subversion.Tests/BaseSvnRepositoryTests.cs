@@ -123,7 +123,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			// Nonexistent directory
 			path = Path.Combine (rootCheckout, "do", "i", "exist");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
-
 		}
 	}
 }

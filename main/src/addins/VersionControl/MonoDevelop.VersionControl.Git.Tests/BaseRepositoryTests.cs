@@ -179,20 +179,127 @@ namespace MonoDevelop.VersionControl.Tests
 
 		// TODO: Remaining tests for Repository class.
 		// Tests Repository.GetRevisionChanges.
+		public virtual void CorrectRevisionChanges ()
+		{
+			string added = rootCheckout + "testfile";
+			string content = "text";
+
+			File.WriteAllText (added, content);
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "TestMessage";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			// Override and test in specific with GitRevision and SvnRevision.
+		}
+
 		// Tests Repository.RevertRevision.
+		[Test]
+		[Ignore]
+		public virtual void RevertsRevision ()
+		{
+			string added = rootCheckout + "testfile";
+			string content = "text";
+
+			File.WriteAllText (added, content);
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "TestMessage";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			// Override and test in specific with GitRevision and SvnRevision.
+		}
+
 		// Tests Repository.MoveFile.
+		[Test]
+		public virtual void MovesFile ()
+		{
+			string src = rootCheckout + "testfile";
+			string dst = src + "2";
+			string content = "text";
+
+			File.WriteAllText (src, content);
+			repo.Add (src, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "TestMessage";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			repo.MoveFile (src, dst, true, new NullProgressMonitor ());
+			// Win32 Subversion shows srcVi as Unversioned.
+			// Test for Unix Subversion.
+			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
+			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
+		}
+
+		[Test]
 		// Tests Repository.MoveDirectory.
-		// Tests Repository.DeleteFile(s).
-		// Tests Repository.DeleteDirectory(es).
+		public virtual void MovesDirectory ()
+		{
+		}
+
+		[Test]
+		// Tests Repository.DeleteFile.
+		public virtual void DeletesFile ()
+		{
+		}
+
+		[Test]
+		// Tests Repository.DeleteDirectory.
+		public virtual void DeletesDirectory ()
+		{
+		}
+
+		[Test]
 		// Tests Repository.CreateLocalDirectory.
+		public virtual void CreatesDirectory ()
+		{
+		}
+
+		[Test]
 		// Tests Repository.Lock.
+		public virtual void LocksEntities ()
+		{
+		}
+
+		[Test]
 		// Tests Repository.Unlock.
+		public virtual void UnlocksEntities ()
+		{
+		}
+
+		[Test]
+		// Tests Repository.Ignore
+		public virtual void IgnoresEntities ()
+		{
+		}
+
+		[Test]
+		// Tests Repository.Unignore
+		public virtual void UnignoresEntities ()
+		{
+		}
+
+		[Test]
 		// Tests Repository.GetTextAtRevision.
+		public virtual void CorrectTextAtRevision ()
+		{
+		}
+
+		[Test]
 		// Tests Repository.GetAnnotations.
+		public virtual void BlameIsCorrect ()
+		{
+		}
 
 		#region Util
 
-		public virtual void Checkout (string path, string url)
+		protected void Checkout (string path, string url)
 		{
 			Repository _repo = GetRepo (path, url);
 			_repo.Checkout (path, true, new NullProgressMonitor ());
@@ -202,12 +309,22 @@ namespace MonoDevelop.VersionControl.Tests
 				repo2 = _repo;
 		}
 
-		public void AddFile (string path, string contents)
+		protected void CommitItems ()
+		{
+
+		}
+
+		protected void CommitFile (string path, string contents)
+		{
+
+		}
+
+		protected void AddFile (string path, string contents)
 		{
 			AddToRepository (path, contents ?? "");
 		}
 
-		public void AddDirectory (string path)
+		protected void AddDirectory (string path)
 		{
 			AddToRepository (path, null);
 		}
@@ -220,16 +337,16 @@ namespace MonoDevelop.VersionControl.Tests
 			else
 				File.WriteAllText (added, contents);
 
-			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
 			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
 			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
 			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo.Commit (changes, new NullProgressMonitor ());
 		}
 
 		protected abstract Repository GetRepo (string path, string url);
 
-		public static void DeleteDirectory (string path)
+		protected static void DeleteDirectory (string path)
 		{
 			string[] files = Directory.GetFiles (path);
 			string[] dirs = Directory.GetDirectories (path);
