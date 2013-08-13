@@ -72,12 +72,14 @@ namespace Mono.MHex.Rendering
 			ctx.SetColor (Style.HexOffsetBg);
 			ctx.Fill ();
 
-			LayoutWrapper layout = GetLayout (line);
-			var sz = layout.Layout.GetSize ();
-			ctx.SetColor (line != Caret.Line ? Style.HexOffset : Style.HexOffsetHighlighted);
-			ctx.DrawTextLayout (layout.Layout, x + Width - sz.Width - 4, y);
-			if (layout.IsUncached)
-				layout.Dispose ();
+			if (line * Editor.BytesInRow < Data.Length) {
+				LayoutWrapper layout = GetLayout (line);
+				var sz = layout.Layout.GetSize ();
+				ctx.SetColor (line != Caret.Line ? Style.HexOffset : Style.HexOffsetHighlighted);
+				ctx.DrawTextLayout (layout.Layout, x + Width - sz.Width - 4, y);
+				if (layout.IsUncached)
+					layout.Dispose ();
+			}
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)

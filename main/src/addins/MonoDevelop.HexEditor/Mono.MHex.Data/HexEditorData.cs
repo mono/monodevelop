@@ -95,8 +95,10 @@ namespace Mono.MHex.Data
 			byte[] nodeBytes = node.value.GetBytes (this, nodeOffset, offset, (int)(nodeEndOffset - offset));
 			
 			byte[] result = new byte[count];
-			nodeBytes.CopyTo (result, 0);
-			GetBytes (offset + nodeBytes.Length, count - nodeBytes.Length).CopyTo (result, nodeBytes.Length);
+			if (nodeBytes.Length > 0) {
+				nodeBytes.CopyTo (result, 0);
+				GetBytes (offset + nodeBytes.Length, count - nodeBytes.Length).CopyTo (result, nodeBytes.Length);
+			}
 			return result;
 		}
 		

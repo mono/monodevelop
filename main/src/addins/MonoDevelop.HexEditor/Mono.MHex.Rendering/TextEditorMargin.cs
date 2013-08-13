@@ -92,7 +92,6 @@ namespace Mono.MHex.Rendering
 
 		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			
 			ctx.Rectangle (x, y, Width, Editor.LineHeight);
 			ctx.SetColor (Style.HexDigitBg);
 			ctx.Fill ();
@@ -113,15 +112,15 @@ namespace Mono.MHex.Rendering
 
 		public double CalculateCaretXPos (out char ch)
 		{
-			byte b = Data.GetByte (Caret.Offset);
-			ch = (char)b;
-			if (b < 128 && (Char.IsLetterOrDigit (ch) || Char.IsPunctuation (ch))) {
-				// ok
-			} else {
-				ch = '.';
-			}
+			var layout = GetLayout (Data.Caret.Line);
+			ch = (char)Data.GetByte (Caret.Offset);
 
-			return XOffset + (Caret.Offset % BytesInRow) * charWidth;
+			var rectangle = layout.Layout.GetCoordinateFromIndex ((int)(Caret.Offset % BytesInRow));
+
+			if (layout.IsUncached)
+				layout.Dispose ();
+
+			return XOffset + rectangle.X / 1024.0; // FIX XWT !!!! Pango.Scale bug
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
