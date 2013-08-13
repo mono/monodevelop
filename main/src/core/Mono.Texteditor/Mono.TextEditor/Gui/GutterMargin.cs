@@ -245,7 +245,7 @@ namespace Mono.TextEditor
 					layout.Alignment = Pango.Alignment.Right;
 					layout.SetText (line.ToString ());
 					cr.Save ();
-					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y + (lineHeight - fontHeight) / 2);
+					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
 					cr.SetSourceColor (lineNumberGC);
 					cr.ShowLayout (layout);
 					cr.Restore ();

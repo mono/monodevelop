@@ -1409,10 +1409,12 @@ namespace Mono.TextEditor
 				if (!selected && textEditor.Options.ShowWhitespaces != ShowWhitespaces.Always)
 					continue;
 				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
+				double ypos = y + pos.Y / Pango.Scale.PangoScale;
 				double xpos = xPos + pos.X / Pango.Scale.PangoScale;
 				if (xpos > textEditor.Allocation.Width)
 					break;
 				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
+				double ypos2 = y + pos2.Y / Pango.Scale.PangoScale;
 				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
 				Cairo.Color col = new Cairo.Color (0, 0, 0);
 				if (SelectionColor.TransparentForeground) {
@@ -1431,9 +1433,9 @@ namespace Mono.TextEditor
 				ctx.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
 
 				if (ch == '\t') {
-					DrawTabMarker (ctx, selected, xpos, xpos2, y);
+					DrawTabMarker (ctx, selected, xpos, xpos2, ypos);
 				} else {
-					DrawSpaceMarker (ctx, selected, xpos, xpos2, y);
+					DrawSpaceMarker (ctx, selected, xpos, xpos2, ypos);
 				}
 			}
 		}
@@ -2785,8 +2787,10 @@ namespace Mono.TextEditor
 			
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
-					if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
-						DrawEolMarker (cr, line, isEolSelected, position / Pango.Scale.PangoScale, y);
+				if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection)) {
+					LayoutWrapper wrapper = GetLayout (line);
+					DrawEolMarker (cr, line, isEolSelected, position, y + System.Math.Max (0, wrapper.Height - LineHeight));
+				}
 			}
 
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
@@ -2833,7 +2837,8 @@ namespace Mono.TextEditor
 			int lineNumber;
 			DocumentLine line;
 			int xPos = 0;
-			
+			int yPos = 0;
+
 			public bool WasInLine {
 				get;
 				set;
@@ -2881,6 +2886,8 @@ namespace Mono.TextEditor
 				xp *= Pango.Scale.PangoScale;
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
+				yp -= margin.LineToY (lineNumber);
+				yp *= Pango.Scale.PangoScale;
 				int column = DocumentLocation.MinColumn;
 				ISyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : new SyntaxMode (margin.Document);
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
@@ -2894,7 +2901,7 @@ namespace Mono.TextEditor
 						if (foldOffset < offset)
 							continue;
 						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
-						done |= ConsumeLayout ((int)(xp - xPos), 0);
+						done |= ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos));
 						if (done)
 							break;
 						int height, width;
@@ -2933,7 +2940,7 @@ namespace Mono.TextEditor
 					}
 					if (!done) {
 						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
-						if (!ConsumeLayout ((int)(xp - xPos), 0)) {
+						if (!ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos))) {
 							if (endAtEol)
 								return DocumentLocation.Empty; 
 						}
