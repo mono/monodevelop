@@ -2886,8 +2886,9 @@ namespace Mono.TextEditor
 				xp *= Pango.Scale.PangoScale;
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
-				yp -= margin.LineToY (lineNumber);
-				yp *= Pango.Scale.PangoScale;
+				yp = 0;
+//				yp -= margin.LineToY (lineNumber);
+//				yp *= Pango.Scale.PangoScale;
 				int column = DocumentLocation.MinColumn;
 				ISyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : new SyntaxMode (margin.Document);
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
