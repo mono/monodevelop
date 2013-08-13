@@ -1059,14 +1059,28 @@ namespace Mono.TextEditor
 			atts.Dispose ();
 			int w, h;
 			wrapper.Layout.GetSize (out w, out h);
-			wrapper.Width = w / Pango.Scale.PangoScale;
+			wrapper.Width = System.Math.Floor (w / Pango.Scale.PangoScale);
+			wrapper.Height = System.Math.Floor (h / Pango.Scale.PangoScale);
+
+			var lines = wrapper.Layout.LineCount;
+
+			if (lines == 1) {
+				wrapper.LastLineWidth = wrapper.Width;
+			} else {
+				var layoutLine = wrapper.Layout.GetLine (lines - 1);
+				Pango.Rectangle iR = Pango.Rectangle.Zero;
+				Pango.Rectangle lR = Pango.Rectangle.Zero;
+				layoutLine.GetExtents (ref iR, ref lR);
+				wrapper.LastLineWidth = System.Math.Floor (lR.Width / Pango.Scale.PangoScale);
+			}
+
 
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 			selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
 			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
 			if (!containsPreedit)
 				layoutDict [line] = descriptor;
-			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, System.Math.Floor (h / Pango.Scale.PangoScale)));
+			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, wrapper.Height));
 			return wrapper;
 		}
 
@@ -1262,6 +1276,16 @@ namespace Mono.TextEditor
 			}
 
 			public double Width {
+				get;
+				set;
+			}
+
+			public double Height {
+				get;
+				set;
+			}
+
+			public double LastLineWidth {
 				get;
 				set;
 			}
@@ -1568,14 +1592,21 @@ namespace Mono.TextEditor
 
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
 				double startX;
+				int startY;
+
 				double endX;
+				int endY;
 
 				if (selectionStart != offset + length) {
 					var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
 					startX = System.Math.Floor (start.X / Pango.Scale.PangoScale);
+					startY = (int)(y + System.Math.Floor (start.Y / Pango.Scale.PangoScale));
+
 					var end = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
 					endX = System.Math.Ceiling (end.X / Pango.Scale.PangoScale);
+					endY = (int)(y + System.Math.Ceiling (end.Y / Pango.Scale.PangoScale));
 				} else {
+					startY = endY = (int)y;
 					startX = width;
 					endX = startX;
 				}
@@ -1583,7 +1614,41 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
+				if (startY == endY) {
+					DrawRectangleWithRuler (
+						cr,
+						xPos + textEditor.HAdjustment.Value - TextStartPosition,
+						new Cairo.Rectangle (xPos + startX, startY, endX - startX, LineHeight),
+						this.SelectionColor.Background,
+						true
+						);
+				} else {
+					DrawRectangleWithRuler (
+						cr,
+						xPos + textEditor.HAdjustment.Value - TextStartPosition,
+						new Cairo.Rectangle (xPos + startX, startY, textEditor.Allocation.Width - xPos - startX, LineHeight),
+						this.SelectionColor.Background,
+						true
+					);
+
+					if (endY - startY > LineHeight) {
+						DrawRectangleWithRuler (
+							cr,
+							xPos,
+							new Cairo.Rectangle (xPos, startY + LineHeight, textEditor.Allocation.Width - xPos, endY - startY - LineHeight),
+							this.SelectionColor.Background,
+							true
+						);
+					}
+
+					DrawRectangleWithRuler (
+						cr,
+						xPos,
+						new Cairo.Rectangle (xPos, endY, endX, LineHeight),
+						this.SelectionColor.Background,
+						true
+						);
+				}
 			}
 
 			// highlight search results
@@ -1719,8 +1784,7 @@ namespace Mono.TextEditor
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
-
-			position += System.Math.Floor (layout.Width);
+			position += System.Math.Floor (layout.LastLineWidth);
 
 			if (layout.IsUncached)
 				layout.Dispose ();
@@ -2690,12 +2754,13 @@ namespace Mono.TextEditor
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
+					LayoutWrapper wrapper = GetLayout (line);
 					var eolStartX = System.Math.Floor (position);
 					lineArea = new Cairo.Rectangle (
 						eolStartX,
-						lineArea.Y,
+						lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
 						textEditor.Allocation.Width - eolStartX,
-						lineArea.Height);
+						LineHeight);
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
 						DrawIndent (cr, GetLayout (line), line, lx, y);
