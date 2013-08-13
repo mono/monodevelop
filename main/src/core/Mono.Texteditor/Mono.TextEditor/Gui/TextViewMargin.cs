@@ -1059,7 +1059,7 @@ namespace Mono.TextEditor
 			atts.Dispose ();
 			int w, h;
 			wrapper.Layout.GetSize (out w, out h);
-			wrapper.PangoWidth = w;
+			wrapper.Width = w / Pango.Scale.PangoScale;
 
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
 			selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
@@ -1261,7 +1261,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public int PangoWidth {
+			public double Width {
 				get;
 				set;
 			}
@@ -1503,12 +1503,12 @@ namespace Mono.TextEditor
 			// ---- new renderer
 			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStart, selectionEnd);
 			int lineOffset = line.Offset;
-			double width = layout.PangoWidth / Pango.Scale.PangoScale;
+			double width = layout.Width;
 			double xPos = pangoPosition / Pango.Scale.PangoScale;
 
 			// The caret line marker must be drawn below the text markers otherwise the're invisible
 			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
-				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
+				DrawCaretLineMarker (cr, xPos, y, layout.Width, _lineHeight);
 
 			//		if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
 			if (BackgroundRenderer == null) {
@@ -1653,15 +1653,15 @@ namespace Mono.TextEditor
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
 						
-						var x = ((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale);
+						var x = ((pangoPosition + vx) / Pango.Scale.PangoScale) + layout.Width;
 						SetVisibleCaretPosition (x, y, x, y);
-						xPos = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
+						xPos = (pangoPosition) / Pango.Scale.PangoScale + layout.Width;
 
 						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.Length) && BackgroundRenderer == null) {
 							double startX;
 							double endX;
 							startX = xPos;
-							endX = (pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale;
+							endX = (pangoPosition + vx) / Pango.Scale.PangoScale + layout.Width;
 							DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
 						}
 
@@ -1687,7 +1687,7 @@ namespace Mono.TextEditor
 						wrapper.Dispose ();
 						pangoPosition += vx;
 					} else if (index == length && string.IsNullOrEmpty (textEditor.preeditString)) {
-						var x = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
+						var x = pangoPosition / Pango.Scale.PangoScale + layout.Width;
 						SetVisibleCaretPosition (x, y, x, y);
 					} else if (index >= 0 && index <= length) {
 						Pango.Rectangle strong_pos, weak_pos;
@@ -1720,7 +1720,7 @@ namespace Mono.TextEditor
 					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
 
-			pangoPosition += layout.PangoWidth;
+			pangoPosition += layout.Width * Pango.Scale.PangoScale;
 			int scaledDown = (int)(pangoPosition / Pango.Scale.PangoScale);
 			pangoPosition = scaledDown * Pango.Scale.PangoScale;
 

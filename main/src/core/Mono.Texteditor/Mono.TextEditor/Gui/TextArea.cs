@@ -2809,7 +2809,7 @@ namespace Mono.TextEditor
 					longest = line;
 			}
 			if (longest != longestLine) {
-				int width = (int)(textViewMargin.GetLayout (longest).PangoWidth / Pango.Scale.PangoScale);
+				int width = (int)(textViewMargin.GetLayout (longest).Width);
 				
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
