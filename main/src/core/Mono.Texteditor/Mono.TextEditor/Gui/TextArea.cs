@@ -1737,8 +1737,11 @@ namespace Mono.TextEditor
 				var line = Document.GetLine (logicalLineNumber);
 
 				// Ensure that the correct line height is set.
-				if (line != null)
-					textViewMargin.GetLayout (line);
+				if (line != null) {
+					var wrapper = textViewMargin.GetLayout (line);
+					if (wrapper.IsUncached)
+						wrapper.Dispose ();
+				}
 
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
@@ -2809,8 +2812,10 @@ namespace Mono.TextEditor
 					longest = line;
 			}
 			if (longest != longestLine) {
-				int width = (int)(textViewMargin.GetLayout (longest).Width);
-				
+				var layoutWrapper = textViewMargin.GetLayout (longest);
+				int width = (int)(layoutWrapper.Width);
+				if (layoutWrapper.IsUncached)
+					layoutWrapper.Dispose ();
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;

@@ -2752,11 +2752,11 @@ namespace Mono.TextEditor
 					lineArea = new Cairo.Rectangle (x2, lineArea.Y, textEditor.Allocation.Width - lineArea.X, lineArea.Height);
 				}
 			}
-
+			LayoutWrapper wrapper = null;
 			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-					LayoutWrapper wrapper = GetLayout (line);
+					wrapper = GetLayout (line);
 					var eolStartX = System.Math.Floor (position);
 					lineArea = new Cairo.Rectangle (
 						eolStartX,
@@ -2765,9 +2765,9 @@ namespace Mono.TextEditor
 						LineHeight);
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
-						DrawIndent (cr, GetLayout (line), line, lx, y);
+						DrawIndent (cr, wrapper, line, lx, y);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
-					LayoutWrapper wrapper = GetLayout (line);
+					wrapper = GetLayout (line);
 					if (wrapper.EolSpanStack != null) {
 						foreach (var span in wrapper.EolSpanStack) {
 							var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
@@ -2788,7 +2788,8 @@ namespace Mono.TextEditor
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
 				if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection)) {
-					LayoutWrapper wrapper = GetLayout (line);
+					if (wrapper == null)
+						wrapper = GetLayout (line);
 					DrawEolMarker (cr, line, isEolSelected, position, y + System.Math.Max (0, wrapper.Height - LineHeight));
 				}
 			}
@@ -2818,6 +2819,8 @@ namespace Mono.TextEditor
 					cr.Stroke ();
 				}
 			}
+			if (wrapper != null && wrapper.IsUncached)
+				wrapper.Dispose ();
 		}
 
 		static double[] verticalShadowAlphaTable = new [] { 0.71, 0.84, 0.95 };

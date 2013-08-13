@@ -431,7 +431,10 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			int lw, lh;
-			widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
+			var wrapper = widget.TextEditor.TextViewMargin.GetLayout (line);
+			wrapper.Layout.GetPixelSize (out lw, out lh);
+			if (wrapper.IsUncached)
+				wrapper.Dispose ();
 			lh = (int) TextEditor.TextViewMargin.GetLineHeight (widgetExtension.Line);
 			x = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
 			y = (int)widget.TextEditor.LineToY (widgetExtension.Line);
@@ -1182,7 +1185,10 @@ namespace MonoDevelop.SourceEditor
 			if (w.OffsetX < 0) {
 				w.OffsetY = (int)widget.TextEditor.LineToY (w.Line);
 				int lw, lh;
-				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
+				var wrapper = widget.TextEditor.TextViewMargin.GetLayout (line);
+				wrapper.Layout.GetPixelSize (out lw, out lh);
+				if (wrapper.IsUncached)
+					wrapper.Dispose ();
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
 			}
 			wi.Widget = new PinnedWatchWidget (widget.TextEditor, w);
