@@ -48,7 +48,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.foldregionsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			this.foldCommentsCheckbutton.Active = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 			this.antiAliasingCheckbutton.Active = DefaultSourceEditorOptions.Instance.UseAntiAliasing;
-			wordWrapCheckbutton.Active = DefaultSourceEditorOptions.Instance.WrapLines;
+			//			wordWrapCheckbutton.Active = DefaultSourceEditorOptions.Instance.WrapLines;
+			wordWrapCheckbutton.Visible = false;
 			return this;
 		}
 		
@@ -62,7 +63,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				DefaultSourceEditorOptions.Instance.ShowFoldMargin = this.foldingCheckbutton.Active;
 				HighlightingPanel.UpdateActiveDocument ();
 			}
-			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
+//			DefaultSourceEditorOptions.Instance.WrapLines = wordWrapCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

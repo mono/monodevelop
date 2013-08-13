@@ -22,6 +22,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.Label GtkLabel15;
 		private global::Gtk.Alignment alignment4;
 		private global::Gtk.VBox vbox6;
+		private global::Gtk.CheckButton wordWrapCheckbutton;
 		private global::Gtk.CheckButton antiAliasingCheckbutton;
 
 		protected virtual void Build ()
@@ -185,6 +186,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox6.Name = "vbox6";
 			this.vbox6.Spacing = 6;
 			// Container child vbox6.Gtk.Box+BoxChild
+			this.wordWrapCheckbutton = new global::Gtk.CheckButton ();
+			this.wordWrapCheckbutton.CanFocus = true;
+			this.wordWrapCheckbutton.Name = "wordWrapCheckbutton";
+			this.wordWrapCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Word wrap");
+			this.wordWrapCheckbutton.DrawIndicator = true;
+			this.wordWrapCheckbutton.UseUnderline = true;
+			this.vbox6.Add (this.wordWrapCheckbutton);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.wordWrapCheckbutton]));
+			w16.Position = 0;
+			w16.Expand = false;
+			w16.Fill = false;
+			// Container child vbox6.Gtk.Box+BoxChild
 			this.antiAliasingCheckbutton = new global::Gtk.CheckButton ();
 			this.antiAliasingCheckbutton.CanFocus = true;
 			this.antiAliasingCheckbutton.Name = "antiAliasingCheckbutton";
@@ -192,16 +205,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.antiAliasingCheckbutton.DrawIndicator = true;
 			this.antiAliasingCheckbutton.UseUnderline = true;
 			this.vbox6.Add (this.antiAliasingCheckbutton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.antiAliasingCheckbutton]));
-			w16.Position = 0;
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.antiAliasingCheckbutton]));
+			w17.Position = 1;
+			w17.Expand = false;
+			w17.Fill = false;
 			this.alignment4.Add (this.vbox6);
 			this.vbox1.Add (this.alignment4);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment4]));
-			w18.Position = 5;
-			w18.Expand = false;
-			w18.Fill = false;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment4]));
+			w19.Position = 5;
+			w19.Expand = false;
+			w19.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
