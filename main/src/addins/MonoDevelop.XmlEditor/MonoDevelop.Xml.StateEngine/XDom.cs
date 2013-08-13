@@ -56,8 +56,7 @@ namespace MonoDevelop.Xml.StateEngine
 			internal protected set {
 				parent = value;
 				Debug.Assert (parent != null || !region.Begin.IsEmpty, "When parent is null, start must not be negative.");
-				Debug.Assert (parent.IsComplete, "Parent must be complete.");
-				Debug.Assert (region.Begin > parent.Region.End, "Start must greater than parent's end.");
+				Debug.Assert (parent.Region.End.IsEmpty || region.Begin >= parent.Region.End, "Start must be >= parent's end.");
 			}
 		}
 		
@@ -78,7 +77,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public void End (TextLocation endLocation)
 		{
 			Debug.Assert (region.Begin < endLocation, "End must be greater than start.");
-			Debug.Assert (region.Begin < region.End, "XObject cannot be ended multiple times.");
+			Debug.Assert (region.End.IsEmpty || region.Begin < region.End, "XObject cannot be ended multiple times.");
 			region = new DomRegion (region.Begin, endLocation);
 		}
 		
@@ -137,7 +136,7 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return nextSibling; }
 			internal protected set {
 				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Region.Begin > Region.Begin, "Start must greater than parent's end.");
+				Debug.Assert (value.Region.Begin >= Region.End, "Start must >= previous sibling's end.");
 				nextSibling = value;
 			}
 		}
@@ -427,7 +426,7 @@ namespace MonoDevelop.Xml.StateEngine
 			get { return nextSibling; }
 			internal protected set {
 				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Region.Begin > Region.Begin, "Start must greater than parent's end.");
+				Debug.Assert (value.Region.Begin >= Region.End, "Start must be >= previous sibling's end.");
 				nextSibling = value;
 			}
 		}
