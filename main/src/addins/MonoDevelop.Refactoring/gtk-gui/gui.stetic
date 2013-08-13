@@ -9,7 +9,6 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.RefactoringPreviewDialog" design-size="400 300">
@@ -110,7 +109,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.Rename.RenameItemDialog" design-size="365 154">
+  <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.Rename.RenameItemDialog" design-size="365 174">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rename {0}</property>
@@ -184,6 +183,24 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.CheckButton" id="includeOverloadsCheckbox">
+                <property name="MemberName" />
+                <property name="Visible">False</property>
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes">Include overloads</property>
+                <property name="Active">True</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">True</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
@@ -212,7 +229,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">3</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -417,6 +434,7 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="Label" translatable="yes">_External</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>
@@ -722,6 +740,8 @@
               <widget class="MonoDevelop.Components.SearchEntry" id="searchentryFilter">
                 <property name="MemberName" />
                 <property name="ForceFilterButtonVisible">False</property>
+                <property name="HasFrame">False</property>
+                <property name="RoundedShape">False</property>
                 <property name="IsCheckMenu">False</property>
                 <property name="ActiveFilterID">0</property>
                 <property name="Ready">True</property>
@@ -802,6 +822,8 @@
               <widget class="MonoDevelop.Components.SearchEntry" id="searchentryFilter">
                 <property name="MemberName" />
                 <property name="ForceFilterButtonVisible">False</property>
+                <property name="HasFrame">False</property>
+                <property name="RoundedShape">False</property>
                 <property name="IsCheckMenu">False</property>
                 <property name="ActiveFilterID">0</property>
                 <property name="Ready">True</property>

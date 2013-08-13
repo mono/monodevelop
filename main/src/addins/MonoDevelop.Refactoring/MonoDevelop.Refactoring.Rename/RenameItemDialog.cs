@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -50,6 +51,8 @@ namespace MonoDevelop.Refactoring.Rename
 				options.SelectedItem = ((IMethod)options.SelectedItem).DeclaringType;
 			}
 			this.Build ();
+			includeOverloadsCheckbox.Active = true;
+			includeOverloadsCheckbox.Visible = false;
 			if (options.SelectedItem is IType) {
 
 				var t = (IType)options.SelectedItem;
@@ -88,6 +91,7 @@ namespace MonoDevelop.Refactoring.Rename
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				} else {
 					this.Title = GettextCatalog.GetString ("Rename Method");
+					includeOverloadsCheckbox.Visible = m.DeclaringType.GetMethods (x => x.Name == m.Name).Count () > 1;
 				}
 			} else if (options.SelectedItem is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
@@ -162,7 +166,8 @@ namespace MonoDevelop.Refactoring.Rename
 			get {
 				return new RenameRefactoring.RenameProperties () {
 					NewName = entry.Text,
-					RenameFile = renameFileFlag.Visible && renameFileFlag.Active
+					RenameFile = renameFileFlag.Visible && renameFileFlag.Active,
+					IncludeOverloads = includeOverloadsCheckbox.Visible && includeOverloadsCheckbox.Active
 				};
 			}
 		}

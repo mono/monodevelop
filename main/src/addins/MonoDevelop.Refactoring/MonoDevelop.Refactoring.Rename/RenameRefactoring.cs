@@ -253,6 +253,11 @@ namespace MonoDevelop.Refactoring.Rename
 				get;
 				set;
 			}
+
+			public bool IncludeOverloads {
+				get;
+				set;
+			}
 		}
 		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
@@ -261,7 +266,7 @@ namespace MonoDevelop.Refactoring.Rename
 			List<Change> result = new List<Change> ();
 			IEnumerable<MemberReference> col = null;
 			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
-				col = ReferenceFinder.FindReferences (options.SelectedItem, true, monitor);
+				col = ReferenceFinder.FindReferences (options.SelectedItem, properties.IncludeOverloads, monitor);
 				if (col == null)
 					return result;
 					
