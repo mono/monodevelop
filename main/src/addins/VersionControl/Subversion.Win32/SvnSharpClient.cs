@@ -585,12 +585,19 @@ namespace SubversionAddinWindows
 			public bool SendingData;
 		}
 
+		class ProgressData
+		{
+			public bool IsStarted;
+			public int LastWork;
+		}
+
 		void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
 		{
-			NotifData data = new NotifData ();
+			NotifData notifData = new NotifData ();
+			ProgressData progressData = new ProgressData ();
 
 			args.Notify += delegate (object o, SvnNotifyEventArgs e) {
-				Notify (e, data, monitor);
+				Notify (e, notifData, monitor);
 			};
 			args.Cancel += delegate (object o, SvnCancelEventArgs a) {
 				a.Cancel = monitor.IsCancelRequested;
@@ -598,6 +605,28 @@ namespace SubversionAddinWindows
 			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
 				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
 			};
+			args.Progress += delegate (object o, SvnProgressEventArgs e) {
+				// Route table from SvnCommandType to String.
+				ProgressWork (e, progressData, monitor, args.CommandType.ToString ());
+			};
+		}
+
+		void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor, string command)
+		{
+			if (monitor == null)
+				return;
+
+			int progress = (int)e.Progress;
+
+			if (!data.IsStarted) {
+				monitor.BeginTask (command, (int)e.TotalProgress);
+				data.IsStarted = true;
+				data.LastWork = progress;
+				return;
+			}
+
+			monitor.Step (progress - data.LastWork);
+			data.LastWork = progress;
 		}
 
 		void Notify (SvnNotifyEventArgs e, NotifData notifData, IProgressMonitor monitor)
