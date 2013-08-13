@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>VersionControl.Subversion.Win32.Tests</RootNamespace>
     <AssemblyName>VersionControl.Subversion.Win32.Tests</AssemblyName>
-    <TestRunnerCommand>..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerCommand>..\..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
