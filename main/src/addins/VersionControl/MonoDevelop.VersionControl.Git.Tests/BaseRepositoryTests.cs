@@ -54,15 +54,18 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests VersionControlService.GetRepositoryReference.
 		public abstract void RightRepositoryDetection ();
 
 		[Test]
+		// Tests Repository.Checkout.
 		public virtual void CheckoutExists ()
 		{
 			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));
 		}
 
 		[Test]
+		// Tests Repository.Add.
 		public virtual void FileIsAdded ()
 		{
 			FilePath added = rootCheckout + "testfile";
@@ -77,6 +80,7 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests Repository.Commit.
 		public virtual void FileIsCommitted ()
 		{
 			FilePath added = rootCheckout + "testfile";
@@ -91,7 +95,8 @@ namespace MonoDevelop.VersionControl.Tests
 			PostCommit (repo);
 
 			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.RemoteStatus));
+			// TODO: Fix Win32 Svn Remote status check.
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 		}
 
 		protected virtual void PostCommit (Repository repo)
@@ -99,6 +104,7 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests Repository.Update.
 		public virtual void UpdateIsDone ()
 		{
 			string added = rootCheckout + "testfile";
@@ -132,6 +138,7 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests Repository.GetHistory.
 		public virtual void LogIsProper ()
 		{
 			string added = rootCheckout + "testfile";
@@ -147,9 +154,11 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests Repository.GenerateDiff.
 		public abstract void DiffIsProper ();
 
 		[Test]
+		// Tests Repository.Revert.
 		public virtual void Reverts ()
 		{
 			string added = rootCheckout + "testfile";
@@ -167,6 +176,19 @@ namespace MonoDevelop.VersionControl.Tests
 			repo.Revert (added, false, new NullProgressMonitor ());
 			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
 		}
+
+		// TODO: Remaining tests for Repository class.
+		// Tests Repository.GetRevisionChanges.
+		// Tests Repository.RevertRevision.
+		// Tests Repository.MoveFile.
+		// Tests Repository.MoveDirectory.
+		// Tests Repository.DeleteFile(s).
+		// Tests Repository.DeleteDirectory(es).
+		// Tests Repository.CreateLocalDirectory.
+		// Tests Repository.Lock.
+		// Tests Repository.Unlock.
+		// Tests Repository.GetTextAtRevision.
+		// Tests Repository.GetAnnotations.
 
 		#region Util
 

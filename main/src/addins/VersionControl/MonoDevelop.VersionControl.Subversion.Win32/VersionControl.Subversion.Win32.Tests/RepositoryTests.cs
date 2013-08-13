@@ -34,10 +34,10 @@ using System.Diagnostics;
 using System.IO;
 using System;
 
-namespace VersionControl.Subversion.Win32.Tests
+namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
-	public class SharpSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
+	public class SharpSvnUtilsTest : BaseSvnUtilsTest
 	{
 		[SetUp]
 		public override void Setup ()

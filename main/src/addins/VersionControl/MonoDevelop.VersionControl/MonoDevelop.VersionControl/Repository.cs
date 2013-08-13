@@ -167,8 +167,8 @@ namespace MonoDevelop.VersionControl
 		/// <param name='paths'>
 		/// A list of files or directories
 		/// </param>
-		/// <param name='getRemoteStatus'>
-		/// True if remote status information has to be included
+		/// <param name='queryFlags'>
+		/// Use VersionInfoQueryFlags enum for options.
 		/// </param>
 		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
@@ -639,7 +639,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 		
-		// Returns a dif description between local files and the remote files.
+		// Returns a diff description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
 		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
