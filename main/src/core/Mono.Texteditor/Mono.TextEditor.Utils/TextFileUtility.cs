@@ -202,7 +202,7 @@ namespace Mono.TextEditor.Utils
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
 
-			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
+			string tmpPath = Path.GetTempFileName ();
 			using (var stream = new FileStream (tmpPath, FileMode.Create, FileAccess.Write, FileShare.Write)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
@@ -212,7 +212,16 @@ namespace Mono.TextEditor.Utils
 				byte[] bytes = encoding.GetBytes (text);
 				stream.Write (bytes, 0, bytes.Length);
 			}
-			SystemRename (tmpPath, fileName);
+			try {
+				SystemRename (tmpPath, fileName);
+			} catch (Exception) {
+				try {
+					System.IO.File.Delete (tmpPath);
+				} catch {
+					// nothing
+				}
+				throw;
+			}
 		}
 
 		/// <summary>
