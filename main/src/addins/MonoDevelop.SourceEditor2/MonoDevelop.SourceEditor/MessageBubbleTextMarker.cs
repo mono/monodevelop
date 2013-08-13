@@ -302,7 +302,7 @@ namespace MonoDevelop.SourceEditor
 			EnsureLayoutCreated (editor);
 			var layout = wrapper ?? editor.TextViewMargin.GetLayout (lineSegment);
 			try {
-				var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout.PangoWidth / Pango.Scale.PangoScale;
+				var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout.Width;
 				if (errors.Count > 1 && errorCountLayout != null || editor.Allocation.Width < lineTextPx + layouts [0].Width) {
 					int ew = 0, eh = 0;
 					if (errorCountLayout != null) {
@@ -558,7 +558,7 @@ namespace MonoDevelop.SourceEditor
 			double y2 = y + 0.5;
 			double y2Bottom = y2 + editor.LineHeight - 1;
 			var selected = isEolSelected;
-			var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + metrics.Layout.PangoWidth / Pango.Scale.PangoScale;
+			var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + metrics.Layout.Width;
 			if (x2 < lineTextPx) 
 				x2 = lineTextPx;
 

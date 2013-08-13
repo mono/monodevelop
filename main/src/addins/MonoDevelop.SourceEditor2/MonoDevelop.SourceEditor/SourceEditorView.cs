@@ -714,7 +714,10 @@ namespace MonoDevelop.SourceEditor
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't set file attributes", e);
 				}
-			} finally {
+			} catch (UnauthorizedAccessException e) {
+				LoggingService.LogError ("Error while saving file", e);
+				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
+				} finally {
 				FileRegistry.SuspendFileWatch = false;
 			}
 				
