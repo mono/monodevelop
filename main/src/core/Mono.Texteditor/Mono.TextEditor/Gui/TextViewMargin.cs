@@ -1066,7 +1066,7 @@ namespace Mono.TextEditor
 			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
 			if (!containsPreedit)
 				layoutDict [line] = descriptor;
-			//textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, System.Math.Floor (h / Pango.Scale.PangoScale)));
+			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, System.Math.Floor (h / Pango.Scale.PangoScale)));
 			return wrapper;
 		}
 

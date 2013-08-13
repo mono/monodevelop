@@ -498,9 +498,7 @@ namespace Mono.TextEditor
 		bool wrapLines = false;
 		public virtual bool WrapLines {
 			get {
-				// Doesn't work atm
-				return false;
-//				return wrapLines;
+				return wrapLines;
 			}
 			set {
 				if (wrapLines != value) {
