@@ -148,6 +148,7 @@
     <Compile Include="MonoDevelop.Debugger\TreePathComparer.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathReference.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerConsoleView.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

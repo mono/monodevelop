@@ -86,7 +86,7 @@ namespace MonoDevelop.HexEditor
 						buf[i] = (byte) sbuf[i];
 					break;
 				case "char[]":
-					buf = Encoding.UTF8.GetBytes (new string (raw.ToArray () as char[]));
+					buf = Encoding.Unicode.GetBytes (new string (raw.ToArray () as char[]));
 					break;
 				case "byte[]":
 					buf = raw.ToArray () as byte[];
@@ -98,10 +98,11 @@ namespace MonoDevelop.HexEditor
 
 				var raw = val.GetRawValue (ops) as RawValueString;
 
-				buf = Encoding.UTF8.GetBytes (raw.Value);
+				buf = Encoding.Unicode.GetBytes (raw.Value);
 			}
 
 			hexEditor.HexEditorData.Buffer = new ArrayBuffer (buf);
+			hexEditor.Sensitive = CanEdit (val);
 
 			var scrolled = new ScrolledWindow () {
 				HscrollbarPolicy = PolicyType.Automatic,
