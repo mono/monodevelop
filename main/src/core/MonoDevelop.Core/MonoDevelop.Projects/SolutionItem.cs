@@ -57,6 +57,9 @@ namespace MonoDevelop.Projects
 		
 		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
 		MonoDevelop.Projects.Policies.PolicyBag policies;
+
+		[ItemProperty ("UseMSBuildEngine")]
+		public bool? UseMSBuildEngine { get; set; }
 		
 		PropertyBag userProperties;
 		

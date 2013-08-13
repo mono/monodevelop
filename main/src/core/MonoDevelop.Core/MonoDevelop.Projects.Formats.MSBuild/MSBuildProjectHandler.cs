@@ -56,7 +56,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string lastBuildRuntime;
 		string lastFileName;
 		ITimeTracker timer;
-		bool forceUseMSBuild;
 
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -67,7 +66,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return (SolutionEntityItem) Item; }
 		}
 		
-		public System.Collections.Generic.List<string> TargetImports {
+		public List<string> TargetImports {
 			get {
 				return targetImports;
 			}
@@ -189,7 +188,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
-			if (UseMSBuildEngine) {
+			if (UseMSBuildEngineForItem (Item)) {
 				// Get the references list from the msbuild project
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
@@ -211,7 +210,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			if (UseMSBuildEngine) {
+			if (UseMSBuildEngineForItem (Item)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					
@@ -310,8 +309,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						subtypeGuids.Add (guid);
 				}
 			}
-			// Enable xbuild by default only for standard .NET projects - not for subtypes
-			//ForceUseMSBuild = subtypeGuids.Count == 0;
 			
 			try {
 				timer.Trace ("Create item instance");
@@ -337,14 +334,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		internal bool UseMSBuildEngine {
-			get { return forceUseMSBuild || MSBuildProjectService.DefaultBuildWithMSBuild; }
+		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
+		internal bool UseMSBuildEngineForItem (SolutionItem item)
+		{
+			return item.UseMSBuildEngine ?? UseMSBuildEngineByDefault;
 		}
-		
-		internal bool ForceUseMSBuild {
-			get { return forceUseMSBuild; }
-			set { forceUseMSBuild = value; }
-		}
+
+		/// <summary>Whether to use the MSBuild engine by default.</summary>
+		internal bool UseMSBuildEngineByDefault { get; set; }
+
+		/// <summary>Forces the MSBuild engine to be used.</summary>
+		internal bool RequireMSBuildEngine { get; set; }
 		
 		// All of the last 4 parameters are optional, but at least one must be provided.
 		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language, string typeGuids,
@@ -355,7 +355,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (typeGuids)) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
 				if (st != null) {
-					forceUseMSBuild = st.UseXBuild;
+					UseMSBuildEngineByDefault = st.UseXBuild;
+					RequireMSBuildEngine = st.RequireXBuild;
 					Type migratedType = null;
 
 					if (st.IsMigration && (migratedType = MigrateProject (monitor, st, p, fileName, language)) != null) {
@@ -363,8 +364,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						st = MSBuildProjectService.GetItemSubtypeNodes ().Last (t => t.CanHandleType (migratedType));
 
 						for (int i = 0; i < subtypeGuids.Count; i++) {
-							if (string.Equals (subtypeGuids[i], oldSt.Guid, StringComparison.OrdinalIgnoreCase)) {
-								subtypeGuids[i] = st.Guid;
+							if (string.Equals (subtypeGuids [i], oldSt.Guid, StringComparison.OrdinalIgnoreCase)) {
+								subtypeGuids [i] = st.Guid;
 								oldSt = null;
 								break;
 							}
@@ -387,8 +388,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (item == null && itemClass != null)
 				item = (SolutionItem) Activator.CreateInstance (itemClass);
 			
-			if (item == null && !string.IsNullOrEmpty (language))
+			if (item == null && !string.IsNullOrEmpty (language)) {
 				item = new DotNetAssemblyProject (language);
+
+				//enable msbuild by default .NET assembly projects
+				UseMSBuildEngineByDefault = true;
+				RequireMSBuildEngine = false;
+			}
 			
 			if (item == null) {
 				if (string.IsNullOrEmpty (itemType))
