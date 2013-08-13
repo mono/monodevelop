@@ -392,7 +392,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item = new DotNetAssemblyProject (language);
 
 				//enable msbuild by default .NET assembly projects
-				UseMSBuildEngineByDefault = true;
+				UseMSBuildEngineByDefault = false;
 				RequireMSBuildEngine = false;
 			}
 			
