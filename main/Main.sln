@@ -43,9 +43,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.VersionControl.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.VersionControl.Git.Tests", "src\addins\VersionControl\MonoDevelop.VersionControl.Git.Tests\MonoDevelop.VersionControl.Git.Tests.csproj", "{F3AC14B0-3D1F-4B9B-95E8-384056060F33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionControl.Subversion.Win32", "src\addins\VersionControl\MonoDevelop.VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32.csproj", "{1038FBD8-750E-4081-BC65-D89FFED3C881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionControl.Subversion.Win32", "src\addins\VersionControl\Subversion.Win32\VersionControl.Subversion.Win32.csproj", "{1038FBD8-750E-4081-BC65-D89FFED3C881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionControl.Subversion.Win32.Tests", "src\addins\VersionControl\MonoDevelop.VersionControl.Subversion.Win32\VersionControl.Subversion.Win32.Tests\VersionControl.Subversion.Win32.Tests.csproj", "{E17829B5-8EAC-4714-8798-EB8ED3540191}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionControl.Subversion.Win32.Tests", "src\addins\VersionControl\Subversion.Win32.Tests\VersionControl.Subversion.Win32.Tests.csproj", "{E17829B5-8EAC-4714-8798-EB8ED3540191}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.GtkCore", "MonoDevelop.GtkCore", "{02280E65-C507-4931-AE68-AA2E89E15EEF}"
 EndProject
