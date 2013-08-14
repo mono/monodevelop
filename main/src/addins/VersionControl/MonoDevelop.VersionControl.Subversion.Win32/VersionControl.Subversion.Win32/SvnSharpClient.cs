@@ -389,8 +389,8 @@ namespace SubversionAddinWindows
 			args.RetrieveRemoteStatus = remoteStatus;
 			lock (client) 
 				client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
-				list.Add (CreateVersionInfo (repo, a));
-			});
+					list.Add (CreateVersionInfo (repo, a));
+				});
 			return list;
 		}
 

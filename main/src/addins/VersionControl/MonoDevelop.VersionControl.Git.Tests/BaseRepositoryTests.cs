@@ -73,11 +73,9 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Add.
 		public virtual void FileIsAdded ()
 		{
-			FilePath added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
+			AddFile ("testfile", null, true, false);
 
-			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo vi = repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache);
 
 			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
@@ -88,18 +86,10 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Commit.
 		public virtual void FileIsCommitted ()
 		{
-			FilePath added = rootCheckout + "testfile";
-
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "test";
-			repo.Commit (changes, new NullProgressMonitor ());
-
+			AddFile ("testfile", null, true, true);
 			PostCommit (repo);
 
-			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo vi = repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
 			// TODO: Fix Win32 Svn Remote status check.
 			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 		}
@@ -112,24 +102,17 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Update.
 		public virtual void UpdateIsDone ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "test";
-			repo.Commit (changes, new NullProgressMonitor ());
-
+			AddFile ("testfile", null, true, true);
 			PostCommit (repo);
 
 			// Checkout a second repository.
 			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			Checkout (second, repoLocation);
 			repo2 = GetRepo (second, repoLocation);
-			added = second + "testfile2";
+			string added = second + "testfile2";
 			File.Create (added).Close ();
 			repo2.Add (added, false, new NullProgressMonitor ());
-			changes = repo.CreateChangeSet (repo.RootPath);
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
 			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
 			changes.GlobalComment = "test2";
 			repo2.Commit (changes, new NullProgressMonitor ());
@@ -146,35 +129,29 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetHistory.
 		public virtual void LogIsProper ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new NullProgressMonitor ());
-			foreach (Revision rev in repo.GetHistory (added, null)) {
-				Assert.AreEqual ("File committed", rev.Message);
+			AddFile ("testfile", null, true, true);
+			AddFile ("testfile2", null, true, true);
+			int index = 0;
+			foreach (Revision rev in repo.GetHistory (rootCheckout + "testfile", null)) {
+				Assert.AreEqual (String.Format ("Commit #{0}", index++), rev.Message);
 			}
 		}
 
 		[Test]
 		// Tests Repository.GenerateDiff.
-		public abstract void DiffIsProper ();
+		public virtual void DiffIsProper ()
+		{
+			AddFile ("testfile", null, true, true);
+			File.AppendAllText (rootCheckout + "testfile", "text" + Environment.NewLine);
+		}
 
 		[Test]
-		// Tests Repository.Revert.
+		// Tests Repository.Revert and Repository.GetBaseText.
 		public virtual void Reverts ()
 		{
-			string added = rootCheckout + "testfile";
 			string content = "text";
-
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new NullProgressMonitor ());
+			AddFile ("testfile", null, true, true);
+			string added = rootCheckout + "testfile";
 
 			// Revert to head.
 			File.WriteAllText (added, content);
@@ -186,16 +163,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetRevisionChanges.
 		public virtual void CorrectRevisionChanges ()
 		{
-			string added = rootCheckout + "testfile";
-			string content = "text";
-
-			File.WriteAllText (added, content);
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "TestMessage";
-			repo.Commit (changes, new NullProgressMonitor ());
-
+			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
 		}
 
@@ -204,16 +172,7 @@ namespace MonoDevelop.VersionControl.Tests
 		[Ignore]
 		public virtual void RevertsRevision ()
 		{
-			string added = rootCheckout + "testfile";
-			string content = "text";
-
-			File.WriteAllText (added, content);
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "TestMessage";
-			repo.Commit (changes, new NullProgressMonitor ());
-
+			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
 		}
 
@@ -223,16 +182,9 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			string src = rootCheckout + "testfile";
 			string dst = src + "2";
-			string content = "text";
 
-			File.WriteAllText (src, content);
-			repo.Add (src, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "TestMessage";
-			repo.Commit (changes, new NullProgressMonitor ());
-
-			repo.MoveFile (src, dst, true, new NullProgressMonitor ());
+			AddFile ("testfile", "text", true, true);
+			repo.MoveFile (src, dst, false, new NullProgressMonitor ());
 			// Win32 Subversion shows srcVi as Unversioned.
 			// Test for Unix Subversion.
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);

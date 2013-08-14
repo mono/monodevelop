@@ -77,19 +77,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Test]
 		public override void DiffIsProper ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			File.AppendAllText (added, "text" + Environment.NewLine);
+			base.DiffIsProper ();
 
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]
