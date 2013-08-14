@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using NUnit.Framework;
@@ -56,24 +55,66 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			base.TearDown ();
 		}
 
-		[Test]
-		public override void DiffIsProper ()
+		protected override void TestDiff ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new NullProgressMonitor ());
-			File.AppendAllText (added, "text" + Environment.NewLine);
-
 			string difftext = @"--- testfile	(revision 1)
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+		}
+
+		// Tests that fail due to SvnSharp giving wrong data.
+		[Test]
+		[Ignore ("Fix SvnSharp")]
+		public override void MovesFile ()
+		{
+			base.MovesFile ();
+		}
+
+		[Test]
+		[Ignore ("Fix SvnSharp")]
+		public override void MovesDirectory ()
+		{
+			base.MovesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Fix SvnSharp")]
+		public override void DeletesDirectory ()
+		{
+			base.DeletesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Throws SvnAuthorizationException on Lock")]
+		public override void LocksEntities ()
+		{
+			base.LocksEntities ();
+		}
+
+		protected override void PostLock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.Throws<Exception> (delegate {
+				File.WriteAllText (added, "text");
+			});
+		}
+
+		[Test]
+		[Ignore ("Throws SvnAuthorizationException on Lock")]
+		public override void UnlocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		protected override void PostUnlock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.DoesNotThrow (delegate {
+				File.WriteAllText (added, "text");
+			});
 		}
 
 		protected override Repository GetRepo (string path, string url)

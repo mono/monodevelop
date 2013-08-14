@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		static readonly byte[] EmptyContent = new byte[0];
 
-		LocalGitRepository RootRepository {
+		internal LocalGitRepository RootRepository {
 			get; set;
 		}
 
@@ -356,15 +356,6 @@ namespace MonoDevelop.VersionControl.Git
 					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 				}
 			};
-
-			if (status.IsClean ()) {
-				existingFiles.ExceptWith (localPaths);
-				nonVersionedMissingFiles.ExceptWith (localPaths);
-				foreach (var file in localPaths)
-					versions.Add (new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null));
-
-				return;
-			}
 
 			AddFiles (status.GetAdded (), VersionStatus.Versioned | VersionStatus.ScheduledAdd);
 			AddFiles (status.GetChanged (), VersionStatus.Versioned | VersionStatus.Modified);
@@ -1661,10 +1652,13 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnIgnore (FilePath[] paths)
 		{
 			List<FilePath> ignored = new List<FilePath> ();
+			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
-			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
-				while ((txt = br.ReadLine ()) != null) {
-					ignored.Add (txt);
+			if (File.Exists (gitignore)) {
+				using (StreamReader br = new StreamReader (gitignore)) {
+					while ((txt = br.ReadLine ()) != null) {
+						ignored.Add (txt);
+					}
 				}
 			}
 
@@ -1678,10 +1672,13 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnUnignore (FilePath[] paths)
 		{
 			List<string> ignored = new List<string> ();
+			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
-			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
-				while ((txt = br.ReadLine ()) != null) {
-					ignored.Add (txt);
+			if (File.Exists (gitignore)) {
+				using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+					while ((txt = br.ReadLine ()) != null) {
+						ignored.Add (txt);
+					}
 				}
 			}
 
