@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>VersionControl.Subversion.Win32.Tests</RootNamespace>
     <AssemblyName>VersionControl.Subversion.Win32.Tests</AssemblyName>
-    <TestRunnerCommand>..\..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\tests</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\tests</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,10 +34,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RepositoryTests.cs" />
-    <Compile Include="..\..\MonoDevelop.VersionControl.Git.Tests\BaseRepositoryTests.cs">
+    <Compile Include="..\MonoDevelop.VersionControl.Git.Tests\BaseRepositoryTests.cs">
       <Link>BaseRepositoryTests.cs</Link>
     </Compile>
-    <Compile Include="..\..\MonoDevelop.VersionControl.Subversion.Tests\BaseSvnRepositoryTests.cs">
+    <Compile Include="..\MonoDevelop.VersionControl.Subversion.Tests\BaseSvnRepositoryTests.cs">
       <Link>BaseSvnRepositoryTests.cs</Link>
     </Compile>
   </ItemGroup>
