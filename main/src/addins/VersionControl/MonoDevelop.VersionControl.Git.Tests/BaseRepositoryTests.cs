@@ -60,18 +60,58 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests VersionControlService.GetRepositoryReference.
-		public abstract void RightRepositoryDetection ();
+		public void RightRepositoryDetection ()
+		{
+			var path = ((string)rootCheckout).TrimEnd (Path.DirectorySeparatorChar);
+			var repo = VersionControlService.GetRepositoryReference (path, null);
+			Assert.That (repo, IsCorrectType (), "#1");
+
+			while (!String.IsNullOrEmpty (path)) {
+				path = Path.GetDirectoryName (path);
+				if (path == null)
+					return;
+				Assert.IsNull (VersionControlService.GetRepositoryReference (path, null), "#2." + path);
+			}
+
+			// Versioned file
+			AddFile ("foo", "contents", true, true);
+			path = Path.Combine (rootCheckout, "foo");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#2");
+
+			// Versioned directory
+			AddDirectory ("bar", true, true);
+			path = Path.Combine (rootCheckout, "bar");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#3");
+
+			// Unversioned file
+			AddFile ("bip", "contents", false, false);
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#4");
+
+			// Unversioned directory
+			AddDirectory ("bop", false, false);
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#5");
+
+			// Nonexistent file
+			path = Path.Combine (rootCheckout, "do_i_exist");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
+
+			// Nonexistent directory
+			path = Path.Combine (rootCheckout, "do", "i", "exist");
+			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
+		}
+
+		protected abstract NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ();
 
 		[Test]
 		// Tests Repository.Checkout.
-		public virtual void CheckoutExists ()
+		public void CheckoutExists ()
 		{
 			Assert.IsTrue (Directory.Exists (rootCheckout + DOT_DIR));
 		}
 
 		[Test]
 		// Tests Repository.Add.
-		public virtual void FileIsAdded ()
+		public void FileIsAdded ()
 		{
 			AddFile ("testfile", null, true, false);
 
@@ -84,7 +124,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.Commit.
-		public virtual void FileIsCommitted ()
+		public void FileIsCommitted ()
 		{
 			AddFile ("testfile", null, true, true);
 			PostCommit (repo);
@@ -127,7 +167,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GetHistory.
-		public virtual void LogIsProper ()
+		public void LogIsProper ()
 		{
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
@@ -139,7 +179,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GenerateDiff.
-		public virtual void DiffIsProper ()
+		public void DiffIsProper ()
 		{
 			AddFile ("testfile", null, true, true);
 			File.AppendAllText (rootCheckout + "testfile", "text" + Environment.NewLine);
@@ -151,7 +191,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.Revert and Repository.GetBaseText.
-		public virtual void Reverts ()
+		public void Reverts ()
 		{
 			string content = "text";
 			AddFile ("testfile", null, true, true);
@@ -168,7 +208,7 @@ namespace MonoDevelop.VersionControl.Tests
 		[Test]
 		// Tests Repository.GetRevisionChanges.
 		[Ignore ("TODO")]
-		public virtual void CorrectRevisionChanges ()
+		public void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
@@ -177,7 +217,7 @@ namespace MonoDevelop.VersionControl.Tests
 		[Test]
 		// Tests Repository.RevertRevision.
 		[Ignore ("TODO")]
-		public virtual void RevertsRevision ()
+		public void RevertsRevision ()
 		{
 			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
@@ -221,7 +261,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.DeleteFile.
-		public virtual void DeletesFile ()
+		public void DeletesFile ()
 		{
 			string added = rootCheckout + "testfile";
 			AddFile ("testfile", null, true, true);
@@ -300,13 +340,13 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GetTextAtRevision.
-		public virtual void CorrectTextAtRevision ()
+		public void CorrectTextAtRevision ()
 		{
 		}
 
 		[Test]
 		// Tests Repository.GetAnnotations.
-		public virtual void BlameIsCorrect ()
+		public void BlameIsCorrect ()
 		{
 		}
 

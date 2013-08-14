@@ -83,45 +83,9 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			DOT_DIR = ".svn";
 		}
 
-		[Test]
-		public override void RightRepositoryDetection ()
+		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
-			var path = ((string)rootCheckout).TrimEnd (Path.DirectorySeparatorChar);
-			var repo = VersionControlService.GetRepositoryReference (path, null);
- 			Assert.That (repo, Is.InstanceOf<SubversionRepository> (), "#1");
-
-			while (!String.IsNullOrEmpty (path)) {
-				path = Path.GetDirectoryName (path);
-				if (path == null)
-					return;
-				Assert.IsNull (VersionControlService.GetRepositoryReference (path, null), "#2." + path);
-			}
-
-			// Versioned file
-			AddFile ("foo", "contents", true, true);
-			path = Path.Combine (rootCheckout, "foo");
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#2");
-
-			// Versioned directory
-			AddDirectory ("bar", true, true);
-			path = Path.Combine (rootCheckout, "bar");
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#3");
-
-			// Unversioned file
-			AddFile ("bip", "contents", false, false);
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#4");
-
-			// Unversioned directory
-			AddDirectory ("bop", false, false);
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#5");
-
-			// Nonexistent file
-			path = Path.Combine (rootCheckout, "do_i_exist");
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
-
-			// Nonexistent directory
-			path = Path.Combine (rootCheckout, "do", "i", "exist");
-			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
+			return Is.InstanceOf<SubversionRepository> ();
 		}
 	}
 }

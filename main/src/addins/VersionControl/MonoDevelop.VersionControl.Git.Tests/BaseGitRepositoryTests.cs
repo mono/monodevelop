@@ -67,11 +67,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			DOT_DIR = ".git";
 		}
 
-		[Test]
-		public override void RightRepositoryDetection ()
+		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
-			Repository repo = VersionControlService.GetRepositoryReference (rootCheckout + DOT_DIR, null);
-			Assert.True (repo is GitRepository);
+			return Is.InstanceOf<GitRepository> ();
 		}
 
 		protected override void TestDiff ()
