@@ -200,10 +200,10 @@ namespace Mono.TextEditor.Highlighting
 
 		public class SpanParser
 		{
-			protected SyntaxMode mode;
+			protected readonly SyntaxMode mode;
 			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
-			protected TextDocument doc;
+			protected readonly TextDocument doc;
 
 			internal Func<bool> IsAtWordStart = () => true;
 			int maxEnd;
@@ -257,6 +257,8 @@ namespace Mono.TextEditor.Highlighting
 				if (mode == null)
 					throw new ArgumentNullException ("mode");
 				this.doc  = mode.Document;
+				if (this.doc == null)
+					throw new ArgumentException ("Syntax mode isn't bound to any document.", "mode");
 				this.mode = mode;
 				this.SpanStack = spanStack;
 				this.CurRule = mode;
@@ -844,3 +846,4 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 }
+
