@@ -297,26 +297,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Tuple<int, int> GetErrorCountBounds (TextViewMargin.LayoutWrapper wrapper = null)
+		Tuple<int, int> GetErrorCountBounds (LineMetrics metrics)
 		{
 			EnsureLayoutCreated (editor);
-			var layout = wrapper ?? editor.TextViewMargin.GetLayout (lineSegment);
-			try {
-				var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout.Width;
-				if (errors.Count > 1 && errorCountLayout != null || editor.Allocation.Width < lineTextPx + layouts [0].Width) {
-					int ew = 0, eh = 0;
-					if (errorCountLayout != null) {
-						errorCountLayout.GetPixelSize (out ew, out eh);
-					} else {
-						ew = 10;
-					}
-					return Tuple.Create (ew + 10, eh);
+			var lineTextPx = editor.TextViewMargin.XOffset + metrics.TextRenderEndPosition;
+			if (errors.Count > 1 && errorCountLayout != null || editor.Allocation.Width < lineTextPx + layouts [0].Width) {
+				int ew = 0, eh = 0;
+				if (errorCountLayout != null) {
+					errorCountLayout.GetPixelSize (out ew, out eh);
+				} else {
+					ew = 10;
 				}
-				return Tuple.Create (0, 0);
-			} finally {
-				if (wrapper == null && layout.IsUncached)
-					layout.Dispose ();
+				return Tuple.Create (ew + 10, eh);
 			}
+			return Tuple.Create (0, 0);
 		}
 
 		static void DrawRectangle (Cairo.Context g, double x, double y, double width, double height)
@@ -501,7 +495,6 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return false;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
-
 			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
 				return false;
 
@@ -509,7 +502,7 @@ namespace MonoDevelop.SourceEditor
 			double x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			bool isCaretInLine = metrics.TextStartOffset <= editor.Caret.Offset && editor.Caret.Offset <= metrics.TextEndOffset;
-			int errorCounterWidth = GetErrorCountBounds (metrics.Layout).Item1;
+			int errorCounterWidth = GetErrorCountBounds (metrics).Item1;
 
 			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth, editor.TextViewMargin.XOffset + editor.LineHeight / 2);
 

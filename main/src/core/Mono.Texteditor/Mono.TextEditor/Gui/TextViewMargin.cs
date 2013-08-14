@@ -2801,7 +2801,7 @@ namespace Mono.TextEditor
 			if (BackgroundRenderer == null) {
 				var metrics = new EndOfLineMetrics {
 					LineSegment = line,
-					TextRenderEndPosition = TextStartPosition + position / Pango.Scale.PangoScale,
+					TextRenderEndPosition = TextStartPosition + position,
 					LineHeight = _lineHeight
 				};
 				foreach (var marker in line.Markers) {
@@ -2809,7 +2809,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			lastLineRenderWidth = position / Pango.Scale.PangoScale;
+			lastLineRenderWidth = position;
 			if (textEditor.HAdjustment.Value > 0) {
 				cr.LineWidth = textEditor.Options.Zoom;
 				for (int i = 0; i < verticalShadowAlphaTable.Length; i++) {
