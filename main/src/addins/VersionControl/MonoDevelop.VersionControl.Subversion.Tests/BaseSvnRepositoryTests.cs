@@ -87,6 +87,11 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		{
 			return Is.InstanceOf<SubversionRepository> ();
 		}
+
+		protected override Revision GetHeadRevision ()
+		{
+			return SvnRevision.Head;
+		}
 	}
 }
 

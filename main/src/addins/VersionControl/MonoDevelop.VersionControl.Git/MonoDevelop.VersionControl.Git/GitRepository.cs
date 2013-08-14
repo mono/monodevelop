@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		static readonly byte[] EmptyContent = new byte[0];
 
-		LocalGitRepository RootRepository {
+		internal LocalGitRepository RootRepository {
 			get; set;
 		}
 

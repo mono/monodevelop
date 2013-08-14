@@ -207,12 +207,15 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GetRevisionChanges.
-		[Ignore ("TODO")]
 		public void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
-			// Override and test in specific with GitRevision and SvnRevision.
+			foreach (var rev in repo.GetRevisionChanges (GetRevision ())) {
+				Assert.AreEqual (rev.Action, RevisionAction.Add);
+			}
 		}
+
+		protected abstract Revision GetHeadRevision ();
 
 		[Test]
 		// Tests Repository.RevertRevision.
@@ -221,6 +224,10 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
+		}
+
+		protected virtual void DoRevisionRevert ()
+		{
 		}
 
 		[Test]
@@ -339,12 +346,19 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		[Ignore ("TODO")]
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
 		}
 
+		protected virtual string GetTextAtRevision ()
+		{
+			return null;
+		}
+
 		[Test]
+		[Ignore ("TODO")]
 		// Tests Repository.GetAnnotations.
 		public void BlameIsCorrect ()
 		{

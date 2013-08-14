@@ -34,6 +34,7 @@ using NUnit.Framework;
 using System.IO;
 using System;
 using NGit.Storage.File;
+using NGit.Revwalk;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -113,6 +114,20 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public override void MovesDirectory ()
 		{
 			base.MovesDirectory ();
+		}
+
+		protected override Revision GetHeadRevision ()
+		{
+			GitRepository repo2 = (GitRepository)repo;
+			RevWalk rw = new RevWalk (repo2.RootRepository);
+			ObjectId headId = repo2.RootRepository.Resolve (Constants.HEAD);
+			if (headId == null)
+				return null;
+
+			RevCommit commit = rw.ParseCommit (headId);
+			GitRevision rev = new GitRevision (repo, repo2.RootRepository, commit.Id.Name);
+			rev.Commit = commit;
+			return rev;
 		}
 
 		protected override void PostCommit (Repository repo)
