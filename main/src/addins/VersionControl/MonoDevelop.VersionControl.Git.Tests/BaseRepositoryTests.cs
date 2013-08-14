@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Checkout.
 		public virtual void CheckoutExists ()
 		{
-			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));
+			Assert.IsTrue (Directory.Exists (rootCheckout + DOT_DIR));
 		}
 
 		[Test]
@@ -143,7 +143,11 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			AddFile ("testfile", null, true, true);
 			File.AppendAllText (rootCheckout + "testfile", "text" + Environment.NewLine);
+
+			TestDiff ();
 		}
+
+		protected abstract void TestDiff ();
 
 		[Test]
 		// Tests Repository.Revert and Repository.GetBaseText.
@@ -160,33 +164,34 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		// TODO: Remaining tests for Repository class.
+
+		[Test]
 		// Tests Repository.GetRevisionChanges.
+		[Ignore ("TODO")]
 		public virtual void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
 		}
 
-		// Tests Repository.RevertRevision.
 		[Test]
-		[Ignore]
+		// Tests Repository.RevertRevision.
+		[Ignore ("TODO")]
 		public virtual void RevertsRevision ()
 		{
 			AddFile ("testfile", "text", true, true);
 			// Override and test in specific with GitRevision and SvnRevision.
 		}
 
-		// Tests Repository.MoveFile.
 		[Test]
+		// Tests Repository.MoveFile.
 		public virtual void MovesFile ()
 		{
 			string src = rootCheckout + "testfile";
 			string dst = src + "2";
 
-			AddFile ("testfile", "text", true, true);
+			AddFile ("testfile", null, true, true);
 			repo.MoveFile (src, dst, false, new NullProgressMonitor ());
-			// Win32 Subversion shows srcVi as Unversioned.
-			// Test for Unix Subversion.
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
 			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
 			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
@@ -198,29 +203,59 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.MoveDirectory.
 		public virtual void MovesDirectory ()
 		{
+			string srcDir = rootCheckout + "test";
+			string dstDir = rootCheckout + "test2";
+			string src = srcDir + Path.DirectorySeparatorChar + "testfile";
+			string dst = dstDir + Path.DirectorySeparatorChar + "testfile";
+
+			AddDirectory ("test", true, false);
+			AddFile ("test" + Path.DirectorySeparatorChar + "testfile", null, true, true);
+
+			repo.MoveDirectory (srcDir, dstDir, false, new NullProgressMonitor ());
+			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
+			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
 
 		[Test]
 		// Tests Repository.DeleteFile.
 		public virtual void DeletesFile ()
 		{
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", null, true, true);
+			repo.DeleteFile (added, true, new NullProgressMonitor ());
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.ScheduledDelete, vi.Status & VersionStatus.ScheduledDelete);
 		}
 
 		[Test]
 		// Tests Repository.DeleteDirectory.
 		public virtual void DeletesDirectory ()
 		{
-		}
+			string addedDir = rootCheckout + "test";
+			string added = addedDir + Path.DirectorySeparatorChar + "testfile";
+			AddDirectory ("test", true, false);
+			AddFile ("testfile", null, true, true);
 
-		[Test]
-		// Tests Repository.CreateLocalDirectory.
-		public virtual void CreatesDirectory ()
-		{
+			repo.DeleteDirectory (addedDir, true, new NullProgressMonitor ());
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.ScheduledDelete, vi.Status & VersionStatus.ScheduledDelete);
 		}
 
 		[Test]
 		// Tests Repository.Lock.
 		public virtual void LocksEntities ()
+		{
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", null, true, true);
+			repo.Lock (new NullProgressMonitor (), added);
+
+			PostLock ();
+		}
+
+		protected virtual void PostLock ()
 		{
 		}
 
@@ -228,18 +263,39 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Unlock.
 		public virtual void UnlocksEntities ()
 		{
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", null, true, true);
+			repo.Lock (new NullProgressMonitor (), "testfile");
+			repo.Unlock (new NullProgressMonitor (), added);
+
+			PostLock ();
+		}
+
+		protected virtual void PostUnlock ()
+		{
 		}
 
 		[Test]
 		// Tests Repository.Ignore
 		public virtual void IgnoresEntities ()
 		{
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", null, false, false);
+			repo.Ignore (new FilePath[] { added });
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Ignored, vi.Status & VersionStatus.Ignored);
 		}
 
 		[Test]
 		// Tests Repository.Unignore
 		public virtual void UnignoresEntities ()
 		{
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", null, false, false);
+			repo.Ignore (new FilePath[] { added });
+			repo.Unignore (new FilePath[] { added });
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status);
 		}
 
 		[Test]

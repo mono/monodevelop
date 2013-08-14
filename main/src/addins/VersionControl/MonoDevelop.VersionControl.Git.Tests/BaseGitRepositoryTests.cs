@@ -74,11 +74,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.True (repo is GitRepository);
 		}
 
-		[Test]
-		public override void DiffIsProper ()
+		protected override void TestDiff ()
 		{
-			base.DiffIsProper ();
-
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
@@ -90,6 +87,34 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public override void UpdateIsDone ()
 		{
 			base.UpdateIsDone ();
+		}
+
+		[Test]
+		[Ignore ("Not implemented in GitRepository.")]
+		public override void LocksEntities ()
+		{
+			base.LocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("Not implemented in GitRepository.")]
+		public override void UnlocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("Apparently, we have issues with this")]
+		public override void DeletesDirectory ()
+		{
+			base.DeletesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("NGit sees added directories as unversioned.")]
+		public override void MovesDirectory ()
+		{
+			base.MovesDirectory ();
 		}
 
 		protected override void PostCommit (Repository repo)

@@ -65,11 +65,8 @@ namespace VersionControl.Subversion.Unix.Tests
 			Assert.IsTrue (items.Any (item => item.Name == "foo" && item.IsDirectory), "#2b");
 		}
 
-		[Test]
-		public override void DiffIsProper ()
+		protected override void TestDiff ()
 		{
-			base.DiffIsProper ();
-
 			string difftext = @"--- testfile	(revision 1)
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
