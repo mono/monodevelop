@@ -468,20 +468,24 @@ namespace MonoDevelop.CodeIssues
 			var groups = possibleFixes.Take (BatchChoiceCount).ToList ();
 			if (!groups.Any ())
 				return;
-			
-			var menu = new Menu ();
-			foreach (var g in groups) {
-				menu.Items.Add (CreateIssueMenuItem (g));
+
+			if (groups.Count == 1) {
+				CreateIssueMenu (groups.First ()).Popup (view, x, y);
+			} else {
+				var menu = new Menu ();
+				foreach (var g in groups) {
+					var menuItem = new MenuItem (g.First ().ProviderTitle);
+					menuItem.SubMenu = CreateIssueMenu (g);
+					menu.Items.Add (menuItem);
+				}
+				menu.Popup (view, x, y);
 			}
-			menu.Popup (view, x, y);
 		}
 
-		MenuItem CreateIssueMenuItem (IEnumerable<IssueSummary> issues)
+		Menu CreateIssueMenu (IEnumerable<IssueSummary> issues)
 		{
 			var allIssues = issues as IList<IssueSummary> ?? issues.ToList ();
-			var issueMenuItem = new MenuItem (allIssues.First ().ProviderTitle);
-			var issueSubMenu = new Menu ();
-			issueMenuItem.SubMenu = issueSubMenu;
+			var issueMenu = new Menu ();
 			
 			var actionGroups = allIssues
 				.SelectMany (issue => issue.Actions)
@@ -508,9 +512,9 @@ namespace MonoDevelop.CodeIssues
 						}
 					});
 				};
-				issueSubMenu.Items.Add (actionMenuItem);
+				issueMenu.Items.Add (actionMenuItem);
 			}
-			return issueMenuItem;
+			return issueMenu;
 		}
 		
 	}
