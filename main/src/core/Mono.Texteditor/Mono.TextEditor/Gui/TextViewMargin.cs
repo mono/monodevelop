@@ -1671,7 +1671,7 @@ namespace Mono.TextEditor
 							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
 							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
 							int w = (int) System.Math.Ceiling ((x2 - x1) / Pango.Scale.PangoScale);
-							int s = (int) System.Math.Floor ((x1 + x) / Pango.Scale.PangoScale);
+							int s = (int) System.Math.Floor (x1 / Pango.Scale.PangoScale + x);
 							double corner = System.Math.Min (4, width) * textEditor.Options.Zoom;
 
 							cr.SetSourceColor (MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchResult.Color : ColorStyle.SearchResultMain.Color);
