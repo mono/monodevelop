@@ -201,9 +201,16 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
+			string tmpPath;
 
-			string tmpPath = Path.GetTempFileName ();
-			using (var stream = new FileStream (tmpPath, FileMode.Create, FileAccess.Write, FileShare.Write)) {
+			if (Platform.IsMac || Platform.IsWindows) {
+				tmpPath = Path.GetTempFileName ();
+			} else {
+				// atomic rename only works in the same directory on linux.
+				tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
+			}
+
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
@@ -760,4 +767,7 @@ namespace Mono.TextEditor.Utils
 		#endregion
 	}
 }
+
+
+
 
