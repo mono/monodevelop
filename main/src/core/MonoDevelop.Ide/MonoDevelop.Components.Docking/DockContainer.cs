@@ -210,7 +210,7 @@ namespace MonoDevelop.Components.Docking
 		protected override void OnRemoved (Widget widget)
 		{
 			System.Diagnostics.Debug.Assert (
-				widget.Parent != this,
+				widget.Parent == this,
 				"Widget is not parented on this widget");
 
 			widget.Unparent ();
