@@ -113,7 +113,9 @@ namespace MonoDevelop.CSharp.Formatting
 			get { return myProperty;} 
 			set { myProperty = value;} 
 		}
-		
+
+		string Simple { get { ; } set { ; } }
+
 		int myOtherProperty;
 		int MyOtherProperty { 
 			get { 
@@ -125,6 +127,13 @@ namespace MonoDevelop.CSharp.Formatting
 					myOtherProperty = value;
 			} 
 		}
+		
+		int MyAutoProperty { 
+			get;
+			set;
+		}
+
+		int MyOtherAutoProperty { get; set; }
 	}";
 		
 		const string spaceExample = @"class ClassDeclaration { 
@@ -593,10 +602,14 @@ namespace TestSpace {
 			AddOption (bacePositionOptions, "StatementBraceStyle", GettextCatalog.GetString ("Statements"), spaceExample);
 			
 			category = AddOption (bacePositionOptions, "PropertyBraceStyle", GettextCatalog.GetString ("Property declaration"), propertyExample);
+			AddOption (bacePositionOptions, category, "AutoPropertyFormatting", GettextCatalog.GetString ("Allow automatic property in one line"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimplePropertyFormatting", GettextCatalog.GetString ("Allow simple property in one line"), propertyExample);
+
+
 			AddOption (bacePositionOptions, category, "PropertyGetBraceStyle", GettextCatalog.GetString ("Get declaration"), propertyExample);
-			AddOption (bacePositionOptions, category, "AllowPropertyGetBlockInline", GettextCatalog.GetString ("Allow one line get"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimpleGetBlockFormatting", GettextCatalog.GetString ("Allow one line get"), propertyExample);
 			AddOption (bacePositionOptions, category, "PropertySetBraceStyle", GettextCatalog.GetString ("Set declaration"), propertyExample);
-			AddOption (bacePositionOptions, category, "AllowPropertySetBlockInline", GettextCatalog.GetString ("Allow one line set"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimpleSetBlockFormatting", GettextCatalog.GetString ("Allow one line set"), propertyExample);
 			
 			
 			category = AddOption (bacePositionOptions, "EventBraceStyle", GettextCatalog.GetString ("Event declaration"), eventExample);

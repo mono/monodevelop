@@ -215,15 +215,25 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public PropertyFormatting PropertyFormatting {
+		public PropertyFormatting SimplePropertyFormatting {
 			get {
-				return options.PropertyFormatting;
+				return options.SimplePropertyFormatting;
 			}
 			set {
-				options.PropertyFormatting = value;
+				options.SimplePropertyFormatting = value;
 			}
 		}
-		
+
+		[ItemProperty]
+		public PropertyFormatting AutoPropertyFormatting {
+			get {
+				return options.AutoPropertyFormatting;
+			}
+			set {
+				options.AutoPropertyFormatting = value;
+			}
+		}
+
 		#endregion
 		
 		#region Braces
@@ -346,24 +356,25 @@ namespace MonoDevelop.CSharp.Formatting
 				options.PropertySetBraceStyle = value;
 			}
 		}
-		
+
 		[ItemProperty]
-		public bool AllowPropertyGetBlockInline {
+		public PropertyFormatting SimpleGetBlockFormatting {
 			get {
-				return options.AllowPropertyGetBlockInline;
+				return options.SimpleGetBlockFormatting;
 			}
 			set {
-				options.AllowPropertyGetBlockInline = value;
+				options.SimpleGetBlockFormatting = value;
 			}
 		}
-		
+
 		[ItemProperty]
-		public bool AllowPropertySetBlockInline {
+		public PropertyFormatting SimpleSetBlockFormatting {
 			get {
-				return options.AllowPropertySetBlockInline;
+
+				return options.SimpleSetBlockFormatting;
 			}
 			set {
-				options.AllowPropertySetBlockInline = value;
+				options.SimpleSetBlockFormatting = value;
 			}
 		}
 		
