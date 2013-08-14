@@ -421,7 +421,7 @@ namespace MonoDevelop.CodeActions
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.LineWidth = border;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.Color = document.Editor.ColorStyle.PlainText.Background;
+				cr.SetSourceColor (document.Editor.ColorStyle.PlainText.Background);
 				cr.Fill ();
 				
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr,

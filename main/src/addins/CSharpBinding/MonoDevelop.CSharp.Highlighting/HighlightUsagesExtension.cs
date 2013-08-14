@@ -318,12 +318,12 @@ namespace MonoDevelop.CSharp.Highlighting
 						using (var lg = new LinearGradient (@from + 1, y + 1, to , y + editor.LineHeight)) {
 							lg.AddColorStop (0, colorStyle.Color);
 							lg.AddColorStop (1, colorStyle.SecondColor);
-							cr.Pattern = lg;
+							cr.SetSource (lg);
 							cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
 							cr.FillPreserve ();
 						}
 						
-						cr.Color = colorStyle.BorderColor;
+						cr.SetSourceColor (colorStyle.BorderColor);
 						cr.Stroke ();
 					}
 				}

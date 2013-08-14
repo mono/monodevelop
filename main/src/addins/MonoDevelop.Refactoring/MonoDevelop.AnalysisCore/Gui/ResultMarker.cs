@@ -119,12 +119,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			
 			double height = editor.LineHeight / 5;
-			cr.Color = GetColor (editor, Result);
+			cr.SetSourceColor (GetColor (editor, Result));
 			if (drawOverlay) {
 				cr.Rectangle (drawFrom, y, drawTo - drawFrom, editor.LineHeight);
 				var color = editor.ColorStyle.PlainText.Background;
 				color.A = 0.6;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.Fill ();
 			} else if (result.InspectionMark == IssueMarker.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
