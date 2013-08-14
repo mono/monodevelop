@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Tests
 {
@@ -42,6 +43,8 @@ namespace MonoDevelop.VersionControl.Tests
 		protected Repository repo;
 		protected Repository repo2;
 		protected string DOT_DIR;
+		protected List<string> addedItems = new List<string> ();
+		protected int commitNumber = 0;
 
 		[SetUp]
 		public abstract void Setup ();
@@ -51,6 +54,8 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			DeleteDirectory (rootUrl);
 			DeleteDirectory (rootCheckout);
+			addedItems.Clear ();
+			commitNumber = 0;
 		}
 
 		[Test]
@@ -311,25 +316,35 @@ namespace MonoDevelop.VersionControl.Tests
 
 		protected void CommitItems ()
 		{
-
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			foreach (var item in addedItems) {
+				changes.AddFile (repo.GetVersionInfo (item, VersionInfoQueryFlags.IgnoreCache));
+			}
+			changes.GlobalComment = String.Format ("Commit #{0}", commitNumber);
+			repo.Commit (changes, new NullProgressMonitor ());
+			commitNumber++;
 		}
 
-		protected void CommitFile (string path, string contents)
+		protected void CommitFile (string path)
 		{
-
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = String.Format ("Commit #{0}", commitNumber);
+			repo.Commit (changes, new NullProgressMonitor ());
+			commitNumber++;
 		}
 
-		protected void AddFile (string path, string contents)
+		protected void AddFile (string path, string contents, bool toVcs, bool commit)
 		{
-			AddToRepository (path, contents ?? "");
+			AddToRepository (path, contents ?? "", toVcs, commit);
 		}
 
-		protected void AddDirectory (string path)
+		protected void AddDirectory (string path, bool toVcs, bool commit)
 		{
-			AddToRepository (path, null);
+			AddToRepository (path, null, toVcs, commit);
 		}
 
-		void AddToRepository (string relativePath, string contents)
+		void AddToRepository (string relativePath, string contents, bool toVcs, bool commit)
 		{
 			string added = Path.Combine (rootCheckout, relativePath);
 			if (contents == null)
@@ -337,11 +352,13 @@ namespace MonoDevelop.VersionControl.Tests
 			else
 				File.WriteAllText (added, contents);
 
-			repo.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new NullProgressMonitor ());
+			if (toVcs)
+				repo.Add (added, false, new NullProgressMonitor ());
+
+			if (commit)
+				CommitFile (added);
+			else
+				addedItems.Add (added);
 		}
 
 		protected abstract Repository GetRepo (string path, string url);

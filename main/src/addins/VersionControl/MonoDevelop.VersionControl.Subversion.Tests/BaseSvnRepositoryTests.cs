@@ -29,6 +29,7 @@ using MonoDevelop.VersionControl.Tests;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.IO;
+using System;
 
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
@@ -89,7 +90,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			var repo = VersionControlService.GetRepositoryReference (path, null);
  			Assert.That (repo, Is.InstanceOf<SubversionRepository> (), "#1");
 
-			while (!string.IsNullOrEmpty (path)) {
+			while (!String.IsNullOrEmpty (path)) {
 				path = Path.GetDirectoryName (path);
 				if (path == null)
 					return;
@@ -97,23 +98,21 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			}
 
 			// Versioned file
-			AddFile ("foo", "contents");
+			AddFile ("foo", "contents", true, true);
 			path = Path.Combine (rootCheckout, "foo");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#2");
 
 			// Versioned directory
-			AddDirectory ("bar");
+			AddDirectory ("bar", true, true);
 			path = Path.Combine (rootCheckout, "bar");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#3");
 
 			// Unversioned file
-			path = Path.Combine (rootCheckout, "bip");
-			File.WriteAllText (path, "contents");
+			AddFile ("bip", "contents", false, false);
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#4");
 
 			// Unversioned directory
-			path = Path.Combine (rootCheckout, "bop");
-			Directory.CreateDirectory (path);
+			AddDirectory ("bop", false, false);
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#5");
 
 			// Nonexistent file

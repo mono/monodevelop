@@ -57,8 +57,8 @@ namespace VersionControl.Subversion.Unix.Tests
 		[Test]
 		public void ListUrls ()
 		{
-			AddFile ("test", "data");
-			AddDirectory ("foo");
+			AddFile ("test", "data", true, true);
+			AddDirectory ("foo", true, true);
 			var items = SvnClient.ListUrl (repo.Url, false).ToArray ();
 			Assert.AreEqual (2, items.Length, "#1");
 			Assert.IsTrue (items.Any (item => item.Name == "test" && !item.IsDirectory), "#2a");
