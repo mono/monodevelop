@@ -210,7 +210,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
-			foreach (var rev in repo.GetRevisionChanges (GetRevision ())) {
+			foreach (var rev in repo.GetRevisionChanges (GetHeadRevision ())) {
 				Assert.AreEqual (rev.Action, RevisionAction.Add);
 			}
 		}

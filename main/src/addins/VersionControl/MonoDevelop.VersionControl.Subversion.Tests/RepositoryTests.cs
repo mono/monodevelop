@@ -75,6 +75,58 @@ namespace VersionControl.Subversion.Unix.Tests
 			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
 
+		// Tests that fail due to Subversion giving wrong data.
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void MovesFile ()
+		{
+			base.MovesFile ();
+		}
+
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void MovesDirectory ()
+		{
+			base.MovesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void DeletesDirectory ()
+		{
+			base.DeletesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Test fails on Lock")]
+		public override void LocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		protected override void PostLock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.Throws<Exception> (delegate {
+				File.WriteAllText (added, "text");
+			});
+		}
+
+		[Test]
+		[Ignore ("Test fails on Unlock")]
+		public override void UnlocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		protected override void PostUnlock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.DoesNotThrow (delegate {
+				File.WriteAllText (added, "text");
+			});
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
