@@ -87,9 +87,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			context.TextEditor.SelectionRange = new TextSegment (seg.Offset, length);
 		}
 
-		public override Task InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
+		public override Task<Script> InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
-			var tcs = new TaskCompletionSource<object> ();
+			var tcs = new TaskCompletionSource<Script> ();
 			var editor = context.TextEditor;
 			DocumentLocation loc = context.TextEditor.Caret.Location;
 			var declaringType = context.ParsedDocument.GetInnermostTypeDefinition (loc);
@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
 						output.RegisterTrackedSegments (this, delta + offset);
 					}
-					tcs.SetResult (null);
+					tcs.SetResult (this);
 				} else {
 					Rollback ();
 				}
@@ -151,9 +151,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return tcs.Task;
 		}
 
-		public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
+		List<Script> startedScripts = new List<Script> ();
+
+		public override Task<Script> InsertWithCursor (string operation, ITypeDefinition parentType, Func<Script, RefactoringContext, IEnumerable<AstNode>> nodeCallback)
 		{
-			var tcs = new TaskCompletionSource<object>();
+			var tcs = new TaskCompletionSource<Script>();
 			if (parentType == null)
 				return tcs.Task;
 			var part = parentType.Parts.FirstOrDefault ();
@@ -166,6 +168,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var loc = part.Region.Begin;
 				var parsedDocument = loadedDocument.UpdateParseDocument ();
 				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				MDRefactoringScript script;
+
+				if (loadedDocument.Editor != this.context.TextEditor) {
+					script = new MDRefactoringScript (new MDRefactoringContext (loadedDocument, loc, context.CancellationToken), FormattingOptions);
+					startedScripts.Add (script);
+				} else {
+					script = this;
+				}
+				var nodes = nodeCallback (script, script.context);
 				var mode = new InsertionCursorEditMode (
 					editor.Parent,
 					CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType));
@@ -182,12 +193,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						var offset = loadedDocument.Editor.LocationToOffset (point.Location);
 						var text = output.Text + ",";
 						var delta = point.Insert (editor, text);
-						output.RegisterTrackedSegments (this, delta + offset);
+						output.RegisterTrackedSegments (script, delta + offset);
 					}
-					tcs.SetResult (null);
+					tcs.SetResult (script);
 					return;
 				}
-
 
 				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 				helpWindow.TitleText = operation;
@@ -207,9 +217,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
 							var text = output.Text;
 							var delta = iCArgs.InsertionPoint.Insert (editor, text);
-							output.RegisterTrackedSegments (this, delta + offset);
+							output.RegisterTrackedSegments (script, delta + offset);
 						}
-						tcs.SetResult (null);
+						tcs.SetResult (script);
 					} else {
 						Rollback ();
 					}
@@ -257,6 +267,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				undoGroup.Dispose ();
 				base.Dispose ();
 			}
+			foreach (var script in startedScripts)
+				script.Dispose ();
 		}
 		
 		public override void Dispose ()
