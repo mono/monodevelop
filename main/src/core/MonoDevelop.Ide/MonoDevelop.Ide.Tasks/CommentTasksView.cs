@@ -496,15 +496,18 @@ namespace MonoDevelop.Ide.Tasks
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
-						string line = doc.Editor.GetLineText (task.Line);
-						int index = line.IndexOf (commentTags[0]);
-						if (index != -1) {
-							doc.Editor.SetCaretTo (task.Line, task.Column);
-							line = line.Substring (0, index);
-							var ls = doc.Editor.Document.GetLine (task.Line);
-							doc.Editor.Replace (ls.Offset, ls.Length, line);
-							comments.Remove (task);
-						}
+						doc.DisableAutoScroll ();
+						doc.RunWhenLoaded (() => {
+							string line = doc.Editor.GetLineText (task.Line);
+							int index = line.IndexOf (commentTags[0]);
+							if (index != -1) {
+								doc.Editor.SetCaretTo (task.Line, task.Column);
+								line = line.Substring (0, index);
+								var ls = doc.Editor.Document.GetLine (task.Line);
+								doc.Editor.Replace (ls.Offset, ls.Length, line);
+								comments.Remove (task);
+							}
+						}); 
 					}
 				}
 			}

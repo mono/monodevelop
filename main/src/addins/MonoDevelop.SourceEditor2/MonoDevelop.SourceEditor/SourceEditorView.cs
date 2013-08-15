@@ -53,6 +53,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Ide.TextEditing;
 using System.Text;
 using Mono.Addins;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -863,30 +864,11 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.SizeAllocated -= HandleTextEditorVAdjustmentChanged;
 			LoadSettings ();
 		}
-		
-		
-		class Settings
-		{
-			public int CaretOffset { get; set; }
-
-			public double vAdjustment { get; set; }
-
-			public double hAdjustment { get; set; }
-			
-			public Dictionary<int, bool> FoldingStates = new Dictionary<int, bool> ();
-			
-			public override string ToString ()
-			{
-				return string.Format ("[Settings: CaretOffset={0}, vAdjustment={1}, hAdjustment={2}]", CaretOffset, vAdjustment, hAdjustment);
-			}
-		}
-		
-		static Dictionary<string, Settings> settingStore = new Dictionary<string, Settings> ();
 
 		internal void LoadSettings ()
 		{
-			Settings settings;
-			if (widget == null || string.IsNullOrEmpty (ContentName) || !settingStore.TryGetValue (ContentName, out settings))
+			FileSettingsStore.Settings settings;
+			if (widget == null || string.IsNullOrEmpty (ContentName) || !FileSettingsStore.TryGetValue (ContentName, out settings))
 				return;
 			
 			widget.TextEditor.Caret.Offset = settings.CaretOffset;
@@ -908,12 +890,12 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (string.IsNullOrEmpty (ContentName))
 				return;
-			settingStore [ContentName] = new Settings () {
+			FileSettingsStore.Store (ContentName, new FileSettingsStore.Settings () {
 				CaretOffset = widget.TextEditor.Caret.Offset,
 				vAdjustment = widget.TextEditor.VAdjustment.Value,
 				hAdjustment = widget.TextEditor.HAdjustment.Value,
 				FoldingStates = foldingStates
-			};
+			});
 		}
 
 		bool warnOverwrite = false;

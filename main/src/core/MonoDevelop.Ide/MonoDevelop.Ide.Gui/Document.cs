@@ -925,6 +925,15 @@ namespace MonoDevelop.Ide.Gui
 //			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
 //				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
 //		}
+
+		/// <summary>
+		/// If the document shouldn't restore the settings after the load it can be disabled with this method.
+		/// That is useful when opening a document and programmatically scrolling to a specified location.
+		/// </summary>
+		public void DisableAutoScroll ()
+		{
+			Mono.TextEditor.Utils.FileSettingsStore.Remove (FileName);
+		}
 	}
 	
 	

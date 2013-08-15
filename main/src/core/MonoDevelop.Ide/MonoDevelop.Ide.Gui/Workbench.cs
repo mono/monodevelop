@@ -407,6 +407,7 @@ namespace MonoDevelop.Ide.Gui
 						if (vcFound != null) {
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 							if (line >= 1 && ipos != null) {
+								doc.DisableAutoScroll ();
 								doc.RunWhenLoaded (() => {
 									ipos.SetCaretTo (
 										line,
@@ -1227,6 +1228,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
 			if (fileInfo.Line > 0 && ipos != null) {
+				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
 				ipos.RunWhenLoaded (JumpToLine); 
 			}
 			
