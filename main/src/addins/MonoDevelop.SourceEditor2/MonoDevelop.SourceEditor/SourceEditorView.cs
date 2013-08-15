@@ -1513,7 +1513,11 @@ namespace MonoDevelop.SourceEditor
 		public bool HasInputFocus {
 			get { return TextEditor.HasFocus; }
 		}
-		
+
+		public void RunWhenLoaded (System.Action action)
+		{
+			Document.RunWhenLoaded (action);
+		}
 		#endregion
 		
 		#region ITextBuffer

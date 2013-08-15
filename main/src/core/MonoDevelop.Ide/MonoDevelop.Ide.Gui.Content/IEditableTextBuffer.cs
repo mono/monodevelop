@@ -38,7 +38,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		void SetCaretTo (int line, int column, bool highlightLine);
 		void SetCaretTo (int line, int column, bool highlightLine, bool centerCaret);
 		bool HasInputFocus { get; }
-		
+
+		void RunWhenLoaded (System.Action action);
+
 		event EventHandler CaretPositionSet;
 		event EventHandler<TextChangedEventArgs> TextChanged;
 	}
