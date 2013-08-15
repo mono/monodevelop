@@ -210,6 +210,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
+			// TODO: Extend and test each member and more types.
 			foreach (var rev in repo.GetRevisionChanges (GetHeadRevision ())) {
 				Assert.AreEqual (rev.Action, RevisionAction.Add);
 			}
@@ -223,7 +224,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public void RevertsRevision ()
 		{
 			AddFile ("testfile", "text", true, true);
-			// Override and test in specific with GitRevision and SvnRevision.
+			DoRevisionRevert ();
 		}
 
 		protected virtual void DoRevisionRevert ()
@@ -346,23 +347,50 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
-		[Ignore ("TODO")]
+		[Platform (Exclude = "Win")]
+		// TODO: Fix SvnSharp logic failing to generate correct URL.
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
-		}
-
-		protected virtual string GetTextAtRevision ()
-		{
-			return null;
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", "text1", true, true);
+			File.AppendAllText (added, "text2");
+			CommitFile (added);
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			string text = repo.GetTextAtRevision (vi.LocalPath.ToRelative (rootCheckout), GetHeadRevision ());
+			Assert.AreEqual ("text1text2", text);
 		}
 
 		[Test]
-		[Ignore ("TODO")]
 		// Tests Repository.GetAnnotations.
 		public void BlameIsCorrect ()
 		{
+			string added = rootCheckout + "testfile";
+			// Initial commit.
+			AddFile ("testfile", "blah" + Environment.NewLine, true, true);
+			// Second commit.
+			File.AppendAllText (added, "wut" + Environment.NewLine);
+			CommitFile (added);
+			// Working copy.
+			File.AppendAllText (added, "wut2" + Environment.NewLine);
+
+			var annotations = repo.GetAnnotations (added);
+			for (int i = 0; i < 2; i++) {
+				var annotation = annotations [i];
+				Assert.IsTrue (annotation.HasDate);
+				Assert.IsNotNull (annotation.Date);
+			}
+
+			BlameExtraInternals (annotations);
+			
+			Assert.False (annotations [2].HasEmail);
+			Assert.IsNotNull (annotations [2].Author);
+			Assert.IsNull (annotations [2].Email);
+			Assert.AreEqual (annotations [2].Revision, GettextCatalog.GetString ("working copy"));
+			Assert.AreEqual (annotations [2].Author, "<uncommitted>");
 		}
+
+		protected abstract void BlameExtraInternals (Annotation [] annotations);
 
 		#region Util
 

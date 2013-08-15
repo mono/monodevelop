@@ -92,6 +92,17 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		{
 			return SvnRevision.Head;
 		}
+
+		protected override void BlameExtraInternals (Annotation [] annotations)
+		{
+			for (int i = 0; i < 2; i++) {
+				Assert.IsFalse (annotations [i].HasEmail);
+				Assert.IsNull (annotations [i].Author);
+				Assert.IsNull (annotations [i].Email);
+			}
+			Assert.IsFalse (annotations [2].HasEmail);
+			Assert.IsFalse (annotations [2].HasDate);
+		}
 	}
 }
 

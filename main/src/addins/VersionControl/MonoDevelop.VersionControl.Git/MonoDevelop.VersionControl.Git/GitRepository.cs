@@ -1635,7 +1635,7 @@ namespace MonoDevelop.VersionControl.Git
 					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
 					list.Add (new Annotation (commit.Name, author.GetName (), commitTime, String.Format ("<{0}>", author.GetEmailAddress ())));
 				} else {
-					list.Add (new Annotation (new string ('0', 20), "<uncommitted>", DateTime.Now));
+					list.Add (new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.Now));
 				}
 			}
 			return list.ToArray ();
