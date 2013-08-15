@@ -13,8 +13,7 @@ TEST_PROJECTS_MAC = \
 
 TEST_PROJECTS_COMMON = \
 	UnitTests/UnitTests.csproj \
-	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj \
-	$(EXTERNAL)/ngit/NGit.Test/NGit.Test.csproj
+	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj
 
 TEST_ASSEMBLIES_MAC = \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Subversion.Tests.dll \
@@ -27,9 +26,7 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.XmlEditor.Tests.dll \
-	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll \
-	$(EXTERNAL)/ngit/bin/NGit.Test.dll
-
+	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
 TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
