@@ -773,7 +773,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MSBuildProperty bp = pgroup.GetProperty (prop.Name);
 				if (bp != null) {
 					var preserveCase = prop.DataType is MSBuildBoolDataType;
-					res.SetPropertyValue (bp.Name, bp.Value, preserveCase);
+					res.SetPropertyValue (bp.Name, bp.Element.InnerXml, preserveCase, true);
 				}
 			}
 			if (ob is DotNetProjectConfiguration) {
@@ -783,7 +783,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildProperty bp = pgroup.GetProperty (prop.Name);
 					if (bp != null) {
 						var preserveCase = prop.DataType is MSBuildBoolDataType;
-						res.SetPropertyValue (bp.Name, bp.Value, preserveCase);
+						res.SetPropertyValue (bp.Name, bp.Element.InnerXml, preserveCase, true);
 					}
 				}
 			}
@@ -1135,7 +1135,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Move properties with common values from configurations to the main
 				// property group
 				foreach (KeyValuePair<string,MergedPropertyValue> prop in mergeToProjectPropertyValues)
-					globalGroup.SetPropertyValue (prop.Key, prop.Value.Value, prop.Value.PreserveExistingCase);
+					globalGroup.SetPropertyValue (prop.Key, prop.Value.XmlValue, prop.Value.PreserveExistingCase, true);
 				foreach (string prop in mergeToProjectPropertyNames) {
 					if (!mergeToProjectPropertyValues.ContainsKey (prop))
 						globalGroup.RemoveProperty (prop);
@@ -1220,7 +1220,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				projectBuilder.Refresh ();
 		}
 
-		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue)
+		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue, bool isXml = false)
 		{
 			bool hasDefaultValue = string.IsNullOrEmpty (value) || value == defaultValue;
 			var prop = propGroup.GetProperty (name);
@@ -1228,15 +1228,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//if the value is default or empty, only remove the element if it was not already the default or empty
 				//to avoid unnecessary project file churn
 				if (hasDefaultValue) {
-					var existing = prop.Value;
+					var existing = prop.GetValue (isXml);
 					bool alreadyHadDefaultValue = string.IsNullOrEmpty (existing) || existing == defaultValue;
 					if (!alreadyHadDefaultValue)
 						propGroup.RemoveProperty (name);
 				} else {
-					prop.Value = value;
+					prop.SetValue (value, isXml);
 				}
 			} else if (!hasDefaultValue) {
-				propGroup.SetPropertyValue (name, value, false);
+				propGroup.SetPropertyValue (name, value, false, isXml);
 			}
 		}
 		
@@ -1262,12 +1262,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (!mergeToProjectProperties.TryGetValue (pinfo.Name, out mvalue)) {
 					if (prop != null) {
 						// This is the first time the value is checked. Just assign it.
-						mergeToProjectProperties.Add (pinfo.Name, new MergedPropertyValue (prop.Value, pinfo.PreserveExistingCase));
+						mergeToProjectProperties.Add (pinfo.Name, new MergedPropertyValue (prop.GetValue (true), pinfo.PreserveExistingCase));
 						continue;
 					}
 					// If there is no value, it can't be merged
 				}
-				else if (prop != null && string.Equals (prop.Value, mvalue.Value, StringComparison.OrdinalIgnoreCase))
+				else if (prop != null && string.Equals (prop.GetValue (true), mvalue.XmlValue, StringComparison.OrdinalIgnoreCase))
 					// Same value. It can be merged.
 					continue;
 
@@ -1280,12 +1280,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		struct MergedPropertyValue
 		{
-			public readonly string Value;
+			public readonly string XmlValue;
 			public readonly bool PreserveExistingCase;
 
-			public MergedPropertyValue (string value, bool preserveExistingCase)
+			public MergedPropertyValue (string xmlValue, bool preserveExistingCase)
 			{
-				this.Value = value;
+				this.XmlValue = xmlValue;
 				this.PreserveExistingCase = preserveExistingCase;
 			}
 		}
@@ -1566,8 +1566,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						break;
 					}
 				}
-				if (node == null)
-					node = new DataValue (bprop.Name, UnescapeText (bprop.Value));
+				if (node == null) {
+					node = new DataValue (bprop.Name, bprop.GetValue (false));
+				}
 				
 				ConvertFromMsbuildFormat (node);
 				ditem.ItemData.Add (node);
@@ -1605,7 +1606,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					preserveExistingCase = false;
 				}
 
-				propGroup.SetPropertyValue (node.Name, value, preserveExistingCase);
+				propGroup.SetPropertyValue (node.Name, value, preserveExistingCase, node is DataItem);
 			}
 			foreach (string prop in notWrittenProps)
 				propGroup.RemoveProperty (prop);
@@ -1826,41 +1827,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static readonly IList<string> UnsupportedItems = new string[] {
 			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service"
 		};
-		
-		public static string UnescapeText (string text)
-		{
-			var sb = new StringBuilder ();
-			for (int i = 0; i < text.Length; i++) {
-				char ch = text [i];
-				if (ch == '&') {
-					int end = text.IndexOf (';', i);
-					if (end == -1)
-						break;
-					string entity = text.Substring (i + 1, end - i - 1);
-					switch (entity) {
-					case "lt":
-						sb.Append ('<');
-						break;
-					case "gt":
-						sb.Append ('>');
-						break;
-					case "amp":
-						sb.Append ('&');
-						break;
-					case "apos":
-						sb.Append ('\'');
-						break;
-					case "quot":
-						sb.Append ('"');
-						break;
-					}
-					i = end;
-				} else {
-					sb.Append (ch);
-				}
-			}
-			return sb.ToString ();	
-		}
 	}
 	
 	class MSBuildSerializer: DataSerializer

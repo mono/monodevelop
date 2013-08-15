@@ -34,6 +34,7 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -344,6 +345,26 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual (1, p.References.Count);
 			Assert.AreEqual ("some - library", p.References[0].Reference);
+		}
+
+		[Test]
+		public void RoundtripPropertyWithXmlCharacters ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("roundtrip-property-with-xml");
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
+
+			var value = "Hello<foo>&.exe";
+
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			var conf = ((DotNetProjectConfiguration)p.Configurations [0]);
+			conf.OutputAssembly = value;
+			sol.Save (Util.GetMonitor ());
+
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			p = (DotNetProject) sol.GetAllProjects ().First ();
+			conf = ((DotNetProjectConfiguration)p.Configurations [0]);
+
+			Assert.AreEqual (value, conf.OutputAssembly);
 		}
 	}
 }

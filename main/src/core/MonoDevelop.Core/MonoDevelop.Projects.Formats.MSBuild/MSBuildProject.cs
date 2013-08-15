@@ -428,14 +428,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string Name {
 			get { return Element.Name; }
 		}
-		
+
+		[Obsolete]
 		public string Value {
 			get {
-				return Element.InnerXml; 
+				return Element.InnerText; 
 			}
 			set {
-				Element.InnerXml = value;
+				Element.InnerText = value;
 			}
+		}
+
+		public string GetValue (bool isXml = false)
+		{
+			if (isXml)
+				return Element.InnerXml;
+			return Element.InnerText;
+		}
+
+		public void SetValue (string value, bool isXml = false)
+		{
+			if (isXml)
+				Element.InnerXml = value;
+			else
+				Element.InnerText = value;
 		}
 	}
 	
@@ -443,8 +459,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		MSBuildProperty GetProperty (string name);
 		IEnumerable<MSBuildProperty> Properties { get; }
-		MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase);
-		string GetPropertyValue (string name);
+		MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false);
+		string GetPropertyValue (string name, bool isXml = false);
 		bool RemoveProperty (string name);
 		void RemoveAllProperties ();
 		void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propertiesToExclude);
@@ -476,22 +492,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase)
+		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false)
 		{
 			MSBuildProperty p = GetProperty (name);
 			if (p != null) {
-				if (!preserveExistingCase || !string.Equals (value, p.Value, StringComparison.OrdinalIgnoreCase)) {
-					p.Value = value;
+				if (!preserveExistingCase || !string.Equals (value, p.GetValue (isXml), StringComparison.OrdinalIgnoreCase)) {
+					p.SetValue (value, isXml);
 				}
 				return p;
 			}
-			return groups [0].SetPropertyValue (name, value, preserveExistingCase);
+			return groups [0].SetPropertyValue (name, value, preserveExistingCase, isXml);
 		}
 
-		public string GetPropertyValue (string name)
+		public string GetPropertyValue (string name, bool isXml = false)
 		{
 			MSBuildProperty prop = GetProperty (name);
-			return prop != null ? prop.Value : null;
+			return prop != null ? prop.GetValue (isXml) : null;
 		}
 
 		public bool RemoveProperty (string name)
@@ -588,27 +604,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase)
+		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false)
 		{
 			MSBuildProperty prop = GetProperty (name);
 			if (prop == null) {
 				XmlElement pelem = AddChildElement (name);
 				prop = new MSBuildProperty (pelem);
 				properties [name] = prop;
-				prop.Value = value;
-			} else if (!preserveExistingCase || !string.Equals (value, prop.Value, StringComparison.OrdinalIgnoreCase)) {
-				prop.Value = value;
+				prop.SetValue (value, isXml);
+			} else if (!preserveExistingCase || !string.Equals (value, prop.GetValue (isXml), StringComparison.OrdinalIgnoreCase)) {
+				prop.SetValue (value, isXml);
 			}
 			return prop;
 		}
 		
-		public string GetPropertyValue (string name)
+		public string GetPropertyValue (string name, bool isXml = false)
 		{
 			MSBuildProperty prop = GetProperty (name);
 			if (prop == null)
 				return null;
 			else
-				return prop.Value;
+				return prop.GetValue (isXml);
 		}
 		
 		public bool RemoveProperty (string name)
@@ -640,7 +656,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
 					continue;
 				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && prop.Value.Equals (thisProp.Value, StringComparison.CurrentCultureIgnoreCase))
+				if (thisProp != null && prop.GetValue (true).Equals (thisProp.GetValue (true), StringComparison.OrdinalIgnoreCase))
 					RemoveProperty (prop.Name);
 			}
 		}
@@ -649,7 +665,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			string s = "[MSBuildPropertyGroup:";
 			foreach (MSBuildProperty prop in Properties)
-				s += " " + prop.Name + "=" + prop.Value;
+				s += " " + prop.Name + "=" + prop.GetValue (true);
 			return s + "]";
 		}
 
