@@ -150,7 +150,7 @@ namespace MonoDevelop.CodeActions
 				if (alreadyInserted.Contains (ir.Inspector))
 					continue;
 				alreadyInserted.Add (ir.Inspector);
-				
+
 				var subMenu = new Gtk.Menu ();
 				if (analysisFix.SupportsBatchRunning) {
 					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Fix all in this file"));
@@ -164,10 +164,18 @@ namespace MonoDevelop.CodeActions
 				}
 
 				var inspector = ir.Inspector;
+				if (inspector.CanSuppressWithAttribute) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
+					menuItem.Activated += delegate {
+						inspector.SuppressWithAttribute (document, analysisFix.DocumentRegion); 
+					};
+					subMenu.Add (menuItem);
+				}
+
 				if (inspector.CanDisableWithPragma) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
 					menuItem.Activated += delegate {
-						inspector.DisableWithPragma (document, loc); 
+						inspector.DisableWithPragma (document, analysisFix.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -175,7 +183,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableOnce) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
 					menuItem.Activated += delegate {
-						inspector.DisableOnce (document, loc); 
+						inspector.DisableOnce (document, analysisFix.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -183,7 +191,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableAndRestore) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
 					menuItem.Activated += delegate {
-						inspector.DisableAndRestore (document, loc); 
+						inspector.DisableAndRestore (document, analysisFix.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -222,7 +230,7 @@ namespace MonoDevelop.CodeActions
 					if (inspector.CanSuppressWithAttribute) {
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
 						menuItem.Activated += delegate {
-							inspector.SuppressWithAttribute (document, loc); 
+							inspector.SuppressWithAttribute (document, fix.DocumentRegion); 
 						};
 						subMenu.Add (menuItem);
 					}
@@ -230,7 +238,7 @@ namespace MonoDevelop.CodeActions
 					if (inspector.CanDisableWithPragma) {
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
 						menuItem.Activated += delegate {
-							inspector.DisableWithPragma (document, loc); 
+							inspector.DisableWithPragma (document, fix.DocumentRegion); 
 						};
 						subMenu.Add (menuItem);
 					}
@@ -238,7 +246,7 @@ namespace MonoDevelop.CodeActions
 					if (inspector.CanDisableOnce) {
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
 						menuItem.Activated += delegate {
-							inspector.DisableOnce (document, loc); 
+							inspector.DisableOnce (document, fix.DocumentRegion); 
 						};
 						subMenu.Add (menuItem);
 					}
@@ -246,7 +254,7 @@ namespace MonoDevelop.CodeActions
 					if (inspector.CanDisableAndRestore) {
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
 						menuItem.Activated += delegate {
-							inspector.DisableAndRestore (document, loc); 
+							inspector.DisableAndRestore (document, fix.DocumentRegion); 
 						};
 						subMenu.Add (menuItem);
 					}

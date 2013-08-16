@@ -152,31 +152,49 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override bool CanSuppressWithAttribute { get { return !string.IsNullOrEmpty (attr.SuppressMessageCheckId); } }
 
-		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
-			document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+			document.Editor.Insert (
+				document.Editor.LocationToOffset (loc.BeginLine, 1), 
+				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+			); 
 		}
 
-		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+				); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.BeginLine, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+				); 
 			}
 		}
 
-		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker); 
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker
+				); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.BeginLine, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker
+				); 
 			}
 		}
 
-		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
-			var member = document.ParsedDocument.GetMember (loc);
-			document.Editor.Insert (document.Editor.LocationToOffset (member.Region.BeginLine, 1), string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)); 
+			var member = document.ParsedDocument.GetMember (loc.End);
+			document.Editor.Insert (
+				document.Editor.LocationToOffset (member.Region.BeginLine, 1),
+				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
+			); 
 		}
 	}
 }

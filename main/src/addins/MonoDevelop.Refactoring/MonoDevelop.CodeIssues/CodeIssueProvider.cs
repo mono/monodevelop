@@ -116,22 +116,22 @@ namespace MonoDevelop.CodeIssues
 
 		public virtual bool CanSuppressWithAttribute { get { return false; } }
 
-		public virtual void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public virtual void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public virtual void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public virtual void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public virtual void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
