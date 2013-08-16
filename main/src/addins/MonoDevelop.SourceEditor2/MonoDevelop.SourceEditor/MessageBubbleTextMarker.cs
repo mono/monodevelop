@@ -333,6 +333,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
+			if (!IsVisible)
+				return;
 			if (LineSegment == null)
 				return;
 			if (bubbleDrawX < args.X && args.X < bubbleDrawX + bubbleWidth) {
@@ -354,6 +356,8 @@ namespace MonoDevelop.SourceEditor
 
 		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, double y, EndOfLineMetrics metrics)
 		{
+			if (!IsVisible)
+				return;
 			EnsureLayoutCreated (editor);
 			int errorCounterWidth = 0, eh = 0;
 			if (errorCountLayout != null) {
@@ -425,11 +429,15 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanDrawBackground (Margin margin)
 		{
+			if (!IsVisible)
+				return false;
 			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin || margin is ActionMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
 		{
+			if (!IsVisible)
+				return false;
 			return margin is IconMargin;
 		}
 
