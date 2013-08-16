@@ -145,8 +145,8 @@ namespace MonoDevelop.Refactoring
 				if (cls != null && cls.DirectBaseTypes != null) {
 					foreach (var bt in cls.DirectBaseTypes) {
 						var def = bt.GetDefinition ();
-						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
-							IdeApp.Workbench.OpenDocument (def.Region.FileName, def.Region.BeginLine, def.Region.BeginColumn);
+						if (def != null && def.Kind != TypeKind.Interface) {
+							IdeApp.ProjectOperations.JumpToDeclaration (def); 
 							return;
 						}
 					}
@@ -155,8 +155,9 @@ namespace MonoDevelop.Refactoring
 				var method = item as IMember;
 				if (method != null) {
 					var baseMethod = InheritanceHelper.GetBaseMember (method); 
-					if (baseMethod != null)
-						IdeApp.Workbench.OpenDocument (baseMethod.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.EndLine);
+					if (baseMethod != null) {
+						IdeApp.ProjectOperations.JumpToDeclaration (baseMethod); 
+					}
 					return;
 				}
 			}
