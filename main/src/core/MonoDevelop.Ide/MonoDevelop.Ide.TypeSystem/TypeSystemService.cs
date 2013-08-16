@@ -1323,11 +1323,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					WasChanged = changed;
 				} catch (Exception e) {
 					if (netProject.TargetRuntime == null) {
-						LoggingService.LogError ("Target runtime was null:" + Project);
+						LoggingService.LogError ("Target runtime was null: " + Project.Name);
 					} else if (netProject.TargetRuntime.AssemblyContext == null) {
-						LoggingService.LogError ("Target runtime assambly context was null:" + Project);
+						LoggingService.LogError ("Target runtime assembly context was null: " + Project.Name);
 					}
-					LoggingService.LogError ("Error while reloading all references of project:" + Project, e);
+					LoggingService.LogError ("Error while reloading all references of project: " + Project.Name, e);
 				}
 			}
 		}
