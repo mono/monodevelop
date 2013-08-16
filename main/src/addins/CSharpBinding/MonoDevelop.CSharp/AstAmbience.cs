@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp
 				}
 			} else if (e is OperatorDeclaration) {
 				var op = e as OperatorDeclaration;
-				sb.Append ("operator");
+				sb.Append ("operator ");
 				if (!op.OperatorTypeToken.IsNull)
 					AppendEscaped (sb, op.OperatorTypeToken.ToString ());
 				AppendParameter (sb, op.Parameters);
