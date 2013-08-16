@@ -216,10 +216,6 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\ngit\NGit\NGit.csproj">
-      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
-      <Name>NGit</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
