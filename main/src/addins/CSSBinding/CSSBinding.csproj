@@ -34,7 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CSSLanguageBinding.cs" />
     <Compile Include="Parser\CSSParsedDocument.cs" />
     <Compile Include="Parser\CSSParserAdapter.cs" />
     <Compile Include="Parser\CSSParserManager.cs" />
@@ -51,16 +50,15 @@
     <Folder Include="Icons\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Templates\EmptyCSSFile.xft.xml">
-      <LogicalName>EmptyCSSFile.xft.xml</LogicalName>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="CSSBinding.addin.xml">
       <LogicalName>CSSBinding.addin.xml</LogicalName>
     </EmbeddedResource>
-    <None Include="..\..\core\Mono.Texteditor\SyntaxModes\CssSyntaxMode.xml">
+    <None Include="Makefile.am" />
+    <EmbeddedResource Include="CssSyntaxMode.xml">
       <LogicalName>CssSyntaxMode.xml</LogicalName>
-	  <Link>CssSyntaxMode.xml</Link>
+    </EmbeddedResource>
+    <None Include="Templates\EmptyCSSFile.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

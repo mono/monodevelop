@@ -9,8 +9,7 @@
        version     = "4.1.4">
        
     <Runtime>
-		<Import assembly="CSSBinding.dll" />
-		<Import assembly="Antlr.Runtime.dll" />
+		<Import assembly="Antlr3.Runtime.dll" />
 	</Runtime>
 	
 	<Dependencies>
@@ -25,16 +24,23 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="CssSyntaxMode.xml" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "Stylesheet" file = "Templates/EmptyCSSFile.xft.xml"/>
+	
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "EmptyCSSFileX"
+		           _label = "CSS Templates"
+		           extensions = "*.css" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "EmptyCSSFile" file = "Templates/EmptyCSSFile.xft.xml"/>
+	</Extension>
+	
+	<!--<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id    = "CSS"
 		                 supportedextensions = ".css"
 		                 class = "CSSBinding.CSSLanguageBinding" />
-	</Extension>
+	</Extension>-->
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-c-file" resource = "text-x-csrc.16x16.png" size="Menu" />
@@ -50,6 +56,7 @@
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class="CSSBinding.Parser.CSSParserAdapter" mimeType = "text/x-css" />
 	</Extension>
-
+	
+	
 	
 </Addin>
