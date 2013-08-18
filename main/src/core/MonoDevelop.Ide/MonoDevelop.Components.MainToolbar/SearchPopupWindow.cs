@@ -214,6 +214,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var cat = _cat;
 				var token = src.Token;
 				cat.GetResults (pattern, maxItems, token).ContinueWith (t => {
+					if (t.IsCanceled)
+						return;
 					if (t.IsFaulted) {
 						LoggingService.LogError ("Error getting search results", t.Exception);
 					} else {
