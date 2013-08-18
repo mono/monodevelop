@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -152,7 +152,6 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlClosingTagState.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlCommentState.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlFreeState.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\XmlMalformedTagState.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlNameState.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlTagState.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlProcessingInstructionState.cs" />
@@ -233,7 +232,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Xml.Formatting\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -35,18 +35,18 @@ namespace MonoDevelop.AspNet.StateEngine
 {
 	
 	
-	public class AspNetSpeculativeExpressionState : XmlMalformedTagState
+	public class AspNetAttributeValueState : XmlAttributeValueState
 	{
 		AspNetServerCommentState CommentState;
 		AspNetExpressionState ExpressionState;
 		
-		public AspNetSpeculativeExpressionState () : this (
+		public AspNetAttributeValueState () : this (
 			new AspNetServerCommentState (),
 			new AspNetExpressionState ())
 		{
 		}
-		
-		public AspNetSpeculativeExpressionState (
+
+		public AspNetAttributeValueState(
 			AspNetServerCommentState commentState,
 			AspNetExpressionState expressionState)
 		{

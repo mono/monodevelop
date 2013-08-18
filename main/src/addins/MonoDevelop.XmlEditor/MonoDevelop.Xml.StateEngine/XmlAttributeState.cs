@@ -37,50 +37,26 @@ namespace MonoDevelop.Xml.StateEngine
 	public class XmlAttributeState : State
 	{
 		XmlNameState XmlNameState;
-		XmlDoubleQuotedAttributeValueState DoubleQuotedAttributeValueState;
-		XmlSingleQuotedAttributeValueState SingleQuotedAttributeValueState;
-		XmlUnquotedAttributeValueState UnquotedAttributeValueState;
-		XmlMalformedTagState MalformedTagState;
+		XmlAttributeValueState AttributeValueState;
 		
 		const int NAMING = 0;
 		const int GETTINGEQ = 1;
 		const int GETTINGVAL = 2;
 		
-		public bool AllowOpeningTagCharInsideAttributeValue {
-			get {
-				return SingleQuotedAttributeValueState.AllowOpeningTagCharInside;
-			}
-			set {
-				SingleQuotedAttributeValueState.AllowOpeningTagCharInside = DoubleQuotedAttributeValueState.AllowOpeningTagCharInside = value;
-			}
-		}
-		
 		public XmlAttributeState () : this (
 			new XmlNameState (),
-			new XmlDoubleQuotedAttributeValueState (),
-			new XmlSingleQuotedAttributeValueState (),
-			new XmlUnquotedAttributeValueState (),
-			new XmlMalformedTagState ())
+			new XmlAttributeValueState ())
 		{}
 		
 		public XmlAttributeState (
 			XmlNameState nameState,
-			XmlDoubleQuotedAttributeValueState doubleQuotedAttributeValueState,
-			XmlSingleQuotedAttributeValueState singleQuotedAttributeValueState,
-			XmlUnquotedAttributeValueState unquotedAttributeValueState,
-			XmlMalformedTagState malformedTagState)
+			XmlAttributeValueState attributeValueState)
 		{
 			this.XmlNameState = nameState;
-			this.DoubleQuotedAttributeValueState = doubleQuotedAttributeValueState;
-			this.SingleQuotedAttributeValueState = singleQuotedAttributeValueState;
-			this.UnquotedAttributeValueState = unquotedAttributeValueState;
-			this.MalformedTagState = malformedTagState;
+			this.AttributeValueState = attributeValueState;
 			
 			Adopt (this.XmlNameState);
-			Adopt (this.DoubleQuotedAttributeValueState);
-			Adopt (this.SingleQuotedAttributeValueState);
-			Adopt (this.UnquotedAttributeValueState);
-			Adopt (this.MalformedTagState);
+			Adopt (this.AttributeValueState);
 		}
 
 		public override State PushChar (char c, IParseContext context, ref string rollback)
@@ -97,9 +73,13 @@ namespace MonoDevelop.Xml.StateEngine
 			
 			//state has just been entered
 			if (context.CurrentStateLength == 1)  {
-				
 				if (context.PreviousState is XmlNameState) {
-					Debug.Assert (att.IsNamed);
+					//error parsing name
+					if (!att.IsNamed) {
+						context.Nodes.Pop ();
+						rollback = string.Empty;
+						return Parent;
+					}
 					context.StateTag = GETTINGEQ;
 				}
 				else if (context.PreviousState is XmlAttributeValueState) {
@@ -133,36 +113,27 @@ namespace MonoDevelop.Xml.StateEngine
 			if (context.StateTag == GETTINGEQ) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
-				} else if (c == '=') {
+				}
+				if (c == '=') {
 					context.StateTag = GETTINGVAL;
 					return null;
 				}
+				context.LogError ("Expecting = in attribute, got '" + c + "'.");
 			} else if (context.StateTag == GETTINGVAL) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
-				} else if (c== '"') {
-					return DoubleQuotedAttributeValueState;
-				} else if (c == '\'') {
-					return SingleQuotedAttributeValueState;
-				} else if (char.IsLetterOrDigit (c)) {
-					rollback = string.Empty;
-					return UnquotedAttributeValueState;
 				}
+				if (c == '"' || c == '\'' || char.IsLetterOrDigit (c)) {
+					rollback = string.Empty;
+					return AttributeValueState;
+				}
+				context.LogError ("Expecting attribute value, got '" + c + "'.");
+			} else {
+				context.LogError ("Unexpected character '" + c + "' in attribute.");
 			}
-			
-			if (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsWhiteSpace (c)) {
-				if (context.StateTag == GETTINGEQ)
-					context.LogError ("Expecting = in attribute, got " + c + ".");
-				else if (context.StateTag == GETTINGVAL)
-					context.LogError ("Expecting attribute value, got " + c + ".");
-				else
-					context.LogError ("Unexpected character '" + c + "' in attribute.");
-				
-				if (att != null)
-					context.Nodes.Pop ();
-				rollback = string.Empty;
-				return Parent;
-			}
+
+			if (att != null)
+				context.Nodes.Pop ();
 			
 			rollback = string.Empty;
 			return Parent;

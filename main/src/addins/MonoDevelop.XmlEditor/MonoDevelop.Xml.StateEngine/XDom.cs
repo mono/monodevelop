@@ -404,7 +404,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public XName Name {
 			get { return name; }
 			set {
-				Debug.Assert (!IsNamed, "Should not name node more than once.");
+				Debug.Assert ((value.HasPrefix && !name.HasPrefix) || !IsNamed, "Should not name node more than once.");
 				name = value;
 			}
 		}

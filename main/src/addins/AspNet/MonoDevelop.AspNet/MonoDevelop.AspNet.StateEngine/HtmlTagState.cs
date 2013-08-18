@@ -43,20 +43,17 @@ namespace MonoDevelop.AspNet.StateEngine
 		public HtmlTagState (bool warnAutoClose) : this (warnAutoClose, new XmlAttributeState ()) {}
 		
 		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState)
-			: this (warnAutoClose, attributeState, new XmlNameState ()) {}
-		
-		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState)
-			: this (warnAutoClose, attributeState, nameState, new XmlMalformedTagState ()) {}
-		
-		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState,
-			XmlMalformedTagState malformedTagState)
-			: this (warnAutoClose, attributeState, nameState, malformedTagState, new HtmlScriptBodyState ())
+			: this (warnAutoClose, attributeState, new XmlNameState ())
 		{
 		}
 		
-		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState,
-			XmlMalformedTagState malformedTagState, HtmlScriptBodyState scriptState)
-			: base (attributeState, nameState, malformedTagState)
+		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState)
+			: this(warnAutoClose, attributeState, nameState, new HtmlScriptBodyState ())
+		{
+		}
+		
+		public HtmlTagState (bool warnAutoClose, XmlAttributeState attributeState, XmlNameState nameState, HtmlScriptBodyState scriptState)
+			: base (attributeState, nameState)
 		{
 			this.warnAutoClose = warnAutoClose;
 			this.ScriptState = scriptState;

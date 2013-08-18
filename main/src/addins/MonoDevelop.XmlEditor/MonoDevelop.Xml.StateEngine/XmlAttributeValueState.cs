@@ -26,103 +26,59 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
-	public abstract class XmlAttributeValueState : State
+	public class XmlAttributeValueState : State
 	{
-		XmlMalformedTagState malformedTagState;
-		
-		protected XmlMalformedTagState MalformedTagState {
-			get { return malformedTagState; } 
-		}
-		
-		public XmlAttributeValueState () : this (new XmlMalformedTagState ())
-		{}
-		
-		public XmlAttributeValueState (XmlMalformedTagState malformedTagState)
-		{
-			this.malformedTagState = malformedTagState;
-			Adopt (this.MalformedTagState);
-		}
-	}
-	
-	public class XmlUnquotedAttributeValueState : XmlAttributeValueState
-	{
-		public XmlUnquotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
-		public XmlUnquotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
-		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
-			
+
 			if (c == '<') {
 				//the parent state should report the error
 				rollback = string.Empty;
 				return Parent;
-			} else if (c == '>' && context.KeywordBuilder.Length > 0) {
-				string fullName = ((XAttribute) context.Nodes.Peek ()).Name.FullName;
-				context.LogError  ("The value of attribute '" + fullName + "' ended unexpectedly.");
+			}
+
+			if (context.CurrentStateLength == 1) {
+				if (c == '\'' || c == '"') {
+					context.StateTag = c;
+					return null;
+				}
+				context.StateTag = '\0';
+			} else if (context.StateTag == '\0') {
+				return BuildUnquotedValue (c, context, ref rollback);
+			}
+
+			if (c == context.StateTag) {
+				//ending the value
+				var att = (XAttribute) context.Nodes.Peek ();
+				att.Value = context.KeywordBuilder.ToString ();
+				return Parent;
+			}
+
+			context.KeywordBuilder.Append (c);
+			return null;
+		}
+
+		State BuildUnquotedValue (char c, IParseContext context, ref string rollback)
+		{
+			if (c == '>' && context.KeywordBuilder.Length > 0) {
+				string fullName = ((XAttribute)context.Nodes.Peek ()).Name.FullName;
+				context.LogError ("The value of attribute '" + fullName + "' ended unexpectedly.");
 				rollback = string.Empty;
 				return Parent;
-			} else if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
-				context.KeywordBuilder.Append (c);
-				return null;
-			} else if (char.IsWhiteSpace (c) || c == '>' || c == '\\') {
-				//ending the value
-				XAttribute att = (XAttribute) context.Nodes.Peek ();
-				att.Value = context.KeywordBuilder.ToString ();
-			} else {
-				//MalformedTagState handles error reporting
-				//context.LogWarning ("Unexpected character '" + c + "' getting attribute value");
-				return MalformedTagState;
 			}
 			
+			if (char.IsLetterOrDigit(c) || c == '_' || c == '.') {
+				context.KeywordBuilder.Append (c);
+				return null;
+			}
+
+			var att = (XAttribute)context.Nodes.Peek ();
+			att.Value = context.KeywordBuilder.ToString ();
 			rollback = string.Empty;
 			return Parent;
-		}
-	}
-	
-	public class XmlSingleQuotedAttributeValueState : XmlAttributeValueState
-	{
-		public bool AllowOpeningTagCharInside { get; set; }
-		
-		public XmlSingleQuotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
-		public XmlSingleQuotedAttributeValueState (XmlMalformedTagState malformedTagState) : base (malformedTagState) {}
-		
-		protected char Quote = '\'';
-		
-		public override State PushChar (char c, IParseContext context, ref string rollback)
-		{
-			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
-			
-			if (!AllowOpeningTagCharInside && c == '<') {
-				//the parent state should report the error
-				rollback = string.Empty;
-				return Parent;
-			} else if (c == Quote) {
-				//ending the value
-				XAttribute att = (XAttribute) context.Nodes.Peek ();
-				att.Value = context.KeywordBuilder.ToString ();
-				return Parent;
-			}
-			else {
-				context.KeywordBuilder.Append (c);
-				return null;
-			}
-		}
-	}
-	
-	public class XmlDoubleQuotedAttributeValueState : XmlSingleQuotedAttributeValueState
-	{
-		public XmlDoubleQuotedAttributeValueState () : this (new XmlMalformedTagState ()) {}
-		
-		public XmlDoubleQuotedAttributeValueState (XmlMalformedTagState malformedTagState)
-		: base (malformedTagState) {
-			Quote = '"';
 		}
 	}
 }
