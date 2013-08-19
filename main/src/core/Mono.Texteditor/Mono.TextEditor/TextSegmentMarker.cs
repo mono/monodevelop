@@ -26,6 +26,7 @@
 using System;
 using Cairo;
 using Mono.TextEditor.Highlighting;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -64,6 +65,8 @@ namespace Mono.TextEditor
 
 	public interface IChunkMarker
 	{
+		void TransformChunks (List<Chunk> chunks);
+
 		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color);
 	}
 

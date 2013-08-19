@@ -918,6 +918,14 @@ namespace Mono.TextEditor
 			}
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
+			var markers = Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible).ToArray ();
+			foreach (var marker in markers) {
+				var chunkMarker = marker as IChunkMarker;
+				if (chunkMarker == null)
+					continue;
+				chunkMarker.TransformChunks (chunks);
+			}
+
 			wrapper.Chunks = chunks;
 			foreach (var chunk in chunks) {
 				try {
@@ -956,7 +964,6 @@ namespace Mono.TextEditor
 					uint startIndex = (uint)(oldEndIndex);
 					uint endIndex = (uint)(startIndex + chunk.Length);
 					oldEndIndex = endIndex;
-					var markers = Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible).ToArray ();
 					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						if (containsPreedit) {
 							if (textEditor.preeditOffset < start)
@@ -1117,12 +1124,12 @@ namespace Mono.TextEditor
 
 		class ChunkDescriptor : LineDescriptor
 		{
-			public Chunk[] Chunk {
+			public List<Chunk> Chunk {
 				get;
 				private set;
 			}
 
-			public ChunkDescriptor (DocumentLine line, int offset, int length, Chunk[] chunk) : base(line, offset, length)
+			public ChunkDescriptor (DocumentLine line, int offset, int length, List<Chunk> chunk) : base(line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
@@ -1130,7 +1137,7 @@ namespace Mono.TextEditor
 
 		Dictionary<DocumentLine, ChunkDescriptor> chunkDict = new Dictionary<DocumentLine, ChunkDescriptor> ();
 
-		IEnumerable<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
+		List<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
@@ -1140,7 +1147,7 @@ namespace Mono.TextEditor
 				chunkDict.Remove (line);
 			}
 
-			Chunk[] chunks = mode.GetChunks (style, line, offset, length).ToArray ();
+			var chunks = mode.GetChunks (style, line, offset, length).ToList ();
 			descriptor = new ChunkDescriptor (line, offset, length, chunks);
 			chunkDict [line] = descriptor;
 			return chunks;

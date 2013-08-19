@@ -29,6 +29,7 @@ using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -155,15 +156,35 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		#region IChunkMarker implementation
+
+		void IChunkMarker.TransformChunks (List<Chunk> chunks)
+		{
+			int markerStart = Segment.Offset;
+			int markerEnd = Segment.EndOffset;
+			for (int i = 0; i < chunks.Count; i++) {
+				var chunk = chunks [i];
+				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+					continue;
+				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
+					return;
+				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
+					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
+					chunks.Insert (i, newChunk);
+					chunk.Offset += newChunk.Length;
+					chunk.Length -= newChunk.Length;
+					continue;
+				}
+			}
+		}
+
 		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color)
 		{
 			if (Debugger.DebuggingService.IsDebugging)
 				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
-			if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-
 			var bgc = editor.ColorStyle.PlainText.Background;
 			double alpha = 0.6;
 			color = new Cairo.Color (
