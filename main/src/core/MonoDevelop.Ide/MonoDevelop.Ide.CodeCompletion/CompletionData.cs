@@ -129,8 +129,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
 				? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
 					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
-			if (result == 0)
-				result = StringComparer.OrdinalIgnoreCase.Compare (a.Description, b.Description);
 			return result;
 		}
 

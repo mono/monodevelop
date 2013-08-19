@@ -799,6 +799,30 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		#endregion
 
+		public override int CompareTo (object obj)
+		{
+			int result = base.CompareTo (obj);
+			if (result == 0) {
+				var mcd = obj as MemberCompletionData;
+				if (mcd != null) {
+					var mc = mcd;
+					if (this.Entity.SymbolKind == SymbolKind.Method) {
+						var method = (IMethod)this.Entity;
+						if (method.IsExtensionMethod)
+							return 1;
+					}
+					if (mc.Entity.SymbolKind == SymbolKind.Method) {
+						var method = (IMethod)mc.Entity;
+						if (method.IsExtensionMethod)
+							return -1;
+					}
+				} else {
+					return -1;
+				}
+			}
+			return result;
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[MemberCompletionData: Entity={0}]", Entity);

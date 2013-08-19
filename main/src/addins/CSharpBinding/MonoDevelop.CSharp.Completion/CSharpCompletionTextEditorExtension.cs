@@ -1184,6 +1184,20 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				#endregion
+
+				public override int CompareTo (object obj)
+				{
+					var result = base.CompareTo (obj);
+					if (result == 0) {
+						var isd = obj as ImportSymbolCompletionData;
+						if (isd != null) {
+							result = StringComparer.OrdinalIgnoreCase.Compare (Description, isd.Description);
+						} else {
+							return 1;
+						}
+					}
+					return result;
+				}
 			}
 
 
