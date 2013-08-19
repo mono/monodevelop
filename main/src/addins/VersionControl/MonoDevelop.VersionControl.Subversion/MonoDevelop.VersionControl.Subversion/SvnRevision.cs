@@ -25,10 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -65,6 +61,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override Revision GetPrevious()
 		{
+			if (Kind != 1 && Rev == 0)
+				return Previous;
+
 			return new SvnRevision (Repository, Rev-1);
 		}
 		

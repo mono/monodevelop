@@ -143,6 +143,16 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
 		}
 
+		protected override void BlameExtraInternals (Annotation [] annotations)
+		{
+			for (int i = 0; i < 2; i++) {
+				Assert.IsTrue (annotations [i].HasEmail);
+				Assert.IsNotNull (annotations [i].Author);
+				Assert.IsNotNull (annotations [i].Email);
+			}
+			Assert.IsTrue (annotations [2].HasDate);
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new GitRepository (path, url);
