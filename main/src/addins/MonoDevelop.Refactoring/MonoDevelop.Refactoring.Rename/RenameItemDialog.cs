@@ -99,6 +99,8 @@ namespace MonoDevelop.Refactoring.Rename
 				this.Title = GettextCatalog.GetString ("Rename Variable");
 			} else if (options.SelectedItem is ITypeParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Type Parameter");
+			}  else if (options.SelectedItem is INamespace) {
+				this.Title = GettextCatalog.GetString ("Rename namespace");
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
@@ -118,6 +120,10 @@ namespace MonoDevelop.Refactoring.Rename
 			} else if (options.SelectedItem is IVariable) {
 				var lvar = (IVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
+				//				this.fileName = lvar.Region.FileName;
+			} else if (options.SelectedItem is INamespace) {
+				var lvar = (INamespace)options.SelectedItem;
+				entry.Text = lvar.FullName;
 				//				this.fileName = lvar.Region.FileName;
 			}
 			entry.SelectRegion (0, -1);

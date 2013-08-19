@@ -115,6 +115,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is NamespaceResolveResult) {
 				var ns = ((NamespaceResolveResult)result).Namespace;
 				valid = searchedMembers.FirstOrDefault (n => n is INamespace && ns.FullName.StartsWith (((INamespace)n).FullName, StringComparison.Ordinal));
+				if (!(node is NamespaceDeclaration))
+					goto skip;
 			} else if (result is LocalResolveResult) {
 				var ns = ((LocalResolveResult)result).Variable;
 				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
@@ -173,6 +175,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is IdentifierExpression) {
 				node = ((IdentifierExpression)node).IdentifierToken;
 			}
+
+		skip:
 
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
