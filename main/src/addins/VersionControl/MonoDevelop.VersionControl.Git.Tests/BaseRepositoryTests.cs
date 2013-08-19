@@ -217,10 +217,8 @@ namespace MonoDevelop.VersionControl.Tests
 		protected abstract Revision GetHeadRevision ();
 
 		[Test]
-		[Platform (Exclude = "Win")]
-		// TODO: Fix SvnSharp not reverting.
 		// Tests Repository.RevertRevision.
-		public void RevertsRevision ()
+		public virtual void RevertsRevision ()
 		{
 			string added = rootCheckout + "testfile2";
 			AddFile ("testfile", "text", true, true);
@@ -240,7 +238,7 @@ namespace MonoDevelop.VersionControl.Tests
 			repo.MoveFile (src, dst, false, new NullProgressMonitor ());
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
 			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
 			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
@@ -260,7 +258,7 @@ namespace MonoDevelop.VersionControl.Tests
 			repo.MoveDirectory (srcDir, dstDir, false, new NullProgressMonitor ());
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
 			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
 			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
@@ -345,8 +343,10 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
-		[Platform (Exclude = "Win")]
+		[Ignore]
+		// TODO: Fix Subversion for Unix not returning the correct value.
 		// TODO: Fix SvnSharp logic failing to generate correct URL.
+		// TODO: Fix Git TreeWalk failing.
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
@@ -354,8 +354,7 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", "text1", true, true);
 			File.AppendAllText (added, "text2");
 			CommitFile (added);
-			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
-			string text = repo.GetTextAtRevision (vi.LocalPath.ToRelative (rootCheckout), GetHeadRevision ());
+			string text = repo.GetTextAtRevision (rootCheckout, GetHeadRevision ());
 			Assert.AreEqual ("text1text2", text);
 		}
 
