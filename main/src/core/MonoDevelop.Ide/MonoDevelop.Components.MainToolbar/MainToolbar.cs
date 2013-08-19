@@ -93,12 +93,13 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
 		bool SearchForMembers {
 			get {
-				return PropertyService.Get ("MainToolbar.Search.IncludeMembers", true);
+				return searchForMembers;
 			}
 			set {
-				PropertyService.Set ("MainToolbar.Search.IncludeMembers", value);
+				searchForMembers.Value = value;
 			}
 		}
 
