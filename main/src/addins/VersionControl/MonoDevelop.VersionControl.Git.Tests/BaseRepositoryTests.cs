@@ -203,8 +203,6 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
 		}
 
-		// TODO: Remaining tests for Repository class.
-
 		[Test]
 		// Tests Repository.GetRevisionChanges.
 		public void CorrectRevisionChanges ()
@@ -219,16 +217,16 @@ namespace MonoDevelop.VersionControl.Tests
 		protected abstract Revision GetHeadRevision ();
 
 		[Test]
+		[Platform (Exclude = "Win")]
+		// TODO: Fix SvnSharp not reverting.
 		// Tests Repository.RevertRevision.
-		[Ignore ("TODO")]
 		public void RevertsRevision ()
 		{
+			string added = rootCheckout + "testfile2";
 			AddFile ("testfile", "text", true, true);
-			DoRevisionRevert ();
-		}
-
-		protected virtual void DoRevisionRevert ()
-		{
+			AddFile ("testfile2", "text2", true, true);
+			repo.RevertRevision (added, GetHeadRevision (), new NullProgressMonitor ());
+			Assert.IsFalse (File.Exists (added));
 		}
 
 		[Test]

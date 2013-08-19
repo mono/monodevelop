@@ -29,7 +29,6 @@ using MonoDevelop.VersionControl.Tests;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.IO;
-using System;
 
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {

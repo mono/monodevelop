@@ -150,7 +150,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				Assert.IsNotNull (annotations [i].Author);
 				Assert.IsNotNull (annotations [i].Email);
 			}
-			Assert.IsFalse (annotations [2].HasDate);
+			Assert.IsTrue (annotations [2].HasDate);
 		}
 
 		protected override Repository GetRepo (string path, string url)

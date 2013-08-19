@@ -545,7 +545,7 @@ namespace SubversionAddinWindows
 			return new Annotation[0];
 		}
 
-		SharpSvn.SvnRevision GetRevision (Revision rev)
+		static SharpSvn.SvnRevision GetRevision (Revision rev)
 		{
 			if (rev == null)
 				return null;
@@ -563,7 +563,7 @@ namespace SubversionAddinWindows
 			return new SharpSvn.SvnRevision (srev.Rev);
 		}
 
-		SvnRevision ToBaseRevision (SharpSvn.SvnRevision rev)
+		static SvnRevision ToBaseRevision (SharpSvn.SvnRevision rev)
 		{
 			if (rev.RevisionType == SvnRevisionType.Base)
 				return SvnRevision.Base;
