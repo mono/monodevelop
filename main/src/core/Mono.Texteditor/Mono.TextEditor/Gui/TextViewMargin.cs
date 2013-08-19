@@ -414,6 +414,8 @@ namespace Mono.TextEditor
 					return;
 				highlightBracketOffset = matchingBracket;
 				Application.Invoke (delegate {
+					if (textEditor.IsDisposed)
+						return;
 					if (line1 >= 0)
 						textEditor.RedrawLine (line1);
 					if (line1 != line2 && line2 >= 0)
