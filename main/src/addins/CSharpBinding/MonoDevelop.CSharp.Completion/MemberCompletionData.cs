@@ -193,6 +193,35 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
+		bool InsertSemicolon (int exprStart)
+		{
+			int offset = exprStart;
+			while (offset > 0) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch)) {
+					if (ch != '{' && ch != '}' && ch != ';')
+						return false;
+					break;
+				}
+				offset--;
+			}
+
+			offset = Editor.Caret.Offset;
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsLetterOrDigit (ch))
+					break;
+				offset++;
+			}
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch))
+					return char.IsLetter (ch) || ch == '}';
+				offset++;
+			}
+			return true;
+		}
+
 		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier, bool addParens, bool addOpeningOnly)
 		{
 			string text = CompletionText;
@@ -214,10 +243,7 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 					exprStart--;
 				}
-				string textBefore = Editor.GetTextBetween (line.Offset, exprStart);
-				bool insertSemicolon = false;
-				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
-					insertSemicolon = true;
+				bool insertSemicolon = InsertSemicolon(exprStart);
 				if (Entity.SymbolKind == SymbolKind.Constructor)
 					insertSemicolon = false;
 				//int pos;

@@ -216,6 +216,31 @@ namespace MonoDevelop.CSharpBinding
 			Assert.AreEqual ("FooBar", completion); 
 		}
 
+		[Test]
+		public void TestBracketAlreadyThereCase2 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		Test($);
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ()|", completion); 
+		}
+
+		[Test]
+		public void TestParameter ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		Test(foo, $
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ()|", completion); 
+		}
 
 		[Test]
 		public void TestOverloads ()
