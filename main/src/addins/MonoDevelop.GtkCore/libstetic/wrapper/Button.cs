@@ -295,11 +295,14 @@ namespace Stetic.Wrapper {
 		{
 			base.GenerateBuildCode (ctx, var);
 
-			CodePropertyReferenceExpression cprop = new CodePropertyReferenceExpression (var, "Label");
-			PropertyDescriptor prop = (PropertyDescriptor) this.ClassDescriptor ["Label"];
-			bool trans = Type != ButtonType.StockItem && prop.IsTranslated (Wrapped);
-			CodeExpression val = ctx.GenerateValue (button.Label, typeof(string), trans);
-			ctx.Statements.Add (new CodeAssignStatement (cprop, val));
+			string text = button.Label;
+			if (!string.IsNullOrEmpty (text)) {
+				CodePropertyReferenceExpression cprop = new CodePropertyReferenceExpression (var, "Label");
+				PropertyDescriptor prop = (PropertyDescriptor)this.ClassDescriptor ["Label"];
+				bool trans = Type != ButtonType.StockItem && prop.IsTranslated (Wrapped);
+				CodeExpression val = ctx.GenerateValue (text, typeof(string), trans);
+				ctx.Statements.Add (new CodeAssignStatement (cprop, val));
+			}
 
 			if (Type == ButtonType.TextAndIcon) {
 				var imageWidget = (Gtk.Image) button.Image;
