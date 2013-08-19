@@ -59,8 +59,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var formatter = CodeFormatterService.GetFormatter (mt);
 			if (formatter == null)
 				return;
-			using (var undo = doc.Editor.OpenUndoGroup ()) {
-				formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
+			if (formatter.SupportsOnTheFlyFormatting) {
+				using (var undo = doc.Editor.OpenUndoGroup ()) {
+					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
+				}
+			} else {
+				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 
 			}
 		}
 	}
