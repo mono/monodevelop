@@ -123,11 +123,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				valid = searchedMembers.FirstOrDefault ();
 			}
-
 			if (node is ConstructorInitializer)
 				return null;
 			if (node is ObjectCreateExpression)
 				node = ((ObjectCreateExpression)node).Type;
+			if (node is IndexerDeclaration)
+				node = ((IndexerDeclaration)node).ThisToken;
 
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
