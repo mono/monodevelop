@@ -446,7 +446,9 @@ namespace MonoDevelop.VersionControl.Views
 				hscrollbar.Destroy ();
 			}
 
-			children.ForEach (child => child.Child.Destroy ());
+			foreach (var child in children.ToArray ()) {
+				child.Child.Destroy ();
+			}
 
 			base.OnDestroyed ();
 		}

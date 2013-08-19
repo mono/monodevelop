@@ -194,6 +194,9 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Unignore"
 			_label = "Remove from ignore list"
 			description = "Add items to version control ignore list"/>
+		<Command id = "MonoDevelop.VersionControl.Commands.ResolveConflicts"
+			_label = "Resolve Conflicts"
+			description = "Resolve conflicts on the project file."/>
 
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.CopyRevision"
 			_label = "_Copy revision"/>
@@ -246,6 +249,7 @@
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="IFileItem|IFolderItem">
 			<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Tools">
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.ResolveConflicts"/>
 				<Condition id="ItemType" value="Project|WorkspaceItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 				</Condition>
