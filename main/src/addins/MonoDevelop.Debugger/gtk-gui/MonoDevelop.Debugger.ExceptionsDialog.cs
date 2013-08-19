@@ -113,7 +113,6 @@ namespace MonoDevelop.Debugger
 			this.buttonAdd.CanFocus = true;
 			this.buttonAdd.Name = "buttonAdd";
 			this.buttonAdd.UseUnderline = true;
-			this.buttonAdd.Label = "";
 			global::Gtk.Image w10 = new global::Gtk.Image ();
 			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Menu);
 			this.buttonAdd.Image = w10;
@@ -127,7 +126,6 @@ namespace MonoDevelop.Debugger
 			this.buttonRemove.CanFocus = true;
 			this.buttonRemove.Name = "buttonRemove";
 			this.buttonRemove.UseUnderline = true;
-			this.buttonRemove.Label = "";
 			global::Gtk.Image w12 = new global::Gtk.Image ();
 			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-back", global::Gtk.IconSize.Menu);
 			this.buttonRemove.Image = w12;
