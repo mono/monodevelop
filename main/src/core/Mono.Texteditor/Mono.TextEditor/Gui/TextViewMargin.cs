@@ -2210,7 +2210,7 @@ namespace Mono.TextEditor
 			var line = doc.GetLineByOffset (offset);
 			char first = doc.GetCharAt (offset);
 			if (char.IsPunctuation (first))
-				return forwardDirection ? System.Math.Min (line.Offset + line.Length, offset + 1) : System.Math.Max (line.Offset, offset - 1);
+				return forwardDirection ? System.Math.Min (line.Offset + line.Length, offset + 1) : System.Math.Max (line.Offset, offset);
 			while (offset >= line.Offset && offset < line.Offset + line.Length) {
 				char ch = doc.GetCharAt (offset);
 				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch)
