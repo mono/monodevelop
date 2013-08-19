@@ -203,13 +203,12 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
 		}
 
-		// TODO: Remaining tests for Repository class.
-
 		[Test]
 		// Tests Repository.GetRevisionChanges.
 		public void CorrectRevisionChanges ()
 		{
 			AddFile ("testfile", "text", true, true);
+			// TODO: Extend and test each member and more types.
 			foreach (var rev in repo.GetRevisionChanges (GetHeadRevision ())) {
 				Assert.AreEqual (rev.Action, RevisionAction.Add);
 			}
@@ -219,15 +218,13 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.RevertRevision.
-		[Ignore ("TODO")]
-		public void RevertsRevision ()
+		public virtual void RevertsRevision ()
 		{
+			string added = rootCheckout + "testfile2";
 			AddFile ("testfile", "text", true, true);
-			// Override and test in specific with GitRevision and SvnRevision.
-		}
-
-		protected virtual void DoRevisionRevert ()
-		{
+			AddFile ("testfile2", "text2", true, true);
+			repo.RevertRevision (added, GetHeadRevision (), new NullProgressMonitor ());
+			Assert.IsFalse (File.Exists (added));
 		}
 
 		[Test]
@@ -241,7 +238,7 @@ namespace MonoDevelop.VersionControl.Tests
 			repo.MoveFile (src, dst, false, new NullProgressMonitor ());
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
 			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
 			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
@@ -261,7 +258,7 @@ namespace MonoDevelop.VersionControl.Tests
 			repo.MoveDirectory (srcDir, dstDir, false, new NullProgressMonitor ());
 			VersionInfo srcVi = repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
 			VersionInfo dstVi = repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
 			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
@@ -346,23 +343,51 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
-		[Ignore ("TODO")]
+		[Ignore]
+		// TODO: Fix Subversion for Unix not returning the correct value.
+		// TODO: Fix SvnSharp logic failing to generate correct URL.
+		// TODO: Fix Git TreeWalk failing.
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
-		}
-
-		protected virtual string GetTextAtRevision ()
-		{
-			return null;
+			string added = rootCheckout + "testfile";
+			AddFile ("testfile", "text1", true, true);
+			File.AppendAllText (added, "text2");
+			CommitFile (added);
+			string text = repo.GetTextAtRevision (rootCheckout, GetHeadRevision ());
+			Assert.AreEqual ("text1text2", text);
 		}
 
 		[Test]
-		[Ignore ("TODO")]
 		// Tests Repository.GetAnnotations.
 		public void BlameIsCorrect ()
 		{
+			string added = rootCheckout + "testfile";
+			// Initial commit.
+			AddFile ("testfile", "blah" + Environment.NewLine, true, true);
+			// Second commit.
+			File.AppendAllText (added, "wut" + Environment.NewLine);
+			CommitFile (added);
+			// Working copy.
+			File.AppendAllText (added, "wut2" + Environment.NewLine);
+
+			var annotations = repo.GetAnnotations (added);
+			for (int i = 0; i < 2; i++) {
+				var annotation = annotations [i];
+				Assert.IsTrue (annotation.HasDate);
+				Assert.IsNotNull (annotation.Date);
+			}
+
+			BlameExtraInternals (annotations);
+			
+			Assert.False (annotations [2].HasEmail);
+			Assert.IsNotNull (annotations [2].Author);
+			Assert.IsNull (annotations [2].Email);
+			Assert.AreEqual (annotations [2].Revision, GettextCatalog.GetString ("working copy"));
+			Assert.AreEqual (annotations [2].Author, "<uncommitted>");
 		}
+
+		protected abstract void BlameExtraInternals (Annotation [] annotations);
 
 		#region Util
 
