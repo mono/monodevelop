@@ -1,7 +1,6 @@
 
 using System;
 using System.Collections;
-using System.Linq;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;

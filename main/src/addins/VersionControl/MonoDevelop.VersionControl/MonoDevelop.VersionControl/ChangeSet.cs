@@ -1,6 +1,4 @@
-
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +58,7 @@ namespace MonoDevelop.VersionControl
 			return GeneratePathComment (basePath.FullPath, items, format, userInfo);
 		}
 		
-		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
+		public static string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
 			CommitMessageFormat messageFormat, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);
@@ -163,7 +161,7 @@ namespace MonoDevelop.VersionControl
 		public string Comment {
 			get {
 				string txt = VersionControlService.GetCommitComment (LocalPath);
-				return txt != null ? txt : String.Empty;
+				return txt ?? String.Empty;
 			}
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}

@@ -216,7 +216,7 @@ namespace MonoDevelop.VersionControl
 		{
 			lock (commentsLock) {
 				Hashtable doc = GetCommitComments ();
-				if (comment == null || comment.Length == 0) {
+				if (String.IsNullOrEmpty (comment)) {
 					if (doc.ContainsKey (file)) {
 						doc.Remove (file);
 						if (save) SaveComments ();
@@ -490,7 +490,7 @@ namespace MonoDevelop.VersionControl
 		
 		static void SolutionItemAddFile (string rootPath, HashSet<string> files, string file)
 		{
-			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar))
+			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar, StringComparison.Ordinal))
 			    return;
 			if (!File.Exists (file))
 				return;

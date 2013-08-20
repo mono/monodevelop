@@ -26,9 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects;
@@ -73,7 +71,7 @@ namespace MonoDevelop.VersionControl
 		
 		private string GetRelativeEntryPath (string path)
 		{
-			if (!path.StartsWith (changelog_path)) {
+			if (!path.StartsWith (changelog_path, System.StringComparison.Ordinal)) {
 				return null;
 			}
 			

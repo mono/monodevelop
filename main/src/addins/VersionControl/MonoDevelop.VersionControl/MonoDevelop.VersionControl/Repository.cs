@@ -261,10 +261,6 @@ namespace MonoDevelop.VersionControl
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
 		HashSet<FilePath> directoriesInQueryQueue = new HashSet<FilePath> ();
 
-		void QueueVersionInfoQuery (IEnumerable<FilePath> paths, bool getRemoteStatus)
-		{
-		}
-
 		void AddQuery (object query)
 		{
 			lock (queryLock) {
@@ -691,11 +687,12 @@ namespace MonoDevelop.VersionControl
 				string pathRoot = null;
 				
 				while ((line = sr.ReadLine ()) != null) {
-					if (pathRoot != null && fileName != null && (line.StartsWith ("+++ " + pathRoot) || line.StartsWith ("--- " + pathRoot))) {
+					if (pathRoot != null && fileName != null &&
+						(line.StartsWith ("+++ " + pathRoot, StringComparison.Ordinal) || line.StartsWith ("--- " + pathRoot, StringComparison.Ordinal))) {
 						line = line.Substring (0, 4) + line.Substring (4 + pathRoot.Length);
 						content.Append (line).Append ('\n');
 					}
-					else if (!line.StartsWith ("Index:")) {
+					else if (!line.StartsWith ("Index:", StringComparison.Ordinal)) {
 						content.Append (line).Append ('\n');
 					} else {
 						if (fileName != null) {
