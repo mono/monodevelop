@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
