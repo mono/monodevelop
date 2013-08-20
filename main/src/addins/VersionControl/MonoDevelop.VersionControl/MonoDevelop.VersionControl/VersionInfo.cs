@@ -1,7 +1,5 @@
 
-using System;
 using MonoDevelop.Core;
-using System.IO;
 
 namespace MonoDevelop.VersionControl
 {
@@ -31,17 +29,16 @@ namespace MonoDevelop.VersionControl
 
 		public bool Equals (VersionInfo obj)
 		{
-			VersionInfo other = obj as VersionInfo;
-			if (other == null)
+			if (obj == null)
 				return false;
-			return localPath == other.localPath &&
-				repositoryPath == other.repositoryPath &&
-				isDirectory == other.isDirectory &&
-				status == other.status &&
-				revision == other.revision &&
-				remoteStatus == other.remoteStatus &&
-				remoteRevision == other.remoteRevision &&
-				AllowedOperations == other.AllowedOperations;
+			return localPath == obj.localPath &&
+				repositoryPath == obj.repositoryPath &&
+				isDirectory == obj.isDirectory &&
+				status == obj.status &&
+				revision == obj.revision &&
+				remoteStatus == obj.remoteStatus &&
+				remoteRevision == obj.remoteRevision &&
+				AllowedOperations == obj.AllowedOperations;
 		}
 		
 		internal void Init (Repository repo)

@@ -160,12 +160,10 @@
     <Compile Include="MonoDevelop.VersionControl.Views\CellRendererDiff.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\LogView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\StatusView.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\AnnotateView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\CommitDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\EditRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\SelectRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl\AddRemoveMoveCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\AnnotateCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeSet.cs" />
     <Compile Include="MonoDevelop.VersionControl\CheckoutCommand.cs" />

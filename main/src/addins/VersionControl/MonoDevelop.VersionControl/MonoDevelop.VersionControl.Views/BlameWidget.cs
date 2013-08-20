@@ -33,7 +33,6 @@ using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core;
-using System.Text.RegularExpressions;
 using System.Text;
 using MonoDevelop.Components.Commands;
 
@@ -384,7 +383,7 @@ namespace MonoDevelop.VersionControl.Views
 				this.widget = widget;
 				widget.info.Updated += delegate { QueueDraw (); };
 				annotations = new List<Annotation> ();
-				UpdateAnnotations (null, null);
+				UpdateAnnotations ();
 	//			widget.Document.Saved += UpdateAnnotations;
 				document = widget.Editor.Document;
 				document.TextReplacing += EditorDocumentTextReplacing;
@@ -545,7 +544,7 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Reloads annotations for the current document
 			/// </summary>
-			internal void UpdateAnnotations (object sender, EventArgs e)
+			internal void UpdateAnnotations ()
 			{
 				StatusBarContext ctx = IdeApp.Workbench.StatusBar.CreateContext ();
 				ctx.AutoPulse = true;
@@ -614,7 +613,7 @@ namespace MonoDevelop.VersionControl.Views
 						}
 				} else if (startLine > endLine) {
 					// revert
-					UpdateAnnotations (null, null);
+					UpdateAnnotations ();
 					return;
 				}
 				
@@ -673,7 +672,7 @@ namespace MonoDevelop.VersionControl.Views
 				string truncated = revision.Substring (0, initalLength);
 				var history = widget.info.History;
 				if (history != null) {
-					bool isMisleadingMatch = history.Select (r => r.ToString ()).Any (rev => rev != revision && rev.StartsWith (truncated));
+					bool isMisleadingMatch = history.Select (r => r.ToString ()).Any (rev => rev != revision && rev.StartsWith (truncated, StringComparison.Ordinal));
 					if (isMisleadingMatch)
 						truncated = TruncRevision (revision, initalLength + 1);
 				}

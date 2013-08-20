@@ -3,7 +3,6 @@ using System.Threading;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {

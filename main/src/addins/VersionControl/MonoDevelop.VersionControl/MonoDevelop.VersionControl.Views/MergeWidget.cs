@@ -27,13 +27,10 @@
 using System;
 using System.Linq;
 using Gtk;
-using Gdk;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
-using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -82,7 +79,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Load (string fileName)
 		{
 			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-			MainEditor.Document.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
+			MainEditor.Document.Text = TextFileUtility.ReadAllText (fileName);
 
 			this.CreateDiff ();
 			Show ();
@@ -103,9 +100,9 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {
-				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
 			};
 			
 			this.editors[0].Document.ReadOnly = true;
@@ -119,7 +116,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		// todo: move to version control backend
-		IEnumerable<Conflict> Conflicts (Mono.TextEditor.TextDocument doc)
+		static IEnumerable<Conflict> Conflicts (TextDocument doc)
 		{
 			int mergeStart = 0;
 			while ((mergeStart = doc.IndexOf ("<<<<<<<", mergeStart, doc.TextLength - mergeStart, StringComparison.Ordinal)) >= 0) {
@@ -161,13 +158,13 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		List<Conflict> currentConflicts = new List<Conflict> ();
-		List<Mono.TextEditor.Utils.Hunk> leftConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
-		List<Mono.TextEditor.Utils.Hunk> rightConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
+		List<Hunk> leftConflicts = new List<Hunk> ();
+		List<Hunk> rightConflicts = new List<Hunk> ();
 		
 		public override void UpdateDiff ()
 		{
-			LeftDiff  = new List<Mono.TextEditor.Utils.Hunk> (editors[0].Document.Diff (MainEditor.Document));
-			RightDiff = new List<Mono.TextEditor.Utils.Hunk> (editors[2].Document.Diff (MainEditor.Document));
+			LeftDiff  = new List<Hunk> (editors[0].Document.Diff (MainEditor.Document));
+			RightDiff = new List<Hunk> (editors[2].Document.Diff (MainEditor.Document));
 
 			DocumentLine line;
 			LeftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) &&
@@ -185,8 +182,8 @@ namespace MonoDevelop.VersionControl.Views
 				int middleA = MainEditor.Document.OffsetToLineNumber (curConflict.StartSegment.Offset);
 				int middleB = MainEditor.Document.OffsetToLineNumber (curConflict.EndSegment.Offset) + 1;
 
-				LeftDiff.Add (new Mono.TextEditor.Utils.Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
-				RightDiff.Add (new Mono.TextEditor.Utils.Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
+				LeftDiff.Add (new Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
+				RightDiff.Add (new Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
 			}
 			base.UpdateDiff ();
 			QueueDraw ();
@@ -218,8 +215,8 @@ namespace MonoDevelop.VersionControl.Views
 				int middleA = MainEditor.Document.OffsetToLineNumber (conflict.StartSegment.Offset);
 				int middleB = MainEditor.Document.OffsetToLineNumber (conflict.EndSegment.EndOffset);
 
-				leftConflicts.Add (new Mono.TextEditor.Utils.Hunk (leftA, middleA, leftB - leftA, middleB - middleA));
-				rightConflicts.Add (new Mono.TextEditor.Utils.Hunk (rightA, middleA, rightB - rightA, middleB - middleA));
+				leftConflicts.Add (new Hunk (leftA, middleA, leftB - leftA, middleB - middleA));
+				rightConflicts.Add (new Hunk (rightA, middleA, rightB - rightA, middleB - middleA));
 			}
 			int endOffset = 0;
 			if (currentConflicts.Count > 0)

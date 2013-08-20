@@ -1,5 +1,4 @@
 
-using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -32,7 +31,7 @@ namespace MonoDevelop.VersionControl
 	
 	class SolutionVersionControlCommandHandler: CommandHandler
 	{
-		VersionControlItemList GetItems ()
+		static VersionControlItemList GetItems ()
 		{
 			VersionControlItemList list = new VersionControlItemList ();
 			
@@ -74,7 +73,7 @@ namespace MonoDevelop.VersionControl
 	
 	class FileVersionControlCommandHandler: CommandHandler
 	{
-		protected VersionControlItemList GetItems ()
+		protected static VersionControlItemList GetItems ()
 		{
 			VersionControlItemList list = new VersionControlItemList ();
 			VersionControlItem it = GetItem ();
@@ -84,7 +83,7 @@ namespace MonoDevelop.VersionControl
 			return list;
 		}
 		
-		protected VersionControlItem GetItem ()
+		protected static VersionControlItem GetItem ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || !doc.IsFile)

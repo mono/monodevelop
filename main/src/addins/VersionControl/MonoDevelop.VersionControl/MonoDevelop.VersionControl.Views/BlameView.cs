@@ -25,11 +25,9 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using System.Linq;
 namespace MonoDevelop.VersionControl.Views
 {
 	public interface IBlameView : IAttachableViewContent

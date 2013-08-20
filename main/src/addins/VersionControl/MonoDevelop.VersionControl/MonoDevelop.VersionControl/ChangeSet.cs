@@ -1,6 +1,4 @@
-
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,7 +161,7 @@ namespace MonoDevelop.VersionControl
 		public string Comment {
 			get {
 				string txt = VersionControlService.GetCommitComment (LocalPath);
-				return txt != null ? txt : String.Empty;
+				return txt ?? String.Empty;
 			}
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}

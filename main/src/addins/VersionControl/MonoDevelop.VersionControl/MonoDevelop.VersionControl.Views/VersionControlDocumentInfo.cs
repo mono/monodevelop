@@ -25,15 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Content;
-using Mono.Addins;
 
 namespace MonoDevelop.VersionControl.Views
 {

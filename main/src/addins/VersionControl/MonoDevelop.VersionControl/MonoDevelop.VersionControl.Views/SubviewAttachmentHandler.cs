@@ -69,7 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
+		static void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
 			where T : IAttachableViewContent
 		{
 			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type)

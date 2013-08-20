@@ -111,11 +111,11 @@ namespace MonoDevelop.VersionControl.Views
 			return layout;
 		}
 		
-		string ProcessLine (string line)
+		static string ProcessLine (string line)
 		{
 			if (line == null)
 				return null;
-			return line.Replace ("\t","    ");
+			return line.Replace ("\t", "    ");
 		}
 		
 		const int leftSpace = 16;
@@ -182,7 +182,8 @@ namespace MonoDevelop.VersionControl.Views
 					
 					char tag = line [0];
 	
-					if (line.StartsWith ("---") || line.StartsWith ("+++")) {
+					if (line.StartsWith ("---", StringComparison.Ordinal) ||
+						line.StartsWith ("+++", StringComparison.Ordinal)) {
 						// Ignore this part of the header.
 						currentBlock = null;
 						y -= lineHeight;
@@ -325,7 +326,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		bool IsChangeBlock (BlockType t)
+		static bool IsChangeBlock (BlockType t)
 		{
 			return t == BlockType.Added || t == BlockType.Removed;
 		}
@@ -516,7 +517,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		StateType GetState (Gtk.Widget widget, CellRendererState flags)
+		static StateType GetState (Gtk.Widget widget, CellRendererState flags)
 		{
 			if ((flags & CellRendererState.Selected) != 0)
 				return widget.HasFocus ? StateType.Selected : StateType.Active;
@@ -524,7 +525,7 @@ namespace MonoDevelop.VersionControl.Views
 				return StateType.Normal;
 		}
 		
-		int ParseCurrentLine (string line)
+		static int ParseCurrentLine (string line)
 		{
 			int i = line.IndexOf ('+');
 			if (i == -1) return -1;
