@@ -104,20 +104,11 @@ namespace MonoDevelop.HexEditor
 			hexEditor.HexEditorData.Buffer = new ArrayBuffer (buf);
 			hexEditor.Sensitive = CanEdit (val);
 
-			var scrolled = new ScrolledWindow () {
-				HscrollbarPolicy = PolicyType.Automatic,
-				VscrollbarPolicy = PolicyType.Automatic,
-				ShadowType = ShadowType.In
-			};
-
-			var hexEditorWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (hexEditor);
-			scrolled.AddWithViewport (hexEditorWidget);
-			scrolled.ShowAll ();
-
+			var xwtScrollView = new Xwt.ScrollView (hexEditor);
+			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);
 			SetHexEditorOptions ();
 			hexEditor.SetFocus ();
-
-			return scrolled;
+			return scrollWidget;
 		}
 
 		public bool StoreValue (ObjectValue val)

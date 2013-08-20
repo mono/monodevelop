@@ -72,7 +72,7 @@ namespace Mono.MHex.Rendering
 			ctx.SetColor (Style.HexOffsetBg);
 			ctx.Fill ();
 
-			if (line * Editor.BytesInRow < Data.Length) {
+			if (line >= 0 && line * Editor.BytesInRow < Data.Length) {
 				LayoutWrapper layout = GetLayout (line);
 				var sz = layout.Layout.GetSize ();
 				ctx.SetColor (line != Caret.Line ? Style.HexOffset : Style.HexOffsetHighlighted);
