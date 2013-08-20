@@ -66,9 +66,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
 			var ctx = stateTracker.Clone ();
-			for (int max = offset; max < line.Offset + line.Length; max++) {
-				ctx.Push (data.Document.GetCharAt (max));
-			}
+			ctx.Update(line.Offset + line.Length);
+
 //			int pos = line.Offset;
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;

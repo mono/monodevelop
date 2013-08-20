@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 				var policy = Policy.CreateOptions();
 				var options = Editor.CreateNRefactoryTextEditorOptions();
 				options.IndentBlankLines = true;
-				var engine = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(Editor.Document, options, policy));
+				var engine = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(textEditorData.Document, options, policy));
 				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
 					textEditorData,
 					engine
@@ -198,7 +198,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
 				textEditorData,
-				new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(Editor.Document, options, policy))
+				new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(textEditorData.Document, options, policy))
 				);
 
 		}
