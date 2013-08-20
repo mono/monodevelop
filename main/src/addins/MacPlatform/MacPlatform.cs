@@ -85,15 +85,9 @@ namespace MonoDevelop.MacIntegration
 
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName (BrandingService.ApplicationName);
-			
-			Cocoa.InitMonoMac ();
 
 			CheckGtkVersion (2, 24, 14);
 
-			timer.Trace ("Installing App Event Handlers");
-			GlobalSetup ();
-			
-			timer.EndTiming ();
 		}
 
 		static void CheckGtkVersion (uint major, uint minor, uint micro)
@@ -130,7 +124,14 @@ namespace MonoDevelop.MacIntegration
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
-			return Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+
+			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
+			timer.Trace ("Installing App Event Handlers");
+			GlobalSetup ();
+			timer.EndTiming ();
+
+			return loaded;
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
