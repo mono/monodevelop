@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -39,7 +38,7 @@ namespace MonoDevelop.VersionControl.Views
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class LogWidget : Gtk.Bin
 	{
-		MonoDevelop.VersionControl.Revision[] history;
+		Revision[] history;
 		public Revision[] History {
 			get {
 				return history;
@@ -510,8 +509,8 @@ namespace MonoDevelop.VersionControl.Views
 			string author = rev.Author;
 			if (string.IsNullOrEmpty (author))
 				return;
-			int idx = author.IndexOf ("<");
-			if (idx >= 0 && idx < author.IndexOf (">"))
+			int idx = author.IndexOf ("<", StringComparison.Ordinal);
+			if (idx >= 0 && idx < author.IndexOf (">", StringComparison.Ordinal))
 				author = author.Substring (0, idx).Trim ();
 			if (string.IsNullOrEmpty (currentFilter))
 				renderer.Text = author;

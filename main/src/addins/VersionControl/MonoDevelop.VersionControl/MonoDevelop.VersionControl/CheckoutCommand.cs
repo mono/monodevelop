@@ -58,14 +58,14 @@ namespace MonoDevelop.VersionControl
 			
 			string[] list = System.IO.Directory.GetFiles(path);
 			foreach (string str in list ) {
-				if (str.EndsWith(".mds")) {
+				if (str.EndsWith (".mds", System.StringComparison.Ordinal)) {
 					projectFn = str;
 					break;
 				}
 			}
 			if ( projectFn == null ) {
 				foreach ( string str in list ) {
-					if (str.EndsWith(".mdp")) {
+					if (str.EndsWith (".mdp", System.StringComparison.Ordinal)) {
 						projectFn = str;
 						break;
 					}

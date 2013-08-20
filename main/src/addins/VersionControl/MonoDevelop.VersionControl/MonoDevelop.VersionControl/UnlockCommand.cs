@@ -25,10 +25,8 @@
 //
 //
 
-using System;
 using System.Linq;
 using MonoDevelop.Core;
-using System.IO;
 
 namespace MonoDevelop.VersionControl
 {

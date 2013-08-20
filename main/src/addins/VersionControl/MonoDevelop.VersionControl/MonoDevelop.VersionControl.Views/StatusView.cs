@@ -661,7 +661,7 @@ namespace MonoDevelop.VersionControl.Views
 			UpdateSelectionStatus ();
 		}
 		
-		string GetCommitMessage (string file)
+		static string GetCommitMessage (string file)
 		{
 			string txt = VersionControlService.GetCommitComment (file);
 			return txt ?? String.Empty;
@@ -989,7 +989,7 @@ namespace MonoDevelop.VersionControl.Views
 			return true;
 		}
 		
-		bool FileVisible (VersionInfo vinfo)
+		static bool FileVisible (VersionInfo vinfo)
 		{
 			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
 		}

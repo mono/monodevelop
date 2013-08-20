@@ -25,7 +25,6 @@
 //
 //
 
-using System;
 
 namespace MonoDevelop.VersionControl
 {
