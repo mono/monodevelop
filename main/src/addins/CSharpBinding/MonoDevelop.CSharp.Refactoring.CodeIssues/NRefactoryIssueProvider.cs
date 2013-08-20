@@ -34,6 +34,7 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
@@ -42,6 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
 		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
+		TimerCounter counter;
 
 		public override string IdString {
 			get {
@@ -91,6 +93,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			DefaultSeverity = attr.Severity;
 			SetMimeType ("text/x-csharp");
 			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
+			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
@@ -101,7 +104,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				
 			// Holds all the actions in a particular sibling group.
 			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
-			foreach (var action in issueProvider.GetIssues (context)) {
+			IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues;
+			using (var timer = counter.BeginTiming ()) {
+				// We need to enumerate here in order to time it. 
+				// This shouldn't be a problem since there are current very few (if any) lazy providers.
+				var _issues = issueProvider.GetIssues (context);
+				issues = _issues as IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> ?? _issues.ToList ();
+			}
+			foreach (var action in issues) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
 				if (action.Actions == null) {
@@ -120,7 +130,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					if (act.SiblingKey != null) {
 						// make sure the action has a list of its siblings
 						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
-						if (!actionGroups.TryGetValue(act.SiblingKey, out siblingGroup)) {
+						if (!actionGroups.TryGetValue (act.SiblingKey, out siblingGroup)) {
 							siblingGroup = new List<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ();
 							actionGroups.Add (act.SiblingKey, siblingGroup);
 						}
