@@ -58,7 +58,7 @@ namespace MonoDevelop.VersionControl
 			return GeneratePathComment (basePath.FullPath, items, format, userInfo);
 		}
 		
-		public static string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
+		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
 			CommitMessageFormat messageFormat, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);

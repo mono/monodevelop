@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide
 			item.SaveUserProperties ();
 		}
 		
-		public static FileStatusTracker GetFileStatusTracker ()
+		public FileStatusTracker GetFileStatusTracker ()
 		{
 			FileStatusTracker fs = new FileStatusTracker ();
 			fs.AddFiles (GetKnownFiles ());
