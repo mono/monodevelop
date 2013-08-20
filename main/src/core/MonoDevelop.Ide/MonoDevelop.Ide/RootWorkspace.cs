@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide
 			IdeApp.ProjectOperations.Clean (this);
 		}
 
-		public static IAsyncOperation Execute ()
+		public IAsyncOperation Execute ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
 				return IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedSolution);
@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public static bool CanExecute ()
+		public bool CanExecute ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
 				return IdeApp.ProjectOperations.CanExecute (IdeApp.ProjectOperations.CurrentSelectedSolution);
