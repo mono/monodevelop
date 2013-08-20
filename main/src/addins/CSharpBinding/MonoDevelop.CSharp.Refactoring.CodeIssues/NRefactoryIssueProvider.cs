@@ -55,12 +55,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		List<BaseCodeIssueProvider> subIssues;
+		readonly List<BaseCodeIssueProvider> subIssues;
 		public override IEnumerable<BaseCodeIssueProvider> SubIssues {
 			get {
-				if (subIssues == null) {
-					subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
-				}
 				return subIssues;
 			}
 		}
@@ -93,6 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
 			SetMimeType ("text/x-csharp");
+			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
