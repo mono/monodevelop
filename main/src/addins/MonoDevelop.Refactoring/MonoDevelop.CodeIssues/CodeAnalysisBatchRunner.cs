@@ -35,12 +35,13 @@ using System.Threading.Tasks;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -49,6 +50,8 @@ namespace MonoDevelop.CodeIssues
 		object _lock = new object ();
 		CancellationTokenSource tokenSource;
 		IIssueSummarySink destinationGroup;
+
+		ConcurrentDictionary<string, object> processedFiles;
 		
 		public IIssueSummarySink IssueSink {
 			get {
@@ -115,74 +118,103 @@ namespace MonoDevelop.CodeIssues
 		{
 			lock (_lock) {
 				tokenSource = new CancellationTokenSource ();
+				processedFiles = new ConcurrentDictionary<string, object> ();
 				ThreadPool.QueueUserWorkItem (delegate {
 					State = AnalysisState.Running;
 
 					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
-						int work = 0;
-						foreach (var project in solution.GetAllProjects ()) {
-							work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
-						}
-						monitor.BeginTask ("Analyzing solution", work);
-						var processedFiles = new ConcurrentDictionary<string, object> ();
-						foreach (var project in solution.GetAllProjects ()) {
-							if (tokenSource.IsCancellationRequested)
-								break;
-							var content = TypeSystemService.GetProjectContext (project);
-							Parallel.ForEach (project.Files, file => {
-								var me = new object();
-								var owner = processedFiles.AddOrUpdate(file.Name, me, (key, old) => old);
-								if (me != owner)
-									return;
-								if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
-									return;
-
-								var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-								var document = TypeSystemService.ParseFile (project, editor);
-								if (document == null) 
-									return;
-
-								var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
-								var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
-								var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
-
-								CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
-								Parallel.ForEach (codeIssueProvider, (provider) => { 
-									var severity = provider.GetSeverity ();
-									if (severity == Severity.None || tokenSource.IsCancellationRequested)
-										return;
-									try {
-										foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
-											AddIssue (file, provider, issue);
-										}
-									} catch (OperationCanceledException) {
-										// The operation was cancelled, no-op as the user-visible parts are
-										// handled elsewhere
-									} catch (Exception ex) {
-										LoggingService.LogError ("Error while running code issue on:" + editor.FileName, ex);
-									}
-								});
-								//lastMime = editor.MimeType;
-								monitor.Step (1);
-							});
-						}
-						// Cleanup
 						AnalysisState oldState;
 						AnalysisState newState;
-						lock (_lock) {
-							oldState = state;
-							if (tokenSource.IsCancellationRequested) {
-								newState = AnalysisState.Cancelled;
-							} else {
-								newState = AnalysisState.Completed;
+						try {
+							int work = 0;
+							foreach (var project in solution.GetAllProjects ()) {
+								work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
 							}
-							state = newState;
-							tokenSource = null;
+							monitor.BeginTask ("Analyzing solution", work);
+							foreach (var project in solution.GetAllProjects ()) {
+								if (tokenSource.IsCancellationRequested)
+									break;
+								var content = TypeSystemService.GetProjectContext (project);
+								Parallel.ForEach (project.Files, file => {
+									try {
+										AnalyzeFile (file, content);
+										monitor.Step (1);
+									} catch (Exception ex) {
+										LoggingService.LogError ("Error while running code issue on:" + file.Name, ex);
+									}
+								});
+							}
+							// Cleanup
+							lock (_lock) {
+								oldState = state;
+								if (tokenSource.IsCancellationRequested) {
+									newState = AnalysisState.Cancelled;
+								} else {
+									newState = AnalysisState.Completed;
+								}
+								state = newState;
+								tokenSource = null;
+							}
+							OnAnalysisStateChanged (new AnalysisStateChangeEventArgs (oldState, newState));
+						} catch (Exception e) {
+							lock (_lock) {
+								oldState = state;
+								state = AnalysisState.Error;
+								newState = state;
+								tokenSource = null;
+							}
+							OnAnalysisStateChanged (new AnalysisStateChangeEventArgs (oldState, newState));
+							// Do not rethrow in a thread pool
+							MessageService.ShowException (e);
 						}
-						OnAnalysisStateChanged(new AnalysisStateChangeEventArgs(oldState, newState));
-						monitor.EndTask ();
 					}
 				});
+			}
+		}
+
+		void AnalyzeFile (ProjectFile file, IProjectContent content)
+		{
+			var me = new object ();
+			var owner = processedFiles.AddOrUpdate (file.Name, me, (key, old) => old);
+			if (me != owner)
+				return;
+
+			if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
+				return;
+
+			TextEditorData editor;
+			try {
+				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
+			} catch (FileNotFoundException) {
+				// Swallow exception and ignore this file
+				return;
+			}
+			var document = TypeSystemService.ParseFile (file.Project, editor);
+			if (document == null)
+				return;
+
+			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
+
+			CSharpAstResolver resolver;
+			using (var timer = ExtensionMethods.ResolveCounter.BeginTiming ()) {
+				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+				resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+			}
+			var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
+
+			CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
+			foreach (var provider in codeIssueProvider) {
+				var severity = provider.GetSeverity ();
+				if (severity == Severity.None || tokenSource.IsCancellationRequested)
+					return;
+				try {
+					foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
+						AddIssue (file, provider, issue);
+					}
+				} catch (OperationCanceledException) {
+					// The operation was cancelled, no-op as the user-visible parts are
+					// handled elsewhere
+				}
 			}
 		}
 

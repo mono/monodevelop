@@ -30,7 +30,8 @@ namespace MonoDevelop.CodeIssues
 		NeverStarted,
 		Running,
 		Completed,
-		Cancelled
+		Cancelled,
+		Error
 	}
 }
 
