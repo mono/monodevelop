@@ -30,7 +30,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
 using NGit.Api;
 using System.Threading;
-using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -65,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 				string branch = dlg.SelectedRemoteBranch ?? repo.GetCurrentBranch ();
 				
 				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						repo.Push (monitor, remote, branch);
 					} catch (Exception ex) {
@@ -123,7 +122,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
@@ -145,7 +144,7 @@ namespace MonoDevelop.VersionControl.Git
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					NGit.Api.MergeCommandResult result;
+					MergeCommandResult result;
 					using (var gm = new GitMonitor (monitor))
 						result = s.Apply (gm);
 					ReportStashResult (monitor, result);
@@ -163,7 +162,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static void ReportStashResult (IProgressMonitor monitor, MergeCommandResult result)
 		{
-			if (result.GetMergeStatus () == NGit.Api.MergeStatus.FAILED) {
+			if (result.GetMergeStatus () == MergeStatus.FAILED) {
 				string msg = GettextCatalog.GetString ("Stash operation failed.");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
@@ -171,14 +170,14 @@ namespace MonoDevelop.VersionControl.Git
 				string txt = msg + "\n\n" + GetMergeResultErrorDetail (result);
 				monitor.ReportError (txt, null);
 			}
-			else if (result.GetMergeStatus () == NGit.Api.MergeStatus.NOT_SUPPORTED) {
+			else if (result.GetMergeStatus () == MergeStatus.NOT_SUPPORTED) {
 				string msg = GettextCatalog.GetString ("Operation not supported");
 				monitor.ReportError (msg, null);
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
 				});
 			}
-			else if (result.GetMergeStatus () == NGit.Api.MergeStatus.CONFLICTING) {
+			else if (result.GetMergeStatus () == MergeStatus.CONFLICTING) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
