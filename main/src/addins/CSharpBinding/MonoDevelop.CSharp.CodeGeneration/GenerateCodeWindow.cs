@@ -35,7 +35,7 @@ using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public partial class GenerateCodeWindow : Gtk.Window
+	partial class GenerateCodeWindow : Gtk.Window
 	{
 		TreeStore generateActionsStore = new TreeStore (typeof(Gdk.Pixbuf), typeof (string), typeof (ICodeGenerator));
 		

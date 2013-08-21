@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Projects
 			return !isDirectory;
 		}
 
-		public override void RequestFileEdit (System.Collections.Generic.IEnumerable<MonoDevelop.Core.FilePath> files)
+		public override void RequestFileEdit (IEnumerable<FilePath> files)
 		{
 			base.RequestFileEdit (files);
 

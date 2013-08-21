@@ -79,8 +79,10 @@ namespace Mono.TextEditor
 					if (marginMarker != null) 
 						marginMarker.InformMousePress (editor, this, args);
 
+#pragma warning disable 618
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MousePress (args);
+#pragma warning restore 618
 				}
 			}
 		}
@@ -96,8 +98,10 @@ namespace Mono.TextEditor
 					if (marginMarker != null) 
 						marginMarker.InformMouseRelease (editor, this, args);
 
+#pragma warning disable 618
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseRelease (args);
+#pragma warning restore 618
 				}
 			}
 		}
@@ -112,8 +116,11 @@ namespace Mono.TextEditor
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMouseHover (editor, this, args);
+
+#pragma warning disable 618
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseHover (args);
+#pragma warning restore 618
 				}
 			}
 		}
@@ -128,23 +135,25 @@ namespace Mono.TextEditor
 						backgroundIsDrawn = marginMarker.DrawBackground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 					}
 
+#pragma warning disable 618
 					var iconMarker = marker as IIconBarMarker;
 					if (iconMarker == null || !iconMarker.CanDrawBackground)
 						continue;
 					iconMarker.DrawBackground (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
 					backgroundIsDrawn = true;
 					break;
+#pragma warning restore 618
 				}
 			}
 
 			if (!backgroundIsDrawn) {
 				ctx.Rectangle (x, y, Width, lineHeight);
-				ctx.Color = backgroundColor;
+				ctx.SetSourceColor (backgroundColor);
 				ctx.Fill ();
 				
 				ctx.MoveTo (x + Width - 0.5, y);
 				ctx.LineTo (x + Width - 0.5, y + lineHeight);
-				ctx.Color = separatorColor;
+				ctx.SetSourceColor (separatorColor);
 				ctx.Stroke ();
 			}
 
@@ -155,8 +164,10 @@ namespace Mono.TextEditor
 						marginMarker.DrawForeground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 					}
 
+#pragma warning disable 618
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
+#pragma warning restore 618
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));

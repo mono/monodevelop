@@ -21,4 +21,8 @@
 		</Condition>
 	</Extension>
 	-->
+	
+	<Extension path="/MonoDevelop/Debugging/ValueVisualizers">
+		<Type class="MonoDevelop.HexEditor.HexEditorVisualizer" />
+	</Extension>
 </ExtensionModel>

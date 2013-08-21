@@ -41,7 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 namespace MonoDevelop.CSharp.Project
 {
 	
-	public partial class CompilerOptionsPanelWidget : Gtk.Bin
+	partial class CompilerOptionsPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;
 		ListStore classListStore;
@@ -227,7 +227,7 @@ namespace MonoDevelop.CSharp.Project
 		}
 	}
 	
-	public class CompilerOptionsPanel : ItemOptionsPanel
+	class CompilerOptionsPanel : ItemOptionsPanel
 	{
 		CompilerOptionsPanelWidget widget;
 		

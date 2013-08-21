@@ -25,19 +25,21 @@
 // THE SOFTWARE.
 
 using System;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class IconMargin : Margin
+	class IconMargin : Margin
 	{
-		int marginWidth;
-		public override int Width {
+		double marginWidth;
+		public override double Width {
 			get {
 				return marginWidth;
 			}
 		}
 		
-		public override int CalculateWidth (int bytesInRow)
+		public override double CalculateWidth (int bytesInRow)
 		{
 			return Width;
 		}
@@ -46,30 +48,28 @@ namespace Mono.MHex.Rendering
 		{
 		}
 		
-		Gdk.GC backgroundGC, separatorGC;
 		internal protected override void OptionsChanged ()
 		{
-			backgroundGC = GetGC (Style.IconBarBg);
-			separatorGC = GetGC (Style.IconBarSeperator);
-			
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
-			layout.SetText ("!");
-			int tmp;
-			layout.GetPixelSize (out tmp, out this.marginWidth);
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
+			layout.Text = "!";
+//			int tmp;
+			this.marginWidth = layout.GetSize ().Height;
 			marginWidth *= 12;
 			marginWidth /= 10;
 			layout.Dispose ();
 		}
 		
-		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, long line, int x, int y)
+		internal protected override void Draw (Context win, Rectangle area, long line, double x, double y)
 		{
-			if (backgroundGC == null)
-				OptionsChanged ();
-		
-			win.DrawRectangle (backgroundGC, true, x, y, Width, Editor.LineHeight);
-			win.DrawLine (separatorGC, x + Width - 1, y, x + Width - 1, y + Editor.LineHeight);
-			
+			win.Rectangle (x, y, Width, Editor.LineHeight);
+			win.SetColor (Style.IconBarBg);
+			win.Fill ();
+			win.MoveTo (x + Width - 1, y);
+			win.LineTo (x + Width - 1, y + Editor.LineHeight);
+			win.SetColor (Style.IconBarSeperator);
+			win.Stroke ();
+
 			foreach (long bookmark in Data.Bookmarks) {
 				if (line * Editor.BytesInRow <= bookmark && bookmark < line * Editor.BytesInRow + Editor.BytesInRow) {
 					DrawBookmark (win, x, y);
@@ -78,34 +78,32 @@ namespace Mono.MHex.Rendering
 			}
 		}
 
-		void DrawBookmark (Gdk.Drawable win, int x, int y)
+		void DrawBookmark (Context cr, double x, double y)
 		{
-			Cairo.Color color1 = ToCairoColor (Style.BookmarkColor1);
-			Cairo.Color color2 = ToCairoColor (Style.BookmarkColor2);
+			var color1 = Style.BookmarkColor1;
+			var color2 = Style.BookmarkColor2;
 			
-			Cairo.Context cr = Gdk.CairoHelper.Create (win);
 			DrawRoundRectangle (cr, x + 1, y + 1, 8, Width - 4, Editor.LineHeight - 4);
-			using (var pat = new Cairo.LinearGradient (x + Width / 4, y, x + Width / 2, y + Editor.LineHeight - 4)) {
+			using (var pat = new LinearGradient (x + Width / 4, y, x + Width / 2, y + Editor.LineHeight - 4)) {
 				pat.AddColorStop (0, color1);
 				pat.AddColorStop (1, color2);
 				cr.Pattern = pat;
 				cr.FillPreserve ();
 			}
 			
-			using (var pat = new Cairo.LinearGradient (x, y + Editor.LineHeight, x + Width, y)) {
+			using (var pat = new LinearGradient (x, y + Editor.LineHeight, x + Width, y)) {
 				pat.AddColorStop (0, color2);
 				//pat.AddColorStop (1, color1);
 				cr.Pattern = pat;
 				cr.Stroke ();
 			}
-			((IDisposable)cr).Dispose ();
 		}
 		
-		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
+		public static void DrawRoundRectangle (Context cr, double x, double y, double r, double w, double h)
 		{
 			const double ARC_TO_BEZIER = 0.55228475;
-			int radius_x = r;
-			int radius_y = r / 4;
+			double radius_x = r;
+			double radius_y = r / 4;
 			
 			if (radius_x > w - radius_x)
 				radius_x = w / 2;
@@ -128,12 +126,5 @@ namespace Mono.MHex.Rendering
 			cr.RelCurveTo (0.0, -c2, radius_x - c1, -radius_y, radius_x, -radius_y);
 			cr.ClosePath ();
 		}
-		
-		public static Cairo.Color ToCairoColor (Gdk.Color color)
-		{
-			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
-			                        (double)color.Green / ushort.MaxValue,
-			                        (double)color.Blue / ushort.MaxValue);
-		}		
 	}
 }

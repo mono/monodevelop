@@ -11,11 +11,12 @@
     <RootNamespace>MonoDevelop.XmlEditor.Tests</RootNamespace>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -24,9 +25,10 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -35,6 +37,8 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.XmlEditor.csproj">

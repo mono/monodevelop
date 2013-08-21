@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ErrorNodeBuilder : TypeNodeBuilder
+	class ErrorNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(Error); }

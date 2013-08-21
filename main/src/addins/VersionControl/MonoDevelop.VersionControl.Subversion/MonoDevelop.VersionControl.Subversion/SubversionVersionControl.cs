@@ -29,7 +29,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			string svnPath = GetDirectoryDotSvn (path);
-			if (svnPath != String.Empty)
+			if (!String.IsNullOrEmpty (svnPath))
 				return new SubversionRepository (this, null, svnPath);
 
 			return null;

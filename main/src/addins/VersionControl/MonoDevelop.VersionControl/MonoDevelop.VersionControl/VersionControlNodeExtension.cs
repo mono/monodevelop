@@ -279,6 +279,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Log, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
 		protected void OnStatus() {
 			RunCommand(Commands.Status, false);
@@ -287,17 +288,6 @@ namespace MonoDevelop.VersionControl
 		[CommandUpdateHandler (Commands.Status)]
 		protected void UpdateStatus(CommandInfo item) {
 			TestCommand(Commands.Status, item);
-		}
-
-		[AllowMultiSelection]
-		[CommandHandler (Commands.Commit)]
-		protected void OnCommit() {
-			RunCommand (Commands.Commit, false);
-		}
-		
-		[CommandUpdateHandler (Commands.Commit)]
-		protected void UpdateCommit (CommandInfo item) {
-			TestCommand(Commands.Commit, item);
 		}
 		
 		[AllowMultiSelection]
@@ -453,10 +443,7 @@ namespace MonoDevelop.VersionControl
 					res = LogCommand.Show (items, test);
 					break;
 				case Commands.Status:
-					res = StatusView.Show (items, test);
-					break;
-				case Commands.Commit:
-					res = CommitCommand.Commit (items, test);
+					res = StatusView.Show (items, test, false);
 					break;
 				case Commands.Add:
 					res = AddCommand.Add (items, test);

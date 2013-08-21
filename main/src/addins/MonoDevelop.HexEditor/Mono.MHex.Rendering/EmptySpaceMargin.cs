@@ -25,18 +25,20 @@
 // THE SOFTWARE.
 
 using System;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class EmptySpaceMargin : Margin
+	class EmptySpaceMargin : Margin
 	{
-		public override int Width {
+		public override double Width {
 			get { 
-				return Editor.Allocation.Width - XOffset; 
+				return Editor.Bounds.Width - XOffset; 
 			}
 		}
 
-		public override int CalculateWidth (int bytesInRow)
+		public override double CalculateWidth (int bytesInRow)
 		{
 			return 0;
 		}
@@ -44,17 +46,16 @@ namespace Mono.MHex.Rendering
 		public EmptySpaceMargin (HexEditor hexEditor) : base (hexEditor)
 		{
 		}
-		Gdk.GC bgGC;
-		
+
 		internal protected override void OptionsChanged ()
 		{
-			bgGC = GetGC (Style.HexDigitBg);
 		}
 
-		protected internal override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, long line, int x, int y)
+		protected internal override void Draw (Context drawable, Rectangle area, long line, double x, double y)
 		{
-			drawable.DrawRectangle (bgGC, true, x, y, Width, Editor.LineHeight);
+			drawable.Rectangle (x, y, Width, Editor.LineHeight);
+			drawable.SetColor (Style.HexDigitBg);
+			drawable.Fill ();
 		}
-		
 	}
 }

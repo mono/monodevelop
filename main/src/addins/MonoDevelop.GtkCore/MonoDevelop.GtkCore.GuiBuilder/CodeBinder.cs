@@ -104,7 +104,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void UpdateBindings (Stetic.Component obj, IUnresolvedTypeDefinition cls)
 		{
-			if (targetObject == null)
+			if (targetObject == null || cls == null)
 				return;
 
 			// Remove signals for which there isn't a handler in the class

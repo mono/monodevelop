@@ -101,7 +101,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			set { wrappedRule.IncludeStaticEntities = value;} 
 		}
 
-		
 		internal NameConventionRule (ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule wrappedRule)
 		{
 			this.wrappedRule = wrappedRule;
@@ -120,36 +119,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public string GetPreview ()
 		{
-			var result = new StringBuilder ();
-			if (RequiredPrefixes != null && RequiredPrefixes.Length > 0)
-				result.Append (RequiredPrefixes [0]);
-			switch (NamingStyle) {
-			case ICSharpCode.NRefactory.CSharp.Refactoring.NamingStyle.PascalCase:
-				result.Append ("PascalCase");
-				break;
-			case ICSharpCode.NRefactory.CSharp.Refactoring.NamingStyle.CamelCase:
-				result.Append ("camelCase");
-				break;
-			case ICSharpCode.NRefactory.CSharp.Refactoring.NamingStyle.AllUpper:
-				result.Append ("ALL_UPPER");
-				break;
-			case ICSharpCode.NRefactory.CSharp.Refactoring.NamingStyle.AllLower:
-				result.Append ("all_lower");
-				break;
-			case ICSharpCode.NRefactory.CSharp.Refactoring.NamingStyle.FirstUpper:
-				result.Append ("First_upper");
-				break;
-			}
-			if (RequiredSuffixes != null && RequiredSuffixes.Length > 0)
-				result.Append (RequiredSuffixes [0]);
-			if (AllowedPrefixes != null) {
-				string baseString = result.ToString ();
-				foreach (var str in AllowedPrefixes) {
-					result.Append (", " + str + baseString);
-				}
-
-			}
-			return result.ToString ();
+			return wrappedRule.GetPreview ();
 		}
 
 		internal ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule GetNRefactoryRule ()

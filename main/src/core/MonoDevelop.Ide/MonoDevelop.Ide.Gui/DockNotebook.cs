@@ -841,14 +841,14 @@ namespace MonoDevelop.Ide.Gui
 			using (Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h)) {
 				gr.AddColorStop (0, Styles.TabBarGradientStartColor);
 				gr.AddColorStop (1, Styles.TabBarGradientMidColor);
-				ctx.Pattern = gr;
+				ctx.SetSource (gr);
 				ctx.Fill ();
 			}
 			
 			ctx.MoveTo (region.X, 0.5);
 			ctx.LineTo (region.Right + 1, 0.5);
 			ctx.LineWidth = 1;
-			ctx.Color = Styles.TabBarGradientShadowColor;
+			ctx.SetSourceColor (Styles.TabBarGradientShadowColor);
 			ctx.Stroke ();
 		}
 
@@ -947,7 +947,7 @@ namespace MonoDevelop.Ide.Gui
 			// Draw breadcrumb bar header
 			if (notebook.Tabs.Count > 0) {
 				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-				ctx.Color = Styles.BreadcrumbBackgroundColor;
+				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor);
 				ctx.Fill ();
 			}
 
@@ -976,10 +976,10 @@ namespace MonoDevelop.Ide.Gui
 			if (hovered) {
 				double radius = 6;
 				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-				context.Color = new Cairo.Color (.6, .6, .6, opacity);
+				context.SetSourceRGBA (.6, .6, .6, opacity);
 				context.Fill ();
 
-				context.Color = new Cairo.Color (0.95, 0.95, 0.95, opacity);
+				context.SetSourceRGBA (0.95, 0.95, 0.95, opacity);
 				context.LineWidth = 2;
 
 				context.MoveTo (center.X - 3, center.Y - 3);
@@ -998,7 +998,7 @@ namespace MonoDevelop.Ide.Gui
 				context.LineTo (center.X + 3, center.Y - 3 * heightMod);
 				
 				context.LineWidth = 2;
-				context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+				context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
 				context.Stroke ();
 				
 				if (animationProgress > 0.5) {
@@ -1007,7 +1007,7 @@ namespace MonoDevelop.Ide.Gui
 					context.LineTo (center.X + 3, center.Y);
 					
 					context.LineWidth = 2 - partialProg;
-					context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
 					context.Stroke ();
 					
 					
@@ -1015,7 +1015,7 @@ namespace MonoDevelop.Ide.Gui
 
 					// Background
 					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-					context.Color = new Cairo.Color (fillColor, fillColor, fillColor, opacity);
+					context.SetSourceRGBA (fillColor, fillColor, fillColor, opacity);
 					context.Fill ();
 
 					// Inset shadow
@@ -1023,13 +1023,13 @@ namespace MonoDevelop.Ide.Gui
 						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
 						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
 						lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-						context.Pattern = lg;
+						context.SetSource (lg);
 						context.Stroke ();
 					}
 
 					// Outline
 					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
-					context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+					context.SetSourceRGBA (lineColor, lineColor, lineColor, opacity);
 					context.Stroke ();
 
 				}
@@ -1058,15 +1058,15 @@ namespace MonoDevelop.Ide.Gui
 					gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
 					gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
 				}
-				ctx.Pattern = gr;
+				ctx.SetSource (gr);
 			}
 			ctx.Fill ();
 			
-			ctx.Color = new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity);
+			ctx.SetSourceColor (new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity));
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 1, active);
 			ctx.Stroke ();
 
-			ctx.Color = Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity);
+			ctx.SetSourceColor (Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity));
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.StrokePreserve ();
 
@@ -1076,7 +1076,7 @@ namespace MonoDevelop.Ide.Gui
 					rg.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.4 * tab.Opacity * tab.GlowStrength));
 					rg.AddColorStop (1, new Cairo.Color (1, 1, 1, 0));
 					
-					ctx.Pattern = rg;
+					ctx.SetSource (rg);
 					ctx.Fill ();
 				}
 			} else {
@@ -1113,7 +1113,7 @@ namespace MonoDevelop.Ide.Gui
 				lg.AddColorStop (0, color);
 				color.A = 0;
 				lg.AddColorStop (1, color);
-				ctx.Pattern = lg;
+				ctx.SetSource (lg);
 				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			}
 			la.Dispose ();

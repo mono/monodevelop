@@ -40,7 +40,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public class ASPNetReferenceFinder : ReferenceFinder
+	class ASPNetReferenceFinder : ReferenceFinder
 	{
 		public ASPNetReferenceFinder ()
 		{

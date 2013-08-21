@@ -531,13 +531,11 @@ namespace Mono.TextTemplating
 			return ccu;
 		}
 
-		static bool isMono = Type.GetType ("Mono.Runtime") != null;
-
 		static CodeSnippetTypeMember CreateSnippetMember (string value, CodeLinePragma location = null)
 		{
-			//HACK: workaround for Mono not indenting first line of member snippet when inserting into class
+			//HACK: workaround for code generator not indenting first line of member snippet when inserting into class
 			const string indent = "\n        ";
-			if (isMono && !char.IsWhiteSpace (value[0]))
+			if (!char.IsWhiteSpace (value[0]))
 				value = indent + value;
 
 			return new CodeSnippetTypeMember (value) {

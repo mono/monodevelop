@@ -46,7 +46,7 @@ namespace Mono.TextTemplating
 			string outputFile = null, inputFile = null;
 			var directives = new List<string> ();
 			var parameters = new List<string> ();
-			var session = new Microsoft.VisualStudio.TextTemplating.TextTemplatingSession ();
+		//	var session = new Microsoft.VisualStudio.TextTemplating.TextTemplatingSession ();
 			string preprocess = null;
 			
 			optionSet = new OptionSet () {

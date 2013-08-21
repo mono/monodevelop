@@ -25,8 +25,6 @@
 //
 //
 
-using System;
-using MonoDevelop.Projects;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.VersionControl.Git</RootNamespace>
     <AssemblyName>MonoDevelop.VersionControl.Git</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -19,14 +20,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>False</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

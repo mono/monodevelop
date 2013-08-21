@@ -34,14 +34,16 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	class NRefactoryIssueProvider : CodeIssueProvider
 	{
-		readonly ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
+		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
 		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
+		TimerCounter counter;
 
 		public override string IdString {
 			get {
@@ -49,7 +51,38 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
+		public override bool HasSubIssues {
+			get {
+				return issueProvider.HasSubIssues;
+			}
+		}
+
+		readonly List<BaseCodeIssueProvider> subIssues;
+		public override IEnumerable<BaseCodeIssueProvider> SubIssues {
+			get {
+				return subIssues;
+			}
+		}
+
+		public ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider IssueProvider {
+			get {
+				return issueProvider;
+			}
+		}
+
+		public string ProviderIdString {
+			get {
+				return providerIdString;
+			}
+		}
+
+		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
+			get {
+				return attr.IssueMarker;
+			}
+		}
+
+		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
 			this.attr = attr;
@@ -58,23 +91,34 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
-			IssueMarker = attr.IssueMarker;
-			MimeType = "text/x-csharp";
+			SetMimeType ("text/x-csharp");
+			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
+			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
 		{
 			var context = ctx as MDRefactoringContext;
-			if (context == null || context.IsInvalid || context.RootNode == null)
+			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
 				yield break;
-			foreach (var action in issueProvider.GetIssues (context)) {
+				
+			// Holds all the actions in a particular sibling group.
+			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
+			IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues;
+			using (var timer = counter.BeginTiming ()) {
+				// We need to enumerate here in order to time it. 
+				// This shouldn't be a problem since there are current very few (if any) lazy providers.
+				var _issues = issueProvider.GetIssues (context);
+				issues = _issues as IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> ?? _issues.ToList ();
+			}
+			foreach (var action in issues) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
 				if (action.Actions == null) {
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
 				}
-				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
+				var actions = new List<NRefactoryCodeAction> ();
 				foreach (var act in action.Actions) {
 					if (cancellationToken.IsCancellationRequested)
 						yield break;
@@ -82,13 +126,25 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
 					}
-					actions.Add (new NRefactoryCodeAction (providerIdString, act.Description, act));
+					var nrefactoryCodeAction = new NRefactoryCodeAction (IdString, act.Description, act, act.SiblingKey);
+					if (act.SiblingKey != null) {
+						// make sure the action has a list of its siblings
+						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
+						if (!actionGroups.TryGetValue (act.SiblingKey, out siblingGroup)) {
+							siblingGroup = new List<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ();
+							actionGroups.Add (act.SiblingKey, siblingGroup);
+						}
+						siblingGroup.Add (act);
+						nrefactoryCodeAction.SiblingActions = siblingGroup;
+					}
+					actions.Add (nrefactoryCodeAction);
 				}
 				var issue = new CodeIssue (
 					GettextCatalog.GetString (action.Description ?? ""),
 					context.TextEditor.FileName,
 					action.Start,
 					action.End,
+					IdString,
 					actions
 				);
 				yield return issue;
@@ -104,31 +160,49 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override bool CanSuppressWithAttribute { get { return !string.IsNullOrEmpty (attr.SuppressMessageCheckId); } }
 
-		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
-			document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+			document.Editor.Insert (
+				document.Editor.LocationToOffset (loc.BeginLine, 1), 
+				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+			); 
 		}
 
-		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+				); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.BeginLine, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+				); 
 			}
 		}
 
-		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line + 1, 1), "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker); 
-				document.Editor.Insert (document.Editor.LocationToOffset (loc.Line, 1), "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker
+				); 
+				document.Editor.Insert (
+					document.Editor.LocationToOffset (loc.BeginLine, 1),
+					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker
+				); 
 			}
 		}
 
-		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
-			var member = document.ParsedDocument.GetMember (loc);
-			document.Editor.Insert (document.Editor.LocationToOffset (member.Region.BeginLine, 1), string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)); 
+			var member = document.ParsedDocument.GetMember (loc.End);
+			document.Editor.Insert (
+				document.Editor.LocationToOffset (member.Region.BeginLine, 1),
+				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
+			); 
 		}
 	}
 }

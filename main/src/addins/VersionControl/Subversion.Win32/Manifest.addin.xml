@@ -1,0 +1,40 @@
+<Addin id        = "SubversionAddinWindows"
+       namespace = "MonoDevelop"
+       version   = "4.1.7">
+  <Header>
+    <Name>Subversion Add-in</Name>
+    <Description>Subversion support for the Version Control Add-in</Description>
+    <Description locale="ca">Suport per a Subversion</Description>
+    <Icon32>subversion-logo.png</Icon32>
+    <Author>Lluis Sanchez</Author>
+    <Copyright>GPL</Copyright>
+    <Category>Version Control</Category>
+  </Header>
+
+	<Dependencies>
+		<Addin id="Core" version="4.1.7"/>
+		<Addin id="Ide" version="4.1.7"/>
+		<Addin id="VersionControl" version="4.1.7"/>
+		<Addin id="VersionControl.Subversion" version="4.1.7"/>
+	</Dependencies>
+
+  <!-- Some files are excluded twice. This is on purpose to work around some case sensivity issues. If you change this you break addin installation on windows -->
+  <Runtime>
+    <Import      file="SharpSvn.dll" />
+    <ScanExclude path="SharpSvn.dll"/>
+    <Import      file="SharpPlink-Win32.svnExe" />
+    <ScanExclude path="SharpPlink-Win32.svnExe" />
+    <Import      file="SharpSvn-DB44-20-win32.dll" />
+    <ScanExclude path="SharpSvn-DB44-20-win32.dll" />
+    <ScanExclude path="SharpSvn-DB44-20-Win32.dll" />
+    <Import      file="SharpSvn-Sasl21-23-win32.dll" />
+    <ScanExclude path="SharpSvn-Sasl21-23-win32.dll" />
+    <ScanExclude path="SharpSvn-Sasl21-23-Win32.dll" />
+    <ScanExclude path="SharpSvn-SASL21-23-win32.dll" />
+    <ScanExclude path="SharpSvn-SASL21-23-Win32.dll" />
+  </Runtime>
+
+	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
+		<Class class = "SubversionAddinWindows.SvnSharpClient" />
+	</Extension>
+</Addin>

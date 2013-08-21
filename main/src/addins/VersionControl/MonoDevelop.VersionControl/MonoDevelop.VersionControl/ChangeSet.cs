@@ -1,6 +1,4 @@
-
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +17,13 @@ namespace MonoDevelop.VersionControl
 		internal protected ChangeSet (Repository repo, FilePath basePath)
 		{
 			this.repo = repo;
-			
-			//make sure the base path has a trailign slash, or ChangeLogWriter's
-			//GetDirectoryName call on it will take us up a directory
+
+			// Make sure the path has a trailing slash or the ChangeLogWriter's
+			// call to GetDirectoryName will take us one extra directory up.
 			string bp = basePath.ToString ();
-			if (bp[bp.Length -1] != System.IO.Path.DirectorySeparatorChar)
+			if (bp [bp.Length - 1] != System.IO.Path.DirectorySeparatorChar)
 				basePath = bp + System.IO.Path.DirectorySeparatorChar;
-			
+
 			this.basePath = basePath;
 		}
 		
@@ -57,7 +55,7 @@ namespace MonoDevelop.VersionControl
 		
 		public string GenerateGlobalComment (CommitMessageFormat format, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
-			return GeneratePathComment (basePath, items, format, userInfo);
+			return GeneratePathComment (basePath.FullPath, items, format, userInfo);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
@@ -163,7 +161,7 @@ namespace MonoDevelop.VersionControl
 		public string Comment {
 			get {
 				string txt = VersionControlService.GetCommitComment (LocalPath);
-				return txt != null ? txt : String.Empty;
+				return txt ?? String.Empty;
 			}
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}

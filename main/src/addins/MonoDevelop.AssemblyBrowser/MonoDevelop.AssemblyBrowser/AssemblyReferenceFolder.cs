@@ -40,7 +40,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyReferenceFolder
+	class AssemblyReferenceFolder
 	{
 		AssemblyDefinition definition;
 		

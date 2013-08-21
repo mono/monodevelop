@@ -33,7 +33,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 namespace MonoDevelop.CSharp.Formatting
 {
-	public partial class CSharpFormattingProfileDialog : Gtk.Dialog
+	partial class CSharpFormattingProfileDialog : Gtk.Dialog
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 		CSharpFormattingPolicy profile;
@@ -113,7 +113,9 @@ namespace MonoDevelop.CSharp.Formatting
 			get { return myProperty;} 
 			set { myProperty = value;} 
 		}
-		
+
+		string Simple { get { ; } set { ; } }
+
 		int myOtherProperty;
 		int MyOtherProperty { 
 			get { 
@@ -125,6 +127,13 @@ namespace MonoDevelop.CSharp.Formatting
 					myOtherProperty = value;
 			} 
 		}
+		
+		int MyAutoProperty { 
+			get;
+			set;
+		}
+
+		int MyOtherAutoProperty { get; set; }
 	}";
 		
 		const string spaceExample = @"class ClassDeclaration { 
@@ -593,10 +602,14 @@ namespace TestSpace {
 			AddOption (bacePositionOptions, "StatementBraceStyle", GettextCatalog.GetString ("Statements"), spaceExample);
 			
 			category = AddOption (bacePositionOptions, "PropertyBraceStyle", GettextCatalog.GetString ("Property declaration"), propertyExample);
+			AddOption (bacePositionOptions, category, "AutoPropertyFormatting", GettextCatalog.GetString ("Allow automatic property in one line"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimplePropertyFormatting", GettextCatalog.GetString ("Allow simple property in one line"), propertyExample);
+
+
 			AddOption (bacePositionOptions, category, "PropertyGetBraceStyle", GettextCatalog.GetString ("Get declaration"), propertyExample);
-			AddOption (bacePositionOptions, category, "AllowPropertyGetBlockInline", GettextCatalog.GetString ("Allow one line get"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimpleGetBlockFormatting", GettextCatalog.GetString ("Allow one line get"), propertyExample);
 			AddOption (bacePositionOptions, category, "PropertySetBraceStyle", GettextCatalog.GetString ("Set declaration"), propertyExample);
-			AddOption (bacePositionOptions, category, "AllowPropertySetBlockInline", GettextCatalog.GetString ("Allow one line set"), propertyExample);
+			AddOption (bacePositionOptions, category, "SimpleSetBlockFormatting", GettextCatalog.GetString ("Allow one line set"), propertyExample);
 			
 			
 			category = AddOption (bacePositionOptions, "EventBraceStyle", GettextCatalog.GetString ("Event declaration"), eventExample);
@@ -656,6 +669,16 @@ namespace TestSpace {
 			AddOption (newLineOptions, "FinallyNewLinePlacement", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
 			AddOption (newLineOptions, "WhileNewLinePlacement", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
 			AddOption (newLineOptions, "ArrayInitializerWrapping", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
+			AddOption (newLineOptions, "EmbeddedStatementPlacement", GettextCatalog.GetString ("Place embedded statements on new line"), @"class Test
+{
+	public void Example ()
+	{
+		if (true)
+			Call ();
+		
+		foreach (var o in col) DoSomething (o);
+	}
+}");
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			
@@ -959,7 +982,25 @@ delegate void BarFoo ();
 			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*, /, %) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (<<, >>) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
-			
+			AddOption (whiteSpaceOptions, category, "SpaceAfterUnsafeAddressOfOperator", GettextCatalog.GetString ("Unsafe addressof operator (&)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		int* a = &x;
+	}
+}");
+			AddOption (whiteSpaceOptions, category, "SpaceAfterUnsafeAsteriskOfOperator", GettextCatalog.GetString ("Unsafe asterisk operator (*)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		int a = *x;
+	}
+}");
+			AddOption (whiteSpaceOptions, category, "SpaceAroundUnsafeArrowOperator", GettextCatalog.GetString ("Unsafe arrow operator (->)"), @"unsafe class ClassDeclaration { 
+	public void TestMethod ()
+	{
+		x->Foo();
+	}
+}");
+
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Conditional Operator (?:)"), condOpExample);
 			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'"), condOpExample);
 			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'"), condOpExample);

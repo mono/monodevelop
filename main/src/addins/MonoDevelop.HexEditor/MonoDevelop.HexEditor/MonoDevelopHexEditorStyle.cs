@@ -27,14 +27,15 @@
 using System;
 using Mono.TextEditor.Highlighting;
 using Mono.MHex.Rendering;
-using Gdk;
+using Xwt;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using Xwt.Drawing;
 
 namespace MonoDevelop.HexEditor
 {
-	public class MonoDevelopHexEditorStyle : HexEditorStyle
+	class MonoDevelopHexEditorStyle : HexEditorStyle
 	{
 		ColorScheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;
@@ -55,88 +56,93 @@ namespace MonoDevelop.HexEditor
 		{
 			colorStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 		}
-		
+
+		Color ConvertColor (Cairo.Color foreground)
+		{
+			return new Color (foreground.R, foreground.G, foreground.B, foreground.A);
+		}
+
 		public override Color HexOffset {
 			get {
-				return (HslColor)colorStyle.LineNumbers.Foreground;
+				return ConvertColor (colorStyle.LineNumbers.Foreground);
 			}
 		}
 		
 		public override Color HexOffsetBg {
 			get {
-				return (HslColor)colorStyle.LineNumbers.Background;
+				return ConvertColor (colorStyle.LineNumbers.Background);
 			}
 		}
 		
-		public override Color HexOffsetHighlighted {
+/*		public override Color HexOffsetHighlighted {
 			get {
-				return (HslColor)colorStyle.LineMarker.Color;
+				return ConvertColor (colorStyle.LineNumbers.fo);
 			}
-		}
+		}*/
 		
 		public override Color HexDigit {
 			get {
-				return (HslColor)colorStyle.PlainText.Foreground;
+				return ConvertColor (colorStyle.PlainText.Foreground);
 			}
 		}
 		
 		public override Color HexDigitBg {
 			get {
-				return (HslColor)colorStyle.PlainText.Background;
+				return ConvertColor (colorStyle.PlainText.Background);
 			}
 		}
 		
 		public override Color DashedLineFg {
 			get {
-				return (HslColor)colorStyle.PlainText.Foreground;
+				return ConvertColor (colorStyle.PlainText.Foreground);
 			}
 		}
 		
 		public override Color DashedLineBg {
 			get {
-				return (HslColor)colorStyle.PlainText.Background;
+				return ConvertColor (colorStyle.PlainText.Background);
 			}
 		}
 		
 		public override Color IconBarBg {
 			get {
-				return (HslColor) (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
 			}
 		}
 		
 		public override Color IconBarSeperator {
 			get {
-				return (HslColor) (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
 			}
 		}
 		
 		public override Color BookmarkColor1 {
 			get {
-				return (HslColor) (colorStyle.Bookmarks.Color);
+				return ConvertColor (colorStyle.Bookmarks.Color);
 			}
 		}
 		
 		public override Color BookmarkColor2 {
 			get {
-				return (HslColor) (colorStyle.Bookmarks.SecondColor);
+				return ConvertColor (colorStyle.Bookmarks.SecondColor);
 			}
 		}
 		
 		public override Color Selection {
 			get {
-				return (HslColor)colorStyle.SelectedText.Foreground;
+				return ConvertColor (colorStyle.SelectedText.Foreground);
 			}
 		}
 		
 		public override Color SelectionBg {
 			get {
-				return (HslColor)colorStyle.SelectedText.Background;
+				return ConvertColor (colorStyle.SelectedText.Background);
 			}
 		}
 		
 		public override Color HighlightOffset {
 			get {
-				return (HslColor) (colorStyle.SearchResult.Color);
+				return ConvertColor (colorStyle.SearchResult.Color);
 			}
 		}
 	}

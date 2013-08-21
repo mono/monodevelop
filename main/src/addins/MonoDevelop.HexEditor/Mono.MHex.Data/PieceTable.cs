@@ -28,7 +28,7 @@ using System;
 
 namespace Mono.MHex.Data
 {
-	public class PieceTable
+	class PieceTable
 	{
 		public abstract class TreeNode
 		{

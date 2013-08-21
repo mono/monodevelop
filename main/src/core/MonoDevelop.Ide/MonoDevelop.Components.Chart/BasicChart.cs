@@ -413,12 +413,12 @@ namespace MonoDevelop.Components.Chart
 					pat.AddColorStop (0, backroundColor);
 					Cairo.Color endc = new Cairo.Color (1,1,1);
 					pat.AddColorStop (1, endc);
-					ctx.Pattern = pat;
+					ctx.SetSource (pat);
 					ctx.Fill ();
 				}
 			} else {
 				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
-				ctx.Color = backroundColor;
+				ctx.SetSourceColor (backroundColor);
 				ctx.Fill ();
 			}
 //			win.DrawRectangle (Style.WhiteGC, true, left - 1, top - 1, width + 2, height + 2);
@@ -677,7 +677,7 @@ namespace MonoDevelop.Components.Chart
 			ctx.Clip ();
 			
 			ctx.NewPath ();
-			ctx.Color = serie.Color;
+			ctx.SetSourceColor (serie.Color);
 			ctx.LineWidth = serie.LineWidth;
 			
 			bool first = true;

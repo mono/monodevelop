@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			protected override void MouseMove (double y)
 			{
-				if (button != 1)
+				if ((button & 1) == 0)
 					return;
 				var ph = (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount));
 				double position = vadjustment.Upper * (Math.Min (GetBufferYOffset () + y, ph) / (double)ph) - vadjustment.PageSize / 2;
@@ -199,7 +199,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (TextEditor.ColorStyle != null) {
 					using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
 						cr.Rectangle (0, 0, curWidth, curHeight);
-						cr.Color = TextEditor.ColorStyle.PlainText.Background;
+						cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
 						cr.Fill ();
 					}
 				}
@@ -229,7 +229,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					int h = mode.backgroundBuffer.ClipRegion.Clipbox.Height;
 					cr.Rectangle (0, 0, w, h);
 					if (mode.TextEditor.ColorStyle != null)
-						cr.Color = mode.TextEditor.ColorStyle.PlainText.Background;
+						cr.SetSourceColor (mode.TextEditor.ColorStyle.PlainText.Background);
 					cr.Fill ();
 					
 					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
@@ -306,7 +306,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					} else {
 						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 						if (TextEditor.ColorStyle != null)
-							cr.Color = TextEditor.ColorStyle.PlainText.Background;
+							cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
 						cr.Fill ();
 					}
 					/*
@@ -329,7 +329,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						              lineHeight * vadjustment.PageSize / TextEditor.LineHeight);
 						var c = (Cairo.Color)(HslColor)Style.Dark (State); 
 						c.A = 0.2;
-						cr.Color = c;
+						cr.SetSourceColor (c);
 						cr.Fill ();
 					}
 					DrawLeftBorder (cr);

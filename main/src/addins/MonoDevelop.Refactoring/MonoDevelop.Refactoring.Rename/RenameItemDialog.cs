@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -50,6 +51,8 @@ namespace MonoDevelop.Refactoring.Rename
 				options.SelectedItem = ((IMethod)options.SelectedItem).DeclaringType;
 			}
 			this.Build ();
+			includeOverloadsCheckbox.Active = true;
+			includeOverloadsCheckbox.Visible = false;
 			if (options.SelectedItem is IType) {
 
 				var t = (IType)options.SelectedItem;
@@ -88,6 +91,7 @@ namespace MonoDevelop.Refactoring.Rename
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				} else {
 					this.Title = GettextCatalog.GetString ("Rename Method");
+					includeOverloadsCheckbox.Visible = m.DeclaringType.GetMethods (x => x.Name == m.Name).Count () > 1;
 				}
 			} else if (options.SelectedItem is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
@@ -95,6 +99,8 @@ namespace MonoDevelop.Refactoring.Rename
 				this.Title = GettextCatalog.GetString ("Rename Variable");
 			} else if (options.SelectedItem is ITypeParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Type Parameter");
+			}  else if (options.SelectedItem is INamespace) {
+				this.Title = GettextCatalog.GetString ("Rename namespace");
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
@@ -114,6 +120,10 @@ namespace MonoDevelop.Refactoring.Rename
 			} else if (options.SelectedItem is IVariable) {
 				var lvar = (IVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
+				//				this.fileName = lvar.Region.FileName;
+			} else if (options.SelectedItem is INamespace) {
+				var lvar = (INamespace)options.SelectedItem;
+				entry.Text = lvar.FullName;
 				//				this.fileName = lvar.Region.FileName;
 			}
 			entry.SelectRegion (0, -1);
@@ -162,7 +172,8 @@ namespace MonoDevelop.Refactoring.Rename
 			get {
 				return new RenameRefactoring.RenameProperties () {
 					NewName = entry.Text,
-					RenameFile = renameFileFlag.Visible && renameFileFlag.Active
+					RenameFile = renameFileFlag.Visible && renameFileFlag.Active,
+					IncludeOverloads = includeOverloadsCheckbox.Visible && includeOverloadsCheckbox.Active
 				};
 			}
 		}

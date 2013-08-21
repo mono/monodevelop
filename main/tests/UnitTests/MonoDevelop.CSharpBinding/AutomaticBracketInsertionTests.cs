@@ -180,6 +180,7 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Document);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
+
 			var t = ext.Document.Compilation.FindType (new FullTypeName (type)); 
 			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
@@ -215,6 +216,31 @@ namespace MonoDevelop.CSharpBinding
 			Assert.AreEqual ("FooBar", completion); 
 		}
 
+		[Test]
+		public void TestBracketAlreadyThereCase2 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		Test($);
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ()|", completion); 
+		}
+
+		[Test]
+		public void TestParameter ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		Test(foo, $
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ()|", completion); 
+		}
 
 		[Test]
 		public void TestOverloads ()
@@ -323,6 +349,88 @@ class MyClass
 	}
 }", "MyClass", null);
 			Assert.AreEqual ("MyClass (|)", completion); 
+		}
+
+		[Test]
+		public void TestGenericCase1 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar<|> ();", completion); 
+		}
+
+		[Test]
+		public void TestGenericCase2 ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> (T t)
+	{
+		$
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar (|);", completion); 
+		}
+
+		[Test]
+		public void TestGenericDotCompletion ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$
+	}
+}", "MyClass", "FooBar", (Gdk.Key)'.');
+			Assert.AreEqual ("FooBar<> ().|", completion); 
+		}
+
+		[Test]
+		public void TestInsertionBug ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		$
+		if (true) { }
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ();|", completion); 
+		}
+
+		
+		[Test]
+		public void TestGenericConstructor ()
+		{
+			string completion = Test (@"class MyClass<T>
+{
+	public MyClass () {}
+
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass`1", null);
+			Assert.AreEqual ("MyClass<|> ()", completion); 
+		}
+
+		[Test]
+		public void TestBracketAlreadyThereGenericCase ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar<T> ()
+	{
+		$<string>();
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar", completion); 
 		}
 
 	}

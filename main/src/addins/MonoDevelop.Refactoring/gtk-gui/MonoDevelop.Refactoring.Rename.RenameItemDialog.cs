@@ -9,6 +9,7 @@ namespace MonoDevelop.Refactoring.Rename
 		private global::Gtk.Label labelNewName;
 		private global::Gtk.Entry entry;
 		private global::Gtk.CheckButton renameFileFlag;
+		private global::Gtk.CheckButton includeOverloadsCheckbox;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Image imageWarning;
 		private global::Gtk.Label labelWarning;
@@ -75,6 +76,19 @@ namespace MonoDevelop.Refactoring.Rename
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox.Gtk.Box+BoxChild
+			this.includeOverloadsCheckbox = new global::Gtk.CheckButton ();
+			this.includeOverloadsCheckbox.CanFocus = true;
+			this.includeOverloadsCheckbox.Name = "includeOverloadsCheckbox";
+			this.includeOverloadsCheckbox.Label = global::Mono.Unix.Catalog.GetString ("Include overloads");
+			this.includeOverloadsCheckbox.Active = true;
+			this.includeOverloadsCheckbox.DrawIndicator = true;
+			this.includeOverloadsCheckbox.UseUnderline = true;
+			this.vbox.Add (this.includeOverloadsCheckbox);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox [this.includeOverloadsCheckbox]));
+			w6.Position = 2;
+			w6.Expand = false;
+			w6.Fill = false;
+			// Container child vbox.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
@@ -83,34 +97,34 @@ namespace MonoDevelop.Refactoring.Rename
 			this.imageWarning.Name = "imageWarning";
 			this.imageWarning.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
 			this.hbox1.Add (this.imageWarning);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.imageWarning]));
-			w6.Position = 0;
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.imageWarning]));
+			w7.Position = 0;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.labelWarning = new global::Gtk.Label ();
 			this.labelWarning.Name = "labelWarning";
 			this.hbox1.Add (this.labelWarning);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelWarning]));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
-			this.vbox.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox1]));
-			w8.Position = 2;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelWarning]));
+			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
-			w1.Add (this.vbox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox]));
-			w9.Position = 0;
+			this.vbox.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox1]));
+			w9.Position = 3;
 			w9.Expand = false;
 			w9.Fill = false;
+			w1.Add (this.vbox);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Internal child MonoDevelop.Refactoring.Rename.RenameItemDialog.ActionArea
-			global::Gtk.HButtonBox w10 = this.ActionArea;
-			w10.Name = "dialog1_ActionArea";
-			w10.Spacing = 10;
-			w10.BorderWidth = ((uint)(5));
-			w10.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w11 = this.ActionArea;
+			w11.Name = "dialog1_ActionArea";
+			w11.Spacing = 10;
+			w11.BorderWidth = ((uint)(5));
+			w11.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -120,9 +134,9 @@ namespace MonoDevelop.Refactoring.Rename
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonCancel]));
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonPreview = new global::Gtk.Button ();
 			this.buttonPreview.CanFocus = true;
@@ -130,10 +144,10 @@ namespace MonoDevelop.Refactoring.Rename
 			this.buttonPreview.UseUnderline = true;
 			this.buttonPreview.Label = global::Mono.Unix.Catalog.GetString ("_Preview");
 			this.AddActionWidget (this.buttonPreview, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonPreview]));
-			w12.Position = 1;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonPreview]));
+			w13.Position = 1;
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -143,17 +157,18 @@ namespace MonoDevelop.Refactoring.Rename
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
-			w13.Position = 2;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
+			w14.Position = 2;
+			w14.Expand = false;
+			w14.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 365;
-			this.DefaultHeight = 154;
+			this.DefaultHeight = 174;
 			this.labelNewName.MnemonicWidget = this.entry;
 			this.renameFileFlag.Hide ();
+			this.includeOverloadsCheckbox.Hide ();
 			this.Hide ();
 		}
 	}

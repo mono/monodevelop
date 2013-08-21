@@ -11,6 +11,7 @@
     <RootNamespace>MonoDevelop.Core</RootNamespace>
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
@@ -50,9 +51,12 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG</DefineConstants>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\bin\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -61,6 +65,9 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

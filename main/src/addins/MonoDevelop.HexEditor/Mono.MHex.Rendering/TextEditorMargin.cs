@@ -27,19 +27,21 @@
 using System;
 using System.Text;
 using Mono.MHex.Data;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class TextEditorMargin : Margin
+	class TextEditorMargin : Margin
 	{
-		internal int charWidth;
-		public override int Width {
+		internal double charWidth;
+		public override double Width {
 			get {
 				return charWidth * Editor.BytesInRow;
 			}
 		}
 		
-		public override int CalculateWidth (int bytesInRow)
+		public override double CalculateWidth (int bytesInRow)
 		{
 			return charWidth * bytesInRow;
 		}
@@ -48,24 +50,20 @@ namespace Mono.MHex.Rendering
 		{
 		}
 		
-		Gdk.GC bgGC;
-		Gdk.GC fgGC;
 		internal protected override void OptionsChanged ()
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
-			layout.SetText (".");
-			int height;
-			layout.GetPixelSize (out charWidth, out height);
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
+			layout.Text = ".";
+//			int height;
+			charWidth = layout.GetSize ().Width;
 			layout.Dispose ();
-			bgGC = GetGC (Style.HexDigitBg);
-			fgGC = GetGC (Style.HexDigit);
 		}
 		
 		protected override LayoutWrapper RenderLine (long line)
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
 			StringBuilder sb = new StringBuilder ();
 			long startOffset = line * Editor.BytesInRow;
 			long endOffset   = System.Math.Min (startOffset + Editor.BytesInRow, Data.Length);
@@ -80,79 +78,75 @@ namespace Mono.MHex.Rendering
 				}
 			}
 			
-			layout.SetText (sb.ToString ());
-			char[] lineChars = layout.Text.ToCharArray ();
+			layout.Text = sb.ToString ();
 			Margin.LayoutWrapper result = new LayoutWrapper (layout);
-			uint curIndex = 0, byteIndex = 0;
 			if (Data.IsSomethingSelected) {
 				ISegment selection = Data.MainSelection.Segment;
 				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
-					Pango.AttrForeground selectedForeground = new Pango.AttrForeground (Style.Selection.Red, 
-					                                                                    Style.Selection.Green, 
-					                                                                    Style.Selection.Blue);
-					selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
-					selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-					
-					result.Add (selectedForeground);
-					
-					Pango.AttrBackground attrBackground = new Pango.AttrBackground (Style.SelectionBg.Red, 
-					                                                                Style.SelectionBg.Green, 
-					                                                                Style.SelectionBg.Blue);
-					attrBackground.StartIndex = selectedForeground.StartIndex;
-					attrBackground.EndIndex = selectedForeground.EndIndex;
-					result.Add (attrBackground);
-
+					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset), (int)(end - start));
+					result.Layout.SetBackgound (Style.SelectionBg, (int)(start - startOffset), (int)(end - start));
 				});
 			}
-			result.SetAttributes ();
 			return result;
 		}
-		
-		internal protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, long line, int x, int y)
+
+		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			
-			drawable.DrawRectangle (bgGC, true, x, y, Width, Editor.LineHeight);
+			ctx.Rectangle (x, y, Width, Editor.LineHeight);
+			ctx.SetColor (Style.HexDigitBg);
+			ctx.Fill ();
+
 			LayoutWrapper layout = GetLayout (line);
 			if (!Data.IsSomethingSelected && !Caret.InTextEditor && line == Data.Caret.Line) {
-				int column = (int)(Caret.Offset % BytesInRow);
-				int xOffset = charWidth * column;
-				drawable.DrawRectangle (GetGC (Style.HighlightOffset), true, x + xOffset, y, charWidth, Editor.LineHeight);
+				var column = (int)(Caret.Offset % BytesInRow);
+				var xOffset = charWidth * column;
+				ctx.Rectangle (x + xOffset, y, charWidth, Editor.LineHeight);
+				ctx.SetColor (Style.HighlightOffset);
+				ctx.Fill ();
 			}
-			drawable.DrawLayout (fgGC, x, y, layout.Layout);
+			ctx.SetColor (Style.HexDigit);
+			ctx.DrawTextLayout (layout.Layout, x, y);
 			if (layout.IsUncached)
 				layout.Dispose ();
 		}
 
-		public int CalculateCaretXPos ()
+		public double CalculateCaretXPos (out char ch)
 		{
-			return (int)(XOffset + Caret.Offset % BytesInRow * charWidth);
+			var layout = GetLayout (Data.Caret.Line);
+			ch = (char)Data.GetByte (Caret.Offset);
+
+			var rectangle = layout.Layout.GetCoordinateFromIndex ((int)(Caret.Offset % BytesInRow));
+
+			if (layout.IsUncached)
+				layout.Dispose ();
+
+			return XOffset + rectangle.X;
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
 			
-			if (args.Button != 1)
+			if (args.Button != PointerButton.Left)
 				return;
 			
 			Caret.InTextEditor = true;
-			Caret.Offset = GetOffset (args);
+			Caret.Offset = GetOffset (args.X, args.Line);
 		}
 
-		long GetOffset (MarginMouseEventArgs args)
+		long GetOffset (double x, long line)
 		{
-			return args.Line * BytesInRow + args.X / charWidth;
+			return (long)(line * BytesInRow + x / charWidth);
 		}
 		
-		internal protected override void MouseHover (MarginMouseEventArgs args)
+		internal protected override void MouseHover (MarginMouseMovedEventArgs args)
 		{
 			base.MouseHover (args);
-
-			if (args.Button != 1)
+			if (Editor.pressedButton == -1)
 				return;
 			Caret.InTextEditor = true;
 			
-			long hoverOffset = GetOffset (args);
+			long hoverOffset = GetOffset (args.X, args.Line);
 			if (Data.MainSelection == null) {
 				Data.SetSelection (hoverOffset, hoverOffset);
 			} else {

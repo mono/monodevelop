@@ -244,7 +244,9 @@ namespace Mono.TextEditor
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			containerChildren.ForEach (child => callback (child.Child));
+			foreach (var child in containerChildren.ToArray ()) {
+				callback (child.Child);
+			}
 		}
 
 		void ResizeChild (Rectangle allocation, EditorContainerChild child)
@@ -1103,7 +1105,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Initiate a pulse at the specified document location
 		/// </summary>
-		/// <param name="pulseLocation">
+		/// <param name="pulseStart">
 		/// A <see cref="DocumentLocation"/>
 		/// </param>
 		public void PulseCharacter (DocumentLocation pulseStart)

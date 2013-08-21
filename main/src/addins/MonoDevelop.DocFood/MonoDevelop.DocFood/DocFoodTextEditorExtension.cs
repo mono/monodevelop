@@ -35,7 +35,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
-	public class DocFoodTextEditorExtension : TextEditorExtension
+	class DocFoodTextEditorExtension : TextEditorExtension
 	{
 		TextEditorData textEditorData {
 			get {
@@ -120,6 +120,9 @@ namespace MonoDevelop.DocFood
 		/// </returns>
 		/// <param name='offset'>
 		/// Offset in document where the documentation is inserted
+		/// </param>
+		/// <param name='insertedLength'>
+		/// the length of the summary content.
 		/// </param>
 		/// <param name='documentation'>
 		/// Documentation containing the summary

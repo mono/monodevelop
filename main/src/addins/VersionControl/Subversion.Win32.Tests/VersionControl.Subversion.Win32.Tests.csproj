@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E17829B5-8EAC-4714-8798-EB8ED3540191}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>VersionControl.Subversion.Win32.Tests</RootNamespace>
+    <AssemblyName>VersionControl.Subversion.Win32.Tests</AssemblyName>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RepositoryTests.cs" />
+    <Compile Include="..\MonoDevelop.VersionControl.Git.Tests\BaseRepositoryTests.cs">
+      <Link>BaseRepositoryTests.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.VersionControl.Subversion.Tests\BaseSvnRepositoryTests.cs">
+      <Link>BaseSvnRepositoryTests.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Subversion.Win32\VersionControl.Subversion.Win32.csproj">
+      <Project>{1038FBD8-750E-4081-BC65-D89FFED3C881}</Project>
+      <Name>VersionControl.Subversion.Win32</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.VersionControl.Subversion\MonoDevelop.VersionControl.Subversion.csproj">
+      <Project>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</Project>
+      <Name>MonoDevelop.VersionControl.Subversion</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
+      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_0</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

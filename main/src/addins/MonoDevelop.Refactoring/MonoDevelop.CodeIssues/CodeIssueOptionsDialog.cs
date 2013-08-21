@@ -37,9 +37,9 @@ namespace MonoDevelop.CodeIssues
 {
 	partial class CodeIssueOptionsDialog : Gtk.Dialog
 	{
-		readonly CodeIssueProvider inpector;
+		readonly BaseCodeIssueProvider inpector;
 		
-		public CodeIssueOptionsDialog (CodeIssueProvider inpector)
+		public CodeIssueOptionsDialog (BaseCodeIssueProvider inpector)
 		{
 			this.inpector = inpector;
 			Build ();

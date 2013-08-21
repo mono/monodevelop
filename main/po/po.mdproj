@@ -29,6 +29,7 @@
         <Translation isoCode="tr" />
         <Translation isoCode="zh_CN" />
         <Translation isoCode="zh_TW" />
+        <Translation isoCode="ko" />
       </translations>
     </translations>
     <packageName>monodevelop</packageName>
@@ -71,6 +72,7 @@
     <GettextTranslation Include="tr.po" />
     <GettextTranslation Include="zh_CN.po" />
     <GettextTranslation Include="zh_TW.po" />
+    <GettextTranslation Include="ko.po" />
   </ItemGroup>
   <Import Project="Gettext.targets" />
 </Project>

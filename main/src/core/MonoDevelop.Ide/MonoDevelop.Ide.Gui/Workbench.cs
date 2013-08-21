@@ -178,7 +178,6 @@ namespace MonoDevelop.Ide.Gui
 		/// When set to <c>true</c>, opened documents will automatically be reloaded when a change in the underlying
 		/// file is detected (unless the document has unsaved changes)
 		/// </summary>
-		/// </value>
 		public bool AutoReloadDocuments { get; set; }
 		
 		/// <summary>
@@ -408,12 +407,15 @@ namespace MonoDevelop.Ide.Gui
 						if (vcFound != null) {
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
 							if (line >= 1 && ipos != null) {
-								ipos.SetCaretTo (
-									line,
-									column >= 1 ? column : 1,
-									options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-									options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-								);
+								doc.DisableAutoScroll ();
+								doc.RunWhenLoaded (() => {
+									ipos.SetCaretTo (
+										line,
+										column >= 1 ? column : 1,
+										options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+										options.HasFlag (OpenDocumentOptions.CenterCaretLine)
+									);
+								});
 							}
 							
 							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -1225,19 +1227,19 @@ namespace MonoDevelop.Ide.Gui
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			if (fileInfo.Line > 0 && ipos != null)
-				JumpToLine ();
+			if (fileInfo.Line > 0 && ipos != null) {
+				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
+				ipos.RunWhenLoaded (JumpToLine); 
+			}
 			
 			fileInfo.NewContent = newContent;
 		}
 		
-		public bool JumpToLine ()
+		void JumpToLine ()
 		{
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
 			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
-			return false;
 		}
-		
 	}
 	
 	[Flags]

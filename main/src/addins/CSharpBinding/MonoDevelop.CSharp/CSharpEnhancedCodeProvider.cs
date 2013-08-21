@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace MonoDevelop.CSharp
 {
 	[System.ComponentModel.DesignerCategory ("Code")]
-	public class CSharpEnhancedCodeProvider : CSharpCodeProvider
+	class CSharpEnhancedCodeProvider : CSharpCodeProvider
 	{
 		private ICodeParser codeParser;
 		

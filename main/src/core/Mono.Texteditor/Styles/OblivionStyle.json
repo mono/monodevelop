@@ -72,8 +72,8 @@
 		{ "name": "Quick Diff(Changed)", "color":"chameleon2" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"aluminium4", "secondcolor":"aluminium5" },
-		{ "name": "Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99" },
-		{ "name": "Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75" },
+		{ "name": "Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
+		{ "name": "Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
@@ -95,12 +95,14 @@
 		{ "name": "Message Bubble Error Counter", "color":"black", "secondcolor":"#e3a6a1"},
 		{ "name": "Message Bubble Error IconMargin", "color":"#735c54", "bordercolor":"#805b4d"},
 		{ "name": "Message Bubble Error Line", "color":"#7b645c"},
+		{ "name": "Message Bubble Error Tooltip", "color":"#e3a6a1"},
 
 		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
 		{ "name": "Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"black"},
 		{ "name": "Message Bubble Warning Counter", "color":"black", "secondcolor":"#efe89d"},
 		{ "name": "Message Bubble Warning IconMargin", "color":"#777553", "bordercolor":"#948e51"},
-		{ "name": "Message Bubble Warning Line", "color":"#807e5c"}
+		{ "name": "Message Bubble Warning Line", "color":"#807e5c"},
+		{ "name": "Message Bubble Warning Tooltip", "color":"#efe89d"}
 	],
 
 	"text":[
@@ -128,7 +130,8 @@
 
 		{ "name": "Number", "fore":"butter2"},
 
-		{ "name": "Preprocessor", "fore":"skyblue1", "style":"italic"  },
+		{ "name": "Preprocessor", "fore":"skyblue1", "style":"italic" },
+		{ "name": "Preprocessor(Region Name)", "fore":"skyblue1", "style":"italic" },
 
 		{ "name": "Xml Text", "fore":"aluminium2" },
 		{ "name": "Xml Delimiter", "fore":"aluminium2" },

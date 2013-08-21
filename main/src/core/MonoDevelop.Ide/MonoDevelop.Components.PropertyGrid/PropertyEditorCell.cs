@@ -33,6 +33,7 @@ using System.ComponentModel;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using Gtk;
 using Gdk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -139,7 +140,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			int dy = (bounds.Height - h) / 2;
 
 			ctx.Save ();
-			ctx.Color = container.Style.Text (state).ToCairoColor();
+			ctx.SetSourceColor (container.Style.Text (state).ToCairoColor ());
 			ctx.MoveTo (bounds.X, dy + bounds.Y);
 			Pango.CairoHelper.ShowLayout (ctx, layout);
 			ctx.Restore ();

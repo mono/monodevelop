@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using Xwt;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -149,6 +150,19 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ContentNameChanged != null)
 				ContentNameChanged (this, e);
+		}
+	}
+
+	public abstract class AbstractXwtViewContent :AbstractViewContent
+	{
+		public override Gtk.Widget Control {
+			get {
+				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (Widget);
+			}
+		}
+
+		public abstract Xwt.Widget Widget {
+			get;
 		}
 	}
 }

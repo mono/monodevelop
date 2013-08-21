@@ -48,7 +48,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LanguageItemTooltipProvider: TooltipProvider, IDisposable
+	class LanguageItemTooltipProvider: TooltipProvider, IDisposable
 	{
 		public LanguageItemTooltipProvider ()
 		{

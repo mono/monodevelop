@@ -46,7 +46,7 @@ using System.Threading;
 
 namespace MonoDevelop.Gettext
 {
-	public partial class POEditorWidget : Gtk.Bin, IUndoHandler
+	partial class POEditorWidget : Gtk.Bin, IUndoHandler
 	{
 		TranslationProject project;
 		CatalogHeadersWidget headersEditor;

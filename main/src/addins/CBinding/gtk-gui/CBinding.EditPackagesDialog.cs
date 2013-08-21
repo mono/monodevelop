@@ -24,7 +24,7 @@ namespace CBinding
 		private global::Gtk.Button removeButton;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -168,43 +168,33 @@ namespace CBinding
 			this.removeButton.CanFocus = true;
 			this.removeButton.Name = "removeButton";
 			this.removeButton.UseUnderline = true;
-			// Container child removeButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w14 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w15 = new global::Gtk.HBox ();
-			w15.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w16 = new global::Gtk.Image ();
-			w16.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Menu);
-			w15.Add (w16);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w18 = new global::Gtk.Label ();
-			w15.Add (w18);
-			w14.Add (w15);
-			this.removeButton.Add (w14);
+			this.removeButton.Label = "";
+			global::Gtk.Image w14 = new global::Gtk.Image ();
+			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Menu);
+			this.removeButton.Image = w14;
 			this.vbox2.Add (this.removeButton);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
-			w22.Position = 0;
-			w22.Expand = false;
-			w22.Fill = false;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
+			w15.Position = 0;
+			w15.Expand = false;
+			w15.Fill = false;
 			this.table1.Add (this.vbox2);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1 [this.vbox2]));
-			w23.TopAttach = ((uint)(1));
-			w23.BottomAttach = ((uint)(2));
-			w23.LeftAttach = ((uint)(1));
-			w23.RightAttach = ((uint)(2));
-			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.vbox2]));
+			w16.TopAttach = ((uint)(1));
+			w16.BottomAttach = ((uint)(2));
+			w16.LeftAttach = ((uint)(1));
+			w16.RightAttach = ((uint)(2));
+			w16.XOptions = ((global::Gtk.AttachOptions)(4));
 			this.vpaned1.Add (this.table1);
 			w1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(w1 [this.vpaned1]));
-			w25.Position = 0;
-			w25.Padding = ((uint)(3));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(w1 [this.vpaned1]));
+			w18.Position = 0;
+			w18.Padding = ((uint)(3));
 			// Internal child CBinding.EditPackagesDialog.ActionArea
-			global::Gtk.HButtonBox w26 = this.ActionArea;
-			w26.Name = "dialog1_ActionArea";
-			w26.Spacing = 6;
-			w26.BorderWidth = ((uint)(5));
-			w26.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w19 = this.ActionArea;
+			w19.Name = "dialog1_ActionArea";
+			w19.Spacing = 6;
+			w19.BorderWidth = ((uint)(5));
+			w19.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -214,9 +204,9 @@ namespace CBinding
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonCancel]));
-			w27.Expand = false;
-			w27.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.buttonCancel]));
+			w20.Expand = false;
+			w20.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -226,10 +216,10 @@ namespace CBinding
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonOk]));
-			w28.Position = 1;
-			w28.Expand = false;
-			w28.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.buttonOk]));
+			w21.Position = 1;
+			w21.Expand = false;
+			w21.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

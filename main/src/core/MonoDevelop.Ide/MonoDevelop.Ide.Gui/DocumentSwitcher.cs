@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide
 					yPos = padding;
 					cr.MoveTo (xPos, yPos);
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
-					cr.Color = (Mono.TextEditor.HslColor)Style.Text (StateType.Normal);
+					cr.SetSourceColor ((HslColor)Style.Text (StateType.Normal));
 					cr.ShowLayout (layout);
 					
 					if (cat.Items.Count == 0)
@@ -229,16 +229,16 @@ namespace MonoDevelop.Ide
 							int itemWidth = w + (int)item.Icon.Width + 2 + itemPadding * 2;
 							cr.Rectangle (xPos, yPos, itemWidth, iconHeight);
 							cr.LineWidth = 1;
-							cr.Color = (Mono.TextEditor.HslColor)Style.Base (StateType.Selected);
+							cr.SetSourceColor ((HslColor)Style.Base (StateType.Selected));
 							cr.Fill ();
 						} else if (item == hoverItem) {
 							int itemWidth = w + (int)item.Icon.Width + 2 + itemPadding * 2;
 							cr.Rectangle (xPos + 0.5, yPos + 0.5, itemWidth - 1, iconHeight);
 							cr.LineWidth = 1;
-							cr.Color = (Mono.TextEditor.HslColor)Style.Base (StateType.Selected);
+							cr.SetSourceColor ((HslColor)Style.Base (StateType.Selected));
 							cr.Stroke ();
 						}
-						cr.Color = (Mono.TextEditor.HslColor)Style.Text (item == ActiveItem? StateType.Selected : StateType.Normal);
+						cr.SetSourceColor ((HslColor)Style.Text (item == ActiveItem? StateType.Selected : StateType.Normal));
 						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);

@@ -126,7 +126,7 @@ namespace MonoDevelop.Components
 				int alpha = blossom.Count + tick;
 				for (int i = 0; i < blossom.Count; i++) {
 					var petal = blossom[i];
-					context.Color = new Cairo.Color (0, 0, 0, 0.1 + (alpha % blossom.Count) / (double)blossom.Count);
+					context.SetSourceRGBA (0, 0, 0, 0.1 + (alpha % blossom.Count) / (double)blossom.Count);
 					context.MoveTo (petal.Start);
 					context.LineTo (petal.End);
 					context.Stroke ();

@@ -794,14 +794,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					});
 					
 					if (item == null) {
-						LoggingService.LogWarning (GettextCatalog.GetString (
-							"Unknown project type guid '{0}' on line #{1}. Ignoring.",
-							projTypeGuid,
-							sec.Start + 1));
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"{0}({1}): Unsupported or unrecognized project : '{2}'.", 
-							fileName, sec.Start + 1, projectPath));
-						continue;
+						throw new UnknownSolutionItemTypeException (projTypeGuid);
 					}
 
 					MSBuildHandler handler = (MSBuildHandler) item.ItemHandler;

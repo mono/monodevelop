@@ -27,9 +27,7 @@
 
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl

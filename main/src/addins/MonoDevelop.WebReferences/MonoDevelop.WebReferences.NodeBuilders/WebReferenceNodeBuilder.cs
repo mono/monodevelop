@@ -33,7 +33,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		}
 		
 		/// <summary>Gets the Addin path for the context menu for the WebReferenceFolderNodeBuilder.</summary>
-		/// <value>A string containing the AddIn path for the context menu for the WebReferenceFolderNodeBuilder.</summary>
+		/// <value>A string containing the AddIn path for the context menu for the WebReferenceFolderNodeBuilder.</value>
 		public override string ContextMenuAddinPath 
 		{
 			get { return "/MonoDevelop/WebReferences/ContextMenu/ProjectPad/WebReferenceItem"; }

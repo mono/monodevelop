@@ -31,7 +31,7 @@
 
 namespace MonoDevelop.Gettext
 {
-	public enum Commands
+	enum Commands
 	{
 		AddTranslation,
 		IncludeInTranslation,

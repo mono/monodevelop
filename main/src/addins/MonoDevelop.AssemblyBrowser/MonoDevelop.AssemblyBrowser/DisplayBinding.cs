@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyBrowserDisplayBinding : IViewDisplayBinding
+	class AssemblyBrowserDisplayBinding : IViewDisplayBinding
 	{
 		public string Name {
 			get {

@@ -257,13 +257,13 @@ namespace Mono.TextEditor.Highlighting
 			{
 				return !span.StopAtEol || span.StopAtEol && !string.IsNullOrEmpty (span.Continuation) &&
 					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation, StringComparison.Ordinal);
-			}
+			} 
 			
 			public void InnerRun ()
 			{
 				bool doUpdate = false;
 				int startLine = doc.OffsetToLineNumber (startOffset);
-				if (startLine < 0)
+				if (startLine < 0 || mode.Document == null)
 					return;
 				try {
 					var lineSegment = doc.GetLine (startLine);
@@ -547,3 +547,4 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 }
+

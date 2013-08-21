@@ -25,19 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
+using Xwt;
 using System.Collections.Generic;
 
 namespace Mono.MHex.Data
 {
-	public class HexEditorData
+	class HexEditorData
 	{
-		public Adjustment HAdjustment {
+		public ScrollAdjustment HAdjustment {
 			get;
 			set;
 		}
 		
-		public Adjustment VAdjustment {
+		public ScrollAdjustment VAdjustment {
 			get;
 			set;
 		}
@@ -52,7 +52,7 @@ namespace Mono.MHex.Data
 			set;
 		}
 		
-		public int LineHeight {
+		public double LineHeight {
 			get;
 			set;
 		}
@@ -95,8 +95,10 @@ namespace Mono.MHex.Data
 			byte[] nodeBytes = node.value.GetBytes (this, nodeOffset, offset, (int)(nodeEndOffset - offset));
 			
 			byte[] result = new byte[count];
-			nodeBytes.CopyTo (result, 0);
-			GetBytes (offset + nodeBytes.Length, count - nodeBytes.Length).CopyTo (result, nodeBytes.Length);
+			if (nodeBytes.Length > 0) {
+				nodeBytes.CopyTo (result, 0);
+				GetBytes (offset + nodeBytes.Length, count - nodeBytes.Length).CopyTo (result, nodeBytes.Length);
+			}
 			return result;
 		}
 		
@@ -108,6 +110,8 @@ namespace Mono.MHex.Data
 		public HexEditorData ()
 		{
 			Caret = new Caret (this);
+			VAdjustment = new ScrollAdjustment ();
+			HAdjustment = new ScrollAdjustment ();
 		}
 		
 		PieceTable pieceTable = new PieceTable ();

@@ -62,26 +62,23 @@ namespace MonoDevelop.Xml.StateEngine
 				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
 					context.LogError ("Zero-length name.");
-				} else if (namedObject.Name.Name != null) {
-					//add prefix (and move current "name" to prefix)
-					namedObject.Name = new XName (namedObject.Name.Name, context.KeywordBuilder.ToString ());
 				} else {
-					namedObject.Name = new XName (context.KeywordBuilder.ToString ());
+					string s = context.KeywordBuilder.ToString ();
+					int i = s.IndexOf (':');
+					if (i < 0) {
+						namedObject.Name = new XName (s);
+					} else {
+						namedObject.Name = new XName (s.Substring (0, i), s.Substring (i + 1));
+					}
 				}
-				
-				//note: parent's MalformedTagState logs an error, so skip this
-				//if (c == '<')
-				//context.LogError ("Unexpected '<' in name.");
 				
 				return Parent;
 			}
 			if (c == ':') {
-				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
+				if (namedObject.Name.Name != null || context.KeywordBuilder.ToString ().IndexOf (':') <= 0) {
 					context.LogError ("Unexpected ':' in name.");
 					return Parent;
 				}
-				namedObject.Name = new XName (context.KeywordBuilder.ToString ());
-				context.KeywordBuilder.Length = 0;
 				return null;
 			}
 			

@@ -32,9 +32,7 @@ using System.Text;
 
 namespace MonoDevelop.Gettext
 {
-	
-	
-	public static class StringEscaping
+	static class StringEscaping
 	{
 		//based on http://www-ccs.ucsd.edu/c/charset.html
 		//with modififications, as Gettext dosn't follow all C escaping

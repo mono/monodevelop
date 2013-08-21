@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public interface IAssemblyBrowserNodeBuilder
+	interface IAssemblyBrowserNodeBuilder
 	{
 		string GetDocumentationMarkup (ITreeNavigator navigator);
 		List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator);

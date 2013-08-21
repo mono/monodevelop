@@ -139,7 +139,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				else
 					dataItem = null;
 			}
-			
+
+			public void ScrollToNode ()
+			{
+				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, 0);
+			}
+
 			public bool MoveToRoot ()
 			{
 				AssertIsValid ();

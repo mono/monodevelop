@@ -341,17 +341,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
-		public bool EnableCodeCompletion {
-			get { return CompletionTextEditorExtension.EnableCodeCompletion; }
-			set { CompletionTextEditorExtension.EnableCodeCompletion.Value = value; }
-		}
-		
-		public bool EnableParameterInsight {
-			get { return CompletionTextEditorExtension.EnableParameterInsight; }
-			set { CompletionTextEditorExtension.EnableParameterInsight.Value = value; }
-		}
-		
+
 		bool underlineErrors;
 		public bool UnderlineErrors {
 			get {

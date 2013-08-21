@@ -9,13 +9,13 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.DocFood.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.AcronymsPanelWidget" design-size="514 493">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
@@ -185,6 +185,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.OptionsPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -309,6 +310,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.RulesPanelWidget" design-size="433 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox4">
         <property name="MemberName" />
@@ -383,6 +385,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.OfTheReorderingWidget" design-size="424 334">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
@@ -698,6 +701,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.NoTheReorderingWidget" design-size="424 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
@@ -867,6 +871,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.DocFood.Options.ExpansionsPanelWidget" design-size="417 298">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />

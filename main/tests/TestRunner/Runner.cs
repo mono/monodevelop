@@ -68,13 +68,12 @@ namespace MonoDevelop.Tests.TestRunner
 			if (useGuiUnit) {
 				var runnerType = Type.GetType ("GuiUnit.TestRunner, GuiUnit");
 				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
-				method.Invoke (null, new [] { args.ToArray () });
+				return (int) method.Invoke (null, new [] { args.ToArray () });
 			} else {
 				args.RemoveAll (a => a.StartsWith ("-port="));
 				args.Add ("-domain=None");
-				NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
+				return NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
 			}
-			return 0;
 		}
 
 		IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)

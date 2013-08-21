@@ -28,10 +28,12 @@ using System;
 using System.Collections.Generic;
 using Mono.MHex.Data;
 using System.Text;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public abstract class Margin : IDisposable
+	abstract class Margin : IDisposable
 	{
 		protected HexEditor Editor {
 			get;
@@ -62,27 +64,28 @@ namespace Mono.MHex.Rendering
 			}
 		}
 		
-		public abstract int Width {
+		public abstract double Width {
 			get;
 		}
 			
-		public abstract int CalculateWidth (int bytesInRow);
+		public abstract double CalculateWidth (int bytesInRow);
 		
 		public bool IsVisible { get; set; }
 		
 		// set by the text editor
-		public virtual int XOffset {
+		public virtual double XOffset {
 			get;
 			internal set;
 		}
-		
+
+		/*
 		protected Gdk.Cursor cursor = null;
 		
 		public Gdk.Cursor MarginCursor {
 			get {
 				return cursor;
 			}
-		}
+		}*/
 		
 		protected Margin (HexEditor hexEditor)
 		{
@@ -93,7 +96,7 @@ namespace Mono.MHex.Rendering
 		#region Layout caching
 		protected class LayoutWrapper : IDisposable
 		{
-			public Pango.Layout Layout {
+			public TextLayout Layout {
 				get;
 				private set;
 			}
@@ -102,40 +105,15 @@ namespace Mono.MHex.Rendering
 				get;
 				set;
 			}
-			
-			Pango.AttrList attrList;
-			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
-			
-			public void Add (Pango.Attribute attribute)
-			{
-				attributes.Add (attribute);
-			}
-			
-			public LayoutWrapper (Pango.Layout layout)
+
+			public LayoutWrapper (TextLayout layout)
 			{
 				this.Layout = layout;
 				this.IsUncached = false;
 			}
 			
-			public void SetAttributes ()
-			{
-				this.attrList = new Pango.AttrList ();
-				attributes.ForEach (attr => attrList.Insert (attr));
-				Layout.Attributes = attrList;
-			}
-			
 			public void Dispose ()
 			{
-				if (attributes != null) {
-					attributes.ForEach (attr => attr.Dispose ());
-					attributes.Clear ();
-					attributes = null;
-				}
-				if (attrList != null) {
-					attrList.Dispose ();
-					attrList = null;
-				}
-
 				if (Layout != null) {
 					Layout.Dispose ();
 					Layout = null;
@@ -230,26 +208,13 @@ namespace Mono.MHex.Rendering
 		}
 		#endregion
 		
-		
-		Dictionary<Gdk.Color, Gdk.GC> gcDictionary = new Dictionary<Gdk.Color, Gdk.GC> ();
-		protected Gdk.GC GetGC (Gdk.Color color)
-		{
-			Gdk.GC result;
-			if (gcDictionary.TryGetValue (color, out result))
-				return result;
-			result = new Gdk.GC (Editor.GdkWindow);
-			result.RgbFgColor = color;
-			gcDictionary[color] = result;
-			return result;
-		}
-		
 		internal protected virtual void OptionsChanged ()
 		{
 		}
 		
 //		internal protected virtual void OptionsCh
 		
-		internal protected abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, long line, int x, int y);
+		internal protected abstract void Draw (Context ctx, Rectangle area, long line, double x, double y);
 		
 		internal protected virtual void MousePressed (MarginMouseEventArgs args)
 		{
@@ -263,7 +228,7 @@ namespace Mono.MHex.Rendering
 				ButtonReleased (this, args);
 		}
 		
-		internal protected virtual void MouseHover (MarginMouseEventArgs args)
+		internal protected virtual void MouseHover (MarginMouseMovedEventArgs args)
 		{
 			if (MouseMoved != null)
 				MouseMoved (this, args);
@@ -277,75 +242,100 @@ namespace Mono.MHex.Rendering
 		
 		public virtual void Dispose ()
 		{
-			if (cursor != null) {
-				cursor.Dispose ();
-				cursor = null;
-			}
 			PurgeLayoutCache ();
-			PurgeGCs ();
 		}
 
-		internal protected void PurgeGCs ()
-		{
-				foreach (Gdk.GC gc in gcDictionary.Values) {
-				gc.Dispose ();
-			}
-			gcDictionary.Clear ();
-		}
-
-		
 		public event EventHandler<MarginMouseEventArgs> ButtonPressed;
 		public event EventHandler<MarginMouseEventArgs> ButtonReleased;
-		public event EventHandler<MarginMouseEventArgs> MouseMoved;
+		public event EventHandler<MarginMouseMovedEventArgs> MouseMoved;
 		public event EventHandler MouseLeave;
 	}
 	
-	public class MarginMouseEventArgs : EventArgs
+	class MarginMouseEventArgs : EventArgs
 	{
-		public int X {
+		Margin margin;
+
+		public double X {
+			get {
+				return Args.X - margin.XOffset;
+			}
+		}
+
+		public double Y {
+			get {
+				return Args.Y;
+			}
+		}
+
+		public PointerButton Button {
+			get {
+				return Args.Button;
+			}
+		}
+
+		public ButtonEventArgs Args {
 			get;
 			private set;
 		}
-		
-		public int Y {
-			get;
-			private set;
-		}
-		
-		public Gdk.EventType Type {
-			get;
-			private set;
-		}
-		
-		public Gdk.ModifierType ModifierState {
-			get;
-			private set;
-		}
-		
-		public int Button {
-			get;
-			private set;
-		}
-		
+
 		public HexEditor Editor {
 			get;
 			private set;
 		}
-		
+
 		public long Line {
 			get {
 				return (long)(Y + Editor.HexEditorData.VAdjustment.Value) / Editor.LineHeight;
 			}
 		}
-		
-		public MarginMouseEventArgs (HexEditor editor, int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+
+		public MarginMouseEventArgs (HexEditor editor, Margin margin, ButtonEventArgs args)
 		{
 			this.Editor = editor;
-			this.Button = button;
-			this.X = x;
-			this.Y = y;
-			this.Type = type;
-			this.ModifierState = modifierState;
+			this.margin = margin;
+			this.Args = args;
 		}
 	}
+
+	class MarginMouseMovedEventArgs : EventArgs
+	{
+		public double X {
+			get {
+				return Args.X - margin.XOffset;
+			}
+		}
+
+		public double Y {
+			get {
+				return Args.Y;
+			}
+		}
+
+		public MouseMovedEventArgs Args {
+			get;
+			private set;
+		}
+
+		public HexEditor Editor {
+			get;
+			private set;
+		}
+
+		public long Line {
+			get {
+				return (long)(Y + Editor.HexEditorData.VAdjustment.Value) / Editor.LineHeight;
+			}
+		}
+
+		Margin margin;
+
+		public MarginMouseMovedEventArgs (HexEditor editor, Margin margin, MouseMovedEventArgs args)
+		{
+			this.margin = margin;
+			this.Editor = editor;
+			this.Args = args;
+		}
+	}
+
+
 }

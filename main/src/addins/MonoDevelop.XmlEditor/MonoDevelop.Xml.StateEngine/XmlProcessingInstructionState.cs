@@ -40,7 +40,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				context.Nodes.Push (new XProcessingInstruction (context.LocationMinus ("<?".Length + 1)));
+				context.Nodes.Push (new XProcessingInstruction (context.LocationMinus ("<?".Length)));
 			}
 			
 			if (c == '?') {

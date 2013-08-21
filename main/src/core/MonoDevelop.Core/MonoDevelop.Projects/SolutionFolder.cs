@@ -985,10 +985,6 @@ namespace MonoDevelop.Projects
 			get { return false; }
 		}
 		
-		public void OnModified (string hint)
-		{
-		}
-
 		public void Dispose ()
 		{
 		}

@@ -1,10 +1,11 @@
 // 
 // TextVisualizer.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +26,11 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugging.Client;
+using System.Text;
+
 using Gtk;
+
+using Mono.Debugging.Client;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Visualizer
@@ -37,7 +41,7 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		TextView textView;
 		RawValueString raw;
-		ObjectValue val;
+		ObjectValue value;
 		uint idle_id;
 		int length;
 		int offset;
@@ -47,14 +51,16 @@ namespace MonoDevelop.Debugger.Visualizer
 		}
 		
 		public string Name {
-			get {
-				return GettextCatalog.GetString ("Text");
-			}
+			get { return GettextCatalog.GetString ("Text"); }
 		}
 		
 		public bool CanVisualize (ObjectValue val)
 		{
-			return val.TypeName == "string";
+			switch (val.TypeName) {
+			case "char[]": return true;
+			case "string": return true;
+			default: return false;
+			}
 		}
 		
 		bool GetNextStringChunk ()
@@ -75,58 +81,96 @@ namespace MonoDevelop.Debugger.Visualizer
 			return false;
 		}
 
-		public Gtk.Widget GetVisualizerWidget (ObjectValue val)
+		void PopulateTextView ()
 		{
-			VBox box = new VBox (false, 6);
+			if (value.TypeName == "string") {
+				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+				ops.ChunkRawStrings = true;
+
+				raw = value.GetRawValue (ops) as RawValueString;
+				length = raw.Length;
+				offset = 0;
+
+				if (length > 0) {
+					idle_id = GLib.Idle.Add (GetNextStringChunk);
+					textView.Destroyed += delegate {
+						if (idle_id != 0) {
+							GLib.Source.Remove (idle_id);
+							idle_id = 0;
+						}
+					};
+				}
+			} else {
+				var array = value.GetRawValue () as RawValueArray;
+				var iter = textView.Buffer.EndIter;
+				string text;
+
+				switch (value.TypeName) {
+				case "char[]":
+					text = new string (array.ToArray () as char[]);
+					break;
+				default:
+					text = string.Empty;
+					break;
+				}
+
+				textView.Buffer.Insert (ref iter, text);
+			}
+		}
+
+		public Widget GetVisualizerWidget (ObjectValue val)
+		{
 			textView = new TextView () { WrapMode = WrapMode.Char };
-			Gtk.ScrolledWindow scrolled = new Gtk.ScrolledWindow ();
-			scrolled.HscrollbarPolicy = PolicyType.Automatic;
-			scrolled.VscrollbarPolicy = PolicyType.Automatic;
-			scrolled.ShadowType = ShadowType.In;
+
+			var scrolled = new ScrolledWindow () {
+				HscrollbarPolicy = PolicyType.Automatic,
+				VscrollbarPolicy = PolicyType.Automatic,
+				ShadowType = ShadowType.In
+			};
 			scrolled.Add (textView);
-			box.PackStart (scrolled, true, true, 0);
-			CheckButton cb = new CheckButton (GettextCatalog.GetString ("Wrap text"));
-			cb.Active = true;
-			cb.Toggled += delegate {
-				if (cb.Active)
-					textView.WrapMode = WrapMode.Char;
+
+			var check = new CheckButton (GettextCatalog.GetString ("Wrap text"));
+			check.Active = true;
+			check.Toggled += delegate {
+				if (check.Active)
+					textView.WrapMode = WrapMode.WordChar;
 				else
 					textView.WrapMode = WrapMode.None;
 			};
-			box.PackStart (cb, false, false, 0);
+
+			var box = new VBox (false, 6);
+			box.PackStart (scrolled, true, true, 0);
+			box.PackStart (check, false, false, 0);
 			box.ShowAll ();
-			
-			EvaluationOptions ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.ChunkRawStrings = true;
-			
-			this.raw = val.GetRawValue (ops) as RawValueString;
-			this.length = raw.Length;
-			this.offset = 0;
-			this.val = val;
-			
-			if (this.length > 0) {
-				idle_id = GLib.Idle.Add (GetNextStringChunk);
-				textView.Destroyed += delegate {
-					if (idle_id != 0) {
-						GLib.Source.Remove (idle_id);
-						idle_id = 0;
-					}
-				};
-			}
+
+			value = val;
+
+			PopulateTextView ();
 			
 			return box;
 		}
 		
 		public bool StoreValue (ObjectValue val)
 		{
-			val.SetRawValue (textView.Buffer.Text);
-			return true;
+			switch (val.TypeName) {
+			case "char[]":
+				val.SetRawValue (textView.Buffer.Text.ToCharArray ());
+				return true;
+			case "string":
+				val.SetRawValue (textView.Buffer.Text);
+				return true;
+			default:
+				return false;
+			}
 		}
 		
 		public bool CanEdit (ObjectValue val)
 		{
-			return true;
+			switch (val.TypeName) {
+			case "char[]": return true;
+			case "string": return true;
+			default: return false;
+			}
 		}
 	}
 }
-

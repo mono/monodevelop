@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class ConvertToEnumDialog : Xwt.Dialog
+	class ConvertToEnumDialog : Xwt.Dialog
 	{
 		Xwt.TextEntry enumNameEntry;
 		Xwt.ListView variableList;

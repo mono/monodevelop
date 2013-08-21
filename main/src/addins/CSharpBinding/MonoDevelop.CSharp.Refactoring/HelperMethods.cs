@@ -31,7 +31,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public static class HelperMethods
+	static class HelperMethods
 	{
 		public static TextReplaceChange GetRemoveNodeChange (this TextEditorData editor, AstNode n)
 		{

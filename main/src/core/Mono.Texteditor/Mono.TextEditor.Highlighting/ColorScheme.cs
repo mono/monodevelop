@@ -107,10 +107,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Brace Matching(Rectangle)", VSSetting="color=Brace Matching (Rectangle)/Background,secondcolor=Brace Matching (Rectangle)/Foreground")]
 		public AmbientColor BraceMatchingRectangle { get; private set; }
 		
-		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
+		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
-		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
+		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor ChangingUsagesRectangle { get; private set; }
 
 		[ColorDescription("Breakpoint Marker")]
@@ -164,6 +164,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Message Bubble Error Tag")]
 		public AmbientColor MessageBubbleErrorTag { get; private set; }
 
+		[ColorDescription("Message Bubble Error Tooltip")]
+		public AmbientColor MessageBubbleErrorTooltip { get; private set; }
+
 		[ColorDescription("Message Bubble Error Line")]
 		public AmbientColor MessageBubbleErrorLine { get; private set; }
 
@@ -178,6 +181,9 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Message Bubble Warning Tag")]
 		public AmbientColor MessageBubbleWarningTag { get; private set; }
+
+		[ColorDescription("Message Bubble Warning Tooltip")]
+		public AmbientColor MessageBubbleWarningTooltip { get; private set; }
 
 		[ColorDescription("Message Bubble Warning Line")]
 		public AmbientColor MessageBubbleWarningLine { get; private set; }
@@ -244,6 +250,9 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Preprocessor", VSSetting = "Preprocessor Keyword")]
 		public ChunkStyle Preprocessor { get; private set; }
+
+		[ColorDescription("Preprocessor(Region Name)", VSSetting = "Plain Text")]
+		public ChunkStyle PreprocessorRegionName { get; private set; }
 
 		[ColorDescription("Xml Text", VSSetting = "XML Text")]
 		public ChunkStyle XmlText { get; private set; }

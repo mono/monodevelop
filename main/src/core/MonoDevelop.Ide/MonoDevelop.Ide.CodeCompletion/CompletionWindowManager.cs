@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return wnd.CodeCompletionContext;
 			}
 		}
-		
-		static bool forceSuggestionMode;
+
+		static PropertyWrapper<bool> forceSuggestionMode = PropertyService.Wrap ("ForceCompletionSuggestionMode", false);
 		public static bool ForceSuggestionMode {
 			get { return forceSuggestionMode; }
 			set {
-				forceSuggestionMode = value; 
+				forceSuggestionMode.Value = value; 
 				if (wnd != null) {
 					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !forceSuggestionMode;
 				}

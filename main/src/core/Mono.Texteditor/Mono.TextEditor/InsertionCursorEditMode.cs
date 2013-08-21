@@ -316,10 +316,10 @@ namespace Mono.TextEditor
 				
 				g.LineTo (x - arrowLength / phi, y);
 				g.ClosePath ();
-				g.Color = new Cairo.Color (1.0, 0, 0);
+				g.SetSourceRGB (1.0, 0, 0);
 				g.StrokePreserve ();
 				
-				g.Color = new Cairo.Color (1.0, 0, 0, 0.1);
+				g.SetSourceRGBA (1.0, 0, 0, 0.1);
 				g.Fill ();
 			}
 
@@ -365,7 +365,7 @@ namespace Mono.TextEditor
 				cr.MoveTo (x, y);
 				cr.LineTo (x2, y);
 
-				cr.Color = LineColor;
+				cr.SetSourceColor (LineColor);
 				cr.Stroke ();
 				
 //				DrawArrow (cr, x - 4, y);

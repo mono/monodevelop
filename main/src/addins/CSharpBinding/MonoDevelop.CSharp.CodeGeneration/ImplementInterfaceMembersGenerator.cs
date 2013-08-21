@@ -34,7 +34,7 @@ using System;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class ImplementInterfaceMembersGenerator : ICodeGenerator
+	class ImplementInterfaceMembersGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

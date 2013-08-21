@@ -44,7 +44,7 @@ using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class AspLanguageBuilder : ILanguageCompletionBuilder
+	class AspLanguageBuilder : ILanguageCompletionBuilder
 	{
 		public bool SupportsLanguage (string language)
 		{

@@ -463,7 +463,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
-			IntPtr localpool = newpool (pool);
+			IntPtr localpool = TryStartOperation (null);
 			List<DirectoryEntry> items = new List<DirectoryEntry> ();
 
 			try {
@@ -1375,8 +1375,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				try {
 					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
 				} catch (SubversionException e) {
-					if (e.ErrorCode == 155007)
+					// We are not in a working copy.
+					switch (e.ErrorCode) {
+					// SVN_ERR_WC_NOT_DIRECTORY
+					case 155007:
+					// SVN_ERR_WC_NOT_FILE
+					case 155008:
 						return "";
+					}
+
 					throw;
 				}
 				return Marshal.PtrToStringAnsi (result);

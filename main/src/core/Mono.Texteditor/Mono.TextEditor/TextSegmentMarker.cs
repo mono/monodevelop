@@ -26,6 +26,7 @@
 using System;
 using Cairo;
 using Mono.TextEditor.Highlighting;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -64,6 +65,8 @@ namespace Mono.TextEditor
 
 	public interface IChunkMarker
 	{
+		void TransformChunks (List<Chunk> chunks);
+
 		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color);
 	}
 
@@ -146,9 +149,9 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			if (selected) {
-				cr.Color = editor.ColorStyle.SelectedText.Foreground;
+				cr.SetSourceColor (editor.ColorStyle.SelectedText.Foreground);
 			} else {
-				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).Foreground;
+				cr.SetSourceColor (ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).Foreground);
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

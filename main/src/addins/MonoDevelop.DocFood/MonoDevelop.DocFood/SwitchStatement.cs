@@ -29,7 +29,7 @@ using System.Xml;
 using MonoDevelop.Core;
 namespace MonoDevelop.DocFood
 {
-	public class SwitchStatement : Node
+	class SwitchStatement : Node
 	{
 		public const string XmlTag = "Switch";
 		

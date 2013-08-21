@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class CaretMoveActions
+	static class CaretMoveActions
 	{
 		public static void SwitchSide (HexEditorData data)
 		{
@@ -96,15 +96,15 @@ namespace Mono.MHex
 		
 		public static void PageUp (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Value - data.VAdjustment.PageSize); 
-			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight;
+			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.LowerValue, data.VAdjustment.Value - data.VAdjustment.PageSize); 
+			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight) / data.LineHeight);
 			data.Caret.Offset = (long)System.Math.Max (0, data.Caret.Offset - data.BytesInRow * pageLines);
 		}
 		
 		public static void PageDown (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.PageSize); 
-			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight;
+			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.UpperValue - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.PageSize); 
+			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight) / data.LineHeight);
 			data.Caret.Offset = (long)System.Math.Min (data.Length, data.Caret.Offset + data.BytesInRow * pageLines);
 		}
 		

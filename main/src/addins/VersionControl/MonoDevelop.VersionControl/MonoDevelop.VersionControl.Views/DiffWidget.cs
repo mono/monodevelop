@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -35,7 +34,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.TextEditor diffTextEditor;
-		MonoDevelop.VersionControl.Views.ComparisonWidget comparisonWidget;
+		ComparisonWidget comparisonWidget;
 		Gtk.Button buttonNext;
 		Gtk.Button buttonPrev;
 		Gtk.Button buttonDiff;
@@ -78,7 +77,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.info = info;
 			this.Build ();
-			comparisonWidget = new MonoDevelop.VersionControl.Views.ComparisonWidget (viewOnly);
+			comparisonWidget = new ComparisonWidget (viewOnly);
 			buttonNext = new DocumentToolButton (Gtk.Stock.GoUp, GettextCatalog.GetString ("Previous Change"));
 			buttonPrev = new DocumentToolButton (Gtk.Stock.GoDown, GettextCatalog.GetString ("Next Change"));
 			labelOverview = new Gtk.Label () { Xalign = 0 };
@@ -148,7 +147,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
+		static string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
 		{
 			if (!editor.Document.ReadOnly)
 				return GettextCatalog.GetString ("(working copy)");

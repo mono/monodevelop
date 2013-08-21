@@ -39,9 +39,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	class NRefactoryCodeActionProvider : MonoDevelop.CodeActions.CodeActionProvider
 	{
 		readonly List<string> actionId = new List<string> ();
-		readonly ICodeActionProvider provider;
+		readonly CodeActionProvider provider;
 
-		public NRefactoryCodeActionProvider (ICodeActionProvider provider, ContextActionAttribute attr)
+		public NRefactoryCodeActionProvider (CodeActionProvider provider, ContextActionAttribute attr)
 		{
 			if (provider == null)
 				throw new System.ArgumentNullException ("provider");

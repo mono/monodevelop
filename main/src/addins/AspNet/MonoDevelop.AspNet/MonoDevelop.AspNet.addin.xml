@@ -277,4 +277,8 @@
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="AspNet" class = "MonoDevelop.AspNet.AspNetExecutionHandler"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete id="Html" insertbefore="Other" insertafter="C#" language="Html" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
 </Addin>

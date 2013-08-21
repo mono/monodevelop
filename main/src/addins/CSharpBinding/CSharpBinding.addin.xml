@@ -241,6 +241,7 @@
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.PartialGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
@@ -269,6 +270,11 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete id="C#" insertbefore="Html" language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
 
 	<Module>
 	    <Runtime>

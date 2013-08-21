@@ -77,7 +77,7 @@ namespace Mono.TextEditor.Tests
 				set;
 			}
 
-			public int Balance {
+			public sbyte Balance {
 				get;
 				set;
 			}

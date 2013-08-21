@@ -28,12 +28,12 @@ using System;
 
 namespace Mono.MHex.Data
 {
-	public enum SelectionMode {
+	enum SelectionMode {
 		Normal,
 		Block
 	}
 	
-	public class Selection : IEquatable <Selection>
+	class Selection : IEquatable <Selection>
 	{
 		long anchor;
 		public long Anchor {

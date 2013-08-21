@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.DocFood
 {
-	public class MemberVisitor : DepthFirstAstVisitor<object, object>
+	class MemberVisitor : DepthFirstAstVisitor<object, object>
 	{
 		public List<AstType> Exceptions = new List<AstType> ();
 		

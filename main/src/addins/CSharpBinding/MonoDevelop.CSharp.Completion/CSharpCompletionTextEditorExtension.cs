@@ -52,7 +52,6 @@ using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
 		internal Mono.TextEditor.TextEditorData TextEditorData {
@@ -121,6 +120,12 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				return policy;
+			}
+		}
+
+		public override string CompletionLanguage {
+			get {
+				return "C#";
 			}
 		}
 		
@@ -222,7 +227,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			bool result = base.KeyPress (key, keyChar, modifier);
 			
-			if (EnableParameterInsight && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+			if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
 				base.RunParameterCompletionCommand ();
 			
 //			if (IsInsideComment ())
@@ -232,8 +237,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
 				return null;
 
@@ -326,7 +331,7 @@ namespace MonoDevelop.CSharp.Completion
 			);
 			completionDataFactory.Engine = engine;
 			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
-			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
+			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
 			if (FilterCompletionListByEditorBrowsable) {
 				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
 			} else {
@@ -540,8 +545,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			try {
@@ -992,7 +997,9 @@ namespace MonoDevelop.CSharp.Completion
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
 			{
 				var result = new CompletionDataList ();
-				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+				if (EnableAutoCodeCompletion || IncludeCodeSnippetsInCompletionList.Value) {
+					CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+				}
 				return result;
 			}
 			
@@ -1071,10 +1078,10 @@ namespace MonoDevelop.CSharp.Completion
 			class ImportSymbolCompletionData : CompletionData
 			{
 				IType type;
-				ParsedDocument unit;
+//				ParsedDocument unit;
 				MonoDevelop.Ide.Gui.Document doc;
 				bool useFullName;
-				bool addConstructors;
+//				bool addConstructors;
 
 				public IType Type {
 					get { return this.type; }
@@ -1085,8 +1092,8 @@ namespace MonoDevelop.CSharp.Completion
 					this.doc = doc;
 					this.useFullName = useFullName;
 					this.type = type;
-					this.unit = doc.ParsedDocument;
-					this.addConstructors = addConstructors;
+//					this.unit = doc.ParsedDocument;
+//					this.addConstructors = addConstructors;
 				}
 
 				bool initialized = false;
@@ -1114,7 +1121,7 @@ namespace MonoDevelop.CSharp.Completion
 								text = type.Namespace + "." + text;
 							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
 						}
-
+					
 						if (!window.WasShiftPressed && generateUsing) {
 							var generator = CodeGenerator.CreateGenerator (doc);
 							if (generator != null) {
@@ -1124,6 +1131,7 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
+					ka |= KeyActions.Ignore;
 				}
 				#endregion
 
@@ -1176,6 +1184,20 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				#endregion
+
+				public override int CompareTo (object obj)
+				{
+					var result = base.CompareTo (obj);
+					if (result == 0) {
+						var isd = obj as ImportSymbolCompletionData;
+						if (isd != null) {
+							result = StringComparer.OrdinalIgnoreCase.Compare (Description, isd.Description);
+						} else {
+							return 1;
+						}
+					}
+					return result;
+				}
 			}
 
 

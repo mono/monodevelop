@@ -11,11 +11,12 @@
     <RootNamespace>UnitTests</RootNamespace>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -26,7 +27,7 @@
     </Execution>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -35,6 +36,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -60,6 +62,9 @@
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="GuiUnit">
+      <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -228,10 +233,6 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
-      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
-      <Name>GuiUnit_NET_4_0</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.AspNet.Mvc.Completion\CompletionTests.cs" />
@@ -282,6 +283,12 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
+    <Compile Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
@@ -314,4 +321,7 @@
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Refactoring\" />
+  </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@ using System.Text;
 namespace XmlDocIdLib
 {
     #region CompatibilityType enumeration
-    public enum CompatibilityType
+    enum CompatibilityType
     {
         None,
         Net11,

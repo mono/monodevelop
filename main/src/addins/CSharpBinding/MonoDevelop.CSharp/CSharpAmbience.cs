@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharp
 {
-	public class CSharpAmbience : Ambience
+	class CSharpAmbience : Ambience
 	{
 		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
 		static HashSet<string> keywords = new HashSet<string> (new [] {
@@ -640,7 +640,7 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup ("."));
 			}
 			AppendExplicitInterfaces (result, method, settings);
-			if (method.EntityType == EntityType.Operator) {
+			if (method.SymbolKind == SymbolKind.Operator) {
 				result.Append ("operator ");
 				result.Append (settings.Markup (GetOperator (methodName)));
 			} else {
@@ -683,7 +683,7 @@ namespace MonoDevelop.CSharp
 
 		protected override string GetMethodString (IMethod method, OutputSettings settings)
 		{
-			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor ? method.DeclaringTypeDefinition.Name : method.Name))), true);
+			return InternalGetMethodString (method, settings, settings.EmitName (method, Format (FilterName (method.SymbolKind == SymbolKind.Constructor || method.SymbolKind == SymbolKind.Destructor ? method.DeclaringTypeDefinition.Name : method.Name))), true);
 		}
 
 		protected override string GetConstructorString (IMethod method, OutputSettings settings)
@@ -773,7 +773,7 @@ namespace MonoDevelop.CSharp
 			
 			AppendExplicitInterfaces (result, property, settings);
 			
-			if (property.EntityType == EntityType.Indexer) {
+			if (property.SymbolKind == SymbolKind.Indexer) {
 				result.Append (settings.EmitName (property, "this"));
 			} else {
 				result.Append (settings.EmitName (property, Format (FilterName (property.Name))));

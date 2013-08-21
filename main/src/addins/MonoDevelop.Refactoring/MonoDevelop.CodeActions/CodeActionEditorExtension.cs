@@ -202,9 +202,9 @@ namespace MonoDevelop.CodeActions
 				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.Color = new Cairo.Color (0.8, 0.8, 1, 0.9);
+					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
 				} else {
-					cr.Color = new Cairo.Color (0.2, 0.2, 1, 0.9);
+					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
 				}
 				cr.Stroke ();
 			}

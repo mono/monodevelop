@@ -10,7 +10,7 @@ namespace MonoDevelop.AspNet.Gui
 		private global::Gtk.Label label2;
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.CheckButton disableCodeBehindGeneration;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

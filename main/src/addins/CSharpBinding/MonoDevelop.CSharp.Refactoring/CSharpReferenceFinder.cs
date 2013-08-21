@@ -45,7 +45,7 @@ using System.Threading;
 namespace MonoDevelop.CSharp.Refactoring
 {
 	using MonoDevelop.Projects;
-	public class CSharpReferenceFinder : ReferenceFinder
+	class CSharpReferenceFinder : ReferenceFinder
 	{
 		ICSharpCode.NRefactory.CSharp.Resolver.FindReferences refFinder = new ICSharpCode.NRefactory.CSharp.Resolver.FindReferences ();
 		List<object> searchedMembers;
@@ -115,6 +115,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is NamespaceResolveResult) {
 				var ns = ((NamespaceResolveResult)result).Namespace;
 				valid = searchedMembers.FirstOrDefault (n => n is INamespace && ns.FullName.StartsWith (((INamespace)n).FullName, StringComparison.Ordinal));
+				if (!(node is NamespaceDeclaration))
+					goto skip;
 			} else if (result is LocalResolveResult) {
 				var ns = ((LocalResolveResult)result).Variable;
 				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
@@ -123,11 +125,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				valid = searchedMembers.FirstOrDefault ();
 			}
-
 			if (node is ConstructorInitializer)
 				return null;
 			if (node is ObjectCreateExpression)
 				node = ((ObjectCreateExpression)node).Type;
+			if (node is IndexerDeclaration)
+				node = ((IndexerDeclaration)node).ThisToken;
 
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
@@ -172,6 +175,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is IdentifierExpression) {
 				node = ((IdentifierExpression)node).IdentifierToken;
 			}
+
+		skip:
 
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
@@ -266,7 +271,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 					// May happen for anonymous types since empty constructors are always generated.
 					// But there is no declaring type definition for them - we filter out this case.
-					if (entity.EntityType == EntityType.Constructor && entity.DeclaringTypeDefinition == null)
+					if (entity.SymbolKind == SymbolKind.Constructor && entity.DeclaringTypeDefinition == null)
 						continue;
 
 					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
@@ -279,7 +284,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
 					}, CancellationToken.None);
 				} else if (obj is ITypeParameter) {
-					refFinder.FindTypeParameterReferences ((ITypeParameter)obj, file, unit, doc.Compilation, (astNode, r) => { 
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((ITypeParameter)obj), file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
 					}, CancellationToken.None);

@@ -2,6 +2,7 @@
 // AvlTree.cs
 //
 // Author:
+//       Andrea Krüger <andrea.krueger77@googlemail.com>
 //       Mike Krüger <mkrueger@xamarin.com>
 //
 // Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
@@ -29,7 +30,7 @@ using System.Linq;
 
 namespace Mono.TextEditor.Utils
 {
-	internal interface IAvlNode
+	interface IAvlNode
 	{
 		IAvlNode Parent { get; set; }
 
@@ -37,12 +38,12 @@ namespace Mono.TextEditor.Utils
 
 		IAvlNode Right { get; set; }
 
-		int Balance { get; set; }
+		sbyte Balance { get; set; }
 
 		void UpdateAugmentedData ();
 	}
 
-	internal class AvlTree<T> : ICollection<T> where T : class, IAvlNode
+	class AvlTree<T> : ICollection<T> where T : class, IAvlNode
 	{
 		readonly Func<T, T, int> comparisonFunc;
 
@@ -74,7 +75,7 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("newNode");
 			parentNode.Left = newNode;
 			newNode.Parent = parentNode;
-			InsertBalanceTree (parentNode, 1);
+			InsertBalanceTree (parentNode, -1);
 			parentNode.UpdateAugmentedData ();
 			Count++;
 		}
@@ -87,7 +88,7 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("newNode");
 			parentNode.Right = newNode;
 			newNode.Parent = parentNode;
-			InsertBalanceTree (parentNode, -1);
+			InsertBalanceTree (parentNode, 1);
 			parentNode.UpdateAugmentedData ();
 			Count++;
 		}
@@ -105,7 +106,7 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		public void InsertAfter (IAvlNode node, IAvlNode newNode)
+		public void InsertAfter (IAvlNode node, T newNode)
 		{
 			if (node == null)
 				throw new ArgumentNullException ("node");
@@ -120,29 +121,29 @@ namespace Mono.TextEditor.Utils
 
 		#region ICollection implementation
 
-		public void Add (T item)
+		public void Add (T node)
 		{
-			if (item == null)
-				throw new ArgumentNullException ("item");
+			if (node == null)
+				throw new ArgumentNullException ("node");
 			if (Root == null) {
-				Root = item;
+				Root = node;
 				Count = 1;
 				return;
 			}
-			IAvlNode currentNode = Root;
+			T currentNode = Root;
 			while (currentNode != null) {
-				if (comparisonFunc ((T)currentNode, item) == -1) {
+				if (comparisonFunc (currentNode, node) < 0) {
 					if (currentNode.Right == null) {
-						InsertRight (currentNode, item);
+						InsertRight (currentNode, node);
 						break;
 					}
-					currentNode = currentNode.Right;
+					currentNode = (T)currentNode.Right;
 				} else {
 					if (currentNode.Left == null) {
-						InsertLeft (currentNode, item);
+						InsertLeft (currentNode, node);
 						break;
 					}
-					currentNode = currentNode.Left;
+					currentNode = (T)currentNode.Left;
 				}
 			}
 		}
@@ -153,9 +154,9 @@ namespace Mono.TextEditor.Utils
 			Count = 0;
 		}
 
-		public bool Contains (T item)
+		public bool Contains (T node)
 		{
-			return this.Any (i => i.Equals (item));
+			return this.Any (i => i.Equals (node));
 		}
 
 		public void CopyTo (T[] array, int arrayIndex)
@@ -172,104 +173,79 @@ namespace Mono.TextEditor.Utils
 				array [i++] = value;
 		}
 
-		public bool Remove (T item)
+		bool ICollection<T>.Remove (T node)
 		{
-			if (item == null)
-				throw new ArgumentNullException ("item");
-			IAvlNode left = item.Left;
-			IAvlNode right = item.Right;
+			return Remove (node);
+		}
+
+		public bool Remove (IAvlNode node)
+		{
+			if (node == null)
+				throw new ArgumentNullException ("node");
+			var left = node.Left;
+			var right = node.Right;
+			var parent = node.Parent;
 
 			if (left == null) {
 				if (right == null) {
-					if (item == Root) {
+					if (node == Root) {
 						Clear ();
 						return true;
 					}
-					var parent = item.Parent;
-
-					if (parent.Left == item) {
+					if (parent == null) {
+						throw new Exception ();
+					}
+					if (parent.Left == node) {
 						parent.Left = null;
-						DeleteBalanceTree (parent, -1);
+						DeleteBalanceTree (parent, 1);
 					} else {
 						parent.Right = null;
-						DeleteBalanceTree (parent, 1);
+						DeleteBalanceTree (parent, -1);
 					}
 				} else {
-					ReplaceNodes (item, right);
-
-					DeleteBalanceTree (item, 0);
+					if (node == Root) {
+						node.Right.Parent = null;
+						Root = (T)node.Right;
+						return true;
+					}
+					node.Right.Parent = node.Parent;
+					if (parent.Left == node) {
+						parent.Left = node.Right;
+						DeleteBalanceTree (parent, 1);
+					} else {
+						parent.Right = node.Right;
+						DeleteBalanceTree (parent, -1);
+					}
 				}
 			} else if (right == null) {
-				ReplaceNodes (item, left);
-
-				DeleteBalanceTree (item, 0);
-			} else {
-				var successor = right;
-				if (successor.Left == null) {
-					IAvlNode parent = item.Parent;
-
-					successor.Parent = parent;
-					successor.Left = left;
-					successor.Balance = item.Balance;
-
-					if (left != null) {
-						left.Parent = successor;
-					}
-
-					if (item == Root) {
-						Root = (T)successor;
-					} else {
-						if (parent.Left == item) {
-							parent.Left = successor;
-						} else {
-							parent.Right = successor;
-						}
-					}
-
-					DeleteBalanceTree (successor, 1);
-				} else {
-					while (successor.Left != null) {
-						successor = successor.Left;
-					}
-
-					IAvlNode parent = item.Parent;
-					IAvlNode successorParent = successor.Parent;
-					IAvlNode successorRight = successor.Right;
-
-					if (successorParent.Left == successor) {
-						successorParent.Left = successorRight;
-					} else {
-						successorParent.Right = successorRight;
-					}
-
-					if (successorRight != null) {
-						successorRight.Parent = successorParent;
-					}
-
-					successor.Parent = parent;
-					successor.Left = left;
-					successor.Balance = item.Balance;
-					successor.Right = right;
-					right.Parent = successor;
-
-					if (left != null) {
-						left.Parent = successor;
-					}
-
-					if (item == Root) {
-						Root = (T)successor;
-					} else {
-						if (parent.Left == item) {
-							parent.Left = successor;
-						} else {
-							parent.Right = successor;
-						}
-					}
-
-					DeleteBalanceTree (successorParent, -1);
+				if (node == Root) {
+					node.Left.Parent = null;
+					Root = (T)node.Left;
+					return true;
 				}
+				node.Left.Parent = node.Parent;
+				if (parent.Left == node) {
+					parent.Left = node.Left;
+					DeleteBalanceTree (parent, 1);
+				} else {
+					parent.Right = node.Left;
+					DeleteBalanceTree (parent, -1);
+				}
+			} else { // no (half-)leaf
+				IAvlNode successor;
+				if (node.Balance > -1)
+					successor = node.AvlGetNextNode ();
+				else
+					successor = node.AvlGetPrevNode ();
+				SwitchNodes (node, successor);
+				successor.UpdateAugmentedData ();
+				return Remove (node);
+			}
+			if (parent != null) {
+				parent.UpdateAugmentedData ();
 			}
 			Count--;
+			OnNodeRemoved (new TreeNodeEventArgs ((T)node));
 			return true;
 		}
 
@@ -284,6 +260,24 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
+		protected virtual void OnNodeRemoved (TreeNodeEventArgs e)
+		{
+			var handler = this.NodeRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<TreeNodeEventArgs> NodeRemoved;
+
+		public class TreeNodeEventArgs : EventArgs
+		{
+			public T Node { get; private set; }
+
+			public TreeNodeEventArgs (T node)
+			{
+				Node = node;
+			}
+		}
 		#endregion
 
 		#region IEnumerable implementation
@@ -306,19 +300,23 @@ namespace Mono.TextEditor.Utils
 
 		#endregion
 
-		void RotateRight (IAvlNode node)
+		public void RotateLeft (IAvlNode node)
 		{
-			IAvlNode rightChild = node.Right;
-			IAvlNode rightLeft = null;
-			IAvlNode parent = node.Parent;
+			var rightChild = node.Right;
 
-			if (rightChild != null) {
-				rightLeft = rightChild.Left;
-				rightChild.Parent = parent;
-				rightChild.Left = node;
-				rightChild.Balance++;
-				node.Balance = -rightChild.Balance;
+			var rightLeft = rightChild.Left;
+			var parent = node.Parent;
+
+			rightChild.Parent = parent;
+			rightChild.Left = node;
+
+			if (rightChild.Balance == 0) {
+				node.Balance = 1;
+			} else if (rightChild.Balance == 1) {
+				node.Balance = 0;
 			}
+
+			rightChild.Balance--;
 
 			node.Parent = rightChild;
 			node.Right = rightLeft;
@@ -326,6 +324,7 @@ namespace Mono.TextEditor.Utils
 			if (rightLeft != null)
 				rightLeft.Parent = node;
 			node.UpdateAugmentedData ();
+			rightChild.UpdateAugmentedData ();
 
 			if (node == Root) {
 				Root = (T)rightChild;
@@ -339,19 +338,23 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		void RotateLeft (IAvlNode node)
+		public void RotateRight (IAvlNode node)
 		{
-			IAvlNode leftChild = node.Left;
-			IAvlNode leftRight = null;
-			IAvlNode parent = node.Parent;
+			var leftChild = node.Left;
 
-			if (leftChild != null) {
-				leftRight = leftChild.Right;
-				leftChild.Parent = parent;
-				leftChild.Right = node;
-				leftChild.Balance--;
-				node.Balance = -leftChild.Balance;
+			var leftRight = leftChild.Right;
+			var parent = node.Parent;
+
+			leftChild.Parent = parent;
+			leftChild.Right = node;
+
+			if (leftChild.Balance == 0) {
+				node.Balance = -1;
+			} else if (leftChild.Balance == -1) {
+				node.Balance = 0;
 			}
+
+			leftChild.Balance++;
 
 			node.Parent = leftChild;
 			node.Left = leftRight;
@@ -359,6 +362,7 @@ namespace Mono.TextEditor.Utils
 			if (leftRight != null)
 				leftRight.Parent = node;
 			node.UpdateAugmentedData ();
+			leftChild.UpdateAugmentedData ();
 
 			if (node == Root) {
 				Root = (T)leftChild;
@@ -372,123 +376,161 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		void RotateRightLeft (IAvlNode node)
+		public void RotateRightLeft (IAvlNode node)
 		{
-			IAvlNode rightChild = node.Right;
-			IAvlNode rightLeft = null;
-			IAvlNode rightLeftRight = null;
+			var rightChild = node.Right;
+			var rightLeft = rightChild.Left;
+			var rightLeftRight = rightLeft.Right;
 
-			if (rightChild != null)
-				rightLeft = rightChild.Left;
-			if (rightLeft != null)
-				rightLeftRight = rightLeft.Right;
-
-			node.Right = rightLeft;
-
-			if (rightLeft != null) {
-				rightLeft.Parent = node;
-				rightLeft.Right = rightChild;
-				rightLeft.Balance--;
-			}
-
-			if (rightChild != null) {
-				rightChild.Parent = rightLeft;
-				rightChild.Left = rightLeftRight;
-				rightChild.Balance--;
-			}
-
+			rightChild.Left = rightLeftRight;
 			if (rightLeftRight != null)
 				rightLeftRight.Parent = rightChild;
+			rightLeft.Right = rightChild;
+			rightChild.Parent = rightLeft;
+			node.Right = rightLeft.Left;
+			if (rightLeft.Left != null)
+				rightLeft.Left.Parent = node;
+			rightLeft.Parent = node.Parent;
+			if (node == Root) {
+				Root = (T)rightLeft;
+			} else {
+				if (node.Parent.Right == node) {
+					node.Parent.Right = rightLeft;
+				} else {
+					node.Parent.Left = rightLeft;
+				}
+				node.Parent.UpdateAugmentedData ();
+			}
+			rightLeft.Left = node;
+			node.Parent = rightLeft;
+			switch (rightLeft.Balance) {
+			case 0:
+				rightChild.Balance = 0;
+				node.Balance = 0;
+				break;
+			case 1:
+				rightChild.Balance = 0;
+				node.Balance = -1;
+				break;
+			default: // -1
+				rightChild.Balance = 1;
+				node.Balance = 0;
+				break;
+			}
+			rightLeft.Balance = 0;
 
-			RotateRight (node);
+			rightChild.UpdateAugmentedData ();
+			node.UpdateAugmentedData ();
+			rightLeft.UpdateAugmentedData ();
 		}
 
-		void RotateLeftRight (IAvlNode node)
+		public void RotateLeftRight (IAvlNode node)
 		{
-			IAvlNode leftChild = node.Left;
-			IAvlNode leftRight = null;
-			IAvlNode leftRightLeft = null;
+			var leftChild = node.Left;
+			var leftRight = leftChild.Right;
+			var leftRightLeft = leftRight.Left;
 
-			if (leftChild != null)
-				leftRight = leftChild.Right;
-			if (leftRight != null)
-				leftRightLeft = leftRight.Left;
-
-			node.Left = leftRight;
-
-			if (leftRight != null) {
-				leftRight.Parent = node;
-				leftRight.Left = leftChild;
-				leftRight.Balance++;
-			}
-
-			if (leftChild != null) {
-				leftChild.Parent = leftRight;
-				leftChild.Right = leftRightLeft;
-				leftChild.Balance++;
-			}
-
+			leftChild.Right = leftRightLeft;
 			if (leftRightLeft != null)
 				leftRightLeft.Parent = leftChild;
+			leftRight.Left = leftChild;
+			leftChild.Parent = leftRight;
+			node.Left = leftRight.Right;
+			if (leftRight.Right != null)
+				leftRight.Right.Parent = node;
+			leftRight.Parent = node.Parent;
+			if (node == Root) {
+				Root = (T)leftRight;
+			} else {
+				if (node.Parent.Right == node) {
+					node.Parent.Right = leftRight;
+				} else {
+					node.Parent.Left = leftRight;
+				}
+				node.Parent.UpdateAugmentedData (); 
+			}
+			leftRight.Right = node;
+			node.Parent = leftRight;
+			switch (leftRight.Balance) {
+			case 1:
+				leftChild.Balance = -1;
+				node.Balance = 0;
+				break;
+			case 0:
+				leftChild.Balance = 0;
+				node.Balance = 0;
+				break;
+			default: // -1
+				leftChild.Balance = 0;
+				node.Balance = 1;
+				break;
+			}
+			leftRight.Balance = 0;
 
-			RotateLeft (node);
+			leftChild.UpdateAugmentedData ();
+			node.UpdateAugmentedData ();
+			leftRight.UpdateAugmentedData ();
 		}
 
-		void InsertBalanceTree (IAvlNode node, int balance)
+		void InsertBalanceTree (IAvlNode node, sbyte balance)
 		{
 			while (node != null) {
 				node.Balance += balance;
 				balance = node.Balance;
 
 				if (balance == 0)
-					break;
-				if (balance == 2) {
-					if (node.Left.Balance == 1) {
-						RotateLeft (node);
+					return;
+				if (balance == -2) {
+					if (node.Left.Balance < 1) {
+						RotateRight (node);
 					} else {
 						RotateLeftRight (node);
 					}
-					break;
+					return;
 				}
 
-				if (balance == -2) {
-					if (node.Right.Balance == -1) {
-						RotateRight (node);
+				if (balance == 2) {
+					if (node.Right.Balance > -1) {
+						RotateLeft (node);
 					} else {
 						RotateRightLeft (node);
 					}
-					break;
+					return;
 				}
 
 				var parent = node.Parent;
 				if (parent != null)
-					balance = parent.Left == node ? 1 : -1;
+					balance = parent.Left == node ? (sbyte)-1 : (sbyte)1;
 				node = parent;
 			}
 		}
 
-		void DeleteBalanceTree (IAvlNode node, int balance)
+		void DeleteBalanceTree (IAvlNode node, sbyte balance)
 		{
 			while (node != null) {
 				node.Balance += balance;
 				balance = node.Balance;
-				if (balance == 2) {
-					if (node.Left != null && node.Left.Balance >= 0) {
-						RotateLeft (node);
-
-						if (node.Balance == -1)
+				if (balance == -2) {
+					if (node.Left.Balance < 1) {
+						RotateRight (node);
+						if (node.Balance == 0) {
+							node = node.Parent;
+						} else if (node.Balance == -1)
 							return;
 					} else {
 						RotateLeftRight (node);
+						node = node.Parent;
 					}
-				} else if (balance == -2) {
-					if (node.Right != null && node.Right.Balance <= 0) {
-						RotateRight (node);
-
-						if (node.Balance == 1)
+				} else if (balance == 2) {
+					if (node.Right.Balance > -1) {
+						RotateLeft (node);
+						if (node.Balance == 0) {
+							node = node.Parent;
+						} else if (node.Balance == 1)
 							return;
 					} else {
 						RotateRightLeft (node);
+						node = node.Parent;
 					}
 				} else if (node.Balance != 0) {
 					return;
@@ -496,36 +538,162 @@ namespace Mono.TextEditor.Utils
 
 				var parent = node.Parent;
 				if (parent != null)
-					balance = parent.Left == node ? -1 : 1;
+					balance = parent.Left == node ? (sbyte)1 : (sbyte)-1;
 				node = parent;
 			}
 		}
 
-		void ReplaceNodes (IAvlNode oldNode, IAvlNode newNode)
+		public void SwitchNodes (IAvlNode oldNode, IAvlNode newNode)
 		{
+			if (oldNode == newNode)
+				return;
+
+			var oldBalance = oldNode.Balance;
+			var newLeft = newNode.Left;
+			var newRight = newNode.Right;
+			var oldParent = oldNode.Parent;
+
 			oldNode.Balance = newNode.Balance;
+			newNode.Balance = oldBalance;
 
-			if (oldNode.Left != null && oldNode.Left != newNode) {
-				newNode.Left = oldNode.Left;
-				newNode.Left.Parent = newNode;
-			}
-
-			if (oldNode.Right != null && oldNode.Right != newNode) {
-				newNode.Right = oldNode.Right;
-				newNode.Right.Parent = newNode;
-			}
-
-			if (oldNode.Parent != null) {
-				if (oldNode.Parent.Left == oldNode) {
-					oldNode.Parent.Left = newNode;
-				} else {
-					oldNode.Parent.Right = newNode;
+			// oldNode and newNode are Parent and Child
+			if (newNode.Parent == oldNode) {
+				if (oldNode.Parent != null) {
+					if (oldNode.Parent.Right == oldNode) {
+						oldNode.Parent.Right = newNode;
+					} else {
+						oldNode.Parent.Left = newNode;
+					}
+				} else if (oldNode == Root) {
+					Root = (T)newNode;
 				}
 				newNode.Parent = oldNode.Parent;
-			} else {
-				Root = (T)newNode;
-				newNode.Parent = null;
+				oldNode.Parent = newNode;
+
+				if (oldNode.Left == newNode) {
+					// update Children
+					newNode.Left = oldNode;
+					newNode.Right = oldNode.Right;
+					oldNode.Left = newLeft;
+					oldNode.Right = newRight;
+
+					// update Parents of Children
+					if (newNode.Right != null)
+						newNode.Right.Parent = newNode;
+					if (oldNode.Right != null)
+						oldNode.Right.Parent = oldNode;
+					if (oldNode.Left != null)
+						oldNode.Left.Parent = oldNode;
+				} else { //odlNode.Right == newNode
+					// update Children
+					newNode.Right = oldNode;
+					newNode.Left = oldNode.Left;
+					oldNode.Left = newLeft;
+					oldNode.Right = newRight;
+
+					// update Parents of Children
+					if (newNode.Left != null)
+						newNode.Left.Parent = newNode;
+					if (oldNode.Right != null)
+						oldNode.Right.Parent = oldNode;
+					if (oldNode.Left != null)
+						oldNode.Left.Parent = oldNode;
+				}
+				return;
 			}
+			if (oldNode.Parent == newNode) {
+				if (newNode.Parent != null) {
+					if (newNode.Parent.Right == newNode) {
+						newNode.Parent.Right = oldNode;
+					} else {
+						newNode.Parent.Left = oldNode;
+					}
+				} else if (newNode == Root) {
+					Root = (T)oldNode;
+				}
+				oldNode.Parent = newNode.Parent;
+				newNode.Parent = oldNode;
+
+				if (newNode.Left == oldNode) {
+					// update Children
+					newNode.Left = oldNode.Left;
+					newNode.Right = oldNode.Right;
+					oldNode.Left = newNode;
+					oldNode.Right = newRight;
+
+					// update Parents of Children
+					if (newNode.Right != null)
+						newNode.Right.Parent = newNode;
+					if (newNode.Left != null)
+						newNode.Left.Parent = newNode;
+					if (oldNode.Right != null)
+						oldNode.Right.Parent = oldNode;
+				} else {
+					// update Children
+					newNode.Left = oldNode.Left;
+					newNode.Right = oldNode.Right;
+					oldNode.Left = newLeft;
+					oldNode.Right = newNode;
+
+					// update Parents of Children
+					if (newNode.Right != null)
+						newNode.Right.Parent = newNode;
+					if (newNode.Left != null)
+						newNode.Left.Parent = newNode;
+					if (oldNode.Left != null)
+						oldNode.Left.Parent = oldNode;
+				}
+				return;
+			}
+
+			// no node is Parent of the other
+
+			// update Parents
+			if (oldNode.AvlGetSibling () == newNode) {
+				if (newNode.Parent.Right == newNode) {
+					newNode.Parent.Right = oldNode;
+					newNode.Parent.Left = newNode;
+				} else {
+					newNode.Parent.Left = oldNode;
+					newNode.Parent.Right = newNode;
+				}
+			} else {
+				oldNode.Parent = newNode.Parent;
+				if (newNode.Parent != null) {
+					if (newNode.Parent.Right == newNode) {
+						newNode.Parent.Right = oldNode;
+					} else {
+						newNode.Parent.Left = oldNode;
+					}
+				} else if (newNode == Root) {
+					Root = (T)oldNode;
+				}
+				newNode.Parent = oldParent;
+				if (oldParent != null) {
+					if (oldParent.Right == oldNode) {
+						oldParent.Right = newNode;
+					} else {
+						oldParent.Left = newNode;
+					}
+				} else if (oldNode == Root) {
+					Root = (T)newNode;
+				}
+			}
+			// assign Children of newNode
+			newNode.Left = oldNode.Left;
+			if (newNode.Left != null)
+				newNode.Left.Parent = newNode;
+			newNode.Right = oldNode.Right;
+			if (newNode.Right != null)
+				newNode.Right.Parent = newNode;
+
+			// assign Children of oldNode
+			oldNode.Left = newLeft;
+			if (oldNode.Left != null)
+				oldNode.Left.Parent = oldNode;
+			oldNode.Right = newRight;
+			if (oldNode.Right != null)
+				oldNode.Right.Parent = oldNode;
 		}
 	}
 
@@ -567,10 +735,11 @@ namespace Mono.TextEditor.Utils
 
 		public static T AvlGetUncle<T> (this T node) where T : class, IAvlNode
 		{
-			var grandparent = node.AvlGetGrandparent ();
-			if (grandparent == null)
-				return null;
-			return (T)(node.Parent == grandparent.Left ? grandparent.Right : grandparent.Left);
+			return (T)(node.Parent != null ? node.Parent.AvlGetSibling () : null);
+			//			var grandparent = node.AvlGetGrandparent ();
+			//			if (grandparent == null)
+			//				return null;
+			//			return (T)(node.Parent == grandparent.Left ? grandparent.Right : grandparent.Left);
 		}
 
 		public static T AvlGetNextNode<T> (this T node) where T : class, IAvlNode

@@ -32,7 +32,7 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public partial class CSharpIndentEngine : ICloneable {
+	partial class CSharpIndentEngine : ICloneable {
 		[Flags]
 		public enum Inside {
 			Empty              = 0,

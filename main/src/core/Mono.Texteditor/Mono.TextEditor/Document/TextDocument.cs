@@ -38,7 +38,7 @@ using System.Threading;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument : AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
+	public class TextDocument : ICSharpCode.NRefactory.AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		readonly IBuffer buffer;
 		readonly ILineSplitter splitter;
@@ -1376,8 +1376,10 @@ namespace Mono.TextEditor
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
-			CommitLineUpdate (GetLineByOffset (marker.Offset));
 			textSegmentMarkerTree.Add (marker);
+			var startLine = OffsetToLineNumber (marker.Offset);
+			var endLine = OffsetToLineNumber (marker.EndOffset);
+			CommitMultipleLineUpdate (startLine, endLine);
 		}
 
 		/// <summary>
@@ -1388,8 +1390,11 @@ namespace Mono.TextEditor
 		public bool RemoveMarker (TextSegmentMarker marker)
 		{
 			bool wasRemoved = textSegmentMarkerTree.Remove (marker);
-			if (wasRemoved)
-				CommitLineUpdate (GetLineByOffset (marker.Offset));
+			if (wasRemoved) {
+				var startLine = OffsetToLineNumber (marker.Offset);
+				var endLine = OffsetToLineNumber (marker.EndOffset);
+				CommitMultipleLineUpdate (startLine, endLine);
+			}
 			return wasRemoved;
 		}
 

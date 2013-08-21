@@ -203,9 +203,6 @@ namespace MonoDevelop.Components.Docking
 			System.Diagnostics.Debug.Assert (
 				widget.Parent == null,
 				"Widget is already parented on another widget");
-			System.Diagnostics.Debug.Assert (
-				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
-				"Can only add widgets to the container that are in the parent DockFrame's DockItem collection");
 
 			widget.Parent = this;
 		}
@@ -213,11 +210,8 @@ namespace MonoDevelop.Components.Docking
 		protected override void OnRemoved (Widget widget)
 		{
 			System.Diagnostics.Debug.Assert (
-				widget.Parent != this,
+				widget.Parent == this,
 				"Widget is not parented on this widget");
-			System.Diagnostics.Debug.Assert (
-				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
-				"Can only remove widgets from the container that are in the parent DockFrame's DockItem collection");
 
 			widget.Unparent ();
 		}

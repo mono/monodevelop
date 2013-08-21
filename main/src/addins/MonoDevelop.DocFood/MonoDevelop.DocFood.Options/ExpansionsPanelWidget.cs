@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 namespace MonoDevelop.DocFood.Options
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ExpansionsPanelWidget : Gtk.Bin
+	partial class ExpansionsPanelWidget : Gtk.Bin
 	{
 //		DocConfig config;
 		
@@ -44,7 +44,7 @@ namespace MonoDevelop.DocFood.Options
 	/// <summary>
 	/// Expansions panel.
 	/// </summary>
-	public class ExpansionsPanel : OptionsPanel
+	class ExpansionsPanel : OptionsPanel
 	{
 		ExpansionsPanelWidget panel;
 

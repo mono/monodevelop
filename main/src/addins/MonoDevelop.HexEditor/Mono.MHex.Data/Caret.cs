@@ -28,7 +28,7 @@ using System;
 
 namespace Mono.MHex.Data
 {
-	public class Caret
+	class Caret
 	{
 		HexEditorData data;
 		
@@ -38,7 +38,7 @@ namespace Mono.MHex.Data
 				return offset; 
 			}
 			set { 
-				value = System.Math.Min (data.Length + 1, System.Math.Max (0, value));
+				value = System.Math.Min (data.Length, System.Math.Max (0, value));
 				if (offset != value) {
 					long old = offset;
 					offset = value; 
@@ -133,7 +133,7 @@ namespace Mono.MHex.Data
 	}
 	
 	[Serializable]
-	public sealed class CaretLocationEventArgs : EventArgs
+	sealed class CaretLocationEventArgs : EventArgs
 	{
 		public long OldOffset {
 			get;

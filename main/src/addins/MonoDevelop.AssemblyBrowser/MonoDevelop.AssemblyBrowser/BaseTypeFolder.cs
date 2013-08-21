@@ -32,7 +32,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class BaseTypeFolder : IDisposable
+	class BaseTypeFolder : IDisposable
 	{
 		public IUnresolvedTypeDefinition Type {
 			get;

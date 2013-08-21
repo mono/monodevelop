@@ -754,8 +754,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					return null;
 				
 				var buf = doc.GetContent<IEditableTextBuffer> ();
-				if (buf != null)
-					buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+				if (buf != null) {
+					doc.DisableAutoScroll ();
+					buf.RunWhenLoaded (() => {
+						buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+					});
+				}
 				
 				return doc;
 			}

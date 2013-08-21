@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public partial class NewFormattingProfileDialog  : Gtk.Dialog
+	partial class NewFormattingProfileDialog  : Gtk.Dialog
 	{
 		public string NewProfileName {
 			get;

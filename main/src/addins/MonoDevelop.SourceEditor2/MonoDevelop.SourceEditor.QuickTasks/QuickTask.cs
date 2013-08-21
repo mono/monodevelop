@@ -40,9 +40,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	
 	public class QuickTask
 	{
+		Lazy<string> description;
 		public string Description {
-			get;
-			private set;
+			get {
+				return description.Value;
+			}
 		}
 		
 		public TextLocation Location {
@@ -55,13 +57,20 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			private set;
 		}
 		
-		public QuickTask (string description, TextLocation location, Severity severity)
+		public QuickTask (Func<string> descriptionFunc, TextLocation location, Severity severity)
 		{
-			this.Description = description;
+			this.description = new Lazy<string> (descriptionFunc);
 			this.Location = location;
 			this.Severity = severity;
 		}
-		
+
+		public QuickTask (string description, TextLocation location, Severity severity)
+		{
+			this.description = new Lazy<string> (() => description);
+			this.Location = location;
+			this.Severity = severity;
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[QuickTask: Description={0}, Location={1}, Severity={2}]", Description, Location, Severity);

@@ -479,7 +479,7 @@ namespace MonoDevelop.Core.Assemblies
 		/// Set to true if this package is provided by an add-in and is not installed in the system.
 		/// </param>
 		/// <param name="assemblyFiles">
-		/// A <see cref="System.String[]"/>
+		/// The assemblies of the package.
 		/// </param>
 		/// <returns>
 		/// A <see cref="SystemPackage"/>

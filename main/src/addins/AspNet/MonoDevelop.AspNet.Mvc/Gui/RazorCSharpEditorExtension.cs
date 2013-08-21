@@ -42,6 +42,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui;
 using System.Web.Razor.Generator;
 using System.Text.RegularExpressions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		IRazorCompletionBuilder completionBuilder;
 
 		bool isInCSharpContext;
-		Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
 		ICompletionWidget defaultCompletionWidget;
 		Document defaultDocument;
@@ -72,6 +73,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return new RazorFreeState ();
 		}
 
+		public override string CompletionLanguage {
+			get {
+				return "Razor";
+			}
+		}
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -129,26 +135,29 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected override void OnParsedDocumentUpdated ()
 		{
 			base.OnParsedDocumentUpdated ();
+			try {
+				razorDocument = CU as RazorCSharpParsedDocument;
+				if (razorDocument == null || razorDocument.PageInfo.CSharpParsedFile == null)
+					return;
 
-			razorDocument = CU as RazorCSharpParsedDocument;
-			if (razorDocument == null || razorDocument.PageInfo.CSharpParsedFile == null)
-				return;
+				CreateDocType ();
 
-			CreateDocType ();
+				// Don't update C# code in hiddenInfo when:
+				// 1) We are in a RazorState, and the completion window is visible,
+				// it'll freeze (or disappear if we call OnCompletionContextChanged).
+				// 2) We're in the middle of writing a Razor expression - if we're in an incorrect state,
+				// the generated code migh be behind what we've been already written.
 
-			// Don't update C# code in hiddenInfo when:
-			// 1) We are in a RazorState, and the completion window is visible,
-			// it'll freeze (or disappear if we call OnCompletionContextChanged).
-			// 2) We're in the middle of writing a Razor expression - if we're in an incorrect state,
-			// the generated code migh be behind what we've been already written.
-
-			var state = Tracker.Engine.CurrentState;
-			if (state is RazorState && CompletionWindowManager.IsVisible || (!updateNeeded && (state is RazorSpeculativeState
-				|| state is RazorExpressionState)))
-				UpdateHiddenDocument (false);
-			else {
-				UpdateHiddenDocument ();
-				updateNeeded = false;
+				var state = Tracker.Engine.CurrentState;
+				if (state is RazorState && CompletionWindowManager.IsVisible || 
+				    (!updateNeeded && (state is RazorSpeculativeState || state is RazorExpressionState)))
+					UpdateHiddenDocument (false);
+				else {
+					UpdateHiddenDocument ();
+					updateNeeded = false;
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while updating razor completion.", e); 
 			}
 		}
 
@@ -156,8 +165,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			DocType = new MonoDevelop.Xml.StateEngine.XDocType (TextLocation.Empty);
 			var matches = DocTypeRegex.Match (razorDocument.PageInfo.DocType);
-			DocType.PublicFpi = matches.Groups["fpi"].Value;
-			DocType.Uri = matches.Groups["uri"].Value;
+			if (matches.Success) {
+				DocType.PublicFpi = matches.Groups ["fpi"].Value;
+				DocType.Uri = matches.Groups ["uri"].Value;
+			}
 		}
 
 		void EnsureUnderlyingDocumentSet ()
@@ -241,7 +252,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			bool result;
 			try {
 				result = base.KeyPress (key, keyChar, modifier);
-				if (EnableParameterInsight && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+				if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
 				    base.RunParameterCompletionCommand ();
 			} finally {
 				SwitchToReal ();
@@ -390,8 +401,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 			char completionChar, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 
 			char previousChar = defaultDocument.Editor.Caret.Offset > 1 ? defaultDocument.Editor.GetCharAt (
 				defaultDocument.Editor.Caret.Offset - 2) : ' ';
@@ -468,8 +479,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 			bool forced, ref int triggerWordLength)
 		{
-			if (!EnableCodeCompletion)
-				return null;
+//			if (!EnableCodeCompletion)
+//				return null;
 
 			var currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Buffer.GetCharAt (completionContext.TriggerOffset - 1);

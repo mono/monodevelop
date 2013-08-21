@@ -341,7 +341,6 @@ namespace Mono.ServiceContractTool
 					| MemberAttributes.Final;
 
 			var inArgs = new List<CodeParameterDeclarationExpression > ();
-			var outArgs = new List<CodeParameterDeclarationExpression > ();
 
 			foreach (CodeParameterDeclarationExpression p in context.SyncMethod.Parameters) {
 				inArgs.Add (p);

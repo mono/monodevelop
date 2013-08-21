@@ -304,6 +304,7 @@
 		<ProjectType guid = "{349C5851-65DF-11DA-9384-00065B846F21}" name = "ASP.NET Web Application" addin = "ASP.NET" />
 		<ProjectType guid = "{9B831FEF-F496-498F-9FE8-180DA5CB4258}" name = "MonoGame" addin = "MonoGame" />
 		<ProjectType guid = "{4925A630-B079-445d-BCD4-3A9C94FE9307}" name = "F#" addin = "F#" />
+		<ProjectType guid = "{F2A71F9B-5D33-465A-A702-920D77279786}" name = "F#" addin = "F#" />
 		<ProjectType guid = "{C089C8C0-30E0-4E22-80C0-CE093F111A43}" name = "Windows Phone" />
 		<ProjectType guid = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}" name = "ASP.NET Web Site" />
 		<ProjectType guid = "{F135691A-BF7E-435D-8960-F99683D2D49C}" name = "MS Distributed System" />

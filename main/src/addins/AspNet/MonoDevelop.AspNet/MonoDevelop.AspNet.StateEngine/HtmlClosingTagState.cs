@@ -41,18 +41,17 @@ namespace MonoDevelop.AspNet.StateEngine
 		bool warnAutoClose;
 		
 		public HtmlClosingTagState (bool warnAutoClose)
-			: this (warnAutoClose, new XmlNameState ()) {}
+			: this (warnAutoClose, new XmlNameState ())
+		{
+		}
 		
 		public HtmlClosingTagState (bool warnAutoClose, XmlNameState nameState)
-			: this (warnAutoClose, nameState, new XmlMalformedTagState ()) {}
-		
-		public HtmlClosingTagState (bool warnAutoClose, XmlNameState nameState, XmlMalformedTagState malformedTagState)
-			: base (nameState, new XmlMalformedTagState ())
+			: base (nameState)
 		{
 			this.warnAutoClose = warnAutoClose;
 		}
 
-		public override State PushChar (char c, MonoDevelop.Xml.StateEngine.IParseContext context, ref string rollback)
+		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			//NOTE: This is (mostly) duplicated in HtmlTagState
 			//handle inline tags implicitly closed by block-level elements

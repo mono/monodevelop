@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.IO;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl

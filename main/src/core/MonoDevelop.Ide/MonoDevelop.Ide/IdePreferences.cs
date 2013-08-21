@@ -230,11 +230,6 @@ namespace MonoDevelop.Ide
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 		}
-
-		public bool BuildWithMSBuild {
-			get { return PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false); }
-			set { PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", value); }
-		}
 		
 		public MSBuildVerbosity MSBuildVerbosity {
 			get { return PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal); }
@@ -318,6 +313,8 @@ namespace MonoDevelop.Ide
 			add { PropertyService.AddPropertyHandler ("ColorScheme", value); }
 			remove { PropertyService.RemovePropertyHandler ("ColorScheme", value); }
 		}
+
+		public readonly PropertyWrapper<bool> BuildBeforeRunningTests = new PropertyWrapper<bool> ("BuildBeforeRunningTests", true);
 	}
 	
 	public enum BeforeCompileAction {

@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public enum GotoLabelIndentStyle {
+	enum GotoLabelIndentStyle {
 		// Place goto labels in the leftmost column
 		LeftJustify,
 		

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CBinding</AssemblyName>
     <RootNamespace>CBinding</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -22,9 +23,12 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <DefineConstants>DEBUG</DefineConstants>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -33,6 +37,9 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

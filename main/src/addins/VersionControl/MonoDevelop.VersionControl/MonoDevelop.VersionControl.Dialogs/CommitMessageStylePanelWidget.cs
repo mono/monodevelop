@@ -26,7 +26,6 @@
 //
 
 using System;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -121,14 +120,14 @@ namespace MonoDevelop.VersionControl
 			OnChanged ();
 		}
 		
-		string FromCString (string txt)
+		static string FromCString (string txt)
 		{
-			return txt.Replace ("\\t","\t").Replace ("\\n","\n");
+			return txt.Replace ("\\t", "\t").Replace ("\\n", "\n");
 		}
 		
-		string ToCString (string txt)
+		static string ToCString (string txt)
 		{
-			return txt.Replace ("\t","\\t").Replace ("\n","\\n");
+			return txt.Replace ("\t", "\\t").Replace ("\n", "\\n");
 		}
 		
 		void UpdateBullets ()

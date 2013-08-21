@@ -249,7 +249,6 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				}
 				else {
-					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (!IsVersioned (path.ParentDirectory)) {
 						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
@@ -450,6 +449,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteFiles (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 		}
@@ -482,6 +482,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected override void OnDeleteDirectories (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
 		}

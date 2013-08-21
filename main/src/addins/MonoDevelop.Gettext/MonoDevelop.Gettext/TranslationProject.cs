@@ -41,7 +41,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Gettext
 {	
-	public class TranslationProject : SolutionEntityItem, IDeployable
+	class TranslationProject : SolutionEntityItem, IDeployable
 	{
 		[ItemProperty("packageName")]
 		string packageName = null;
@@ -432,12 +432,12 @@ namespace MonoDevelop.Gettext
 		public event EventHandler TranslationRemoved;
 	}
 	
-	public enum TranslationOutputType {
+	enum TranslationOutputType {
 		RelativeToOutput,
 		SystemPath
 	}
 	
-	public class TranslationProjectConfiguration : SolutionItemConfiguration
+	class TranslationProjectConfiguration : SolutionItemConfiguration
 	{
 		public TranslationProjectConfiguration ()
 		{
@@ -448,7 +448,7 @@ namespace MonoDevelop.Gettext
 		}
 	}
 	
-	public class TranslationProjectInformation
+	class TranslationProjectInformation
 	{
 		[ItemProperty]
 		string projectName;

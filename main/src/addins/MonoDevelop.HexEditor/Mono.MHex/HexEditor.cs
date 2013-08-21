@@ -32,17 +32,17 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Timers;
 
-using Gdk;
-using Gtk;
+using Xwt;
 
 using Mono.MHex.Data;
 using Mono.MHex.Rendering;
+using Xwt.Drawing;
 
 namespace Mono.MHex
 {
 	[System.ComponentModel.Category ("Mono.HexEditor")]
 	[System.ComponentModel.ToolboxItem (true)]
-	public class HexEditor : Gtk.DrawingArea
+	class HexEditor : Canvas
 	{
 		public HexEditorData HexEditorData {
 			get;
@@ -57,7 +57,6 @@ namespace Mono.MHex
 		IconMargin iconMargin;
 		internal HexEditorMargin hexEditorMargin;
 		GutterMargin gutterMargin;
-		DashedLineMargin dashedLineMargin;
 		internal TextEditorMargin textEditorMargin;
 		
 		List<Margin> margins = new List<Margin> ();
@@ -67,7 +66,7 @@ namespace Mono.MHex
 		
 		public int LineHeight {
 			get {
-				return HexEditorData.LineHeight;
+				return (int)HexEditorData.LineHeight;
 			}
 			set {
 				HexEditorData.LineHeight = value;
@@ -93,15 +92,16 @@ namespace Mono.MHex
 				Repaint ();
 			}
 		}
-		
-		public Pango.FontDescription Font {
+
+		protected override bool SupportsCustomScrolling {
 			get {
-				return Pango.FontDescription.FromString ("Mono 10");
+				return true;
 			}
 		}
-		
+
 		public HexEditor ()
 		{
+			CanGetFocus = true;
 			HexEditorData = new HexEditorData ();
 			HexEditorData.EditMode = new SimpleEditMode ();
 			HexEditorData.Caret.Changed += delegate {
@@ -143,10 +143,7 @@ namespace Mono.MHex
 			
 			gutterMargin = new GutterMargin (this);
 			margins.Add (gutterMargin);
-			
-			dashedLineMargin = new DashedLineMargin (this);
-			margins.Add (dashedLineMargin);
-			
+
 			hexEditorMargin = new HexEditorMargin (this);
 			margins.Add (hexEditorMargin);
 			
@@ -154,12 +151,7 @@ namespace Mono.MHex
 			margins.Add (textEditorMargin);
 			
 			margins.Add (new EmptySpaceMargin (this));
-			
-			this.Events = EventMask.AllEventsMask;
-			this.DoubleBuffered = false;
-			this.AppPaintable = true;
-			base.CanFocus = true;
-			
+
 			HexEditorData.UpdateRequested += delegate {
 				HexEditorData.Updates.ForEach (update => update.AddRedraw (this));
 				HexEditorData.Updates.Clear ();
@@ -233,20 +225,17 @@ namespace Mono.MHex
 
 		void OptionsChanged (object sender, EventArgs e)
 		{
-			if (!IsRealized)
-				return;
-			dashedLineMargin.IsVisible = gutterMargin.IsVisible = Options.ShowLineNumberMargin;
+			gutterMargin.IsVisible = Options.ShowLineNumberMargin;
 			iconMargin.IsVisible = iconMargin.IsVisible;
 			
 			
 			Margins.ForEach (margin => { 
-				margin.PurgeGCs (); 
 				margin.PurgeLayoutCache (); 
 				margin.OptionsChanged (); 
 			});
 			
 			this.CalculateBytesInRow ();
-			SetAdjustments (Allocation);
+			SetAdjustments (Bounds);
 			OnBytesInRowChanged (EventArgs.Empty);
 		}
 		
@@ -258,38 +247,6 @@ namespace Mono.MHex
 		}
 		
 		public event EventHandler BytesInRowChanged;
-		
-		#region Background buffer
-		Gdk.Pixmap buffer = null, flipBuffer = null;
-		
-		void DoFlipBuffer ()
-		{
-			Gdk.Pixmap tmp = buffer;
-			buffer = flipBuffer;
-			flipBuffer = tmp;
-		}
-		
-		void DisposeBgBuffer ()
-		{
-			if (buffer != null) {
-				buffer.Dispose ();
-				buffer = null;
-			}
-			if (flipBuffer !=  null) {
-				flipBuffer.Dispose ();
-				flipBuffer = null;
-			}
-		}
-		
-		void AllocateWindowBuffer (Rectangle allocation)
-		{
-			DisposeBgBuffer ();
-			if (this.IsRealized) {
-				buffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-				flipBuffer = new Gdk.Pixmap (this.GdkWindow, allocation.Width, allocation.Height);
-			}
-		}
-		#endregion
 		
 		#region Scrolling
 		int oldHAdjustment = -1;
@@ -304,69 +261,53 @@ namespace Mono.MHex
 			if (oldHAdjustment == curHAdjustment)
 				return;
 			
-//			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+//			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Bounds.Width - this.textViewMargin.XOffset, this.Bounds.Height);
 			oldHAdjustment = curHAdjustment;
 		}
 		
-		double oldVadjustment = -1;
+//		double oldVadjustment = -1;
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (buffer == null)
-				AllocateWindowBuffer (this.Allocation);
-			
 			if (HexEditorData.VAdjustment.Value != System.Math.Ceiling (HexEditorData.VAdjustment.Value)) {
 				HexEditorData.VAdjustment.Value = System.Math.Ceiling (HexEditorData.VAdjustment.Value);
 				return;
 			}
 			long firstVisibleLine = (long)(HexEditorData.VAdjustment.Value / LineHeight);
-			long lastVisibleLine  = (long)((HexEditorData.VAdjustment.Value + Allocation.Height) / LineHeight);
+			long lastVisibleLine  = (long)((HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight);
 			margins.ForEach (margin => margin.SetVisibleWindow (firstVisibleLine, lastVisibleLine));
 			
-			int delta = (int)(HexEditorData.VAdjustment.Value - this.oldVadjustment);
-			oldVadjustment = HexEditorData.VAdjustment.Value;
+//			int delta = (int)(HexEditorData.VAdjustment.Value - this.oldVadjustment);
+//			oldVadjustment = HexEditorData.VAdjustment.Value;
 			
 			// update pending redraws
-			if (redrawList.Count > 0)
-				redrawList = new List<RedrawRequest> (redrawList.Select (request => { 
-					Gdk.Rectangle area = request.Area; 
-					area.Y -= delta; 
-					request.Area = area;
-					return request;
-				}));
-			
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2) {
-				this.Repaint ();
-				return;
-			}
-			
-			int from, to;
-			if (delta > 0) {
-				from = delta;
-				to   = 0;
-			} else {
-				from = 0;
-				to   = -delta;
-			}
-			
-			DoFlipBuffer ();
-			this.buffer.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                          this.flipBuffer,
-			                          0, from, 
-			                          0, to, 
-			                          Allocation.Width, Allocation.Height - from - to);
-			
-			if (delta > 0) {
-				delta += LineHeight;
-				RenderMargins (buffer, new Gdk.Rectangle (0, Allocation.Height - delta, Allocation.Width, delta), null);
-			} else {
-				delta -= LineHeight;
-				RenderMargins (buffer, new Gdk.Rectangle (0, 0, Allocation.Width, -delta), null);
-			}
-			ResetCaretBlink ();
+
+//			if (System.Math.Abs (delta) >= Bounds.Height - this.LineHeight * 2) {
+//				this.Repaint ();
+//				return;
+//			}
+//			
+//			int from, to;
+//			if (delta > 0) {
+//				from = delta;
+//				to   = 0;
+//			} else {
+//				from = 0;
+//				to   = -delta;
+//			} 
+//
+//		
+//			if (delta > 0) {
+//				delta += LineHeight;
+//				QueueDraw (new Rectangle (0, Bounds.Height - delta, Bounds.Width, delta));
+//			} else {
+//				delta -= LineHeight;
+//				QueueDraw (new Rectangle (0, 0, Bounds.Width, -delta));
+//			}
 			QueueDraw ();
+			ResetCaretBlink ();
 		}
-		
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+
+		protected override void SetScrollAdjustments (ScrollAdjustment hAdjustement, ScrollAdjustment vAdjustement)
 		{
 			if (HexEditorData.HAdjustment != null)
 				HexEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
@@ -385,13 +326,13 @@ namespace Mono.MHex
 
 /*		void UpdateAdjustments ()
 		{
-			SetAdjustments (this.Allocation);
+			SetAdjustments (this.Bounds);
 		}
 		*/
 		
 		internal void SetAdjustments ()
 		{
-			SetAdjustments (Allocation);
+			SetAdjustments (Bounds);
 		}
 		
 		void SetHAdjustment ()
@@ -401,7 +342,7 @@ namespace Mono.MHex
 /*			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (longestLine != null && this.textEditorData.HAdjustment != null) {
 				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;
-				int width = Allocation.Width - this.TextViewMargin.XOffset;
+				int width = Bounds.Width - this.TextViewMargin.XOffset;
 				
 				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
 				if (maxX < width)
@@ -411,70 +352,57 @@ namespace Mono.MHex
 		}
 		
 		
-		internal void SetAdjustments (Gdk.Rectangle allocation)
+		internal void SetAdjustments (Rectangle allocation)
 		{
 			if (HexEditorData.VAdjustment == null)
 				return;
 			long maxY = (HexEditorData.Length / BytesInRow + 1) * LineHeight;
-			HexEditorData.VAdjustment.SetBounds (0, maxY, LineHeight, allocation.Height, allocation.Height);
+			var vAdj = HexEditorData.VAdjustment;
+			vAdj.LowerValue = 0;
+			vAdj.UpperValue = maxY;
+			vAdj.StepIncrement = LineHeight;
+			vAdj.PageIncrement = allocation.Height;
+			vAdj.PageSize = allocation.Height;
+
 			if (maxY < allocation.Height)
-				HexEditorData.VAdjustment.Value = 0;
-			if (HexEditorData.VAdjustment.Value > maxY - allocation.Height) {
-				HexEditorData.VAdjustment.Value = maxY - allocation.Height;
+				vAdj.Value = 0;
+			if (vAdj.Value > maxY - allocation.Height) {
+				vAdj.Value = maxY - allocation.Height;
 			}
 			SetHAdjustment ();
 		}
 		#endregion
 		
 		#region Drawing
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose e)
+
+		protected override void OnDraw (Context ctx, Rectangle area)
 		{
-			RenderPendingUpdates (e.Window);
-			e.Window.DrawDrawable (Style.BackgroundGC (StateType.Normal), 
-			                       buffer,
-			                       e.Area.X, e.Area.Y, e.Area.X, e.Area.Y,
-			                       e.Area.Width, e.Area.Height + 1);
-			if (requestResetCaretBlink) {
-				ResetCaretBlink ();
-				requestResetCaretBlink = false;
-			}
-			DrawCaret (e.Window, e.Area);
-			return true;
-		}
-		
-		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area, Margin marginToRender)
-		{
-			int reminder  = (int)HexEditorData.VAdjustment.Value % LineHeight;
+			int reminder  = (int)HexEditorData.VAdjustment.Value % (int)LineHeight;
 			long firstLine = (long)(HexEditorData.VAdjustment.Value / (long)LineHeight);
-			long startLine = (area.Top + reminder) / this.LineHeight;
-			long endLine   = (area.Bottom + reminder) / this.LineHeight - 1;
-			if ((area.Bottom + reminder) % this.LineHeight != 0)
+			long startLine = (long)(area.Top + reminder) / (int)this.LineHeight;
+			long endLine   = (long)(area.Bottom + reminder) / (int)this.LineHeight - 1;
+			if ((area.Bottom + reminder) % (int)this.LineHeight != 0)
 				endLine++;
 			// Initialize the rendering of the margins. Determine wether each margin has to be
 			// rendered or not and calculate the X offset.
 			List<Margin> marginsToRender = new List<Margin> ();
-			if (marginToRender != null) {
-				marginsToRender.Add (marginToRender);
-			} else {
-				int curX = 0;
-				foreach (Margin margin in this.margins) {
-					if (margin.IsVisible) {
-						margin.XOffset = curX;
-						if (curX >= area.X || margin.Width < 0)
-							marginsToRender.Add (margin);
-						curX += margin.Width;
-					}
+			double curX = 0;
+			foreach (Margin margin in this.margins) {
+				if (margin.IsVisible) {
+					margin.XOffset = curX;
+					if (curX >= area.X || margin.Width < 0)
+						marginsToRender.Add (margin);
+					curX += margin.Width;
 				}
 			}
-			
+
 			int curY = (int)(startLine * this.LineHeight - reminder);
-			
+
 			for (long visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				long logicalLineNumber = visualLineNumber + firstLine;
 				foreach (Margin margin in marginsToRender) {
 					try {
-						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY);
+						margin.Draw (ctx, area, logicalLineNumber, margin.XOffset, curY);
 					} catch (Exception e) {
 						System.Console.WriteLine (e);
 					}
@@ -483,96 +411,48 @@ namespace Mono.MHex
 				if (curY > area.Bottom)
 					break;
 			}
-		}
-		
-		List<RedrawRequest> redrawList = new List<RedrawRequest> ();
-		void RenderPendingUpdates (Gdk.Window window)
-		{
-			foreach (RedrawRequest request in redrawList) {
-				Rectangle updateRect = request.Area;
-				RenderMargins (this.buffer, updateRect, request.Margin);
-				window.DrawDrawable (Style.BackgroundGC (StateType.Normal), buffer, updateRect.X, updateRect.Y, updateRect.X, updateRect.Y, updateRect.Width, updateRect.Height);
+			if (requestResetCaretBlink) {
+				ResetCaretBlink ();
+				requestResetCaretBlink = false;
 			}
-			redrawList.Clear ();
+			DrawCaret (ctx, area);
 		}
-		
+
 		public void RepaintLine (long line)
 		{
 			long firstVisibleLine = (long)(HexEditorData.VAdjustment.Value / LineHeight);
-			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Allocation.Height) / LineHeight;
+			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight;
 			margins.ForEach (margin => margin.PurgeLayoutCache (line));
 			if (firstVisibleLine <= line && line <= lastVisibleLine)
-				RepaintArea (0, (int)(line * LineHeight - HexEditorData.VAdjustment.Value), Allocation.Width, LineHeight);
+				QueueDraw (new Rectangle (0, (int)(line * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, LineHeight));
 		}
 		
 		public void RepaintLines (long start, long end)
 		{
 			long firstVisibleLine = (long)(HexEditorData.VAdjustment.Value / LineHeight);
-			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Allocation.Height) / LineHeight;
+			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight;
 			
 			start = System.Math.Max (start, firstVisibleLine);
 			end = System.Math.Min (end, lastVisibleLine);
 			
 			for (long line = start; line <= end; line++)
 				margins.ForEach (margin => margin.PurgeLayoutCache (line));
-			RepaintArea (0, (int)(start * LineHeight - HexEditorData.VAdjustment.Value), Allocation.Width, (int)((end - start) * LineHeight));
+			RepaintArea (0, (int)(start * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, (int)((end - start) * LineHeight));
 		}
 		
-		public void RepaintArea (int x, int y, int width, int height)
+		public void RepaintArea (double x, double y, double width, double height)
 		{
 			RepaintMarginArea (null, x, y, width, height);
 		}
 		
-		public void RepaintMarginArea (Margin margin, int x, int y, int width, int height)
+		public void RepaintMarginArea (Margin margin, double x, double y, double width, double height)
 		{
-			if (this.buffer == null)
-				return;
-			y = System.Math.Max (0, y);
-			height = System.Math.Min (height, Allocation.Height - y);
-
-			x = System.Math.Max (0, x);
-			width = System.Math.Min (width, Allocation.Width - x);
-			if (height < 0 || width < 0)
-				return;
-			
-			lock (redrawList) {
-				redrawList.Add (new RedrawRequest (margin, new Gdk.Rectangle (x, y, width, height)));
-			}
-			QueueDrawArea (x, y, width, height);
+			QueueDraw (new Rectangle (x, y, width, height));
 		}
 		
-		class RedrawRequest 
-		{
-			public Margin Margin {
-				get;
-				set;
-			}
-			
-			public Gdk.Rectangle Area {
-				get;
-				set;
-			}
-			
-			public RedrawRequest (Gdk.Rectangle area)
-			{
-				this.Area = area;
-			}
-			
-			public RedrawRequest (Margin margin, Gdk.Rectangle area)
-			{
-				this.Margin = margin;
-				this.Area = area;
-			}
-		}
-		
+	
 		public void Repaint ()
 		{
-			if (buffer == null)
-				return;
-			lock (redrawList) {
-				redrawList.Clear ();
-				redrawList.Add (new RedrawRequest (new Gdk.Rectangle (0, 0, this.Allocation.Width, this.Allocation.Height)));
-			}
 			QueueDraw ();
 		}		
 		
@@ -586,7 +466,7 @@ namespace Mono.MHex
 					StopCaretThread ();
 				
 				if (caretTimer == null) {
-					caretTimer = new Timer (Gtk.Settings.Default.CursorBlinkTime / 2);
+					caretTimer = new Timer (800);
 					caretTimer.Elapsed += UpdateCaret;
 				}
 				caretBlink = true; 
@@ -626,31 +506,38 @@ namespace Mono.MHex
 			requestResetCaretBlink = true;
 		}
 		
-		Gdk.GC caretGc;
-		public void DrawCaret (Gdk.Drawable win, Gdk.Rectangle area)
+		public void DrawCaret (Context ctx, Rectangle area)
 		{
-			if (Settings.Default.CursorBlink && !caretBlink || HexEditorData.IsSomethingSelected) 
+			if (!caretBlink || HexEditorData.IsSomethingSelected) 
 				return;
-			if (caretGc == null) {
-				caretGc = new Gdk.GC (win);
-				caretGc.RgbFgColor = new Color (255, 255, 255);
-				caretGc.Function = Gdk.Function.Xor;
-			}
 			long caretY = HexEditorData.Caret.Line * LineHeight - (long)HexEditorData.VAdjustment.Value;
-			int caretX;
+			double caretX;
+			char ch;
 			if (HexEditorData.Caret.InTextEditor) {
-				caretX = textEditorMargin.CalculateCaretXPos ();
+				caretX = textEditorMargin.CalculateCaretXPos (out ch);
 			} else {
-				caretX = hexEditorMargin.CalculateCaretXPos ();
+				caretX = hexEditorMargin.CalculateCaretXPos (out ch);
 			}
-			
+
 			if (!area.Contains (caretX, (int)caretY))
 				return;
 			
 			if (HexEditorData.Caret.IsInsertMode) {
-				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, (int)caretY, 2, LineHeight));
+				ctx.Rectangle (caretX, (int)caretY, 2, LineHeight);
 			} else {
-				win.DrawRectangle (caretGc, true, new Gdk.Rectangle (caretX, (int)caretY, textEditorMargin.charWidth, LineHeight));
+				ctx.Rectangle (caretX, (int)caretY, textEditorMargin.charWidth, LineHeight);
+			}
+
+			ctx.SetColor (HexEditorStyle.HexDigit); 
+			ctx.Fill ();
+
+			if (!HexEditorData.Caret.IsInsertMode) {
+				using (var layout = new TextLayout (this)) {
+					layout.Font = Options.Font;
+					layout.Text = ch.ToString ();
+					ctx.SetColor (HexEditorStyle.HexDigitBg);
+					ctx.DrawTextLayout (layout, caretX, caretY); 
+				}
 			}
 		}
 		
@@ -663,36 +550,34 @@ namespace Mono.MHex
 		#endregion
 		
 		#region Events
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		protected override void OnBoundsChanged ()
 		{
-			base.OnSizeAllocated (allocation);
-			if (IsRealized) {
-				AllocateWindowBuffer (Allocation);
-				this.CalculateBytesInRow ();
-				SetAdjustments (Allocation);
-				OnBytesInRowChanged (EventArgs.Empty);
-				Repaint ();
-			}
+			base.OnBoundsChanged ();
+			this.CalculateBytesInRow ();
+			OptionsChanged (this, EventArgs.Empty);
+			SetAdjustments (Bounds);
+			OnBytesInRowChanged (EventArgs.Empty);
+			Repaint ();
 		}
-		
-		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
+
+		protected override void OnKeyPressed (KeyEventArgs args)
 		{
-			uint unicodeChar = Gdk.Keyval.ToUnicode (evt.KeyValue);
-			ModifierType filteredModifiers = evt.State & (ModifierType.ShiftMask | ModifierType.Mod1Mask | ModifierType.ControlMask);
+			uint unicodeChar = (uint)args.Key;
+
+			var filteredModifiers = args.Modifiers & (ModifierKeys.Shift | ModifierKeys.Command | ModifierKeys.Control);
 			
-			HexEditorData.EditMode.InternalHandleKeypress (this, evt.Key, unicodeChar, filteredModifiers);
-			
-			
-			return true;
+			HexEditorData.EditMode.InternalHandleKeypress (this, args.Key, unicodeChar, filteredModifiers);
+			args.Handled = true;
+
 		}
 		
 		void CalculateBytesInRow ()
 		{
 			int oldBytes = BytesInRow;
-			int maxWidth = Allocation.Width;
+			var maxWidth = Bounds.Width;
 			int start = Options.GroupBytes * 2;
 			for (int i = start; i < 100; i += Options.GroupBytes) {
-				int width = margins.Sum (margin => margin.CalculateWidth (i));
+				double width = margins.Sum (margin => margin.CalculateWidth (i));
 				if (width > maxWidth) {
 					BytesInRow = i - Options.GroupBytes;
 					if (i == start) {
@@ -707,23 +592,8 @@ namespace Mono.MHex
 				margins.ForEach (margin => margin.PurgeLayoutCache ());
 			}
 		}
-		
-		protected override void OnMapped ()
-		{
-			if (buffer == null) {
-				AllocateWindowBuffer (this.Allocation);
-				if (Allocation.Width != 1 || Allocation.Height != 1)
-					Repaint ();
-			}
-			base.OnMapped (); 
-		}
 
-		protected override void OnUnmapped ()
-		{
-			DisposeBgBuffer ();
-			base.OnUnmapped (); 
-		}
-		
+		/*
 		protected override bool OnScrollEvent (EventScroll evnt)
 		{
 			if ((evnt.State & Gdk.ModifierType.ControlMask) == Gdk.ModifierType.ControlMask) {
@@ -745,54 +615,62 @@ namespace Mono.MHex
 				caretGc = null;
 			}
 		}
-		
-		protected override bool OnFocusInEvent (EventFocus evnt)
+		*/
+
+		protected override void OnGotFocus (EventArgs args)
 		{
+			base.OnGotFocus (args);
 			RequestResetCaretBlink ();
-			return base.OnFocusInEvent (evnt);
 		}
-		
-		protected override bool OnFocusOutEvent (EventFocus evnt)
+
+		protected override void OnLostFocus (EventArgs args)
 		{
+			base.OnLostFocus (args);
 			StopCaretThread ();
-			return base.OnFocusOutEvent (evnt);
 		}
-		
+
+/*
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			OptionsChanged (this, EventArgs.Empty);
-			AllocateWindowBuffer (Allocation);
-		}
+
+			AllocateWindowBuffer (Bounds);
+		}*/
 		
-		int pressedButton = -1;
-		protected override bool OnButtonPressEvent (Gdk.EventButton e)
+		internal int pressedButton = -1;
+		protected override void OnButtonPressed (ButtonEventArgs e)
 		{
+			base.OnButtonPressed (e);
+			this.SetFocus ();
+			if (e.Button != PointerButton.Left)
+				return;
 			pressedButton = (int)e.Button;
-			base.IsFocus = true;
 			Margin margin = GetMarginAtX ((int)e.X);
 			if (margin != null) 
-				margin.MousePressed (new MarginMouseEventArgs (this, (int)e.Button, (int)(e.X - margin.XOffset), (int)e.Y, e.Type, e.State));
-			return base.OnButtonPressEvent (e);
+				margin.MousePressed (new MarginMouseEventArgs (this, margin, e));
 		}
-		
-		protected override bool OnButtonReleaseEvent (EventButton e)
+
+		protected override void OnButtonReleased (ButtonEventArgs e)
 		{
+			base.OnButtonReleased (e);
+
+			if (e.Button != PointerButton.Left)
+				return;
 			pressedButton = -1;
 			Margin margin = GetMarginAtX ((int)e.X);
 			
 			if (margin != null)
-				margin.MouseReleased (new MarginMouseEventArgs (this, (int)e.Button, (int)(e.X - margin.XOffset), (int)e.Y, EventType.ButtonRelease, e.State));
-			return base.OnButtonReleaseEvent (e);
+				margin.MouseReleased (new MarginMouseEventArgs (this, margin, e));
 		}
-		
-		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
+
+		protected override void OnMouseMoved (MouseMovedEventArgs e)
 		{
+			base.OnMouseMoved (e);
+
 			Margin margin = GetMarginAtX ((int)e.X);
 			
 			if (margin != null)
-				margin.MouseHover (new MarginMouseEventArgs (this, pressedButton, (int)(e.X - margin.XOffset), (int)e.Y, EventType.MotionNotify, e.State));
-			return base.OnMotionNotifyEvent (e);
+				margin.MouseHover (new MarginMouseMovedEventArgs (this, margin, e));
 		}
 		
 		Margin GetMarginAtX (int x)

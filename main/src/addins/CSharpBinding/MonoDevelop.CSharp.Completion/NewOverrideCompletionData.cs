@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.GenerateBody = true;
 			this.Icon = member.GetStockIcon ();
 			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
-			this.CompletionText = member.EntityType == EntityType.Indexer ? "this" : member.Name;
+			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)

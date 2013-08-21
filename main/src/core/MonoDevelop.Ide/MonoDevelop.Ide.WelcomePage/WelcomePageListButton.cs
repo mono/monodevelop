@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -137,7 +138,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (mouseOver) {
 					if (BorderPadding <= 0) {
 						ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor);
+						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor));
 						ctx.Fill ();
 						ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
 						ctx.RelLineTo (Allocation.Width, 0);
@@ -154,18 +155,18 @@ namespace MonoDevelop.Ide.WelcomePage
 						}
 						
 						ctx.LineWidth = 1;
-						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
+						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor));
 						ctx.Stroke ();
 					} else {
 						Gdk.Rectangle region = Allocation;
 						region.Inflate (-BorderPadding, -BorderPadding);
 
 						ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
-						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor);
+						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor));
 						ctx.FillPreserve ();
 						
 						ctx.LineWidth = 1;
-						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
+						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor));
 						ctx.Stroke ();
 					}
 				}

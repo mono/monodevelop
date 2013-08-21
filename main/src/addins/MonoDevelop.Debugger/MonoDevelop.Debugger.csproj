@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Debugger</AssemblyName>
     <RootNamespace>MonoDevelop.Debugger</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -22,9 +23,11 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.Debugger</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -33,6 +36,9 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -141,6 +147,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathComparer.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathReference.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerConsoleView.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

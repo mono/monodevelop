@@ -74,8 +74,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		readonly Document guiDocument;
 
 		SyntaxTree unit;
-		CSharpUnresolvedFile parsedFile;
-		ICompilation compilation;
+//		CSharpUnresolvedFile parsedFile;
+//		ICompilation compilation;
 		CSharpAstResolver resolver;
 		CancellationTokenSource src;
 
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (newResolver == null)
 								return;
 							unit = newResolver.RootNode as SyntaxTree;
-							parsedFile = newResolver.UnresolvedFile;
+//							parsedFile = newResolver.UnresolvedFile;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Highlighting
 									var editorData = guiDocument.Editor;
 									if (editorData == null)
 										return;
-									compilation = newResolver.Compilation;
+//									compilation = newResolver.Compilation;
 									resolver = newResolver;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
@@ -284,6 +284,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			public QuickTaskVisitor (CSharpAstResolver resolver, CancellationToken cancellationToken)
 			{
 				this.resolver = resolver;
+				this.cancellationToken = cancellationToken;
 			}
 			
 			protected override void VisitChildren (AstNode node)
@@ -298,7 +299,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				base.VisitIdentifierExpression (identifierExpression);
 				var result = resolver.Resolve (identifierExpression, cancellationToken);
 				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
+					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
 				}
 			}
 
@@ -308,6 +309,24 @@ namespace MonoDevelop.CSharp.Highlighting
 				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
 				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
 					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
+				}
+			}
+
+			public override void VisitSimpleType (SimpleType simpleType)
+			{
+				base.VisitSimpleType (simpleType);
+				var result = resolver.Resolve (simpleType, cancellationToken);
+				if (result.IsError) {
+					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
+				}
+			}
+
+			public override void VisitMemberType (MemberType memberType)
+			{
+				base.VisitMemberType (memberType);
+				var result = resolver.Resolve (memberType, cancellationToken);
+				if (result.IsError) {
+					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
 				}
 			}
 
@@ -327,8 +346,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					// Force syntax mode reparse (required for #if directives)
 					var editor = doc.Editor;
 					if (editor != null) {
+						if (data.Document.SyntaxMode is SyntaxMode) {
+							((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
+							SyntaxModeService.WaitUpdate (data.Document);
+						}
 						editor.Parent.TextViewMargin.PurgeLayoutCache ();
 						doc.ReparseDocument ();
+						editor.Parent.QueueDraw ();
 					}
 				}
 			};
@@ -420,11 +444,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				using (var reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
 					_rules = new List<Rule> (baseMode.Rules.Where (r => r.Name != "Comment"));
-					_rules.Add (new Rule (this) {
+					_rules.Add (new Rule {
 						Name = "PreProcessorComment"
 					});
 
-					_commentRule = new Rule (this) {
+					_commentRule = new Rule {
 						Name = "Comment",
 						IgnoreCase = true
 					};

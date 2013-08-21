@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyBrowserHandler : CommandHandler
+	class AssemblyBrowserHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

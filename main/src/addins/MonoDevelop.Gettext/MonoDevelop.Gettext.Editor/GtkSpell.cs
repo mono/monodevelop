@@ -34,7 +34,7 @@ using Gtk;
 namespace MonoDevelop.Gettext.Editor
 {
 	// as GtkSpell sharp looks quite old and unmaintained, here is simple wrapper 
-	internal static class GtkSpell
+	static class GtkSpell
 	{
 		static bool isSupported;
 		

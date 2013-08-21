@@ -34,7 +34,7 @@ using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.Gettext
 {
-	public class PropertyProvider : IPropertyProvider
+	class PropertyProvider : IPropertyProvider
 	{
 		public bool SupportsObject (object o)
 		{

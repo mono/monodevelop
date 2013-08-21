@@ -37,6 +37,8 @@ using System.Threading;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
@@ -100,7 +102,7 @@ namespace MonoDevelop.Refactoring
 					break;
 				}
 			});
-
+			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -112,10 +114,12 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
-		AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssueSource", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssueSource", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					inspectors.AddRange (((ICodeIssueProviderSource)args.ExtensionObject).GetProviders ());
+					var source = (ICodeIssueProviderSource)args.ExtensionObject;
+					var providers = source.GetProviders ();
+					inspectors.AddRange (providers);
 					break;
 				}
 			});
@@ -246,6 +250,46 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}	
+
+		public static IList<CodeAction> ApplyFixes (IEnumerable<CodeAction> fixes, object refactoringContext)
+		{
+			if (fixes == null)
+				throw new ArgumentNullException ("fixes");
+			if (refactoringContext == null)
+				throw new ArgumentNullException ("refactoringContext");
+			var allFixes = fixes as IList<CodeAction> ?? fixes.ToArray ();
+			if (allFixes.Count == 0)
+				return new List<CodeAction> ();
+				
+			var scriptProvider = refactoringContext as IScriptProvider;
+			if (scriptProvider == null) {
+				return RunAll (allFixes, refactoringContext, null);
+			}
+			using (var script = scriptProvider.CreateScript ()) {
+				return RunAll (allFixes, refactoringContext, script);
+			}
+		}
+		
+		public static void ApplyFix (CodeAction action, object context)
+		{
+			if (context is IScriptProvider) {
+				using(var script = ((IScriptProvider)context).CreateScript ()) {
+					action.Run (context, script);
+				}
+			} else {
+				action.Run (context, null);
+			}
+		}
+
+		static List<CodeAction> RunAll (IEnumerable<CodeAction> allFixes, object refactoringContext, object script)
+		{
+			var appliedFixes = new List<CodeAction> ();
+			foreach (var fix in allFixes) {
+				fix.Run (refactoringContext, script);
+				appliedFixes.Add (fix);
+			}
+			return appliedFixes;
+		}
 
 		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
 		{

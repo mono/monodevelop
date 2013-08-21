@@ -268,7 +268,7 @@ namespace MonoDevelop.Components
 					layout.GetPixelSize (out rowWidth, out rowHeight);
 					rowHeight += padding;
 				}
-				SetBounds (Allocation);
+				SetBounds ();
 			}
 			
 			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -343,13 +343,14 @@ namespace MonoDevelop.Components
 			void UpdatePage ()
 			{
 				var area = GetRowArea (selection);
-				if (area.Y < vadj.Value) {
-					vadj.Value = area.Y;
-					return;
+				var value = vadj.Value;
+				if (area.Y < value) {
+					value = area.Y;
+				} else if (value + Allocation.Height < area.Bottom) {
+					value = Math.Max (0, area.Bottom - vadj.PageSize + 1);
 				}
-				if (vadj.Value + Allocation.Height < area.Bottom) {
-					vadj.Value = System.Math.Max (0, area.Bottom - vadj.PageSize + 1);
-				}
+				vadj.Value = Math.Max (vadj.Lower, Math.Min (value, vadj.Upper - vadj.PageSize));
+
 			}
 			
 			public bool SelectionDisabled {
@@ -499,7 +500,6 @@ namespace MonoDevelop.Components
 				else
 					newHeight = (rowHeight * this.win.DataProvider.IconCount) + margin * 2;
 				listWidth = Math.Min (450, CalcWidth ());
-				Console.WriteLine ("new height:"+newHeight);
 				this.SetSizeRequest (listWidth, newHeight);
 			} 
 			internal int CalcWidth ()
@@ -525,17 +525,18 @@ namespace MonoDevelop.Components
 				return w;
 			}
 
-			void SetBounds (Gdk.Rectangle allocation)
+			void SetBounds ()
 			{
 				if (vadj == null)
 					return;
-				var h = allocation.Height;
+				var h = Allocation.Height;
 				var height = Math.Max (h, rowHeight * win.DataProvider.IconCount);
 				if (this.win.DataProvider.IconCount < MaxVisibleRows) {
 					vadj.SetBounds (0, h, 0, 0, h);
 				} else {
 					vadj.SetBounds (0, height, RowHeight, h, h);
 				}
+				UpdatePage ();
 			}
 
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -544,7 +545,7 @@ namespace MonoDevelop.Components
 
 				hadj.SetBounds (0, allocation.Width, 0, 0, allocation.Width);
 
-				SetBounds (allocation);
+				SetBounds ();
 
 				UpdatePage ();
 			}

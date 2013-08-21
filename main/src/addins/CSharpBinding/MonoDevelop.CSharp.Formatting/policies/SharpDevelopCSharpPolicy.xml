@@ -41,7 +41,8 @@ THE SOFTWARE.
 	<IndentBreakStatements>True</IndentBreakStatements>
 	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
 	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
-	<PropertyFormatting>AllowOneLine</PropertyFormatting>
+	<SimplePropertyFormatting>AllowOneLine</SimplePropertyFormatting>
+	<AutoPropertyFormatting>AllowOneLine</AutoPropertyFormatting>
 	<NamespaceBraceStyle>NextLine</NamespaceBraceStyle>
 	<ClassBraceStyle>NextLine</ClassBraceStyle>
 	<InterfaceBraceStyle>NextLine</InterfaceBraceStyle>
@@ -54,8 +55,8 @@ THE SOFTWARE.
 	<PropertyBraceStyle>EndOfLine</PropertyBraceStyle>
 	<PropertyGetBraceStyle>EndOfLine</PropertyGetBraceStyle>
 	<PropertySetBraceStyle>EndOfLine</PropertySetBraceStyle>
-	<AllowPropertyGetBlockInline>True</AllowPropertyGetBlockInline>
-	<AllowPropertySetBlockInline>True</AllowPropertySetBlockInline>
+	<SimpleGetBlockFormatting>AllowOneLine</SimpleGetBlockFormatting>
+	<SimpleSetBlockFormatting>AllowOneLine</SimpleSetBlockFormatting>
 	<EventBraceStyle>EndOfLine</EventBraceStyle>
 	<EventAddBraceStyle>EndOfLine</EventAddBraceStyle>
 	<EventRemoveBraceStyle>EndOfLine</EventRemoveBraceStyle>

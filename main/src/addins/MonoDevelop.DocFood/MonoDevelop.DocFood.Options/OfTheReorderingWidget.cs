@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 namespace MonoDevelop.DocFood.Options
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class OfTheReorderingWidget : Gtk.Bin
+	partial class OfTheReorderingWidget : Gtk.Bin
 	{
 //		DocConfig config;
 		
@@ -40,7 +40,7 @@ namespace MonoDevelop.DocFood.Options
 		}
 	}
 	
-	public class OfTheReordering : OptionsPanel
+	class OfTheReordering : OptionsPanel
 	{
 		OfTheReorderingWidget panel;
 		

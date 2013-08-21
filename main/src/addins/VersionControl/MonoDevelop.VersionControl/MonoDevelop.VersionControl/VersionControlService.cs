@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl
 		
 		static VersionControlService ()
 		{
-			if (IdeApp.IsInitialized) {
+			IdeApp.Initialized += delegate {
 				try {
 					overlay_modified = Xwt.Drawing.Image.FromResource("overlay_modified.png");
 					overlay_removed = Xwt.Drawing.Image.FromResource("overlay_removed.png");
@@ -78,16 +78,16 @@ namespace MonoDevelop.VersionControl
 				//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
 				//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
 				//IdeApp.Workspace.FileRenamedInProject += OnFileRenamed;
-			
+
 				IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
 				IdeApp.Exiting += delegate {
 					DelayedSaveComments (null);
 				};
-			}
-			
+			};
+
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
 		}
-		
+
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			VersionControlSystem vcs = (VersionControlSystem) args.ExtensionObject;
@@ -215,7 +215,7 @@ namespace MonoDevelop.VersionControl
 		{
 			lock (commentsLock) {
 				Hashtable doc = GetCommitComments ();
-				if (comment == null || comment.Length == 0) {
+				if (String.IsNullOrEmpty (comment)) {
 					if (doc.ContainsKey (file)) {
 						doc.Remove (file);
 						if (save) SaveComments ();
@@ -489,7 +489,7 @@ namespace MonoDevelop.VersionControl
 		
 		static void SolutionItemAddFile (string rootPath, HashSet<string> files, string file)
 		{
-			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar))
+			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar, StringComparison.Ordinal))
 			    return;
 			if (!File.Exists (file))
 				return;

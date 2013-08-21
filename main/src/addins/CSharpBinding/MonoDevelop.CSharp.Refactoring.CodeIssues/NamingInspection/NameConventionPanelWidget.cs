@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		TreeStore treeStore = new TreeStore (typeof(NameConventionRule));
 		NameConventionPolicy policy;
 
-		public NameConventionPolicy Policy {
+		internal NameConventionPolicy Policy {
 			get {
 				return policy;
 			}

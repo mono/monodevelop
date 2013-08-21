@@ -216,6 +216,12 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
+			public QuickTaskStrip Strip {
+				get {
+					return strip;
+				}
+			}
+
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
 				this.parent = parent;
@@ -1604,7 +1610,36 @@ namespace MonoDevelop.SourceEditor
 			OnTasksUpdated (EventArgs.Empty);
 		}
 		#endregion
-	
+
+		internal void NextIssue ()
+		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
+			mainsw.Strip.GotoTask (mainsw.Strip.SearchNextTask (QuickTaskStrip.HoverMode.NextMessage));
+		}	
+
+		internal void PrevIssue ()
+		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
+			mainsw.Strip.GotoTask (mainsw.Strip.SearchPrevTask (QuickTaskStrip.HoverMode.NextMessage));
+		}
+
+		internal void NextIssueError ()
+		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
+			mainsw.Strip.GotoTask (mainsw.Strip.SearchNextTask (QuickTaskStrip.HoverMode.NextError));
+		}	
+
+		internal void PrevIssueError ()
+		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
+			mainsw.Strip.GotoTask (mainsw.Strip.SearchPrevTask (QuickTaskStrip.HoverMode.NextError));
+		}
+
+
 	}
 
 	class ErrorMarker : UnderlineMarker

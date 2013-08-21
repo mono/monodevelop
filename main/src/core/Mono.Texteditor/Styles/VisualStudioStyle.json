@@ -28,8 +28,8 @@
 		{"name": "Underline(Error)", "color":"#FF0000" },
 		{"name": "Underline(Warning)", "color":"comment-green" },
 		{"name": "Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
-		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9" },
-		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD" }
+		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
+		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" }
 	],
 	
 	"text":[
@@ -51,6 +51,7 @@
 		{"name": "String(C# @ Verbatim)", "fore":"#A31515" },
 		{"name": "Number" },
 		{"name": "Preprocessor", "fore":"keyword-blue" },
+		{"name": "Preprocessor(Region Name)", "fore":"#000000" },
 		{"name": "Xml Text" },
 		{"name": "Xml Delimiter", "fore":"keyword-blue" },
 		{"name": "Xml Name", "fore":"#A31515" },

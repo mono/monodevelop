@@ -36,7 +36,7 @@ using System.Linq; //GB Added
 namespace MonoDevelop.Gettext
 {
 	//FIXME: StreamReader has been implemeneted but not a real parser
-	public abstract class CatalogParser
+	abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\r\n", "\r", "\n" };
 		

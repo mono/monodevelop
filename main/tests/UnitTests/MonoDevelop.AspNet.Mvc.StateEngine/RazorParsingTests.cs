@@ -24,20 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 using NUnit.Framework;
-using MonoDevelop.AspNet.StateEngine;
-using Mono.TextEditor;
 
 namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 {
 	[TestFixture ()]
-	public class RazorParsingTests
+	public abstract class RazorParsingTests
 	{
 		protected TestParser parser;
 
@@ -51,29 +45,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 	class RazorTestFreeState : RazorFreeState
 	{
 		public RazorTestFreeState ()
-			: base (
-				new HtmlTagState (true,
-				new XmlAttributeState (
-				new XmlNameState (),
-				new XmlDoubleQuotedAttributeValueState (
-				new XmlMalformedTagState ()),
-				new XmlSingleQuotedAttributeValueState (
-				new XmlMalformedTagState ()),
-				new XmlUnquotedAttributeValueState (
-				new XmlMalformedTagState ()),
-				new XmlMalformedTagState ()),
-				new XmlNameState (),
-				new XmlMalformedTagState ()),
-				new HtmlClosingTagState (true),
-				new XmlCommentState (),
-				new XmlCDataState (),
-				new XmlDocTypeState (),
-				new XmlProcessingInstructionState (),
-				new RazorCodeBlockState (),
-				new RazorExpressionState (),
-				new RazorCommentState (),
-				new RazorSpeculativeState ()
-				)
 		{
 			UseSimplifiedBracketTracker = true;
 		}

@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public enum CodeGenerationCommands
+	enum CodeGenerationCommands
 	{
 		ShowCodeGenerationWindow
 	}

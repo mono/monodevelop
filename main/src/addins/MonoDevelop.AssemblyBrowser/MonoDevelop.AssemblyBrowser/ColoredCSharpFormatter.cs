@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceSegment
+	class ReferenceSegment
 	{
 		public TextSegment Segment {
 			get;
@@ -77,7 +77,7 @@ namespace MonoDevelop.AssemblyBrowser
 	}
 	
 		
-	public class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
+	class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
 		TextDocument doc;

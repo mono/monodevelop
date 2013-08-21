@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.MHex.Data
 {
-	public class RedBlackTree<T> : ICollection<T>
+	class RedBlackTree<T> : ICollection<T>
 	{
 		public RedBlackTreeNode Root {
 			get;

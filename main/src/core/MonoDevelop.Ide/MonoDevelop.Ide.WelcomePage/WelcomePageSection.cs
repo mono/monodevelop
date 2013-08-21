@@ -28,6 +28,7 @@ using Gtk;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -100,15 +101,15 @@ namespace MonoDevelop.Ide.WelcomePage
 					sr = new Cairo.Rectangle (sr.X - 1, sr.Y - 1, sr.Width + 2, sr.Height + 2);
 					CairoExtensions.RoundedRectangle (ctx, sr.X, sr.Y, sr.Width, sr.Height, 4);
 					shadowColor.A = alpha;
-					ctx.Color = shadowColor;
+					ctx.SetSourceColor (shadowColor);
 					ctx.Stroke ();
 					alpha -= alphaDec;
 				}
 
 				CairoExtensions.RoundedRectangle (ctx, r.X, r.Y, r.Width, r.Height, 4);
-				ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BackgroundColor);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BackgroundColor));
 				ctx.FillPreserve ();
-				ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BorderColor);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BorderColor));
 				ctx.Stroke ();
 			}
 

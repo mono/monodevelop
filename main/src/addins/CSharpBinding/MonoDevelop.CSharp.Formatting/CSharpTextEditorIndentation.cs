@@ -44,7 +44,7 @@ using System.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
+	class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.ToString ();
 		}
 
-		static string ConvertToStringLiteral (string text)
+		internal static string ConvertToStringLiteral (string text)
 		{
 			var result = new StringBuilder ();
 			foreach (var ch in text) {
@@ -627,7 +627,8 @@ namespace MonoDevelop.CSharp.Formatting
 					automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
 					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
 						if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
-							textEditorData.Caret.Column = textEditorData.IndentationTracker.GetVirtualIndentationColumn (textEditorData.Caret.Location);
+							if (textEditorData.GetLine (textEditorData.Caret.Line).Length == 0)
+								textEditorData.Caret.Column = textEditorData.IndentationTracker.GetVirtualIndentationColumn (textEditorData.Caret.Location);
 						} else {
 							DoReSmartIndent ();
 						}

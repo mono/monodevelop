@@ -324,15 +324,16 @@ namespace MonoDevelop.SourceEditor
 			var sm = Document.SyntaxMode as SyntaxMode;
 			if (sm != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, sm, sm, stack, line.Offset, Caret.Offset);
+			string spanColor = null;
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
 				if (span.Color.StartsWith ("String", StringComparison.Ordinal) || span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
+					spanColor = span.Color;
 					inStringOrComment = true;
 					break;
 				}
 			}
-
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false;
 			//!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
@@ -348,8 +349,14 @@ namespace MonoDevelop.SourceEditor
 			// special handling for escape chars inside ' and "
 			if (Caret.Offset > 0) {
 				char charBefore = Document.GetCharAt (Caret.Offset - 1);
-				if (inStringOrComment && ch == '"' && charBefore == '\\')
-					skipChar = null;
+				if (ch == '"') {
+					if (!inStringOrComment && charBefore == '"' || 
+					    inStringOrComment && spanColor == "String" && charBefore == '\\' ) {
+						skipChar = null;
+						braceIndex = -1;
+					}
+				}
+
 			}
 			char insertionChar = '\0';
 			bool insertMatchingBracket = false;

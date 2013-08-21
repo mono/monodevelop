@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class Error
+	class Error
 	{
 		public string Message {
 			get;
