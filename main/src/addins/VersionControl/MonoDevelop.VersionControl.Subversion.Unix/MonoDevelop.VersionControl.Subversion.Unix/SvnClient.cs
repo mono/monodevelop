@@ -9,6 +9,7 @@ using System.Text;
 
 using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
+using off_t = System.Int64;
 using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
@@ -105,9 +106,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				int newv = oldVersion;
 				if (File.Exists (file)) {
 					string txt = File.ReadAllText (file);
-					if (txt.IndexOf ("libapr-0") != -1 && oldVersion != 0)
+					if (txt.IndexOf ("libapr-0", StringComparison.Ordinal) != -1 && oldVersion != 0)
 						newv = 0;
-					if (txt.IndexOf ("libapr-1") != -1 && oldVersion != 1)
+					if (txt.IndexOf ("libapr-1", StringComparison.Ordinal) != -1 && oldVersion != 1)
 						newv = 1;
 				}
 				return newv;
@@ -208,6 +209,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		LibSvnClient.NotifyLockState requiredLockState;
 
 		// retain this so the delegates aren't GC'ed
+		LibSvnClient.svn_ra_progress_notify_func_t progress_func;
 		LibSvnClient.svn_wc_notify_func2_t notify_func;
 		LibSvnClient.svn_client_get_commit_log_t log_func;
 		IntPtr config_hash;
@@ -224,7 +226,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public UnixSvnBackend ()
 		{
-			pre_1_7 = GetVersion ().StartsWith ("1.6");
+			pre_1_7 = GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
 
@@ -246,6 +248,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			Marshal.WriteIntPtr (ctx,
 			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "LogMsgFunc"),
 			                     Marshal.GetFunctionPointerForDelegate (log_func));
+			progress_func = new LibSvnClient.svn_ra_progress_notify_func_t (svn_ra_progress_notify_func_t_impl);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "progress_func"),
+			                     Marshal.GetFunctionPointerForDelegate (progress_func));
 			
 			// Load user and system configuration
 			svn.config_get_config (ref config_hash, null, pool);
@@ -930,7 +936,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					string npath1 = NormalizePath (path1, localpool);
 					string npath2 = NormalizePath (path2, localpool);
 					CheckError (svn.client_diff (options, npath1, ref revision1, npath2, ref revision2, recursive, false, true, outfile, errfile, ctx, localpool));
-					return MonoDevelop.Projects.Text.TextFile.ReadFile (fout).Text;
+					return TextFile.ReadFile (fout).Text;
 				} else {
 					throw new Exception ("Could not get diff information");
 				}
@@ -1056,7 +1062,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						hash_item = apr.hash_next (hash_item);
 					}
 					props_str = props.ToString ();
-					index = props_str.IndexOf (Path.GetFileName (new_path) + Environment.NewLine);
+					index = props_str.IndexOf (Path.GetFileName (new_path) + Environment.NewLine, StringComparison.Ordinal);
 					props_str = (index < 0) ? props_str : props_str.Remove (index, Path.GetFileName(new_path).Length+1);
 
 					new_props = new LibSvnClient.svn_string_t ();
@@ -1102,6 +1108,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					throw new SubversionException ("Another Subversion operation is already in progress.");
 				inProgress = true;
 				updatemonitor = monitor;
+				lastWork = 0;
+				progressStarted = false;
 				return newpool (pool);
 			}
 		}
@@ -1175,11 +1183,31 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (string.IsNullOrEmpty (mimeType))
 				return false;
-			return !(mimeType.StartsWith ("text/") || 
-			         mimeType == "image/x-xbitmap" || 
-			         mimeType == "image/x-xpixmap");
+			return !(mimeType.StartsWith ("text/", StringComparison.Ordinal) || 
+					mimeType == "image/x-xbitmap" || 
+					mimeType == "image/x-xpixmap");
 		}
-		
+
+		int lastWork;
+		bool progressStarted;
+		void svn_ra_progress_notify_func_t_impl (off_t progress, off_t total, IntPtr baton, IntPtr pool)
+		{
+			if (updatemonitor == null)
+				return;
+
+			int curProgress = (int)progress;
+
+			if (!progressStarted) {
+				updatemonitor.BeginTask ("", (int)total);
+				progressStarted = true;
+				lastWork = curProgress;
+				return;
+			}
+
+			updatemonitor.Step (curProgress - lastWork);
+			lastWork = curProgress;
+		}
+
 		struct notify_baton {
 			public bool received_some_change;
 			public bool is_checkout;
