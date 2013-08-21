@@ -55,6 +55,11 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal void Initialize ()
 		{
+			Initialize (false);
+		}
+
+		internal void Initialize (bool synchronous)
+		{
 			CreateFrameworks ();
 			runtimes = new List<TargetRuntime> ();
 			foreach (ITargetRuntimeFactory factory in AddinManager.GetExtensionObjects ("/MonoDevelop/Core/Runtimes", typeof(ITargetRuntimeFactory))) {
@@ -73,20 +78,17 @@ namespace MonoDevelop.Core.Assemblies
 			if (CurrentRuntime == null)
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
 
-			CurrentRuntime.StartInitialization ();
+			if (synchronous)
+				CurrentRuntime.EnsureInitialized ();
+			else
+				CurrentRuntime.StartInitialization ();
 			
 			LoadUserAssemblyContext ();
 			userAssemblyContext.Changed += delegate {
 				SaveUserAssemblyContext ();
 			};
 		}
-		
-		void InitializeRuntime (TargetRuntime runtime)
-		{
-			runtime.Initialized += HandleRuntimeInitialized;
-			runtime.StartInitialization ();
-		}
-		
+
 		void HandleRuntimeInitialized (object sender, EventArgs e)
 		{
 			var runtime = (TargetRuntime) sender;

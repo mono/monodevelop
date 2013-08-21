@@ -40,7 +40,10 @@ public class MonoDevelopProcessHost
 	public static int Main (string[] args)
 	{
 		try {
-			Runtime.Initialize (false);
+			// If we are running mdtool setup reg-build we *must* ensure we do all our initialization synchronously. Otherwise we can end up
+			// in a situation where some addins are trying to use Mono.Addins while we are rebuilding the registry. As you can imagine, this
+			// causes all kinds of strange and unusual crashes and errors.
+			Runtime.Initialize (true, true);
 			Runtime.SetProcessName ("mdtool");
 			
 			if (args.Length == 0 || args [0] == "--help") {
