@@ -48,15 +48,18 @@
 	
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-css" icon="md-c-file" isText="true">
+		<MimeType id="text/css" icon="md-c-file" isText="true">
 			<File pattern="*.css" />
 		</MimeType>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
-		<Parser class="CSSBinding.Parser.CSSParserAdapter" mimeType = "text/x-css" />
+		<Parser class="Parser.CSSParserAdapter" mimeType = "text/css" />
 	</Extension>
 	
-	
-	
+	<!--<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<Tool name="CSSFileGenerator" type="CSSBinding.CSSFileGenerator"/>
+		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
+	</Extension>-->
+
 </Addin>
