@@ -99,6 +99,11 @@ namespace MonoDevelop.VersionControl
 				path = proj.FileName;
 				isDir = false;
 				pentry = proj;
+			} else if (!projRecurse && obj is UnknownSolutionItem) {
+				UnknownSolutionItem item = (UnknownSolutionItem)obj;
+				path = item.FileName;
+				isDir = false;
+				pentry = item;
 			} else if (obj is IWorkspaceObject) {
 				pentry = ((IWorkspaceObject)obj);
 				path = pentry.BaseDirectory;
