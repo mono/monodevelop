@@ -120,7 +120,7 @@ namespace Mono.MHex.Rendering
 			if (layout.IsUncached)
 				layout.Dispose ();
 
-			return XOffset + rectangle.X / 1024.0; // FIX XWT !!!! Pango.Scale bug
+			return XOffset + rectangle.X;
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
