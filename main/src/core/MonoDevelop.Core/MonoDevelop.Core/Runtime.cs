@@ -81,6 +81,10 @@ namespace MonoDevelop.Core
 			AddinManager.AddinUnloaded += OnUnload;
 			
 			//provides a development-time way to load addins that are being developed in a asperate solution
+			var devConfigDir = Environment.GetEnvironmentVariable ("MONODEVELOP_DEV_CONFIG");
+			if (devConfigDir != null && devConfigDir.Length == 0)
+				devConfigDir = null;
+
 			var devAddinDir = Environment.GetEnvironmentVariable ("MONODEVELOP_DEV_ADDINS");
 			if (devAddinDir != null && devAddinDir.Length == 0)
 				devAddinDir = null;
@@ -88,7 +92,7 @@ namespace MonoDevelop.Core
 			try {
 				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
 				AddinManager.Initialize (
-					UserProfile.Current.ConfigDir,
+					devConfigDir ?? UserProfile.Current.ConfigDir,
 					devAddinDir ?? UserProfile.Current.LocalInstallDir.Combine ("Addins"),
 					devAddinDir ?? UserProfile.Current.CacheDir);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
