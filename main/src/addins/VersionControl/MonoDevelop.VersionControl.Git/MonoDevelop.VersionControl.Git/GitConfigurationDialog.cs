@@ -188,6 +188,9 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 			
 			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			if (remote == null)
+				return;
+
 			string oldName = remote.Name;
 			
 			var dlg = new EditRemoteDialog (remote, false);
@@ -208,7 +211,11 @@ namespace MonoDevelop.VersionControl.Git
 			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
 				return;
+
 			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			if (remote == null)
+				return;
+
 			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the remote '{0}'?", remote.Name), AlertButton.Delete)) {
 				repo.RemoveRemote (remote.Name);
 				FillRemotes ();
