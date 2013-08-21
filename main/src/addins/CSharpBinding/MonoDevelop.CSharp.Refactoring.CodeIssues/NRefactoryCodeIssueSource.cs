@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		#region ICodeIssueProviderSource implementation
 		public IEnumerable<CodeIssueProvider> GetProviders ()
 		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider).Assembly.GetTypes ()) {
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.AbstractAndVirtualConversionAction).Assembly.GetTypes ()) {
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;

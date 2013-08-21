@@ -34,7 +34,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		#region ICodeActionProviderSource implementation
 		public IEnumerable<CodeActionProvider> GetProviders ()
 		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider).Assembly.GetTypes ()) {
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.AbstractAndVirtualConversionAction).Assembly.GetTypes ()) {
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.ContextActionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
