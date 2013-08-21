@@ -26,8 +26,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Xwt;
-using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -98,23 +96,25 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 		}
-		
+
 		bool IIssueTreeNode.HasVisibleChildren {
 			get {
-				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+				lock (_lock) {
+					return allIssues.Any (issue => ((IIssueTreeNode)issue).Visible);
+				}
 			}
 		}
-		
+
 		bool IIssueTreeNode.Visible {
 			get {
-				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+				return ((IIssueTreeNode)this).HasVisibleChildren;
 			}
 			
 			set {
 				throw new InvalidOperationException ("Not supported");
 			}
 		}
-		
+
 		ICollection<IIssueTreeNode> IIssueTreeNode.AllChildren {
 			get {
 				lock (_lock) {
@@ -124,6 +124,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
 			add {
 				childrenInvalidated += value;
@@ -142,6 +143,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueTreeNodeEventArgs> childAdded;
+
 		event EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
 			add {
 				childAdded += value;
@@ -160,6 +162,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> textChanged;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
 			add {
 				textChanged += value;
@@ -178,6 +181,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> visibleChanged;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.VisibleChanged {
 			add {
 				visibleChanged += value;
