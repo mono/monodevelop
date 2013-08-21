@@ -666,7 +666,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException();
 
 			updateFileList = new ArrayList ();
-			
+
+			pb = new progress_baton {
+				MonitorText = "Updating"
+			};
+
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Head;
 			var localpool = TryStartOperation (monitor);
 			try {
@@ -748,6 +752,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev rev = (LibSvnClient.Rev) revision;
 			
 			nb = new notify_baton ();
+			pb = new progress_baton {
+				MonitorText = "Checking out repository"
+			};
 			var localpool = TryStartOperation (monitor);
 			try {
 				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
@@ -766,6 +773,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException();
 
 			nb = new notify_baton ();
+			pb = new progress_baton {
+				MonitorText = "Committing"
+			};
 			var localpool = TryStartOperation (monitor);
 			try {
 				// Put each item into an APR array.
@@ -1108,8 +1118,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					throw new SubversionException ("Another Subversion operation is already in progress.");
 				inProgress = true;
 				updatemonitor = monitor;
-				lastWork = 0;
-				progressStarted = false;
 				return newpool (pool);
 			}
 		}
@@ -1188,8 +1196,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					mimeType == "image/x-xpixmap");
 		}
 
-		int lastWork;
-		bool progressStarted;
+		struct progress_baton {
+			public int LastWork;
+			public bool ProgressStarted;
+			public string MonitorText;
+		}
+		progress_baton pb;
 		void svn_ra_progress_notify_func_t_impl (off_t progress, off_t total, IntPtr baton, IntPtr pool)
 		{
 			if (updatemonitor == null)
@@ -1197,15 +1209,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			int curProgress = (int)progress;
 
-			if (!progressStarted) {
-				updatemonitor.BeginTask ("", (int)total);
-				progressStarted = true;
-				lastWork = curProgress;
+			if (!pb.ProgressStarted) {
+				updatemonitor.BeginTask (pb.MonitorText, (int)total);
+				pb.ProgressStarted = true;
+				pb.LastWork = curProgress;
 				return;
 			}
 
-			updatemonitor.Step (curProgress - lastWork);
-			lastWork = curProgress;
+			updatemonitor.Step (curProgress - pb.LastWork);
+			pb.LastWork = curProgress;
 		}
 
 		struct notify_baton {

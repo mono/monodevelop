@@ -591,7 +591,21 @@ namespace SubversionAddinWindows
 			public int LastWork;
 		}
 
-		void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
+		static string CommandToText (SvnCommandType cmd)
+		{
+			switch (cmd) {
+			case SvnCommandType.CheckOut:
+				return "Checking out repository";
+			case SvnCommandType.Commit:
+				return "Committing";
+			case SvnCommandType.Update:
+				return "Updating";
+			default:
+				return "";
+			}
+		}
+
+		static void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
 		{
 			NotifData notifData = new NotifData ();
 			ProgressData progressData = new ProgressData ();
@@ -607,7 +621,7 @@ namespace SubversionAddinWindows
 			};
 			args.Progress += delegate (object o, SvnProgressEventArgs e) {
 				// Route table from SvnCommandType to String.
-				ProgressWork (e, progressData, monitor, args.CommandType.ToString ());
+				ProgressWork (e, progressData, monitor, CommandToText (args.CommandType));
 			};
 		}
 
