@@ -411,6 +411,23 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Unignore, item);
 		}
 
+		[CommandHandler (Commands.ResolveConflicts)]
+		protected void OnResolveConflicts ()
+		{
+			RunCommand (Commands.ResolveConflicts, false, false);
+		}
+
+		[CommandUpdateHandler (Commands.ResolveConflicts)]
+		protected void UpdateResolveConflicts (CommandInfo item)
+		{
+			if (!(CurrentNode.DataItem is UnknownSolutionItem)) {
+				item.Visible = false;
+				return;
+			}
+
+			TestCommand (Commands.ResolveConflicts, item, false);
+		}
+
 		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
@@ -483,6 +500,9 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.Unignore:
 					res = UnignoreCommand.Unignore (items, test);
+					break;
+				case Commands.ResolveConflicts:
+					res = ResolveConflictsCommand.ResolveConflicts (items, test);
 					break;
 				}
 			}
