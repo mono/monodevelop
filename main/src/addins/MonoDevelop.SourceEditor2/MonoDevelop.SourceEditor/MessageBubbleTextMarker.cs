@@ -197,6 +197,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		internal AmbientColor TooltipColor {
+			get {
+				return isError ? editor.ColorStyle.MessageBubbleErrorTooltip : editor.ColorStyle.MessageBubbleWarningTooltip;
+			}
+		}
+
 		internal AmbientColor LineColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorLine : editor.ColorStyle.MessageBubbleWarningLine;
@@ -362,7 +368,7 @@ namespace MonoDevelop.SourceEditor
 			int errorCounterWidth = 0, eh = 0;
 			if (errorCountLayout != null) {
 				errorCountLayout.GetPixelSize (out errorCounterWidth, out eh);
-				errorCounterWidth = Math.Max (errorCounterWidth + 3, (int)(editor.LineHeight * 3 / 4));
+				errorCounterWidth = Math.Max (15, Math.Max (errorCounterWidth + 3, (int)(editor.LineHeight * 3 / 4)));
 			}
 
 			var sx = metrics.TextRenderEndPosition;
@@ -393,28 +399,67 @@ namespace MonoDevelop.SourceEditor
 			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
 			bubbleDrawY = y;
 			bubbleWidth = width;
-			g.RoundedRectangle (sx, y + 1, width, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
+
+			var bubbleHeight = editor.LineHeight - 1;
+			g.RoundedRectangle (sx, y + 1, width, bubbleHeight, editor.LineHeight / 2 - 1);
 			g.SetSourceColor (TagColor.Color);
 			g.Fill ();
+
+			// Draw error count icon
 			if (errorCounterWidth > 0 && errorCountLayout != null) {
-				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
-				g.SetSourceColor (CounterColor.Color);
+				var errorCounterHeight = bubbleHeight - 2;
+				var errorCounterX = sx + width - errorCounterWidth - 3;
+				var errorCounterY = y + 1 + (bubbleHeight - errorCounterHeight) / 2;
+
+				g.RoundedRectangle (
+					errorCounterX - 1, 
+					errorCounterY - 1, 
+					errorCounterWidth + 2, 
+					errorCounterHeight + 2, 
+					editor.LineHeight / 2 - 3
+				);
+
+				g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.081));
 				g.Fill ();
+
+				g.RoundedRectangle (
+					errorCounterX, 
+					errorCounterY, 
+					errorCounterWidth, 
+					errorCounterHeight, 
+					editor.LineHeight / 2 - 3
+					);
+				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
+					lg.AddColorStop (0, CounterColor.Color);
+					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
+					g.Pattern = lg;
+					g.Fill ();
+				}
 
 				g.Save ();
 
 				int ew;
 				errorCountLayout.GetPixelSize (out ew, out eh);
 
-				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
+				g.Translate (
+					errorCounterX + (errorCounterWidth - ew) / 2,
+					errorCounterY + (errorCounterHeight - eh) / 2
+				);
 				g.SetSourceColor (CounterColor.SecondColor);
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
 			}
 
+			// Draw label text
 			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
 				g.Save ();
-				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + layouts [0].Height % 2);
+				g.Translate (sx + editor.LineHeight / 2 + 1, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
+
+				// draw shadow
+				g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.1));
+				g.ShowLayout (drawLayout);
+				g.Translate (-1, -1);
+
 				g.SetSourceColor (TagColor.SecondColor);
 				g.ShowLayout (drawLayout);
 				g.Restore ();

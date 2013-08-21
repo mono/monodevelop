@@ -164,6 +164,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Message Bubble Error Tag")]
 		public AmbientColor MessageBubbleErrorTag { get; private set; }
 
+		[ColorDescription("Message Bubble Error Tooltip")]
+		public AmbientColor MessageBubbleErrorTooltip { get; private set; }
+
 		[ColorDescription("Message Bubble Error Line")]
 		public AmbientColor MessageBubbleErrorLine { get; private set; }
 
@@ -178,6 +181,9 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Message Bubble Warning Tag")]
 		public AmbientColor MessageBubbleWarningTag { get; private set; }
+
+		[ColorDescription("Message Bubble Warning Tooltip")]
+		public AmbientColor MessageBubbleWarningTooltip { get; private set; }
 
 		[ColorDescription("Message Bubble Warning Line")]
 		public AmbientColor MessageBubbleWarningLine { get; private set; }

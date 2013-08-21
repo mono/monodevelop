@@ -92,12 +92,14 @@
 		{ "name": "Message Bubble Error Counter", "color":"white", "secondcolor":"#d83f3f"},
 		{ "name": "Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#b12a2a"},
 		{ "name": "Message Bubble Error Line", "color":"#fbe4e6"},
+		{ "name": "Message Bubble Error Tooltip", "color":"#d11b1b"},
 
 		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
 		{ "name": "Message Bubble Warning Tag", "color":"#e68100", "secondcolor":"white"},
 		{ "name": "Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100"},
 		{ "name": "Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00"},
-		{ "name": "Message Bubble Warning Line", "color":"#fff1da"}
+		{ "name": "Message Bubble Warning Line", "color":"#fff1da"},
+		{ "name": "Message Bubble Warning Tooltip", "color":"#d4641c"}
 	],
 
 	"text":[

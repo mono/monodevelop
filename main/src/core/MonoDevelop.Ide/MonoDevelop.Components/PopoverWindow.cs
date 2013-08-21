@@ -315,12 +315,18 @@ namespace MonoDevelop.Components
 
 			Move (x, y);
 			Show ();
-			DesktopService.RemoveWindowShadow (this);
+			if (!ShowWindowShadow)
+				DesktopService.RemoveWindowShadow (this);
 		}
 		
 		public bool SupportsAlpha {
 			get;
 			private set;
+		}
+
+		public bool ShowWindowShadow {
+			get;
+			set;
 		}
 
 		void CheckScreenColormap ()
