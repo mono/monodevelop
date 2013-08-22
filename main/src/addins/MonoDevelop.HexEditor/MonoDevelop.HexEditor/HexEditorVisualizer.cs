@@ -36,7 +36,7 @@ using Mono.MHex.Data;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorVisualizer : IValueVisualizer
+	public class HexEditorVisualizer : ValueVisualizer
 	{
 		Mono.MHex.HexEditor hexEditor;
 
@@ -46,11 +46,11 @@ namespace MonoDevelop.HexEditor
 
 		#region IValueVisualizer implementation
 
-		public string Name {
+		public override string Name {
 			get { return GettextCatalog.GetString ("HexEdit"); }
 		}
 
-		public bool CanVisualize (ObjectValue val)
+		public override bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "sbyte[]": return true;
@@ -61,6 +61,17 @@ namespace MonoDevelop.HexEditor
 			}
 		}
 
+		public override bool IsDefaultVisualizer (ObjectValue val)
+		{
+			switch (val.TypeName) {
+				case "sbyte[]":
+				case "byte[]": return true;
+				case "char[]": 
+				case "string": return false;
+				default: return false;
+			}
+		}
+
 		void SetHexEditorOptions ()
 		{
 			hexEditor.Options.FontName = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.FontName;
@@ -68,7 +79,7 @@ namespace MonoDevelop.HexEditor
 			hexEditor.Repaint ();
 		}
 
-		public Widget GetVisualizerWidget (ObjectValue val)
+		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
 			hexEditor = new Mono.MHex.HexEditor ();
 
@@ -111,7 +122,7 @@ namespace MonoDevelop.HexEditor
 			return scrollWidget;
 		}
 
-		public bool StoreValue (ObjectValue val)
+		public override bool StoreValue (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "byte[]":
@@ -122,7 +133,7 @@ namespace MonoDevelop.HexEditor
 			}
 		}
 
-		public bool CanEdit (ObjectValue val)
+		public override bool CanEdit (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "byte[]": return true;
