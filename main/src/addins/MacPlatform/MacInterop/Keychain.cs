@@ -473,21 +473,26 @@ namespace MonoDevelop.MacInterop
 //				                                         (int) protocol, (int) auth, (uint) passwordBytes.Length, passwordBytes, ref itemRef);
 
 				var label = Encoding.UTF8.GetBytes (string.Format ("{0} ({1})", uri.Host, Uri.UnescapeDataString (uri.UserInfo)));
-				fixed (byte* labelPtr = label, userPtr = user, hostPtr = host, pathPtr = path) {
-					SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [7];
+				var desc = Encoding.UTF8.GetBytes ("Web form password");
+
+				fixed (byte* labelPtr = label, descPtr = desc, userPtr = user, hostPtr = host, pathPtr = path) {
+					SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [8];
 					int* protoPtr = (int*) &protocol;
 					int* authPtr = (int*) &auth;
 					int* portPtr = &port;
+					int n = 0;
 
-					attrs[0] = new SecKeychainAttribute (SecItemAttr.Label,    (uint) label.Length, (IntPtr) labelPtr);
-					attrs[1] = new SecKeychainAttribute (SecItemAttr.Account,  (uint) user.Length,  (IntPtr) userPtr);
-					attrs[2] = new SecKeychainAttribute (SecItemAttr.Protocol, (uint) 4,            (IntPtr) protoPtr);
-					attrs[3] = new SecKeychainAttribute (SecItemAttr.AuthType, (uint) 4,            (IntPtr) authPtr);
-					attrs[4] = new SecKeychainAttribute (SecItemAttr.Server,   (uint) host.Length,  (IntPtr) hostPtr);
-					attrs[5] = new SecKeychainAttribute (SecItemAttr.Port,     (uint) 4,            (IntPtr) portPtr);
-					attrs[6] = new SecKeychainAttribute (SecItemAttr.Path,     (uint) path.Length,  (IntPtr) pathPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Label,    (uint) label.Length, (IntPtr) labelPtr);
+					if (auth == SecAuthenticationType.HTMLForm)
+						attrs[n++] = new SecKeychainAttribute (SecItemAttr.Description, (uint) desc.Length, (IntPtr) descPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Account,  (uint) user.Length,  (IntPtr) userPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Protocol, (uint) 4,            (IntPtr) protoPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.AuthType, (uint) 4,            (IntPtr) authPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Server,   (uint) host.Length,  (IntPtr) hostPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Port,     (uint) 4,            (IntPtr) portPtr);
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Path,     (uint) path.Length,  (IntPtr) pathPtr);
 
-					SecKeychainAttributeList attrList = new SecKeychainAttributeList (6, (IntPtr) attrs);
+					SecKeychainAttributeList attrList = new SecKeychainAttributeList (n, (IntPtr) attrs);
 
 					itemRef = IntPtr.Zero;
 					result = SecKeychainItemCreateFromContent (SecItemClass.InternetPassword, &attrList, (uint) passwd.Length, passwd, IntPtr.Zero, IntPtr.Zero, ref itemRef);
