@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
@@ -120,8 +119,11 @@ Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 		static bool IsValidBranchName (string name)
 		{
 			// List from: https://github.com/git/git/blob/master/refs.c#L21
-			if (name.StartsWith (".") || name.EndsWith ("/") || name.EndsWith (".lock"))
+			if (name.StartsWith (".", System.StringComparison.Ordinal) ||
+				name.EndsWith ("/", System.StringComparison.Ordinal) ||
+				name.EndsWith (".lock", System.StringComparison.Ordinal))
 				return false;
+
 			if (name.Contains (" ") || name.Contains ("~") || name.Contains ("..") || name.Contains ("^") || name.Contains (":") || name.Contains ("\\") || name.Contains ("?") || name.Contains ("["))
 				return false;
 			return true;

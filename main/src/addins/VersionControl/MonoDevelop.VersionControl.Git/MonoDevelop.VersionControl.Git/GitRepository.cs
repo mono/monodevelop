@@ -377,7 +377,7 @@ namespace MonoDevelop.VersionControl.Git
 			return ops;
 		}
 
-		void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
+		static void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
 		{
 			if (!Directory.Exists (dir))
 				return;
@@ -1404,7 +1404,7 @@ namespace MonoDevelop.VersionControl.Git
 			var refs = RootRepository.RefDatabase.GetRefs (Constants.R_REMOTES);
 			foreach (var pair in refs) {
 				string name = NGit.Repository.ShortenRefName (pair.Key);
-				if (name.StartsWith (remoteName + "/"))
+				if (name.StartsWith (remoteName + "/", StringComparison.Ordinal))
 					yield return name.Substring (remoteName.Length + 1);
 			}
 		}

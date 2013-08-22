@@ -23,9 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.IO;
-using System.Linq;
 using NGit;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -34,13 +32,10 @@ using NGit.Api.Errors;
 using NGit.Dircache;
 using NGit.Revwalk;
 using NGit.Treewalk;
-using NGit.Treewalk.Filter;
 using NGit.Api;
 using NGit.Merge;
-using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Diff;
-using Mono.TextEditor.Utils;
 using NGit.Internal;
 
 namespace MonoDevelop.VersionControl.Git
@@ -229,9 +224,9 @@ namespace MonoDevelop.VersionControl.Git
 			string rbranch = config.GetString ("branch", branch, "merge");
 			if (string.IsNullOrEmpty (rbranch))
 				return null;
-			if (rbranch.StartsWith (Constants.R_HEADS))
+			if (rbranch.StartsWith (Constants.R_HEADS, System.StringComparison.Ordinal))
 				rbranch = rbranch.Substring (Constants.R_HEADS.Length);
-			else if (rbranch.StartsWith (Constants.R_TAGS))
+			else if (rbranch.StartsWith (Constants.R_TAGS, System.StringComparison.Ordinal))
 				rbranch = rbranch.Substring (Constants.R_TAGS.Length);
 			if (!string.IsNullOrEmpty (remote) && remote != ".")
 				return remote + "/" + rbranch;
