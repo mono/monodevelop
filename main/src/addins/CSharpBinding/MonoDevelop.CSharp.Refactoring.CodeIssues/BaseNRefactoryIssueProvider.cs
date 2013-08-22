@@ -33,6 +33,7 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
@@ -40,8 +41,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 	{
 		NRefactoryIssueProvider parentIssue;
 		SubIssueAttribute subIssue;
+		TimerCounter counter;
 
-		public override BaseCodeIssueProvider Parent {
+		public override CodeIssueProvider Parent {
 			get {
 				return parentIssue;
 			}
@@ -78,6 +80,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 			DefaultSeverity = subIssue.HasOwnSeverity ? subIssue.Severity : parentIssue.DefaultSeverity;
 			UpdateSeverity ();
+
+			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");
 		}
 
 		/// <summary>
@@ -87,34 +91,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
-				yield break;
-			foreach (var action in parentIssue.IssueProvider.GetIssues (context, subIssue.Title)) {
-				if (cancellationToken.IsCancellationRequested)
-					yield break;
-				if (action.Actions == null) {
-					LoggingService.LogError ("NRefactory actions == null in :" + Title);
-					continue;
-				}
-				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
-				foreach (var act in action.Actions) {
-					if (cancellationToken.IsCancellationRequested)
-						yield break;
-					if (act == null) {
-						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
-						continue;
-					}
-					actions.Add (new NRefactoryCodeAction (parentIssue.ProviderIdString, act.Description, act));
-				}
-				var issue = new CodeIssue (
-					GettextCatalog.GetString (action.Description ?? ""),
-					context.TextEditor.FileName,
-					action.Start,
-					action.End,
-					IdString,
-					actions
-				);
-				yield return issue;
+				return new CodeIssue[0];
+			// Holds all the actions in a particular sibling group.
+			IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues;
+			using (var timer = counter.BeginTiming ()) {
+				// We need to enumerate here in order to time it. 
+				// This shouldn't be a problem since there are current very few (if any) lazy providers.
+				var _issues = parentIssue.IssueProvider.GetIssues (context, subIssue.Title);
+				issues = _issues as IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> ?? _issues.ToList ();
 			}
+			return parentIssue.ToMonoDevelopRepresentation (cancellationToken, context, issues);
 		}
 
 

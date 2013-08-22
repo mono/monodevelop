@@ -100,10 +100,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
-				yield break;
+				return new CodeIssue[0];
 				
 			// Holds all the actions in a particular sibling group.
-			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
 			IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues;
 			using (var timer = counter.BeginTiming ()) {
 				// We need to enumerate here in order to time it. 
@@ -111,6 +110,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				var _issues = issueProvider.GetIssues (context);
 				issues = _issues as IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> ?? _issues.ToList ();
 			}
+			return ToMonoDevelopRepresentation (cancellationToken, context, issues);
+		}
+
+		internal IEnumerable<CodeIssue> ToMonoDevelopRepresentation (CancellationToken cancellationToken, MDRefactoringContext context, IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues)
+		{
+			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
 			foreach (var action in issues) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
@@ -139,18 +144,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					}
 					actions.Add (nrefactoryCodeAction);
 				}
-				var issue = new CodeIssue (
-					GettextCatalog.GetString (action.Description ?? ""),
-					context.TextEditor.FileName,
-					action.Start,
-					action.End,
-					IdString,
-					actions
-				);
+				var issue = new CodeIssue (GettextCatalog.GetString (action.Description ?? ""), context.TextEditor.FileName, action.Start, action.End, IdString, actions);
 				yield return issue;
 			}
-		}
-	
+		}	
 
 		public override bool CanDisableOnce { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
 

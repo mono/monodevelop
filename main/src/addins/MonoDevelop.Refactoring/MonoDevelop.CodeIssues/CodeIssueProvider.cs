@@ -34,7 +34,7 @@ namespace MonoDevelop.CodeIssues
 {
 	public abstract class BaseCodeIssueProvider
 	{
-		public virtual BaseCodeIssueProvider Parent {
+		public virtual CodeIssueProvider Parent {
 			get {
 				return null;
 			}
@@ -164,12 +164,24 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// If true this issue has sub issues.
 		/// </summary>
-		public virtual bool HasSubIssues { get { return false; } }
+		public abstract bool HasSubIssues { get; }
 
 		/// <summary>
 		/// Gets the sub issues of this issue. If HasSubIssus == false an InvalidOperationException is thrown.
 		/// </summary>
 		public virtual IEnumerable<BaseCodeIssueProvider> SubIssues { get { throw new InvalidOperationException (); } }
+
+		/// <summary>
+		/// Gets the effective set of providers. The effective set of providers
+		/// is either the sub issues (if it has sub issues) or simply itself (otherwise).
+		/// </summary>
+		/// <returns>The effective provider set.</returns>
+		public IEnumerable<BaseCodeIssueProvider> GetEffectiveProviderSet()
+		{
+			if (HasSubIssues)
+				return SubIssues;
+			return new[] { this };
+		}
 	}
 }
 

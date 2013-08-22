@@ -202,8 +202,10 @@ namespace MonoDevelop.CodeIssues
 			}
 			var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
-			CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
-			foreach (var provider in codeIssueProvider) {
+			var codeIssueProviders = RefactoringService.GetInspectors (editor.MimeType)
+				.SelectMany (p => p.GetEffectiveProviderSet ())
+				.ToList ();
+			foreach (var provider in codeIssueProviders) {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None || tokenSource.IsCancellationRequested)
 					return;
@@ -218,16 +220,19 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void AddIssue (ProjectFile file, CodeIssueProvider provider, CodeIssue r)
+		void AddIssue (ProjectFile file, BaseCodeIssueProvider provider, CodeIssue r)
 		{
+			var topLevelProvider = (provider as CodeIssueProvider) ?? provider.Parent;
+			if (topLevelProvider == null)
+				throw new ArgumentException ("must be a CodeIssueProvider or a BaseCodeIssueProvider with Parent != null", "provider");
 			var issue = new IssueSummary {
 				IssueDescription = r.Description,
 				Region = r.Region,
-				ProviderTitle = provider.Title,
-				ProviderDescription = provider.Description,
-				ProviderCategory = provider.Category,
-				Severity = provider.GetSeverity (),
-				IssueMarker = provider.IssueMarker,
+				ProviderTitle = topLevelProvider.Title,
+				ProviderDescription = topLevelProvider.Description,
+				ProviderCategory = topLevelProvider.Category,
+				Severity = topLevelProvider.GetSeverity (),
+				IssueMarker = topLevelProvider.IssueMarker,
 				File = file,
 				Project = file.Project,
 				InspectorIdString = r.InspectorIdString
