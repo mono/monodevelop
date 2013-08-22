@@ -329,7 +329,8 @@ namespace MonoDevelop.Refactoring
 							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
 					}
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while looking up framework extension methods.", e);
+					if (!TypeSystemService.RecreateFrameworkLookup (netProject))
+						LoggingService.LogError ("Error while looking up framework extension methods.", e);
 				}
 			}
 			bool foundIdentifier = false;
@@ -427,7 +428,8 @@ namespace MonoDevelop.Refactoring
 								lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while looking up framework types.", e);
+						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
+							LoggingService.LogError ("Error while looking up framework types.", e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
@@ -447,7 +449,8 @@ namespace MonoDevelop.Refactoring
 								lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
-						LoggingService.LogError ("Error while looking up framework types.", e);
+						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
+							LoggingService.LogError ("Error while looking up framework types.", e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));

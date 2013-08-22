@@ -2150,15 +2150,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			return assemblies.Values;
 		}
 
-		readonly static Dictionary<string, Task<FrameworkLookup>> frameworkLookup = new Dictionary<string, Task<FrameworkLookup>> ();
+		class FrameworkTask
+		{
+			public int RetryCount { get; set; }
+			public Task<FrameworkLookup> Task { get; set; }
+
+		}
+
+		readonly static Dictionary<string, FrameworkTask> frameworkLookup = new Dictionary<string, FrameworkTask> ();
 
 		static void StartFrameworkLookup (DotNetProject netProject)
 		{
+			if (netProject == null)
+				throw new ArgumentNullException ("netProject");
 			lock (frameworkLookup) {
-				Task<FrameworkLookup> result;
-				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
+				FrameworkTask result;
+				if (netProject.TargetFramework == null)
 					return;
-				frameworkLookup[netProject.TargetFramework.Name] = Task.Factory.StartNew (delegate {
+				var frameworkName = netProject.TargetFramework.Name;
+				if (!frameworkLookup.TryGetValue (frameworkName, out result))
+					frameworkLookup [frameworkName] = result = new FrameworkTask ();
+				if (result.Task != null)
+					return;
+				result.Task = Task.Factory.StartNew (delegate {
 					return GetFrameworkLookup (netProject);
 				});
 			}
@@ -2167,18 +2181,35 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
 		{
 			lock (frameworkLookup) {
-				Task<FrameworkLookup> result;
+				FrameworkTask result;
 				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
-					if (!result.IsCompleted)  {
+					if (!result.Task.IsCompleted)  {
 						lookup = null;
 						return false;
 					}
-					lookup = result.Result;
+					lookup = result.Task.Result;
 					return true;
 				}
 			}
 			lookup = null;
 			return false;
+		}
+
+		public static bool RecreateFrameworkLookup (DotNetProject netProject)
+		{
+			lock (frameworkLookup) {
+				FrameworkTask result;
+				if (!frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result))
+					return false;
+				if (result.RetryCount > 5) {
+					LoggingService.LogError ("Can't create framework lookup for:" + netProject.TargetFramework.Name);
+					return false;
+				}
+				result.RetryCount++;
+				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", netProject.TargetFramework.Name, result.RetryCount);
+				StartFrameworkLookup (netProject);
+				return true;
+			}
 		}
 
 		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
@@ -2597,6 +2628,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		#endregion
+
 	}
 
 	internal sealed class AssemblyLoadedEventArgs : EventArgs
