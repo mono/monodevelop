@@ -2996,6 +2996,7 @@ namespace Mono.TextEditor
 			return LocationToPoint (loc, false);
 		}
 		
+	
 		public Cairo.Point LocationToPoint (int line, int column, bool useAbsoluteCoordinates)
 		{
 			return LocationToPoint (new DocumentLocation (line, column), useAbsoluteCoordinates);
@@ -3028,156 +3029,13 @@ namespace Mono.TextEditor
 			}
 			if (line == null || line.Length == 0 || column < 0)
 				return 0;
-			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
-			int lineOffset = line.Offset;
-			StringBuilder textBuilder = new StringBuilder ();
-			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
-			var startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.Length);
-			foreach (Chunk chunk in startChunk) {
-				try {
-					textBuilder.Append (Document.GetTextAt (chunk));
-				} catch (Exception e) {
-					Console.WriteLine (e);
-					return 0;
-				}
-			}
-			string lineText = textBuilder.ToString ();
-			char[] lineChars = lineText.ToCharArray ();
-			
-			bool containsPreedit = textEditor.ContainsPreedit (lineOffset, line.Length);
-			uint preeditLength = 0;
 
-			if (containsPreedit) {
-				lineText = lineText.Insert (textEditor.preeditOffset - lineOffset, textEditor.preeditString);
-				preeditLength = (uint)textEditor.preeditString.Length;
-			}
-			if (column < lineText.Length)
-				lineText = lineText.Substring (0, column);
-
-			var layout = PangoUtil.CreateLayout (textEditor, lineText);
-			layout.Alignment = Pango.Alignment.Left;
-			layout.FontDescription = textEditor.Options.Font;
-			layout.Tabs = tabArray;
-
-			int startOffset = lineOffset, endOffset = lineOffset + line.Length;
-			uint curIndex = 0, byteIndex = 0;
-			uint curChunkIndex = 0, byteChunkIndex = 0;
-			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
-			uint oldEndIndex = 0;
-
-			Cairo.Color curFgColor = textEditor.ColorStyle.PlainText.Foreground;
-			Cairo.Color curBgColor = textEditor.ColorStyle.PlainText.Background;
-			var curWeight = Xwt.Drawing.FontWeight.Normal;
-			var curStyle = Xwt.Drawing.FontStyle.Normal;
-
-			foreach (Chunk chunk in startChunk) {
-				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
-
-				foreach (TextLineMarker marker in line.Markers)
-					chunkStyle = marker.GetStyle (chunkStyle);
-
-				if (chunkStyle != null) {
-					startOffset = chunk.Offset;
-					endOffset = chunk.EndOffset;
-
-					uint startIndex = (uint)(oldEndIndex);
-					uint endIndex = (uint)(startIndex + chunk.Length);
-					oldEndIndex = endIndex;
-
-					if (containsPreedit) {
-						if (textEditor.preeditOffset < startOffset)
-							startIndex += preeditLength;
-						if (textEditor.preeditOffset < endOffset)
-							endIndex += preeditLength;
-					}
-
-					HandleSelection (lineOffset, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-						var color = textEditor.ColorStyle.GetForeground (chunkStyle);
-						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						if (!color.Equals (curFgColor)) {
-							curFgColor = color;
-							var foreGround = new Pango.AttrForeground (
-								(ushort)(color.R * ushort.MaxValue),
-								(ushort)(color.G * ushort.MaxValue),
-								(ushort)(color.B * ushort.MaxValue));
-							foreGround.StartIndex = si;
-							foreGround.EndIndex = ei;
-							attributes.Add (foreGround);
-						}
-						if (!chunkStyle.TransparentBackground) {
-							color = chunkStyle.Background;
-							if (!color.Equals (curBgColor)) {
-								var background = new Pango.AttrBackground (
-									(ushort)(color.R * ushort.MaxValue),
-									(ushort)(color.G * ushort.MaxValue),
-									(ushort)(color.B * ushort.MaxValue));
-								background.StartIndex = si;
-								background.EndIndex = ei;
-								attributes.Add (background);
-							}
-						}
-					}, delegate(int start, int end) {
-						Pango.AttrForeground selectedForeground;
-						if (!SelectionColor.TransparentForeground) {
-							var color = SelectionColor.Foreground;
-							if (color.Equals (curFgColor))
-								return;
-							curFgColor = color;
-							selectedForeground = new Pango.AttrForeground (
-								(ushort)(color.R * ushort.MaxValue),
-								(ushort)(color.G * ushort.MaxValue),
-								(ushort)(color.B * ushort.MaxValue));
-						} else {
-							var color = ColorStyle.GetForeground (chunkStyle);
-							if (color.Equals (curFgColor))
-								return;
-							curFgColor = color;
-							selectedForeground = new Pango.AttrForeground (
-								(ushort)(color.R * ushort.MaxValue),
-								(ushort)(color.G * ushort.MaxValue),
-								(ushort)(color.B * ushort.MaxValue));
-						} 
-						selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-						selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						attributes.Add (selectedForeground);
-					});
-
-					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
-					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
-
-					if (chunkStyle.FontWeight != curWeight) {
-						curWeight = chunkStyle.FontWeight;
-						var attrWeight = new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight);
-						attrWeight.StartIndex = translatedStartIndex;
-						attrWeight.EndIndex = translatedEndIndex;
-						attributes.Add (attrWeight);
-					}
-
-					if (chunkStyle.FontStyle != curStyle) {
-						curStyle = chunkStyle.FontStyle;
-						Pango.AttrStyle attrStyle = new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle);
-						attrStyle.StartIndex = translatedStartIndex;
-						attrStyle.EndIndex = translatedEndIndex;
-						attributes.Add (attrStyle);
-					}
-
-					if (chunkStyle.Underline) {
-						var attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
-						attrUnderline.StartIndex = translatedStartIndex;
-						attrUnderline.EndIndex = translatedEndIndex;
-						attributes.Add (attrUnderline);
-					}
-				}
-			}
-			Pango.AttrList attributeList = new Pango.AttrList ();
-			attributes.ForEach (attr => attributeList.Insert (attr));
-			layout.Attributes = attributeList;
+			var wrapper = GetLayout (line);
 			Pango.Rectangle inkrect, logicalrect;
-			layout.GetExtents (out inkrect, out logicalrect);
-			attributes.ForEach (attr => attr.Dispose ());
-			attributeList.Dispose ();
-			layout.Dispose ();
+			wrapper.Layout.GetExtents (out inkrect, out logicalrect);
+			if (wrapper.IsUncached)
+				wrapper.Dispose ();
+
 			return (logicalrect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
 		}
 		
