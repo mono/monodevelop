@@ -214,9 +214,9 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 
-		public static System.Reflection.AssemblyName ParseAssemblyName (string fullname)
+		public static AssemblyName ParseAssemblyName (string fullname)
 		{
-			var aname = new System.Reflection.AssemblyName ();
+			var aname = new AssemblyName ();
 			int i = fullname.IndexOf (',');
 			if (i == -1) {
 				aname.Name = fullname.Trim ();
@@ -224,7 +224,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			aname.Name = fullname.Substring (0, i).Trim ();
-			i = fullname.IndexOf ("Version", i+1);
+			i = fullname.IndexOf ("Version", i + 1, StringComparison.Ordinal);
 			if (i == -1)
 				return aname;
 			i = fullname.IndexOf ('=', i);
@@ -238,7 +238,7 @@ namespace MonoDevelop.Core.Assemblies
 			return aname;
 		}
 		
-		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
+		static readonly Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
 			AssemblyName name;
@@ -351,7 +351,7 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error to determine target framework for assembly {0}: {1}", file, ex);
+				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
 				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
 				universe.Dispose ();

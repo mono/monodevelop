@@ -62,7 +62,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (!Directory.Exists (MAC_FRAMEWORK_DIR))
 					yield break;
 				foreach (string dir in Directory.GetDirectories (MAC_FRAMEWORK_DIR)) {
-					if (dir.EndsWith ("/Current") || currentRuntime.Prefix == dir)
+					if (dir.EndsWith ("/Current", StringComparison.Ordinal) || currentRuntime.Prefix == dir)
 						continue;
 					MonoRuntimeInfo info = new MonoRuntimeInfo (dir);
 					if (info.IsValidRuntime)
