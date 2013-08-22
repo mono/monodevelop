@@ -3031,12 +3031,14 @@ namespace Mono.TextEditor
 				return 0;
 
 			var wrapper = GetLayout (line);
-			Pango.Rectangle inkrect, logicalrect;
-			wrapper.Layout.GetExtents (out inkrect, out logicalrect);
+			uint curIndex = 0;
+			uint byteIndex = 0;
+
+			var pos = wrapper.Layout.IndexToPos ((int)TranslateToUTF8Index (wrapper.LineChars, (uint)column, ref curIndex, ref byteIndex));
 			if (wrapper.IsUncached)
 				wrapper.Dispose ();
 
-			return (logicalrect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
+			return (pos.X + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
 		}
 		
 		public int YToLine (double yPos)
