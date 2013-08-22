@@ -424,7 +424,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		void MakeDirVersioned (string dir, IProgressMonitor monitor)
 		{
-			if (Directory.Exists (Path.Combine (dir, ".svn")))
+			if (Directory.Exists (SubversionBackend.GetDirectoryDotSvn (VersionControlSystem, dir)))
 				return;
 			
 			// Make the parent versioned
