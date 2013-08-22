@@ -114,7 +114,7 @@ namespace MonoDevelop.Core.Assemblies
 			return GetReferenceFrameworkDirectories (IsInitialized || IsRunning);
 		}
 
-		internal IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeMacGlobalDir)
+		IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeGlobalDirectories)
 		{
 			//duplicate xbuild's framework folders path logic
 			//see xbuild man page
@@ -124,7 +124,7 @@ namespace MonoDevelop.Core.Assemblies
 					yield return (FilePath) dir;
 			}
 
-			if (Platform.IsMac && true) {
+			if (includeGlobalDirectories && Platform.IsMac) {
 				yield return "/Library/Frameworks/Mono.framework/External/xbuild-frameworks";
 			}
 
