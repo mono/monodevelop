@@ -88,7 +88,8 @@ namespace MonoDevelop.AspNet
 			//instead we switch the loops
 			foreach (ProjectFile pf in proj.Files) {
 				for (int i = 0; i < dirs.Count; i++) {
-					if (pf.FilePath.IsChildPathOf (dirs[i])) {
+					// Equality comparison in case we don't have files in dirs[i].
+					if (pf.FilePath.IsChildPathOf (dirs[i]) || pf.FilePath == dirs[i]) {
 						dirs.RemoveAt (i);
 						if (dirs.Count == 0)
 							return;
