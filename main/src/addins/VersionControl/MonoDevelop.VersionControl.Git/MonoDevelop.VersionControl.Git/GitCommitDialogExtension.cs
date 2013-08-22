@@ -23,8 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -46,8 +44,8 @@ namespace MonoDevelop.VersionControl.Git
 					AllowCommit = widget.CommitterIsAuthor || widget.AuthorName.Length > 0;
 				};
 				return true;
-			} else
-				return false;
+			}
+			return false;
 		}
 		
 		public override bool OnBeginCommit (ChangeSet changeSet)
@@ -126,7 +124,7 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 		
-		string GetDesc (string name, string email)
+		static string GetDesc (string name, string email)
 		{
 			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (email))
 				return "Not configured";
