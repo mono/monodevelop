@@ -80,7 +80,7 @@ namespace MonoDevelop.MacInterop
 		                                                                IntPtr initialAccess, ref IntPtr itemRef);
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainItemModifyAttributesAndData (IntPtr itemRef, IntPtr attrList, uint length, byte [] data);
+		static extern unsafe OSStatus SecKeychainItemModifyAttributesAndData (IntPtr itemRef, SecKeychainAttributeList *attrList, uint length, byte [] data);
 		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, IntPtr attrList, out IntPtr searchRef);
@@ -444,6 +444,8 @@ namespace MonoDevelop.MacInterop
 			}
 		}
 
+		static readonly byte[] WebFormPassword = Encoding.UTF8.GetBytes ("Web form password");
+
 		public static unsafe void AddInternetPassword (Uri uri, string password)
 		{
 			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
@@ -456,7 +458,11 @@ namespace MonoDevelop.MacInterop
 			IntPtr itemRef = IntPtr.Zero;
 			uint passwordLength = 0;
 			int port = uri.Port;
-			
+			byte[] desc = null;
+
+			if (auth == SecAuthenticationType.HTMLForm)
+				desc = WebFormPassword;
+
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port,
@@ -464,8 +470,18 @@ namespace MonoDevelop.MacInterop
 
 			if (result == OSStatus.Ok) {
 				// If there is, replace it with the new one
-				result = SecKeychainItemModifyAttributesAndData (itemRef, IntPtr.Zero, (uint) passwd.Length, passwd);
-				CFRelease (itemRef);
+				fixed (byte* descPtr = desc) {
+					SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [1];
+					int n = 0;
+
+					if (desc != null)
+						attrs[n++] = new SecKeychainAttribute (SecItemAttr.Description, (uint) desc.Length, (IntPtr) descPtr);
+
+					SecKeychainAttributeList attrList = new SecKeychainAttributeList (n, (IntPtr) attrs);
+
+					result = SecKeychainItemModifyAttributesAndData (itemRef, &attrList, (uint) passwd.Length, passwd);
+					CFRelease (itemRef);
+				}
 			} else {
 				// Otherwise add a new entry with the password
 //				result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
@@ -473,7 +489,6 @@ namespace MonoDevelop.MacInterop
 //				                                         (int) protocol, (int) auth, (uint) passwordBytes.Length, passwordBytes, ref itemRef);
 
 				var label = Encoding.UTF8.GetBytes (string.Format ("{0} ({1})", uri.Host, Uri.UnescapeDataString (uri.UserInfo)));
-				var desc = Encoding.UTF8.GetBytes ("Web form password");
 
 				fixed (byte* labelPtr = label, descPtr = desc, userPtr = user, hostPtr = host, pathPtr = path) {
 					SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [8];
@@ -483,7 +498,7 @@ namespace MonoDevelop.MacInterop
 					int n = 0;
 
 					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Label,    (uint) label.Length, (IntPtr) labelPtr);
-					if (auth == SecAuthenticationType.HTMLForm)
+					if (desc != null)
 						attrs[n++] = new SecKeychainAttribute (SecItemAttr.Description, (uint) desc.Length, (IntPtr) descPtr);
 					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Account,  (uint) user.Length,  (IntPtr) userPtr);
 					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Protocol, (uint) 4,            (IntPtr) protoPtr);
