@@ -313,11 +313,25 @@ namespace MonoDevelop.Core.Assemblies
 			
 			fx.RelationsBuilt = true;
 		}
+
+		static IKVM.Reflection.Universe CreateClosedUniverse ()
+		{
+			const IKVM.Reflection.UniverseOptions ikvmOptions =
+				IKVM.Reflection.UniverseOptions.DisablePseudoCustomAttributeRetrieval |
+				IKVM.Reflection.UniverseOptions.SupressReferenceTypeIdentityConversion |
+				IKVM.Reflection.UniverseOptions.ResolveMissingMembers;
+
+			var universe = new IKVM.Reflection.Universe (ikvmOptions);
+			universe.AssemblyResolve += delegate (object sender, IKVM.Reflection.ResolveEventArgs args) {
+				return ((IKVM.Reflection.Universe)sender).CreateMissingAssembly (args.Name);
+			};
+			return universe;
+		}
 		
-		//FIXME: this is totally broken. assemblies can't just belong to one framework
+		//FIXME: the fallback is broken since multiple frameworks can have the same corlib
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
-			var universe = new IKVM.Reflection.Universe (IKVM.Reflection.UniverseOptions.ResolveMissingMembers);
+			var universe = CreateClosedUniverse ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
