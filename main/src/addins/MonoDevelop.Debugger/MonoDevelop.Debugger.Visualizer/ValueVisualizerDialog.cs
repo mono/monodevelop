@@ -33,9 +33,9 @@ namespace MonoDevelop.Debugger.Viewers
 {
 	public partial class ValueVisualizerDialog : Gtk.Dialog
 	{
-		List<IValueVisualizer> visualizers;
+		List<ValueVisualizer> visualizers;
 		Gtk.Widget currentWidget;
-		IValueVisualizer currentVisualizer;
+		ValueVisualizer currentVisualizer;
 		ObjectValue value;
 		
 		public ValueVisualizerDialog ()
@@ -46,13 +46,20 @@ namespace MonoDevelop.Debugger.Viewers
 		public void Show (ObjectValue val)
 		{
 			value = val;
-			visualizers = new List<IValueVisualizer> (DebuggingService.GetValueVisualizers (val));
-			visualizers.Sort (delegate (IValueVisualizer v1, IValueVisualizer v2) {
+			visualizers = new List<ValueVisualizer> (DebuggingService.GetValueVisualizers (val));
+			visualizers.Sort (delegate (ValueVisualizer v1, ValueVisualizer v2) {
 				return v1.Name.CompareTo (v2.Name);
 			});
-			foreach (IValueVisualizer vis in visualizers)
+
+			int defaultVis = 0;
+			int n = 0;
+			foreach (ValueVisualizer vis in visualizers) {
 				comboVisualizers.AppendText (vis.Name);
-			comboVisualizers.Active = 0;
+				if (vis.IsDefaultVisualizer (val))
+					defaultVis = n;
+				n++;
+			}
+			comboVisualizers.Active = defaultVis;
 			if (val.IsReadOnly || !visualizers.Where (v => v.CanEdit (val)).Any ()) {
 				buttonCancel.Hide ();
 				buttonOk.Label = Gtk.Stock.Close;

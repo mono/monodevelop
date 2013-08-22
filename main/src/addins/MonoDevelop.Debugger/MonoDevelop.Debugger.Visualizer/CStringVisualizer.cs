@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Visualizer
 {
-	public class CStringVisualizer : IValueVisualizer
+	public class CStringVisualizer : ValueVisualizer
 	{
 		TextView textView;
 
@@ -42,11 +42,11 @@ namespace MonoDevelop.Debugger.Visualizer
 		{
 		}
 
-		public string Name {
+		public override string Name {
 			get { return GettextCatalog.GetString ("C String"); }
 		}
 
-		public bool CanVisualize (ObjectValue val)
+		public override bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "sbyte[]": return true;
@@ -116,7 +116,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			textView.Buffer.Insert (ref iter, text);
 		}
 
-		public Widget GetVisualizerWidget (ObjectValue val)
+		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
 			textView = new TextView () { WrapMode = WrapMode.Char };
 
@@ -144,16 +144,6 @@ namespace MonoDevelop.Debugger.Visualizer
 			PopulateTextView (val);
 
 			return box;
-		}
-
-		public bool StoreValue (ObjectValue val)
-		{
-			return false;
-		}
-
-		public bool CanEdit (ObjectValue val)
-		{
-			return false;
 		}
 	}
 }
