@@ -67,7 +67,7 @@ namespace MonoDevelop.CodeIssues
 			// enumerate once
 			var actionSummaries = actions as IList<ActionSummary> ?? actions.ToArray ();
 			var issueSummaries = actionSummaries.Select (action => action.IssueSummary).ToArray ();
-			var files = issueSummaries.Select (issue => issue.File).ToList ();
+			var files = issueSummaries.Select (issue => issue.File).Distinct ().ToList ();
 			monitor.BeginTask ("Applying fixes", files.Count);
 			
 			var appliedActions = new List<ActionSummary> (issueSummaries.Length);
