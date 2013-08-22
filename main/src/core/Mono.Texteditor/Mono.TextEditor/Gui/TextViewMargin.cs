@@ -3033,8 +3033,13 @@ namespace Mono.TextEditor
 			var wrapper = GetLayout (line);
 			uint curIndex = 0;
 			uint byteIndex = 0;
-
-			var pos = wrapper.Layout.IndexToPos ((int)TranslateToUTF8Index (wrapper.LineChars, (uint)column, ref curIndex, ref byteIndex));
+			int index;
+			try {
+				index = (int)TranslateToUTF8Index (wrapper.LineChars, (uint)System.Math.Min (System.Math.Max (0, column), wrapper.LineChars.Length), ref curIndex, ref byteIndex);
+			} catch {
+				return 0;
+			}
+			var pos = wrapper.Layout.IndexToPos (index);
 			if (wrapper.IsUncached)
 				wrapper.Dispose ();
 
