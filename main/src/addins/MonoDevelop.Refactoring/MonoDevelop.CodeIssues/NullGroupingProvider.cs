@@ -29,7 +29,7 @@ namespace MonoDevelop.CodeIssues
 {
 	public class NullGroupingProvider: IGroupingProvider
 	{
-		static Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
+		static readonly Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
 		public static IGroupingProvider Instance
 		{
 			get {

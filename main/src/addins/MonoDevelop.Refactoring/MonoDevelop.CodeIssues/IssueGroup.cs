@@ -37,19 +37,18 @@ namespace MonoDevelop.CodeIssues
 	/// </remarks>
 	public class IssueGroup : IIssueTreeNode, IIssueSummarySink
 	{
-		object _lock = new object ();
+		readonly object _lock = new object ();
 		bool processingEnabled;
 		/// <summary>
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
-		ISet<IssueGroup> groups = new HashSet<IssueGroup>();
-		IList<IIssueTreeNode> children = new List<IIssueTreeNode>();
-		ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
+		readonly ISet<IssueGroup> groups = new HashSet<IssueGroup>();
+		readonly IList<IIssueTreeNode> children = new List<IIssueTreeNode>();
+		readonly ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.IssueGroup"/> class.
 		/// </summary>
-		/// <param name="sourceProvider">The <see cref="IGroupingProvider"/> that created this group.</param>
 		/// <param name="nextProvider">
 		/// The <see cref="IGroupingProvider"/> to use when grouping <see cref="IssueSummary"/> instances.
 		/// </param>

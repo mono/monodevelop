@@ -47,7 +47,7 @@ namespace MonoDevelop.CodeIssues
 {
 	public class CodeAnalysisBatchRunner
 	{
-		object _lock = new object ();
+		readonly object _lock = new object ();
 		CancellationTokenSource tokenSource;
 		IIssueSummarySink destinationGroup;
 
