@@ -191,7 +191,15 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		public IEnumerable<string> PkgConfigDirs {
-			get { return PkgConfigPath.Split (Path.PathSeparator); }
+			get { return GetPkgConfigDirs (IsInitialized || IsRunning); }
+		}
+
+		IEnumerable<string> GetPkgConfigDirs (bool includeGlobalDirectories)
+		{
+			foreach (string s in PkgConfigPath.Split (Path.PathSeparator))
+				yield return s;
+			if (includeGlobalDirectories && Platform.IsMac)
+				yield return "/Library/Frameworks/Mono.framework/External/pkgconfig";
 		}
 		
 		public string PkgConfigPath {
