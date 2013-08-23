@@ -55,11 +55,6 @@ namespace MonoDevelop.Core
 
 		public static void Initialize (bool updateAddinRegistry)
 		{
-			Initialize (updateAddinRegistry, false);
-		}
-
-		public static void Initialize (bool updateAddinRegistry, bool synchronousRuntimeInitialization)
-		{
 			if (initialized)
 				return;
 			Counters.RuntimeInitialization.BeginTiming ();
@@ -119,7 +114,7 @@ namespace MonoDevelop.Core
 				
 				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
-				systemAssemblyService.Initialize (synchronousRuntimeInitialization);
+				systemAssemblyService.Initialize ();
 				
 				initialized = true;
 				
