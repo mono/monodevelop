@@ -370,7 +370,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			if (editor.Options.ShowFoldMargin && line < editor.Document.LineCount) {
+			if (editor.Options.ShowFoldMargin && line <= editor.Document.LineCount) {
 				double foldSegmentYPos = y + System.Math.Floor (editor.LineHeight - foldSegmentSize) / 2;
 				double xPos = x + System.Math.Floor (marginWidth / 2) + 0.5;
 				
