@@ -1728,8 +1728,9 @@ namespace Mono.TextEditor
 						wrapper.Layout.FontDescription = textEditor.Options.Font;
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
-						
-						var x = (position + vx / Pango.Scale.PangoScale) + layout.Width;
+						vx = (int)(vx / Pango.Scale.PangoScale);
+
+						var x = (position + vx) + layout.Width;
 						SetVisibleCaretPosition (x, y, x, y);
 						xPos = position + layout.Width;
 
@@ -1737,7 +1738,7 @@ namespace Mono.TextEditor
 							double startX;
 							double endX;
 							startX = xPos;
-							endX = position + vx / Pango.Scale.PangoScale + layout.Width;
+							endX = position + vx + layout.Width;
 							DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
 						}
 
@@ -1745,7 +1746,7 @@ namespace Mono.TextEditor
 						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
 
 						if ((!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
-							DrawCaretLineMarker (cr, position, y, vx / Pango.Scale.PangoScale, _lineHeight);
+							DrawCaretLineMarker (cr, position, y, vx, _lineHeight);
 
 						if (DecorateLineBg != null)
 							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
@@ -2624,7 +2625,6 @@ namespace Mono.TextEditor
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			int width, height;
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
-
 			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
 
 			// Draw the default back color for the whole line. Colors other than the default
