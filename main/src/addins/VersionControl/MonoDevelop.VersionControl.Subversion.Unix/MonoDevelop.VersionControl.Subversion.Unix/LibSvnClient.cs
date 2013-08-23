@@ -681,7 +681,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 
 		public delegate IntPtr svn_client_blame_receiver_t (IntPtr baton, Int64 line_no, svn_revnum_t revision, string author, string date, string line, IntPtr pool);
 
-		public delegate void svn_ra_progress_notify_func_t (off_t progress, off_t total, off_t baton, IntPtr pool);
+		public delegate void svn_ra_progress_notify_func_t (off_t progress, off_t total, IntPtr baton, IntPtr pool);
 
 		public delegate IntPtr svn_wc_conflict_resolver_func_t (out IntPtr result, IntPtr description, IntPtr baton, IntPtr pool);
 
