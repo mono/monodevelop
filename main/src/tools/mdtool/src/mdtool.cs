@@ -40,7 +40,6 @@ public class MonoDevelopProcessHost
 	public static int Main (string[] args)
 	{
 		try {
-			Runtime.Initialize (false);
 			Runtime.SetProcessName ("mdtool");
 			
 			if (args.Length == 0 || args [0] == "--help") {
@@ -58,29 +57,37 @@ public class MonoDevelopProcessHost
 				return 0;
 			}
 
+			int pi = 0;
+
+			bool verbose = false;
+			if (args [0] == "-v" || args [0] == "--verbose") {
+				pi++;
+				verbose = true;
+			}
+
 			if (args [0] == "-q") {
 				ShowAvailableApps ();
 				return 0;
 			}
-			
-			// Don't log to console unless verbose log is requested
-			var logger = (MonoDevelop.Core.Logging.ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
-			int pi = 0;
-			if (args [0] == "-v" || args [0] == "--verbose") {
-				pi++;
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToWarn;
-			} else {
-				// Disable logging (except fatal errors) if verbose is not specified. Command line tools should already
-				// be providing feedback using the console.
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.Fatal;
-			}
-			
+
 			string[] newArgs = new string [args.Length - 1 - pi];
 			Array.Copy (args, pi + 1, newArgs, 0, args.Length - 1 - pi);
-			if (args [pi] != "setup")
-				return Runtime.ApplicationService.StartApplication (args [pi], newArgs);
-			else
+
+			if (args [pi] == "setup") {
 				return RunSetup (newArgs);
+			}
+
+			//only init the runtime if not running the setup tool
+			Runtime.Initialize (false);
+
+			// Only log fatal errors unless verbose is specified. Command line tools should already
+			// be providing feedback using the console.
+			var logger = (MonoDevelop.Core.Logging.ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
+			logger.EnabledLevel = verbose
+				? MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToWarn
+				: MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToFatal;
+
+			return Runtime.ApplicationService.StartApplication (args [pi], newArgs);
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			return -1;
@@ -104,7 +111,9 @@ public class MonoDevelopProcessHost
 			if (a == "-v")
 				verbose = true;
 	
-		SetupTool setupTool = new SetupTool (AddinManager.Registry);
+		string configDir, addinsDir, databaseDir;
+		Runtime.GetAddinRegistryLocation (out configDir, out addinsDir, out databaseDir);
+		SetupTool setupTool = new SetupTool (new AddinRegistry (configDir, addinsDir, databaseDir));
 		setupTool.VerboseOutput = verbose;
 		return setupTool.Run (args);
 	}
@@ -114,7 +123,7 @@ public class MonoDevelopProcessHost
 		Console.WriteLine ("Available tools:");
 		foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
 			Console.Write ("- " + ainfo.Id);
-			if (ainfo.Description != null && ainfo.Description.Length > 0)
+			if (!string.IsNullOrEmpty (ainfo.Description))
 				Console.WriteLine (": " + ainfo.Description);
 			else
 				Console.WriteLine ();
