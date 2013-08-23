@@ -36,16 +36,23 @@ namespace MonoDevelop.Core
 	{
 		public int StartApplication (string appId, string[] parameters)
 		{
+			var app = GetApplication (appId);
+			if (app == null)
+				throw new InstallException ("Application not found: " + appId);
+			return app.Run (parameters);
+		}
+
+		public IApplication GetApplication (string appId)
+		{
 			ExtensionNode node = AddinManager.GetExtensionNode ("/MonoDevelop/Core/Applications/" + appId);
 			if (node == null)
-				throw new InstallException ("Application not found: " + appId);
+				return null;
 			
-			ApplicationExtensionNode apnode = node as ApplicationExtensionNode;
+			var apnode = node as ApplicationExtensionNode;
 			if (apnode == null)
 				throw new Exception ("Invalid node type");
 			
-			IApplication app = (IApplication) apnode.CreateInstance ();
-			return app.Run (parameters);
+			return (IApplication) apnode.CreateInstance ();
 		}
 		
 		public IApplicationInfo[] GetApplications ()
