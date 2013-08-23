@@ -90,7 +90,7 @@ namespace MonoDevelop.SourceEditor
 				this.cache = cache;
 				this.marker = marker;
 				ShowArrow = true;
-				Opacity = 0.9;
+				Opacity = 0.93;
 				Theme.ArrowLength = 7;
 			}
 
