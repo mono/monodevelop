@@ -172,12 +172,12 @@ namespace MonoDevelop.SourceEditor
 
 						g.Save ();
 
-						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width + 1: textBorder, y + verticalTextSpace / 2 + 1);
+						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2 + 1);
 
-						g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.1));
+						g.SetSourceColor (new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.1 : 0.2));
 						g.ShowLayout (drawingLayout);
 
-						g.Translate (-1, -1);
+						g.Translate (0, -1);
 
 						g.SetSourceColor (marker.TagColor.SecondColor);
 						g.ShowLayout (drawingLayout);

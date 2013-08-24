@@ -453,12 +453,12 @@ namespace MonoDevelop.SourceEditor
 			// Draw label text
 			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
 				g.Save ();
-				g.Translate (sx + editor.LineHeight / 2 + 1, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
+				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
 
 				// draw shadow
-				g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.1));
+				g.SetSourceColor (new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.1 : 0.2));
 				g.ShowLayout (drawLayout);
-				g.Translate (-1, -1);
+				g.Translate (0, -1);
 
 				g.SetSourceColor (TagColor.SecondColor);
 				g.ShowLayout (drawLayout);
