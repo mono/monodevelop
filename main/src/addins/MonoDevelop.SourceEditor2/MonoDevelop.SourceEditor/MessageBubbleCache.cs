@@ -245,7 +245,7 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 
-		void DestroyPopoverWindow ()
+		internal void DestroyPopoverWindow ()
 		{
 			if (popoverWindow != null) {
 				popoverWindow.Destroy ();

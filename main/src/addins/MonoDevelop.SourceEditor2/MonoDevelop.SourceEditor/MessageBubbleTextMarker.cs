@@ -39,7 +39,7 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	partial class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
+	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
@@ -179,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DisposeLayout ();
-
+			cache.DestroyPopoverWindow ();
 		}
 		
 		internal Pango.Layout errorCountLayout;
@@ -628,7 +628,7 @@ namespace MonoDevelop.SourceEditor
 			var o = metrics.LineSegment.Offset;
 
 			foreach (var task in errors.Select (t => t.Task)) {
-				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.LineSegment.Length));
+				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;
