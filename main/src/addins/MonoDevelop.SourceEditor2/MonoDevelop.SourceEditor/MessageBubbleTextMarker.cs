@@ -456,7 +456,7 @@ namespace MonoDevelop.SourceEditor
 				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
 
 				// draw shadow
-				g.SetSourceColor (new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.1 : 0.2));
+				g.SetSourceColor (MessageBubbleCache.ShadowColor);
 				g.ShowLayout (drawLayout);
 				g.Translate (0, -1);
 
