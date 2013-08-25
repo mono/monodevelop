@@ -9,6 +9,9 @@
 		{ "name":"chameleon1", "value":"#8ae234" },
 		{ "name":"chameleon2", "value":"#73d216" },
 		{ "name":"chameleon3", "value":"#4e9a06" },
+		{ "name":"chocolate1", "value":"#e9b96e" },
+		{ "name":"chocolate2", "value":"#c17d11" },
+		{ "name":"chocolate3", "value":"#8f5902" },
 		{ "name":"skyblue1", "value":"#729fcf" },
 		{ "name":"skyblue2", "value":"#3465a4" },
 		{ "name":"plum2", "value":"#75507b" },
@@ -61,10 +64,10 @@
         { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
 		{ "name": "Underline(Error)", "color":"invalid-red" },
-		{ "name": "Underline(Warning)", "color":"butter2" },
-		{ "name": "Underline(Suggestion)", "color":"chameleon2" },
-		{ "name": "Underline(Hint)", "color":"skyblue2" },
-		
+		{ "name": "Underline(Warning)", "color":"chocolate2" },
+		{ "name": "Underline(Suggestion)", "color":"chameleon3" },
+		{ "name": "Underline(Hint)", "color":"chameleon1" },
+
 		{ "name": "Quick Diff(Dirty)", "color":"orangesicle-light" },
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
 		
