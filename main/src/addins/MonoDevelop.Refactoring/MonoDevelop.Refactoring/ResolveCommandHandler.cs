@@ -348,8 +348,8 @@ namespace MonoDevelop.Refactoring
 						foreach (var u in scope.Usings) {
 							foreach (var typeDefinition in u.Types) {
 								if (typeDefinition.Name == aResult.Type.Name && 
-									typeDefinition.TypeParameterCount == tc &&
-									lookup.IsAccessible (typeDefinition, false)) {
+								    typeDefinition.TypeParameterCount == tc &&
+								    lookup.IsAccessible (typeDefinition, false)) {
 									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 								}
 							}
@@ -381,7 +381,11 @@ namespace MonoDevelop.Refactoring
 					var umResult = (UnknownMemberResolveResult)resolveResult;
 					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : umResult.MemberName;
 					foreach (var typeDefinition in allTypes.Where (t => t.HasExtensionMethods)) {
+						if (!lookup.IsAccessible (typeDefinition, false))
+							continue;
 						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == possibleAttributeName || m.Name == umResult.MemberName))) {
+							if (!lookup.IsAccessible (method, false))
+								continue;
 							IType[] inferredTypes;
 							if (CSharpResolver.IsEligibleExtensionMethod (
 								compilation.Import (umResult.TargetType),
