@@ -489,7 +489,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return result;
 		}
-		static string GetCacheDirectory (string filename)
+		static string InternalGetCacheDirectory (string filename)
 		{
 			string result;
 			var nameNoExtension = Path.GetFileNameWithoutExtension (filename);
@@ -526,9 +526,27 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
 		public static string GetCacheDirectory (Project project, bool forceCreation = false)
 		{
-			var result = GetCacheDirectory (project.FileName);
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			return GetCacheDirectory (project.FileName, forceCreation);
+		}
+
+		/// <summary>
+		/// Gets the cache directory for arbitrary file names.
+		/// If forceCreation is set to false the method may return null, if the cache doesn't exist.
+		/// </summary>
+		/// <returns>The cache directory.</returns>
+		/// <param name="fileName">The file name to get the cache for.</param>
+		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
+		public static string GetCacheDirectory (string fileName, bool forceCreation = false)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			var result = InternalGetCacheDirectory (fileName);
+			if (result != null)
+				TouchCache (result);
 			if (forceCreation && result == null)
-				result = CreateCacheDirectory (project.FileName);
+				result = CreateCacheDirectory (fileName);
 			return result;
 		}
 
@@ -726,7 +744,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!wrapper.WasChanged)
 				return;
 			string cacheDir = GetCacheDirectory (project, true);
-			TouchCache (cacheDir);
 			string fileName = Path.GetTempFileName ();
 			
 			SerializeObject (fileName, wrapper.Content.RemoveAssemblyReferences (wrapper.Content.AssemblyReferences));
@@ -1087,11 +1104,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				static IProjectContent LoadProjectCache (Project project)
 				{
 					string cacheDir = GetCacheDirectory (project);
-					if (cacheDir == null) {
+					if (cacheDir == null)
 						return null;
-					}
 					
-					TouchCache (cacheDir);
 					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
 					if (cache is MonoDevelopProjectContent)
 						((MonoDevelopProjectContent)cache).Project = project;
@@ -2048,7 +2063,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				string cache = GetCacheDirectory (fileName);
 				if (cache != null) {
-					TouchCache (cache);
 					var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
 					if (deserialized != null) {
 						deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
