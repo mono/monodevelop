@@ -65,4 +65,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
 </Project>

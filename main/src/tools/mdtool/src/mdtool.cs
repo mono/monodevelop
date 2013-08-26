@@ -175,9 +175,11 @@ public class MonoDevelopProcessHost
 			if (a == "-v")
 				verbose = true;
 	
-		string configDir, addinsDir, databaseDir;
+		string startupDir, configDir, addinsDir, databaseDir;
+		string asmFile = new Uri (System.Reflection.Assembly.GetEntryAssembly ().CodeBase).LocalPath;
+		startupDir = System.IO.Path.GetDirectoryName (asmFile);
 		Runtime.GetAddinRegistryLocation (out configDir, out addinsDir, out databaseDir);
-		SetupTool setupTool = new SetupTool (new AddinRegistry (configDir, addinsDir, databaseDir));
+		SetupTool setupTool = new SetupTool (new AddinRegistry (configDir, startupDir, addinsDir, databaseDir));
 		setupTool.VerboseOutput = verbose;
 		return setupTool.Run (args);
 	}
