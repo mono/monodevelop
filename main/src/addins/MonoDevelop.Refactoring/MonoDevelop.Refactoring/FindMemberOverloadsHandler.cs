@@ -34,12 +34,12 @@ namespace MonoDevelop.Refactoring
 {
 	public class FindMemberOverloadsHandler
 	{
-		Ide.Gui.Document doc;
+		//Ide.Gui.Document doc;
 		IMember entity;
 
 		public FindMemberOverloadsHandler (Ide.Gui.Document doc, IMember entity)
 		{
-			this.doc = doc;
+			//this.doc = doc;
 			this.entity = entity;
 		}
 
