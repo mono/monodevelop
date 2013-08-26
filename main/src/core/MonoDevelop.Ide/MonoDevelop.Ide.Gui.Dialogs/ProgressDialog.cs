@@ -169,6 +169,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (asyncOperation != null)
 				asyncOperation.Cancel ();
+
+			IsCanceled = true;
+		}
+
+		public bool IsCanceled {
+			get;
+			private set;
 		}
 		
 		bool UpdateSize ()

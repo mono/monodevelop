@@ -868,7 +868,15 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetCloneSubmodules (true);
 			using (var gm = new GitMonitor (monitor, 4)) {
 				cmd.SetProgressMonitor (gm);
-				cmd.Call ();
+				try {
+					cmd.Call ();
+				} catch (NGit.Api.Errors.JGitInternalException e) {
+					// We cancelled and NGit throws.
+					if (e.InnerException is NGit.Errors.MissingObjectException ||
+						e.InnerException is NGit.Errors.TransportException) {
+						FileService.DeleteDirectory (targetLocalPath);
+					}
+				}
 			}
 		}
 

@@ -140,7 +140,15 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
-		
+
+		protected bool IsCancelRequested ()
+		{
+			if (dialog == null)
+				return base.IsCancelRequested;
+
+			return dialog.IsCanceled;
+		}
+
 		void ShowDialogs ()
 		{
 			if (dialog != null) {
