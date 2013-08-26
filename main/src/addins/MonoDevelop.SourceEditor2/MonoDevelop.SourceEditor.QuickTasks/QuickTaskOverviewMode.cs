@@ -351,8 +351,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (hoverOverIndicator) {
 					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
 					return base.OnButtonPressEvent (evnt);
-				} else  if (hoverTask != null) {
-					TextEditor.Caret.Location = new DocumentLocation (hoverTask.Location.Line, Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
+				}
+
+				if (hoverTask != null) {
+					if (hoverTask.Location.IsEmpty) {
+						Console.WriteLine ("empty:"+ hoverTask.Description);
+					}
+					var loc = new DocumentLocation (Math.Max (DocumentLocation.MinLine, hoverTask.Location.Line), Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
+					TextEditor.Caret.Location = loc;
 					TextEditor.CenterToCaret ();
 					TextEditor.StartCaretPulseAnimation ();
 					TextEditor.GrabFocus ();
