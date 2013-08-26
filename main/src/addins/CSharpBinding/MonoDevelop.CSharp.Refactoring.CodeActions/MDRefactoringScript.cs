@@ -73,18 +73,23 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override void Select (AstNode node)
 		{
 			var seg = GetSegment (node);
-			var length = seg.Length;
-			while (length > 0) {
-				char ch = context.TextEditor.GetCharAt (seg.Offset + length);
-				if (!char.IsWhiteSpace (ch)) {
-					length++;
+			var startOffset = seg.Offset;
+			var endOffset   = seg.EndOffset;
+			while (startOffset < endOffset) {
+				char ch = context.TextEditor.GetCharAt (startOffset);
+				if (!char.IsWhiteSpace (ch))
 					break;
-				}
-				length--;
+				startOffset++;
+			}
+			while (startOffset < endOffset && endOffset > 0) {
+				char ch = context.TextEditor.GetCharAt (endOffset - 1);
+				if (!char.IsWhiteSpace (ch))
+					break;
+				endOffset--;
 			}
 
-			context.TextEditor.Caret.Offset = seg.Offset + length;
-			context.TextEditor.SelectionRange = new TextSegment (seg.Offset, length);
+			context.TextEditor.Caret.Offset = endOffset;
+			context.TextEditor.SelectionRange = new TextSegment (startOffset, endOffset - startOffset);
 		}
 
 		public override Task<Script> InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
