@@ -166,10 +166,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var content = buildEngine.GetUnsavedProjectContent (file);
 				if (content == null)
 					p = engine.LoadProject (file);
-				else {
+				else
 					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
-					p.FullPath = file;
-				}
 			}
 			p.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))

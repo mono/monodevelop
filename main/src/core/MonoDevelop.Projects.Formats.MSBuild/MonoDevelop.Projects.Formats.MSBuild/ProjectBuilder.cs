@@ -154,10 +154,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
 					if (content == null)
 						p.Load (pc.ProjectFile);
-					else {
-						p.FullFileName = pc.ProjectFile;
+					else
 						p.Load (new StringReader (content));
-					}
 				}
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
