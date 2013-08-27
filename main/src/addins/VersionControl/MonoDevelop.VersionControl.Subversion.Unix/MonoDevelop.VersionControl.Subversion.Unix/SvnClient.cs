@@ -761,6 +761,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				url = NormalizePath (new Uri(url).ToString(), localpool);
 				string npath = NormalizePath (path, localpool);
 				CheckError (svn.client_checkout (IntPtr.Zero, url, npath, ref rev, recurse, ctx, localpool));
+			} catch (SubversionException e) {
+				if (e.ErrorCode != 200015)
+					throw;
+
+				if (Directory.Exists (path.ParentDirectory))
+					FileService.DeleteDirectory (path.ParentDirectory);
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
