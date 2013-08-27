@@ -20,6 +20,8 @@ typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
 
+void *libmono;
+
 static void
 exit_with_message (char *reason, char *argv0)
 {
@@ -401,7 +403,7 @@ int main (int argc, char **argv)
 	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
 	use_sgen = env2bool ("MONODEVELOP_USE_SGEN", use_sgen);
 	
-	void *libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
 	
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
