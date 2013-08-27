@@ -34,7 +34,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildVerbosity verbosity);
 		string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations);
 		void Refresh ();
-		void RefreshWithContent (string projectContent);
 	}
 
 	[Serializable]

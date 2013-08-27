@@ -42,7 +42,6 @@ using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Core.Instrumentation;
 using System.Text;
-using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -57,7 +56,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string lastBuildRuntime;
 		string lastFileName;
 		ITimeTracker timer;
-		bool modifiedInMemory;
 
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -138,11 +136,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				lastBuildToolsVersion = toolsVersion;
 				lastBuildRuntime = runtime.Id;
 				lastFileName = item.FileName;
-			}
-			else if (modifiedInMemory) {
-				modifiedInMemory = false;
-				var p = SaveProject (new NullProgressMonitor ());
-				projectBuilder.RefreshWithContent (p.SaveToString ());
 			}
 			return projectBuilder;
 		}
@@ -975,31 +968,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-		public override void OnModified (string hint)
-		{
-			base.OnModified (hint);
-			modifiedInMemory = true;
-		}
-
 		protected override void SaveItem (MonoDevelop.Core.IProgressMonitor monitor)
 		{
-			modifiedInMemory = false;
-
-			MSBuildProject msproject = SaveProject (monitor);
-			if (msproject == null)
-				return;
-			
-			// Don't save the file to disk if the content did not change
-			msproject.Save (EntityItem.FileName);
-
-			if (projectBuilder != null)
-				projectBuilder.Refresh ();
-		}
-
-		MSBuildProject SaveProject (MonoDevelop.Core.IProgressMonitor monitor)
-		{
 			if (Item is UnknownProject || Item is UnknownSolutionItem)
-				return null;
+				return;
 			
 			bool newProject;
 			SolutionEntityItem eitem = EntityItem;
@@ -1241,7 +1213,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 
-			return msproject;
+			// Don't save the file to disk if the content did not change
+			msproject.Save (eitem.FileName);
+
+			if (projectBuilder != null)
+				projectBuilder.Refresh ();
 		}
 
 		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue, bool isXml = false)

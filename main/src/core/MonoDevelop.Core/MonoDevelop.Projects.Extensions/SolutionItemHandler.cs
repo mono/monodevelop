@@ -78,9 +78,5 @@ namespace MonoDevelop.Projects.Extensions
 		public abstract string ItemId { get; }
 		
 		public abstract void Save (IProgressMonitor monitor);
-
-		public virtual void OnModified (string hint)
-		{
-		}
 	}
 }
