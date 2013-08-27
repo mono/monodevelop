@@ -11,7 +11,6 @@
     <RootNamespace>MonoDevelop.Core</RootNamespace>
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
