@@ -1202,11 +1202,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		IntPtr svn_cancel_func_t_impl (IntPtr baton)
 		{
+			if (updatemonitor == null || !updatemonitor.IsCancelRequested)
+				return IntPtr.Zero;
+
 			LibSvnClient.svn_error_t err = new LibSvnClient.svn_error_t ();
-			if (updatemonitor != null && updatemonitor.IsCancelRequested) {
-				err.apr_err = 200015;
-				err.message = "The operation was interrupted";
-			}
+			err.apr_err = 200015;
+			err.message = "The operation was interrupted";
+
 			IntPtr localpool = newpool (IntPtr.Zero);
 			err.pool = localpool;
 			return apr.pcalloc (localpool, err);
