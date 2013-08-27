@@ -157,7 +157,7 @@ namespace MonoDevelop.MacInterop
 		}
 
 		[StructLayout (LayoutKind.Sequential)]
-		struct SecKeychainAttributeInfo
+		unsafe struct SecKeychainAttributeInfo
 		{
 			public UInt32 Count;
 			public int* Tag;
