@@ -126,7 +126,7 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainItemDelete (IntPtr itemRef);
 
-		const uint CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
+		const int CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
 
 		[StructLayout (LayoutKind.Sequential)]
 		struct SecKeychainAttributeList
@@ -160,8 +160,8 @@ namespace MonoDevelop.MacInterop
 		struct SecKeychainAttributeInfo
 		{
 			public UInt32 Count;
-			public UInt32[] Tag;
-			public UInt32[] Format;
+			public int* Tag;
+			public int* Format;
 		}
 		
 		struct CssmData
@@ -403,29 +403,33 @@ namespace MonoDevelop.MacInterop
 
 		static unsafe SecKeychainAttributeList *GetAttributeListFromKeychainItemRef (IntPtr itemRef)
 		{
-			uint[] attributeTags = {(uint) SecItemAttr.Account};
-			uint[] formatConstants = {CSSM_DB_ATTRIBUTE_FORMAT_STRING};
+			int[] attributeTags = {(int) SecItemAttr.Account};
+			int[] formatConstants = {CSSM_DB_ATTRIBUTE_FORMAT_STRING};
 
-			var attributeInfo = new SecKeychainAttributeInfo {
-				Count = 1,
-				Tag = attributeTags,
-				Format = formatConstants
-			};
+			fixed (int* tags = attributeTags) {
+				fixed (int* formats = formatConstants) {
+					var attributeInfo = new SecKeychainAttributeInfo {
+						Count = 1,
+						Tag = tags,
+						Format = formats
+					};
 
-			uint length = 0;
-			IntPtr outData = IntPtr.Zero;
-			SecKeychainAttributeList* attributeList;
-			OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, 
-			                                                                 IntPtr.Zero, &attributeList, 
-			                                                                 ref length, ref outData);
+					uint length = 0;
+					IntPtr outData = IntPtr.Zero;
+					SecKeychainAttributeList* attributeList;
+					OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, 
+					                                                                 IntPtr.Zero, &attributeList, 
+					                                                                 ref length, ref outData);
 
-			if (attributeStatus == OSStatus.ItemNotFound)
-				throw new Exception ("Could not add internet password to keychain: " + GetError (attributeStatus));
+					if (attributeStatus == OSStatus.ItemNotFound)
+						throw new Exception ("Could not add internet password to keychain: " + GetError (attributeStatus));
 
-			if (attributeStatus != OSStatus.Ok)
-				throw new Exception ("Could not find internet username and password: " + GetError (attributeStatus));
+					if (attributeStatus != OSStatus.Ok)
+						throw new Exception ("Could not find internet username and password: " + GetError (attributeStatus));
 
-			return attributeList;
+					return attributeList;
+				}
+			}
 		}
 
 		static unsafe SecKeychainAttribute *GetUsernameAttributeFromAttributeList (SecKeychainAttributeList *attributeList)
