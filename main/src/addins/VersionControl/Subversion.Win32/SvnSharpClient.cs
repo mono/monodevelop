@@ -622,6 +622,9 @@ namespace SubversionAddinWindows
 				return;
 
 			int currentProgress = (int)e.Progress;
+			if (currentProgress == 0)
+				return;
+
 			int totalProgress = (int)e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				data.LogTimer.Close ();

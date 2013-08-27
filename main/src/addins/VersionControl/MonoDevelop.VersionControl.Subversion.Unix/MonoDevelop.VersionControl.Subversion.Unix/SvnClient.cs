@@ -1202,6 +1202,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return;
 
 			int currentProgress = (int)progress;
+			if (currentProgress == 0)
+				return;
+
 			int totalProgress = (int)total;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				progressData.LogTimer.Close ();
