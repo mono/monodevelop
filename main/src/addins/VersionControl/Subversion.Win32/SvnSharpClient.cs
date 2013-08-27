@@ -115,6 +115,9 @@ namespace SubversionAddinWindows
 			client.Progress += delegate (object sender, SvnProgressEventArgs e) {
 				ProgressWork (e, progressData, updateMonitor);
 			};
+			client.Cancel += delegate (object o, SvnCancelEventArgs a) {
+				a.Cancel = updateMonitor.IsCancelRequested;
+			};
 		}
 
 		void AuthenticationUserNamePasswordHandlers (object sender, SvnUserNamePasswordEventArgs e)
@@ -188,8 +191,14 @@ namespace SubversionAddinWindows
 			SvnCheckOutArgs args = new SvnCheckOutArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
-			lock (client)
-				client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+			lock (client) {
+				try {
+					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+				} catch (SvnOperationCanceledException e) {
+					if (Directory.Exists (path.ParentDirectory))
+						FileService.DeleteDirectory (path.ParentDirectory);
+				}
+			}
 		}
 
 		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
@@ -605,9 +614,6 @@ namespace SubversionAddinWindows
 
 			args.Notify += delegate (object o, SvnNotifyEventArgs e) {
 				Notify (e, data, monitor);
-			};
-			args.Cancel += delegate (object o, SvnCancelEventArgs a) {
-				a.Cancel = monitor.IsCancelRequested;
 			};
 			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
 				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
