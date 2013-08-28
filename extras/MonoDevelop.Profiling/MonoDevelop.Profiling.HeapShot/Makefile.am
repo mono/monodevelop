@@ -26,8 +26,8 @@ FILES =  \
 	Snapshot/TypeInfo.cs
 
 RES =  \
-	gtk-gui/gui.stetic,MonoDevelop.Profiling.HeapShot.gui.stetic \
-	MonoDevelop.Profiling.HeapShot.addin.xml,MonoDevelop.Profiling.HeapShot.MonoDevelop.Profiling.HeapShot.addin.xml
+	gtk-gui/gui.stetic \
+	MonoDevelop.Profiling.HeapShot.addin.xml
 
 all: $(ASSEMBLY)
 
