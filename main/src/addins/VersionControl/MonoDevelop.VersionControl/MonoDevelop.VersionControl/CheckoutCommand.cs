@@ -46,14 +46,19 @@ namespace MonoDevelop.VersionControl
 		protected override IProgressMonitor CreateProgressMonitor ()
 		{
 			return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
-				new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true),
-				base.CreateProgressMonitor ()
+				base.CreateProgressMonitor (),
+				new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true)
 			);
 		}
 		
 		protected override void Run () 
 		{
 			vc.Checkout (path, null, true, Monitor);
+			if (Monitor.IsCancelRequested) {
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
+				return;
+			}
+
 			string projectFn = null;
 			
 			string[] list = System.IO.Directory.GetFiles(path);
