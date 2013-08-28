@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
 		IAsyncOperation asyncOperation;
+		public event EventHandler OperationCancelled;
 		
 		public ProgressDialog (bool allowCancel, bool showDetails): this (null, allowCancel, showDetails)
 		{
@@ -165,10 +166,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				label.Text = GettextCatalog.GetString ("Operation successfully completed.");
 		}
 		
-		protected void OnBtnCancelClicked (object sender, System.EventArgs e)
+		protected void OnBtnCancelClicked (object sender, EventArgs e)
 		{
 			if (asyncOperation != null)
 				asyncOperation.Cancel ();
+
+			if (OperationCancelled != null)
+				OperationCancelled (this, null);
 		}
 		
 		bool UpdateSize ()

@@ -210,6 +210,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		LibSvnClient.NotifyLockState requiredLockState;
 
 		// retain this so the delegates aren't GC'ed
+		LibSvnClient.svn_cancel_func_t cancel_func;
 		LibSvnClient.svn_ra_progress_notify_func_t progress_func;
 		LibSvnClient.svn_wc_notify_func2_t notify_func;
 		LibSvnClient.svn_client_get_commit_log_t log_func;
@@ -253,6 +254,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			Marshal.WriteIntPtr (ctx,
 			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "progress_func"),
 			                     Marshal.GetFunctionPointerForDelegate (progress_func));
+			cancel_func = new LibSvnClient.svn_cancel_func_t (svn_cancel_func_t_impl);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "cancel_func"),
+			                     Marshal.GetFunctionPointerForDelegate (cancel_func));
+
 
 			// Load user and system configuration
 			svn.config_get_config (ref config_hash, null, pool);
@@ -755,6 +761,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				url = NormalizePath (new Uri(url).ToString(), localpool);
 				string npath = NormalizePath (path, localpool);
 				CheckError (svn.client_checkout (IntPtr.Zero, url, npath, ref rev, recurse, ctx, localpool));
+			} catch (SubversionException e) {
+				if (e.ErrorCode != 200015)
+					throw;
+
+				if (Directory.Exists (path.ParentDirectory))
+					FileService.DeleteDirectory (path.ParentDirectory);
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
@@ -1186,6 +1198,20 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return !(mimeType.StartsWith ("text/", StringComparison.Ordinal) || 
 			         mimeType == "image/x-xbitmap" || 
 			         mimeType == "image/x-xpixmap");
+		}
+
+		IntPtr svn_cancel_func_t_impl (IntPtr baton)
+		{
+			if (updatemonitor == null || !updatemonitor.IsCancelRequested)
+				return IntPtr.Zero;
+
+			LibSvnClient.svn_error_t err = new LibSvnClient.svn_error_t ();
+			err.apr_err = 200015;
+			err.message = "The operation was interrupted";
+
+			IntPtr localpool = newpool (IntPtr.Zero);
+			err.pool = localpool;
+			return apr.pcalloc (localpool, err);
 		}
 
 		class ProgressData
