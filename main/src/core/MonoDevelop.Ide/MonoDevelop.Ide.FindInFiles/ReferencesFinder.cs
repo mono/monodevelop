@@ -190,8 +190,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					yield break;
 				}
-				if (member is IMember && searchForAllOverloads)
-					searchNodes = CollectMembers (solution, (IMember)member, scope).ToList<object> ();
+				if (member is IMember)
+					searchNodes = CollectMembers (solution, (IMember)member, scope, searchForAllOverloads).ToList<object> ();
 			}
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
@@ -236,9 +236,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers);
 
-		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope)
+		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope, bool includeOverloads = true)
 		{
-			return MemberCollector.CollectMembers (solution, member, scope);
+			return MemberCollector.CollectMembers (solution, member, scope, includeOverloads);
 		}
 		
 		internal static IEnumerable<IEntity> CollectMembers (IType type)

@@ -100,9 +100,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		MemberReference GetReference (Project project, ResolveResult result, AstNode node, SyntaxTree syntaxTree, string fileName, Mono.TextEditor.TextEditorData editor)
 		{
 			AstNode originalNode = node;
-			if (result == null) {
+			if (result == null)
 				return null;
-			}
 
 			object valid = null;
 			if (result is MethodGroupResolveResult) {
@@ -122,8 +121,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType);
-			} else {
-				valid = searchedMembers.FirstOrDefault ();
 			}
 			if (node is ConstructorInitializer)
 				return null;
@@ -181,7 +178,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
 			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;
-
+			if (valid == null)
+				valid = searchedMembers.FirstOrDefault ();
 			var reference = new CSharpMemberReference (project, originalNode, syntaxTree, valid, region, editor.LocationToOffset (region.Begin), length);
 
 			reference.ReferenceUsageType = GetUsage (originalNode);

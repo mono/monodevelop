@@ -30,6 +30,7 @@ using Mono.Addins;
 using MonoDevelop.VersionControl;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.LogReporting;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -44,10 +45,23 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var document = Ide.IdeApp.Workbench.ActiveDocument;
 			try {
-				if (document == null || !document.IsFile || document.Project == null || document.Window.FindView<IDiffView> () >= 0)
+				if (document == null || !document.IsFile || document.Window.FindView<IDiffView> () >= 0)
 					return;
+
+				IWorkspaceObject project = document.Project;
+				if (project == null) {
+					// Fix for broken .csproj and .sln files not being seen as having a project.
+					foreach (var projItem in Ide.IdeApp.Workspace.GetAllSolutionItems<UnknownSolutionItem> ()) {
+						if (projItem.FileName == document.FileName) {
+							project = projItem;
+						}
+					}
+
+					if (project == null)
+						return;
+				}
 				
-				var repo = VersionControlService.GetRepository (document.Project);
+				var repo = VersionControlService.GetRepository (project);
 				if (repo == null)
 					return;
 
@@ -55,7 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (!versionInfo.IsVersioned)
 					return;
 
-				var item = new VersionControlItem (repo, document.Project, document.FileName, false, null);
+				var item = new VersionControlItem (repo, project, document.FileName, false, null);
 				var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
 				TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
 				TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);

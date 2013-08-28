@@ -96,10 +96,10 @@ namespace MonoDevelop.CodeActions
 			Fixes = null;
 			base.Dispose ();
 		}
-		TextLocation loc;
+		//TextLocation loc;
 		void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
 		{
-			this.loc = loc;
+			//this.loc = loc;
 			var editor = document.Editor;
 			var container = editor.Parent;
 			var point = editor.Parent.LocationToPoint (loc);

@@ -72,18 +72,21 @@ namespace MonoDevelop.VersionControl.Subversion
 		[CommandUpdateHandler (Commands.Resolve)]
 		protected void UpdateResolve (CommandInfo item)
 		{
-			foreach (VersionControlItem vit in GetItems ()) {
+			foreach (VersionControlItem vit in GetItems (false)) {
 				if (!(vit.Repository is SubversionRepository)) {
 					item.Visible = false;
 					return;
 				}
 				
-				if (!vit.IsDirectory) {
-					VersionInfo vi = vit.Repository.GetVersionInfo (vit.Path);
-					if (vi != null && (vi.Status & VersionStatus.Conflicted) == 0) {
-						item.Visible = false;
-						return;
-					}
+				if (vit.IsDirectory) {
+					item.Visible = false;
+					return;
+				}
+
+				VersionInfo vi = vit.Repository.GetVersionInfo (vit.Path);
+				if (vi != null && (vi.Status & VersionStatus.Conflicted) == 0) {
+					item.Visible = false;
+					return;
 				}
 			}
 		}

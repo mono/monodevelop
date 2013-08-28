@@ -58,8 +58,15 @@ namespace MonoDevelop.SourceEditor
 			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 			editor.MotionNotifyEvent += HandleMotionNotifyEvent;
 			editor.TextArea.BeginHover += HandleBeginHover;
+			editor.VAdjustment.ValueChanged += HandleValueChanged;
+			editor.HAdjustment.ValueChanged += HandleValueChanged;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
 			tooltipFontDescription = FontService.GetFontDescription ("MessageBubbleTooltip");
+		}
+
+		void HandleValueChanged (object sender, EventArgs e)
+		{
+			DestroyPopoverWindow ();
 		}
 
 		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
@@ -79,7 +86,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		MessageBubblePopoverWindow popoverWindow;
 
-		
+		internal static readonly Cairo.Color ShadowColor = new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.12 : 0.2);
+
 		class MessageBubblePopoverWindow : PopoverWindow
 		{
 			readonly MessageBubbleCache cache;
@@ -90,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 				this.cache = cache;
 				this.marker = marker;
 				ShowArrow = true;
-				Opacity = 0.9;
+				Opacity = 0.93;
 				Theme.ArrowLength = 7;
 			}
 
@@ -172,12 +180,11 @@ namespace MonoDevelop.SourceEditor
 
 						g.Save ();
 
-						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width + 1: textBorder, y + verticalTextSpace / 2 + 1);
-
-						g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.1));
+						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2 + 1);
+						g.SetSourceColor (ShadowColor);
 						g.ShowLayout (drawingLayout);
 
-						g.Translate (-1, -1);
+						g.Translate (0, -1);
 
 						g.SetSourceColor (marker.TagColor.SecondColor);
 						g.ShowLayout (drawingLayout);
@@ -245,7 +252,7 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 
-		void DestroyPopoverWindow ()
+		internal void DestroyPopoverWindow ()
 		{
 			if (popoverWindow != null) {
 				popoverWindow.Destroy ();
@@ -257,6 +264,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			CancelHoverTimeout ();
 			DestroyPopoverWindow ();
+			editor.VAdjustment.ValueChanged -= HandleValueChanged;
+			editor.HAdjustment.ValueChanged -= HandleValueChanged;
 			editor.TextArea.BeginHover -= HandleBeginHover;
 			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
 			editor.MotionNotifyEvent -= HandleMotionNotifyEvent;

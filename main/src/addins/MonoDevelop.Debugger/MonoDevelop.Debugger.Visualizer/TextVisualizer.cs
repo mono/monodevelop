@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Debugger.Visualizer
 {
-	public class TextVisualizer: IValueVisualizer
+	public class TextVisualizer: ValueVisualizer
 	{
 		const int CHUNK_SIZE = 1024;
 		
@@ -50,17 +50,22 @@ namespace MonoDevelop.Debugger.Visualizer
 		{
 		}
 		
-		public string Name {
+		public override string Name {
 			get { return GettextCatalog.GetString ("Text"); }
 		}
 		
-		public bool CanVisualize (ObjectValue val)
+		public override bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "char[]": return true;
 			case "string": return true;
 			default: return false;
 			}
+		}
+
+		public override bool IsDefaultVisualizer (ObjectValue val)
+		{
+			return true;
 		}
 		
 		bool GetNextStringChunk ()
@@ -118,7 +123,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			}
 		}
 
-		public Widget GetVisualizerWidget (ObjectValue val)
+		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
 			textView = new TextView () { WrapMode = WrapMode.Char };
 
@@ -150,7 +155,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			return box;
 		}
 		
-		public bool StoreValue (ObjectValue val)
+		public override bool StoreValue (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "char[]":
@@ -164,7 +169,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			}
 		}
 		
-		public bool CanEdit (ObjectValue val)
+		public override bool CanEdit (ObjectValue val)
 		{
 			switch (val.TypeName) {
 			case "char[]": return true;

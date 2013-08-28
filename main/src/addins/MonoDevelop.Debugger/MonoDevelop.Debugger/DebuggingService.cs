@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.Semantics;
  * exceptions, now we error out silently, this needs a real solution.
  */
 using MonoDevelop.Ide.TextEditing;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
@@ -184,19 +185,27 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		internal static IEnumerable<IValueVisualizer> GetValueVisualizers (ObjectValue val)
+		internal static IEnumerable<ValueVisualizer> GetValueVisualizers (ObjectValue val)
 		{
-			foreach (IValueVisualizer v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false))
-				if (v.CanVisualize (val))
-					yield return v;
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false)) {
+				if (v is ValueVisualizer) {
+					var vv = (ValueVisualizer)v;
+					if (vv.CanVisualize (val))
+						yield return vv;
+				}
+#pragma warning disable 618
+				if (v is IValueVisualizer) {
+					var vv = (IValueVisualizer)v;
+					if (vv.CanVisualize (val))
+						yield return new ValueVisualizerWrapper (vv);
+				}
+#pragma warning restore 618
+			}
 		}
 		
 		internal static bool HasValueVisualizers (ObjectValue val)
 		{
-			foreach (IValueVisualizer v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false))
-				if (v.CanVisualize (val))
-					return true;
-			return false;
+			return GetValueVisualizers (val).Any ();
 		}
 		
 		public static void ShowValueVisualizer (ObjectValue val)

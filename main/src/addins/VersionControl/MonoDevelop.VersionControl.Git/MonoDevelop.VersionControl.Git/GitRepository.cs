@@ -377,7 +377,7 @@ namespace MonoDevelop.VersionControl.Git
 			return ops;
 		}
 
-		void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
+		static void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
 		{
 			if (!Directory.Exists (dir))
 				return;
@@ -868,7 +868,15 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetCloneSubmodules (true);
 			using (var gm = new GitMonitor (monitor, 4)) {
 				cmd.SetProgressMonitor (gm);
-				cmd.Call ();
+				try {
+					cmd.Call ();
+				} catch (NGit.Api.Errors.JGitInternalException e) {
+					// We cancelled and NGit throws.
+					if (e.InnerException is NGit.Errors.MissingObjectException ||
+						e.InnerException is NGit.Errors.TransportException) {
+						FileService.DeleteDirectory (targetLocalPath);
+					}
+				}
 			}
 		}
 
@@ -1404,7 +1412,7 @@ namespace MonoDevelop.VersionControl.Git
 			var refs = RootRepository.RefDatabase.GetRefs (Constants.R_REMOTES);
 			foreach (var pair in refs) {
 				string name = NGit.Repository.ShortenRefName (pair.Key);
-				if (name.StartsWith (remoteName + "/"))
+				if (name.StartsWith (remoteName + "/", StringComparison.Ordinal))
 					yield return name.Substring (remoteName.Length + 1);
 			}
 		}

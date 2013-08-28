@@ -26,7 +26,8 @@ namespace MonoDevelop.VersionControl
 		HideAnnotations,
 		CreatePatch,
 		Ignore,
-		Unignore
+		Unignore,
+		ResolveConflicts
 	}
 	
 	class SolutionVersionControlCommandHandler: CommandHandler

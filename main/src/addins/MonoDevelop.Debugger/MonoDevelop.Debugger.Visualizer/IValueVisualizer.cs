@@ -29,6 +29,7 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
+	[Obsolete ("Please use the ValueVisualizer class")]
 	public interface IValueVisualizer
 	{
 		/// <summary>
@@ -105,6 +106,49 @@ namespace MonoDevelop.Debugger
 		/// Editing support is optional. 
 		/// </remarks>
 		bool CanEdit (ObjectValue val);
+	}
+
+	class ValueVisualizerWrapper: ValueVisualizer
+	{
+#pragma warning disable 618
+		IValueVisualizer wrapped;
+
+		public ValueVisualizerWrapper (IValueVisualizer wrapped)
+		{
+			this.wrapped = wrapped;
+		}
+#pragma warning restore 618
+
+		public override bool CanVisualize (ObjectValue val)
+		{
+			return wrapped.CanVisualize (val);
+		}
+
+		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
+		{
+			return wrapped.GetVisualizerWidget (val);
+		}
+
+		public override string Name {
+			get {
+				return wrapped.Name;
+			}
+		}
+
+		public override bool CanEdit (ObjectValue val)
+		{
+			return wrapped.CanEdit (val);
+		}
+
+		public override bool IsDefaultVisualizer (ObjectValue val)
+		{
+			return false;
+		}
+
+		public override bool StoreValue (ObjectValue val)
+		{
+			return wrapped.StoreValue (val);
+		}
 	}
 }
 

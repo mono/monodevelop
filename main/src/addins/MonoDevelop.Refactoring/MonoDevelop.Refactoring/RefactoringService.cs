@@ -38,15 +38,14 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
-		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
-		static List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
+		static readonly List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
+		static readonly List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
+		static readonly List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
 		
 		public static IEnumerable<CodeActionProvider> ContextAddinNodes {
 			get {
@@ -134,7 +133,7 @@ namespace MonoDevelop.Refactoring
 		
 		class RenameHandler 
 		{
-			IEnumerable<Change> changes;
+			readonly IEnumerable<Change> changes;
 			public RenameHandler (IEnumerable<Change> changes)
 			{
 				this.changes = changes;
@@ -196,18 +195,18 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		public static Task<IEnumerable<MonoDevelop.CodeActions.CodeAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			var editor = doc.Editor;
+			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
 			return Task.Factory.StartNew (delegate {
-				var result = new List<MonoDevelop.CodeActions.CodeAction> ();
+				var result = new List<CodeAction> ();
 				try {
-					var editor = doc.Editor;
 					var parsedDocument = doc.ParsedDocument;
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
 						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
 						if (ctx != null) {
-							string disabledNodes = PropertyService.Get ("ContextActions." + editor.Document.MimeType, "") ?? "";
-							foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
+							foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0)) {
 								try {
 									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
 								} catch (Exception ex) {
@@ -219,18 +218,18 @@ namespace MonoDevelop.Refactoring
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
 				}
-				return (IEnumerable<MonoDevelop.CodeActions.CodeAction>)result;
+				return (IEnumerable<CodeAction>)result;
 			}, cancellationToken);
 		}
 
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken token, Action<List<MonoDevelop.CodeActions.CodeAction>> callback)
+		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
 
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					var result = new List<MonoDevelop.CodeActions.CodeAction> ();
+					var result = new List<CodeAction> ();
 					foreach (var r in issues) {
 						if (token.IsCancellationRequested)
 							return;
@@ -272,8 +271,9 @@ namespace MonoDevelop.Refactoring
 		
 		public static void ApplyFix (CodeAction action, object context)
 		{
-			if (context is IScriptProvider) {
-				using(var script = ((IScriptProvider)context).CreateScript ()) {
+			var scriptProvider = context as IScriptProvider;
+			if (scriptProvider != null) {
+				using(var script = scriptProvider.CreateScript ()) {
 					action.Run (context, script);
 				}
 			} else {

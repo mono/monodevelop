@@ -16,7 +16,11 @@
 		{ "name":"monokai-classname", "value":"#A6E22E" },
 		{ "name":"monokai-functionargument", "value":"#FD971F" },
 		{ "name":"monokai-invalid", "value":"#F8F8F0" },
-		{ "name":"monokai-invalidBackground", "value":"#F92672" }
+		{ "name":"monokai-invalidBackground", "value":"#F92672" },
+		{ "name":"skyblue1", "value":"#729fcf" },
+		{ "name":"chameleon1", "value":"#8ae234" },
+		{ "name":"chameleon2", "value":"#73d216" },
+		{ "name":"chameleon3", "value":"#4e9a06" }
 	],
 
 	"colors":[
@@ -49,9 +53,9 @@
 		{ "name": "Bookmarks", "color":"#FDD99B", "secondcolor":"#816647 " },
 
 		{ "name": "Underline(Error)", "color":"red" },
-		{ "name": "Underline(Warning)", "color":"#FFA500" },
-		{ "name": "Underline(Suggestion)", "color":"#8FC68F" },
-		{ "name": "Underline(Hint)", "color":"#8F8FC6" },
+		{ "name": "Underline(Warning)", "color":"skyblue1" },
+		{ "name": "Underline(Suggestion)", "color":"chameleon3" },
+		{ "name": "Underline(Hint)", "color":"chameleon1" },
 		
 		{ "name": "Quick Diff(Dirty)", "color":"monokai-string" },
 		{ "name": "Quick Diff(Changed)", "color":"#A4E22E" },

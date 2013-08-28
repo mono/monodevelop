@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 	
 	public class HighlightUrlSemanticRule : SemanticRule
 	{
-		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\._/\-~%@()+:?&=#!]*[\w\d/]";
+		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\.,;_/\-~%@()+:?&^=#!]*[\w\d/]";
 		
 		public static readonly Regex UrlRegex  = new Regex (urlRegexStr, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		public static readonly Regex MailRegex = new Regex (@"[\w\d._%+-]+@[\w\d.-]+\.\w{2,4}", RegexOptions.Compiled);

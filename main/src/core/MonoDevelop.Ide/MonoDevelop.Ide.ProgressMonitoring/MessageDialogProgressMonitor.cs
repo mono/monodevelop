@@ -27,10 +27,7 @@
 //
 
 using System;
-using System.Collections.Specialized;
-using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Ide.ProgressMonitoring
@@ -68,6 +65,9 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
 				dialog.Show ();
 				dialog.AsyncOperation = AsyncOperation;
+				dialog.OperationCancelled += delegate {
+					OnCancelRequested ();
+				};
 				RunPendingEvents ();
 				this.hideWhenDone = hideWhenDone;
 				this.showDetails = showDetails;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
 			base.OnCompleted ();
 		}
-		
+
 		void ShowDialogs ()
 		{
 			if (dialog != null) {

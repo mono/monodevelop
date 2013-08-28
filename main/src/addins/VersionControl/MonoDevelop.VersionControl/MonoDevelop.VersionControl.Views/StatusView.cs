@@ -1078,6 +1078,7 @@ namespace MonoDevelop.VersionControl.Views
 				StatusView view = doc.GetContent<StatusView> ();
 				if (view != null && view.filepath == filepath) {
 					doc.Select ();
+					view.StartUpdate ();
 					return true;
 				}
 			}

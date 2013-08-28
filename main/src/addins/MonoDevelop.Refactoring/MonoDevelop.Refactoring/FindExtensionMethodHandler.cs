@@ -37,12 +37,12 @@ namespace MonoDevelop.Refactoring
 {
 	public class FindExtensionMethodHandler 
 	{
-		Ide.Gui.Document doc;
+		//Ide.Gui.Document doc;
 		ITypeDefinition entity;
 
 		public FindExtensionMethodHandler (Ide.Gui.Document doc, ITypeDefinition entity)
 		{
-			this.doc = doc;
+			//this.doc = doc;
 			this.entity = entity;
 		}
 
