@@ -32,7 +32,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public enum MoveToUsagesCommand {
+	enum MoveToUsagesCommand {
 		PrevUsage,
 		NextUsage
 	}

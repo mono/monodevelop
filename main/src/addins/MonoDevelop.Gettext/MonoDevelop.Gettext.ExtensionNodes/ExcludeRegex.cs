@@ -31,7 +31,7 @@ using Mono.Addins;
 namespace MonoDevelop.Gettext.ExtensionNodes
 {
 	[ExtensionNode ("Exclude", Description="A regular expresion that defines a region of the file to be excluded by the string scanner.")]
-	public class ExcludeExtensionNode: ExtensionNode
+	class ExcludeExtensionNode: ExtensionNode
 	{
 		[NodeAttribute ("regex", Required=true, Description="Regular expression")]
 		string regexValue = null;

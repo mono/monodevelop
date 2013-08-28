@@ -41,7 +41,8 @@ THE SOFTWARE.
 	<IndentBreakStatements>True</IndentBreakStatements>
 	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
 	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
-	<PropertyFormatting>AllowOneLine</PropertyFormatting>
+	<SimplePropertyFormatting>AllowOneLine</SimplePropertyFormatting>
+	<AutoPropertyFormatting>AllowOneLine</AutoPropertyFormatting>
 	<NamespaceBraceStyle>NextLine</NamespaceBraceStyle>
 	<ClassBraceStyle>NextLine</ClassBraceStyle>
 	<InterfaceBraceStyle>NextLine</InterfaceBraceStyle>
@@ -54,8 +55,8 @@ THE SOFTWARE.
 	<PropertyBraceStyle>NextLine</PropertyBraceStyle>
 	<PropertyGetBraceStyle>NextLine</PropertyGetBraceStyle>
 	<PropertySetBraceStyle>NextLine</PropertySetBraceStyle>
-	<AllowPropertyGetBlockInline>True</AllowPropertyGetBlockInline>
-	<AllowPropertySetBlockInline>True</AllowPropertySetBlockInline>
+	<SimpleGetBlockFormatting>AllowOneLine</SimpleGetBlockFormatting>
+	<SimpleSetBlockFormatting>AllowOneLine</SimpleSetBlockFormatting>
 	<EventBraceStyle>NextLine</EventBraceStyle>
 	<EventAddBraceStyle>NextLine</EventAddBraceStyle>
 	<EventRemoveBraceStyle>NextLine</EventRemoveBraceStyle>
@@ -64,7 +65,7 @@ THE SOFTWARE.
 	<StatementBraceStyle>NextLine</StatementBraceStyle>
 	<AllowIfBlockInline>False</AllowIfBlockInline>
 	<ElseNewLinePlacement>NewLine</ElseNewLinePlacement>
-	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
+	<ElseIfNewLinePlacement>SameLine</ElseIfNewLinePlacement>
 	<CatchNewLinePlacement>NewLine</CatchNewLinePlacement>
 	<FinallyNewLinePlacement>NewLine</FinallyNewLinePlacement>
 	<WhileNewLinePlacement>DoNotCare</WhileNewLinePlacement>

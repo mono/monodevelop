@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public static class ContextActionExtensions
+	static class ContextActionExtensions
 	{
 		public static int CalcIndentLevel (this MonoDevelop.Ide.Gui.Document doc, string indent)
 		{

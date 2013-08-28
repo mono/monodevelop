@@ -28,7 +28,7 @@ using System;
 
 namespace ILAsmBinding
 {
-	public class ILAsmCompilerParameters : MonoDevelop.Projects.ConfigurationParameters
+	class ILAsmCompilerParameters : MonoDevelop.Projects.ConfigurationParameters
 	{
 		public override void AddDefineSymbol (string symbol)
 		{

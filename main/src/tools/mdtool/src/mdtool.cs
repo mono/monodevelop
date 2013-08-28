@@ -34,53 +34,102 @@ using Mono.Addins;
 using Mono.Addins.Setup;
 using System.IO;
 using System.Collections;
+using MonoDevelop.Core.Logging;
 
 public class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
 		try {
-			Runtime.Initialize (false);
 			Runtime.SetProcessName ("mdtool");
-			
-			if (args.Length == 0 || args [0] == "--help") {
-				Console.WriteLine ();
-				Console.WriteLine ("MonoDevelop Tool Runner");
-				Console.WriteLine ();
-				Console.WriteLine ("Usage: mdtool [options] <tool> ... : Runs a tool.");
-				Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
-				Console.WriteLine ("       mdtool -q : Lists available tools.");
-				Console.WriteLine ();
-				Console.WriteLine ("Options:");
-				Console.WriteLine ("  --verbose (-v): Enable verbose log.");
-				Console.WriteLine ();
-				ShowAvailableApps ();
-				return 0;
+
+			EnabledLoggingLevel verbosity = EnabledLoggingLevel.Fatal;
+			bool regUpdate = true;
+			bool listTools = false;
+			bool showHelp = false;
+			bool badInput = false;
+
+			//read the arguments to mdtool itself
+			int pi = 0;
+			while (pi < args.Length && (args[pi][0] == '-' || args[pi][0] == '/')) {
+				string arg = args[pi];
+				pi++;
+				switch (arg) {
+				case "-v":
+				case "/v":
+				case "--verbose":
+				case "/verbose":
+					verbosity = (EnabledLoggingLevel)((int)verbosity << 1) | EnabledLoggingLevel.Fatal;
+					continue;
+				case "-q":
+				case "/q":
+					listTools = true;
+					continue;
+				case "--no-reg-update":
+				case "/no-reg-update":
+				case "-nru":
+				case "/nru":
+					regUpdate = false;
+					continue;
+				case "-h":
+				case "/h":
+				case "--help":
+				case "/help":
+					showHelp = true;
+					continue;
+				default:
+					Console.Error.WriteLine ("Unknown argument '{0}'", arg);
+					badInput = true;
+					break;
+				}
 			}
 
-			if (args [0] == "-q") {
-				ShowAvailableApps ();
-				return 0;
+			//determine the tool name and arguments
+			string toolName = null;
+			string[] toolArgs = null;
+			if (!showHelp && !listTools && !badInput) { 
+				if (pi < args.Length) {
+					toolName = args[pi];
+					toolArgs = new string [args.Length - 1 - pi];
+					Array.Copy (args, pi + 1, toolArgs, 0, args.Length - 1 - pi);
+				} else if (args.Length == 0) {
+					showHelp = true;
+				} else {
+					Console.Error.WriteLine ("No tool specified");
+					badInput = true;
+				}
 			}
-			
-			// Don't log to console unless verbose log is requested
-			var logger = (MonoDevelop.Core.Logging.ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
-			int pi = 0;
-			if (args [0] == "-v" || args [0] == "--verbose") {
-				pi++;
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToWarn;
-			} else {
-				// Disable logging (except fatal errors) if verbose is not specified. Command line tools should already
-				// be providing feedback using the console.
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.Fatal;
+
+			//setup app needs to skip runtime initialization or we get addin engine races
+			if (toolName == "setup") {
+				return RunSetup (toolArgs);
 			}
-			
-			string[] newArgs = new string [args.Length - 1 - pi];
-			Array.Copy (args, pi + 1, newArgs, 0, args.Length - 1 - pi);
-			if (args [pi] != "setup")
-				return Runtime.ApplicationService.StartApplication (args [pi], newArgs);
-			else
-				return RunSetup (newArgs);
+
+			// Only log fatal errors unless verbosity is specified. Command line tools should already
+			// be providing feedback using the console.
+			var logger = (ConsoleLogger)LoggingService.GetLogger ("ConsoleLogger");
+			logger.EnabledLevel = verbosity;
+
+			Runtime.Initialize (regUpdate);
+
+			if (showHelp || badInput) {
+				ShowHelp (badInput);
+				return badInput? 1 : 0;
+			}
+
+			var tool = Runtime.ApplicationService.GetApplication (toolName);
+			if (tool == null) {
+				Console.Error.WriteLine ("Tool '{0}' not found.", toolName);
+				listTools = true;
+				badInput = true;
+			}
+
+			if (listTools) {
+				ShowAvailableTools ();
+				return badInput? 1 : 0;
+			}
+
+			return tool.Run (toolArgs);
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			return -1;
@@ -95,6 +144,28 @@ public class MonoDevelopProcessHost
 			}
 		}
 	}
+
+	static void ShowHelp (bool shortHelp)
+	{
+		if (shortHelp) {
+			Console.WriteLine ();
+			Console.WriteLine ("Run `mdtool --help` to show usage information.");
+			Console.WriteLine ();
+			return;
+		}
+		Console.WriteLine ();
+		Console.WriteLine ("MonoDevelop Tool Runner");
+		Console.WriteLine ();
+		Console.WriteLine ("Usage: mdtool [options] <tool> ... : Runs a tool.");
+		Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
+		Console.WriteLine ("       mdtool -q : Lists available tools.");
+		Console.WriteLine ();
+		Console.WriteLine ("Options:");
+		Console.WriteLine ("  --verbose (-v)   Increases log verbosity. Can be used multiple times.");
+		Console.WriteLine ("  --no-reg-update  Skip updating addin registry. Faster but results in");
+		Console.WriteLine ("                   random errors if registry is not up to date.");
+		ShowAvailableTools ();
+	}
 	
 	static int RunSetup (string[] args)
 	{
@@ -104,17 +175,22 @@ public class MonoDevelopProcessHost
 			if (a == "-v")
 				verbose = true;
 	
-		SetupTool setupTool = new SetupTool (AddinManager.Registry);
+		string startupDir, configDir, addinsDir, databaseDir;
+		string asmFile = new Uri (System.Reflection.Assembly.GetEntryAssembly ().CodeBase).LocalPath;
+		startupDir = System.IO.Path.GetDirectoryName (asmFile);
+		Runtime.GetAddinRegistryLocation (out configDir, out addinsDir, out databaseDir);
+		SetupTool setupTool = new SetupTool (new AddinRegistry (configDir, startupDir, addinsDir, databaseDir));
 		setupTool.VerboseOutput = verbose;
 		return setupTool.Run (args);
 	}
 
-	static void ShowAvailableApps ()
+	static void ShowAvailableTools ()
 	{
+		Console.WriteLine ();
 		Console.WriteLine ("Available tools:");
 		foreach (IApplicationInfo ainfo in Runtime.ApplicationService.GetApplications ()) {
 			Console.Write ("- " + ainfo.Id);
-			if (ainfo.Description != null && ainfo.Description.Length > 0)
+			if (!string.IsNullOrEmpty (ainfo.Description))
 				Console.WriteLine (": " + ainfo.Description);
 			else
 				Console.WriteLine ();

@@ -29,6 +29,7 @@ using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System;
 using MonoDevelop.VersionControl;
 
@@ -37,6 +38,14 @@ namespace VersionControl.Subversion.Unix.Tests
 	[TestFixture]
 	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
+		SubversionBackend SvnClient {
+			get { return repo.Svn; }
+		}
+
+		new SubversionRepository repo {
+			get { return (SubversionRepository) base.repo; }
+		}
+
 		[SetUp]
 		public override void Setup ()
 		{
@@ -46,23 +55,76 @@ namespace VersionControl.Subversion.Unix.Tests
 		}
 
 		[Test]
-		public override void DiffIsProper ()
+		public void ListUrls ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			File.AppendAllText (added, "text" + Environment.NewLine);
+			AddFile ("test", "data", true, true);
+			AddDirectory ("foo", true, true);
+			var items = SvnClient.ListUrl (repo.Url, false).ToArray ();
+			Assert.AreEqual (2, items.Length, "#1");
+			Assert.IsTrue (items.Any (item => item.Name == "test" && !item.IsDirectory), "#2a");
+			Assert.IsTrue (items.Any (item => item.Name == "foo" && item.IsDirectory), "#2b");
+		}
 
+		protected override void TestDiff ()
+		{
 			string difftext = @"--- testfile	(revision 1)
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content);
+			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
+		}
+
+		// Tests that fail due to Subversion giving wrong data.
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void MovesFile ()
+		{
+			base.MovesFile ();
+		}
+
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void MovesDirectory ()
+		{
+			base.MovesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Fix Subversion")]
+		public override void DeletesDirectory ()
+		{
+			base.DeletesDirectory ();
+		}
+
+		[Test]
+		[Ignore ("Test fails on Lock")]
+		public override void LocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		protected override void PostLock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.Throws<Exception> (delegate {
+				File.WriteAllText (added, "text");
+			});
+		}
+
+		[Test]
+		[Ignore ("Test fails on Unlock")]
+		public override void UnlocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		protected override void PostUnlock ()
+		{
+			string added = rootCheckout + "testfile";
+			Assert.DoesNotThrow (delegate {
+				File.WriteAllText (added, "text");
+			});
 		}
 
 		protected override Repository GetRepo (string path, string url)

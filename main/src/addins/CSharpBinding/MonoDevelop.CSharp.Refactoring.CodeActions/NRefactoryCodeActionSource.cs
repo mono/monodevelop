@@ -29,17 +29,17 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class NRefactoryCodeActionSource : ICodeActionProviderSource
+	class NRefactoryCodeActionSource : ICodeActionProviderSource
 	{
 		#region ICodeActionProviderSource implementation
 		public IEnumerable<CodeActionProvider> GetProviders ()
 		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider).Assembly.GetTypes ()) {
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.AbstractAndVirtualConversionAction).Assembly.GetTypes ()) {
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.ContextActionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
 				yield return new NRefactoryCodeActionProvider (
-					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider)Activator.CreateInstance (t),
+					(ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.ContextActionAttribute)attr [0]);
 			}
 		}

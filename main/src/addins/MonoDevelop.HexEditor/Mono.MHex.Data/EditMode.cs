@@ -26,10 +26,11 @@
 
 using System;
 using Mono.MHex.Data;
+using Xwt;
 
 namespace Mono.MHex.Data
 {
-	public abstract class EditMode
+	abstract class EditMode
 	{
 		protected HexEditor Editor {
 			get;
@@ -39,7 +40,7 @@ namespace Mono.MHex.Data
 			get { return Editor.HexEditorData; } 
 		}
 		
-		internal void InternalHandleKeypress (HexEditor editor, Gdk.Key key, uint unicodeChar, Gdk.ModifierType modifier)
+		internal void InternalHandleKeypress (HexEditor editor, Key key, uint unicodeChar, ModifierKeys modifier)
 		{
 			this.Editor = editor; 
 			
@@ -49,6 +50,6 @@ namespace Mono.MHex.Data
 			this.Editor = null;
 		}
 
-		protected abstract void HandleKeypress (Gdk.Key key, uint unicodeChar, Gdk.ModifierType modifier);
+		protected abstract void HandleKeypress (Key key, uint unicodeChar, ModifierKeys modifier);
 	}
 }

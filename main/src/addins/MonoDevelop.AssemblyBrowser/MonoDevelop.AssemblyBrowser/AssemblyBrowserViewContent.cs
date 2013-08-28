@@ -38,7 +38,7 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyBrowserViewContent : AbstractViewContent, IUrlHandler, INavigable
+	class AssemblyBrowserViewContent : AbstractViewContent, IUrlHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;

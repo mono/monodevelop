@@ -32,25 +32,19 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
 	public class XmlClosingTagState : State
 	{
 		XmlNameState NameState;
-		XmlMalformedTagState MalformedTagState;
 		
 		public XmlClosingTagState ()
-			: this (new XmlNameState ()) {}
+			: this (new XmlNameState ())
+		{
+		}
 		
 		public XmlClosingTagState (XmlNameState nameState)
-			: this (nameState, new XmlMalformedTagState ()) {}
-		
-		public XmlClosingTagState (XmlNameState nameState, XmlMalformedTagState malformedTagState)
 		{
 			NameState = nameState;
-			MalformedTagState = malformedTagState;
 			Adopt (NameState);
-			Adopt (MalformedTagState);
 		}
 
 		public override State PushChar (char c, IParseContext context, ref string rollback)
@@ -125,9 +119,8 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			rollback = string.Empty;
-			//note: MalformedTagState logs an error, so skip this
-			//context.LogError ("Unexpected character '" + c + "' in closing tag.");
-			return MalformedTagState;
+			context.LogError ("Unexpected character '" + c + "' in closing tag.");
+			return Parent;
 		}
 	}
 }

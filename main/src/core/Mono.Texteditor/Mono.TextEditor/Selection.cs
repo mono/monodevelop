@@ -61,7 +61,12 @@ namespace Mono.TextEditor
 		
 		public bool Contains (DocumentLocation loc)
 		{
-			return anchor <= loc && loc <= lead || lead <= loc && loc <= anchor;
+			return anchor <= loc && loc <= lead || lead < loc && loc < anchor;
+		}
+
+		public bool Contains (int line, int column)
+		{
+			return  Contains (new DocumentLocation (line, column));
 		}
 
 		Selection(bool empty)

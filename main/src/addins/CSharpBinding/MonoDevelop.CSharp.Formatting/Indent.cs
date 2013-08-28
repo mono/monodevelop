@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class Indent
+	class Indent
 	{
 		public int Level {
 			get;

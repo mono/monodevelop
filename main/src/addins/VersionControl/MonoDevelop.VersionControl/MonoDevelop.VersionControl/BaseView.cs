@@ -1,15 +1,6 @@
 using System;
-using System.Collections;
-using System.IO;
-
-using Gtk;
-
-using MonoDevelop.Core;
- 
+using System.IO; 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl
 {

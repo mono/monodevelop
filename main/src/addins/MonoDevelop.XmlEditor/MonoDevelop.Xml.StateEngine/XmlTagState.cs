@@ -28,6 +28,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -35,28 +36,26 @@ namespace MonoDevelop.Xml.StateEngine
 	
 	public class XmlTagState : State
 	{
+		const int ATTEMPT_RECOVERY = 1;
+		const int RECOVERY_FOUND_WHITESPACE = 2;
+		const int MAYBE_SELF_CLOSING = 2;
+		const int OK = 0;
+
 		XmlAttributeState AttributeState;
 		XmlNameState NameState;
-		XmlMalformedTagState MalformedTagState;
 		
 		public XmlTagState () : this (new XmlAttributeState ()) {}
 		
 		public XmlTagState  (XmlAttributeState attributeState)
 			: this (attributeState, new XmlNameState ()) {}
 		
-		public XmlTagState  (XmlAttributeState attributeState, XmlNameState nameState)
-			: this (attributeState, nameState, new XmlMalformedTagState ()) {}
-		
-		public XmlTagState (XmlAttributeState attributeState, XmlNameState nameState,
-			XmlMalformedTagState malformedTagState)
+		public XmlTagState (XmlAttributeState attributeState, XmlNameState nameState)
 		{
 			this.AttributeState = attributeState;
 			this.NameState = nameState;
-			this.MalformedTagState = malformedTagState;
 			
 			Adopt (this.AttributeState);
 			Adopt (this.NameState);
-			Adopt (this.MalformedTagState);
 		}
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
@@ -71,7 +70,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (c == '<') {
 				if (element.IsNamed) {
 					context.LogError ("Unexpected '<' in tag '" + element.Name.FullName + "'.");
-					Close (element, context);
+					Close (element, context, context.LocationMinus (1));
 				} else {
 					context.LogError ("Unexpected '<' in unnamed tag.");
 				}
@@ -86,55 +85,69 @@ namespace MonoDevelop.Xml.StateEngine
 				if (char.IsWhiteSpace (c)) {
 					context.LogWarning ("Unexpected whitespace after '/' in self-closing tag.");
 					return null;
-				} else {
-					context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
-					context.Nodes.Pop ();
-					return Parent;
 				}
+				context.LogError ("Unexpected character '" + c + "' after '/' in self-closing tag.");
+				context.Nodes.Pop ();
+				return Parent;
 			}
 			
 			//if tag closed
 			if (c == '>') {
+				if (context.StateTag == MAYBE_SELF_CLOSING) {
+					element.Close (element);
+				}
 				if (!element.IsNamed) {
 					context.LogError ("Tag closed prematurely.");
 				} else {
-					Close (element, context);
+					Close (element, context, context.Location);
 				}
 				return Parent;
 			}
-			
-			if (XmlChar.IsFirstNameChar (c)) {
-				rollback = string.Empty;
-				if (!element.IsNamed) {
-					return NameState;
-				} else {
-					return AttributeState;
-				}
-			}
-			
+
 			if (c == '/') {
-				element.Close (element);
+				context.StateTag = MAYBE_SELF_CLOSING;
 				return null;
+			}
+
+			if (context.StateTag == ATTEMPT_RECOVERY) {
+				if (XmlChar.IsWhitespace (c)) {
+					context.StateTag = RECOVERY_FOUND_WHITESPACE;
+				}
+				return null;
+			}
+
+			if (context.StateTag == RECOVERY_FOUND_WHITESPACE) {
+				if (!XmlChar.IsFirstNameChar (c))
+					return null;
+			}
+
+			context.StateTag = OK;
+
+			if (!element.IsNamed && XmlChar.IsFirstNameChar (c)) {
+				rollback = string.Empty;
+				return NameState;
+			}
+
+			if (context.CurrentStateLength > 1 && XmlChar.IsFirstNameChar (c)) {
+				rollback = string.Empty;
+				return AttributeState;
 			}
 			
 			if (XmlChar.IsWhitespace (c))
 				return null;
-			
-			if (element.IsNamed)
-				Close (element, context);
-			context.LogError ("Unexpected character '" + c + "' in tag.");
-			
-			rollback = string.Empty;
-			return Parent;
+
+			context.LogError ("Unexpected character '" + c + "' in tag.", context.LocationMinus (1));
+			context.StateTag = ATTEMPT_RECOVERY;
+			return null;
 		}
 		
-		protected virtual void Close (XElement element, IParseContext context)
+		protected virtual void Close (XElement element, IParseContext context, TextLocation location)
 		{
 			//have already checked that element is not null, i.e. top of stack is our element
 			if (element.IsClosed)
 				context.Nodes.Pop ();
-			
-			element.End (context.Location);
+
+			element.End (location);
 			if (context.BuildTree) {
 				XContainer container = element.IsClosed? 
 					  (XContainer) context.Nodes.Peek ()

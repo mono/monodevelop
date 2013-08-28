@@ -35,7 +35,7 @@ namespace MonoDevelop.Gettext.Editor
 		private global::Gtk.Label label14;
 		private global::Gtk.Label label15;
 		private global::Gtk.Label label2;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

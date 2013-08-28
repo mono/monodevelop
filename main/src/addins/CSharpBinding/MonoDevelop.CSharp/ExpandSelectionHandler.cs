@@ -31,13 +31,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp
 {
-	public enum ExpandCommands
+	enum ExpandCommands
 	{
 		ExpandSelection,
 		ShrinkSelection
 	}
 	
-	public class ExpandSelectionHandler : CommandHandler
+	class ExpandSelectionHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp
 		}
 	}
 	
-	public class ShrinkSelectionHandler : CommandHandler
+	class ShrinkSelectionHandler : CommandHandler
 	{
 		
 		protected override void Run ()

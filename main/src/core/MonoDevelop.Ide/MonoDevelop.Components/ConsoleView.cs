@@ -216,12 +216,16 @@ namespace MonoDevelop.Components
 //				TriggerCodeCompletion ();
 
 			switch (args.Event.Key) {
+			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
 				return ProcessReturn ();
+			case Gdk.Key.KP_Up:
 			case Gdk.Key.Up:
 				return ProcessCommandHistoryUp ();
+			case Gdk.Key.KP_Down:
 			case Gdk.Key.Down:
 				return ProcessCommandHistoryDown ();
+			case Gdk.Key.KP_Left:
 			case Gdk.Key.Left:
 				// On Mac, when using a small keyboard, Home is Command+Left
 				if (Platform.IsMac && args.Event.State.HasFlag (Gdk.ModifierType.MetaMask)) {
@@ -239,6 +243,7 @@ namespace MonoDevelop.Components
 					return true;
 
 				break;
+			case Gdk.Key.KP_Home:
 			case Gdk.Key.Home:
 				Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
 

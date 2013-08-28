@@ -36,21 +36,29 @@ namespace MonoDevelop.AnalysisCore.Fixes
 {
 	public class InspectorResults : GenericResults
 	{
-		public CodeIssueProvider Inspector { get; private set; }
+		public BaseCodeIssueProvider Inspector { get; private set; }
 
-		public InspectorResults (CodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
+		public InspectorResults (BaseCodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
 			: base (region, message, level, mark, fixes)
 		{
 			this.Inspector = inspector;
 		}
 
 		public override bool HasOptionsDialog { get { return true; } }
-		public override string OptionsTitle { get { return Inspector.Title; } }
+		public override string OptionsTitle { get { return GetTitle (Inspector); } }
 		public override void ShowResultOptionsDialog ()
 		{
 			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (Inspector), MessageService.RootWindow);
 		}
-		
+
+		public static string GetTitle (BaseCodeIssueProvider inspector)
+		{
+			if (inspector.Parent == null)
+				return inspector.Title;
+			return inspector.Parent.Title + " -> " + inspector.Title;
+		}
+
+
 	}
 
 	public class GenericResults : FixableResult
@@ -66,11 +74,13 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class GenericFix : IAnalysisFix, IAnalysisFixAction
 	{
 		Action fix;
+		Action batchFix;
 		string label;
 		public DocumentRegion DocumentRegion { get; set; }
 
-		public GenericFix (string label, Action fix)
+		public GenericFix (string label, Action fix, Action batchFix = null)
 		{
+			this.batchFix = batchFix;
 			this.fix = fix;
 			this.label = label;
 		}
@@ -88,6 +98,19 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public void Fix ()
 		{
 			fix ();
+		}
+		
+		public bool SupportsBatchFix {
+			get {
+				return batchFix != null;
+			}
+		}
+		
+		public void BatchFix () {
+			if (!SupportsBatchFix) {
+				throw new InvalidOperationException ("Batch fixing is not supported.");
+			}
+			batchFix ();
 		}
 
 		public string Label {

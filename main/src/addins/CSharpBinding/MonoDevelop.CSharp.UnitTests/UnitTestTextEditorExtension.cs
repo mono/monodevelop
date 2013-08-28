@@ -44,14 +44,32 @@ namespace MonoDevelop.CSharp
 {
 	class UnitTestTextEditorExtension : TextEditorExtension
 	{
+		TestPad testPad;
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentParsed; 
+
+			var pad = IdeApp.Workbench.GetPad<TestPad> ();
+			testPad = (TestPad)pad.Content;
+			if (testPad != null)
+				testPad.TestSessionCompleted += HandleTestSessionCompleted;
+		}
+
+		void HandleTestSessionCompleted (object sender, EventArgs e)
+		{
+			if (document.Editor == null)
+				return;
+			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
 		}
 
 		public override void Dispose ()
 		{
+			if (testPad != null) {
+				testPad.TestSessionCompleted -= HandleTestSessionCompleted;
+			}
+
 			RemoveHandler ();
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
@@ -70,9 +88,15 @@ namespace MonoDevelop.CSharp
 				var resolver = document.GetSharedResolver ();
 				if (resolver == null || resolver.Result == null)
 					return;
+				var parsedDocument = document.ParsedDocument;
+				if (parsedDocument == null)
+					return;
+				var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();
+				if (syntaxTree == null)
+					return;
 				var visitor = new NUnitVisitor (resolver.Result);
 				try {
-					visitor.VisitSyntaxTree (document.ParsedDocument.GetAst<SyntaxTree> ());
+					visitor.VisitSyntaxTree (syntaxTree);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
 					return;
@@ -80,19 +104,27 @@ namespace MonoDevelop.CSharp
 				if (token.IsCancellationRequested)
 					return;
 				Application.Invoke (delegate {
-					if (document.Editor.Parent.ActionMargin.IsVisible ^ (visitor.FoundTests.Count > 0))
-						document.Editor.Parent.QueueDraw ();
-					document.Editor.Parent.ActionMargin.IsVisible = visitor.FoundTests.Count > 0;
-
+					var editor = document.Editor;
+					if (editor == null)
+						return;
+					var textEditor = editor.Parent;
+					if (textEditor == null)
+						return;
+					var actionMargin = textEditor.ActionMargin;
+					if (actionMargin == null)
+						return;
+					if (actionMargin.IsVisible ^ (visitor.FoundTests.Count > 0))
+						textEditor.QueueDraw ();
+					actionMargin.IsVisible = visitor.FoundTests.Count > 0;
 					foreach (var oldMarker in currentMarker)
-						document.Editor.Document.RemoveMarker (oldMarker);
+						editor.Document.RemoveMarker (oldMarker);
 
 					foreach (var foundTest in visitor.FoundTests) {
 						if (token.IsCancellationRequested)
 							return;
 						var unitTestMarker = new UnitTestMarker (foundTest, document);
 						currentMarker.Add (unitTestMarker);
-						document.Editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
+						editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
 					}
 				});
 			});
@@ -147,7 +179,7 @@ namespace MonoDevelop.CSharp
 							var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + id);
 							if (test != null) {
 								var result = test.GetLastResult ();
-								if (result.IsFailure) {
+								if (result != null && result.IsFailure) {
 									if (!string.IsNullOrEmpty (result.Message)) {
 										toolTip += Environment.NewLine + "Test" + id +":";
 										toolTip += Environment.NewLine + result.Message.TrimEnd ();
@@ -251,13 +283,13 @@ namespace MonoDevelop.CSharp
 
 			class TestRunner
 			{
-				readonly MonoDevelop.Ide.Gui.Document doc;
+//				readonly MonoDevelop.Ide.Gui.Document doc;
 				readonly string testCase;
 				readonly bool debug;
 
 				public TestRunner (MonoDevelop.Ide.Gui.Document doc, string testCase, bool debug)
 				{
-					this.doc = doc;
+//					this.doc = doc;
 					this.testCase = testCase;
 					this.debug = debug;
 				}
@@ -274,7 +306,7 @@ namespace MonoDevelop.CSharp
 					return false;
 				}
 
-
+				List<NUnitProjectTestSuite> testSuites = new List<NUnitProjectTestSuite>();
 				internal void Run (object sender, EventArgs e)
 				{
 					menu.Destroy ();
@@ -282,13 +314,50 @@ namespace MonoDevelop.CSharp
 					if (IdeApp.ProjectOperations.IsBuilding (IdeApp.ProjectOperations.CurrentSelectedSolution) || 
 					    IdeApp.ProjectOperations.IsRunning (IdeApp.ProjectOperations.CurrentSelectedSolution))
 						return;
-					var buildOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
-					buildOperation.Completed += delegate {
-						if (!buildOperation.Success)
-							return;
-						RemoveHandler ();
-						timeoutHandler = GLib.Timeout.Add (200, TimeoutHandler);
-					};
+
+					var foundTest = NUnitService.Instance.SearchTestById (testCase);
+					if (foundTest != null) {
+						RunTest (foundTest);
+						return;
+					}
+
+					Stack<UnitTest> tests = new Stack<UnitTest> ();
+					foreach (var test in NUnitService.Instance.RootTests) {
+						tests.Push (test);
+					}
+					while (tests.Count > 0) {
+						var test = tests.Pop ();
+
+						if (test is SolutionFolderTestGroup) {
+							foreach (var test2 in ((SolutionFolderTestGroup)test).Tests) {
+								tests.Push (test2); 
+							}
+							continue;
+						}
+						if (test is NUnitProjectTestSuite)
+							testSuites.Add ((NUnitProjectTestSuite)test); 
+					}
+
+					foreach (var test in testSuites) {
+						test.TestChanged += HandleTestChanged;
+						test.ProjectBuiltWithoutTestChange += HandleTestChanged;
+					}
+
+					IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				}
+
+				void HandleTestChanged (object sender, EventArgs e)
+				{
+					var foundTest = NUnitService.Instance.SearchTestById (testCase);
+					if (foundTest != null) {
+						foreach (var test in testSuites) {
+							test.TestChanged -= HandleTestChanged;
+							test.ProjectBuiltWithoutTestChange -= HandleTestChanged;
+						}
+						testSuites.Clear ();
+
+						RunTest (foundTest); 
+					}
 				}
 
 				internal void Select (object sender, EventArgs e)
@@ -306,7 +375,6 @@ namespace MonoDevelop.CSharp
 
 				void RunTest (UnitTest test)
 				{
-					NUnitService.ResetResult (test.RootTest);
 					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 					MonoDevelop.Core.Execution.IExecutionHandler ctx = null;
 					if (debug && debugModeSet != null) {
@@ -317,14 +385,11 @@ namespace MonoDevelop.CSharp
 							}
 						}
 					}
-					NUnitService.Instance.RunTest (test, ctx).Completed += delegate {
-						Application.Invoke (delegate {
-							doc.Editor.Parent.QueueDraw ();
-						});
-					};
+
+					var pad = IdeApp.Workbench.GetPad<TestPad> ();
+					var content = (TestPad)pad.Content;
+					content.RunTest (test, ctx);
 				}
-
-
 			}
 
 			bool isFailed;
@@ -502,7 +567,6 @@ namespace MonoDevelop.CSharp
 				var method = result.Member as IMethod;
 
 				UnitTest test = null;
-				bool isIgnored = false;
 				foreach (var attr in method.Attributes) {
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestAttribute") {
 						if (test == null) {
@@ -510,14 +574,17 @@ namespace MonoDevelop.CSharp
 							test.UnitTestIdentifier = GetFullName ((TypeDeclaration)methodDeclaration.Parent) + "." + methodDeclaration.Name;
 							foundTests.Add (test);
 						}
-					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
-						test.TestCases.Add ("(" + BuildArguments (attr) + ")");
-					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
-						isIgnored = true;
 					}
 				}
-				if (test != null)
-					test.IsIgnored = isIgnored;
+				if (test != null) {
+					foreach (var attr in method.Attributes) {
+						if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
+							test.TestCases.Add ("(" + BuildArguments (attr) + ")");
+						} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
+							test.IsIgnored = true;
+						}
+					}
+				}
 			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
@@ -540,10 +607,10 @@ namespace MonoDevelop.CSharp
 						isIgnored = true;
 					}
 				}
-				if (unitTest != null)
+				if (unitTest != null) {
 					unitTest.IsIgnored = isIgnored;
-
-				base.VisitTypeDeclaration (typeDeclaration);
+					base.VisitTypeDeclaration (typeDeclaration);
+				}
 			}
 
 			public override void VisitBlockStatement (BlockStatement blockStatement)

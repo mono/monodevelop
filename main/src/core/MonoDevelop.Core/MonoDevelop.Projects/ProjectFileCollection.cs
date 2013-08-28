@@ -140,9 +140,17 @@ namespace MonoDevelop.Projects
 			node.ProjectFile = e.ProjectFile;
 		}
 
+		void FilePathChanged (object sender, ProjectFilePathChangedEventArgs e)
+		{
+			ProjectVirtualPathChanged (sender, e);
+			files.Remove (e.OldPath);
+			files[e.NewPath] = e.ProjectFile;
+		}
+
 		void AddProjectFile (ProjectFile item)
 		{
 			item.VirtualPathChanged += ProjectVirtualPathChanged;
+			item.PathChanged += FilePathChanged;
 
 			if (item.Project != null) {
 				// Note: the ProjectVirtualPath is useless unless a Project is specified.
@@ -173,6 +181,7 @@ namespace MonoDevelop.Projects
 			files.Remove (item.FilePath);
 
 			item.VirtualPathChanged -= ProjectVirtualPathChanged;
+			item.PathChanged -= FilePathChanged;
 		}
 
 		#region ItemCollection<T>
@@ -255,8 +264,8 @@ namespace MonoDevelop.Projects
 		public void Remove (string fileName)
 		{
 			fileName = FileService.GetFullPath (fileName);
-			for (int n=0; n<Count; n++) {
-				if (Items [n].Name == fileName) {
+			for (int n = 0; n < Count; n++) {
+				if (Items[n].Name == fileName) {
 					RemoveAt (n);
 					break;
 				}

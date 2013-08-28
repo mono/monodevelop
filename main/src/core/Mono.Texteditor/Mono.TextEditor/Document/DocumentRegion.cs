@@ -28,7 +28,7 @@ using System;
 namespace Mono.TextEditor
 {
 	/// <summary>
-	/// An (Begin, End) pair representing a document span. It's a TextSegment working with lines & columns instead of offsets.
+	/// An (Begin, End) pair representing a document span. It's a TextSegment working with lines &amp; columns instead of offsets.
 	/// </summary>
 	public struct DocumentRegion : IEquatable<DocumentRegion>
 	{

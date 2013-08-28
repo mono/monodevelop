@@ -54,7 +54,7 @@ namespace MonoDevelop.DesignerSupport
 	/// The string comparison ignores symbols (e.g. sort 'Foo()' next to '~Foo()').
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
 	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
 		ParsedDocument lastCU = null;

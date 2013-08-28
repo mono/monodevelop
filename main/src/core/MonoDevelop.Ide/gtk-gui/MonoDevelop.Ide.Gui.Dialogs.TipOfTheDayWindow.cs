@@ -106,26 +106,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.nextButton = new global::Gtk.Button ();
 			this.nextButton.Name = "nextButton";
 			this.nextButton.UseUnderline = true;
-			// Container child nextButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w8 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w9 = new global::Gtk.HBox ();
-			w9.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w10 = new global::Gtk.Image ();
-			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
-			w9.Add (w10);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w12 = new global::Gtk.Label ();
-			w12.LabelProp = global::Mono.Unix.Catalog.GetString ("_Next Tip");
-			w12.UseUnderline = true;
-			w9.Add (w12);
-			w8.Add (w9);
-			this.nextButton.Add (w8);
+			this.nextButton.Label = global::Mono.Unix.Catalog.GetString ("_Next Tip");
+			global::Gtk.Image w8 = new global::Gtk.Image ();
+			w8.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
+			this.nextButton.Image = w8;
 			this.hbuttonbox1.Add (this.nextButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.nextButton]));
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.nextButton]));
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanDefault = true;
@@ -134,17 +122,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.closeButton.UseUnderline = true;
 			this.closeButton.Label = "gtk-close";
 			this.hbuttonbox1.Add (this.closeButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.closeButton]));
-			w17.Position = 1;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.closeButton]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			this.hbox5.Add (this.hbuttonbox1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbuttonbox1]));
-			w18.Position = 1;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbuttonbox1]));
+			w11.Position = 1;
 			this.vbox2.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox5]));
-			w19.Position = 1;
-			w19.Expand = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox5]));
+			w12.Position = 1;
+			w12.Expand = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

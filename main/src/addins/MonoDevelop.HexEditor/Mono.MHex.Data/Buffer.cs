@@ -29,7 +29,7 @@ using System.IO;
 
 namespace Mono.MHex.Data
 {
-	public interface IBuffer
+	interface IBuffer
 	{
 		long Length {
 			get;
@@ -41,9 +41,14 @@ namespace Mono.MHex.Data
 		byte[] GetBytes (long offset, int count);
 	}
 	
-	public class ArrayBuffer : IBuffer
+	class ArrayBuffer : IBuffer
 	{
 		byte[] content;
+
+		public ArrayBuffer (byte[] buffer)
+		{
+			content = buffer;
+		}
 		
 		public long Length {
 			get {
@@ -68,11 +73,12 @@ namespace Mono.MHex.Data
 		
 		public static IBuffer Load (Stream stream)
 		{
-			ArrayBuffer result = new ArrayBuffer ();
-			long count = stream.Length;
-			result.content = new byte[count];
-			stream.Read (result.content, 0, (int)count);
-			return result;
+			int count = (int) stream.Length;
+			byte[] buf= new byte[count];
+
+			stream.Read (buf, 0, count);
+
+			return new ArrayBuffer (buf);
 		}
 		
 		public static IBuffer Load (string fileName)
@@ -83,7 +89,7 @@ namespace Mono.MHex.Data
 		}
 	}
 	
-	public class FileBuffer : IBuffer
+	class FileBuffer : IBuffer
 	{
 		FileStream stream;
 		

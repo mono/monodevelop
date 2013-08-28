@@ -521,7 +521,7 @@ namespace MonoDevelop.Ide
 					return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
 			}
 
-			if (filename.StartsWith ("file://"))
+			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
@@ -600,11 +600,12 @@ namespace MonoDevelop.Ide
 				Gtk.Application.Invoke (delegate {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
 					Items.Add (item);
-				});
-				
-				timer.Trace ("Searching for new files");
-				SearchForNewFiles ();
 
+					// We must call SearchForNewFiles on the main loop as it iterates over the 'Items'
+					// collection which we are modifying on the main loop
+					timer.Trace ("Searching for new files");
+					SearchForNewFiles ();
+				});
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
 				
@@ -644,7 +645,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void SearchNewFiles (Project project)
+		static void SearchNewFiles (Project project)
 		{
 			var newFiles = new List<string> ();
 			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
@@ -699,12 +700,12 @@ namespace MonoDevelop.Ide
 			});
 		}
 		
-		bool IgnoreFileInSearch (string sfile)
+		static bool IgnoreFileInSearch (string sfile)
 		{
 			string extension = Path.GetExtension (sfile).ToUpper();
 			string file = Path.GetFileName (sfile);
 			
-			if (file.StartsWith (".") || file.EndsWith ("~"))
+			if (file.StartsWith (".", StringComparison.Ordinal) || file.EndsWith ("~", StringComparison.Ordinal))
 				return true;
 			
 			string[] ignoredExtensions = new string [] {
@@ -715,17 +716,21 @@ namespace MonoDevelop.Ide
 				return true;
 			
 			string directory = Path.GetDirectoryName (sfile);
-			if (directory.IndexOf (".svn") != -1 || directory.IndexOf (".git") != -1 || directory.IndexOf ("CVS") != -1)
+			if (directory.IndexOf (".svn", StringComparison.Ordinal) != -1 ||
+				directory.IndexOf (".git", StringComparison.Ordinal) != -1 ||
+				directory.IndexOf ("CVS", StringComparison.Ordinal) != -1)
 				return true;
 			
-			if (directory.IndexOf (Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) != -1
-				|| directory.IndexOf (Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) != -1)
+			if (directory.IndexOf (Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal) != -1 ||
+				directory.IndexOf (Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal) != -1)
 				return true;
 			
-			if (file.EndsWith ("make.sh") || file.StartsWith ("Makefile") || directory.EndsWith ("ProjectDocumentation"))
+			if (file.EndsWith ("make.sh", StringComparison.Ordinal) ||
+				file.StartsWith ("Makefile", StringComparison.Ordinal) ||
+				directory.EndsWith ("ProjectDocumentation", StringComparison.Ordinal))
 				return true;
 			
-			return false;			
+			return false;
 		}
 		
 		void RestoreWorkspacePreferences (WorkspaceItem item)
@@ -831,7 +836,7 @@ namespace MonoDevelop.Ide
 			return fs;
 		}
 		
-		IEnumerable<FilePath> GetKnownFiles ()
+		static IEnumerable<FilePath> GetKnownFiles ()
 		{
 			foreach (WorkspaceItem item in IdeApp.Workspace.Items) {
 				foreach (FilePath file in item.GetItemFiles (true))
@@ -1037,7 +1042,7 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 		
-		internal List<Document> GetOpenDocuments (Project project, bool modifiedOnly)
+		internal static List<Document> GetOpenDocuments (Project project, bool modifiedOnly)
 		{
 			List<Document> docs = new List<Document> ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {

@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 	
 	public class HighlightUrlSemanticRule : SemanticRule
 	{
-		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\._/\-~%@()+:?&=#!]*[\w\d/]";
+		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\.,;_/\-~%@()+:?&^=#!]*[\w\d/]";
 		
 		public static readonly Regex UrlRegex  = new Regex (urlRegexStr, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		public static readonly Regex MailRegex = new Regex (@"[\w\d._%+-]+@[\w\d.-]+\.\w{2,4}", RegexOptions.Compiled);
@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 				return;
 			inUpdate = true;
 			try {
-				string text = doc.GetTextAt (startOffset, endOffset - startOffset);
+				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.TextLength) - startOffset);
 				int startColumn = startOffset - line.Offset;
 				var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
 				markers.ForEach (m => doc.RemoveMarker (m, false));

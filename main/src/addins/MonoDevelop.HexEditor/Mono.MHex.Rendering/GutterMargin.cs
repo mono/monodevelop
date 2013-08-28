@@ -25,19 +25,21 @@
 // THE SOFTWARE.
 
 using System;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class GutterMargin : Margin
+	class GutterMargin : Margin
 	{
-		int width;
-		public override int Width {
+		double width;
+		public override double Width {
 			get {
 				return width;
 			}
 		}
 		
-		public override int CalculateWidth (int bytesInRow)
+		public override double CalculateWidth (int bytesInRow)
 		{
 			return width;
 		}
@@ -48,38 +50,43 @@ namespace Mono.MHex.Rendering
 		
 		internal protected override void OptionsChanged ()
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
-			layout.SetText (string.Format ("0{0:X}", Data.Length) + "_");
-			int height;
-			layout.GetPixelSize (out this.width, out height);
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
+			layout.Text = string.Format ("0{0:X}", Data.Length) + "_";
+//			int height;
+			width = layout.GetSize ().Width;
 			layout.Dispose ();
 		}
 
 		protected override LayoutWrapper RenderLine (long line)
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
-			layout.SetText (string.Format ("{0:X}", line * Editor.BytesInRow));
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
+			layout.Text = string.Format ("{0:X}", line * Editor.BytesInRow);
 			return new LayoutWrapper (layout);
 		}
 		
-		internal protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, long line, int x, int y)
+		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			drawable.DrawRectangle (GetGC (Style.HexOffsetBg), true, x, y, Width, Editor.LineHeight);
-			LayoutWrapper layout = GetLayout (line);
-			int w, h;
-			layout.Layout.GetPixelSize (out w, out h);
-			drawable.DrawLayout (GetGC (line != Caret.Line ? Style.HexOffset : Style.HexOffsetHighlighted), x + Width - w - 4, y, layout.Layout);
-			if (layout.IsUncached)
-				layout.Dispose ();
+			ctx.Rectangle (x, y, Width, Editor.LineHeight);
+			ctx.SetColor (Style.HexOffsetBg);
+			ctx.Fill ();
+
+			if (line >= 0 && line * Editor.BytesInRow < Data.Length) {
+				LayoutWrapper layout = GetLayout (line);
+				var sz = layout.Layout.GetSize ();
+				ctx.SetColor (line != Caret.Line ? Style.HexOffset : Style.HexOffsetHighlighted);
+				ctx.DrawTextLayout (layout.Layout, x + Width - sz.Width - 4, y);
+				if (layout.IsUncached)
+					layout.Dispose ();
+			}
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
 			
-			if (args.Button != 1)
+			if (args.Button != PointerButton.Left)
 				return;
 			Caret.Offset = args.Line * BytesInRow;
 		}

@@ -37,7 +37,7 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		/// <summary>Get ths Has Code for the current WebReferenceFolder.</summary>
-		/// <returns>An int containing the HasCode for the current WebReferenceFolder.</summary>
+		/// <returns>An int containing the HasCode for the current WebReferenceFolder.</returns>
 		public override int GetHashCode ()
 		{
 			return project.GetHashCode () + 2;

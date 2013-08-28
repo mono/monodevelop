@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class ReadonlyPropertyGenerator : ICodeGenerator
+	class ReadonlyPropertyGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

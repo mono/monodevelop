@@ -39,7 +39,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Gettext
 {
-	public class Catalog : IEnumerable<CatalogEntry>
+	class Catalog : IEnumerable<CatalogEntry>
 	{
 		IDictionary<string, CatalogEntry> entriesDict;
 		List<CatalogEntry>        entriesList;

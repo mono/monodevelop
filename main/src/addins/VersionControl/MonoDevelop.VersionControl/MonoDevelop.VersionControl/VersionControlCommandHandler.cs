@@ -25,11 +25,8 @@
 //
 //
 
-using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.VersionControl
@@ -68,7 +65,7 @@ namespace MonoDevelop.VersionControl
 			return nodeItems;
 		}
 		
-		public VersionControlItem CreateItem (object obj, bool projRecurse = true)
+		public static VersionControlItem CreateItem (object obj, bool projRecurse = true)
 		{
 			string path;
 			bool isDir;
@@ -102,6 +99,11 @@ namespace MonoDevelop.VersionControl
 				path = proj.FileName;
 				isDir = false;
 				pentry = proj;
+			} else if (!projRecurse && obj is UnknownSolutionItem) {
+				UnknownSolutionItem item = (UnknownSolutionItem)obj;
+				path = item.FileName;
+				isDir = false;
+				pentry = item;
 			} else if (obj is IWorkspaceObject) {
 				pentry = ((IWorkspaceObject)obj);
 				path = pentry.BaseDirectory;

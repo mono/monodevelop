@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 		{
 			cr.MoveTo (x + 0.5, y);
 			cr.LineTo (x + 0.5, y + lineHeight);
-			cr.Color = color;
+			cr.SetSourceColor (color);
 			cr.Stroke ();
 		}
 	}

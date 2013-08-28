@@ -23,20 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Diagnostics;
-using Gtk;
 using MonoDevelop.Components;
 using Cairo;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Tasks;
-using System.Collections.Generic;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Components;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -47,7 +38,7 @@ namespace MonoDevelop.Components.MainToolbar
 			LayoutRoundedRectangle (context, region);
 			context.Clip ();
 
-			context.Color = CairoExtensions.ParseColor ("D3E6FF");
+			context.SetSourceColor (CairoExtensions.ParseColor ("D3E6FF"));
 			context.Paint ();
 
 			context.Save ();
@@ -60,14 +51,14 @@ namespace MonoDevelop.Components.MainToolbar
 				rg.AddColorStop (1, color);
 
 				context.Scale (region.Width / (double)region.Height, 1.0);
-				context.Pattern = rg;
+				context.SetSource (rg);
 				context.Paint ();
 			}
 
 			context.Restore ();
 
 			LayoutRoundedRectangle (context, region, -3, -3, 2);
-			context.Color = new Cairo.Color (1, 1, 1, 0.4);
+			context.SetSourceRGBA (1, 1, 1, 0.4);
 			context.LineWidth = 1;
 			context.StrokePreserve ();
 
@@ -87,7 +78,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.LineTo (region.Right, y + 0.5);
 			}
 
-			context.Color = new Cairo.Color (1, 1, 1, 0.2);
+			context.SetSourceRGBA (1, 1, 1, 0.2);
 			context.Stroke ();
 
 			context.ResetClip ();

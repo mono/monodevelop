@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.CSharp;
 namespace MonoDevelop.CSharp
 {
 	// Copied from StockIcons.cs and extended for the c# ast (c# AST shouldn't be in Ide)
-	public static class AstStockIcons
+	static class AstStockIcons
 	{
 		static readonly IconId Class = "md-class";
 		static readonly IconId Enum = "md-enum";

@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class MiscActions
+	static class MiscActions
 	{
 		public static void SwitchCaretMode (HexEditorData data)
 		{

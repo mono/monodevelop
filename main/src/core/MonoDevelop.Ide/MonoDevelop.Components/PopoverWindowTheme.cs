@@ -292,7 +292,7 @@ namespace MonoDevelop.Components
 		public virtual void RenderBorder (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
 		{
 			SetBorderPath (context, region, arrowPosition);
-			context.Color = BorderColor;
+			context.SetSourceColor (BorderColor);
 			context.LineWidth = 1;
 			context.Stroke ();
 		}
@@ -356,7 +356,7 @@ namespace MonoDevelop.Components
 				lg.AddColorStop (0, TopColor);
 				lg.AddColorStop (1, BottomColor);
 				context.Rectangle (region.X, region.Y, region.Width, region.Height);
-				context.Pattern = lg;
+				context.SetSource (lg);
 				context.Fill ();
 			}
 		}
@@ -416,7 +416,7 @@ namespace MonoDevelop.Components
 
 			context.MoveTo (bounds.X + (bounds.Width - w) / 2, bounds.Y + (bounds.Height - h) / 2);
 
-			context.Color = PagerTextColor;
+			context.SetSourceColor (PagerTextColor);
 			PangoCairoHelper.ShowLayout (context, layout);
 
 			layout.Dispose ();
@@ -439,7 +439,7 @@ namespace MonoDevelop.Components
 				lg.AddColorStop (0, PagerBackgroundColorTop);
 				lg.AddColorStop (1, PagerBackgroundColorBottom);
 
-				context.Pattern = lg;
+				context.SetSource (lg);
 				context.Fill ();
 			}
 
@@ -452,7 +452,7 @@ namespace MonoDevelop.Components
 			                                  CornerRadius, 
 			                                  CairoCorners.BottomLeft);
 			context.LineWidth = 1;
-			context.Color = BorderColor;
+			context.SetSourceColor (BorderColor);
 			context.Stroke ();
 		}
 
@@ -490,7 +490,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			context.Color = PagerTriangleColor;
+			context.SetSourceColor (PagerTriangleColor);
 			context.Fill ();
 		}
 	}

@@ -201,9 +201,16 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
+			string tmpPath;
 
-			string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
-			using (var stream = new FileStream (tmpPath, FileMode.Create, FileAccess.Write, FileShare.Write)) {
+			if (Platform.IsMac || Platform.IsWindows) {
+				tmpPath = Path.GetTempFileName ();
+			} else {
+				// atomic rename only works in the same directory on linux.
+				tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
+			}
+
+			using (var stream = new FileStream (tmpPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
@@ -212,11 +219,20 @@ namespace Mono.TextEditor.Utils
 				byte[] bytes = encoding.GetBytes (text);
 				stream.Write (bytes, 0, bytes.Length);
 			}
-			SystemRename (tmpPath, fileName);
+			try {
+				SystemRename (tmpPath, fileName);
+			} catch (Exception) {
+				try {
+					System.IO.File.Delete (tmpPath);
+				} catch {
+					// nothing
+				}
+				throw;
+			}
 		}
 
 		/// <summary>
-		/// Returns a byte array containing the text encoded by a specified encoding & bom.
+		/// Returns a byte array containing the text encoded by a specified encoding &amp; bom.
 		/// </summary>
 		/// <param name="text">The text to encode.</param>
 		/// <param name="encoding">The encoding.</param>
@@ -751,4 +767,7 @@ namespace Mono.TextEditor.Utils
 		#endregion
 	}
 }
+
+
+
 

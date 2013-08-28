@@ -207,6 +207,10 @@
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.Formatting.RazorCSharpFormatter" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete id="Razor" insertbefore="Other" insertafter="Html" language="Razor" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<!-- NOTE: we explicitly do no call this "RazorGenerator" to avoid conflicts with http://razorgenerator.codeplex.com/ -->

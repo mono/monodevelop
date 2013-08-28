@@ -1138,7 +1138,6 @@ namespace Mono.TextEditor
 
 		int EnsureIsNotVirtual (int line, int column)
 		{
-			Debug.Assert (document.IsInAtomicUndo);
 			DocumentLine documentLine = Document.GetLine (line);
 			if (documentLine == null)
 				return 0;

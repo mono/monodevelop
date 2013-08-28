@@ -43,6 +43,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -50,6 +51,8 @@ namespace MonoDevelop.Components.MainToolbar
 	class MainToolbar: Gtk.EventBox, ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+		const int RuntimeExecutionTarget = 0;
+		const int RuntimeIsIndented = 1;
 
 		EventHandler executionTargetsChanged;
 
@@ -61,7 +64,7 @@ namespace MonoDevelop.Components.MainToolbar
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(string), typeof (ExecutionTarget));
+		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool));
 
 		StatusArea statusArea;
 
@@ -90,12 +93,13 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
 		bool SearchForMembers {
 			get {
-				return PropertyService.Get ("MainToolbar.Search.IncludeMembers", true);
+				return searchForMembers;
 			}
 			set {
-				PropertyService.Set ("MainToolbar.Search.IncludeMembers", value);
+				searchForMembers.Value = value;
 			}
 		}
 
@@ -115,6 +119,34 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.GrabFocus ();
 			var pos = matchEntry.Entry.Text.Length;
 			matchEntry.Entry.SelectRegion (pos, pos);
+		}
+
+		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
+		{
+			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
+
+			return target == null;
+		}
+
+		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
+			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
+			var renderer = (CellRendererText) cell;
+
+			renderer.Sensitive = !(target is ExecutionTargetGroup);
+
+			if (target == null) {
+				renderer.Xpad = (uint) 0;
+				return;
+			}
+
+			renderer.Xpad = indent ? (uint) 18 : (uint) 3;
+
+			if (!runtimeCombo.PopupShown)
+				renderer.Text = target.FullName;
+			else
+				renderer.Text = target.Name;
 		}
 
 		public MainToolbar ()
@@ -148,8 +180,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
+			ctx = new Gtk.CellRendererText ();
 			runtimeCombo.PackStart (ctx, true);
-			runtimeCombo.AddAttribute (ctx, "text", 0);
+			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
+			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
 
 			var runtimeComboVBox = new VBox ();
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
@@ -478,7 +512,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (!runtimeCombo.GetActiveIter (out iter))
 				return null;
 
-			return (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+			return (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
@@ -557,38 +591,65 @@ namespace MonoDevelop.Components.MainToolbar
 			SelectActiveRuntime ();
 		}
 
+		bool SelectActiveRuntime (TreeIter iter, ref bool selected, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
+		{
+			do {
+				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
+
+				if (target == null)
+					continue;
+
+				if (target is ExecutionTargetGroup) {
+					TreeIter child;
+
+					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter)) {
+						if (SelectActiveRuntime (child, ref selected, ref defaultTarget, ref defaultIter))
+							return true;
+					}
+
+					continue;
+				}
+
+				if (defaultTarget == null) {
+					defaultTarget = target;
+					defaultIter = iter;
+				}
+
+				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+					IdeApp.Workspace.ActiveExecutionTarget = target;
+					runtimeCombo.SetActiveIter (iter);
+					UpdateBuildConfiguration ();
+					selected = true;
+					return true;
+				}
+
+				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+					runtimeCombo.SetActiveIter (iter);
+					UpdateBuildConfiguration ();
+					selected = true;
+				}
+			} while (runtimeStore.IterNext (ref iter));
+
+			return false;
+		}
+
 		void SelectActiveRuntime ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
+
 			try {
 				TreeIter iter;
 
 				if (runtimeStore.GetIterFirst (out iter)) {
-					var defaultTarget = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
+					ExecutionTarget defaultTarget = null;
+					TreeIter defaultIter = TreeIter.Zero;
 					bool selected = false;
-					int i = 0;
 
-					do {
-						var target = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
-						if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-							IdeApp.Workspace.ActiveExecutionTarget = target;
-							runtimeCombo.Active = i;
-							UpdateBuildConfiguration ();
-							selected = true;
-							break;
+					if (!SelectActiveRuntime (iter, ref selected, ref defaultTarget, ref defaultIter) && !selected) {
+						if (defaultTarget != null) {
+							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
+							runtimeCombo.SetActiveIter (defaultIter);
 						}
-
-						if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
-							runtimeCombo.Active = i;
-							UpdateBuildConfiguration ();
-							selected = true;
-						}
-						i++;
-					} while (runtimeStore.IterNext (ref iter));
-
-					if (!selected) {
-						IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
-						runtimeCombo.Active = 0;
 						UpdateBuildConfiguration ();
 					}
 				}
@@ -639,10 +700,40 @@ namespace MonoDevelop.Components.MainToolbar
 				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
 					return;
 
+				ExecutionTarget previous = null;
 				int runtimes = 0;
+
 				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
-					runtimeStore.AppendValues (target.Name, target.Name, target);
-					runtimes++;
+					if (target is ExecutionTargetGroup) {
+						var devices = (ExecutionTargetGroup) target;
+
+						if (previous != null)
+							runtimeStore.AppendValues (null, false);
+
+						runtimeStore.AppendValues (target, false);
+						foreach (var device in devices) {
+							if (device is ExecutionTargetGroup) {
+								var iter = runtimeStore.AppendValues (device, true);
+								var versions = (ExecutionTargetGroup) device;
+
+								foreach (var version in versions) {
+									runtimeStore.AppendValues (iter, version, false);
+									runtimes++;
+								}
+							} else {
+								runtimeStore.AppendValues (device, true);
+								runtimes++;
+							}
+						}
+					} else {
+						if (previous is ExecutionTargetGroup)
+							runtimeStore.AppendValues (null, false);
+
+						runtimeStore.AppendValues (target, false);
+						runtimes++;
+					}
+
+					previous = target;
 				}
 
 				runtimeCombo.Sensitive = runtimes > 1;
@@ -691,19 +782,19 @@ namespace MonoDevelop.Components.MainToolbar
 					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
 						lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
 						lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
-						context.Pattern = lg;
+						context.SetSource (lg);
 					}
 					context.Fill ();
 
 				}
 				context.MoveTo (0, Allocation.Height - 0.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.Color = Styles.ToolbarBottomBorderColor;
+				context.SetSourceColor (Styles.ToolbarBottomBorderColor);
 				context.Stroke ();
 
 				context.MoveTo (0, Allocation.Height - 1.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.Color = Styles.ToolbarBottomGlowColor;
+				context.SetSourceColor (Styles.ToolbarBottomGlowColor);
 				context.Stroke ();
 
 			}

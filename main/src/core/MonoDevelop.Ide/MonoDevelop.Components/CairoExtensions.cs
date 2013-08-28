@@ -33,6 +33,7 @@ using System.Runtime.InteropServices;
 using Gdk;
 using Cairo;
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -69,13 +70,17 @@ namespace MonoDevelop.Components
             return layout;
         }
 
-        public static Surface CreateSurfaceForPixbuf (Cairo.Context cr, Gdk.Pixbuf pixbuf)
+        public static Surface CreateSurfaceForPixbuf (Context cr, Pixbuf pixbuf)
         {
-            Surface surface = cr.Target.CreateSimilar (cr.Target.Content, pixbuf.Width, pixbuf.Height);
-            Cairo.Context surface_cr = new Context (surface);
-            Gdk.CairoHelper.SetSourcePixbuf (surface_cr, pixbuf, 0, 0);
-            surface_cr.Paint ();
-            ((IDisposable)surface_cr).Dispose ();
+			Surface surface;
+			using (var t = cr.GetTarget ()) {
+				surface = t.CreateSimilar (t.Content, pixbuf.Width, pixbuf.Height);
+			}
+			using (Context surface_cr = new Context (surface)) {
+				CairoHelper.SetSourcePixbuf (surface_cr, pixbuf, 0, 0);
+				surface_cr.Paint ();
+				surface_cr.Dispose ();
+			}
             return surface;
         }
 
@@ -355,7 +360,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.X - size, area.Y + rounding, size, area.Height - doubleRounding - 1);
 			using (var lg = new LinearGradient (area.X, 0, area.X - size, 0)) {
 				ShadowGradient (lg, strength);
-				self.Pattern = lg;
+				self.SetSource (lg);
 				self.Fill ();
 			}
 
@@ -363,7 +368,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.Right, area.Y + rounding, size, area.Height - doubleRounding - 1);
 			using (var lg = new LinearGradient (area.Right, 0, area.Right + size, 0)) {
 				ShadowGradient (lg, strength);
-				self.Pattern = lg;
+				self.SetSource (lg);
 				self.Fill ();
 			}
 
@@ -371,7 +376,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.X + rounding, area.Y - size, area.Width - doubleRounding - 1, size);
 			using (var lg = new LinearGradient (0, area.Y, 0, area.Y - size)) {
 				ShadowGradient (lg, strength);
-				self.Pattern = lg;
+				self.SetSource (lg);
 				self.Fill ();
 			}
 
@@ -379,7 +384,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.X + rounding, area.Bottom, area.Width - doubleRounding - 1, size);
 			using (var lg = new LinearGradient (0, area.Bottom, 0, area.Bottom + size)) {
 				ShadowGradient (lg, strength);
-				self.Pattern = lg;
+				self.SetSource (lg);
 				self.Fill ();
 			}
 
@@ -387,7 +392,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.X - size, area.Y - size, size + rounding, size + rounding);
 			using (var rg = new RadialGradient (area.X + rounding, area.Y + rounding, rounding, area.X + rounding, area.Y + rounding, size + rounding)) {
 				ShadowGradient (rg, strength);
-				self.Pattern = rg;
+				self.SetSource (rg);
 				self.Fill ();
 			}
 
@@ -395,7 +400,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.Right - rounding, area.Y - size, size + rounding, size + rounding);
 			using (var rg = new RadialGradient (area.Right - rounding, area.Y + rounding, rounding, area.Right - rounding, area.Y + rounding, size + rounding)) {
 				ShadowGradient (rg, strength);
-				self.Pattern = rg;
+				self.SetSource (rg);
 				self.Fill ();
 			}
 
@@ -403,7 +408,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.X - size, area.Bottom - rounding, size + rounding, size + rounding);
 			using (var rg = new RadialGradient (area.X + rounding, area.Bottom - rounding, rounding, area.X + rounding, area.Bottom - rounding, size + rounding)) {
 				ShadowGradient (rg, strength);
-				self.Pattern = rg;
+				self.SetSource (rg);
 				self.Fill ();
 			}
 
@@ -411,7 +416,7 @@ namespace MonoDevelop.Components
 			self.Rectangle (area.Right - rounding, area.Bottom - rounding, size + rounding, size + rounding);
 			using (var rg = new RadialGradient (area.Right - rounding, area.Bottom - rounding, rounding, area.Right - rounding, area.Bottom - rounding, size + rounding)) {
 				ShadowGradient (rg, strength);
-				self.Pattern = rg;
+				self.SetSource (rg);
 				self.Fill ();
 			}
 		}
@@ -443,8 +448,7 @@ namespace MonoDevelop.Components
 
         public static void DisposeContext (Cairo.Context cr)
         {
-            ((IDisposable)cr.Target).Dispose ();
-            ((IDisposable)cr).Dispose ();
+            cr.Dispose ();
         }
 
         private struct CairoInteropCall
@@ -613,12 +617,15 @@ namespace MonoDevelop.Components
 
 		public SurfaceWrapper (Cairo.Context similar, int width, int height)
 		{
-			if (Platform.IsMac)
+			if (Platform.IsMac) {
 				Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
-			else if (Platform.IsWindows)
-				Surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
-			else
+			} else if (Platform.IsWindows) {
+				using (var target = similar.GetTarget ()) {
+					Surface = target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
+				}
+			} else {
 				Surface = new ImageSurface (Cairo.Format.ARGB32, width, height);
+			}
 			Width = width;
 			Height = height;
 		}
@@ -627,14 +634,17 @@ namespace MonoDevelop.Components
 		{
 			Cairo.Surface surface;
 			// There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
-			if (Platform.IsMac)
-				surface = new QuartzSurface (Cairo.Format.ARGB32, source.Width, source.Height);
-			else if (Platform.IsWindows)
-				surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, source.Width, source.Height);
-			else
-				surface = new ImageSurface (Cairo.Format.ARGB32, source.Width, source.Height);
+			if (Platform.IsMac) {
+				surface = new QuartzSurface (Format.ARGB32, source.Width, source.Height);
+			} else if (Platform.IsWindows) {
+				using (var t = similar.GetTarget ()) {
+					surface = t.CreateSimilar (Content.ColorAlpha, source.Width, source.Height);
+				}
+			} else {
+				surface = new ImageSurface (Format.ARGB32, source.Width, source.Height);
+			}
 
-			using (Cairo.Context context = new Cairo.Context (surface)) {
+			using (Context context = new Context (surface)) {
 				Gdk.CairoHelper.SetSourcePixbuf (context, source, 0, 0);
 				context.Paint ();
 			}

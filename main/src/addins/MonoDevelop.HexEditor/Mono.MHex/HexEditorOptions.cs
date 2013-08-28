@@ -25,20 +25,19 @@
 // THE SOFTWARE.
 
 using System;
+using Xwt.Drawing;
 
 namespace Mono.MHex
 {
-	public class HexEditorOptions : IHexEditorOptions
+	class HexEditorOptions : IHexEditorOptions, IDisposable
 	{
 		public const string DEFAULT_FONT = "Mono 10";
 		static HexEditorOptions options = new HexEditorOptions ();
-		
 		public static HexEditorOptions DefaultOptions {
 			get {
 				return options;
 			}
 		}
-		
 		double zoom = 1.0;
 		public double Zoom {
 			get {
@@ -70,18 +69,15 @@ namespace Mono.MHex
 			zoom *= 1.1;
 			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
 		}
-		
 		public void ZoomOut ()
 		{
 			zoom *= 0.9;
 			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
 		}
-		
 		public void ZoomReset ()
 		{
 			Zoom = 1.0;
 		}
-		
 		bool showIconMargin = true;
 		public virtual bool ShowIconMargin {
 			get {
@@ -92,7 +88,6 @@ namespace Mono.MHex
 				OnChanged (EventArgs.Empty);
 			}
 		}
-		
 		bool showLineNumberMargin = true;
 		public virtual bool ShowLineNumberMargin {
 			get {
@@ -103,7 +98,6 @@ namespace Mono.MHex
 				OnChanged (EventArgs.Empty);
 			}
 		}
-		
 		string fontName = DEFAULT_FONT;
 		public virtual string FontName {
 			get {
@@ -117,7 +111,6 @@ namespace Mono.MHex
 				}
 			}
 		}
-		
 		int groupBytes = 1;
 		public virtual int GroupBytes {
 			get {
@@ -130,49 +123,44 @@ namespace Mono.MHex
 				}
 			}
 		}
-		
-		Pango.FontDescription font;
-		public Pango.FontDescription Font {
+		Font font;
+		public Font Font {
 			get {
 				if (font == null) {
 					try {
-						font = Pango.FontDescription.FromString (FontName);
-					} catch {
+						font = Font.FromName (FontName);
+					}
+					catch {
 						Console.WriteLine ("Could not load font: {0}", FontName);
 					}
 					if (font == null || String.IsNullOrEmpty (font.Family))
-						font = Pango.FontDescription.FromString (DEFAULT_FONT);
+						font = Font.FromName (DEFAULT_FONT);
 					if (font != null)
-						font.Size = (int)(font.Size * Zoom);
+						font = font.WithSize (font.Size * Zoom);
 				}
 				return font;
 			}
 		}
-		
 		void DisposeFont ()
 		{
 			if (font != null) {
-				font.Dispose ();
+				//				font.Dispsoe ();
 				font = null;
 			}
 		}
-		
 		public virtual void Dispose ()
 		{
 			DisposeFont ();
 		}
-		
 		public void RaiseChanged ()
 		{
 			OnChanged (EventArgs.Empty);
 		}
-		
 		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)
 				Changed (null, args);
 		}
-		
 		public event EventHandler Changed;
 	}
 }

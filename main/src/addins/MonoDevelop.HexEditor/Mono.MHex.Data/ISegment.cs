@@ -28,7 +28,7 @@ using System;
 
 namespace Mono.MHex.Data
 {
-	public interface ISegment
+	interface ISegment
 	{
 		long Offset {
 			get;

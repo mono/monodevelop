@@ -7,9 +7,8 @@
   <import>
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Gettext/MonoDevelop.Gettext.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/Gettext/MonoDevelop.Gettext.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Gettext.Editor.CatalogHeadersWidget" design-size="672 613">
     <property name="MemberName" />
@@ -616,6 +615,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Create New Localization</property>
     <property name="Icon">resource:locale_16x16.png</property>
     <property name="TypeHint">Dialog</property>
@@ -903,6 +903,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 426">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Translation Options</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -1023,6 +1024,7 @@
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="Label" translatable="yes">_Relative to output path:</property>
+                                <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
                                 <property name="UseUnderline">True</property>
@@ -1265,6 +1267,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.Gettext.POEditorWidget" design-size="748 638">
     <action-group name="Default" />
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1301,6 +1304,8 @@
                       <widget class="MonoDevelop.Components.SearchEntry" id="searchEntryFilter">
                         <property name="MemberName" />
                         <property name="ForceFilterButtonVisible">False</property>
+                        <property name="HasFrame">False</property>
+                        <property name="RoundedShape">False</property>
                         <property name="IsCheckMenu">False</property>
                         <property name="ActiveFilterID">0</property>
                         <property name="Ready">False</property>
@@ -1741,6 +1746,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Gettext.GettextFeatureWidget" design-size="500 239">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />

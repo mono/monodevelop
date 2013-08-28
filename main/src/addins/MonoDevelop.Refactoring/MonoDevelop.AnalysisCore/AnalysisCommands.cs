@@ -162,21 +162,28 @@ namespace MonoDevelop.AnalysisCore
 					var ir = result as InspectorResults;
 					if (ir != null) {
 						var inspector = ir.Inspector;
+
+						if (inspector.CanSuppressWithAttribute) {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with attribute"), new System.Action(delegate {
+								inspector.SuppressWithAttribute (doc, ir.Region); 
+							}));
+						}
+
 						if (inspector.CanDisableWithPragma) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with #pragma"), new System.Action(delegate {
-								inspector.DisableWithPragma (doc, doc.Editor.Caret.Location); 
+								inspector.DisableWithPragma (doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableOnce) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable once with comment"), new System.Action(delegate {
-								inspector.DisableOnce (doc, doc.Editor.Caret.Location); 
+								inspector.DisableOnce (doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableAndRestore) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and restore with comments"), new System.Action(delegate {
-								inspector.DisableAndRestore (doc, doc.Editor.Caret.Location); 
+								inspector.DisableAndRestore (doc, ir.Region); 
 							}));
 						}
 					}

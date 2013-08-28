@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Cairo;
 using System.Linq;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -338,14 +339,14 @@ namespace MonoDevelop.Components.PropertyGrid
 				int dx = (int)((double)Allocation.Width * dividerPosition);
 				ctx.LineWidth = 1;
 				ctx.Rectangle (0, 0, dx, Allocation.Height);
-				ctx.Color = LabelBackgroundColor;
+				ctx.SetSourceColor (LabelBackgroundColor);
 				ctx.Fill ();
 				ctx.Rectangle (dx, 0, Allocation.Width - dx, Allocation.Height);
-				ctx.Color = new Cairo.Color (1, 1, 1);
+				ctx.SetSourceRGB (1, 1, 1);
 				ctx.Fill ();
 				ctx.MoveTo (dx + 0.5, 0);
 				ctx.RelLineTo (0, Allocation.Height);
-				ctx.Color = DividerColor;
+				ctx.SetSourceColor (DividerColor);
 				ctx.Stroke ();
 	
 				int y = 0;
@@ -374,7 +375,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					using (var gr = new LinearGradient (0, y, 0, rh)) {
 						gr.AddColorStop (0, new Cairo.Color (248d/255d, 248d/255d, 248d/255d));
 						gr.AddColorStop (1, new Cairo.Color (240d/255d, 240d/255d, 240d/255d));
-						ctx.Pattern = gr;
+						ctx.SetSource (gr);
 						ctx.Fill ();
 					}
 
@@ -384,11 +385,11 @@ namespace MonoDevelop.Components.PropertyGrid
 					}
 					ctx.MoveTo (0, y + rh - 0.5);
 					ctx.LineTo (Allocation.Width, y + rh - 0.5);
-					ctx.Color = DividerColor;
+					ctx.SetSourceColor (DividerColor);
 					ctx.Stroke ();
 
 					ctx.MoveTo (x, y + CategoryTopBottomPadding);
-					ctx.Color = CategoryLabelColor;
+					ctx.SetSourceColor (CategoryLabelColor);
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 
 					var img = r.Expanded ? discloseUp : discloseDown;
@@ -406,7 +407,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.Rectangle (0, y, dividerX, h + PropertyTopBottomPadding*2);
 					ctx.Clip ();
 					ctx.MoveTo (x, y + PropertyTopBottomPadding);
-					ctx.Color = Style.Text (state).ToCairoColor ();
+					ctx.SetSourceColor (Style.Text (state).ToCairoColor ());
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 					ctx.Restore ();
 
@@ -435,10 +436,10 @@ namespace MonoDevelop.Components.PropertyGrid
 						// Repaing the background because the cairo clip doesn't work for gdk primitives
 						int dx = (int)((double)Allocation.Width * dividerPosition);
 						ctx.Rectangle (0, y, dx, Allocation.Height - y);
-						ctx.Color = LabelBackgroundColor;
+						ctx.SetSourceColor (LabelBackgroundColor);
 						ctx.Fill ();
 						ctx.Rectangle (dx + 1, y, Allocation.Width - dx - 1, Allocation.Height - y);
-						ctx.Color = new Cairo.Color (1, 1, 1);
+						ctx.SetSourceRGB (1, 1, 1);
 						ctx.Fill ();
 					}
 				}

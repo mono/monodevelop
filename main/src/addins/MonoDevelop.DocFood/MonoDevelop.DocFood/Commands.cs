@@ -34,12 +34,12 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
-	public enum Commands {
+	enum Commands {
 		DocumentThis,
 		DocumentBuffer
 	}
 	
-	public class DocumentThisHandler : CommandHandler
+	class DocumentThisHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -55,7 +55,7 @@ namespace MonoDevelop.DocFood
 		}
 	}
 	
-	public class DocumentBufferHandler : CommandHandler
+	class DocumentBufferHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{

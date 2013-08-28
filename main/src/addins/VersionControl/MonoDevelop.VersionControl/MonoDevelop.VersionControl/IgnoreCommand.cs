@@ -25,11 +25,9 @@
 // THE SOFTWARE.
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using System;
 using System.Linq;
-using System.Xml;
 
 namespace MonoDevelop.VersionControl
 {

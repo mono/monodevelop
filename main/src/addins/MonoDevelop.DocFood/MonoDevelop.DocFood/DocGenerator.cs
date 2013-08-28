@@ -36,7 +36,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
-	public class DocGenerator : MonoDevelop.Projects.Text.DocGenerator
+	class DocGenerator : MonoDevelop.Projects.Text.DocGenerator
 	{
 		public List<Section> sections = new List<Section> ();
 		public Dictionary<string, string> tags = new Dictionary<string, string> ();

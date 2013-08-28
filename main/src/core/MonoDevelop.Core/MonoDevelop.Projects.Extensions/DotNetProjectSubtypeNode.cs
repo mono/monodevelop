@@ -55,6 +55,9 @@ namespace MonoDevelop.Projects.Extensions
 
 		[NodeAttribute]
 		bool useXBuild = false;
+
+		[NodeAttribute]
+		bool requireXBuild = true;
 		
 		[NodeAttribute]
 		string migrationHandler;
@@ -100,7 +103,11 @@ namespace MonoDevelop.Projects.Extensions
 		public bool UseXBuild {
 			get { return useXBuild; }
 		}
-		
+
+		public bool RequireXBuild {
+			get { return useXBuild && requireXBuild; }
+		}
+
 		public bool IsMigration {
 			get { return migrationHandler != null; }
 		}
@@ -148,7 +155,9 @@ namespace MonoDevelop.Projects.Extensions
 			UpdateImports (item, h.TargetImports);
 			h.SubtypeGuids.Add (guid);
 			if (UseXBuild)
-				h.ForceUseMSBuild = true;
+				h.UseMSBuildEngineByDefault = true;
+			if (RequireXBuild)
+				h.RequireMSBuildEngine = true;
 		}
 		
 		public void UpdateImports (SolutionEntityItem item, List<string> imports)

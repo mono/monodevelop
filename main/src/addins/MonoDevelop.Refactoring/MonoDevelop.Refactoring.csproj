@@ -19,14 +19,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>False</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.Refactoring</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -110,7 +115,34 @@
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ExtensionMethods.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueSummary.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueGroup.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CategoryGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\GroupingProviderChainControl.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\GroupingDescriptionAttribute.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\NullGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueGroupEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\GroupingProviderEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AnalysisStateChangeEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IIssueTreeNode.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IIssueSummarySink.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueTreeNodeEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ActionSummary.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\BatchFixer.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
+    <Compile Include="MonoDevelop.CodeActions\IScriptProvider.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

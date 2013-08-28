@@ -45,6 +45,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		int position;
 		TextLocation location;
+		TextLocation previousLineEnd;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -69,6 +70,7 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = copyFrom.previousState;
 			
 			position = copyFrom.position;
+			previousLineEnd = copyFrom.location;
 			location = copyFrom.location;
 			stateTag = copyFrom.stateTag;
 			keywordBuilder = new StringBuilder (copyFrom.keywordBuilder.ToString ());
@@ -100,6 +102,7 @@ namespace MonoDevelop.Xml.StateEngine
 			position = 0;
 			stateTag = 0;
 			location = new TextLocation (1, 1);
+			previousLineEnd = TextLocation.Empty;
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -126,6 +129,7 @@ namespace MonoDevelop.Xml.StateEngine
 			try {
 				//track line, column
 				if (c == '\n') {
+					previousLineEnd = new TextLocation (location.Line, location.Column + 1);
 					location = new TextLocation (location.Line + 1, 1);
 				} else {
 					location = new TextLocation (location.Line, location.Column + 1);
@@ -256,8 +260,14 @@ namespace MonoDevelop.Xml.StateEngine
 		TextLocation IParseContext.LocationMinus (int colOffset)
 		{
 			int col = Location.Column - colOffset;
-			System.Diagnostics.Debug.Assert (col > 0);
-			return new TextLocation (Location.Line, col);
+			int line = Location.Line;
+			if (col <= 0) {
+				col = previousLineEnd.Column + col;
+				line -= 1;
+				System.Diagnostics.Debug.Assert (col > 0);
+			}
+			System.Diagnostics.Debug.Assert (line > 0);
+			return new TextLocation (line, col);
 		}
 		
 		DomRegion LocationCurrentChar {

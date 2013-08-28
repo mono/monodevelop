@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Subversion
 	{
 		public abstract string GetTextBase (string sourcefile);
 
-		protected static string GetDirectoryDotSvn (SubversionVersionControl vcs, FilePath path)
+		internal static string GetDirectoryDotSvn (SubversionVersionControl vcs, FilePath path)
 		{
 			return vcs.GetDirectoryDotSvn (path);
 		}

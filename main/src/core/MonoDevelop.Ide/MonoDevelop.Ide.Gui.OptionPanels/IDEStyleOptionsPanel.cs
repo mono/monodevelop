@@ -166,6 +166,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			"id", "Indonesian",
 			"it", "Italian",
 			"ja", "Japanese",
+			"ko", "Korean",
 			"pl", "Polish",
 			"pt", "Portuguese",
 			"pt_BR", "Portuguese - Brazil",

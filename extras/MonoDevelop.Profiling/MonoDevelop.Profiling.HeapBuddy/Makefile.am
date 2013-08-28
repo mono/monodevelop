@@ -32,8 +32,8 @@ FILES =  \
 	Snapshot/Util.cs
 
 RES =  \
-	gtk-gui/gui.stetic \
-	MonoDevelop.Profiling.HeapBuddy.addin.xml
+	gtk-gui/gui.stetic,MonoDevelop.Profiling.HeapBuddy.gui.stetic \
+	MonoDevelop.Profiling.HeapBuddy.addin.xml,MonoDevelop.Profiling.HeapBuddy.MonoDevelop.Profiling.HeapBuddy.addin.xml
 
 all: $(ASSEMBLY)
 

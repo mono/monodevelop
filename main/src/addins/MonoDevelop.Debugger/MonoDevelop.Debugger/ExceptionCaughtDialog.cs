@@ -204,7 +204,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class ExceptionCaughtMessage
+	class ExceptionCaughtMessage : IDisposable
 	{
 		ExceptionInfo ex;
 		ExceptionCaughtDialog dialog;

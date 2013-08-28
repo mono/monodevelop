@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -287,6 +286,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Log, item);
 		}
 		
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Status)]
 		protected void OnStatus() {
 			RunCommand(Commands.Status, false);
@@ -295,17 +295,6 @@ namespace MonoDevelop.VersionControl
 		[CommandUpdateHandler (Commands.Status)]
 		protected void UpdateStatus(CommandInfo item) {
 			TestCommand(Commands.Status, item);
-		}
-
-		[AllowMultiSelection]
-		[CommandHandler (Commands.Commit)]
-		protected void OnCommit() {
-			RunCommand (Commands.Commit, false);
-		}
-		
-		[CommandUpdateHandler (Commands.Commit)]
-		protected void UpdateCommit (CommandInfo item) {
-			TestCommand(Commands.Commit, item);
 		}
 		
 		[AllowMultiSelection]
@@ -422,6 +411,23 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Unignore, item);
 		}
 
+		[CommandHandler (Commands.ResolveConflicts)]
+		protected void OnResolveConflicts ()
+		{
+			RunCommand (Commands.ResolveConflicts, false, false);
+		}
+
+		[CommandUpdateHandler (Commands.ResolveConflicts)]
+		protected void UpdateResolveConflicts (CommandInfo item)
+		{
+			if (!(CurrentNode.DataItem is UnknownSolutionItem)) {
+				item.Visible = false;
+				return;
+			}
+
+			TestCommand (Commands.ResolveConflicts, item, false);
+		}
+
 		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
@@ -461,10 +467,7 @@ namespace MonoDevelop.VersionControl
 					res = LogCommand.Show (items, test);
 					break;
 				case Commands.Status:
-					res = StatusView.Show (items, test);
-					break;
-				case Commands.Commit:
-					res = CommitCommand.Commit (items, test);
+					res = StatusView.Show (items, test, false);
 					break;
 				case Commands.Add:
 					res = AddCommand.Add (items, test);
@@ -497,6 +500,9 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.Unignore:
 					res = UnignoreCommand.Unignore (items, test);
+					break;
+				case Commands.ResolveConflicts:
+					res = ResolveConflictsCommand.ResolveConflicts (items, test);
 					break;
 				}
 			}

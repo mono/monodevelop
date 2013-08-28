@@ -59,7 +59,7 @@ namespace MonoDevelop.Xml.StateEngine
 </doc>
 ",
 				delegate {
-					parser.AssertStateIs<XmlDoubleQuotedAttributeValueState> ();
+					parser.AssertStateIs<XmlAttributeValueState> ();
 					parser.AssertPath ("//doc/tag.a/tag.b/@id");
 				}
 			);
@@ -85,26 +85,26 @@ namespace MonoDevelop.Xml.StateEngine
 			parser.AssertErrorCount (0);
 		}
 		
-		[Test, Ignore ("Not working")]
+		[Test]
 		public void AttributeRecovery ()
 		{
 			TestParser parser = new TestParser (CreateRootState ());
 			parser.Parse (@"
 <doc>
 	<tag.a>
-		<tag.b arg='fff' sdd = sdsds= 'foo' ff $ />
+		<tag.b arg='fff' sdd = sdsds= 'foo' ff = 5 $ />
 	</tag.a>
 <a><b valid/></a>
 </doc>
 ",
 				delegate {
 					parser.AssertStateIs<XmlTagState> ();
-					parser.AssertAttributes ("arg", "fff", "sdd", "", "sdsds", "foo", "ff", "");
-					parser.AssertErrorCount (1);
+					parser.AssertAttributes ("arg", "fff", "sdd", "sdsds", "ff", "5");
+					parser.AssertErrorCount (3);
 				}
 			);
 			parser.AssertEmpty ();
-			parser.AssertErrorCount (1);
+			parser.AssertErrorCount (4);
 		}
 		
 		[Test]
@@ -127,7 +127,7 @@ namespace MonoDevelop.Xml.StateEngine
 </doc>
 ",
 				delegate {
-					parser.AssertStateIs<XmlSingleQuotedAttributeValueState> ();
+					parser.AssertStateIs<XmlAttributeValueState> ();
 					parser.AssertNodeDepth (9);
 					parser.AssertPath ("//doc/tag.a/tag.b/tag.c/tag.d/tag.e/tag.f/@id");
 				}

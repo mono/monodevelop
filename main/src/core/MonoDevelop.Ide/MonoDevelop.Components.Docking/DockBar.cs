@@ -33,6 +33,7 @@ using System;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -218,7 +219,7 @@ namespace MonoDevelop.Components.Docking
 				using (gr) {
 					gr.AddColorStop (0, Styles.DockBarBackground1);
 					gr.AddColorStop (1, Styles.DockBarBackground2);
-					ctx.Pattern = gr;
+					ctx.SetSource (gr);
 				}
 				ctx.Fill ();
 
@@ -231,7 +232,7 @@ namespace MonoDevelop.Components.Docking
 				case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + offs); ctx.RelLineTo (Allocation.Width, 0); break;
 				}
 				ctx.LineWidth = 1;
-				ctx.Color = Styles.DockBarSeparatorColorLight;
+				ctx.SetSourceColor (Styles.DockBarSeparatorColorLight);
 				ctx.Stroke ();
 			}
 
@@ -249,7 +250,7 @@ namespace MonoDevelop.Components.Docking
 					case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
 					case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
 					}
-					ctx.Color = Styles.DockSeparatorColor.ToCairoColor ();
+					ctx.SetSourceColor (Styles.DockSeparatorColor.ToCairoColor ());
 					ctx.Stroke ();
 				}
 			}

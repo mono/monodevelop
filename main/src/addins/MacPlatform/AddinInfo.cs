@@ -13,3 +13,4 @@ using Mono.Addins.Description;
 [assembly:AddinDescription ("Mac Platform Support for MonoDevelop")]
 
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]

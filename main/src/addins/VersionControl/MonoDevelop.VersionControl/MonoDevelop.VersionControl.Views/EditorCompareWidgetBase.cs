@@ -33,12 +33,8 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
-using System.ComponentModel;
 using MonoDevelop.Core;
-using System.Globalization;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Views
@@ -273,7 +269,7 @@ namespace MonoDevelop.VersionControl.Views
 			return rectangles;
 		}
 		
-		Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> diffCache = new Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> ();
+		Dictionary<List<Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> diffCache = new Dictionary<List<Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> ();
 		
 		protected void ClearDiffCache ()
 		{
@@ -285,7 +281,7 @@ namespace MonoDevelop.VersionControl.Views
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
+		static List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
@@ -308,7 +304,7 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> GetDiffPaths (List<Mono.TextEditor.Utils.Hunk> diff, TextEditor editor, Hunk hunk)
+		Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> GetDiffPaths (List<Hunk> diff, TextEditor editor, Hunk hunk)
 		{
 			if (!diffCache.ContainsKey (diff))
 				diffCache[diff] = new Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>> ();
@@ -450,7 +446,9 @@ namespace MonoDevelop.VersionControl.Views
 				hscrollbar.Destroy ();
 			}
 
-			children.ForEach (child => child.Child.Destroy ());
+			foreach (var child in children.ToArray ()) {
+				child.Child.Destroy ();
+			}
 
 			base.OnDestroyed ();
 		}
@@ -523,7 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk hunk, bool removeSide, bool dark, double alpha)
+		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool dark, double alpha)
 		{
 			Cairo.Color result;
 			if (hunk.Removed > 0 && hunk.Inserted > 0) {
@@ -545,7 +543,7 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
+		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Hunk> diff, bool paintRemoveSide)
 		{
 			if (diff == null)
 				return;
@@ -556,7 +554,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (y1 == y2)
 					y2 = y1 + 1;
 				cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
-				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.15);
+				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, false, 0.15));
 				cr.Fill ();
 				
 				var paths = GetDiffPaths (diff, editors[0], hunk);
@@ -567,11 +565,11 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Rectangle (rect);
 				}
 				
-				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.3);
+				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, false, 0.3));
 				cr.Fill ();
 				cr.Restore ();
 				
-				cr.Color = GetColor (hunk, paintRemoveSide, true, 0.15);
+				cr.SetSourceColor (GetColor (hunk, paintRemoveSide, true, 0.15));
 				cr.MoveTo (0, y1);
 				cr.LineTo (editor.Allocation.Width, y1);
 				cr.Stroke ();
@@ -673,7 +671,7 @@ namespace MonoDevelop.VersionControl.Views
 			TextEditor fromEditor, toEditor;
 			bool useLeft;
 
-			IEnumerable<Mono.TextEditor.Utils.Hunk> Diff {
+			IEnumerable<Hunk> Diff {
 				get {
 					return useLeft ? widget.LeftDiff : widget.RightDiff;
 				}
@@ -700,11 +698,11 @@ namespace MonoDevelop.VersionControl.Views
 				QueueDraw ();
 			}
 
-			Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
+			Hunk selectedHunk = Hunk.Empty;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
 				bool hideButton = widget.MainEditor.Document.ReadOnly;
-				Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
+				Hunk selectedHunk = Hunk.Empty;
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					if (Diff != null) {
@@ -731,7 +729,7 @@ namespace MonoDevelop.VersionControl.Views
 						}
 					}
 				} else {
-					selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
+					selectedHunk = Hunk.Empty;
 				}
 
 				if (selectedHunk.IsEmpty)
@@ -755,7 +753,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 			{
-				selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
+				selectedHunk = Hunk.Empty;
 				TooltipText = null;
 				QueueDraw ();
 				return base.OnLeaveNotifyEvent (evnt);
@@ -763,7 +761,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			const int buttonSize = 16;
 
-			public bool GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, double y1, double y2, double z1, double z2, out double x, out double y, out double w, out double h)
+			public bool GetButtonPosition (Hunk hunk, double y1, double y2, double z1, double z2, out double x, out double y, out double w, out double h)
 			{
 				if (hunk.Removed > 0) {
 					var b1 = z1;
@@ -813,7 +811,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Clip ();
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					if (Diff != null) {
-						foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
+						foreach (Hunk hunk in Diff) {
 							double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
 							double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
 							if (z1 == z2)
@@ -860,10 +858,10 @@ namespace MonoDevelop.VersionControl.Views
 								x1 + (x2 - x1) / 4, z2,
 								x1, z2);
 							cr.ClosePath ();
-							cr.Color = GetColor (hunk, this.useLeft, false, 1.0);
+							cr.SetSourceColor (GetColor (hunk, this.useLeft, false, 1.0));
 							cr.Fill ();
 	
-							cr.Color = GetColor (hunk, this.useLeft, true, 1.0);
+							cr.SetSourceColor (GetColor (hunk, this.useLeft, true, 1.0));
 							cr.MoveTo (x1, z1);
 							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
 								x1 + (x2 - x1) * 3 / 4, y1,
@@ -890,22 +888,22 @@ namespace MonoDevelop.VersionControl.Views
 								//	mx -= (int)x;
 								//	my -= (int)y;
 									using (var gradient = new Cairo.RadialGradient (mx, my, h, mx, my, 2)) {
-										var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+										var color = (HslColor)Style.Mid (StateType.Normal);
 										color.L *= 1.05;
 										gradient.AddColorStop (0, color);
 										color.L *= 1.07;
 										gradient.AddColorStop (1, color);
-										cr.Pattern = gradient;
+										cr.SetSource (gradient);
 									}
 								} else {
-									cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+									cr.SetSourceColor ((HslColor)Style.Mid (StateType.Normal));
 								}
 								cr.FillPreserve ();
 								
-								cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+								cr.SetSourceColor ((HslColor)Style.Dark (StateType.Normal));
 								cr.Stroke ();
 								cr.LineWidth = 1;
-								cr.Color = new Cairo.Color (0, 0, 0);
+								cr.SetSourceRGB (0, 0, 0);
 								if (drawArrow) {
 									DrawArrow (cr, x + w / 1.5, y + h / 2);
 									DrawArrow (cr, x + w / 2.5, y + h / 2);
@@ -1025,7 +1023,7 @@ namespace MonoDevelop.VersionControl.Views
 						curY = start;
 						double height = Math.Max (cr.LineWidth, count * Allocation.Height);
 						cr.Rectangle (0.5, 0.5 + curY, Allocation.Width, height);
-						cr.Color = GetColor (hunk, !paintInsert, false, 1.0);
+						cr.SetSourceColor (GetColor (hunk, !paintInsert, false, 1.0));
 						cr.Fill ();
 						curY += height;
 					}
@@ -1040,7 +1038,7 @@ namespace MonoDevelop.VersionControl.Views
 					DrawBar (cr, barY, barH);
 					
 					cr.Rectangle (0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1);
-					cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+					cr.SetSourceColor ((HslColor)Style.Dark (StateType.Normal));
 					cr.Stroke ();
 				}
 				return true;
@@ -1050,12 +1048,12 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				cr.Rectangle (0.5, y, Allocation.Width, h);
 				using (var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y)) {
-					var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
+					var col = (HslColor)Style.Base (StateType.Normal);
 					col.L *= 0.95;
 					grad.AddColorStop (0, col);
-					grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
+					grad.AddColorStop (0.7, (HslColor)Style.Base (StateType.Normal));
 					grad.AddColorStop (1, col);
-					cr.Pattern = grad;
+					cr.SetSource (grad);
 					cr.Fill ();
 				}
 			}
@@ -1072,15 +1070,15 @@ namespace MonoDevelop.VersionControl.Views
 					h,
 					barWidth / 2);
 				
-				var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+				var color = (HslColor)Style.Mid (StateType.Normal);
 				color.L = 0.5;
 				var c = (Cairo.Color)color;
 				c.A = 0.6;
-				cr.Color = c;
+				cr.SetSourceColor (c);
 				cr.Fill ();
 			}
 	
-			void IncPos(Mono.TextEditor.Utils.Hunk h, ref int pos)
+			static void IncPos (Hunk h, ref int pos)
 			{
 				pos += System.Math.Max (h.Inserted, h.Removed);
 			}

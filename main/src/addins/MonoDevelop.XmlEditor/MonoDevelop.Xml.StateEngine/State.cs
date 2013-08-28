@@ -47,7 +47,7 @@ namespace MonoDevelop.Xml.StateEngine
 		/// Note that this will not change the DOM state.</param>
 		/// <returns>
 		/// The next state. A new or parent <see cref="State"/> will change the parser state; 
-		/// the current state or <see cref="null"/> will not.
+		/// the current state or null will not.
 		/// </returns>
 		public abstract State PushChar (char c, IParseContext context, ref string rollback);
 

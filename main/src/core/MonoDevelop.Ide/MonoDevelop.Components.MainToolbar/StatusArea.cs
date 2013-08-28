@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
+using Mono.TextEditor;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
@@ -846,7 +847,7 @@ namespace MonoDevelop.Components.MainToolbar
 					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
 					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));
 					gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-					ctx.Pattern = gr;
+					ctx.SetSource (gr);
 					ctx.Fill ();
 				}
 			}

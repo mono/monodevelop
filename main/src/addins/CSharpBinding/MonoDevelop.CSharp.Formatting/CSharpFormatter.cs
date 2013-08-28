@@ -39,7 +39,7 @@ using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpFormatter : AbstractAdvancedFormatter
+	class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
 

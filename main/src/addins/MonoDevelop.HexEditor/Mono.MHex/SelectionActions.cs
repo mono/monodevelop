@@ -29,7 +29,7 @@ using Mono.MHex.Data;
 
 namespace Mono.MHex
 {
-	public static class SelectionActions
+	static class SelectionActions
 	{
 		public static Action<HexEditorData> FromMoveAction (Action<HexEditorData> moveAction)
 		{

@@ -1,6 +1,5 @@
 
 using System;
-using MonoDevelop.Ide;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -63,7 +62,7 @@ namespace MonoDevelop.VersionControl
 			} else {
 				// The url may have a scheme, but it may be an incomplete or incorrect url. Do the best to select
 				// the correct value in the protocol combo
-				string prot = repo.SupportedProtocols.FirstOrDefault (p => repo.Url.StartsWith (p + "://"));
+				string prot = repo.SupportedProtocols.FirstOrDefault (p => repo.Url.StartsWith (p + "://", StringComparison.Ordinal));
 				if (prot != null) {
 					repositoryServerEntry.Text = string.Empty;
 					repositoryPortSpin.Value = 0;
@@ -99,7 +98,7 @@ namespace MonoDevelop.VersionControl
 		
 		void UpdateControls ()
 		{
-			if (repo.Uri != null || repo.SupportedProtocols.Any (p => repositoryUrlEntry.Text.StartsWith (p + "://"))) {
+			if (repo.Uri != null || repo.SupportedProtocols.Any (p => repositoryUrlEntry.Text.StartsWith (p + "://", StringComparison.Ordinal))) {
 				repositoryPathEntry.Sensitive = true;
 				bool isUrl = Protocol != "file";
 				repositoryServerEntry.Sensitive = isUrl;

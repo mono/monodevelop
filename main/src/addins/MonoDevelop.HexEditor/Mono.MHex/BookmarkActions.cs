@@ -30,7 +30,7 @@ using Mono.MHex.Rendering;
 
 namespace Mono.MHex
 {
-	public static class BookmarkActions
+	static class BookmarkActions
 	{
 		public static void Toggle (HexEditorData data)
 		{

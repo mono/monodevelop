@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace ILAsmBinding
 {
-	public class ILAsmLanguageBinding : IDotNetLanguageBinding
+	class ILAsmLanguageBinding : IDotNetLanguageBinding
 	{
 		public string Language {
 			get {

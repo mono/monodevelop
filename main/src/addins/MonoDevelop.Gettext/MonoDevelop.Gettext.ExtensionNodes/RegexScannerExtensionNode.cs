@@ -35,7 +35,7 @@ namespace MonoDevelop.Gettext.ExtensionNodes
 	[ExtensionNodeChild (typeof(IncludeExtensionNode))]
 	[ExtensionNodeChild (typeof(TransformExtensionNode))]
 	[ExtensionNodeChild (typeof(ExcludeExtensionNode))]
-	public class RegexScannerExtensionNode: InstanceExtensionNode
+	class RegexScannerExtensionNode: InstanceExtensionNode
 	{
 		[NodeAttribute ("extension", Description="Extensions of the files supported by this scanner (use comma to separate multiple extensions)")]
 		protected string[] extensions = null;

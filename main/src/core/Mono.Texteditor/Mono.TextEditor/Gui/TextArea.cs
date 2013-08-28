@@ -662,6 +662,7 @@ namespace Mono.TextEditor
 			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
 			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
 			GdkWindow.UserData = Raw;
+			GdkWindow.Background = Style.Background (StateType.Normal);
 			Style = Style.Attach (GdkWindow);
 
 			imContext.ClientWindow = this.GdkWindow;
@@ -806,7 +807,7 @@ namespace Mono.TextEditor
 			textEditorData.RemoveTooltipProvider (provider);
 		}
 
-		internal void RedrawMargin (Margin margin)
+		public void RedrawMargin (Margin margin)
 		{
 			if (isDisposed)
 				return;
@@ -1737,8 +1738,11 @@ namespace Mono.TextEditor
 				var line = Document.GetLine (logicalLineNumber);
 
 				// Ensure that the correct line height is set.
-				if (line != null)
-					textViewMargin.GetLayout (line);
+				if (line != null) {
+					var wrapper = textViewMargin.GetLayout (line);
+					if (wrapper.IsUncached)
+						wrapper.Dispose ();
+				}
 
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
@@ -2292,7 +2296,7 @@ namespace Mono.TextEditor
 				Cairo.Color color = editor.ColorStyle.PlainText.Foreground;
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.Stroke ();
 				cr.ResetClip ();
 			}
@@ -2356,7 +2360,7 @@ namespace Mono.TextEditor
 				Cairo.Color color = editor.ColorStyle.PlainText.Foreground;
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.Stroke ();
 				cr.ResetClip ();
 			}
@@ -2380,7 +2384,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Initiate a pulse at the specified document location
 		/// </summary>
-		/// <param name="pulseLocation">
+		/// <param name="pulseStart">
 		/// A <see cref="DocumentLocation"/>
 		/// </param>
 		public void PulseCharacter (DocumentLocation pulseStart)
@@ -2542,7 +2546,7 @@ namespace Mono.TextEditor
 
 				//fill in the highlight rect with solid white to prevent alpha blending artifacts on the corners
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
-				cr.Color = new Cairo.Color (1, 1, 1);
+				cr.SetSourceRGB (1, 1, 1);
 				cr.Fill ();
 
 				//draw the shadow
@@ -2550,7 +2554,7 @@ namespace Mono.TextEditor
 					shadowOffset, shadowOffset, corner, width, height);
 				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.3);
 				color.A = 0.5 * opacity * opacity;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.Fill ();
 
 				//draw the highlight rectangle
@@ -2566,13 +2570,13 @@ namespace Mono.TextEditor
 						Editor.ColorStyle.SearchResultMain.Color,
 						1 - opacity);
 					gradient.AddColorStop (1, color);
-					cr.Pattern = gradient;
+					cr.SetSource (gradient);
 					cr.Fill ();
 				}
 
 				//and finally the text
 				cr.Translate (area.X, area.Y);
-				cr.Color = new Cairo.Color (0, 0, 0);
+				cr.SetSourceRGB (0, 0, 0);
 				cr.ShowLayout (layout);
 			}
 
@@ -2809,8 +2813,10 @@ namespace Mono.TextEditor
 					longest = line;
 			}
 			if (longest != longestLine) {
-				int width = (int)(textViewMargin.GetLayout (longest).PangoWidth / Pango.Scale.PangoScale);
-				
+				var layoutWrapper = textViewMargin.GetLayout (longest);
+				int width = (int)(layoutWrapper.Width);
+				if (layoutWrapper.IsUncached)
+					layoutWrapper.Dispose ();
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;
@@ -3204,8 +3210,8 @@ namespace Mono.TextEditor
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
 			if (!child.FixedPosition) {
 //				double zoom = Options.Zoom;
-				childRectangle.X = (int)(child.X /** zoom */- HAdjustment.Value);
-				childRectangle.Y = (int)(child.Y /** zoom */- VAdjustment.Value);
+				childRectangle.X = (int)(child.X /* * zoom */- HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y /* * zoom */- VAdjustment.Value);
 			}
 			//			childRectangle.X += allocation.X;
 			//			childRectangle.Y += allocation.Y;

@@ -69,7 +69,7 @@ namespace MonoDevelop.Gettext
 				Number
 				'(' Expression ')'
 */
-	internal class PluralFormsToken
+	class PluralFormsToken
 	{
 		public enum Type
 		{

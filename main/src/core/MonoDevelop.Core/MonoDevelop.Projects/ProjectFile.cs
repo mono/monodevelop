@@ -96,7 +96,9 @@ namespace MonoDevelop.Projects
 			set {
 				Debug.Assert (!String.IsNullOrEmpty (value));
 
-				FilePath oldFileName = filename;
+				FilePath oldVirtualPath = ProjectVirtualPath;
+				FilePath oldPath = filename;
+
 				filename = FileService.GetFullPath (value);
 
 				if (HasChildren) {
@@ -105,11 +107,13 @@ namespace MonoDevelop.Projects
 				}
 
 				// If the file is a link, rename the link too
-				if (IsLink && Link.FileName == oldFileName.FileName)
+				if (IsLink && Link.FileName == oldPath.FileName)
 					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
 
+				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
+
 				if (project != null)
-					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldFileName));
+					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldPath));
 			}
 		}
 
@@ -443,6 +447,16 @@ namespace MonoDevelop.Projects
 				handler (this, new ProjectFileVirtualPathChangedEventArgs (this, oldVirtualPath, newVirtualPath));
 		}
 
+		internal event EventHandler<ProjectFilePathChangedEventArgs> PathChanged;
+
+		void OnPathChanged (FilePath oldPath, FilePath newPath, FilePath oldVirtualPath, FilePath newVirtualPath)
+		{
+			var handler = PathChanged;
+
+			if (handler != null)
+				handler (this, new ProjectFilePathChangedEventArgs (this, oldPath, newPath, oldVirtualPath, newVirtualPath));
+		}
+
 		protected virtual void OnChanged (string property)
 		{
 			if (project != null)
@@ -468,5 +482,17 @@ namespace MonoDevelop.Projects
 		public ProjectFile ProjectFile { get; private set; }
 		public FilePath OldVirtualPath { get; private set; }
 		public FilePath NewVirtualPath { get; private set; }
+	}
+
+	internal class ProjectFilePathChangedEventArgs : ProjectFileVirtualPathChangedEventArgs
+	{
+		public ProjectFilePathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath, FilePath oldVirtualPath, FilePath newVirtualPath) : base (projectFile, oldVirtualPath, newVirtualPath)
+		{
+			OldPath = oldPath;
+			NewPath = newPath;
+		}
+
+		public FilePath OldPath { get; private set; }
+		public FilePath NewPath { get; private set; }
 	}
 }

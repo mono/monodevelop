@@ -26,20 +26,28 @@
 using System;
 using MonoDevelop.CodeIssues;
 using System.Collections.Generic;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.TypeSystem;
+using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public class NRefactoryCodeIssueSource : ICodeIssueProviderSource
+	class NRefactoryCodeIssueSource : ICodeIssueProviderSource
 	{
 		#region ICodeIssueProviderSource implementation
 		public IEnumerable<CodeIssueProvider> GetProviders ()
 		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider).Assembly.GetTypes ()) {
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.AbstractAndVirtualConversionAction).Assembly.GetTypes ()) {
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
 				yield return new NRefactoryIssueProvider (
-					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider)Activator.CreateInstance (t),
+					(ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute)attr [0]);
 			}
 		}

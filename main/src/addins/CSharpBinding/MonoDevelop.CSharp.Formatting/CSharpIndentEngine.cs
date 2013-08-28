@@ -34,7 +34,7 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public partial class CSharpIndentEngine : ICloneable, IDocumentStateEngine {
+	partial class CSharpIndentEngine : ICloneable, IDocumentStateEngine {
 		IndentStack stack;
 		
 		// Ponder: should linebuf be dropped in favor of a

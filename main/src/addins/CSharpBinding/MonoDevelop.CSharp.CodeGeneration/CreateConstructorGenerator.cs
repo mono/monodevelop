@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class CreateConstructorGenerator : ICodeGenerator
+	class CreateConstructorGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Gettext
 {
-	internal static class IsoCodes
+	static class IsoCodes
 	{
 		internal class IsoCode
 		{

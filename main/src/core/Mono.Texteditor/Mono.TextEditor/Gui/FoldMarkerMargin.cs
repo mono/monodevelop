@@ -265,9 +265,9 @@ namespace Mono.TextEditor
 			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
 			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
 			ctx.Rectangle (drawArea);
-			ctx.Color = isOpen ? foldBgGC : foldToggleMarkerBackground;
+			ctx.SetSourceColor (isOpen ? foldBgGC : foldToggleMarkerBackground);
 			ctx.FillPreserve ();
-			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
+			ctx.SetSourceColor (isSelected ? foldLineHighlightedGC  : foldLineGC);
 			ctx.Stroke ();
 			
 			ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
@@ -353,24 +353,24 @@ namespace Mono.TextEditor
 					}
 					
 					cr.Rectangle (drawArea);
-					cr.Color = bgGC;
+					cr.SetSourceColor (bgGC);
 					cr.Fill ();
 				}
 			}
 
 			if (editor.Options.EnableQuickDiff) {
 				if (state == TextDocument.LineState.Changed) {
-					cr.Color = lineStateChangedGC;
+					cr.SetSourceColor (lineStateChangedGC);
 					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 					cr.Fill ();
 				} else if (state == TextDocument.LineState.Dirty) {
-					cr.Color = lineStateDirtyGC;
+					cr.SetSourceColor (lineStateDirtyGC);
 					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 					cr.Fill ();
 				}
 			}
 
-			if (editor.Options.ShowFoldMargin && line < editor.Document.LineCount) {
+			if (editor.Options.ShowFoldMargin && line <= editor.Document.LineCount) {
 				double foldSegmentYPos = y + System.Math.Floor (editor.LineHeight - foldSegmentSize) / 2;
 				double xPos = x + System.Math.Floor (marginWidth / 2) + 0.5;
 				

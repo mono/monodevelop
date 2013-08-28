@@ -177,6 +177,34 @@ namespace MonoDevelop.Components.MainToolbar
 			currentSolutionConfigurations.Sort ();
 		}
 
+		static ExecutionTarget FirstRealExecutionTarget (IEnumerable<ExecutionTarget> targets)
+		{
+			foreach (var target in targets) {
+				if (target is ExecutionTargetGroup) {
+					var first = FirstRealExecutionTarget ((ExecutionTargetGroup) target);
+					if (first != null)
+						return first;
+				} else if (!(target is DummyExecutionTarget)) {
+					return target;
+				}
+			}
+
+			return null;
+		}
+
+		static bool ExecutionTargetsContains (IEnumerable<ExecutionTarget> targets, ExecutionTarget desired)
+		{
+			foreach (var target in targets) {
+				if (target == desired)
+					return true;
+
+				if ((target is ExecutionTargetGroup) && ExecutionTargetsContains ((ExecutionTargetGroup) target, desired))
+					return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Gets the full configuration name given a possibly merged configuration name and execution target
 		/// </summary>
@@ -201,14 +229,15 @@ namespace MonoDevelop.Components.MainToolbar
 				// The selected configuration is not reduced, just use it as full config name
 				resolvedConfig = currentConfig;
 				var part = currentTargetPartitions.FirstOrDefault (p => p.SolutionConfigurations.Contains (currentConfig));
-				if (part == null)
+				if (part != null) {
+					if (!ExecutionTargetsContains (part.Targets, resolvedTarget))
+						resolvedTarget = FirstRealExecutionTarget (part.Targets);
+				} else {
 					resolvedTarget = null;
-				else if (!part.Targets.Contains (resolvedTarget))
-					resolvedTarget = part.Targets.FirstOrDefault (t => !(t is DummyExecutionTarget));
+				}
 			} else {
 				// Reduced configuration. Find the partition and guess the implicit project configuration
-
-				var part = currentTargetPartitions.FirstOrDefault (p => p.Targets.Contains (currentTarget ?? dummyExecutionTarget));
+				var part = currentTargetPartitions.FirstOrDefault (p => ExecutionTargetsContains (p.Targets, currentTarget ?? dummyExecutionTarget));
 				if (part != null) {
 					resolvedConfig = part.SolutionConfigurations.FirstOrDefault (c => {
 						string name, plat;
@@ -221,7 +250,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (part == null)
 						part = currentTargetPartitions.FirstOrDefault (p => p.SolutionConfigurations.Contains (currentConfig));
 					if (part != null) {
-						resolvedTarget = part.Targets.FirstOrDefault (t => !(t is DummyExecutionTarget));
+						resolvedTarget = FirstRealExecutionTarget (part.Targets);
 						resolvedConfig = part.SolutionConfigurations.FirstOrDefault (c => {
 							string name, plat;
 							ItemConfiguration.ParseConfigurationId (c, out name, out plat);

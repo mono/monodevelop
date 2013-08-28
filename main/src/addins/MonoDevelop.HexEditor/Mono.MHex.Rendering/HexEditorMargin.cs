@@ -27,12 +27,14 @@
 using System;
 using System.Text;
 using Mono.MHex.Data;
+using Xwt.Drawing;
+using Xwt;
 
 namespace Mono.MHex.Rendering
 {
-	public class HexEditorMargin : Margin
+	class HexEditorMargin : Margin
 	{
-		int groupWidth, byteWidth;
+		double groupWidth, byteWidth;
 			
 		public int LineHeight {
 			get {
@@ -40,55 +42,52 @@ namespace Mono.MHex.Rendering
 			}
 		}
 		
-		public override int Width {
+		public override double Width {
 			get {
 				return CalculateWidth (Editor.BytesInRow);
 			}
 		}
 		
-		public override int CalculateWidth (int bytesInRow)
+		public override double CalculateWidth (int bytesInRow)
 		{
 			return (bytesInRow / Editor.Options.GroupBytes) * groupWidth;
 		}
 		
-		Pango.TabArray tabArray = null;
+//		Pango.TabArray tabArray = null;
 		
 		public HexEditorMargin (HexEditor hexEditor) : base (hexEditor)
 		{
 			
 		}
-		
-		Gdk.GC bgGC;
-		Gdk.GC fgGC;
 
 		internal protected override void OptionsChanged ()
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
 			string groupString = new string ('0', Editor.Options.GroupBytes * 2);
-			layout.SetText (groupString + " ");
-			int lineHeight;
-			layout.GetPixelSize (out groupWidth, out lineHeight);
+			layout.Text = groupString + " ";
+			double lineHeight;
+			var sz = layout.GetSize ();
+			groupWidth = sz.Width;
+			lineHeight = sz.Height;
+			 
 			Data.LineHeight = lineHeight;
 			
-			layout.SetText ("00");
-			layout.GetPixelSize (out byteWidth, out lineHeight);
-			
+			layout.Text = "00";
+			byteWidth = layout.GetSize ().Width;
+
 			layout.Dispose ();
 			
-			tabArray = new Pango.TabArray (1, true);
-			tabArray.SetTab (0, Pango.TabAlign.Left, groupWidth);
-			
-			bgGC = GetGC (Style.HexDigitBg);
-			fgGC = GetGC (Style.HexDigit);
+//			tabArray = new Pango.TabArray (1, true);
+//			tabArray.SetTab (0, Pango.TabAlign.Left, groupWidth);
 		}
 
 		
 		protected override LayoutWrapper RenderLine (long line)
 		{
-			Pango.Layout layout = new Pango.Layout (Editor.PangoContext);
-			layout.FontDescription = Editor.Options.Font;
-			layout.Tabs = tabArray;
+			var layout = new TextLayout (Editor);
+			layout.Font = Editor.Options.Font;
+//			layout.Tabs = tabArray;
 			StringBuilder sb = new StringBuilder ();
 			long startOffset = line * Editor.BytesInRow;
 			long endOffset   = System.Math.Min (startOffset + Editor.BytesInRow, Data.Length);
@@ -96,33 +95,18 @@ namespace Mono.MHex.Rendering
 			for (int i = 0; i < lineBytes.Length; i++) {
 				sb.Append (string.Format ("{0:X2}", lineBytes[i]));
 				if (i % Editor.Options.GroupBytes == 0)
-					sb.Append ("\t");
+					sb.Append (" "); // \t
 			}
 			
-			layout.SetText (sb.ToString ());
-			char[] lineChars = sb.ToString ().ToCharArray ();
+			layout.Text = sb.ToString ();
 			Margin.LayoutWrapper result = new LayoutWrapper (layout);
-			uint curIndex = 0, byteIndex = 0;
 			if (Data.IsSomethingSelected) {
 				ISegment selection = Data.MainSelection.Segment;
 				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
-					Pango.AttrForeground selectedForeground = new Pango.AttrForeground (Style.Selection.Red, 
-					                                                                    Style.Selection.Green, 
-					                                                                    Style.Selection.Blue);
-					selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, TranslateColumn (start - startOffset), ref curIndex, ref byteIndex);
-					selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, TranslateColumn (end - startOffset) - 1, ref curIndex, ref byteIndex);
-					result.Add (selectedForeground);
-					
-					Pango.AttrBackground attrBackground = new Pango.AttrBackground (Style.SelectionBg.Red, 
-					                                                                Style.SelectionBg.Green, 
-					                                                                Style.SelectionBg.Blue);
-					attrBackground.StartIndex = selectedForeground.StartIndex;
-					attrBackground.EndIndex = selectedForeground.EndIndex;
-					result.Add (attrBackground);
-
+					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset) * 3, (int)(end - start) * 3 - 1);
+					result.Layout.SetBackgound (Style.SelectionBg, (int)(start - startOffset) * 3, (int)(end - start) * 3 - 1);
 				});
 			}
-			result.SetAttributes ();
 			return result;
 		}
 
@@ -132,25 +116,31 @@ namespace Mono.MHex.Rendering
 		}
 
 		
-		internal protected override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, long line, int x, int y)
+		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			drawable.DrawRectangle (bgGC, true, x, y, Width, Editor.LineHeight);
+			ctx.Rectangle (x, y, Width, Editor.LineHeight);
+			ctx.SetColor (Style.HexDigitBg); 
+			ctx.Fill ();
+
 			LayoutWrapper layout = GetLayout (line);
-			
+			char ch;
 			if (!Data.IsSomethingSelected && Caret.InTextEditor && line == Data.Caret.Line) {
-				drawable.DrawRectangle (GetGC (Style.HighlightOffset), true, CalculateCaretXPos (false), y, byteWidth, Editor.LineHeight);
+				ctx.Rectangle (CalculateCaretXPos (false, out ch), y, byteWidth, Editor.LineHeight);
+				ctx.SetColor (Style.HighlightOffset); 
+				ctx.Fill ();
+
 			}
-			
-			drawable.DrawLayout (fgGC, x, y, layout.Layout);
+			ctx.SetColor (Style.HexDigit);
+			ctx.DrawTextLayout (layout.Layout, x, y);
 			if (layout.IsUncached)
 				layout.Dispose ();
 		}
 		
-		public int CalculateCaretXPos ()
+		public double CalculateCaretXPos (out char ch)
 		{
-			return CalculateCaretXPos (true);
+			return CalculateCaretXPos (true, out ch);
 		}
-		int CalculateCaretXPos (bool useSubPositon)
+		double CalculateCaretXPos (bool useSubPositon, out char ch)
 		{
 			int byteInRow = (int)Caret.Offset % BytesInRow;
 			int groupNumber = byteInRow / Editor.Options.GroupBytes;
@@ -159,42 +149,45 @@ namespace Mono.MHex.Rendering
 			if (useSubPositon)
 				caretIndex += Caret.SubPosition;
 			LayoutWrapper layout = GetLayout ((int)Caret.Line);
-			Pango.Rectangle rectangle = layout.Layout.IndexToPos (caretIndex);
+			var rectangle = layout.Layout.GetCoordinateFromIndex (caretIndex);
+			var text = layout.Layout.Text;
+
+			ch = caretIndex < text.Length ? text [caretIndex] : ' ';
 			if (layout.IsUncached)
 				layout.Dispose ();
-			return XOffset + (int)(rectangle.X / Pango.Scale.PangoScale);
+			return XOffset + rectangle.X;
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
 			
-			if (args.Button != 1)
+			if (args.Button != PointerButton.Left)
 				return;
 			
 			Caret.InTextEditor = false;
 			int groupChar;
-			Caret.Offset      = GetOffset (args, out groupChar);
+			Caret.Offset      = GetOffset (args.X, args.Line, out groupChar);
 			Caret.SubPosition = groupChar % 2;
 		}
 
-		long GetOffset (MarginMouseEventArgs args, out int groupChar)
+		long GetOffset (double x, long line, out int groupChar)
 		{
-			int groupNumber = args.X / groupWidth;
-			groupChar = (args.X % groupWidth) / Editor.textEditorMargin.charWidth;
-			return args.Line * BytesInRow + groupNumber * Editor.Options.GroupBytes + groupChar / 2;
+			int groupNumber = (int)(x / groupWidth);
+			groupChar = (int)((x % groupWidth) / Editor.textEditorMargin.charWidth);
+			return line * BytesInRow + groupNumber * Editor.Options.GroupBytes + groupChar / 2;
 		}
-		
-		internal protected override void MouseHover (MarginMouseEventArgs args)
+
+		internal protected override void MouseHover (MarginMouseMovedEventArgs args)
 		{
 			base.MouseHover (args);
 
-			if (args.Button != 1)
+			if (Editor.pressedButton == -1)
 				return;
 			Caret.InTextEditor = false;
 			
 			int groupChar;
-			long hoverOffset = GetOffset (args, out groupChar);
+			long hoverOffset = GetOffset (args.X, args.Line, out groupChar);
 			if (Data.MainSelection == null) {
 				Data.SetSelection (hoverOffset, hoverOffset);
 			} else {

@@ -3,7 +3,7 @@
 //
 // Author: Jeffrey Stedfast <jeff@xamarin.com>
 //
-// Copyright (c) 2013 Jeffrey Stedfast
+// Copyright (c) 2013 Xamarin Inc. (www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -216,32 +216,30 @@ namespace MonoDevelop.Debugger
 					continue;
 				}
 
-				if ((token = ReadSyntaxToken (text, ref index)) == null)
-					continue;
+				while ((token = ReadSyntaxToken (text, ref index)) != null) {
+					EatWhitespace (text, ref index);
 
-				EatWhitespace (text, ref index);
-
-				switch (token) {
-				case ")": case "]":
-					if (tokens.Contains (token)) {
-						do {
-							stack.Pop ();
-						} while (tokens.Pop () != token);
-						stack.Pop ();
+					switch (token) {
+					case ")": case "]":
+						if (tokens.Contains (token)) {
+							do {
+								stack.Pop ();
+							} while (tokens.Pop () != token);
+						}
+						break;
+					case "(":
+						tokens.Push (")");
+						stack.Push (index);
+						break;
+					case "[":
+						tokens.Push ("]");
+						stack.Push (index);
+						break;
+					default:
+						tokens.Push (token);
+						stack.Push (index);
+						break;
 					}
-					break;
-				case "(":
-					tokens.Push (")");
-					stack.Push (index);
-					break;
-				case "[":
-					tokens.Push ("]");
-					stack.Push (index);
-					break;
-				default:
-					tokens.Push (token);
-					stack.Push (index);
-					break;
 				}
 			}
 

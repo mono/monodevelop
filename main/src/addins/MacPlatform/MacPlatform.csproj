@@ -20,15 +20,20 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>False</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\..\build\AddIns</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,6 +82,7 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MacKeychainPasswordProvider.cs" />
     <Compile Include="MacPlatform.cs" />
     <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
@@ -95,7 +101,6 @@
     <Compile Include="MacInterop\LaunchServices.cs" />
     <Compile Include="MacInterop\ProcessManager.cs" />
     <Compile Include="MacInterop\Keychain.cs" />
-    <Compile Include="MacInterop\Cocoa.cs" />
     <Compile Include="MacIntegrationCommands.cs" />
     <Compile Include="MacExternalConsoleProcess.cs" />
     <Compile Include="MacInterop\Carbon.cs" />
@@ -107,6 +112,7 @@
     <Compile Include="MacMenu\MDServicesMenuItem.cs" />
     <Compile Include="MacMenu\MDSubMenuItem.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MacProxyCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

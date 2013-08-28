@@ -34,7 +34,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	[PolicyType ("Naming Conventions Policy")]
-	public class NameConventionPolicy : IEquatable<NameConventionPolicy>
+	class NameConventionPolicy : IEquatable<NameConventionPolicy>
 	{
 		NameConventionRule[] rules = new NameConventionRule[0];
 

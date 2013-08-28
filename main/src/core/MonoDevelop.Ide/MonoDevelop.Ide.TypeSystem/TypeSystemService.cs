@@ -489,7 +489,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return result;
 		}
-		static string GetCacheDirectory (string filename)
+		static string InternalGetCacheDirectory (string filename)
 		{
 			string result;
 			var nameNoExtension = Path.GetFileNameWithoutExtension (filename);
@@ -526,9 +526,27 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
 		public static string GetCacheDirectory (Project project, bool forceCreation = false)
 		{
-			var result = GetCacheDirectory (project.FileName);
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			return GetCacheDirectory (project.FileName, forceCreation);
+		}
+
+		/// <summary>
+		/// Gets the cache directory for arbitrary file names.
+		/// If forceCreation is set to false the method may return null, if the cache doesn't exist.
+		/// </summary>
+		/// <returns>The cache directory.</returns>
+		/// <param name="fileName">The file name to get the cache for.</param>
+		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
+		public static string GetCacheDirectory (string fileName, bool forceCreation = false)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			var result = InternalGetCacheDirectory (fileName);
+			if (result != null)
+				TouchCache (result);
 			if (forceCreation && result == null)
-				result = CreateCacheDirectory (project.FileName);
+				result = CreateCacheDirectory (fileName);
 			return result;
 		}
 
@@ -726,7 +744,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!wrapper.WasChanged)
 				return;
 			string cacheDir = GetCacheDirectory (project, true);
-			TouchCache (cacheDir);
 			string fileName = Path.GetTempFileName ();
 			
 			SerializeObject (fileName, wrapper.Content.RemoveAssemblyReferences (wrapper.Content.AssemblyReferences));
@@ -1087,11 +1104,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				static IProjectContent LoadProjectCache (Project project)
 				{
 					string cacheDir = GetCacheDirectory (project);
-					if (cacheDir == null) {
+					if (cacheDir == null)
 						return null;
-					}
 					
-					TouchCache (cacheDir);
 					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
 					if (cache is MonoDevelopProjectContent)
 						((MonoDevelopProjectContent)cache).Project = project;
@@ -1323,11 +1338,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					WasChanged = changed;
 				} catch (Exception e) {
 					if (netProject.TargetRuntime == null) {
-						LoggingService.LogError ("Target runtime was null:" + Project);
+						LoggingService.LogError ("Target runtime was null: " + Project.Name);
 					} else if (netProject.TargetRuntime.AssemblyContext == null) {
-						LoggingService.LogError ("Target runtime assambly context was null:" + Project);
+						LoggingService.LogError ("Target runtime assembly context was null: " + Project.Name);
 					}
-					LoggingService.LogError ("Error while reloading all references of project:" + Project, e);
+					LoggingService.LogError ("Error while reloading all references of project: " + Project.Name, e);
 				}
 			}
 		}
@@ -2048,7 +2063,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				string cache = GetCacheDirectory (fileName);
 				if (cache != null) {
-					TouchCache (cache);
 					var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
 					if (deserialized != null) {
 						deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
@@ -2150,15 +2164,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			return assemblies.Values;
 		}
 
-		readonly static Dictionary<string, Task<FrameworkLookup>> frameworkLookup = new Dictionary<string, Task<FrameworkLookup>> ();
+		class FrameworkTask
+		{
+			public int RetryCount { get; set; }
+			public Task<FrameworkLookup> Task { get; set; }
+
+		}
+
+		readonly static Dictionary<string, FrameworkTask> frameworkLookup = new Dictionary<string, FrameworkTask> ();
 
 		static void StartFrameworkLookup (DotNetProject netProject)
 		{
+			if (netProject == null)
+				throw new ArgumentNullException ("netProject");
 			lock (frameworkLookup) {
-				Task<FrameworkLookup> result;
-				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
+				FrameworkTask result;
+				if (netProject.TargetFramework == null)
 					return;
-				frameworkLookup[netProject.TargetFramework.Name] = Task.Factory.StartNew (delegate {
+				var frameworkName = netProject.TargetFramework.Name;
+				if (!frameworkLookup.TryGetValue (frameworkName, out result))
+					frameworkLookup [frameworkName] = result = new FrameworkTask ();
+				if (result.Task != null)
+					return;
+				result.Task = Task.Factory.StartNew (delegate {
 					return GetFrameworkLookup (netProject);
 				});
 			}
@@ -2167,18 +2195,35 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
 		{
 			lock (frameworkLookup) {
-				Task<FrameworkLookup> result;
+				FrameworkTask result;
 				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
-					if (!result.IsCompleted)  {
+					if (!result.Task.IsCompleted)  {
 						lookup = null;
 						return false;
 					}
-					lookup = result.Result;
+					lookup = result.Task.Result;
 					return true;
 				}
 			}
 			lookup = null;
 			return false;
+		}
+
+		public static bool RecreateFrameworkLookup (DotNetProject netProject)
+		{
+			lock (frameworkLookup) {
+				FrameworkTask result;
+				if (!frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result))
+					return false;
+				if (result.RetryCount > 5) {
+					LoggingService.LogError ("Can't create framework lookup for:" + netProject.TargetFramework.Name);
+					return false;
+				}
+				result.RetryCount++;
+				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", netProject.TargetFramework.Name, result.RetryCount);
+				StartFrameworkLookup (netProject);
+				return true;
+			}
 		}
 
 		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
@@ -2597,6 +2642,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		#endregion
+
 	}
 
 	internal sealed class AssemblyLoadedEventArgs : EventArgs

@@ -34,6 +34,7 @@ using NUnit.Framework;
 using System.IO;
 using System;
 using NGit.Storage.File;
+using NGit.Revwalk;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -67,34 +68,89 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			DOT_DIR = ".git";
 		}
 
-		[Test]
-		public override void DiffIsProper ()
+		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
-			string added = rootCheckout + "testfile";
-			File.Create (added).Close ();
-			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
-			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
-			File.AppendAllText (added, "text" + Environment.NewLine);
+			return Is.InstanceOf<GitRepository> ();
+		}
 
+		protected override void TestDiff ()
+		{
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]
-		[Ignore ("Git pack files are locked by Checkout Command. Fix it")]
+		[Platform (Exclude = "Win")]
 		public override void UpdateIsDone ()
 		{
+			base.UpdateIsDone ();
+		}
+
+		[Test]
+		[Ignore ("Not implemented in GitRepository.")]
+		public override void LocksEntities ()
+		{
+			base.LocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("Not implemented in GitRepository.")]
+		public override void UnlocksEntities ()
+		{
+			base.UnlocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("Apparently, we have issues with this")]
+		public override void DeletesDirectory ()
+		{
+			base.DeletesDirectory ();
+		}
+		
+		[Test]
+		[Ignore ("NGit sees added directories as unversioned on Unix.")]
+		public override void MovesFile ()
+		{
+			base.MovesFile ();
+		}
+
+		[Test]
+		[Ignore ("NGit sees added directories as unversioned.")]
+		public override void MovesDirectory ()
+		{
+			base.MovesDirectory ();
+		}
+
+		protected override Revision GetHeadRevision ()
+		{
+			GitRepository repo2 = (GitRepository)repo;
+			RevWalk rw = new RevWalk (repo2.RootRepository);
+			ObjectId headId = repo2.RootRepository.Resolve (Constants.HEAD);
+			if (headId == null)
+				return null;
+
+			RevCommit commit = rw.ParseCommit (headId);
+			GitRevision rev = new GitRevision (repo, repo2.RootRepository, commit.Id.Name);
+			rev.Commit = commit;
+			return rev;
 		}
 
 		protected override void PostCommit (Repository repo)
 		{
 			GitRepository repo2 = (GitRepository)repo;
 			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
+		}
+
+		protected override void BlameExtraInternals (Annotation [] annotations)
+		{
+			for (int i = 0; i < 2; i++) {
+				Assert.IsTrue (annotations [i].HasEmail);
+				Assert.IsNotNull (annotations [i].Author);
+				Assert.IsNotNull (annotations [i].Email);
+			}
+			Assert.IsTrue (annotations [2].HasDate);
 		}
 
 		protected override Repository GetRepo (string path, string url)

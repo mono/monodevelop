@@ -46,8 +46,9 @@ namespace Stetic.Wrapper {
 					button.Remove (button.Child);
 				ret = base.ReadChild (reader, child_elem);
 				FixupGladeChildren ();
-			} else if (Type == ButtonType.TextAndIcon)
-				ConstructContents ();
+			} else if (Type == ButtonType.TextAndIcon) {
+				UpdateImage ();
+			}
 			return ret;
 		}
 
@@ -140,7 +141,6 @@ namespace Stetic.Wrapper {
 					StockId = stockId;
 					break;
 				case ButtonType.TextOnly:
-					labelWidget = null;
 					button.UseStock = false;
 					Label = label;
 					UseUnderline = useUnderline;
@@ -149,13 +149,15 @@ namespace Stetic.Wrapper {
 					button.UseStock = false;
 					Label = label;
 					UseUnderline = useUnderline;
-					Icon = imageInfo;
 					break;
 				case ButtonType.Custom:
 					button.UseStock = false;
 					if (button.Child != null)
 						ReplaceChild (button.Child, CreatePlaceholder (), true);
 					break;
+				}
+				if (!Loading) {
+					UpdateImage ();
 				}
 			}
 		}
@@ -165,58 +167,37 @@ namespace Stetic.Wrapper {
 			set { 
 				imageInfo = value;
 				if (!Loading) {
-					ConstructContents ();
+					UpdateImage ();
 					EmitNotify ("Image");
 				}
 			}
 		}
-
-		Gtk.Label labelWidget;
 
 		protected override void OnEndRead (FileFormat format)
 		{
 			base.OnEndRead (format);
 			if (format == FileFormat.Native && Type == ButtonType.TextAndIcon) {
 				Loading = true;
-				ConstructContents ();
+				UpdateImage ();
 				Loading = false;
 			}
 		}
 		
-		void ConstructContents ()
+		void UpdateImage ()
 		{
-			if (button.Child != null)
-				button.Remove (button.Child);
-
-			if (useUnderline) {
-				labelWidget = new Gtk.Label (label);
-				labelWidget.MnemonicWidget = button;
-			} else
-				labelWidget = Gtk.Label.New (label);
-
-			Gtk.Image imageWidget = (Gtk.Image)Registry.NewInstance ("Gtk.Image", proj);
+			if (type != ButtonType.TextAndIcon) {
+				button.Image = null;
+				return;
+			}
+			var imageWidget = button.Image as Gtk.Image;
+			if (imageWidget == null) {
+				button.Image = imageWidget = (Gtk.Image)Registry.NewInstance ("Gtk.Image", proj);
+				// force them to display even if hidden by the theme
+				button.Image.Show ();
+			}
 			Image imageWrapper = (Image)Widget.Lookup (imageWidget);
 			imageWrapper.Unselectable = true;
-			if (type != ButtonType.StockItem) {
-				imageWrapper.Pixbuf = imageInfo;
-			}
-
-			Gtk.HBox box = new Gtk.HBox (false, 2);
-			box.PackStart (imageWidget, false, false, 0);
-			box.PackEnd (labelWidget, false, false, 0);
-
-			Gtk.Alignment alignment = new Gtk.Alignment (button.Xalign, button.Yalign, 0.0f, 0.0f);
-			alignment.Add (box);
-
-			Widget wrapper = (Widget)ObjectWrapper.Create (proj, labelWidget);
-			wrapper.Unselectable = true;
-			wrapper = (Widget)ObjectWrapper.Create (proj, box);
-			wrapper.Unselectable = true;
-			wrapper = (Widget)ObjectWrapper.Create (proj, alignment);
-			wrapper.Unselectable = true;
-
-			alignment.ShowAll ();
-			button.Add (alignment);
+			imageWrapper.Pixbuf = imageInfo;
 		}
 
 		string stockId = Gtk.Stock.Ok;
@@ -257,10 +238,7 @@ namespace Stetic.Wrapper {
 			}
 			set {
 				label = value;
-				if (labelWidget != null)
-					labelWidget.LabelProp = value;
-				else
-					button.Label = value;
+				button.Label = value;
 			}
 		}
 
@@ -271,10 +249,7 @@ namespace Stetic.Wrapper {
 			}
 			set {
 				useUnderline = value;
-				if (labelWidget != null)
-					labelWidget.UseUnderline = value;
-				else
-					button.UseUnderline = value;
+				button.UseUnderline = value;
 			}
 		}
 
@@ -319,13 +294,24 @@ namespace Stetic.Wrapper {
 		internal protected override void GenerateBuildCode (GeneratorContext ctx, CodeExpression var)
 		{
 			base.GenerateBuildCode (ctx, var);
-			
-			if (Type != ButtonType.TextAndIcon) {
+
+			string text = button.Label;
+			if (!string.IsNullOrEmpty (text)) {
 				CodePropertyReferenceExpression cprop = new CodePropertyReferenceExpression (var, "Label");
-				PropertyDescriptor prop = (PropertyDescriptor) this.ClassDescriptor ["Label"];
+				PropertyDescriptor prop = (PropertyDescriptor)this.ClassDescriptor ["Label"];
 				bool trans = Type != ButtonType.StockItem && prop.IsTranslated (Wrapped);
-				CodeExpression val = ctx.GenerateValue (button.Label, typeof(string), trans);
+				CodeExpression val = ctx.GenerateValue (text, typeof(string), trans);
 				ctx.Statements.Add (new CodeAssignStatement (cprop, val));
+			}
+
+			if (Type == ButtonType.TextAndIcon) {
+				var imageWidget = (Gtk.Image) button.Image;
+				if (imageWidget != null) {
+					Image imageWrapper = (Image)Widget.Lookup (imageWidget);
+					var imgVar = ctx.GenerateNewInstanceCode (imageWrapper);
+					var imgProp = new CodePropertyReferenceExpression (var, "Image");
+					ctx.Statements.Add (new CodeAssignStatement (imgProp, imgVar));
+				}
 			}
 		}
 		

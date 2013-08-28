@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 			double brightness = HslColor.Brightness (editor.ColorStyle.PlainText.Background);
 
 			int colorCount = foldSegments.Count + 2;
-			cr.Color = GetColor (-1, brightness, colorCount);
+			cr.SetSourceColor (GetColor (-1, brightness, colorCount));
 			cr.Rectangle (area);
 			cr.Fill ();
 			var rectangles = new Cairo.Rectangle[foldSegments.Count];
@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 
 				for (var curLine = segmentStartLine; curLine != endLine && y < editor.VAdjustment.Value + editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
-					var width = (int)(curLayout.PangoWidth / Pango.Scale.PangoScale);
+					var width = (int)(curLayout.Width);
 					curWidth = System.Math.Max (curWidth, width);
 					y += editor.GetLineHeight (curLine);
 				}
@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 					}
 
 					var bg = editor.ColorStyle.PlainText.Foreground;
-					cr.Color = new Cairo.Color (bg.R, bg.G, bg.B, alpha);
+					cr.SetSourceRGBA (bg.R, bg.G, bg.B, alpha);
 					DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
 					cr.Fill ();
 
@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 						var animationState = age / (double)animationLength;
 						curPadSize = (int)(2 + System.Math.Sin (System.Math.PI * animationState) * 2);
 						DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize, rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
-						cr.Color = GetColor (i, brightness, colorCount);
+						cr.SetSourceColor (GetColor (i, brightness, colorCount));
 						cr.Fill ();
 
 						continue;
@@ -201,7 +201,7 @@ namespace Mono.TextEditor
 
 				DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value, rect.Y - editor.VAdjustment.Value, editor.LineHeight / 2, rect.Width, rect.Height);
 				
-				cr.Color = GetColor (i, brightness, colorCount);
+				cr.SetSourceColor (GetColor (i, brightness, colorCount));
 				cr.Fill ();
 			}
 		}

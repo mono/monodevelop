@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class RaiseEventMethodGenerator : ICodeGenerator
+	class RaiseEventMethodGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {

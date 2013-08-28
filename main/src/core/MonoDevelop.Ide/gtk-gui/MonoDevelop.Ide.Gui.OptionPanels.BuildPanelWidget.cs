@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.VBox vbox66;
 		private global::Gtk.CheckButton buildBeforeRunCheckBox;
 		private global::Gtk.CheckButton runWithWarningsCheckBox;
-		private global::Gtk.CheckButton checkXBuild;
+		private global::Gtk.CheckButton buildBeforeTestCheckBox;
 		private global::Gtk.Alignment alignment1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
@@ -55,14 +55,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
-			this.checkXBuild = new global::Gtk.CheckButton ();
-			this.checkXBuild.CanFocus = true;
-			this.checkXBuild.Name = "checkXBuild";
-			this.checkXBuild.Label = global::Mono.Unix.Catalog.GetString ("Compile projects using MSBuild / XBuild\n(this is an experimental feature and may not work for some projects)");
-			this.checkXBuild.DrawIndicator = true;
-			this.checkXBuild.UseUnderline = true;
-			this.vbox66.Add (this.checkXBuild);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.checkXBuild]));
+			this.buildBeforeTestCheckBox = new global::Gtk.CheckButton ();
+			this.buildBeforeTestCheckBox.CanFocus = true;
+			this.buildBeforeTestCheckBox.Name = "buildBeforeTestCheckBox";
+			this.buildBeforeTestCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build solution before executing unit tests");
+			this.buildBeforeTestCheckBox.DrawIndicator = true;
+			this.buildBeforeTestCheckBox.UseUnderline = true;
+			this.vbox66.Add (this.buildBeforeTestCheckBox);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildBeforeTestCheckBox]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;

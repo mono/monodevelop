@@ -39,7 +39,7 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	partial class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
+	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
@@ -179,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DisposeLayout ();
-
+			cache.DestroyPopoverWindow ();
 		}
 		
 		internal Pango.Layout errorCountLayout;
@@ -194,6 +194,12 @@ namespace MonoDevelop.SourceEditor
 		internal AmbientColor TagColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTag : editor.ColorStyle.MessageBubbleWarningTag;
+			}
+		}
+
+		internal AmbientColor TooltipColor {
+			get {
+				return isError ? editor.ColorStyle.MessageBubbleErrorTooltip : editor.ColorStyle.MessageBubbleWarningTooltip;
 			}
 		}
 
@@ -297,26 +303,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Tuple<int, int> GetErrorCountBounds (TextViewMargin.LayoutWrapper wrapper = null)
+		Tuple<int, int> GetErrorCountBounds (LineMetrics metrics)
 		{
 			EnsureLayoutCreated (editor);
-			var layout = wrapper ?? editor.TextViewMargin.GetLayout (lineSegment);
-			try {
-				var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout.PangoWidth / Pango.Scale.PangoScale;
-				if (errors.Count > 1 && errorCountLayout != null || editor.Allocation.Width < lineTextPx + layouts [0].Width) {
-					int ew = 0, eh = 0;
-					if (errorCountLayout != null) {
-						errorCountLayout.GetPixelSize (out ew, out eh);
-					} else {
-						ew = 10;
-					}
-					return Tuple.Create (ew + 10, eh);
+			var lineTextPx = editor.TextViewMargin.XOffset + metrics.TextRenderEndPosition;
+			if (errors.Count > 1 && errorCountLayout != null || editor.Allocation.Width < lineTextPx + layouts [0].Width) {
+				int ew = 0, eh = 0;
+				if (errorCountLayout != null) {
+					errorCountLayout.GetPixelSize (out ew, out eh);
+				} else {
+					ew = 10;
 				}
-				return Tuple.Create (0, 0);
-			} finally {
-				if (wrapper == null && layout.IsUncached)
-					layout.Dispose ();
+				return Tuple.Create (ew + 10, eh);
 			}
+			return Tuple.Create (0, 0);
 		}
 
 		static void DrawRectangle (Cairo.Context g, double x, double y, double width, double height)
@@ -339,6 +339,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
+			if (!IsVisible)
+				return;
 			if (LineSegment == null)
 				return;
 			if (bubbleDrawX < args.X && args.X < bubbleDrawX + bubbleWidth) {
@@ -360,10 +362,14 @@ namespace MonoDevelop.SourceEditor
 
 		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, double y, EndOfLineMetrics metrics)
 		{
+			if (!IsVisible)
+				return;
 			EnsureLayoutCreated (editor);
 			int errorCounterWidth = 0, eh = 0;
-			if (errorCountLayout != null) 
+			if (errorCountLayout != null) {
 				errorCountLayout.GetPixelSize (out errorCounterWidth, out eh);
+				errorCounterWidth = Math.Max (15, Math.Max (errorCounterWidth + 3, (int)(editor.LineHeight * 3 / 4)));
+			}
 
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
@@ -393,26 +399,68 @@ namespace MonoDevelop.SourceEditor
 			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
 			bubbleDrawY = y;
 			bubbleWidth = width;
-			g.RoundedRectangle (sx, y + 1, width, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
-			g.Color = TagColor.Color;
+
+			var bubbleHeight = editor.LineHeight - 1;
+			g.RoundedRectangle (sx, y + 1, width, bubbleHeight, editor.LineHeight / 2 - 1);
+			g.SetSourceColor (TagColor.Color);
 			g.Fill ();
 
+			// Draw error count icon
 			if (errorCounterWidth > 0 && errorCountLayout != null) {
-				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
-				g.Color = CounterColor.Color;
+				var errorCounterHeight = bubbleHeight - 2;
+				var errorCounterX = sx + width - errorCounterWidth - 3;
+				var errorCounterY = y + 1 + (bubbleHeight - errorCounterHeight) / 2;
+
+				g.RoundedRectangle (
+					errorCounterX - 1, 
+					errorCounterY - 1, 
+					errorCounterWidth + 2, 
+					errorCounterHeight + 2, 
+					editor.LineHeight / 2 - 3
+				);
+
+				g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.081));
 				g.Fill ();
 
+				g.RoundedRectangle (
+					errorCounterX, 
+					errorCounterY, 
+					errorCounterWidth, 
+					errorCounterHeight, 
+					editor.LineHeight / 2 - 3
+					);
+				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
+					lg.AddColorStop (0, CounterColor.Color);
+					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
+					g.Pattern = lg;
+					g.Fill ();
+				}
+
 				g.Save ();
-				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - errorCounterWidth) / 2, y + 1);
-				g.Color = CounterColor.SecondColor;
+
+				int ew;
+				errorCountLayout.GetPixelSize (out ew, out eh);
+
+				g.Translate (
+					errorCounterX + (errorCounterWidth - ew) / 2,
+					errorCounterY + (errorCounterHeight - eh) / 2
+				);
+				g.SetSourceColor (CounterColor.SecondColor);
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
 			}
 
+			// Draw label text
 			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
 				g.Save ();
-				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + layouts [0].Height % 2);
-				g.Color = TagColor.SecondColor;
+				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
+
+				// draw shadow
+				g.SetSourceColor (MessageBubbleCache.ShadowColor);
+				g.ShowLayout (drawLayout);
+				g.Translate (0, -1);
+
+				g.SetSourceColor (TagColor.SecondColor);
 				g.ShowLayout (drawLayout);
 				g.Restore ();
 			}
@@ -426,26 +474,30 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanDrawBackground (Margin margin)
 		{
+			if (!IsVisible)
+				return false;
 			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin || margin is ActionMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
 		{
+			if (!IsVisible)
+				return false;
 			return margin is IconMargin;
 		}
 
 		void DrawIconMarginBackground (TextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-			cr.Color = IconMarginColor.Color;
+			cr.SetSourceColor (IconMarginColor.Color);
 			cr.Fill ();
 			cr.MoveTo (metrics.Right - 0.5, metrics.Y);
 			cr.LineTo (metrics.Right - 0.5, metrics.Bottom);
-			cr.Color = IconMarginColor.BorderColor;
+			cr.SetSourceColor (IconMarginColor.BorderColor);
 			cr.Stroke ();
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
 				cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-				cr.Color = new Cairo.Color (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
+				cr.SetSourceRGBA (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
 				cr.Fill ();
 			}
 		}
@@ -454,7 +506,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			cr.Save ();
 			cr.Translate (
-				metrics.X + 0.5  + (metrics.Width - cache.errorPixbuf.Width) / 2,
+				metrics.X + 0.5 + (metrics.Width - 2 - cache.errorPixbuf.Width) / 2,
 				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
 				);
 			Gdk.CairoHelper.SetSourcePixbuf (
@@ -481,7 +533,7 @@ namespace MonoDevelop.SourceEditor
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this)
 				return false;
 			cr.Rectangle (x, y, margin.Width, lineHeight);
-			cr.Color = LineColor.Color;
+			cr.SetSourceColor (LineColor.Color);
 			cr.Fill ();
 			return true;
 		}
@@ -496,7 +548,6 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return false;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
-
 			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
 				return false;
 
@@ -504,7 +555,7 @@ namespace MonoDevelop.SourceEditor
 			double x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			bool isCaretInLine = metrics.TextStartOffset <= editor.Caret.Offset && editor.Caret.Offset <= metrics.TextEndOffset;
-			int errorCounterWidth = GetErrorCountBounds (metrics.Layout).Item1;
+			int errorCounterWidth = GetErrorCountBounds (metrics).Item1;
 
 			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth, editor.TextViewMargin.XOffset + editor.LineHeight / 2);
 
@@ -516,7 +567,7 @@ namespace MonoDevelop.SourceEditor
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
 				DrawRectangle (g, x, y, right, editor.LineHeight);
-				g.Color = LineColor.Color;
+				g.SetSourceColor (LineColor.Color);
 				g.Fill ();
 
 				if (metrics.Layout.StartSet || metrics.SelectionStart == metrics.TextEndOffset) {
@@ -543,7 +594,7 @@ namespace MonoDevelop.SourceEditor
 						endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
 					if (startX < endX) {
 						DrawRectangle (g, startX, y, endX - startX, editor.LineHeight);
-						g.Color = GetLineColor (highlighted, true);
+						g.SetSourceColor (GetLineColor (highlighted, true));
 						g.Fill ();
 					}
 				}
@@ -553,7 +604,7 @@ namespace MonoDevelop.SourceEditor
 			double y2 = y + 0.5;
 			double y2Bottom = y2 + editor.LineHeight - 1;
 			var selected = isEolSelected;
-			var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + metrics.Layout.PangoWidth / Pango.Scale.PangoScale;
+			var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + metrics.Layout.Width;
 			if (x2 < lineTextPx) 
 				x2 = lineTextPx;
 
@@ -562,7 +613,7 @@ namespace MonoDevelop.SourceEditor
 				if (divider >= x2) {
 					g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
 					g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
-					g.Color = GetLineColorBorder (highlighted, selected);
+					g.SetSourceColor (GetLineColorBorder (highlighted, selected));
 					g.Stroke ();
 				}
 			}
@@ -577,11 +628,11 @@ namespace MonoDevelop.SourceEditor
 			var o = metrics.LineSegment.Offset;
 
 			foreach (var task in errors.Select (t => t.Task)) {
-				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.LineSegment.Length));
+				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
 				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
 				var pos = metrics.Layout.Layout.IndexToPos (index);
 				var co = o + task.Column - 1;
-				g.Color = GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd);
+				g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
 				g.MoveTo (
 					metrics.TextRenderStartPosition + editor.TextViewMargin.TextStartPosition + pos.X / Pango.Scale.PangoScale,
 					y + editor.LineHeight - 3

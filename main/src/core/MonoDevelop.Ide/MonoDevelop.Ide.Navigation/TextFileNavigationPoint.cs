@@ -80,8 +80,12 @@ namespace MonoDevelop.Ide.Navigation
 			Document doc = base.DoShow ();
 			if (doc != null) {
 				IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
-				if (buf != null)
-					buf.SetCaretTo (Math.Max (line, 1), Math.Max (column, 1));
+				if (buf != null) {
+					doc.DisableAutoScroll ();
+					buf.RunWhenLoaded (() => {
+						buf.SetCaretTo (Math.Max (line, 1), Math.Max (column, 1));
+					});
+				}
 			}
 			return doc;
 		}

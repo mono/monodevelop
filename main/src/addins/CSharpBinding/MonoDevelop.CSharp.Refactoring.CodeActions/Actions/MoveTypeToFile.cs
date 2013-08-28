@@ -37,10 +37,11 @@ using MonoDevelop.Ide.StandardHeader;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
+	class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{
@@ -62,8 +63,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			} else {
 				title = String.Format (GettextCatalog.GetString ("Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 			}
-			yield return new MonoDevelop.CodeActions.DefaultCodeAction (title, (d, l) => {
-				var ctx = new MDRefactoringContext (d, l);
+			yield return new MonoDevelop.CodeActions.DefaultCodeAction (title, (c, s) => {
+				var ctx = (MDRefactoringContext) c;
+				var script = (Script) s;
 				string correctFileName = GetCorrectFileName (ctx, type);
 				if (IsSingleType (ctx)) {
 					FileService.RenameFile (ctx.TextEditor.FileName, correctFileName);
@@ -73,9 +75,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				}
 				
 				CreateNewFile (ctx, type, correctFileName);
-				using (var script = ctx.StartScript ()) {
-					script.Remove (type);
-				}
+				script.Remove (type);
 			});
 		}
 

@@ -177,27 +177,18 @@ namespace Mono.TextEditor.Utils
 						p.count += count;
 						p.UpdateAugmentedData ();
 					} else {
-						InsertBefore (n, new CompressingNode (item, count));
+						tree.InsertBefore (n, new CompressingNode (item, count));
 					}
 				} else {
 					Debug.Assert (index > 0 && index < n.count);
 					// insert in the middle:
 					// split n into a new node and n
 					n.count -= index;
-					InsertBefore (n, new CompressingNode (n.value, index));
+					tree.InsertBefore (n, new CompressingNode (n.value, index));
 					// then insert the new item in between
-					InsertBefore (n, new CompressingNode (item, count));
+					tree.InsertBefore (n, new CompressingNode (item, count));
 					n.UpdateAugmentedData ();
 				}
-			}
-		}
-
-		void InsertBefore (CompressingNode node, CompressingNode newNode)
-		{
-			if (node.Left == null) {
-				tree.InsertLeft (node, newNode);
-			} else {
-				tree.InsertRight (node.Left.GetOuterRight (), newNode);
 			}
 		}
 
@@ -385,8 +376,11 @@ namespace Mono.TextEditor.Utils
 
 		public IEnumerator<T> GetEnumerator ()
 		{
-			foreach (var item in tree)
-				yield return item.value;
+			foreach (var n in tree) {
+				for (int i = 0; i < n.count; i++) {
+					yield return n.value;
+				}
+			}
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()

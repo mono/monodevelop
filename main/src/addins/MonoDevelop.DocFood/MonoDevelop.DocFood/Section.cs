@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
-	public class Section : Node
+	class Section : Node
 	{
 		public string Name {
 			get;

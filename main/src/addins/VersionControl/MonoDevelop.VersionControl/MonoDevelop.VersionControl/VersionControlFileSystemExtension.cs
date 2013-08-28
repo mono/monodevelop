@@ -6,6 +6,7 @@ using MonoDevelop.Core.FileSystem;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
@@ -16,11 +17,11 @@ namespace MonoDevelop.VersionControl
 			// FIXME: don't load this extension if the ide is not loaded.
 			if (IdeApp.ProjectOperations == null || !IdeApp.Workspace.IsOpen)
 				return false;
-			else
-				return GetRepository (path) != null;
+
+			return GetRepository (path) != null;
 		}
 		
-		Repository GetRepository (FilePath path)
+		static Repository GetRepository (FilePath path)
 		{
 			path = path.FullPath;
 			
@@ -108,7 +109,8 @@ namespace MonoDevelop.VersionControl
 			Repository repo = GetRepository (path);
 			repo.DeleteDirectory (path, true, new NullProgressMonitor (), false);
 		}
-		
+
+		[Obsolete ("This will be removed. Override RequestFileEdit (IEnumerable<FilePath>) instead")]
 		public override bool RequestFileEdit (FilePath file)
 		{
 			Repository repo = GetRepository (file);

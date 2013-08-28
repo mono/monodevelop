@@ -112,8 +112,13 @@ namespace MonoDevelop.NUnit
 		
 		void OnProjectBuilt (object s, BuildEventArgs args)
 		{
-			if (RefreshRequired)
+			if (RefreshRequired) {
 				UpdateTests ();
+			} else {
+				Gtk.Application.Invoke (delegate {
+					OnProjectBuiltWithoutTestChange (EventArgs.Empty);
+				});
+			}
 		}
 
 		public override void GetCustomTestRunner (out string assembly, out string type)
@@ -157,6 +162,15 @@ namespace MonoDevelop.NUnit
 					}
 				}
 			}
+		}
+
+		public event EventHandler ProjectBuiltWithoutTestChange;
+
+		protected virtual void OnProjectBuiltWithoutTestChange (EventArgs e)
+		{
+			var handler = ProjectBuiltWithoutTestChange;
+			if (handler != null)
+				handler (this, e);
 		}
 	}
 }

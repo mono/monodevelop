@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 namespace MonoDevelop.CSharp.Formatting
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
+	partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 //		Gtk.ListStore model = new Gtk.ListStore (typeof(string));

@@ -29,13 +29,14 @@ using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
 	class ResultMarker : UnderlineTextSegmentMarker
 	{
-		Result result;
-		
+		readonly Result result;
+
 		public ResultMarker (Result result, TextSegment segment) : base ("", segment)
 		{
 			this.result = result;
@@ -105,7 +106,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int /*lineNr,*/ x_pos;
-				
+
 				x_pos = layout.IndexToPos (start - startOffset).X;
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 				x_pos = layout.IndexToPos (end - startOffset).X;
@@ -119,15 +120,23 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			
 			double height = editor.LineHeight / 5;
-			cr.Color = GetColor (editor, Result);
+			cr.SetSourceColor (GetColor (editor, Result));
 			if (drawOverlay) {
 				cr.Rectangle (drawFrom, y, drawTo - drawFrom, editor.LineHeight);
 				var color = editor.ColorStyle.PlainText.Background;
 				color.A = 0.6;
-				cr.Color = color;
+				cr.SetSourceColor (color);
 				cr.Fill ();
-			} else if (Wave) {	
+			} else if (result.InspectionMark == IssueMarker.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
+			} else if (result.InspectionMark == IssueMarker.DottedLine) {
+				cr.Save ();
+				cr.LineWidth = 1;
+				cr.MoveTo (drawFrom + 1, y + editor.LineHeight - 1 + 0.5);
+				cr.RelLineTo (System.Math.Min (drawTo - drawFrom, 4 * 3), 0);
+				cr.SetDash (new double[] { 2, 2 }, 0);
+				cr.Stroke ();
+				cr.Restore ();
 			} else {
 				cr.MoveTo (drawFrom, y + editor.LineHeight - 1);
 				cr.LineTo (drawTo, y + editor.LineHeight - 1);
@@ -147,15 +156,35 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		#region IChunkMarker implementation
+
+		void IChunkMarker.TransformChunks (List<Chunk> chunks)
+		{
+			int markerStart = Segment.Offset;
+			int markerEnd = Segment.EndOffset;
+			for (int i = 0; i < chunks.Count; i++) {
+				var chunk = chunks [i];
+				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+					continue;
+				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
+					return;
+				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
+					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
+					chunks.Insert (i, newChunk);
+					chunk.Offset += newChunk.Length;
+					chunk.Length -= newChunk.Length;
+					continue;
+				}
+			}
+		}
+
 		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color)
 		{
 			if (Debugger.DebuggingService.IsDebugging)
 				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
-			if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-
 			var bgc = editor.ColorStyle.PlainText.Background;
 			double alpha = 0.6;
 			color = new Cairo.Color (

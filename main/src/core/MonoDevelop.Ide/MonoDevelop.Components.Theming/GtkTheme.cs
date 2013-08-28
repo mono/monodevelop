@@ -29,6 +29,7 @@
 using System;
 using Cairo;
 using Gtk;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Theming
 {
@@ -83,16 +84,15 @@ namespace MonoDevelop.Components.Theming
 			Color color_a = Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected);
 			Color color_b = CairoExtensions.ColorShade (color_a, 1.4);
 			
-			RadialGradient fill = new RadialGradient (Context.X, Context.Y, 0, Context.X, Context.Y, 2.0 * Context.Radius);
-			fill.AddColorStop (0, color_a);
-			fill.AddColorStop (1, color_b);
-			Context.Cairo.Pattern = fill;
-			
-			Context.Cairo.FillPreserve ();
-			fill.Destroy ();
+			using (RadialGradient fill = new RadialGradient (Context.X, Context.Y, 0, Context.X, Context.Y, 2.0 * Context.Radius)) {
+				fill.AddColorStop (0, color_a);
+				fill.AddColorStop (1, color_b);
+				Context.Cairo.SetSource (fill);
+				Context.Cairo.FillPreserve ();
+			}
 			
 			// Stroke the pie
-			Context.Cairo.Color = CairoExtensions.ColorShade (color_a, 0.8);
+			Context.Cairo.SetSourceColor (CairoExtensions.ColorShade (color_a, 0.8));
 			Context.Cairo.LineWidth = Context.LineWidth;
 			Context.Cairo.Stroke ();
 		}
@@ -119,9 +119,9 @@ namespace MonoDevelop.Components.Theming
 				cr.LineTo (x3, y1);
 			}
 			
-			cr.Color = Colors.GetWidgetColor (GtkColorClass.Base, StateType.Normal);
+			cr.SetSourceColor (Colors.GetWidgetColor (GtkColorClass.Base, StateType.Normal));
 			cr.FillPreserve ();
-			cr.Color = Colors.GetWidgetColor (GtkColorClass.Text, StateType.Normal);
+			cr.SetSourceColor (Colors.GetWidgetColor (GtkColorClass.Text, StateType.Normal));
 			cr.Stroke ();
 			cr.Translate (-0.5, -0.5);
 		}
@@ -130,9 +130,9 @@ namespace MonoDevelop.Components.Theming
 		{
 			color.A = Context.FillAlpha;
 			if (pattern != null) {
-				cr.Pattern = pattern;
+				cr.SetSource (pattern);
 			} else {
-				cr.Color = color;
+				cr.SetSourceColor (color);
 			}
 			CairoExtensions.RoundedRectangle (cr, alloc.X, alloc.Y, alloc.Width, alloc.Height, Context.Radius, CairoCorners.All);
 			cr.Fill ();
@@ -141,7 +141,7 @@ namespace MonoDevelop.Components.Theming
 		public override void DrawFrameBorder (Cairo.Context cr, Gdk.Rectangle alloc)
 		{
 			cr.LineWidth = BorderWidth;
-			cr.Color = border_color;
+			cr.SetSourceColor (border_color);
 			double offset = (double)cr.LineWidth / 2.0;
 			CairoExtensions.RoundedRectangle (cr, alloc.X + offset, alloc.Y + offset, alloc.Width - cr.LineWidth, alloc.Height - cr.LineWidth, Context.Radius, CairoCorners.All);
 			cr.Stroke ();
@@ -150,7 +150,7 @@ namespace MonoDevelop.Components.Theming
 		public override void DrawFrameBorderFocused (Cairo.Context cr, Gdk.Rectangle alloc)
 		{
 			cr.LineWidth = BorderWidth * 1.5;
-			cr.Color = CairoExtensions.ColorShade (border_color, 0.8);
+			cr.SetSourceColor (CairoExtensions.ColorShade (border_color, 0.8));
 			double offset = (double)cr.LineWidth / 2.0;
 			CairoExtensions.RoundedRectangle (cr, alloc.X + offset, alloc.Y + offset, alloc.Width - cr.LineWidth, alloc.Height - cr.LineWidth, Context.Radius, CairoCorners.All);
 			cr.Stroke ();
@@ -165,7 +165,7 @@ namespace MonoDevelop.Components.Theming
 				grad.AddColorStop (0, light_color);
 				grad.AddColorStop (1, dark_color);
 				
-				cr.Pattern = grad;
+				cr.SetSource (grad);
 				cr.Rectangle (alloc.X + 1.5, alloc.Y + 1.5, alloc.Width - 3, alloc.Height - 2);
 				cr.Fill ();
 			}
@@ -184,12 +184,12 @@ namespace MonoDevelop.Components.Theming
 				grad.AddColorStop (0.75, dark_color);
 				grad.AddColorStop (0, light_color);
 				
-				cr.Pattern = grad;
+				cr.SetSource (grad);
 				CairoExtensions.RoundedRectangle (cr, alloc.X, alloc.Y, alloc.Width, alloc.Height, Context.Radius, corners);
 				cr.Fill ();
 			}
 			
-			cr.Color = border_color;
+			cr.SetSourceColor (border_color);
 			cr.Rectangle (alloc.X, alloc.Bottom, alloc.Width, BorderWidth);
 			cr.Fill ();
 		}
@@ -205,7 +205,7 @@ namespace MonoDevelop.Components.Theming
 			Cairo.Color stroke_color = CairoExtensions.ColorShade (Colors.GetWidgetColor (GtkColorClass.Background, StateType.Selected), 0.8);
 			
 			stroke_color.A = 0.1;
-			cr.Color = stroke_color;
+			cr.SetSourceColor (stroke_color);
 			
 			CairoExtensions.RoundedRectangle (cr, alloc.X + margin + line_width + right_offset, alloc.Y + margin + line_width + top_offset, alloc.Width - (margin + line_width) * 2.0 - right_offset, alloc.Height - (margin + line_width) * 2.0 - top_offset, Context.Radius / 2.0, CairoCorners.None);
 			
@@ -213,7 +213,7 @@ namespace MonoDevelop.Components.Theming
 			
 			stroke_color.A = 1.0;
 			cr.LineWidth = line_width;
-			cr.Color = stroke_color;
+			cr.SetSourceColor (stroke_color);
 			CairoExtensions.RoundedRectangle (cr, alloc.X + margin + line_width + right_offset, alloc.Y + margin + line_width + top_offset, alloc.Width - (line_width + margin) * 2.0 - right_offset, alloc.Height - (line_width + margin) * 2.0 - right_offset, Context.Radius / 2.0, CairoCorners.All);
 			cr.Stroke ();
 		}
@@ -228,14 +228,14 @@ namespace MonoDevelop.Components.Theming
 			int y_2 = alloc.Bottom - 3;
 			
 			cr.LineWidth = 1;
-			cr.Antialias = Cairo.Antialias.None;
+			cr.Antialias = Antialias.None;
 			
-			cr.Color = dark_color;
+			cr.SetSourceColor (dark_color);
 			cr.MoveTo (x, y_1);
 			cr.LineTo (x, y_2);
 			cr.Stroke ();
 			
-			cr.Color = light_color;
+			cr.SetSourceColor (light_color);
 			cr.MoveTo (x + 1, y_1);
 			cr.LineTo (x + 1, y_2);
 			cr.Stroke ();
@@ -246,7 +246,7 @@ namespace MonoDevelop.Components.Theming
 		public override void DrawListBackground (Context cr, Gdk.Rectangle alloc, Color color)
 		{
 			color.A = Context.FillAlpha;
-			cr.Color = color;
+			cr.SetSourceColor (color);
 			cr.Rectangle (alloc.X, alloc.Y, alloc.Width, alloc.Height);
 			cr.Fill ();
 		}
@@ -254,22 +254,22 @@ namespace MonoDevelop.Components.Theming
 		public override void DrawRowCursor (Cairo.Context cr, int x, int y, int width, int height, Cairo.Color color, CairoCorners corners)
 		{
 			cr.LineWidth = 1.25;
-			cr.Color = color;
+			cr.SetSourceColor (color);
 			CairoExtensions.RoundedRectangle (cr, x + cr.LineWidth / 2.0, y + cr.LineWidth / 2.0, width - cr.LineWidth, height - cr.LineWidth, Context.Radius, corners, true);
 			cr.Stroke ();
 		}
 
-		public override void DrawRowSelection (Cairo.Context cr, int x, int y, int width, int height, bool filled, bool stroked, Cairo.Color color, CairoCorners corners)
+		public override void DrawRowSelection (Context cr, int x, int y, int width, int height, bool filled, bool stroked, Cairo.Color color, CairoCorners corners)
 		{
-			Cairo.Color selection_color = color;
-			Cairo.Color selection_highlight = CairoExtensions.ColorShade (selection_color, 1.24);
-			Cairo.Color selection_stroke = CairoExtensions.ColorShade (selection_color, 0.85);
+			Color selection_color = color;
+			Color selection_highlight = CairoExtensions.ColorShade (selection_color, 1.24);
+			Color selection_stroke = CairoExtensions.ColorShade (selection_color, 0.85);
 			selection_highlight.A = 0.5;
 			selection_stroke.A = color.A;
 			
 			if (filled) {
-				Cairo.Color selection_fill_light = CairoExtensions.ColorShade (selection_color, 1.12);
-				Cairo.Color selection_fill_dark = selection_color;
+				Color selection_fill_light = CairoExtensions.ColorShade (selection_color, 1.12);
+				Color selection_fill_dark = selection_color;
 				
 				selection_fill_light.A = color.A;
 				selection_fill_dark.A = color.A;
@@ -279,7 +279,7 @@ namespace MonoDevelop.Components.Theming
 					grad.AddColorStop (0.4, selection_fill_dark);
 					grad.AddColorStop (1, selection_fill_light);
 					
-					cr.Pattern = grad;
+					cr.SetSource (grad);
 					CairoExtensions.RoundedRectangle (cr, x, y, width, height, Context.Radius, corners, true);
 					cr.Fill ();
 				}
@@ -287,14 +287,14 @@ namespace MonoDevelop.Components.Theming
 			
 			if (filled && stroked) {
 				cr.LineWidth = 1.0;
-				cr.Color = selection_highlight;
+				cr.SetSourceColor (selection_highlight);
 				CairoExtensions.RoundedRectangle (cr, x + 1.5, y + 1.5, width - 3, height - 3, Context.Radius - 1, corners, true);
 				cr.Stroke ();
 			}
 			
 			if (stroked) {
 				cr.LineWidth = 1.0;
-				cr.Color = selection_stroke;
+				cr.SetSourceColor (selection_stroke);
 				CairoExtensions.RoundedRectangle (cr, x + 0.5, y + 0.5, width - 1, height - 1, Context.Radius, corners, true);
 				cr.Stroke ();
 			}
@@ -302,7 +302,7 @@ namespace MonoDevelop.Components.Theming
 
 		public override void DrawRowRule (Cairo.Context cr, int x, int y, int width, int height)
 		{
-			cr.Color = new Cairo.Color (rule_color.R, rule_color.G, rule_color.B, Context.FillAlpha);
+			cr.SetSourceRGBA (rule_color.R, rule_color.G, rule_color.B, Context.FillAlpha);
 			cr.Rectangle (x, y, width, height);
 			cr.Fill ();
 		}

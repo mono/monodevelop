@@ -131,15 +131,6 @@
 			icon = "vc-remove-command"
 			defaultHandler = "MonoDevelop.VersionControl.RemoveCommandHandler"
 			description = "Remove node to repository in the next commit."/>
-		<Command id = "MonoDevelop.VersionControl.Commands.Commit"
-			_label = "_Commit"
-			icon = "vc-commit"
-			description = "Commits a file or directory into the repository."/>
-		<Command id = "MonoDevelop.VersionControl.Commands.CommitSolution"
-			_label = "_Commit Solution"
-			icon = "vc-commit"
-			defaultHandler="MonoDevelop.VersionControl.CommitCommandHandler"
-			description = "Commits solution changes into the repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Diff"
 			_label = "_Diff"
 			icon = "vc-diff"
@@ -156,11 +147,11 @@
 			defaultHandler = "MonoDevelop.VersionControl.CurrentFileLogHandler"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Status"
-			_label = "_Review Changes"
+			_label = "_Review and Commit"
 			icon = "vc-status"
 			description = "Shows the status of files in the folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.SolutionStatus"
-			_label = "_Review Solution Changes"
+			_label = "_Review Solution and Commit"
 			icon = "vc-status"
 			defaultHandler="MonoDevelop.VersionControl.StatusCommandHandler"
 			description = "Shows the status of files in the solution."/>
@@ -203,6 +194,9 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Unignore"
 			_label = "Remove from ignore list"
 			description = "Add items to version control ignore list"/>
+		<Command id = "MonoDevelop.VersionControl.Commands.ResolveConflicts"
+			_label = "Resolve Conflicts"
+			description = "Resolve conflicts on the project file."/>
 
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.CopyRevision"
 			_label = "_Copy revision"/>
@@ -229,7 +223,6 @@
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.UpdateSolution"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.SolutionStatus"/>
-			<CommandItem id = "MonoDevelop.VersionControl.Commands.CommitSolution"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
@@ -256,6 +249,7 @@
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="IFileItem|IFolderItem">
 			<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Tools">
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.ResolveConflicts"/>
 				<Condition id="ItemType" value="Project|WorkspaceItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 				</Condition>
@@ -270,10 +264,7 @@
 				</Condition>
 				<SeparatorItem id = "CommandSeparator" />
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
-				<Condition id="ItemType" value="IFolderItem">
-					<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-				</Condition>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.CreatePatch"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>

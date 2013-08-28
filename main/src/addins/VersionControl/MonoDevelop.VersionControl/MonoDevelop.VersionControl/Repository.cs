@@ -167,8 +167,8 @@ namespace MonoDevelop.VersionControl
 		/// <param name='paths'>
 		/// A list of files or directories
 		/// </param>
-		/// <param name='getRemoteStatus'>
-		/// True if remote status information has to be included
+		/// <param name='queryFlags'>
+		/// Use VersionInfoQueryFlags enum for options.
 		/// </param>
 		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
@@ -260,10 +260,6 @@ namespace MonoDevelop.VersionControl
 		VersionInfoCache infoCache;
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
 		HashSet<FilePath> directoriesInQueryQueue = new HashSet<FilePath> ();
-
-		void QueueVersionInfoQuery (IEnumerable<FilePath> paths, bool getRemoteStatus)
-		{
-		}
 
 		void AddQuery (object query)
 		{
@@ -534,12 +530,14 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
 
 		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
+#pragma warning disable 618
 			OnDeleteFiles (localPaths, force, monitor);
+#pragma warning restore 618
 		}
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
@@ -563,12 +561,14 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		[Obsolete ("Use the overload with keepLocal parameter")]
 		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
 
 		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
+#pragma warning disable 618
 			OnDeleteDirectories (localPaths, force, monitor);
+#pragma warning restore 618
 		}
 		
 		// Creates a local directory.
@@ -635,7 +635,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 		
-		// Returns a dif description between local files and the remote files.
+		// Returns a diff description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.
 		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
@@ -687,11 +687,12 @@ namespace MonoDevelop.VersionControl
 				string pathRoot = null;
 				
 				while ((line = sr.ReadLine ()) != null) {
-					if (pathRoot != null && fileName != null && (line.StartsWith ("+++ " + pathRoot) || line.StartsWith ("--- " + pathRoot))) {
+					if (pathRoot != null && fileName != null &&
+						(line.StartsWith ("+++ " + pathRoot, StringComparison.Ordinal) || line.StartsWith ("--- " + pathRoot, StringComparison.Ordinal))) {
 						line = line.Substring (0, 4) + line.Substring (4 + pathRoot.Length);
 						content.Append (line).Append ('\n');
 					}
-					else if (!line.StartsWith ("Index:")) {
+					else if (!line.StartsWith ("Index:", StringComparison.Ordinal)) {
 						content.Append (line).Append ('\n');
 					} else {
 						if (fileName != null) {

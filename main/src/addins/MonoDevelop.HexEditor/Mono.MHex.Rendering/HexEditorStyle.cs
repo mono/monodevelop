@@ -25,93 +25,94 @@
 // THE SOFTWARE.
 
 using System;
-using Gdk;
+using Xwt;
+using Xwt.Drawing;
 
 namespace Mono.MHex.Rendering
 {
-	public class HexEditorStyle
+	class HexEditorStyle
 	{
 		public virtual Color HexOffset {
 			get {
-				return new Color (172, 168, 153);
+				return new Color (172 / 255.0, 168 / 255.0, 153 / 255.0);
 			}
 		}
 		
 		public virtual Color HexOffsetBg {
 			get {
-				return new Color (255, 255, 255);
+				return new Color (255 / 255.0, 255 / 255.0, 255 / 255.0);
 			}
 		}
 		
 		public virtual Color HexOffsetHighlighted {
 			get {
-				return new Gdk.Color (122, 118, 103);
+				return new Color (122 / 255.0, 118 / 255.0, 103 / 255.0);
 			}
 		}
 		
 		public virtual Color HexDigit {
 			get {
-				return new Color (0, 0, 0);
+				return new Color (0 / 255.0, 0 / 255.0, 0 / 255.0);
 			}
 		}
 		
 		public virtual Color HexDigitBg {
 			get {
-				return new Color (0xff, 0xff, 0xff);
+				return new Color (0xff / 255.0, 0xff / 255.0, 0xff / 255.0);
 			}
 		}
 		
 		public virtual Color DashedLineFg {
 			get {
-				return new Color (0, 0, 0);
+				return new Color (0 / 255.0, 0 / 255.0, 0 / 255.0);
 			}
 		}
 		
 		public virtual Color DashedLineBg {
 			get {
-				return new Color (255, 255, 255);
+				return new Color (255 / 255.0, 255 / 255.0, 255 / 255.0);
 			}
 		}
 		
 		public virtual Color IconBarBg {
 			get {
-				return new Color (0xee, 0xee, 0xec);
+				return new Color (0xee / 255.0, 0xee / 255.0, 0xec / 255.0);
 			}
 		}
 		
 		public virtual Color IconBarSeperator {
 			get {
-				return new Color (0xba, 0xbd, 0xb6);
+				return new Color (0xba / 255.0, 0xbd / 255.0, 0xb6 / 255.0);
 			}
 		}
 		
 		public virtual Color BookmarkColor1 {
 			get {
-				return new Color (0xff, 0xff, 0xff);
+				return new Color (0xff / 255.0, 0xff / 255.0, 0xff / 255.0);
 			}
 		}
 		
 		public virtual Color BookmarkColor2 {
 			get {
-				return new Color (0x72, 0x9f, 0xcf);
+				return new Color (0x72 / 255.0, 0x9f / 255.0, 0xcf / 255.0);
 			}
 		}
 		
 		public virtual Color Selection {
 			get {
-				return new Color (0xff, 0xff, 0xff);
+				return new Color (0xff / 255.0, 0xff / 255.0, 0xff / 255.0);
 			}
 		}
 		
 		public virtual Color SelectionBg {
 			get {
-				return new Color (0x72, 0x9f, 0xcf);
+				return new Color (0x72 / 255.0, 0x9f / 255.0, 0xcf / 255.0);
 			}
 		}
 		
 		public virtual Color HighlightOffset {
 			get {
-				return new Gdk.Color (0x8f, 0x59, 0x02);
+				return new Color (0x8f / 255.0, 0x59 / 255.0, 0x02 / 255.0);
 			}
 		}
 	}

@@ -34,6 +34,8 @@ using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.Components;
+using Cairo;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -66,7 +68,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			base.Initialize ();
 			
 			textEditorData = base.Document.Editor;
-			textEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider ();
+			textEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
@@ -313,12 +315,15 @@ namespace MonoDevelop.CSharp.Highlighting
 							colorStyle = editor.ColorStyle.UsagesRectangle;
 						}
 
-						cr.Color = (HslColor)colorStyle.SecondColor;
-						cr.Rectangle (@from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
-						cr.Fill ();
+						using (var lg = new LinearGradient (@from + 1, y + 1, to , y + editor.LineHeight)) {
+							lg.AddColorStop (0, colorStyle.Color);
+							lg.AddColorStop (1, colorStyle.SecondColor);
+							cr.SetSource (lg);
+							cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
+							cr.FillPreserve ();
+						}
 						
-						cr.Color = (HslColor)colorStyle.Color;
-						cr.Rectangle (@from + 0.5, y + 0.5, to - @from, editor.LineHeight - 1);
+						cr.SetSourceColor (colorStyle.BorderColor);
 						cr.Stroke ();
 					}
 				}

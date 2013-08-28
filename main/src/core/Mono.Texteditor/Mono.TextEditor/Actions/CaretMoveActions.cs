@@ -218,7 +218,7 @@ namespace Mono.TextEditor
 			return result + 1;
 		}
 		
-		static void InternalCaretMoveHome (TextEditorData data, bool firstNonWhitespace, bool hop)
+		internal static void InternalCaretMoveHome (TextEditorData data, bool firstNonWhitespace, bool hop)
 		{
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();

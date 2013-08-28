@@ -55,8 +55,8 @@ THE SOFTWARE.
 	<PropertyBraceStyle>EndOfLine</PropertyBraceStyle>
 	<PropertyGetBraceStyle>EndOfLine</PropertyGetBraceStyle>
 	<PropertySetBraceStyle>EndOfLine</PropertySetBraceStyle>
-	<AllowPropertyGetBlockInline>True</AllowPropertyGetBlockInline>
-	<AllowPropertySetBlockInline>True</AllowPropertySetBlockInline>
+	<SimpleGetBlockFormatting>AllowOneLine</SimpleGetBlockFormatting>
+	<SimpleSetBlockFormatting>AllowOneLine</SimpleSetBlockFormatting>
 	<EventBraceStyle>EndOfLine</EventBraceStyle>
 	<EventAddBraceStyle>EndOfLine</EventAddBraceStyle>
 	<EventRemoveBraceStyle>EndOfLine</EventRemoveBraceStyle>
@@ -65,7 +65,7 @@ THE SOFTWARE.
 	<StatementBraceStyle>NextLineShifted2</StatementBraceStyle>
 	<AllowIfBlockInline>False</AllowIfBlockInline>
 	<ElseNewLinePlacement>SameLine</ElseNewLinePlacement>
-	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
+	<ElseIfNewLinePlacement>SameLine</ElseIfNewLinePlacement>
 	<CatchNewLinePlacement>SameLine</CatchNewLinePlacement>
 	<FinallyNewLinePlacement>SameLine</FinallyNewLinePlacement>
 	<WhileNewLinePlacement>SameLine</WhileNewLinePlacement>

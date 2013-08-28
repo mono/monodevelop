@@ -44,6 +44,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
@@ -144,28 +145,18 @@ namespace MonoDevelop.Refactoring
 				if (cls != null && cls.DirectBaseTypes != null) {
 					foreach (var bt in cls.DirectBaseTypes) {
 						var def = bt.GetDefinition ();
-						if (def != null && def.Kind != TypeKind.Interface && !def.Region.IsEmpty) {
-							IdeApp.Workbench.OpenDocument (def.Region.FileName, def.Region.BeginLine, def.Region.BeginColumn);
+						if (def != null && def.Kind != TypeKind.Interface) {
+							IdeApp.ProjectOperations.JumpToDeclaration (def); 
 							return;
 						}
 					}
 				}
 				
-				var method = item as IMethod;
+				var method = item as IMember;
 				if (method != null) {
-					foreach (var def in method.DeclaringTypeDefinition.DirectBaseTypes) {
-						if (def != null && def.Kind != TypeKind.Interface && !def.GetDefinition ().Region.IsEmpty) {
-							IMethod baseMethod = null;
-							foreach (var m in def.GetMethods ()) {
-								if (m.Name == method.Name && ParameterListComparer.Instance.Equals (m.Parameters, method.Parameters)) {
-									baseMethod = m;
-									break;
-								}
-							}
-							if (baseMethod != null)
-								IdeApp.Workbench.OpenDocument (baseMethod.Region.FileName, baseMethod.Region.BeginLine, baseMethod.Region.EndLine);
-							return;
-						}
+					var baseMethod = InheritanceHelper.GetBaseMember (method); 
+					if (baseMethod != null) {
+						IdeApp.ProjectOperations.JumpToDeclaration (baseMethod); 
 					}
 					return;
 				}
@@ -294,6 +285,7 @@ namespace MonoDevelop.Refactoring
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
 			if (refactoringInfo.validActions != null) {
+				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 				foreach (var fix_ in refactoringInfo.validActions) {
 					var fix = fix_;
 					if (first) {
@@ -301,7 +293,7 @@ namespace MonoDevelop.Refactoring
 						if (ciset.CommandInfos.Count > 0)
 							ciset.CommandInfos.AddSeparator ();
 					}
-					ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (doc, loc)));
+					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
 				}
 			}
 
@@ -314,7 +306,7 @@ namespace MonoDevelop.Refactoring
 				var type = item as IType;
 				if (type != null && type.GetDefinition ().Parts.Count > 1) {
 					var declSet = new CommandInfoSet ();
-					declSet.Text = GettextCatalog.GetString ("_Go to declaration");
+					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					var ct = type.GetDefinition ();
 					foreach (var part in ct.Parts)
 						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (new JumpTo (part).Run));
@@ -325,30 +317,50 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
+					ainfo.Add (GettextCatalog.GetString ("Go to _Base Symbol"), new System.Action (new GotoBase (member).Run));
+					added = true;
+				}
+			}
+
 			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
 				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
 				added = true;
 			}
-			
-			if (item is IMethod) {
-				IMethod method = item as IMethod;
-				if (method.IsOverride) {
-					ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((IMethod)item).Run));
+
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
+					ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (new FindDerivedSymbolsHandler (doc, member).Run));
 					added = true;
 				}
-			} else if (item is ITypeDefinition) {
+			}
+			if (item is IMember) {
+				var member = (IMember)item;
+				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
+					ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (new FindMemberOverloadsHandler (doc, member).Run));
+					added = true;
+				}
+			}
+
+			if (item is ITypeDefinition) {
 				ITypeDefinition cls = (ITypeDefinition)item;
 				foreach (var bc in cls.DirectBaseTypes) {
 					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
+						ainfo.Add (GettextCatalog.GetString ("Go to _Base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
 						break;
 					}
 				}
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
 					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
 				}
+				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
+				added = true;
+
 			}
 
 			if (added)

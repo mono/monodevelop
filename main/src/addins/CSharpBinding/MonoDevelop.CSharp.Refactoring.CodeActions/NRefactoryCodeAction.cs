@@ -35,23 +35,47 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
+	class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
 	{
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
 		
-		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act)
+		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act, object siblingKey = null)
 		{
 			this.IdString = id;
 			this.Title = title;
 			this.act = act;
+			this.SiblingKey = siblingKey;
 			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
 		}
 
-		public override void Run (Document document, TextLocation loc)
+		public override void Run (object context, object script)
 		{
+			act.Run ((Script) script);
+		}
+
+		/// <summary>
+		/// All the sibling actions of this action, ie those actions which represent the same kind
+		/// of fix. This list includes the current action. 
+		/// </summary>
+		/// <value>The sibling actions.</value>
+		public IList<CodeAction> SiblingActions { get; set; }
+		
+		public override bool SupportsBatchRunning {
+			get{
+				return SiblingActions != null;// && SiblingActions.Count > 1;
+			}
+		}
+		
+		public override void BatchRun (Document document, TextLocation loc)
+		{
+			base.BatchRun (document, loc);
 			var context = new MDRefactoringContext (document, loc);
-			using (var script = context.StartScript ())
-				act.Run (script);
+			using (var script = context.StartScript ()) {
+				foreach (var action in SiblingActions) {
+					context.SetLocation (action.Start);
+					action.Run (script);
+				}
+			}
 		}
 	}
 	

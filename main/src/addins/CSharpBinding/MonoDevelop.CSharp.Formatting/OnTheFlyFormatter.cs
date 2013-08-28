@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class OnTheFlyFormatter
+	class OnTheFlyFormatter
 	{
 		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
@@ -73,15 +73,7 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (policyParent, mimeTypeChain, data, offset, offset, false, true);
 		}		
 		
-		/// <summary>
-		/// Builds a compileable stub file out of an entity.
-		/// </summary>
-		/// <returns>
-		/// A string representing the stub
-		/// </returns>
-		/// <param name='memberStartOffset'>
-		/// The offset where the member starts in the returned text.
-		/// </param>
+
 		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int startOffset, int endOffset, out int memberStartOffset)
 		{
 			var pf = data.ParsedDocument.ParsedFile as CSharpUnresolvedFile;

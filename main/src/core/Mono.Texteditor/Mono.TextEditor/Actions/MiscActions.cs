@@ -243,8 +243,14 @@ namespace Mono.TextEditor
 				return;
 			
 			using (var undo = data.OpenUndoGroup ()) {
-				if (data.IsSomethingSelected)
+				if (data.IsSomethingSelected) {
+					var end = data.MainSelection.End;
 					data.DeleteSelectedText ();
+					if (end.Column == 1) {
+						CaretMoveActions.InternalCaretMoveHome (data, true, false);
+						return;
+					}
+				}
 				switch (data.Options.IndentStyle) {
 				case IndentStyle.None:
 					data.InsertAtCaret (data.EolMarker);

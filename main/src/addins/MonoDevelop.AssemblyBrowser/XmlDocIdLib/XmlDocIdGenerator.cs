@@ -7,7 +7,7 @@ using Mono.Cecil;
 namespace XmlDocIdLib
 {
     #region XmlDocIdGenerator
-    public class XmlDocIdGenerator
+    class XmlDocIdGenerator
     {
         #region Constructors
         public XmlDocIdGenerator()

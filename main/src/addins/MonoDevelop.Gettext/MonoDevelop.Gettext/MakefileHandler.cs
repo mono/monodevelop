@@ -37,7 +37,7 @@ using MonoDevelop.Deployment;
 
 namespace MonoDevelop.Gettext
 {
-	public class MakefileHandler: IMakefileHandler
+	class MakefileHandler: IMakefileHandler
 	{
 		public bool CanDeploy (SolutionItem entry, MakefileType type)
 		{

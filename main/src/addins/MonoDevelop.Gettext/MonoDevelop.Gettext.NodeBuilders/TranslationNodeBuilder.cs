@@ -36,7 +36,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext.NodeBuilders
 {
-	public class TranslationNodeBuilder : TypeNodeBuilder
+	class TranslationNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(Translation); }

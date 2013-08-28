@@ -185,7 +185,12 @@ namespace MonoDevelop.Ide.Gui
 			{
 			}
 		}
-		
+
+		public void RunWhenLoaded (System.Action action)
+		{
+			action ();
+		}
+
 		public IDisposable OpenUndoGroup ()
 		{
 			return new DisposeStub ();

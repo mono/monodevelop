@@ -1238,4 +1238,23 @@ $selection$$end$]]></Code>
 $selection$$end$]]></Code>
 	</CodeTemplate>
 
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>C#</_Group>
+			<MimeType>text/x-csharp</MimeType>
+			<Shortcut>{</Shortcut>
+			<_Description>Template for blocks</_Description>
+			<TemplateType>SurroundsWith</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name">
+				<Default>MyRegion</Default>
+				<_ToolTip>Region name</_ToolTip>
+			</Variable>
+		</Variables>
+		
+		<Code><![CDATA[{
+$selected$$end$
+}]]></Code>
+	</CodeTemplate>
 </CodeTemplates>

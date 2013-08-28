@@ -20,9 +20,9 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActionSource" name = "CodeActionSource">
 		<ExtensionNode name="Source"/>
 	</ExtensionPoint>
-
+	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
-		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
+		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeActions.CodeIssueAddinNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">
@@ -53,11 +53,12 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
+	
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>
-	</Extension>
--->
+	</Extension>-->
+	
 	<!-- Text editor integration -->
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
@@ -77,20 +78,20 @@
 		<Category _name = "Code Navigation" id = "CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
-					_label = "_Go to declaration" 
+					_label = "_Go to Declaration" 
 					shortcut = "F12"
 					macShortcut = "Meta|D"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					defaultHandler = "MonoDevelop.Refactoring.FindReferencesHandler"
-					_label = "_Find references" 
+					_label = "_Find References" 
 					shortcut = "Shift|F12"
 					macShortcut = "Shift|Meta|R"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"
 					defaultHandler = "MonoDevelop.Refactoring.FindAllReferencesHandler"
-					_label = "_Find references of all overloads" />
+					_label = "_Find References of All Overloads" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
 					defaultHandler = "MonoDevelop.Refactoring.FindDerivedClassesHandler"
-					_label = "Find _derived classes" />
+					_label = "Find _Derived Classes" />
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
@@ -105,7 +106,7 @@
 				_label = "Refactory Operations" /> 
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
-					_label = "Quick fix..."
+					_label = "Quick Fix..."
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />
 		
@@ -161,7 +162,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
 		<Section id = "C#" _label = "C#">
-			<Section id = "Inspection" _label = "Code inspection" fill="true"
+			<Section id = "Inspection" _label = "Code Inspection" fill="true"
 				class="MonoDevelop.CodeIssues.CodeIssuePanel"/>
 			<Section id = "CodeActions" _label = "Context Actions" fill="true"
 				icon="md-text-quickfix" 

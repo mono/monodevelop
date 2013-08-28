@@ -80,13 +80,13 @@ namespace MonoDevelop.Core.Assemblies
 				SaveUserAssemblyContext ();
 			};
 		}
-		
+
 		void InitializeRuntime (TargetRuntime runtime)
 		{
 			runtime.Initialized += HandleRuntimeInitialized;
 			runtime.StartInitialization ();
 		}
-		
+
 		void HandleRuntimeInitialized (object sender, EventArgs e)
 		{
 			var runtime = (TargetRuntime) sender;
@@ -212,9 +212,9 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 
-		public static System.Reflection.AssemblyName ParseAssemblyName (string fullname)
+		public static AssemblyName ParseAssemblyName (string fullname)
 		{
-			var aname = new System.Reflection.AssemblyName ();
+			var aname = new AssemblyName ();
 			int i = fullname.IndexOf (',');
 			if (i == -1) {
 				aname.Name = fullname.Trim ();
@@ -222,7 +222,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			aname.Name = fullname.Substring (0, i).Trim ();
-			i = fullname.IndexOf ("Version", i+1);
+			i = fullname.IndexOf ("Version", i + 1, StringComparison.Ordinal);
 			if (i == -1)
 				return aname;
 			i = fullname.IndexOf ('=', i);
@@ -236,7 +236,7 @@ namespace MonoDevelop.Core.Assemblies
 			return aname;
 		}
 		
-		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
+		static readonly Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
 			AssemblyName name;
@@ -311,12 +311,25 @@ namespace MonoDevelop.Core.Assemblies
 			
 			fx.RelationsBuilt = true;
 		}
+
+		static IKVM.Reflection.Universe CreateClosedUniverse ()
+		{
+			const IKVM.Reflection.UniverseOptions ikvmOptions =
+				IKVM.Reflection.UniverseOptions.DisablePseudoCustomAttributeRetrieval |
+				IKVM.Reflection.UniverseOptions.SupressReferenceTypeIdentityConversion |
+				IKVM.Reflection.UniverseOptions.ResolveMissingMembers;
+
+			var universe = new IKVM.Reflection.Universe (ikvmOptions);
+			universe.AssemblyResolve += delegate (object sender, IKVM.Reflection.ResolveEventArgs args) {
+				return ((IKVM.Reflection.Universe)sender).CreateMissingAssembly (args.Name);
+			};
+			return universe;
+		}
 		
-		//FIXME: this is totally broken. assemblies can't just belong to one framework
+		//FIXME: the fallback is broken since multiple frameworks can have the same corlib
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
-			var universe = new IKVM.Reflection.Universe ();
-			universe.EnableMissingMemberResolution ();
+			var universe = CreateClosedUniverse ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
@@ -350,7 +363,7 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error to determine target framework for assembly {0}: {1}", file, ex);
+				LoggingService.LogError ("Error determining target framework for assembly {0}: {1}", file, ex);
 				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
 				universe.Dispose ();

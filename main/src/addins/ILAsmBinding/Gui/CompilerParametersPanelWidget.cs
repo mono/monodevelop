@@ -32,7 +32,7 @@ using Gtk;
 namespace ILAsmBinding
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CompilerParametersPanelWidget : Gtk.Bin
+	partial class CompilerParametersPanelWidget : Gtk.Bin
 	{
 		public CompilerParametersPanelWidget()
 		{
@@ -68,7 +68,7 @@ namespace ILAsmBinding
 		}
 	}
 	
-	public class CompilerParametersPanel : MonoDevelop.Ide.Gui.Dialogs.MultiConfigItemOptionsPanel
+	class CompilerParametersPanel : MonoDevelop.Ide.Gui.Dialogs.MultiConfigItemOptionsPanel
 	{
 		CompilerParametersPanelWidget widget;
 		

@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
-	public class TranslationService
+	class TranslationService
 	{
 		public static IFileScanner[] GetFileScanners ()
 		{

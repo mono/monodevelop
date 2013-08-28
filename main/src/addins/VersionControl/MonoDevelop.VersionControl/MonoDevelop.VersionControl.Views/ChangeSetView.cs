@@ -1,17 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
-using Mono.Addins;
 
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -271,12 +265,12 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
-			OnOpen (null, null);
+			OnOpen ();
 		}
 		
 		void OnDiffLineActivated (object o, EventArgs a)
 		{
-			OnOpen (null, null);
+			OnOpen ();
 		}
 		
 		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
@@ -291,7 +285,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void OnOpen (object s, EventArgs args)
+		void OnOpen ()
 		{
 			string[] files = GetCurrentFiles ();
 			if (files.Length == 0)

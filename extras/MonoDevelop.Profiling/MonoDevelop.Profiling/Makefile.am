@@ -42,14 +42,14 @@ FILES =  \
 	ProfilingSnapshotEventArgs.cs
 
 RES =  \
-	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
-	icons/Icons.16x16.Profiling.Filter.png \
-	icons/Icons.16x16.Profiling.GC.png \
-	icons/Icons.16x16.Profiling.History.png \
-	icons/Icons.16x16.Profiling.Snapshot.png \
-	icons/Icons.16x16.Profiling.Summary.png \
-	MonoDevelop.Profiling.addin.xml
+	gtk-gui/gui.stetic,MonoDevelop.Profiling.gui.stetic \
+	gtk-gui/objects.xml,MonoDevelop.Profiling.objects.xml \
+	icons/Icons.16x16.Profiling.Filter.png,MonoDevelop.Profiling.Icons.16x16.Profiling.Filter.png \
+	icons/Icons.16x16.Profiling.GC.png,MonoDevelop.Profiling.Icons.16x16.Profiling.GC.png \
+	icons/Icons.16x16.Profiling.History.png,MonoDevelop.Profiling.Icons.16x16.Profiling.History.png \
+	icons/Icons.16x16.Profiling.Snapshot.png,MonoDevelop.Profiling.Icons.16x16.Profiling.Snapshot.png \
+	icons/Icons.16x16.Profiling.Summary.png,MonoDevelop.Profiling.Icons.16x16.Profiling.Summary.png \
+	MonoDevelop.Profiling.addin.xml,MonoDevelop.Profiling.MonoDevelop.Profiling.addin.xml
 
 all: $(ASSEMBLY)
 

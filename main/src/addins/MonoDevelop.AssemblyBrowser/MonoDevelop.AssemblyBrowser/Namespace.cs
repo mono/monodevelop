@@ -33,7 +33,7 @@ using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class Namespace : IDisposable
+	class Namespace : IDisposable
 	{
 		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
 		

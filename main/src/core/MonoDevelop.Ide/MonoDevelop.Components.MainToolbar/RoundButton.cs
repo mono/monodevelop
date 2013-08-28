@@ -30,6 +30,7 @@ using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
 using System.Reflection;
+using Mono.TextEditor;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -227,11 +228,11 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var lg = new LinearGradient (0, centerY - rad, 0, centerY +rad)) {
 				lg.AddColorStop (0, new Cairo.Color (high, high, high));
 				lg.AddColorStop (1, new Cairo.Color (low, low, low));
-				context.Pattern = lg;
+				context.SetSource (lg);
 				context.FillPreserve ();
 			}
 
-			context.Color = new Cairo.Color (0, 0, 0, 0.4);
+			context.SetSourceRGBA (0, 0, 0, 0.4);
 			context.LineWidth = 1;
 			context.Stroke ();
 		}

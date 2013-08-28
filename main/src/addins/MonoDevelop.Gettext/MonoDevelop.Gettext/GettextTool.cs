@@ -34,7 +34,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Gettext
 {
-	public class GettextTool: IApplication
+	class GettextTool: IApplication
 	{
 		bool help;
 		string file;
