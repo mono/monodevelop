@@ -105,14 +105,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			});
 		}
 
-		internal void ClearUnsavedProjectContent ()
-		{
-			lock (unsavedProjects) {
-				foreach (var f in new List<string> (unsavedProjects.Keys))
-					UnloadProject (f);
-			}
-		}
-
 		internal void SetUnsavedProjectContent (string file, string content)
 		{
 			lock (unsavedProjects)

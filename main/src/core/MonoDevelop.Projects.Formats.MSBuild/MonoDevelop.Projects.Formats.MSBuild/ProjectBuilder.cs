@@ -33,6 +33,7 @@ using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
 using System.Collections.Generic;
 using System.Collections;
+using System.Reflection;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -78,9 +79,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
-			// Unload all unsaved projects. We build from what's saved in disk.
-			buildEngine.ClearUnsavedProjectContent ();
-
 			MSBuildResult[] result = null;
 			BuildEngine.RunSTA (delegate
 			{
@@ -159,7 +157,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						p.Load (pc.ProjectFile);
 					else {
 						p.FullFileName = pc.ProjectFile;
-						p.Load (new StringReader (content));
+
+						if (HasXbuildFileBug ()) {
+							// Workaround for Xamarin bug #14295: Project.Load incorrectly resets the FullFileName property
+							var t = p.GetType ();
+							t.InvokeMember ("project_load_settings", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField, null, p, new object[] { ProjectLoadSettings.None });
+							t.InvokeMember ("PushThisFileProperty", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { p.FullFileName });
+							t.InvokeMember ("DoLoad", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { new StringReader (content) });
+						} else {
+							p.Load (new StringReader (content));
+						}
 					}
 				}
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
@@ -173,6 +180,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			Environment.CurrentDirectory = Path.GetDirectoryName (file);
 			return project;
+		}
+
+		bool? hasXbuildFileBug;
+
+		bool HasXbuildFileBug ()
+		{
+			if (hasXbuildFileBug == null) {
+				Project p = new Project ();
+				p.FullFileName = "foo";
+				p.LoadXml ("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"/>");
+				hasXbuildFileBug = p.FullFileName.Length == 0;
+			}
+			return hasXbuildFileBug.Value;
 		}
 		
 		public override object InitializeLifetimeService ()
