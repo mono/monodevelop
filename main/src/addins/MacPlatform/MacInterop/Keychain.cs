@@ -398,6 +398,8 @@ namespace MonoDevelop.MacInterop
 		static unsafe string GetUsernameFromKeychainItemRef (IntPtr itemRef)
 		{
 			var attribute = GetUsernameAttributeFromAttributeList (GetAttributeListFromKeychainItemRef (itemRef));
+			if (attribute->Length == 0)
+				return null;
 			return Marshal.PtrToStringAuto (attribute->Data, (int) attribute->Length);
 		}
 
