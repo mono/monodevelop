@@ -78,6 +78,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
+			// Unload all unsaved projects. We build from what's saved in disk.
+			buildEngine.ClearUnsavedProjectContent ();
+
 			MSBuildResult[] result = null;
 			BuildEngine.RunSTA (delegate
 			{
