@@ -8,6 +8,10 @@ AC_SUBST(ACLOCAL_FLAGS)
 
 ASSEMBLY_VERSION=4.1.7.0
 
+echo ARGH
+env 
+echo ARGH
+
 # This is parsed in BuildVariables.cs. Keep the format consistent to avoid breaking
 # the C# side of things. It should be one of the following two formats:
 # 1) "VERSION_NUMBER"					"2.0"
