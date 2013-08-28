@@ -1524,19 +1524,42 @@ namespace Mono.TextEditor
 			cr.Restore ();
 		}
 
+		LayoutWrapper GetVirtualSpaceLayout (DocumentLine line, DocumentLocation location)
+		{
+			string virtualSpace = "";
+			var data = textEditor.GetTextEditorData ();
+			if (data.HasIndentationTracker && line.Length == 0) {
+				virtualSpace = this.textEditor.GetTextEditorData ().GetIndentationString (location);
+			}
+			if (Caret.Column > line.Length + 1 + virtualSpace.Length)
+				virtualSpace += new string (' ', Caret.Column - line.Length - 1 - virtualSpace.Length);
+			// predit layout already contains virtual space.
+			if (!string.IsNullOrEmpty (textEditor.preeditString))
+				virtualSpace = "";
+			LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+			wrapper.LineChars = virtualSpace.ToCharArray ();
+			wrapper.Layout.SetText (virtualSpace);
+			wrapper.Layout.Tabs = tabArray;
+			wrapper.Layout.FontDescription = textEditor.Options.Font;
+			int vy, vx;
+			wrapper.Layout.GetSize (out vx, out vy);
+			wrapper.Width = wrapper.LastLineWidth = vx / Pango.Scale.PangoScale;
+			return wrapper;
+		}
+
 		void DrawLinePart (Cairo.Context cr, DocumentLine line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double position, ref bool isSelectionDrawn, double y, double maxX, double _lineHeight)
 		{
 			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
-			int selectionStart;
-			int selectionEnd;
+			int selectionStartOffset;
+			int selectionEndOffset;
 			if (this.HideSelection) {
-				selectionStart = selectionEnd = -1;
+				selectionStartOffset = selectionEndOffset = -1;
 			} else {
-				GetSelectionOffsets (line, out selectionStart, out selectionEnd);
+				GetSelectionOffsets (line, out selectionStartOffset, out selectionEndOffset);
 			}
 
 			// ---- new renderer
-			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStart, selectionEnd);
+			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStartOffset, selectionEndOffset);
 			int lineOffset = line.Offset;
 			double width = layout.Width;
 			double xPos = position;
@@ -1562,12 +1585,12 @@ namespace Mono.TextEditor
 			bool drawBg = true;
 			bool drawText = true;
 
-			LineMetrics metrics  = new LineMetrics {
+			var metrics  = new LineMetrics {
 				LineSegment = line,
 				Layout = layout,
 
-				SelectionStart = selectionStart,
-				SelectionEnd = selectionEnd,
+				SelectionStart = selectionStartOffset,
+				SelectionEnd = selectionEndOffset,
 
 				TextStartOffset = offset,
 				TextEndOffset = offset + length,
@@ -1598,22 +1621,20 @@ namespace Mono.TextEditor
 			}
 
 			if (DecorateLineBg != null)
-				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
+				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
 			
 
-			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
+			if (!isSelectionDrawn && (layout.StartSet || selectionStartOffset == offset + length) && BackgroundRenderer == null) {
 				double startX;
 				int startY;
-
 				double endX;
 				int endY;
-
-				if (selectionStart != offset + length) {
-					var start = layout.Layout.IndexToPos ((int)layout.SelectionStartIndex);
+				if (selectionStartOffset != offset + length) {
+					var start = layout.Layout.IndexToPos (layout.SelectionStartIndex);
 					startX = System.Math.Floor (start.X / Pango.Scale.PangoScale);
 					startY = (int)(y + System.Math.Floor (start.Y / Pango.Scale.PangoScale));
 
-					var end = layout.Layout.IndexToPos ((int)layout.SelectionEndIndex);
+					var end = layout.Layout.IndexToPos (layout.SelectionEndIndex);
 					endX = System.Math.Ceiling (end.X / Pango.Scale.PangoScale);
 					endY = (int)(y + System.Math.Ceiling (end.Y / Pango.Scale.PangoScale));
 				} else {
@@ -1669,7 +1690,7 @@ namespace Mono.TextEditor
 			if (textEditor.HighlightSearchPattern) {
 				while (!(firstSearch = GetFirstSearchResult (o, offset + length)).IsInvalid) {
 					double x = position;
-					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, System.Math.Max (lineOffset, firstSearch.Offset), System.Math.Min (lineOffset + line.Length, firstSearch.EndOffset), delegate(int start, int end) {
+					HandleSelection (lineOffset, logicalRulerColumn, selectionStartOffset, selectionEndOffset, System.Math.Max (lineOffset, firstSearch.Offset), System.Math.Min (lineOffset + line.Length, firstSearch.EndOffset), delegate(int start, int end) {
 						uint startIndex = (uint)(start - offset);
 						uint endIndex = (uint)(end - offset);
 						if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
@@ -1702,67 +1723,59 @@ namespace Mono.TextEditor
 			}
 
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never && !(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
-				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
+				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
+
+
+			if (textEditor.IsSomethingSelected && !isSelectionDrawn && BackgroundRenderer == null) {
+				if (lineNumber == textEditor.MainSelection.End.Line && textEditor.MainSelection.End.Column > line.Length + 1) {
+					using (var wrapper = GetVirtualSpaceLayout (line, textEditor.MainSelection.End)) {
+						double startX;
+						double endX;
+						startX = xPos;
+						endX = position + wrapper.Width + layout.Width;
+						DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
+
+						if (lineNumber == Caret.Line) {
+							switch (textEditor.Options.ShowWhitespaces) {
+							case ShowWhitespaces.Selection:
+								if (textEditor.IsSomethingSelected && (selectionStartOffset < offset || selectionStartOffset == selectionEndOffset) && BackgroundRenderer == null)
+									DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
+								break;
+							}
+						}
+					}
+				}
+				
+			}
 
 			if (lineNumber == Caret.Line) {
 				int caretOffset = Caret.Offset;
 				if (offset <= caretOffset && caretOffset <= offset + length) {
 					int index = caretOffset - offset;
-
 					if (Caret.Column > line.Length + 1) {
-						string virtualSpace = "";
-						var data = textEditor.GetTextEditorData ();
-						if (data.HasIndentationTracker && line.Length == 0) {
-							virtualSpace = this.textEditor.GetTextEditorData ().GetIndentationString (Caret.Location);
+						using (var wrapper = GetVirtualSpaceLayout (line, Caret.Location)) {
+							var x = (position + wrapper.Width) + layout.Width;
+							SetVisibleCaretPosition (x, y, x, y);
+							xPos = position + layout.Width;
+
+
+							// When drawing virtual space before the selection start paint it as unselected.
+							var virtualSpaceMod = selectionStartOffset < caretOffset ? 0 : wrapper.LineChars.Length;
+
+							if ((!textEditor.IsSomethingSelected || (selectionStartOffset >= offset && selectionStartOffset != selectionEndOffset)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+								DrawCaretLineMarker (cr, position, y, wrapper.Width, _lineHeight);
+
+							if (DecorateLineBg != null)
+								DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStartOffset + virtualSpaceMod, selectionEndOffset + wrapper.LineChars.Length);
+
+							switch (textEditor.Options.ShowWhitespaces) {
+							case ShowWhitespaces.Always:
+								DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
+								break;
+							}
+//							if (isCaretVirtual)
+							//								position += wrapper.Width;
 						}
-						if (Caret.Column > line.Length + 1 + virtualSpace.Length) 
-							virtualSpace += new string (' ', Caret.Column - line.Length - 1 - virtualSpace.Length);
-
-						// predit layout already contains virtual space.
-						if (!string.IsNullOrEmpty (textEditor.preeditString))
-							virtualSpace = ""; 
-						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
-						wrapper.LineChars = virtualSpace.ToCharArray ();
-						wrapper.Layout.SetText (virtualSpace);
-						wrapper.Layout.Tabs = tabArray;
-						wrapper.Layout.FontDescription = textEditor.Options.Font;
-						int vy, vx;
-						wrapper.Layout.GetSize (out vx, out vy);
-						vx = (int)(vx / Pango.Scale.PangoScale);
-
-						var x = (position + vx) + layout.Width;
-						SetVisibleCaretPosition (x, y, x, y);
-						xPos = position + layout.Width;
-
-						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.Length) && BackgroundRenderer == null) {
-							double startX;
-							double endX;
-							startX = xPos;
-							endX = position + vx + layout.Width;
-							DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), this.SelectionColor.Background, true);
-						}
-
-						// When drawing virtual space before the selection start paint it as unselected.
-						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
-
-						if ((!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
-							DrawCaretLineMarker (cr, position, y, vx, _lineHeight);
-
-						if (DecorateLineBg != null)
-							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
-
-						switch (textEditor.Options.ShowWhitespaces) {
-						case ShowWhitespaces.Selection:
-							if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd) && BackgroundRenderer == null)
-								DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
-							break;
-						case ShowWhitespaces.Always:
-							DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
-							break;
-						}
-
-						wrapper.Dispose ();
-						position += vx;
 					} else if (index == length && string.IsNullOrEmpty (textEditor.preeditString)) {
 						var x = position + layout.Width;
 						SetVisibleCaretPosition (x, y, x, y);
@@ -1786,7 +1799,6 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, y, metrics);
@@ -2729,7 +2741,12 @@ namespace Mono.TextEditor
 				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
 			}
 
-			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.Length);
+			bool isEolSelected = 
+				!this.HideSelection && 
+				textEditor.IsSomethingSelected && 
+				textEditor.SelectionMode == SelectionMode.Normal && 
+				(textEditor.MainSelection.Contains (lineNr, 1) || lineNr == textEditor.MainSelection.Start.Line);
+
 			var lx = (int)position;
 			lineArea = new Cairo.Rectangle (lx,
 				lineArea.Y,
@@ -2766,13 +2783,25 @@ namespace Mono.TextEditor
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					wrapper = GetLayout (line);
-					var eolStartX = System.Math.Floor (position);
-					lineArea = new Cairo.Rectangle (
-						eolStartX,
-						lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
-						textEditor.Allocation.Width - eolStartX,
-						LineHeight);
-					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
+					if (lineNr == textEditor.MainSelection.Start.Line && line.Length == 0 && textEditor.MainSelection.Start.Column > 1) {
+						using (var vwrapper = GetVirtualSpaceLayout (line, textEditor.MainSelection.Start)) {
+							lineArea = new Cairo.Rectangle (
+								lineArea.X + vwrapper.Width,
+								lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
+								textEditor.Allocation.Width - (lineArea.X + vwrapper.Width),
+								LineHeight
+							);
+						}
+					} else  {
+						var eolStartX = System.Math.Floor (position);
+						lineArea = new Cairo.Rectangle (
+							eolStartX,
+							lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
+							textEditor.Allocation.Width - eolStartX,
+							LineHeight);
+					}
+					if (lineNr != textEditor.MainSelection.End.Line)
+						DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
 						DrawIndent (cr, wrapper, line, lx, y);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
@@ -2796,7 +2825,11 @@ namespace Mono.TextEditor
 			
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
-				if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection)) {
+				if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
+				if (textEditor.MainSelection.Contains (lineNr, 2 + line.Length) && 
+					!(lineNr == Caret.Line && Caret.Column > 1 && textEditor.MainSelection.Anchor.Line < textEditor.MainSelection.Lead.Line) &&
+					textEditor.MainSelection.Anchor.Line != textEditor.MainSelection.Lead.Line
+					) {
 					if (wrapper == null)
 						wrapper = GetLayout (line);
 					DrawEolMarker (cr, line, isEolSelected, position, y + System.Math.Max (0, wrapper.Height - LineHeight));
