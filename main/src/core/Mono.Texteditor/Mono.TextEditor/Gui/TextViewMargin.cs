@@ -1531,8 +1531,8 @@ namespace Mono.TextEditor
 			if (data.HasIndentationTracker && line.Length == 0) {
 				virtualSpace = this.textEditor.GetTextEditorData ().GetIndentationString (location);
 			}
-			if (Caret.Column > line.Length + 1 + virtualSpace.Length)
-				virtualSpace += new string (' ', Caret.Column - line.Length - 1 - virtualSpace.Length);
+			if (location.Column > line.Length + 1 + virtualSpace.Length)
+				virtualSpace += new string (' ', location.Column - line.Length - 1 - virtualSpace.Length);
 			// predit layout already contains virtual space.
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
