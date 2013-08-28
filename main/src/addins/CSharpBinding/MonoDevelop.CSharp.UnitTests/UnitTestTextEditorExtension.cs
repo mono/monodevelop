@@ -88,9 +88,15 @@ namespace MonoDevelop.CSharp
 				var resolver = document.GetSharedResolver ();
 				if (resolver == null || resolver.Result == null)
 					return;
+				var parsedDocument = document.ParsedDocument;
+				if (parsedDocument == null)
+					return;
+				var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();
+				if (syntaxTree == null)
+					return;
 				var visitor = new NUnitVisitor (resolver.Result);
 				try {
-					visitor.VisitSyntaxTree (document.ParsedDocument.GetAst<SyntaxTree> ());
+					visitor.VisitSyntaxTree (syntaxTree);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
 					return;
