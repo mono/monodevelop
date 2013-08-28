@@ -5,9 +5,6 @@ tests=no
 prefix=NONE
 test -e "$CONFIG_SITE" && . "$CONFIG_SITE"
 test "$prefix" = NONE && prefix=/usr/local
-echo First env
-env
-echo Done First Env
 
 usage ()
 {
@@ -260,8 +257,6 @@ if [ x$select == xyes -o ! -a profiles/$profile ]; then
 fi
 
 if test `uname` = "Darwin"; then
-	echo MyDYLdPathIs $DYLD_FALLBACK_LIBRARY_PATH
-
 	if test "x$DYLD_FALLBACK_LIBRARY_PATH" = "x"; then
 		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib"
 		export PATH="$PATH:/Library/Frameworks/Mono.framework/Versions/Current/bin"
