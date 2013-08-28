@@ -72,5 +72,13 @@ namespace MonoDevelop.Projects.Extensions
 		/// Unique and immutable identifier of the solution item inside the solution
 		/// </summary>
 		string ItemId { get; }
+
+		/// <summary>
+		/// Notifies that this solution item has been modified
+		/// </summary>
+		/// <param name='hint'>
+		/// Hint about which part of the solution item has been modified. This will typically be the property name.
+		/// </param>
+		void OnModified (string hint);
 	}
 }
