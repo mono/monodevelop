@@ -58,12 +58,12 @@ namespace MonoDevelop.Database.ConnectionManager
 			return AddinCatalog.GetString ("Column");
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			ColumnSchema column = dataObject as ColumnSchema;
 			
-			label = column.Name + " (" + column.DataType.Name + ")";
-			icon = Context.GetIcon ("md-db-column");
+			nodeInfo.Label = column.Name + " (" + column.DataType.Name + ")";
+			nodeInfo.Icon = Context.GetIcon ("md-db-column");
 			//TODO: icon based on column type
 		}
 		

@@ -68,15 +68,15 @@ namespace MonoDevelop.Database.ConnectionManager
 			return node.Procedure.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			ProcedureNode node = dataObject as ProcedureNode;
 			
-			label = node.Procedure.Name;
+			nodeInfo.Label = node.Procedure.Name;
 			if (node.Procedure.IsFunction)
-				icon = Context.GetIcon ("md-db-function");
+				nodeInfo.Icon = Context.GetIcon ("md-db-function");
 			else
-				icon = Context.GetIcon ("md-db-procedure");
+				nodeInfo.Icon = Context.GetIcon ("md-db-procedure");
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

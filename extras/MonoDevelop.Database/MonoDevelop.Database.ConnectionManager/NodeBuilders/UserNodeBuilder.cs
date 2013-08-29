@@ -70,13 +70,13 @@ namespace MonoDevelop.Database.ConnectionManager
 			return node.User.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			UserNode node = dataObject as UserNode;
 			// node.RefreshEvent += (EventHandler)DispatchService.GuiDispatch (RefreshHandler);
 
-			label = node.User.Name;
-			icon = Context.GetIcon ("md-db-user");
+			nodeInfo.Label = node.User.Name;
+			nodeInfo.Icon = Context.GetIcon ("md-db-user");
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

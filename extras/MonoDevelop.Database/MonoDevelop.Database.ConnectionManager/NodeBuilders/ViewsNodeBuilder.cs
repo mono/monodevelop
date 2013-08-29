@@ -66,10 +66,10 @@ namespace MonoDevelop.Database.ConnectionManager
 			return AddinCatalog.GetString ("Views");
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = AddinCatalog.GetString ("Views");
-			icon = Context.GetIcon ("md-db-views");
+			nodeInfo.Label = AddinCatalog.GetString ("Views");
+			nodeInfo.Icon = Context.GetIcon ("md-db-views");
 			
 			BaseNode node = (BaseNode) dataObject;
 			

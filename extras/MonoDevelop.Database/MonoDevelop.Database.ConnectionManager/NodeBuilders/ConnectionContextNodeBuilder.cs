@@ -71,29 +71,28 @@ namespace MonoDevelop.Database.ConnectionManager
 			return context.ConnectionSettings.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, 
-		                                ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			DatabaseConnectionContext context = dataObject as DatabaseConnectionContext;
 
 			if (((bool)builder.Options["ShowDatabaseName"]))
-				label = string.Format ("{0} - ({1})", 
+				nodeInfo.Label = string.Format ("{0} - ({1})", 
 				                       context.ConnectionSettings.Name, context.ConnectionSettings.Database);
 			 else
-				label = context.ConnectionSettings.Name;
+				nodeInfo.Label = context.ConnectionSettings.Name;
 			
 			if (context.HasConnectionPool) {
 				IConnectionPool pool = context.ConnectionPool;
 				if (pool.IsInitialized) {
-					icon = Context.GetIcon ("md-db-database-ok");
+					nodeInfo.Icon = Context.GetIcon ("md-db-database-ok");
 				} else if (pool.HasErrors) {
-					icon = Context.GetIcon ("md-db-database-error");
+					nodeInfo.Icon = Context.GetIcon ("md-db-database-error");
 					MessageService.ShowError (AddinCatalog.GetString ("Unable to connect:") + Environment.NewLine + pool.Error);
 				} else {
-					icon = Context.GetIcon ("md-db-database");
+					nodeInfo.Icon = Context.GetIcon ("md-db-database");
 				}
 			} else {
-				icon = Context.GetIcon ("md-db-database");
+				nodeInfo.Icon = Context.GetIcon ("md-db-database");
 			}
 		}
 		

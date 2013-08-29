@@ -74,12 +74,12 @@ namespace MonoDevelop.Database.ConnectionManager
 			return node.Table.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
 			TableNode node = dataObject as TableNode;
 
-			label = node.Table.Name;
-			icon = Context.GetIcon ("md-db-table");
+			nodeInfo.Label = node.Table.Name;
+			nodeInfo.Icon = Context.GetIcon ("md-db-table");
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

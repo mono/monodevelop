@@ -56,10 +56,10 @@ namespace MonoDevelop.Database.ConnectionManager
 			return AddinCatalog.GetString ("Languages");
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			label = AddinCatalog.GetString ("Languages");
-			icon = Context.GetIcon ("md-db-tables");
+			nodeInfo.Label = AddinCatalog.GetString ("Languages");
+			nodeInfo.Icon = Context.GetIcon ("md-db-tables");
 			
 			BaseNode node = (BaseNode) dataObject;
 		}

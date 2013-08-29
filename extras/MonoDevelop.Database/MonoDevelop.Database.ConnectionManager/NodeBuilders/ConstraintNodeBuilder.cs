@@ -52,12 +52,12 @@ namespace MonoDevelop.Database.ConnectionManager
 			return AddinCatalog.GetString ("Constraint");
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			ConstraintSchema constraint = dataObject as ConstraintSchema;
 			
-			label = constraint.Name;
-			icon = Context.GetIcon ("md-db-constraint");
+			nodeInfo.Label = constraint.Name;
+			nodeInfo.Icon = Context.GetIcon ("md-db-constraint");
 			//TODO: icon based on constraint type
 		}
 		
