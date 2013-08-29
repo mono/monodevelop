@@ -47,10 +47,12 @@
     <Reference Include="MonoDevelop.Core.Gui, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Components, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=1.9.2.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -66,6 +68,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Posix" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Database.Sql\MonoDevelop.Database.Sql.csproj">
@@ -102,7 +105,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <Deployment.LinuxDeployData generatePcFile="false" />
+        <Deployment.LinuxDeployData generatePcFile="False" />
         <GtkDesignInfo gettextClass="AddinCatalog" />
       </Properties>
     </MonoDevelop>
