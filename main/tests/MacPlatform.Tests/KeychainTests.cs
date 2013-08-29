@@ -27,12 +27,28 @@
 using System;
 using MonoDevelop.MacInterop;
 using NUnit.Framework;
+using System.IO;
 
 namespace MacPlatform.Tests
 {
 	[TestFixture]
 	public class KeychainTests
 	{
+		static string TestKeyChain = "ThisIsMonoDevelopsPrivateKeyChainForTests";
+
+		[TestFixtureSetUp]
+		public void FixtureSetup ()
+		{
+			Keychain.CurrentKeychain = Keychain.CreateKeychain (TestKeyChain, "mypassword");
+		}
+
+		[TestFixtureTearDown]
+		public void FixtureTeardown ()
+		{
+			Keychain.DeleteKeychain (Keychain.CurrentKeychain);
+			Keychain.CurrentKeychain = IntPtr.Zero;
+		}
+
 		[Test]
 		public void InternetPassword_EmptyUsername ()
 		{

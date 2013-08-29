@@ -37,6 +37,7 @@ namespace MonoDevelop.MacInterop
 {
 	public static class Keychain
 	{
+		internal static IntPtr CurrentKeychain = IntPtr.Zero;
 		#region P/Invoke signatures
 		
 		const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
@@ -50,6 +51,13 @@ namespace MonoDevelop.MacInterop
 			if (cfRef != IntPtr.Zero)
 				CFReleaseInternal (cfRef);
 		}
+
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainCreate (string pathName, uint passwordLength, byte[] password,
+		                                          bool promptUser,  IntPtr initialAccess, ref IntPtr keychain);
+
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainDelete (IntPtr keychain);
 
 		[DllImport (SecurityLib)]
 		static extern unsafe OSStatus SecKeychainItemCopyAttributesAndData (IntPtr itemRef, ref SecKeychainAttributeInfo info,
@@ -228,7 +236,23 @@ namespace MonoDevelop.MacInterop
 		}
 		
 		#endregion
-		
+
+		internal static IntPtr CreateKeychain (string path, string password)
+		{
+			var result = IntPtr.Zero;
+			var status = SecKeychainCreate (path, (uint)password.Length, Encoding.UTF8.GetBytes (password), false, IntPtr.Zero, ref result);
+			if (status!= OSStatus.Ok)
+				throw new Exception (GetError (status));
+			return result;
+		}
+
+		internal static void DeleteKeychain (IntPtr keychain)
+		{
+			var status = SecKeychainDelete (keychain);
+			if (status != OSStatus.Ok)
+				throw new Exception (GetError (status));
+		}
+
 		static string GetError (OSStatus status)
 		{
 			IntPtr str = IntPtr.Zero;
@@ -447,7 +471,7 @@ namespace MonoDevelop.MacInterop
 			var passwordBytes = Encoding.UTF8.GetBytes (password);
 
 			// See if there is already a password there for this uri
-			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
+			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
 														  (uint)username.Length, Encoding.UTF8.GetBytes (username), (uint)uri.PathAndQuery.Length, 
 														  Encoding.UTF8.GetBytes (uri.PathAndQuery), (ushort)uri.Port, 
 														  0, 0, out passwordLength, out passwordPtr, ref itemRef);
@@ -457,7 +481,7 @@ namespace MonoDevelop.MacInterop
 				AddInternetPassword (uri, username, password);
 			} else {
 				// Otherwise add  new entry with the password
-				result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
+				result = SecKeychainAddInternetPassword (CurrentKeychain, (uint)uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null,
 														 (uint)username.Length, Encoding.UTF8.GetBytes (username), 
 														 (uint)uri.PathAndQuery.Length, Encoding.UTF8.GetBytes (uri.PathAndQuery),
 														 (ushort)uri.Port, 0, 0, (uint)passwordBytes.Length, passwordBytes, ref itemRef);
@@ -556,7 +580,7 @@ namespace MonoDevelop.MacInterop
 				desc = WebFormPassword;
 
 			// See if there is already a password there for this uri
-			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) host.Length, host, 0, null,
+			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port,
 			                                              protocol, auth, out passwordLength, out passwordPtr, ref itemRef);
 
@@ -617,7 +641,7 @@ namespace MonoDevelop.MacInterop
 			IntPtr itemRef = IntPtr.Zero;
 			IntPtr password;
 			uint passwordLength;
-			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null, 0, null,
+			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) uri.Host.Length, Encoding.UTF8.GetBytes (uri.Host), 0, null, 0, null,
 			                                              (uint) uri.PathAndQuery.Length, Encoding.UTF8.GetBytes (uri.PathAndQuery),
 			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
 
