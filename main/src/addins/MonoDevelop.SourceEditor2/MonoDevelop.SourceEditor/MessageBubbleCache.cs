@@ -127,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 						int h;
 						drawingLayout.GetPixelSize (out w, out h);
 						if (marker.Layouts.Count > 1) 
-							w += cache.warningPixbuf.Width + iconTextSpacing;
+							w += (int)cache.warningPixbuf.Width + iconTextSpacing;
 
 						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
 						y += h + verticalTextSpace;
@@ -173,8 +173,7 @@ namespace MonoDevelop.SourceEditor
 								textBorder,
 								y + verticalTextSpace / 2
 							);
-							Gdk.CairoHelper.SetSourcePixbuf (g, icon, 0, 0);
-							g.Paint ();
+							g.DrawImage (this, icon, 0, 0);
 							g.Restore ();
 						}
 
