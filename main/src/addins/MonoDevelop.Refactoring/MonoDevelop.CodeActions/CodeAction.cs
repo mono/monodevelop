@@ -27,6 +27,7 @@ using ICSharpCode.NRefactory;
 using System;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
@@ -73,7 +74,13 @@ namespace MonoDevelop.CodeActions
 		/// <value>The sibling key.</value>
 		public object SiblingKey { get; set; }
 
-		public CodeAction ()
+		/// <summary>
+		/// Gets or sets the severity of the code action.
+		/// </summary>
+		/// <value>The severity.</value>
+		public Severity Severity { get; set; }
+
+		protected CodeAction ()
 		{
 			IdString = GetType ().FullName;
 		}

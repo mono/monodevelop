@@ -45,6 +45,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.Title = title;
 			this.act = act;
 			this.SiblingKey = siblingKey;
+			this.Severity = act.Severity;
 			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
 		}
 
