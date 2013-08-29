@@ -75,16 +75,11 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern IntPtr SecCertificateCreateWithData (IntPtr allocator, IntPtr data);
 
-		// Note: might be useful for replacing SecCertificateGetData()
-		//[DllImport (SecurityLib)]
-		//CFDataRef SecCertificateCopyData (SecCertificateRef certificate);
+		[DllImport (SecurityLib)]
+		static extern IntPtr SecCertificateCopyData (IntPtr certificate);
 
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecCertificateCopyCommonName (IntPtr certificate, out IntPtr commonName);
-
-		// WARNING: deprecated in Mac OS X 10.7
-		[DllImport (SecurityLib)]
-		static extern OSStatus SecCertificateGetData (IntPtr certificate, out CssmData data);
 
 		// WARNING: deprecated in Mac OS X 10.7
 		//[DllImport (SecurityLib)]
@@ -263,19 +258,19 @@ namespace MonoDevelop.MacInterop
 		[DllImport (CoreFoundationLib)]
 		extern static void CFDataGetBytes (IntPtr data, CFRange range, IntPtr buffer);
 
-		static byte[] GetBytes (IntPtr cfData)
+		static byte[] CFDataGetBytes (IntPtr data)
 		{
-			if (cfData == IntPtr.Zero)
+			if (data == IntPtr.Zero)
 				return null;
 
-			long len = CFDataGetLength (cfData);
+			long len = CFDataGetLength (data);
 			if (len < 1 || len > int.MaxValue)
 				return null;
 
 			byte[] buffer = new byte [(int) len];
 			unsafe {
-				fixed (byte *bufPtr = buffer) {
-					CFDataGetBytes (cfData, new CFRange (0, (int)len), (IntPtr)bufPtr);
+				fixed (byte *bufptr = buffer) {
+					CFDataGetBytes (data, new CFRange (0, (int) len), (IntPtr) bufptr);
 				}
 			}
 
@@ -415,32 +410,36 @@ namespace MonoDevelop.MacInterop
 		public static IList<X509Certificate2> GetAllSigningCertificates ()
 		{
 			IntPtr searchRef, itemRef, certRef;
-			
+			OSStatus status;
+
 			//null keychain means use default
-			var res = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
-			if (res != OSStatus.Ok)
-				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
+			status = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
+			if (status != OSStatus.Ok)
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
 			
 			var certs = new HashSet<X509Certificate2> ();
-			
-			OSStatus searchStatus;
-			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
+
+			while ((status = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
-					CssmData data;
-					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
+					var data = SecCertificateCopyData (certRef);
+					var rawData = CFDataGetBytes (data);
+
+					if (rawData != null) {
 						try {
-							certs.Add (new X509Certificate2 (data.GetCopy ()));
+							certs.Add (new X509Certificate2 (rawData));
 						} catch (Exception ex) {
 							LoggingService.LogWarning ("Error loading signing certificate from keychain", ex);
 						}
 					}
+
+					CFRelease (certRef);
 				}
 
 				CFRelease (itemRef);
 			}
 
-			if (searchStatus != OSStatus.ItemNotFound)
-				LoggingService.LogWarning ("Unexpected error code retrieving signing certificates from keychain:\n" + GetError (searchStatus));
+			if (status != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error code retrieving signing certificates from keychain:\n" + GetError (status));
 			
 			CFRelease (searchRef);
 
