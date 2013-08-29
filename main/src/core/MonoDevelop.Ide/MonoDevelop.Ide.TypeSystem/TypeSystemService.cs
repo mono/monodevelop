@@ -1478,7 +1478,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else if (item is Solution) {
 				Solution solution = (Solution)item;
 				foreach (var project in solution.GetAllProjects ()) {
-					UnloadProject (project)
+					UnloadProject (project);
 				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
