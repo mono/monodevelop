@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl
 			}
 
 			if (!System.IO.Directory.Exists (path)) {
-				Monitor.ReportError (GettextCatalog.GetString ("Checkout folder does not exist"));
+				Monitor.ReportError (GettextCatalog.GetString ("Checkout folder does not exist"), null);
 				return;
 			}
 
