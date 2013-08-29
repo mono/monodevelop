@@ -47,12 +47,8 @@ namespace MonoDevelop.Tests.TestRunner
 						HashSet<string> ids = new HashSet<string> ();
 						foreach (var aname in asm.GetReferencedAssemblies ()) {
 							if (aname.Name == "GuiUnit") {
-								try {
-									Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (ar), "GuiUnit.exe"));
-									useGuiUnit = true;
-								} catch {
-
-								}
+								Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (ar), "GuiUnit.exe"));
+								useGuiUnit = true;
 							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
 						}
