@@ -38,12 +38,12 @@ namespace MonoDevelop.MacInterop
 {
 	public static class Keychain
 	{
+		const string CoreFoundationLib = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 		const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
-		const string CFLib = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 
 		internal static IntPtr CurrentKeychain = IntPtr.Zero;
 
-		[DllImport (CFLib, EntryPoint="CFRelease")]
+		[DllImport (CoreFoundationLib, EntryPoint="CFRelease")]
 		static extern void CFReleaseInternal (IntPtr cfRef);
 
 		static void CFRelease (IntPtr cfRef)
@@ -257,10 +257,10 @@ namespace MonoDevelop.MacInterop
 
 		#region CFData
 
-		[DllImport (CFLib)]
+		[DllImport (CoreFoundationLib)]
 		extern static int CFDataGetLength (IntPtr data);
 
-		[DllImport (CFLib)]
+		[DllImport (CoreFoundationLib)]
 		extern static void CFDataGetBytes (IntPtr data, CFRange range, IntPtr buffer);
 
 		static byte[] GetBytes (IntPtr cfData)
@@ -286,13 +286,13 @@ namespace MonoDevelop.MacInterop
 
 		#region CFString
 		
-		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
 		extern static int CFStringGetLength (IntPtr handle);
 
-		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
 		extern static IntPtr CFStringGetCharactersPtr (IntPtr handle);
 		
-		[DllImport (CFLib, CharSet=CharSet.Unicode)]
+		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
 		extern static IntPtr CFStringGetCharacters (IntPtr handle, CFRange range, IntPtr buffer);
 		
 		static string FetchString (IntPtr handle)
@@ -343,7 +343,7 @@ namespace MonoDevelop.MacInterop
 			IntPtr searchRef, itemRef;
 			
 			//null keychain means use default
-			var res = SecKeychainSearchCreateFromAttributes (IntPtr.Zero, SecItemClass.Certificate, attrList, out searchRef);
+			var res = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, attrList, out searchRef);
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 
@@ -373,7 +373,7 @@ namespace MonoDevelop.MacInterop
 			IntPtr searchRef, itemRef, certRef, commonName;
 			
 			//null keychain means use default
-			var res = SecIdentitySearchCreate (IntPtr.Zero, CssmKeyUse.Sign, out searchRef);
+			var res = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
@@ -417,7 +417,7 @@ namespace MonoDevelop.MacInterop
 			IntPtr searchRef, itemRef, certRef;
 			
 			//null keychain means use default
-			var res = SecIdentitySearchCreate (IntPtr.Zero, CssmKeyUse.Sign, out searchRef);
+			var res = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
@@ -576,7 +576,7 @@ namespace MonoDevelop.MacInterop
 			byte[] user = Encoding.UTF8.GetBytes (username);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordPtr = IntPtr.Zero;
+			IntPtr passwordData = IntPtr.Zero;
 			IntPtr itemRef = IntPtr.Zero;
 			uint passwordLength = 0;
 			int port = uri.Port;
@@ -588,7 +588,7 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port, 
-			                                              protocol, auth, out passwordLength, out passwordPtr, ref itemRef);
+			                                              protocol, auth, out passwordLength, out passwordData, ref itemRef);
 
 			if (result == OSStatus.Ok) {
 				// If there is, replace it with the new one
@@ -614,7 +614,7 @@ namespace MonoDevelop.MacInterop
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordPtr = IntPtr.Zero;
+			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 			int port = uri.Port;
@@ -626,7 +626,7 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port,
-			                                              protocol, auth, out passwordLength, out passwordPtr, ref item);
+			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
 			if (result == OSStatus.Ok) {
 				// If there is, replace it with the new one
@@ -685,19 +685,19 @@ namespace MonoDevelop.MacInterop
 			return Marshal.PtrToStringAuto (attribute->Data, (int) attribute->Length);
 		}
 
-		public static unsafe Tuple<string, string> FindInternetPasswordAndUserName (Uri uri)
+		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
 		{
 			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordPtr = IntPtr.Zero;
+			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              0, null, (uint) path.Length, path, (ushort) uri.Port,
-			                                              protocol, auth, out passwordLength, out passwordPtr, ref item);
+			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
 			if (result == OSStatus.ItemNotFound)
 				return null;
@@ -707,7 +707,7 @@ namespace MonoDevelop.MacInterop
 
 			var username = GetUsernameFromKeychainItemRef (item);
 
-			return Tuple.Create (username, Marshal.PtrToStringAuto (passwordPtr, (int) passwordLength));
+			return Tuple.Create (username, Marshal.PtrToStringAuto (passwordData, (int) passwordLength));
 		}
 
 		public static string FindInternetPassword (Uri uri)
@@ -717,20 +717,20 @@ namespace MonoDevelop.MacInterop
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordPtr = IntPtr.Zero;
+			IntPtr passwordData = IntPtr.Zero;
 			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 
 			// Look for an internet password for the given protocol and auth mechanism
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-			                                              protocol, auth, out passwordLength, out passwordPtr, ref item);
+			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
 			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
 			if (result == OSStatus.ItemNotFound && protocol != SecProtocolType.Any)
 				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 				                                          (uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
-				                                          0, auth, out passwordLength, out passwordPtr, ref item);
+				                                          0, auth, out passwordLength, out passwordData, ref item);
 
 			CFRelease (item);
 
@@ -740,7 +740,7 @@ namespace MonoDevelop.MacInterop
 			if (result != OSStatus.Ok)
 				throw new Exception ("Could not find internet password: " + GetError (result));
 
-			return Marshal.PtrToStringAuto (passwordPtr, (int) passwordLength);
+			return Marshal.PtrToStringAuto (passwordData, (int) passwordLength);
 		}
 
 		enum SecItemClass : uint

@@ -53,10 +53,10 @@ namespace MacPlatform.Tests
 		public void InternetPassword_EmptyUsername ()
 		{
 			Keychain.AddInternetPassword (new Uri ("http://google.com"), "", "pa55word");
-			var password = Keychain.FindInternetPassword  (new Uri ("http://google.com"));
+			var password = Keychain.FindInternetPassword (new Uri ("http://google.com"));
 			Assert.AreEqual ("pa55word", password, "#1");
 
-			var passAndUser = Keychain.FindInternetPasswordAndUserName  (new Uri ("http://google.com"));
+			var passAndUser = Keychain.FindInternetUserNameAndPassword (new Uri ("http://google.com"));
 			Assert.AreEqual (null, passAndUser.Item1, "#2");
 			Assert.AreEqual ("pa55word", passAndUser.Item2, "#3");
 		}
