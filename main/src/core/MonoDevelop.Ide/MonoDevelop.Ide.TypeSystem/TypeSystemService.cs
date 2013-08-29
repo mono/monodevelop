@@ -966,8 +966,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
 				lock (this) {
-					if (Content is LazyProjectLoader) {
-						((LazyProjectLoader)Content).ContextTask.Wait ();
+					var lazyProjectLoader = Content as LazyProjectLoader;
+					if (lazyProjectLoader != null) {
+						lazyProjectLoader.ContextTask.Wait ();
 					}
 					Content = updateFunc (Content);
 					ClearCachedCompilations ();
@@ -1476,7 +1477,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				Solution solution = (Solution)item;
-				Parallel.ForEach (solution.GetAllProjects (), project => UnloadProject (project));
+				foreach (var project in solution.GetAllProjects ()) {
+					UnloadProject (project)
+				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
