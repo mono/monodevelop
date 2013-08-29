@@ -144,7 +144,7 @@ namespace MonoDevelop.Projects
 		{
 			ProjectVirtualPathChanged (sender, e);
 			files.Remove (e.OldPath);
-			files.Add (e.NewPath, e.ProjectFile);
+			files[e.NewPath] = e.ProjectFile;
 		}
 
 		void AddProjectFile (ProjectFile item)

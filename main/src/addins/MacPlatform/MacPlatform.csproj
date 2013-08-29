@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MacPlatform</AssemblyName>
     <RootNamespace>MacPlatform</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -83,6 +82,7 @@
   <ItemGroup />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MacKeychainPasswordProvider.cs" />
     <Compile Include="MacPlatform.cs" />
     <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="MacMenu\MDServicesMenuItem.cs" />
     <Compile Include="MacMenu\MDSubMenuItem.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MacProxyCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

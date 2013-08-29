@@ -96,6 +96,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			builder.Refresh ();
 		}
 		
+		public void RefreshWithContent (string projectContent)
+		{
+			builder.RefreshWithContent (projectContent);
+		}
+
 		public void Dispose ()
 		{
 			if (engine != null) {

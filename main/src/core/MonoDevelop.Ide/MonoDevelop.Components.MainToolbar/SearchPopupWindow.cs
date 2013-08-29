@@ -278,7 +278,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 			retVal.Width = Math.Min (geometry.Width * 4 / 5, 480);
-			if (y == startY) {
+			if (Math.Abs (y - startY) < 1) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
@@ -299,8 +299,8 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnSizeRequested (ref requisition);
 
 			Gdk.Size idealSize = GetIdealSize ();
-			requisition.Width += idealSize.Width;
-			requisition.Height += idealSize.Height;
+			requisition.Width = idealSize.Width;
+			requisition.Height = idealSize.Height;
 		}
 
 		ItemIdentifier GetItemAt (double px, double py)

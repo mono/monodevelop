@@ -8,7 +8,6 @@
     <ProjectGuid>{0F57E572-2359-4BAF-B302-6478C2E42FA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>prj2makesharplib</RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

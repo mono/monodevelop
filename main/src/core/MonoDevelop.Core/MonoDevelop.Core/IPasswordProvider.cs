@@ -32,6 +32,8 @@ namespace MonoDevelop.Core
 	{
 		void AddWebPassword (Uri uri, string password);
 		string GetWebPassword (Uri uri);
+		void AddWebUserNameAndPassword (Uri url, string username, string password);
+		Tuple<string, string> GetWebUserNameAndPassword (Uri url);
 	}
 }
 

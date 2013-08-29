@@ -44,14 +44,13 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class MonoTargetRuntime: TargetRuntime
 	{
-		string monoVersion;
-		string monoDir;
+		readonly string monoVersion,  monoDir;
 		MonoPlatformExecutionHandler execHandler;
-		Dictionary<string,string> environmentVariables;
+		readonly Dictionary<string,string> environmentVariables;
 		
 		internal static LibraryPcFileCache PcFileCache = new LibraryPcFileCache (new PcFileCacheContext ());
 		
-		MonoRuntimeInfo monoRuntimeInfo;
+		readonly MonoRuntimeInfo monoRuntimeInfo;
 		
 		internal MonoTargetRuntime (MonoRuntimeInfo info)
 		{
@@ -114,7 +113,7 @@ namespace MonoDevelop.Core.Assemblies
 			return GetReferenceFrameworkDirectories (IsInitialized || IsRunning);
 		}
 
-		internal IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeMacGlobalDir)
+		IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeGlobalDirectories)
 		{
 			//duplicate xbuild's framework folders path logic
 			//see xbuild man page
@@ -124,7 +123,7 @@ namespace MonoDevelop.Core.Assemblies
 					yield return (FilePath) dir;
 			}
 
-			if (Platform.IsMac && true) {
+			if (includeGlobalDirectories && Platform.IsMac) {
 				yield return "/Library/Frameworks/Mono.framework/External/xbuild-frameworks";
 			}
 
@@ -154,7 +153,7 @@ namespace MonoDevelop.Core.Assemblies
 			return execHandler;
 		}
 		
-		protected override void ConvertAssemblyProcessStartInfo (System.Diagnostics.ProcessStartInfo pinfo)
+		protected override void ConvertAssemblyProcessStartInfo (ProcessStartInfo pinfo)
 		{
 			pinfo.Arguments = "\"" + pinfo.FileName + "\" " + pinfo.Arguments;
 			pinfo.FileName = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
@@ -191,16 +190,24 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		public IEnumerable<string> PkgConfigDirs {
-			get { return PkgConfigPath.Split (Path.PathSeparator); }
+			get { return GetPkgConfigDirs (IsInitialized || IsRunning); }
+		}
+
+		IEnumerable<string> GetPkgConfigDirs (bool includeGlobalDirectories)
+		{
+			foreach (string s in PkgConfigPath.Split (Path.PathSeparator))
+				yield return s;
+			if (includeGlobalDirectories && Platform.IsMac)
+				yield return "/Library/Frameworks/Mono.framework/External/pkgconfig";
 		}
 		
 		public string PkgConfigPath {
 			get { return environmentVariables ["PKG_CONFIG_PATH"]; }
 		}
-		
+
 		public IEnumerable<string> GetAllPkgConfigFiles ()
 		{
-			HashSet<string> packageNames = new HashSet<string> ();
+			var packageNames = new HashSet<string> ();
 			foreach (string pcdir in PkgConfigDirs) {
 				string[] files;
 				try {

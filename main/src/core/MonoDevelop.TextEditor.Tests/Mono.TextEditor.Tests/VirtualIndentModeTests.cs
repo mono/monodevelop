@@ -42,7 +42,7 @@ namespace Mono.TextEditor.Tests
 			return data;
 		}
 
-		[Test()]
+		[Test]
 		public void TestIndentNewLine ()
 		{
 			var data = CreateData ("\n\n\n");
@@ -54,7 +54,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
-		[Test()]
+		[Test]
 		public void TestLineEndBehavior ()
 		{
 			var data = CreateData ("\n\n\n");
@@ -66,7 +66,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
-		[Test()]
+		[Test]
 		public void TestDesiredColumnCaretDown ()
 		{
 			var data = CreateData ("12345\n\n12345\n");
@@ -82,7 +82,7 @@ namespace Mono.TextEditor.Tests
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestDesiredColumnCaretUp ()
 		{
 			var data = CreateData ("12345\n\n12345\n");
@@ -98,7 +98,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 		}
 
-		[Test()]
+		[Test]
 		public void TestVirtualColumnDesiredColumnCaretUp ()
 		{
 			var data = CreateData ("12345\n\n12345\n");
@@ -117,7 +117,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.LogicalToVisualLocation (2, indentColumn).Column, data.Caret.DesiredColumn);
 		}
 
-		[Test()]
+		[Test]
 		public void TestVirtualColumnDesiredColumnCaretDown ()
 		{
 			var data = CreateData ("12345\n\n12345\n");
@@ -138,7 +138,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.LogicalToVisualLocation (2, indentColumn).Column, data.Caret.DesiredColumn);
 		}
 
-		[Test()]
+		[Test]
 		public void TestCaretRightBehavior ()
 		{
 			var data = CreateData ("\n\n\n");
@@ -150,7 +150,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 		}
 
-		[Test()]
+		[Test]
 		public void TestCaretRightBehaviorInNonEmptyLines ()
 		{
 			var data = CreateData ("12\n\n\n");
@@ -162,7 +162,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBackspaceRightBehavior ()
 		{
 			var data = CreateData ("test\n\n\n");
@@ -172,7 +172,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("test\n\t\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBackspaceSelectionBehavior ()
 		{
 			var data = CreateData ("\n\t\ttest\n\n");
@@ -185,7 +185,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\t\ttest\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteSelectionBehavior ()
 		{
 			var data = CreateData ("\n\t\ttest\n\n");
@@ -198,7 +198,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\t\ttest\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteBehavior ()
 		{
 			var data = CreateData ("\n\t\ttest");
@@ -209,7 +209,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\t\t\t\ttest", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestAutoRemoveIndent ()
 		{
 			var data = CreateData ("\n\t\t\n\n");
@@ -223,7 +223,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAutoRemoveIndentOnReturn ()
 		{
 			var data = CreateData ("\n\n\n");
@@ -234,7 +234,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n\n\n", data.Document.Text);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestAutoRemoveExistingIndentOnReturn ()
 		{
 			var data = CreateData ("\n\t\t\n\n");
@@ -245,7 +245,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestRemoveExistingIndentWithBackspace ()
 		{
 			var data = CreateData ("\n\t\t\t\n\n");
@@ -255,7 +255,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestRemoveLastTabInLine ()
 		{
 			var data = CreateData ("\n\t\n\n");
@@ -265,7 +265,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (1, data.Caret.Column);
 		}
 
-		[Test()]
+		[Test]
 		public void TestAutoRemoveIndentNotRemovingOnCaretMove ()
 		{
 			var data = CreateData ("\n\t\t\n\n");
@@ -278,7 +278,7 @@ namespace Mono.TextEditor.Tests
 		}
 
 		
-		[Test()]
+		[Test]
 		public void TestUndoRedo ()
 		{
 			var data = CreateData ("");
@@ -302,7 +302,7 @@ namespace Mono.TextEditor.Tests
 
 		}
 		
-		[Test()]
+		[Test]
 		public void TestRemoveDoesntBreakCaretPosition ()
 		{
 			var data = CreateData ("Hello\n\n");
@@ -314,7 +314,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestInsertDoesntBreakCaretPosition ()
 		{
 			var data = CreateData ("\n\n");
@@ -327,7 +327,7 @@ namespace Mono.TextEditor.Tests
 		}
 
 
-		[Test()]
+		[Test]
 		public void TestReturnOnNonEmptyLine ()
 		{
 			var data = CreateData ("\n\t\tFoo\t\tBar\n\n");
@@ -337,7 +337,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\t\tFoo\t\tBar\n\n", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestTabBehavior ()
 		{
 			var data = CreateData ("\n\n\n");
@@ -349,7 +349,7 @@ namespace Mono.TextEditor.Tests
 		/// <summary>
 		/// Bug 5067 - Selection does not respect virtual space
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5067 ()
 		{
 			var data = CreateData ("\n\n\t\tFoo ();\n");
@@ -371,7 +371,7 @@ namespace Mono.TextEditor.Tests
 			return data;
 		}
 
-		[Test()]
+		[Test]
 		public void TestIndentWithSpaces ()
 		{
 			var data = CreateDataWithSpaces ("\n        \n\n");
@@ -383,7 +383,7 @@ namespace Mono.TextEditor.Tests
 		/// <summary>
 		/// Bug 5402 - Backspace doesn't work with 1-tab virtual indent
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5402 ()
 		{
 			var data = CreateData ("\t");
@@ -397,7 +397,7 @@ namespace Mono.TextEditor.Tests
 		/// <summary>
 		/// Bug 5949 - Movement across empty line is not symmetric
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5949 ()
 		{
 			var data = CreateData ("\t\tfoo\n\n\t\tbar");
@@ -409,7 +409,7 @@ namespace Mono.TextEditor.Tests
 		/// <summary>
 		/// Bug 5956 - Backspacing ignores virtual indents
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5956 ()
 		{
 			var data = CreateData ("\t\tfoo\n\n\t\tbar");
@@ -423,7 +423,7 @@ namespace Mono.TextEditor.Tests
 		/// Bug 7012 - Paste does not replace entire selection made by the Shift key.
 		/// </summary>
 		[Ignore("Test broken.")]
-		[Test()]
+		[Test]
 		public void TestBug7012 ()
 		{
 			var data = CreateData ("\n\t\tthrow new NotImplementedException();");
@@ -437,6 +437,29 @@ namespace Mono.TextEditor.Tests
 			ClipboardActions.Paste (data);
 			
 			Assert.AreEqual ("\t\tConsole.WriteLine(\"Hello\");", data.Document.Text);
+		}
+
+		[Test]
+		public void TestEmptyLineSelectionBehaviorMoveUp ()
+		{
+			var data = CreateData ("\n\n\n");
+			data.Caret.Location = new DocumentLocation (2, 3);
+			SelectionActions.MoveUp (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.MainSelection.Lead);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.MainSelection.Anchor);
+		}
+
+		[Test]
+		public void TestEmptyLineSelectionBehaviorMoveDown ()
+		{
+			var data = CreateData ("\n\n\n");
+			data.Caret.Location = new DocumentLocation (2, 3);
+			SelectionActions.MoveDown (data);
+			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (3, 3), data.MainSelection.Lead);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.MainSelection.Anchor);
+
 		}
 	}
 }

@@ -39,7 +39,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (ref_assemblies_folder != null)
 				return ref_assemblies_folder;
 			var fxDir = framework.Id.GetAssemblyDirectoryName ();
-			foreach (var rootDir in ((MonoTargetRuntime)runtime).GetReferenceFrameworkDirectories (true)) {
+			foreach (var rootDir in ((MonoTargetRuntime)runtime).GetReferenceFrameworkDirectories ()) {
 				var dir = rootDir.Combine (fxDir);
 				var frameworkList = dir.Combine ("RedistList", "FrameworkList.xml");
 				if (!File.Exists (frameworkList))

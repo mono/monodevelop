@@ -89,9 +89,9 @@
 		{ "name": "Bookmarks", "color":"aluminium1", "secondcolor":"aluminium4" },
 		
 		{ "name": "Underline(Error)", "color":"invalid-red" },
-		{ "name": "Underline(Warning)", "color":"butter2" },
-		{ "name": "Underline(Suggestion)", "color":"chameleon2" },
-		{ "name": "Underline(Hint)", "color":"skyblue2" },
+		{ "name": "Underline(Warning)", "color":"skyblue1" },
+		{ "name": "Underline(Suggestion)", "color":"chameleon3" },
+		{ "name": "Underline(Hint)", "color":"chameleon1" },
 		
 		{ "name": "Quick Diff(Dirty)", "color":"butter2" },
 		{ "name": "Quick Diff(Changed)", "color":"StringVim" },

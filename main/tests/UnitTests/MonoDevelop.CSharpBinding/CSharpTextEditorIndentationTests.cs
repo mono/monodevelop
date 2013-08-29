@@ -46,17 +46,92 @@ namespace MonoDevelop.CSharpBinding
 	public class CSharpTextEditorIndentationTests : TestBase
 	{
 		const string eolMarker = "\n";
-		TextEditorData Create (string input)
+
+		public static TextEditorData Create (string content, ITextEditorOptions options = null)
 		{
 			var data = new TextEditorData ();
 			data.Options.DefaultEolMarker = eolMarker;
 			data.Options.IndentStyle = IndentStyle.Smart;
-			int idx = input.IndexOf ('$');
-			if (idx > 0)
-				input = input.Substring (0, idx) + input.Substring (idx + 1);
-			data.Text = input;
-			if (idx > 0)
-				data.Caret.Offset = idx;
+			if (options != null)
+				data.Options = options;
+			var sb = new StringBuilder ();
+			int caretIndex = -1, selectionStart = -1, selectionEnd = -1;
+			var foldSegments = new List<FoldSegment> ();
+			var foldStack = new Stack<FoldSegment> ();
+
+			for (int i = 0; i < content.Length; i++) {
+				var ch = content [i];
+				switch (ch) {
+					case '$':
+					caretIndex = sb.Length;
+					break;
+					case '<':
+					if (i + 1 < content.Length) {
+						if (content [i + 1] == '-') {
+							selectionStart = sb.Length;
+							i++;
+							break;
+						}
+					}
+					goto default;
+					case '-':
+					if (i + 1 < content.Length) {
+						var next = content [i + 1];
+						if (next == '>') {
+							selectionEnd = sb.Length;
+							i++;
+							break;
+						}
+						if (next == '[') {
+							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
+							segment.IsFolded = false;
+							foldStack.Push (segment);
+							i++;
+							break;
+						}
+					}
+					goto default;
+					case '+':
+					if (i + 1 < content.Length) {
+						var next = content [i + 1];
+						if (next == '[') {
+							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
+							segment.IsFolded = true;
+							foldStack.Push (segment);
+							i++;
+							break;
+						}
+					}
+					goto default;
+					case ']':
+					if (foldStack.Count > 0) {
+						FoldSegment segment = foldStack.Pop ();
+						segment.Length = sb.Length - segment.Offset;
+						foldSegments.Add (segment);
+						break;
+					}
+					goto default;
+					default:
+					sb.Append (ch);
+					break;
+				}
+			}
+			
+			data.Text = sb.ToString ();
+
+			if (caretIndex >= 0)
+				data.Caret.Offset = caretIndex;
+			if (selectionStart >= 0) {
+				if (caretIndex == selectionStart) {
+					data.SetSelection (selectionEnd, selectionStart);
+				} else {
+					data.SetSelection (selectionStart, selectionEnd);
+					if (caretIndex < 0)
+						data.Caret.Offset = selectionEnd;
+				}
+			}
+			if (foldSegments.Count > 0)
+				data.Document.UpdateFoldSegments (foldSegments);
 			return data;
 		}
 
@@ -265,6 +340,15 @@ namespace MonoDevelop.CSharpBinding
 			CheckOutput (data, @"///<summary>This is a long comment 
 /// $ </summary>");
 		}
+
+
+		[Test]
+		public void TestEnterSelectionBehavior ()
+		{
+			var data = Create ("\tfirst\n<-\tsecond\n->$\tthird");
+			MiscActions.InsertNewLine (data);
+
+			CheckOutput (data, "\tfirst\n\t$third");
+		}
 	}
 }
-

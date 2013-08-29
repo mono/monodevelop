@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.Ide.CodeFormatting
@@ -108,9 +109,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
 				} else {
 					var pol = doc.Project != null ? doc.Project.Policies : null;
-					string text = formatter.FormatText (pol, editor.Text, selection.Offset, selection.EndOffset);
-					if (text != null) {
-						editor.Replace (selection.Offset, selection.Length, text);
+					try {
+						string text = formatter.FormatText (pol, editor.Text, selection.Offset, selection.EndOffset);
+						if (text != null) {
+							editor.Replace (selection.Offset, selection.Length, text);
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error during format.", e); 
 					}
 				}
 

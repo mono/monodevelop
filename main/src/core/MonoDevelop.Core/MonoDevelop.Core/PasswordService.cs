@@ -40,13 +40,24 @@ namespace MonoDevelop.Core
 			if (provider != null)
 				provider.AddWebPassword (url, password);
 		}
-		
+
+		public static void AddWebUserNameAndPassword (Uri url, string username, string password)
+		{
+			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			if (provider != null)
+				provider.AddWebUserNameAndPassword (url, username, password);
+		}
+
 		public static string GetWebPassword (Uri url)
 		{
-			var provider = AddinManager.GetExtensionObjects <IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
-			if (provider != null)
-				return provider.GetWebPassword (url);
-			return null;
+			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			return provider != null ? provider.GetWebPassword (url) : null;
+		}
+
+		public static Tuple<string, string> GetWebUserNameAndPassword (Uri url)
+		{
+			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			return provider != null ? provider.GetWebUserNameAndPassword (url) : null;
 		}
 	}
 }

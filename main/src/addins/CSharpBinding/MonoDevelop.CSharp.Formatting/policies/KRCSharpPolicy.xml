@@ -65,7 +65,7 @@ THE SOFTWARE.
 	<StatementBraceStyle>EndOfLine</StatementBraceStyle>
 	<AllowIfBlockInline>False</AllowIfBlockInline>
 	<ElseNewLinePlacement>SameLine</ElseNewLinePlacement>
-	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
+	<ElseIfNewLinePlacement>SameLine</ElseIfNewLinePlacement>
 	<CatchNewLinePlacement>SameLine</CatchNewLinePlacement>
 	<FinallyNewLinePlacement>SameLine</FinallyNewLinePlacement>
 	<WhileNewLinePlacement>SameLine</WhileNewLinePlacement>

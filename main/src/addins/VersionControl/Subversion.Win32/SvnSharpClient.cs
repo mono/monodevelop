@@ -9,6 +9,7 @@ using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
+using System.Timers;
 
 namespace SubversionAddinWindows
 {
@@ -77,6 +78,8 @@ namespace SubversionAddinWindows
 	public class SvnSharpBackend: SubversionBackend
 	{
 		SvnClient client;
+		IProgressMonitor updateMonitor;
+		ProgressData progressData;
 
 		public override string GetTextBase (string file)
 		{
@@ -109,6 +112,12 @@ namespace SubversionAddinWindows
 			client.Authentication.SslServerTrustHandlers += new EventHandler<SvnSslServerTrustEventArgs> (AuthenticationSslServerTrustHandlers);
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
 			client.Authentication.UserNamePasswordHandlers += new EventHandler<SvnUserNamePasswordEventArgs> (AuthenticationUserNamePasswordHandlers);
+			client.Progress += delegate (object sender, SvnProgressEventArgs e) {
+				ProgressWork (e, progressData, updateMonitor);
+			};
+			client.Cancel += delegate (object o, SvnCancelEventArgs a) {
+				a.Cancel = updateMonitor.IsCancelRequested;
+			};
 		}
 
 		void AuthenticationUserNamePasswordHandlers (object sender, SvnUserNamePasswordEventArgs e)
@@ -182,8 +191,14 @@ namespace SubversionAddinWindows
 			SvnCheckOutArgs args = new SvnCheckOutArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
-			lock (client)
-				client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+			lock (client) {
+				try {
+					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+				} catch (SvnOperationCanceledException e) {
+					if (Directory.Exists (path.ParentDirectory))
+						FileService.DeleteDirectory (path.ParentDirectory);
+				}
+			}
 		}
 
 		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
@@ -217,7 +232,7 @@ namespace SubversionAddinWindows
 			// Redo path link.
 			repositoryPath = repositoryPath.TrimStart (new char[] { '/' });
 			foreach (var segment in target.Uri.Segments) {
-				if (repositoryPath.StartsWith (segment))
+				if (repositoryPath.StartsWith (segment, StringComparison.Ordinal))
 					repositoryPath = repositoryPath.Remove (0, segment.Length);
 			}
 
@@ -294,7 +309,7 @@ namespace SubversionAddinWindows
 			return list;
 		}
 
-		private RevisionAction ConvertRevisionAction (SvnChangeAction svnChangeAction)
+		static RevisionAction ConvertRevisionAction (SvnChangeAction svnChangeAction)
 		{
 			switch (svnChangeAction) {
 				case SvnChangeAction.Add: return RevisionAction.Add;
@@ -394,7 +409,7 @@ namespace SubversionAddinWindows
 			return list;
 		}
 
-		VersionInfo CreateVersionInfo (Repository repo, SvnStatusEventArgs ent)
+		static VersionInfo CreateVersionInfo (Repository repo, SvnStatusEventArgs ent)
 		{
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
@@ -434,7 +449,7 @@ namespace SubversionAddinWindows
 			return ret;
 		}
 
-		private VersionStatus ConvertStatus (SvnSchedule schedule, SvnStatus status)
+		static VersionStatus ConvertStatus (SvnSchedule schedule, SvnStatus status)
 		{
 			switch (schedule) {
 				case SvnSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
@@ -504,7 +519,7 @@ namespace SubversionAddinWindows
 			lock (client) {
 				foreach (var path in paths) {
 					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
-						int index = result.IndexOf (path.FileName + Environment.NewLine);
+						int index = result.IndexOf (path.FileName + Environment.NewLine, StringComparison.Ordinal);
 						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+Environment.NewLine.Length);
 						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result);
 					}
@@ -585,22 +600,56 @@ namespace SubversionAddinWindows
 			public bool SendingData;
 		}
 
+		class ProgressData
+		{
+			public int Bytes;
+			public Timer LogTimer = new Timer ();
+			public int Seconds;
+		}
+
 		void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
 		{
 			NotifData data = new NotifData ();
+			progressData = new ProgressData ();
 
 			args.Notify += delegate (object o, SvnNotifyEventArgs e) {
 				Notify (e, data, monitor);
 			};
-			args.Cancel += delegate (object o, SvnCancelEventArgs a) {
-				a.Cancel = monitor.IsCancelRequested;
-			};
 			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
 				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
 			};
+
+			updateMonitor = monitor;
 		}
 
-		void Notify (SvnNotifyEventArgs e, NotifData notifData, IProgressMonitor monitor)
+		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor)
+		{
+			if (monitor == null)
+				return;
+
+			int currentProgress = (int)e.Progress;
+			if (currentProgress == 0)
+				return;
+
+			int totalProgress = (int)e.TotalProgress;
+			if (totalProgress != -1 && currentProgress >= totalProgress) {
+				data.LogTimer.Close ();
+				return;
+			}
+
+			data.Bytes = currentProgress;
+			if (data.LogTimer.Enabled)
+				return;
+
+			data.LogTimer.Interval = 1000;
+			data.LogTimer.Elapsed += delegate (object sender, ElapsedEventArgs eea) {
+				data.Seconds += 1;
+				monitor.Log.WriteLine ("{0} bytes in {1} seconds", data.Bytes, data.Seconds);
+			};
+			data.LogTimer.Start ();
+		}
+
+		static void Notify (SvnNotifyEventArgs e, NotifData notifData, IProgressMonitor monitor)
 		{
 			string actiondesc;
 			string file = e.Path;
