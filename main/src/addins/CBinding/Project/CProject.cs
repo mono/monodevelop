@@ -93,8 +93,9 @@ namespace CBinding
 		private void Init ()
 		{
 			packages.Project = this;
-			
-			IdeApp.Workspace.ItemAddedToSolution += OnEntryAddedToCombine;
+
+			if (IdeApp.IsInitialized)
+				IdeApp.Workspace.ItemAddedToSolution += OnEntryAddedToCombine;
 		}
 		
 		public CProject ()

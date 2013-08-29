@@ -250,6 +250,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunner", "tests\TestRun
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Tests", "src\core\MonoDevelop.TextEditor.Tests\MonoDevelop.TextEditor.Tests.csproj", "{9E4BA410-8338-42EC-AF9C-422C35ECED81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Tests\Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -637,6 +639,18 @@ Global
 		{72944A6C-45FF-4EF8-B349-8C9CABF519D4}.net_4_5_Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{72944A6C-45FF-4EF8-B349-8C9CABF519D4}.net_4_5_Release|Any CPU.Build.0 = Debug|Any CPU
 		{72944A6C-45FF-4EF8-B349-8C9CABF519D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.net_4_5_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.net_4_5_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.net_4_5_Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.net_4_5_Release|Any CPU.Build.0 = Debug|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7525BB88-6142-4A26-93B9-A30C6983390A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7525BB88-6142-4A26-93B9-A30C6983390A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7525BB88-6142-4A26-93B9-A30C6983390A}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1446,6 +1460,7 @@ Global
 		{C05AAB7A-523F-4109-966B-6675BE0975BA} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{EBFC7F90-C2E5-4A4C-A327-E35021BEC181} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{9E4BA410-8338-42EC-AF9C-422C35ECED81} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
+		{73D4CC8B-BAB9-4A29-841B-F25C6311F067} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
