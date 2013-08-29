@@ -299,6 +299,9 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="VersionControl" _label="Version Control">
+			<Condition id="ItemType" value="Solution">
+				<Section id = "VersionControlGeneral" _label = "General" fill="true" class="MonoDevelop.VersionControl.VersionControlGeneralOptionsPanel" />
+			</Condition>
 			<ComplexCondition>
 				<Or>
 					<Condition id="ItemType" value="SolutionItem" />
@@ -314,6 +317,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
+		<Section id = "VersionControlGeneral" _label = "General" fill="true" class="MonoDevelop.VersionControl.VersionControlGeneralOptionsPanel" />
 		<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
 	</Extension>
 

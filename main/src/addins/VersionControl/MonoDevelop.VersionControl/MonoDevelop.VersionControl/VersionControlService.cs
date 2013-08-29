@@ -594,6 +594,11 @@ namespace MonoDevelop.VersionControl
 		{
 			GetConfiguration ().Repositories.Remove (repo);
 		}
+
+		public static bool IsDisabled {
+			get { return GetConfiguration ().Disabled; }
+			internal set { GetConfiguration ().Disabled = value; }
+		}
 		
 		static public IEnumerable<Repository> GetRepositories ()
 		{
