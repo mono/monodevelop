@@ -54,21 +54,6 @@ namespace MonoDevelop.MacInterop
 
 		#region Managing Certificates
 
-		struct CssmData
-		{
-			/// <summary>Length in bytes</summary>
-			public UInt32 Length;
-			/// <summary>Pointer to the byte array</summary>
-			public IntPtr Data;
-
-			public byte[] GetCopy ()
-			{
-				byte[] buffer = new byte[(int)Length];
-				Marshal.Copy (Data, buffer, 0, buffer.Length);
-				return buffer;
-			}
-		}
-
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecCertificateAddToKeychain (IntPtr certificate, IntPtr keychain);
 
@@ -92,12 +77,18 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentityCopyCertificate (IntPtr identityRef, out IntPtr certificateRef);
 
+		// WARNING: deprecated in Mac OS X 10.7
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCreate (IntPtr keychainOrArray, CssmKeyUse keyUsage, out IntPtr searchRef);
 
 		// WARNING: deprecated in Mac OS X 10.7
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecIdentitySearchCopyNext (IntPtr searchRef, out IntPtr identity);
+
+		// Note: SecIdentitySearch* has been replaced with SecItemCopyMatching
+
+		//[DllImport (SecurityLib)]
+		//OSStatus SecItemCopyMatching (CFDictionaryRef query, CFTypeRef *result);
 
 		#endregion
 
@@ -258,6 +249,9 @@ namespace MonoDevelop.MacInterop
 		[DllImport (CoreFoundationLib)]
 		extern static void CFDataGetBytes (IntPtr data, CFRange range, IntPtr buffer);
 
+		[DllImport (CoreFoundationLib)]
+		extern static IntPtr CFDataCreate (IntPtr allocator, byte[] buffer, int length);
+
 		static byte[] CFDataGetBytes (IntPtr data)
 		{
 			if (data == IntPtr.Zero)
@@ -290,7 +284,7 @@ namespace MonoDevelop.MacInterop
 		[DllImport (CoreFoundationLib, CharSet=CharSet.Unicode)]
 		extern static IntPtr CFStringGetCharacters (IntPtr handle, CFRange range, IntPtr buffer);
 		
-		static string FetchString (IntPtr handle)
+		static string CFStringGetString (IntPtr handle)
 		{
 			if (handle == IntPtr.Zero)
 				return null;
@@ -323,7 +317,7 @@ namespace MonoDevelop.MacInterop
 			IntPtr str = IntPtr.Zero;
 			try {
 				str = SecCopyErrorMessageString (status, IntPtr.Zero);
-				return FetchString (str);
+				return CFStringGetString (str);
 			} catch {
 				return status.ToString ();
 			} finally {
@@ -336,27 +330,27 @@ namespace MonoDevelop.MacInterop
 		{
 			IntPtr attrList = IntPtr.Zero; //match any attributes
 			IntPtr searchRef, itemRef;
-			
-			//null keychain means use default
-			var res = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, attrList, out searchRef);
-			if (res != OSStatus.Ok)
-				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
+			OSStatus status;
+
+			status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, attrList, out searchRef);
+			if (status != OSStatus.Ok)
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
 
 			var names = new HashSet<string> ();
 
-			OSStatus searchStatus;
-			while ((searchStatus = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
+			while ((status = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				IntPtr commonName;
+
 				if (SecCertificateCopyCommonName (itemRef, out commonName) == OSStatus.Ok) {
-					names.Add (FetchString (commonName));
+					names.Add (CFStringGetString (commonName));
 					CFRelease (commonName);
 				}
 
 				CFRelease (itemRef);
 			}
 
-			if (searchStatus != OSStatus.ItemNotFound)
-				LoggingService.LogWarning ("Unexpected error retrieving certificates from keychain:\n" + GetError (searchStatus));
+			if (status != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error retrieving certificates from keychain:\n" + GetError (status));
 
 			CFRelease (searchRef);
 
@@ -366,19 +360,18 @@ namespace MonoDevelop.MacInterop
 		public static IList<string> GetAllSigningIdentities ()
 		{
 			IntPtr searchRef, itemRef, certRef, commonName;
-			
-			//null keychain means use default
-			var res = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
-			if (res != OSStatus.Ok)
-				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
+			OSStatus status;
+
+			status = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
+			if (status != OSStatus.Ok)
+				throw new Exception ("Could not enumerate signing identities from the keychain. Error:\n" + GetError (status));
 			
 			var identities = new HashSet<string> ();
-			
-			OSStatus searchStatus;
-			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
+
+			while ((status = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				if (SecIdentityCopyCertificate (itemRef, out certRef) == OSStatus.Ok) {
 					if (SecCertificateCopyCommonName (certRef, out commonName) == OSStatus.Ok) {
-						string name = FetchString (commonName);
+						string name = CFStringGetString (commonName);
 						if (name != null)
 							identities.Add (name);
 
@@ -391,8 +384,8 @@ namespace MonoDevelop.MacInterop
 				CFRelease (itemRef);
 			}
 
-			if (searchStatus != OSStatus.ItemNotFound)
-				LoggingService.LogWarning ("Unexpected error retrieving identities from keychain:\n" + GetError (searchStatus));
+			if (status != OSStatus.ItemNotFound)
+				LoggingService.LogWarning ("Unexpected error retrieving identities from keychain:\n" + GetError (status));
 			
 			CFRelease (searchRef);
 
@@ -412,10 +405,9 @@ namespace MonoDevelop.MacInterop
 			IntPtr searchRef, itemRef, certRef;
 			OSStatus status;
 
-			//null keychain means use default
 			status = SecIdentitySearchCreate (CurrentKeychain, CssmKeyUse.Sign, out searchRef);
 			if (status != OSStatus.Ok)
-				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
+				throw new Exception ("Could not enumerate signing certificates from the keychain. Error:\n" + GetError (status));
 			
 			var certs = new HashSet<X509Certificate2> ();
 
