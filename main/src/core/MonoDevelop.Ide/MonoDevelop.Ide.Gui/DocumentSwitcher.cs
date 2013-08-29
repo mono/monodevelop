@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Components;
-
+using HslColor = MonoDevelop.Components.HslColor;
 
 namespace MonoDevelop.Ide
 {
