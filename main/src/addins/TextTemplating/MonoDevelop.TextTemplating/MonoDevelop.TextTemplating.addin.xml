@@ -6,16 +6,16 @@
        url         = "http://monodevelop.com"
        description = "Support for editing and running T4 text templates."
        category    = "IDE extensions"
-       version     = "4.1.7">
+       version     = "4.1.10">
 	
 	<Runtime>
 		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="SourceEditor2" version="4.1.7"/>
+		<Addin id="Core" version="4.1.10"/>
+		<Addin id="Ide" version="4.1.10"/>
+		<Addin id="SourceEditor2" version="4.1.10"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">

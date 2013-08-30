@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "4.1.7">
+       version     = "4.1.10">
 	
 	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="SourceEditor2" version="4.1.7"/>
-		<Addin id="Refactoring" version="4.1.7"/>
+		<Addin id="Core" version="4.1.10"/>
+		<Addin id="Ide" version="4.1.10"/>
+		<Addin id="SourceEditor2" version="4.1.10"/>
+		<Addin id="Refactoring" version="4.1.10"/>
 	</Dependencies>
 
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
@@ -281,7 +281,7 @@
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="4.1.7"/>
+			<Addin id="Autotools" version="4.1.10"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
@@ -293,7 +293,7 @@
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="4.1.7"/>
+			<Addin id="AspNet" version="4.1.10"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
