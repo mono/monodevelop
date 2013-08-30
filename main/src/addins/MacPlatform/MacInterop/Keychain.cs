@@ -568,7 +568,7 @@ namespace MonoDevelop.MacInterop
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
 			IntPtr passwordData = IntPtr.Zero;
-			IntPtr itemRef = IntPtr.Zero;
+			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 			int port = uri.Port;
 			byte[] desc = null;
@@ -579,12 +579,12 @@ namespace MonoDevelop.MacInterop
 			// See if there is already a password there for this uri
 			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
 			                                              (uint) user.Length, user, (uint) path.Length, path, (ushort) port, 
-			                                              protocol, auth, out passwordLength, out passwordData, ref itemRef);
+			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
 			if (result == OSStatus.Ok) {
 				// If there is, replace it with the new one
-				result = ReplaceInternetPassword (itemRef, desc, passwd);
-				CFRelease (itemRef);
+				result = ReplaceInternetPassword (item, desc, passwd);
+				CFRelease (item);
 			} else {
 				var label = Encoding.UTF8.GetBytes (string.Format ("{0} ({1})", uri.Host, Uri.UnescapeDataString (uri.UserInfo)));
 
