@@ -199,8 +199,6 @@ namespace MonoDevelop.MacInterop
 
 		#region Creating and Deleting Keychain Items
 
-		const int CSSM_DB_ATTRIBUTE_FORMAT_STRING = 0;
-
 		[StructLayout (LayoutKind.Sequential)]
 		struct SecKeychainAttributeList
 		{
@@ -250,12 +248,14 @@ namespace MonoDevelop.MacInterop
 		}
 
 		[DllImport (SecurityLib)]
-		static extern unsafe OSStatus SecKeychainItemCopyAttributesAndData (IntPtr itemRef, ref SecKeychainAttributeInfo info,
-		                                                                    IntPtr itemClass, SecKeychainAttributeList** attrList,
-		                                                                    ref uint length, ref IntPtr outData);
+		static extern unsafe OSStatus SecKeychainItemCopyAttributesAndData (IntPtr itemRef, SecKeychainAttributeInfo* info, ref SecItemClass itemClass,
+		                                                                    SecKeychainAttributeList** attrList, ref uint length, ref IntPtr outData);
 
 		[DllImport (SecurityLib)]
 		static extern unsafe OSStatus SecKeychainItemModifyAttributesAndData (IntPtr itemRef, SecKeychainAttributeList *attrList, uint length, byte [] data);
+
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainItemCopyContent (IntPtr itemRef, ref SecItemClass itemClass, IntPtr attrList, ref uint length, ref IntPtr data);
 
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
@@ -697,10 +697,10 @@ namespace MonoDevelop.MacInterop
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
-		static unsafe SecKeychainAttributeList *GetAttributeListFromKeychainItemRef (IntPtr itemRef)
+		static unsafe string GetUsernameFromKeychainItemRef (IntPtr itemRef)
 		{
+			int[] formatConstants = { (int) CssmDbAttributeFormat.String };
 			int[] attributeTags = { (int) SecItemAttr.Account };
-			int[] formatConstants = { CSSM_DB_ATTRIBUTE_FORMAT_STRING };
 
 			fixed (int* tags = attributeTags, formats = formatConstants) {
 				var attributeInfo = new SecKeychainAttributeInfo {
@@ -708,35 +708,26 @@ namespace MonoDevelop.MacInterop
 					Tag = tags,
 					Format = formats
 				};
-
-				uint length = 0;
-				IntPtr outData = IntPtr.Zero;
 				SecKeychainAttributeList* attributeList;
-				OSStatus attributeStatus = SecKeychainItemCopyAttributesAndData (itemRef, ref attributeInfo, 
-				                                                                 IntPtr.Zero, &attributeList, 
-				                                                                 ref length, ref outData);
+				IntPtr outData = IntPtr.Zero;
+				SecItemClass itemClass = 0;
+				uint length = 0;
 
-				if (attributeStatus == OSStatus.ItemNotFound)
-					throw new Exception ("Could not add internet password to keychain: " + GetError (attributeStatus));
+				OSStatus status = SecKeychainItemCopyAttributesAndData (itemRef, &attributeInfo, ref itemClass, &attributeList, ref length, ref outData);
 
-				if (attributeStatus != OSStatus.Ok)
-					throw new Exception ("Could not find internet username and password: " + GetError (attributeStatus));
+				if (status == OSStatus.ItemNotFound)
+					throw new Exception ("Could not add internet password to keychain: " + GetError (status));
 
-				return attributeList;
+				if (status != OSStatus.Ok)
+					throw new Exception ("Could not find internet username and password: " + GetError (status));
+
+				var userNameAttr = (SecKeychainAttribute*) attributeList->Attrs;
+
+				if (userNameAttr->Length == 0)
+					return null;
+
+				return Marshal.PtrToStringAuto (userNameAttr->Data, (int) userNameAttr->Length);
 			}
-		}
-
-		static unsafe SecKeychainAttribute *GetUsernameAttributeFromAttributeList (SecKeychainAttributeList *attributeList)
-		{
-			return (SecKeychainAttribute*) attributeList->Attrs;
-		}
-
-		static unsafe string GetUsernameFromKeychainItemRef (IntPtr itemRef)
-		{
-			var attribute = GetUsernameAttributeFromAttributeList (GetAttributeListFromKeychainItemRef (itemRef));
-			if (attribute->Length == 0)
-				return null;
-			return Marshal.PtrToStringAuto (attribute->Data, (int) attribute->Length);
 		}
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
