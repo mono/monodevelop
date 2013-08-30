@@ -65,34 +65,25 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Mono.Debugging">
       <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MonoDevelop.AspNet">
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MonoDevelop.Debugger">
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MonoDevelop.Ide">
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="NRefactory, Version=2.1.1.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\NRefactory.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

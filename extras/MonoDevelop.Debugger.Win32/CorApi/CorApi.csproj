@@ -79,8 +79,8 @@
   </Target>
   <Target Name="InitializeIL">
     <PropertyGroup>
-      <ILFile>@(IntermediateAssembly->'%(RootDir)%(Directory)%(Filename).il', ' ')</ILFile>
-      <ILResourceFile>@(IntermediateAssembly->'%(RootDir)%(Directory)%(Filename).res', ' ')</ILResourceFile>
+      <ILFile>@(IntermediateAssembly-&gt;'%(RootDir)%(Directory)%(Filename).il', ' ')</ILFile>
+      <ILResourceFile>@(IntermediateAssembly-&gt;'%(RootDir)%(Directory)%(Filename).res', ' ')</ILResourceFile>
     </PropertyGroup>
   </Target>
   <Target Name="CoreDecompile" Inputs="@(IntermediateAssembly)" Outputs="$(ILFile)" Condition=" Exists ( @(IntermediateAssembly) ) ">
@@ -88,10 +88,10 @@
       <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
     </GetFrameworkSdkPath>
     <PropertyGroup>
-      <ILDasm>"$(FrameworkSdkPath)bin\ildasm.exe" /nobar /linenum /output:"$(ILFile)" @(IntermediateAssembly->'"%(FullPath)"', ' ')</ILDasm>
+      <ILDasm>"$(FrameworkSdkPath)bin\ildasm.exe" /nobar /linenum /output:"$(ILFile)" @(IntermediateAssembly-&gt;'"%(FullPath)"', ' ')</ILDasm>
     </PropertyGroup>
     <PropertyGroup Condition=" Exists ( '$(FrameworkSdkPath)bin\NETFX 4.0 Tools\ildasm.exe' ) ">
-      <ILDasm>"$(FrameworkSdkPath)bin\NETFX 4.0 Tools\ildasm.exe" /nobar /linenum /output:"$(ILFile)" @(IntermediateAssembly->'"%(FullPath)"', ' ')</ILDasm>
+      <ILDasm>"$(FrameworkSdkPath)bin\NETFX 4.0 Tools\ildasm.exe" /nobar /linenum /output:"$(ILFile)" @(IntermediateAssembly-&gt;'"%(FullPath)"', ' ')</ILDasm>
     </PropertyGroup>
     <Exec Command="$(ILDasm)" />
     <ItemGroup>
@@ -117,7 +117,7 @@
       <Output TaskParameter="Path" PropertyName="FrameworkPath" />
     </GetFrameworkPath>
     <PropertyGroup>
-      <ILAsm>"$(FrameworkPath)\ilasm.exe" /nologo /quiet /output:@(IntermediateAssembly->'"%(FullPath)"', ' ')</ILAsm>
+      <ILAsm>"$(FrameworkPath)\ilasm.exe" /nologo /quiet /output:@(IntermediateAssembly-&gt;'"%(FullPath)"', ' ')</ILAsm>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(FileAlignment)' != '' ">
       <ILAsm>$(ILAsm) /alignment=$(FileAlignment)</ILAsm>
@@ -152,9 +152,9 @@
     <PropertyGroup Condition=" Exists ( '$(ILFile)' ) ">
       <ILAsm>$(ILAsm) "$(ILFile)"</ILAsm>
     </PropertyGroup>
-    <Exec Command="$(ILAsm) @(IL->'&quot;%(FullPath)&quot;', ' ')" />
+    <Exec Command="$(ILAsm) @(IL-&gt;'&quot;%(FullPath)&quot;', ' ')" />
     <ItemGroup>
-      <FileWrites Include="@(IntermediateAssembly->'%(RootDir)%(Directory)DesignTimeResolveAssemblyReferencesInput.cache', ' ')" />
+      <FileWrites Include="@(IntermediateAssembly-&gt;'%(RootDir)%(Directory)DesignTimeResolveAssemblyReferencesInput.cache', ' ')" />
     </ItemGroup>
     <Touch Files="$(ILFile)" />
   </Target>
