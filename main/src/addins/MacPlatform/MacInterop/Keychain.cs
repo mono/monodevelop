@@ -40,8 +40,46 @@ namespace MonoDevelop.MacInterop
 	{
 		const string CoreFoundationLib = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
 		const string SecurityLib = "/System/Library/Frameworks/Security.framework/Security";
+//		const string SystemLib = "/usr/lib/libSystem.dylib";
 
 		internal static IntPtr CurrentKeychain = IntPtr.Zero;
+
+//		static IntPtr kCFTypeDictionaryValueCallbacks;
+//		static IntPtr kCFTypeDictionaryKeyCallbacks;
+//
+//		static IntPtr kSecReturnAttributes;
+//		static IntPtr kSecMatchLimitAll;
+//		static IntPtr kSecMatchLimit;
+//		static IntPtr kSecClass;
+//
+//		static IntPtr kCFBooleanFalse;
+//		static IntPtr kCFBooleanTrue;
+//
+//		static Keychain ()
+//		{
+//			var lib = dlopen (CoreFoundationLib, 0);
+//			try {
+//				kCFTypeDictionaryValueCallbacks = dlsym (lib, "kCFTypeDictionaryValueCallBacks");
+//				kCFTypeDictionaryKeyCallbacks = dlsym (lib, "kCFTypeDictionaryKeyCallBacks");
+//				kCFBooleanFalse = dlsym (lib, "kCFBooleanFalse");
+//				kCFBooleanTrue = dlsym (lib, "kCFBooleanTrue");
+//			} finally {
+//				dlclose (lib);
+//			}
+//		}
+//
+//		#region Dynamic Symbol Loading
+//
+//		[DllImport (SystemLib)]
+//		static extern IntPtr dlsym (IntPtr handle, string symbol);
+//
+//		[DllImport (SystemLib)]
+//		static extern IntPtr dlopen (string path, int mode);
+//
+//		[DllImport (SystemLib)]
+//		static extern int dlclose (IntPtr handle);
+//
+//		#endregion
 
 		[DllImport (CoreFoundationLib, EntryPoint="CFRelease")]
 		static extern void CFReleaseInternal (IntPtr cfRef);
@@ -65,10 +103,6 @@ namespace MonoDevelop.MacInterop
 
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecCertificateCopyCommonName (IntPtr certificate, out IntPtr commonName);
-
-		// WARNING: deprecated in Mac OS X 10.7
-		//[DllImport (SecurityLib)]
-		//OSStatus SecCertificateCreateFromData (const CSSM_DATA *data, CSSM_CERT_TYPE type, CSSM_CERT_ENCODING encoding, SecCertificateRef *certificate);
 
 		#endregion
 
@@ -312,6 +346,34 @@ namespace MonoDevelop.MacInterop
 		
 		#endregion
 
+		#region CFMutableDictionary
+
+//		struct CFDictionaryKeyCallBacks {
+//			CFIndex version;
+//			CFDictionaryRetainCallBack retain;
+//			CFDictionaryReleaseCallBack release;
+//			CFDictionaryCopyDescriptionCallBack copyDescription;
+//			CFDictionaryEqualCallBack equal;
+//			CFDictionaryHashCallBack hash;
+//		};
+//
+//		struct CFDictionaryValueCallBacks {
+//			CFIndex version;
+//			CFDictionaryRetainCallBack retain;
+//			CFDictionaryReleaseCallBack release;
+//			CFDictionaryCopyDescriptionCallBack copyDescription;
+//			CFDictionaryEqualCallBack equal;
+//		};
+
+		// use kCFTypeDictionaryKeyCallBacks and kCFTypeDictionaryValueCallBacks
+
+		// CFDictionaryRef CFDictionaryCreate (CFAllocatorRef allocator, const void **keys, const void **values, CFIndex numValues, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
+		// CFMutableDictionaryRef CFDictionaryCreateMutable (CFAllocatorRef allocator, CFIndex capacity, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
+
+		// void CFDictionaryAddValue (CFMutableDictionaryRef theDict, const void *key, const void *value);
+
+		#endregion
+
 		static string GetError (OSStatus status)
 		{
 			IntPtr str = IntPtr.Zero;
@@ -325,7 +387,8 @@ namespace MonoDevelop.MacInterop
 					CFRelease (str);
 			}
 		}
-		
+
+		[Obsolete ("What purpose does this really serve?")]
 		public static IList<string> GetAllCertificateNames ()
 		{
 			IntPtr attrList = IntPtr.Zero; //match any attributes
@@ -736,13 +799,13 @@ namespace MonoDevelop.MacInterop
 
 		enum SecItemClass : uint
 		{
-			InternetPassword = 1768842612, // 'inet'
-			GenericPassword = 1734700656,  // 'genp'
-			AppleSharePassword = 1634953328, // 'ashp'
-			Certificate =  0x80000000 + 0x1000,
-			PublicKey = 0x0000000A + 5,
-			PrivateKey = 0x0000000A + 6,
-			SymmetricKey = 0x0000000A + 7
+			InternetPassword     = 1768842612, // 'inet'
+			GenericPassword      = 1734700656, // 'genp'
+			AppleSharePassword   = 1634953328, // 'ashp'
+			Certificate          = 0x80000000 + 0x1000,
+			PublicKey            = 0x0000000A + 5,
+			PrivateKey           = 0x0000000A + 6,
+			SymmetricKey         = 0x0000000A + 7
 		}
 
 		enum SecItemAttr : int
@@ -779,116 +842,129 @@ namespace MonoDevelop.MacInterop
 
 		enum OSStatus
 		{
-			Ok = 0,
-			ItemNotFound = -25300,
+			Ok                   = 0,
+			ItemNotFound         = -25300,
 		}
 
 		enum SecKeyAttribute
 		{
-			KeyClass =          0,
-			PrintName =         1,
-			Alias =             2,
-			Permanent =         3,
-			Private =           4,
-			Modifiable =        5,
-			Label =             6,
-			ApplicationTag =    7,
-			KeyCreator =        8,
-			KeyType =           9,
-			KeySizeInBits =    10,
-			EffectiveKeySize = 11,
-			StartDate =        12,
-			EndDate =          13,
-			Sensitive =        14,
-			AlwaysSensitive =  15,
-			Extractable =      16,
-			NeverExtractable = 17,
-			Encrypt =          18,
-			Decrypt =          19,
-			Derive =           20,
-			Sign =             21,
-			Verify =           22,
-			SignRecover =      23,
-			VerifyRecover =    24,
-			Wrap =             25,
-			Unwrap =           26,
+			KeyClass             = 0,
+			PrintName            = 1,
+			Alias                = 2,
+			Permanent            = 3,
+			Private              = 4,
+			Modifiable           = 5,
+			Label                = 6,
+			ApplicationTag       = 7,
+			KeyCreator           = 8,
+			KeyType              = 9,
+			KeySizeInBits        = 10,
+			EffectiveKeySize     = 11,
+			StartDate            = 12,
+			EndDate              = 13,
+			Sensitive            = 14,
+			AlwaysSensitive      = 15,
+			Extractable          = 16,
+			NeverExtractable     = 17,
+			Encrypt              = 18,
+			Decrypt              = 19,
+			Derive               = 20,
+			Sign                 = 21,
+			Verify               = 22,
+			SignRecover          = 23,
+			VerifyRecover        = 24,
+			Wrap                 = 25,
+			Unwrap               = 26,
 		}
 
 		enum SecAuthenticationType : int
 		{
-			NTLM        = 1835824238,
-			MSN         = 1634628461,
-			DPA         = 1633775716,
-			RPA         = 1633775730,
-			HTTPBasic   = 1886680168,
-			HTTPDigest  = 1685353576,
-			HTMLForm    = 1836216166,
-			Default     = 1953261156,
-			Any         = 0
+			NTLM                 = 1835824238,
+			MSN                  = 1634628461,
+			DPA                  = 1633775716,
+			RPA                  = 1633775730,
+			HTTPBasic            = 1886680168,
+			HTTPDigest           = 1685353576,
+			HTMLForm             = 1836216166,
+			Default              = 1953261156,
+			Any                  = 0
 		}
 
 		enum SecProtocolType : int
 		{
-			FTP         = 1718906912,
-			FTPAccount  = 1718906977,
-			HTTP        = 1752462448,
-			IRC         = 1769104160,
-			NNTP        = 1852732528,
-			POP3        = 1886351411,
-			SMTP        = 1936553072,
-			SOCKS       = 1936685088,
-			IMAP        = 1768776048,
-			LDAP        = 1818517872,
-			AppleTalk   = 1635019883,
-			AFP         = 1634103328,
-			Telnet      = 1952803950,
-			SSH         = 1936943136,
-			FTPS        = 1718906995,
-			HTTPProxy   = 1752461432,
-			HTTPSProxy  = 1752462200,
-			FTPProxy    = 1718907000,
-			CIFS        = 1667851891,
-			SMB         = 1936548384,
-			RTSP        = 1920234352,
-			RTSPProxy   = 1920234360,
-			DAAP        = 1684103536,
-			EPPC        = 1701867619,
-			IPP         = 1768976416,
-			NNTPS       = 1853124723,
-			LDAPS       = 1818521715,
-			TelnetS     = 1952803955,
-			IMAPS       = 1768779891,
-			IRCS        = 1769104243,
-			POP3S       = 1886351475,
-			CVSpserver  = 1668707184,
-			SVN         = 1937141280,
-			Any         = 0
+			FTP                  = 1718906912,
+			FTPAccount           = 1718906977,
+			HTTP                 = 1752462448,
+			IRC                  = 1769104160,
+			NNTP                 = 1852732528,
+			POP3                 = 1886351411,
+			SMTP                 = 1936553072,
+			SOCKS                = 1936685088,
+			IMAP                 = 1768776048,
+			LDAP                 = 1818517872,
+			AppleTalk            = 1635019883,
+			AFP                  = 1634103328,
+			Telnet               = 1952803950,
+			SSH                  = 1936943136,
+			FTPS                 = 1718906995,
+			HTTPProxy            = 1752461432,
+			HTTPSProxy           = 1752462200,
+			FTPProxy             = 1718907000,
+			CIFS                 = 1667851891,
+			SMB                  = 1936548384,
+			RTSP                 = 1920234352,
+			RTSPProxy            = 1920234360,
+			DAAP                 = 1684103536,
+			EPPC                 = 1701867619,
+			IPP                  = 1768976416,
+			NNTPS                = 1853124723,
+			LDAPS                = 1818521715,
+			TelnetS              = 1952803955,
+			IMAPS                = 1768779891,
+			IRCS                 = 1769104243,
+			POP3S                = 1886351475,
+			CVSpserver           = 1668707184,
+			SVN                  = 1937141280,
+			Any                  = 0
 		}
 
 		[Flags]
 		enum CssmKeyUse : uint
 		{
-			Any =				0x80000000,
-			Encrypt =			0x00000001,
-			Decrypt =			0x00000002,
-			Sign =				0x00000004,
-			Verify =			0x00000008,
-			SignRecover =		0x00000010,
-			VerifyRecover =		0x00000020,
-			Wrap =				0x00000040,
-			Unwrap =			0x00000080,
-			Derive =			0x00000100
+			Any                  = 0x80000000,
+			Encrypt              = 0x00000001,
+			Decrypt              = 0x00000002,
+			Sign                 = 0x00000004,
+			Verify               = 0x00000008,
+			SignRecover          = 0x00000010,
+			VerifyRecover        = 0x00000020,
+			Wrap                 = 0x00000040,
+			Unwrap               = 0x00000080,
+			Derive               = 0x00000100
 		}
 
 		[Flags]
 		enum CssmTPAppleCertStatus : uint
 		{
-			Expired         = 0x00000001,
-			NotValidYet     = 0x00000002,
-			IsInInputCerts  = 0x00000004,
-			IsInAnchors     = 0x00000008,
-			IsRoot          = 0x00000010,
-			IsFromNet       = 0x00000020
+			Expired              = 0x00000001,
+			NotValidYet          = 0x00000002,
+			IsInInputCerts       = 0x00000004,
+			IsInAnchors          = 0x00000008,
+			IsRoot               = 0x00000010,
+			IsFromNet            = 0x00000020
+		}
+
+		enum CssmDbAttributeFormat : int
+		{
+			String               = 0,
+			Int32                = 1,
+			UInt32               = 2,
+			BigNum               = 3,
+			Real                 = 4,
+			DateTime             = 5,
+			Blob                 = 6,
+			MultiUInt32          = 7,
+			Complex              = 8
 		}
 	}
 }
