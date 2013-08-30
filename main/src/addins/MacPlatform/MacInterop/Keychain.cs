@@ -500,6 +500,48 @@ namespace MonoDevelop.MacInterop
 
 			return certs.ToList ();
 		}
+
+		public unsafe static bool ContainsCertificate (X509Certificate2 certificate)
+		{
+			IntPtr searchRef, itemRef;
+			bool found = false;
+			OSStatus status;
+
+			status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, IntPtr.Zero, out searchRef);
+			if (status != OSStatus.Ok)
+				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
+
+			while (!found && (status = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
+				SecItemClass itemClass = 0;
+				IntPtr data = IntPtr.Zero;
+				uint length = 0;
+
+				status = SecKeychainItemCopyContent (itemRef, ref itemClass, IntPtr.Zero, ref length, ref data);
+				if (status == OSStatus.Ok) {
+					if (certificate.RawData.Length == (int) length) {
+						byte[] rawData = new byte[(int) length];
+
+						Marshal.Copy (data, rawData, 0, (int) length);
+
+						found = true;
+						for (int i = 0; i < rawData.Length; i++) {
+							if (rawData[i] != certificate.RawData[i]) {
+								found = false;
+								break;
+							}
+						}
+					}
+
+					SecKeychainItemFreeContent (IntPtr.Zero, data);
+				}
+
+				CFRelease (itemRef);
+			}
+
+			CFRelease (searchRef);
+
+			return found;
+		}
 		
 		public static string GetCertificateCommonName (X509Certificate2 cert)
 		{
