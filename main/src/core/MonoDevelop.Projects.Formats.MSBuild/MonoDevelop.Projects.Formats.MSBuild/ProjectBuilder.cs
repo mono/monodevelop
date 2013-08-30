@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
-			Refresh ();
 		}
 
 		public void Dispose ()
