@@ -43,7 +43,7 @@ using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	class MDRefactoringContext : RefactoringContext, IScriptProvider
+	class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
 		public TextEditorData TextEditor {
 			get;

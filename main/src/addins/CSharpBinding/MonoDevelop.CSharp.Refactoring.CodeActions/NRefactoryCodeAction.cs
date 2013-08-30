@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
 		}
 
-		public override void Run (object context, object script)
+		public override void Run (IRefactoringContext context, object script)
 		{
 			act.Run ((Script) script);
 		}

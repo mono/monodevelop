@@ -118,13 +118,8 @@ namespace MonoDevelop.AnalysisCore
 				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
 
 				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc, default(CancellationToken)) : null;
-				var provider = context as IScriptProvider;
-				if (provider != null) {
-					using (var script = provider.CreateScript ()) {
-						ca.Run (context, script);
-					}
-				} else {
-					ca.Run (context, null);
+				using (var script = context.CreateScript ()) {
+					ca.Run (context, script);
 				}
 				return;
 			}

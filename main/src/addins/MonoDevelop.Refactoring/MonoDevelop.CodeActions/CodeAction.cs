@@ -28,6 +28,7 @@ using System;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeActions
 {
@@ -88,7 +89,7 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Performs the specified code action in document at loc.
 		/// </summary>
-		public abstract void Run (object context, object script);
+		public abstract void Run (IRefactoringContext context, object script);
 
 		/// <summary>
 		/// True if <see cref="BatchRun"/> can be used on the current instance.
@@ -118,7 +119,7 @@ namespace MonoDevelop.CodeActions
 			this.act = act;
 		}
 
-		public override void Run (object context, object script)
+		public override void Run (IRefactoringContext context, object script)
 		{
 			act ((RefactoringContext)context, (Script)script);
 		}
