@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION=4.1.7
+VERSION=4.1.10
 PACKAGE=monodevelop-java
 prefix=/usr/local
 config=DEBUG
