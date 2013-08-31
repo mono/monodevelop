@@ -190,7 +190,7 @@ namespace MonoDevelop.MacInterop
 		#region Searching for Keychain Items
 
 		[DllImport (SecurityLib)]
-		static extern OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, IntPtr attrList, out IntPtr searchRef);
+		static extern unsafe OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, SecKeychainAttributeList *attrList, out IntPtr searchRef);
 
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainSearchCopyNext (IntPtr searchRef, out IntPtr itemRef);
@@ -389,13 +389,12 @@ namespace MonoDevelop.MacInterop
 		}
 
 		[Obsolete ("What purpose does this really serve?")]
-		public static IList<string> GetAllCertificateNames ()
+		public static unsafe IList<string> GetAllCertificateNames ()
 		{
-			IntPtr attrList = IntPtr.Zero; //match any attributes
 			IntPtr searchRef, itemRef;
 			OSStatus status;
 
-			status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, attrList, out searchRef);
+			status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, null, out searchRef);
 			if (status != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
 
@@ -501,44 +500,75 @@ namespace MonoDevelop.MacInterop
 			return certs.ToList ();
 		}
 
-		public unsafe static bool ContainsCertificate (X509Certificate2 certificate)
+		public static void AddCertificate (X509Certificate2 certificate)
 		{
+			if (ContainsCertificate (certificate))
+				return;
+
+			var rawData = certificate.RawData;
+			var certData = CFDataCreate (IntPtr.Zero, rawData, rawData.Length);
+			var status = SecCertificateAddToKeychain (certData, CurrentKeychain);
+
+			CFRelease (certData);
+
+			if (status != OSStatus.Ok)
+				throw new Exception ("Cannot add certificate to keychain: " + GetError (status));
+		}
+
+		public static unsafe bool ContainsCertificate (X509Certificate2 certificate)
+		{
+			// Note: we don't have to use an alias attribute, it's just that it might be faster to use it (fewer certificates we have to compare raw data for)
+			byte[] alias = Encoding.UTF8.GetBytes (GetCertificateCommonName (certificate));
 			IntPtr searchRef, itemRef;
 			bool found = false;
+			byte[] certData;
 			OSStatus status;
 
-			status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, IntPtr.Zero, out searchRef);
-			if (status != OSStatus.Ok)
-				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
+			fixed (byte* aliasPtr = alias) {
+				SecKeychainAttribute* attrs = stackalloc SecKeychainAttribute [1];
+				int n = 0;
 
-			while (!found && (status = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
-				SecItemClass itemClass = 0;
-				IntPtr data = IntPtr.Zero;
-				uint length = 0;
+				if (alias != null)
+					attrs[n++] = new SecKeychainAttribute (SecItemAttr.Alias, (uint) alias.Length, (IntPtr) aliasPtr);
 
-				status = SecKeychainItemCopyContent (itemRef, ref itemClass, IntPtr.Zero, ref length, ref data);
-				if (status == OSStatus.Ok) {
-					if (certificate.RawData.Length == (int) length) {
-						byte[] rawData = new byte[(int) length];
+				SecKeychainAttributeList attrList = new SecKeychainAttributeList (n, (IntPtr) attrs);
 
-						Marshal.Copy (data, rawData, 0, (int) length);
+				status = SecKeychainSearchCreateFromAttributes (CurrentKeychain, SecItemClass.Certificate, &attrList, out searchRef);
+				if (status != OSStatus.Ok)
+					throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (status));
 
-						found = true;
-						for (int i = 0; i < rawData.Length; i++) {
-							if (rawData[i] != certificate.RawData[i]) {
-								found = false;
-								break;
+				// we cache certificate.RawData to avoid unneccessary duplication (X509Certificate2.RawData clones the byte[] each time)
+				certData = certificate.RawData;
+
+				while (!found && (status = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
+					SecItemClass itemClass = 0;
+					IntPtr data = IntPtr.Zero;
+					uint length = 0;
+
+					status = SecKeychainItemCopyContent (itemRef, ref itemClass, IntPtr.Zero, ref length, ref data);
+					if (status == OSStatus.Ok) {
+						if (certData.Length == (int) length) {
+							byte[] rawData = new byte[(int) length];
+
+							Marshal.Copy (data, rawData, 0, (int) length);
+
+							found = true;
+							for (int i = 0; i < rawData.Length; i++) {
+								if (rawData[i] != certData[i]) {
+									found = false;
+									break;
+								}
 							}
 						}
+
+						SecKeychainItemFreeContent (IntPtr.Zero, data);
 					}
 
-					SecKeychainItemFreeContent (IntPtr.Zero, data);
+					CFRelease (itemRef);
 				}
 
-				CFRelease (itemRef);
+				CFRelease (searchRef);
 			}
-
-			CFRelease (searchRef);
 
 			return found;
 		}
