@@ -9,7 +9,7 @@
        version     = "4.1.4">
        
     <Runtime>
-		<Import assembly="Antlr3.Runtime.dll" />
+		<Import assembly="Antlr4.Runtime.v4.0.dll" />
 	</Runtime>
 	
 	<Dependencies>
@@ -54,7 +54,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
-		<Parser class="Parser.CSSParserAdapter" mimeType = "text/css" />
+		<Parser class="MonoDevelop.CSSParser.CSSParserAdapter" mimeType = "text/css" />
 	</Extension>
 	
 	<!--<Extension path = "/MonoDevelop/Ide/CustomTools">

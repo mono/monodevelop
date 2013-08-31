@@ -26,7 +26,7 @@
 using System;
 using System.CodeDom.Compiler;
 
-namespace Parser
+namespace MonoDevelop.CSSParser
 {
 	public class CSSParserManager
 	{

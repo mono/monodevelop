@@ -28,26 +28,33 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Antlr3.Runtime">
-      <HintPath>ParserProject\CSSBinding\Reference\Antlr\Antlr3.Runtime.dll</HintPath>
+    <Reference Include="Antlr4.Runtime.v4.0">
+      <HintPath>..\..\..\..\..\..\2013-02-27-antlr4-csharp-4.0.1-SNAPSHOT\Antlr4.Runtime.v4.0.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Parser\CSSParsedDocument.cs" />
-    <Compile Include="Parser\CSSParserAdapter.cs" />
-    <Compile Include="Parser\CSSParserManager.cs" />
-    <Compile Include="Parser\Location.cs" />
-    <Compile Include="Parser\ParserException.cs" />
-    <Compile Include="Parser\CSSParser.cs" />
-    <Compile Include="Parser\CSSLexer.cs" />
+    <Compile Include="Completion\CSSCompletionExtension.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSParsedDocument.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSParserAdapter.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSParserManager.cs" />
+    <Compile Include="MonoDevelop.CSSParser\Location.cs" />
+    <Compile Include="MonoDevelop.CSSParser\ParserException.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSParser.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSLexer.cs" />
+    <Compile Include="MonoDevelop.CSSParser\ISegment.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CodeSegment.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSBaseListener.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSBaseVisitor.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSListener.cs" />
+    <Compile Include="MonoDevelop.CSSParser\CSSVisitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Templates\" />
-    <Folder Include="Parser\" />
     <Folder Include="Completion\" />
     <Folder Include="Icons\" />
+    <Folder Include="MonoDevelop.CSSParser\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CSSBinding.addin.xml">

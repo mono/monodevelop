@@ -1,5 +1,5 @@
 //
-// AssemblyInfo.cs
+// Location.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -23,30 +23,51 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System;
 
-// Information about this assembly is defined by the following attributes. 
-// Change them to the values specific to your project.
+namespace MonoDevelop.CSSParser
+{
+	public struct Location : IEquatable<Location>
+	{
+		public Location (string fileName, int line, int column) : this()
+		{
+			FileName = fileName;
+			Column = column;
+			Line = line;
+		}
 
-[assembly: AssemblyTitle("MonoDevelop.CSSBinding")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Diyoda Sajjana")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+		public int Line { get; private set; }
+		public int Column { get; private set; }
+		public string FileName { get; private set; }
 
-// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
-// The form "{Major}.{Minor}.*" will automatically update the build and revision,
-// and "{Major}.{Minor}.{Build}.*" will update just the revision.
+		public static Location Empty {
+			get { return new Location (null, -1, -1); }
+		}
 
-[assembly: AssemblyVersion("1.0.*")]
+		public Location AddLine ()
+		{
+			return new Location (this.FileName, this.Line + 1, 1);
+		}
 
-// The following attributes are used to specify the signing key for the assembly, 
-// if desired. See the Mono documentation for more information about signing.
+		public Location AddCol ()
+		{
+			return AddCols (1);
+		}
 
-//[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("")]
+		public Location AddCols (int number)
+		{
+			return new Location (this.FileName, this.Line, this.Column + number);
+		}
+
+		public override string ToString ()
+		{
+			return string.Format("[{0} ({1},{2})]", FileName, Line, Column);
+		}
+
+		public bool Equals (Location other)
+		{
+			return other.Line == Line && other.Column == Column && other.FileName == FileName;
+		}
+	}
+}
 

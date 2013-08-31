@@ -28,14 +28,25 @@ using System;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
-using Antlr.Runtime;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
+using Antlr4.Runtime.Misc;
+using DFA = Antlr4.Runtime.Dfa.DFA;
 
-namespace Parser 
+namespace MonoDevelop.CSSParser 
 {
 	public class CSSParsedDocument : ParsedDocument
 	{
 		string fileName;
 		IList<Error> errors;
+
+
+		public List<ISegment> Segments { get; private set; }
+		public override IList<Error> Errors {
+			get {
+				return errors;
+			}
+		}
 
 		public override string FileName {
 			get 
@@ -44,26 +55,35 @@ namespace Parser
 			}
 		}
 
-		public CSSParsedDocument (string fileName, IList<Error> errors)
+		public CSSParsedDocument (string fileName, List<ISegment> segments, IList<Error> errors)
 		{
 			this.fileName = fileName;
 			this.errors = errors;
+			this.Segments = segments;
 		}
 
 
-		public override IList<Error> Errors {
+	
+
+		public override IEnumerable<FoldingRegion> Foldings 
+		{
 			get 
 			{
-				return errors;
+				foreach (var segment in Segments) 
+				{
+					CodeSegment ts = segment as CodeSegment;
+					DomRegion region = new DomRegion (segment.TagStartLocation.Line, segment.TagStartLocation.Column,
+					                                  segment.EndLocation.Line, segment.EndLocation.Column);
+
+					yield return new FoldingRegion (ts.Text, region,FoldType.Undefined ,true);
+
+				}
+
+
 			}
+
 		}
-
-		//public override IEnumerable<FoldingRegion> Foldings 
-		//{
-
-		//}
-
-
+						
 	}
 
 

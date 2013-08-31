@@ -1,5 +1,5 @@
 //
-// ParserException.cs
+// ISegment.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -25,16 +25,14 @@
 // THE SOFTWARE.
 using System;
 
-namespace Parser
+namespace MonoDevelop.CSSParser
 {
-	public class ParserException : Exception
-	{
-		public ParserException (string message, Location location) : base (message)
-		{
-			Location = location;
-		}
 
-		public Location Location { get; private set; }
+	public interface ISegment
+	{
+		Location StartLocation { get; }
+		Location EndLocation { get; set; }
+		Location TagStartLocation {get; set; }
 	}
 }
 

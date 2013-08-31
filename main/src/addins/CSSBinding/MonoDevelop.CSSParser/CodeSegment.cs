@@ -1,5 +1,5 @@
 //
-// MyClass.cs
+// CodeSegment.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -25,12 +25,35 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.CSSBinding
+namespace MonoDevelop.CSSParser
 {
-	public class MyClass
+	public class CodeSegment : ISegment
 	{
-		public MyClass ()
+		private string _text ;
+
+		public CodeSegment(string text, Location start, Location end)
 		{
+			this.StartLocation = start;
+			this.Text = text;
+			this.EndLocation = end;
+		}
+		
+		public string Text { 
+			get{
+				if(_text !=null )
+					return _text;
+				else return "Not Defined";
+			} 
+			private set{ 
+				_text = GetFoldingStringTag (value);
+			} }
+		public Location TagStartLocation { get; set; }
+		public Location StartLocation { get; private set; }
+		public Location EndLocation { get; set; }
+
+		private string GetFoldingStringTag(string fullString)
+		{
+			return fullString.Split(new char[]{'{'} ).GetValue(0).ToString() +"{..." ;
 		}
 	}
 }
