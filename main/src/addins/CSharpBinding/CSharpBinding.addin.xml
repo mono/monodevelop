@@ -45,7 +45,7 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "CSharpEmptyFile" resource = "EmptyCSharpFile.xft.xml"/>
 		<FileTemplate id = "CSharpAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
-		<!--<FileTemplate id = "EmptyCSSFile1" resource = "EmptyCSSFile1.xft.xml"/>-->
+		<FileTemplate id = "EmptyCSSFile1" resource = "EmptyCSSFile1.xft.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

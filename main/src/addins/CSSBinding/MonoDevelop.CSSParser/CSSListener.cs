@@ -33,6 +33,7 @@ namespace MonoDevelop.CSSParser
 		void EnterOperatorx(CSSParser.OperatorxContext context);
 		void ExitOperatorx(CSSParser.OperatorxContext context);
 
+
 		void EnterSelector(CSSParser.SelectorContext context);
 		void ExitSelector(CSSParser.SelectorContext context);
 

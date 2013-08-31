@@ -153,7 +153,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Tests.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSSBinding", "CSSBinding", "{7A36A8BF-025E-45E8-90F7-B209777C6FA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSSBinding", "src\addins\CSSBinding\CSSBinding.csproj", "{6B72CE46-DDA4-4164-886F-275A8BE34796}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSSBinding", "src\addins\CSSBinding\MonoDevelop.CSSBinding.csproj", "{6B72CE46-DDA4-4164-886F-275A8BE34796}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contrib", "contrib", "{F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}"
 EndProject
