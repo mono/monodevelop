@@ -50,7 +50,7 @@ namespace MonoDevelop.MacIntegration
 
 		public Tuple<string, string> GetWebUserNameAndPassword (Uri url)
 		{
-			return Keychain.FindInternetPasswordAndUserName (url);
+			return Keychain.FindInternetUserNameAndPassword (url);
 		}
 	}
 }

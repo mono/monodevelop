@@ -872,8 +872,10 @@ namespace MonoDevelop.VersionControl.Git
 					cmd.Call ();
 				} catch (NGit.Api.Errors.JGitInternalException e) {
 					// We cancelled and NGit throws.
+					// Or URL is wrong.
 					if (e.InnerException is NGit.Errors.MissingObjectException ||
-						e.InnerException is NGit.Errors.TransportException) {
+						e.InnerException is NGit.Errors.TransportException ||
+						e.InnerException is NGit.Errors.NotSupportedException) {
 						FileService.DeleteDirectory (targetLocalPath);
 					}
 				}

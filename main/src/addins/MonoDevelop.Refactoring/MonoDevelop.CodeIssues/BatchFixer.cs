@@ -81,7 +81,7 @@ namespace MonoDevelop.CodeIssues
 				Encoding encoding;
 				bool isOpen;
 				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out hadBom, out encoding, out isOpen);
-				object refactoringContext;
+				IRefactoringContext refactoringContext;
 				var realActions = GetIssues (data, file, inspectorIds, out refactoringContext).SelectMany (issue => issue.Actions).ToList ();
 				if (realActions.Count == 0 || refactoringContext == null)
 					return;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 			return appliedActions;
 		}
 
-		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out object refactoringContext)
+		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
 			

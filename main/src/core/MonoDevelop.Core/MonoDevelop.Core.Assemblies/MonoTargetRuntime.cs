@@ -210,6 +210,10 @@ namespace MonoDevelop.Core.Assemblies
 			var packageNames = new HashSet<string> ();
 			foreach (string pcdir in PkgConfigDirs) {
 				string[] files;
+
+				if (!Directory.Exists (pcdir))
+					continue;
+
 				try {
 					files = Directory.GetFiles (pcdir, "*.pc");
 				} catch (Exception ex) {
@@ -217,6 +221,7 @@ namespace MonoDevelop.Core.Assemblies
 						"Runtime '{0}' error in pc file scan of directory '{1}'", DisplayName, pcdir), ex);
 					continue;
 				}
+
 				foreach (string pcfile in files)
 					if (packageNames.Add (Path.GetFileNameWithoutExtension (pcfile)))
 						yield return pcfile;

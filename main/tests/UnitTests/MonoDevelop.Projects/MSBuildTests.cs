@@ -71,8 +71,6 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void BuildConsoleProject ()
 		{
-			PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", true);
-
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
 			sol.Save (Util.GetMonitor ());
 

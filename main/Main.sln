@@ -1500,14 +1500,6 @@ Global
 		MakeLibPC = True
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties.Debug) = preSolution
-		CustomCommands = $0
-		$0.Command = $1
-		$1.type = Custom
-		$1.name = Update Stetic
-		$1.command = make update-stetic
-		$1.workingdir = "${SolutionDir}/src/addins/MonoDevelop.GtkCore"
-		$1.externalConsole = True
-		$1.pauseExternalConsole = True
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

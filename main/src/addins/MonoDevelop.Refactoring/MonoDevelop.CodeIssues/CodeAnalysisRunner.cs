@@ -87,13 +87,8 @@ namespace MonoDevelop.CodeIssues
 								return new GenericFix (
 									a.Title,
 									() => {
-										var scriptProvider = context as IScriptProvider;
-										if (scriptProvider != null) {
-											using (var script = scriptProvider.CreateScript ()) {
-												a.Run (context, script);
-											}
-										} else {
-											a.Run (context, null);
+										using (var script = context.CreateScript ()) {
+											a.Run (context, script);
 										}
 									},
 									batchAction) {

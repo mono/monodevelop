@@ -43,7 +43,7 @@ using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	class MDRefactoringContext : RefactoringContext, IScriptProvider
+	class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
 		public TextEditorData TextEditor {
 			get;
@@ -182,7 +182,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.ParsedDocument = document.ParsedDocument;
 			this.Project = document.Project as DotNetProject;
 			this.formattingOptions = document.GetFormattingOptions ();
-			this.location = RefactoringService.GetCorrectResolveLocation (document, loc);
+			this.location = loc;
 			var policy = document.HasProject ? Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 		}
