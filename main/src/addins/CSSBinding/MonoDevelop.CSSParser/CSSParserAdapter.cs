@@ -64,18 +64,20 @@ namespace MonoDevelop.CSSParser
 		
 			foreach (var item in bodySetContext)
 			{
-
 				string foldingString = item.GetText().Split(new char[] { '{' }).GetValue (0).ToString () + "{...";
-				foldingSegments.Add(new CodeSegment(foldingString,new Location(fileName,item.Start.Line,item.Start.Column), new Location(fileName,item.Stop.Line,item.Stop.Column)));
+
+				Console.WriteLine ("Passing info test: "+foldingString+" start line num:" + item.Start.Line + " start comumn:" + item.Start.Column + " end lime: " + item.Stop.Line + " end column: " + item.Stop.Column);
+
+				foldingSegments.Add(new CodeSegment(foldingString,new Location(fileName,item.Start.Line ,item.Start.Column), new Location(fileName,item.Stop.Line,item.Stop.Column)));
 
 			}
 
 			var errors = new List<Error> ();
 //			errors.AddRange (lexerErrorHandler.lexerErrors);
 			errors.AddRange (parserErrorHandler.parserErrors);
-			foreach (var item in errors) {
-				Console.WriteLine (item.ErrorType +"----em:" + item.Message + "-----bc:" + item.Region.BeginColumn +"-----el:"+ item.Region.EndColumn);
-			}
+//			foreach (var item in errors) {
+//				Console.WriteLine (item.ErrorType +"----em:" + item.Message + "-----bc:" + item.Region.BeginColumn +"-----el:"+ item.Region.EndColumn);
+//			}
 			var doc = new CSSParsedDocument (fileName,foldingSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 

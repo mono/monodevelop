@@ -23,55 +23,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Core;
-using Mono.TextEditor;
-
-namespace MonoDevelop.Completion
-{
-	public class CSSCompletionExtension : CompletionTextEditorExtension
-	{
+//using System;
+//using MonoDevelop.Ide.Gui.Content;
+//using MonoDevelop.Ide.CodeCompletion;
+//using MonoDevelop.Core;
+//using Mono.TextEditor;
+//
+//namespace MonoDevelop.Completion
+//{
+//	public class CSSCompletionExtension : CompletionTextEditorExtension
+//	{
 //		public CSSCompletionExtension ()
 //		{
 //		}
 
-		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
-		{
-			if (!EnableCodeCompletion)
-				return null;
-			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
-				return null;
+//		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+//		{
+//			if (!EnableCodeCompletion)
+//				return null;
+//			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
+//				return null;
+//
+//			//	var timer = Counters.ResolveTime.BeginTiming ();
+//			try {
+//				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
+//					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+//						return null;
+//					triggerWordLength = 1;
+//				}
+//				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
+//				                         "FileName: " + Document.FileName + Environment.NewLine + 
+//				                         "Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
+//				                         "Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
+//				                         e);
+//				return null;
+//			} finally {
+////							if (timer != null)
+////								timer.Dispose ();
+//			}
+//		}
+//	}
 
-			//	var timer = Counters.ResolveTime.BeginTiming ();
-			try {
-				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
-						return null;
-					triggerWordLength = 1;
-				}
-				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
-			} catch (Exception e) {
-				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
-				                         "FileName: " + Document.FileName + Environment.NewLine + 
-				                         "Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
-				                         "Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
-				                         e);
-				return null;
-			} finally {
-//							if (timer != null)
-//								timer.Dispose ();
-			}
-		}
-	}
-
-	class CSSCompletionDataList : CompletionDataList
-	{
-		public CSharpResolver Resolver {
-			get;
-			set;
-		}
-	}
-}
+//	class CSSCompletionDataList : CompletionDataList
+//	{
+//		public CSharpResolver Resolver {
+//			get;
+//			set;
+//		}
+//	}
+//}
 

@@ -72,10 +72,11 @@ namespace MonoDevelop.CSSParser
 				foreach (var segment in Segments) 
 				{
 					CodeSegment ts = segment as CodeSegment;
-					DomRegion region = new DomRegion (segment.TagStartLocation.Line, segment.TagStartLocation.Column,
-					                                  segment.EndLocation.Line, segment.EndLocation.Column);
+					Console.WriteLine ("Text: "+ ts.Text+ "start line num:" + segment.TagStartLocation.Line + " start comumn:" + segment.TagStartLocation.Column + " end lime: " + segment.EndLocation.Line + " end column: " + segment.EndLocation.Column);
+					DomRegion region = new DomRegion (segment.StartLocation.Line, (segment.StartLocation.Column +1),
+					                                  segment.EndLocation.Line, (segment.EndLocation.Column +1));
 
-					yield return new FoldingRegion (ts.Text, region,FoldType.Undefined ,true);
+					yield return new FoldingRegion (ts.Text, region,FoldType.Member ,true);
 
 				}
 
@@ -83,6 +84,7 @@ namespace MonoDevelop.CSSParser
 			}
 
 		}
+		
 						
 	}
 
