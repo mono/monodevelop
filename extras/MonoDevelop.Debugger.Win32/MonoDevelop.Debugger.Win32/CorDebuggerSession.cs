@@ -828,7 +828,7 @@ namespace MonoDevelop.Debugger.Win32
 			activeThread = t;
 			stepper = activeThread.CreateStepper (); 
 			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
-			stepper.SetJMC (true);
+			stepper.SetJmcStatus (true);
 		}
 
 		protected override void OnStepInstruction ( )
