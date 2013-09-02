@@ -39,10 +39,10 @@ namespace MonoDevelop.Refactoring
 {
     public static class ExtensionMethods
     {
-		static CancellationTokenSource sharedTokenSource = new CancellationTokenSource ();
 
 		class ResolverAnnotation
 		{
+			public CancellationTokenSource SharedTokenSource;
 			public TaskWrapper Task;
 			public CSharpUnresolvedFile ParsedFile;
 		}
@@ -88,7 +88,7 @@ namespace MonoDevelop.Refactoring
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
-			
+
 			var unit       = parsedDocument.GetAst<SyntaxTree> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (unit == null || parsedFile == null)
@@ -100,11 +100,13 @@ namespace MonoDevelop.Refactoring
 			if (resolverAnnotation != null) {
 				if (resolverAnnotation.ParsedFile == parsedFile)
 					return resolverAnnotation.Task;
+				if (resolverAnnotation.SharedTokenSource != null)
+					resolverAnnotation.SharedTokenSource.Cancel ();
 				document.RemoveAnnotations<ResolverAnnotation> ();
 			}
-			sharedTokenSource.Cancel ();
-			sharedTokenSource = new CancellationTokenSource ();
-			var token = sharedTokenSource.Token;
+
+			var tokenSource = new CancellationTokenSource ();
+			var token = tokenSource.Token;
 			var resolveTask = Task.Factory.StartNew (delegate {
 				try {
 					using (var timer = ResolveCounter.BeginTiming ()) {
@@ -122,7 +124,8 @@ namespace MonoDevelop.Refactoring
 			var wrapper = new TaskWrapper (resolveTask);
 			document.AddAnnotation (new ResolverAnnotation {
 				Task = wrapper,
-				ParsedFile = parsedFile
+				ParsedFile = parsedFile,
+				SharedTokenSource = tokenSource
 			});
 			return wrapper;
 		}
