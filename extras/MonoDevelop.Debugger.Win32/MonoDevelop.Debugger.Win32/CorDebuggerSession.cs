@@ -265,12 +265,10 @@ namespace MonoDevelop.Debugger.Win32
 			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
 				e.Continue = true;
 				Breakpoint bp = (Breakpoint)binfo.BreakEvent;
-				
-				if (bp.HitCount > 1) {
-					// Just update the count and continue
-					binfo.UpdateHitCount (bp.HitCount - 1);
+
+				binfo.IncrementHitCount();
+				if (!binfo.HitCountReached)
 					return;
-				}
 				
 				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
