@@ -19,16 +19,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_corBreakpoint = managedBreakpoint;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugBreakpoint Raw
-        {
-            get 
-            { 
-                return m_corBreakpoint;
-            }
-        }
-#endif
         public virtual void Activate(bool active)
         {
             m_corBreakpoint.Activate (active ? 1 : 0);

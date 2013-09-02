@@ -76,10 +76,12 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         int GetMethodVersion(ISymbolMethod method);
     }
 
+    // This interface is implemented by the internal SymReader
+    // so it could be converted to this and have it's methods called.
     [
         ComVisible(false)
     ]
-    internal interface ISymbolReaderSymbolSearchInfo
+    public interface ISymbolReaderSymbolSearchInfo
     {
         int GetSymbolSearchInfoCount();
     

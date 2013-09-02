@@ -27,35 +27,54 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         int     SizeOfData;
         int     AddressOfRawData;
         int     PointerToRawData;
+
+        public override string ToString()
+        {
+            return String.Format( @"Characteristics: {0}
+TimeDateStamp: {1}
+MajorVersion: {2}
+MinorVersion: {3}
+Type: {4}
+SizeOfData: {5}
+AddressOfRawData: {6}
+PointerToRawData: {7}
+", 
+                      Characteristics, 
+                      TimeDateStamp, 
+                      MajorVersion, 
+                      MinorVersion, 
+                      Type, 
+                      SizeOfData, 
+                      AddressOfRawData, 
+                      PointerToRawData);
+        }
     };
 
     [
         ComVisible(false)
     ]
-    internal interface ISymbolWriter2 : ISymbolWriter
+    public interface ISymbolWriter2 : ISymbolWriter
     {
-    
         void Initialize(Object emitter,
-                    String filename,
+                    String fileName,
                     Boolean fullBuild);
-    
+
         void Initialize(Object emitter,
-                        String filename,
+                        String fileName,
                         IStream stream,
                         Boolean fullBuild);
-    
-    
-        byte[] GetDebugInfo(out ImageDebugDirectory iDD);
+
+        void Initialize(Object emitter,
+                        String temporaryFileName,
+                        IStream stream,
+                        Boolean fullBuild,
+                        String finalFileName);
+
+        byte[] GetDebugInfo(out ImageDebugDirectory imageDebugDirectory);
                              
         void RemapToken(SymbolToken oldToken,
                             SymbolToken newToken);
                              
-        void Initialize(Object emitter,
-                        String tempfilename,
-                        IStream stream,
-                        Boolean fullBuild,
-                        String finalfilename);
-
         void DefineConstant(String name,
                                Object value,
                                byte[] signature);

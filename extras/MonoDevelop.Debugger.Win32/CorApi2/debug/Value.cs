@@ -22,16 +22,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_val = value;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugValue Raw
-        {
-            get 
-            { 
-                return m_val;
-            }
-        }
-#endif
         /** The simple type of the value. */
         public CorElementType Type
         {

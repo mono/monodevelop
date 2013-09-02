@@ -8,6 +8,7 @@ using System.Collections;
 using System.Diagnostics;
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using System.Runtime.Serialization;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
@@ -49,6 +50,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
     }
 
+    public enum CorStackWalkType
+    {
+        PureV3StackWalk,        // true representation of the V3 ICorDebugStackWalk API
+        ExtendedV3StackWalk     // V3 ICorDebugStackWalk API with internal frames interleaved
+    }
+
     /** A thread in the debugged process. */
     public sealed class CorThread : WrapperBase
     {
@@ -63,16 +70,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return m_th;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugThread Raw
-        {
-            get 
-            { 
-                return m_th;
-            }
-        }
-#endif
         
         /** The process that this thread is in. */
         public CorProcess Process
@@ -264,8 +261,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
             return caf;
         }
-        
-
         private ICorDebugThread m_th;
 
     } /* class Thread */
@@ -274,7 +269,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
     public enum CorFrameType
     {
-        ILFrame, NativeFrame, InternalFrame
+        ILFrame, NativeFrame, InternalFrame,
     }
 
     
@@ -286,16 +281,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_frame = frame;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugFrame Raw
-        {
-            get 
-            { 
-                return m_frame;
-            }
-        }
-#endif
         
         public CorStepper CreateStepper()
         {
@@ -389,13 +374,14 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 CorDebugInternalFrameType ft;
                 
                 if(iframe==null)
-                    throw new Exception("Cannot get frame type on non-internal frame");
+                    throw new CorException("Cannot get frame type on non-internal frame");
                 
                 iframe.GetFrameType(out ft);
                 return ft;
             }
         }
-        
+
+    
         [CLSCompliant(false)]
         public void GetStackRange(out UInt64 startOffset,out UInt64 endOffset)
         {
@@ -419,7 +405,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             ICorDebugILFrame ilframe = GetILFrame();
             if(ilframe==null)
-                throw new Exception("Cannot set an IP on non-il frame");
+                throw new CorException("Cannot set an IP on non-il frame");
             ilframe.SetIP((uint)offset);
         }
 
@@ -450,7 +436,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             Debug.Assert( nativeFrame!=null );
             nativeFrame.GetIP(out offset);
         }
-
+    
         public CorValue GetLocalVariable(int index)
         {
             ICorDebugILFrame ilframe = GetILFrame();
@@ -520,25 +506,18 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             ICorDebugILFrame ilframe = GetILFrame();
             if(ilframe==null)
-                throw new Exception("Cannot remap on non-il frame.");
+                throw new CorException("Cannot remap on non-il frame.");
             ICorDebugILFrame2 ilframe2 = (ICorDebugILFrame2) ilframe;
             ilframe2.RemapFunction((uint)newILOffset);
         }
 
-        [CLSCompliant(false)]
-        public ICorDebugILFrame GetILFrame()
+        private ICorDebugILFrame GetILFrame()
         {
             if(!m_ilFrameCached) 
             {
-                m_ilFrameCached = true;
-                try 
-                {
-                    m_ilFrame = (ICorDebugILFrame) m_frame;
-                }
-                catch(InvalidCastException ) 
-                {
-                    m_ilFrame = null; // running on free version without ini file ???
-                }
+                m_ilFrameCached = true;               
+                m_ilFrame = m_frame as ICorDebugILFrame;
+                
             }
             return m_ilFrame;
         }
@@ -548,14 +527,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             if(!m_iFrameCached) 
             {
                 m_iFrameCached = true;
-                try 
-                {
-                    m_iFrame = (ICorDebugInternalFrame)m_frame;
-                }
-                catch(InvalidCastException) 
-                {
-                    m_iFrame = null;
-                }
+                
+                m_iFrame = m_frame as ICorDebugInternalFrame;
             }
             return m_iFrame;
         }
@@ -573,7 +546,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
             IEnumerable e = this.TypeParameters;
             Debug.Assert(e is CorTypeEnumerator);
-            // Skip will throw if we try to skip the whole collection <strip>(a bug?)</strip>
+
+            // Skip will throw if we try to skip the whole collection 
             int total  = (e as CorTypeEnumerator).Count;
             if (skip >= total)
             {
@@ -595,6 +569,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 return new CorTypeEnumerator(icdte);        // icdte can be null, is handled by enumerator
             }
         }
+
+
         
         private ICorDebugILFrame m_ilFrame = null;
         private bool m_ilFrameCached = false;
@@ -613,16 +589,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_chain = chain;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugChain Raw
-        {
-            get 
-            { 
-                return m_chain;
-            }
-        }
-#endif
 
         public CorFrame ActiveFrame
         {
@@ -852,16 +818,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_code = code;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugCode Raw
-        {
-            get 
-            { 
-                return m_code;
-            }
-        }
-#endif
 
         public CorFunctionBreakpoint CreateBreakpoint(int offset)
         {
@@ -869,7 +825,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_code.CreateBreakpoint((uint)offset,out ibreakpoint);
             return ( ibreakpoint==null ? null : new CorFunctionBreakpoint(ibreakpoint) );
         }
-      
+
         [CLSCompliant(false)]
         public ulong Address
         {
@@ -1050,16 +1006,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_function = managedFunction;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugFunction Raw
-        {
-            get 
-            { 
-                return m_function;
-            }
-        }
-#endif
 
         public CorFunctionBreakpoint CreateBreakpoint()
         {
@@ -1078,8 +1024,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
       
-        // <strip>@TODO void GetCurrentVersionNumber(ref UInt32 pnCurrentVersion);</strip>
-      
+        
         public CorCode ILCode
         {
             get 
@@ -1100,8 +1045,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
         
-        // <strip>@TODO void GetLocalVarSigToken(ref UInt32 pmdSig);</strip>
-
+        
         public CorModule Module
         {
             get 
@@ -1156,18 +1100,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_context = context;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugContext Raw
-        {
-            get 
-            { 
-                return m_context;
-            }
-        }
-#endif
 
-        //<strip>@TODO IMPLEMENT</strip>
+        
         // Following functions are not implemented
         /*
           void CreateBreakpoint(ref CORDBLib.ICorDebugValueBreakpoint ppBreakpoint);
@@ -1183,6 +1117,46 @@ namespace Microsoft.Samples.Debugging.CorDebug
           void SetFromManagedCopy(object pObject);
         */
         private ICorDebugContext m_context;
+    }
+
+    [Serializable]
+    public class CorException : Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of the CorException.
+        /// </summary>
+        public CorException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CorException with the specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public CorException(string message)
+            : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CorException with the specified error message and inner Exception.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception.</param>
+        public CorException(string message, Exception innerException) 
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CorException class with serialized data. 
+        /// </summary>
+        /// <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+        protected CorException(SerializationInfo info, StreamingContext context)
+            : base(info,context)
+        {
+        }
     }
 
 } /* namespace */

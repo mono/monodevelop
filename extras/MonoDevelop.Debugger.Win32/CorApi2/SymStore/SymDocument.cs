@@ -37,7 +37,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     
         void GetCheckSum(int cData,
                               out int pcData,
-                              byte[] date);
+                              [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] byte[] data);
      
         void FindClosestLine(int line,
                                 out int pRetVal);
@@ -52,17 +52,21 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
                                  int endColumn,
                                  int cSourceBytes,
                                  out int pcSourceBytes,
-                                 byte[] source);
+                                 [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=4)] byte[] source);
      
     };
     
     /// <include file='doc\SymDocument.uex' path='docs/doc[@for="SymDocument"]/*' />
-    public class SymbolDocument : ISymbolDocument
+    internal class SymbolDocument : ISymbolDocument
     {
         ISymUnmanagedDocument m_unmanagedDocument;
         
         internal SymbolDocument(ISymUnmanagedDocument document)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException("document");
+            }
             m_unmanagedDocument = document;
         }
         

@@ -5,24 +5,21 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 #if !MDBG_FAKE_COM
-using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.InteropServices;
 #endif
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Text;
 using System.Security.Permissions;
 using System.Globalization;
-using System.Collections.Generic;
 
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Win32.SafeHandles;
 
-[assembly:CLSCompliant(true)]
-[assembly:System.Runtime.InteropServices.ComVisible(false)]
-[assembly:SecurityPermission(SecurityAction.RequestMinimum, Unrestricted=true)]
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
@@ -34,6 +31,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public sealed  class CorDebugger : MarshalByRefObject
     {
         private const int MaxVersionStringLength = 256; // == MAX_PATH
+		// [Xamarin] Output redirection.
 		public const int CREATE_REDIRECT_STD = 0x40000000;
         
         public static string GetDebuggerVersionFromFile(string pathToExe)
@@ -109,21 +107,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     // sometimes we cannot terminate because GC collects object in wrong
                     // order. But since the whole process is shutting down, we really
                     // don't care.
-                    // TODO: we need to define IDisposable pattern to CorDebug so that we are able to
-                    // dispose stuff in correct order.
+                    
                 }
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebug Raw
-        {
-            get 
-            { 
-                return m_debugger;
-            }
-        }
-#endif
 
         /**
          * Closes the debugger.  After this method is called, it is an error
@@ -166,6 +153,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return CreateProcess (applicationName, commandLine, ".");
         }
 
+		// [Xamarin] ASP.NET Debugging.
         /**
          * Launch a process under the control of the debugger.
          *
@@ -177,9 +165,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                          String currentDirectory
                                          )
         {
-            return CreateProcess (applicationName, commandLine, currentDirectory, null, 0);
+			return CreateProcess (applicationName, commandLine, currentDirectory, null, 0);
         }
 
+		// [Xamarin] ASP.NET Debugging.
 		/**
 		 * Launch a process under the control of the debugger.
 		 *
@@ -195,6 +184,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			return CreateProcess (applicationName, commandLine, currentDirectory, environment, 0);
 		}
 
+		// [Xamarin] ASP.NET Debugging and output redirection.
         /**
          * Launch a process under the control of the debugger.
          *
@@ -213,7 +203,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             STARTUPINFO si = new STARTUPINFO ();
             si.cb = Marshal.SizeOf(si);
 
-            // initialize safe handles
+            // initialize safe handles 
 			SafeFileHandle outReadPipe = null, errorReadPipe = null;
 			if ((flags & CREATE_REDIRECT_STD) != 0) {
 				CreateHandles (si, out outReadPipe, out errorReadPipe);
@@ -280,6 +270,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			return ret;
         }
 
+		// [Xamarin] Output redirection.
 		void CreateHandles (STARTUPINFO si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
 		{
 			si.dwFlags |= 0x00000100; /*STARTF_USESTDHANDLES*/
@@ -337,7 +328,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                          SECURITY_ATTRIBUTES         threadAttributes,
                                          bool                        inheritHandles,
                                          int                         creationFlags,
-                                         IntPtr                      environment,  // <strip>@TODO fix the environment</strip>
+                                         IntPtr                      environment,  
                                          String                      currentDirectory,
                                          STARTUPINFO                 startupInfo,
                                          ref PROCESS_INFORMATION     processInformation,
@@ -408,12 +399,24 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return CorProcess.GetCorProcess(proc);
         }
 
+        /**
+         * Warn us of potentional problems in using debugging (eg. whether a kernel debugger is 
+         * attached).  This API should probably be renamed or the warnings turned into errors
+         * in CreateProcess/DebugActiveProcess
+         */
+        public void CanLaunchOrAttach(int processId, bool win32DebuggingEnabled)
+        {
+            m_debugger.CanLaunchOrAttach((uint) processId,
+                                         win32DebuggingEnabled?1:0);
+        }
+
         ////////////////////////////////////////////////////////////////////////////////
         //
         // CorDebugger private implement part
         //
         ////////////////////////////////////////////////////////////////////////////////
 
+		// [Xamarin] .NET 4 API Version.
         // called by constructors during initialization
         private void InitFromVersion(string debuggerVersion)
         {
@@ -425,12 +428,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
             
             ICorDebug rawDebuggingAPI;
 #if MDBG_FAKE_COM
-            // TODO: Ideally, there wouldn't be any difference in the corapi code for MDBG_FAKE_COM.
-            // This would require puting this initialization logic into the wrapper and interop assembly, which doesn't seem right.
-            // We should also release this pUnk, but doing that here would be difficult and we aren't done with it until
-            // we shutdown anyway.
-            IntPtr pUnk = NativeMethods.CreateDebuggingInterfaceFromVersion((int)CorDebuggerVersion.Whidbey, debuggerVersion);
-            rawDebuggingAPI = new NativeApi.CorDebugClass(pUnk);
+			// TODO: Ideally, there wouldn't be any difference in the corapi code for MDBG_FAKE_COM.
+			// This would require puting this initialization logic into the wrapper and interop assembly, which doesn't seem right.
+			// We should also release this pUnk, but doing that here would be difficult and we aren't done with it until
+			// we shutdown anyway.
+			IntPtr pUnk = NativeMethods.CreateDebuggingInterfaceFromVersion((int)CorDebuggerVersion.Whidbey, debuggerVersion);
+			rawDebuggingAPI = new NativeApi.CorDebugClass(pUnk);
 #else
 			int apiVersion = debuggerVersion.StartsWith ("v4") ? 4 : 3;
 			rawDebuggingAPI = NativeMethods.CreateDebuggingInterfaceFromVersion (apiVersion, debuggerVersion);
@@ -447,15 +450,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_debugger = rawDebuggingAPI;
             m_debugger.Initialize ();
             m_debugger.SetManagedHandler (new ManagedCallback(this));
-#if MDBG_FEATURE_INTEROP
-            try
-            {
-                m_debugger.SetUnmanagedHandler(new UnmanagedCallback(this));
-            }
-            catch(NotImplementedException)
-            {
-            }
-#endif
     	}            
 
         /**
@@ -470,6 +464,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
          * Consequently, if an exception is thrown and the process is stopped,
          * the process is continued automatically.
          */
+
         void InternalFireEvent(ManagedCallbackType callbackType,CorEventArgs e)
         {
             CorProcess owner;
@@ -491,15 +486,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             {
                 if(e.Continue)
                 {
-#if MDBG_FEATURE_INTEROP
-                    // this is special case for interop debugging
-                    // where we continue from OOB native event in which
-                    // case we have to call Continue with true (OOBound).
-                    if( (e is CorNativeStopEventArgs)
-                        && (e as CorNativeStopEventArgs).IsOutOfBand )
-                        e.Controller.Continue(true);
-                    else
-#endif
                         e.Controller.Continue(false);
                 }
             }
@@ -517,571 +503,21 @@ namespace Microsoft.Samples.Debugging.CorDebug
          * the event arguments into a more approprate form and forwards
          * the call to the appropriate function.
          */
-        private class ManagedCallback : ICorDebugManagedCallback, ICorDebugManagedCallback2
+        private class ManagedCallback : ManagedCallbackBase
         {
             public ManagedCallback (CorDebugger outer)
             {
                 m_outer = outer;
             }
-
-            void ICorDebugManagedCallback.Breakpoint (ICorDebugAppDomain  appDomain,
-                                    ICorDebugThread     thread,
-                                    ICorDebugBreakpoint breakpoint)
+            protected override void HandleEvent(ManagedCallbackType eventId, CorEventArgs args)
             {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnBreakpoint,
-                                   new CorBreakpointEventArgs (appDomain==null?null:new CorAppDomain(appDomain), 
-                                                               thread==null?null:new CorThread (thread),
-                                                               breakpoint==null?null:new CorFunctionBreakpoint ((ICorDebugFunctionBreakpoint)breakpoint)
-                                                               ));
+                m_outer.InternalFireEvent(eventId, args);
             }
-
-            void ICorDebugManagedCallback.StepComplete ( ICorDebugAppDomain  appDomain,
-                                       ICorDebugThread     thread,
-                                       ICorDebugStepper    stepper,
-                                       CorDebugStepReason  stepReason)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnStepComplete,
-                                   new CorStepCompleteEventArgs (appDomain==null?null:new CorAppDomain (appDomain), 
-                                                                thread==null?null:new CorThread (thread), 
-                                                                stepper==null?null:new CorStepper(stepper), 
-                                                                stepReason));
-            }
-        
-            void ICorDebugManagedCallback.Break (
-                               ICorDebugAppDomain  appDomain,
-                               ICorDebugThread     thread)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnBreak,
-                                   new CorThreadEventArgs (
-                                                          appDomain==null?null:new CorAppDomain (appDomain), 
-                                                          thread==null?null:new CorThread (thread)));
-            }
-        
-            void ICorDebugManagedCallback.Exception (
-                                                     ICorDebugAppDomain  appDomain,
-                                                     ICorDebugThread     thread,
-                                                     int                 unhandled)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnException,
-                                   new CorExceptionEventArgs (
-                                                             appDomain==null?null:new CorAppDomain (appDomain), 
-                                                             thread==null?null:new CorThread (thread),
-                                                             !(unhandled == 0)));
-            }
-            /* pass false if ``unhandled'' is 0 -- mapping TRUE to true, etc. */
-
-            void ICorDebugManagedCallback.EvalComplete (
-                                      ICorDebugAppDomain  appDomain,
-                                      ICorDebugThread     thread,
-                                      ICorDebugEval       eval)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnEvalComplete,
-                                  new CorEvalEventArgs (
-                                                        appDomain==null?null:new CorAppDomain(appDomain), 
-                                                        thread==null?null:new CorThread (thread), 
-                                                        eval==null?null:new CorEval(eval)));
-            }
-
-            void ICorDebugManagedCallback.EvalException (
-                                       ICorDebugAppDomain appDomain,
-                                       ICorDebugThread thread,
-                                       ICorDebugEval eval)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnEvalException,
-                                  new CorEvalEventArgs (
-                                                        appDomain==null?null:new CorAppDomain (appDomain), 
-                                                        thread==null?null:new CorThread (thread), 
-                                                        eval==null?null:new CorEval (eval)));
-            }
-
-            void ICorDebugManagedCallback.CreateProcess (
-                                       ICorDebugProcess process)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnCreateProcess,
-                                  new CorProcessEventArgs (
-                                                           process==null?null:CorProcess.GetCorProcess(process)));
-            }
-
-            void ICorDebugManagedCallback.ExitProcess (
-                                     ICorDebugProcess process)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnProcessExit,
-                                   new CorProcessEventArgs (
-                                                           process==null?null:CorProcess.GetCorProcess(process)));
-            }
-
-            void ICorDebugManagedCallback.CreateThread (
-                                      ICorDebugAppDomain appDomain,
-                                      ICorDebugThread thread)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnCreateThread,
-                                  new CorThreadEventArgs (
-                                                          appDomain==null?null:new CorAppDomain(appDomain), 
-                                                          thread==null?null:new CorThread (thread)));
-            }
-
-            void ICorDebugManagedCallback.ExitThread (
-                                    ICorDebugAppDomain appDomain,
-                                    ICorDebugThread thread)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnThreadExit,
-                                  new CorThreadEventArgs (
-                                                          appDomain==null?null:new CorAppDomain(appDomain), 
-                                                          thread==null?null:new CorThread (thread)));
-            }
-
-            void ICorDebugManagedCallback.LoadModule (
-                                    ICorDebugAppDomain appDomain,
-                                    ICorDebugModule managedModule)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnModuleLoad,
-                                  new CorModuleEventArgs (
-                                                          appDomain==null?null:new CorAppDomain(appDomain), 
-                                                          managedModule==null?null:new CorModule (managedModule)));
-            }
-
-            void ICorDebugManagedCallback.UnloadModule (
-                                      ICorDebugAppDomain appDomain,
-                                      ICorDebugModule managedModule)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnModuleUnload,
-                                  new CorModuleEventArgs (
-                                                          appDomain==null?null:new CorAppDomain (appDomain), 
-                                                          managedModule==null?null:new CorModule (managedModule)));
-            }
-
-            void ICorDebugManagedCallback.LoadClass (
-                                   ICorDebugAppDomain appDomain,
-                                   ICorDebugClass c)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnClassLoad,
-                                   new CorClassEventArgs (
-                                                         appDomain==null?null:new CorAppDomain(appDomain), 
-                                                         c==null?null:new CorClass (c)));
-            }
-
-            void ICorDebugManagedCallback.UnloadClass (
-                                     ICorDebugAppDomain appDomain,
-                                     ICorDebugClass c)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnClassUnload,
-                                  new CorClassEventArgs (
-                                                         appDomain==null?null:new CorAppDomain(appDomain), 
-                                                         c==null?null:new CorClass (c)));
-            }
-
-            void ICorDebugManagedCallback.DebuggerError (
-                                       ICorDebugProcess  process,
-                                       int               errorHR,
-                                       uint              errorCode)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnDebuggerError,
-                                  new CorDebuggerErrorEventArgs (
-                                                                 process==null?null:CorProcess.GetCorProcess (process), 
-                                                                 errorHR, 
-                                                                 (int) errorCode));
-            }
-
-            void ICorDebugManagedCallback.LogMessage (
-                                    ICorDebugAppDomain  appDomain,
-                                    ICorDebugThread     thread,
-                                    int                 level,
-                                    string              logSwitchName,  
-                                    string              message)        
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnLogMessage,
-                                   new CorLogMessageEventArgs (
-                                                              appDomain==null?null:new CorAppDomain(appDomain), 
-                                                              thread==null?null:new CorThread (thread), 
-                                                              level, logSwitchName, message));
-            }
-
-            void ICorDebugManagedCallback.LogSwitch (
-                                   ICorDebugAppDomain  appDomain,
-                                   ICorDebugThread     thread,
-                                   int                 level,
-                                   uint                reason,
-                                   string              logSwitchName,  
-                                   string              parentName)     
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnLogSwitch,
-                                  new CorLogSwitchEventArgs (
-                                                             appDomain==null?null:new CorAppDomain(appDomain), 
-                                                             thread==null?null:new CorThread (thread), 
-                                                             level, (int) reason, logSwitchName, parentName));
-            }
-
-            void ICorDebugManagedCallback.CreateAppDomain (
-                                         ICorDebugProcess    process,
-                                         ICorDebugAppDomain  appDomain)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnCreateAppDomain,
-                                  new CorAppDomainEventArgs (
-                                                             process==null?null:CorProcess.GetCorProcess(process), 
-                                                             appDomain==null?null:new CorAppDomain(appDomain)));
-            }
-
-            void ICorDebugManagedCallback.ExitAppDomain (
-                                       ICorDebugProcess    process,
-                                       ICorDebugAppDomain  appDomain)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnAppDomainExit,
-                                  new CorAppDomainEventArgs (
-                                                             process==null?null:CorProcess.GetCorProcess(process), 
-                                                             appDomain==null?null:new CorAppDomain (appDomain)));
-            }
-
-            void ICorDebugManagedCallback.LoadAssembly (
-                                      ICorDebugAppDomain  appDomain,
-                                      ICorDebugAssembly   assembly)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnAssemblyLoad,
-                                  new CorAssemblyEventArgs (
-                                                            appDomain==null?null:new CorAppDomain (appDomain), 
-                                                            assembly==null?null:new CorAssembly (assembly)));
-            }
-
-            void ICorDebugManagedCallback.UnloadAssembly (
-                                        ICorDebugAppDomain  appDomain,
-                                        ICorDebugAssembly   assembly)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnAssemblyUnload,
-                                  new CorAssemblyEventArgs (
-                                                            appDomain==null?null:new CorAppDomain(appDomain), 
-                                                            assembly==null?null:new CorAssembly (assembly)));
-            }
-
-            void ICorDebugManagedCallback.ControlCTrap (ICorDebugProcess process)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnControlCTrap,
-                                  new CorProcessEventArgs (
-                                                           process==null?null:CorProcess.GetCorProcess(process)
-                                                           ));
-            }
-
-            void ICorDebugManagedCallback.NameChange (
-                                    ICorDebugAppDomain  appDomain,
-                                    ICorDebugThread     thread)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnNameChange,
-                                  new CorThreadEventArgs (
-                                                          appDomain==null?null:new CorAppDomain(appDomain), 
-                                                          thread==null?null:new CorThread (thread)));
-            }
-
-        // TODO: Enable support for dynamic modules (reflection emit) with FAKE_COM?
-        // Rotor doesn't have ISymbolBinder2 or IStream, so we may have to add them
-            void ICorDebugManagedCallback.UpdateModuleSymbols (
-                                             ICorDebugAppDomain  appDomain,
-                                             ICorDebugModule     managedModule,
-#if MDBG_FAKE_COM
-                                            IntPtr                  stream)
-#else
-                                             IStream             stream)
-#endif
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnUpdateModuleSymbols,
-                                  new CorUpdateModuleSymbolsEventArgs(
-                                                                      appDomain==null?null:new CorAppDomain(appDomain), 
-                                                                      managedModule==null?null:new CorModule (managedModule), 
-                                                                      stream));
-            }
-
-            void ICorDebugManagedCallback.EditAndContinueRemap(
-                                             ICorDebugAppDomain appDomain, 
-                                             ICorDebugThread thread, 
-                                             ICorDebugFunction managedFunction, 
-                                             int isAccurate)
-            {
-                Debug.Assert(false); //OBSOLETE callback
-            }
-
-            
-            void ICorDebugManagedCallback.BreakpointSetError(
-                                           ICorDebugAppDomain appDomain, 
-                                           ICorDebugThread thread, 
-                                           ICorDebugBreakpoint breakpoint, 
-                                           UInt32 errorCode)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnBreakpointSetError,
-                                  new CorBreakpointSetErrorEventArgs(
-                                                            appDomain==null?null:new CorAppDomain(appDomain),
-                                                            thread==null?null:new CorThread(thread),
-                                                            null, // <strip>@TODO breakpoint==null?null:new CorBreakpoint(breakpoint),</strip>
-                                                            (int)errorCode));
-            }
-
-            void ICorDebugManagedCallback2.FunctionRemapOpportunity(ICorDebugAppDomain appDomain,
-                                                                           ICorDebugThread thread,
-                                                                           ICorDebugFunction oldFunction,
-                                                                           ICorDebugFunction newFunction,
-                                                                           uint oldILoffset)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnFunctionRemapOpportunity,
-                                          new CorFunctionRemapOpportunityEventArgs(
-                                                                                   appDomain==null?null:new CorAppDomain(appDomain), 
-                                                                                   thread==null?null:new CorThread (thread),
-                                                                                   oldFunction==null?null:new CorFunction(oldFunction),
-                                                                                   newFunction==null?null:new CorFunction(newFunction),
-                                                                                   (int)oldILoffset
-                                                                                   ));
-            }
-
-            void ICorDebugManagedCallback2.FunctionRemapComplete(ICorDebugAppDomain appDomain, 
-                                                                 ICorDebugThread thread, 
-                                                                 ICorDebugFunction managedFunction)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnFunctionRemapComplete,
-                                   new CorFunctionRemapCompleteEventArgs(
-                                                          appDomain==null?null:new CorAppDomain(appDomain), 
-                                                          thread==null?null:new CorThread (thread),
-                                                          managedFunction==null?null:new CorFunction(managedFunction)
-                                                          ));
-            }
-
-            void ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess process,uint connectionId, ref ushort connectionName)
-            {
-                // <strip>@TODO - </strip>Not Implemented
-                Debug.Assert(false);
-            }
-            
-            void ICorDebugManagedCallback2.ChangeConnection(ICorDebugProcess process,uint connectionId)
-            {
-                // <strip>@TODO -</strip> Not Implemented
-                Debug.Assert(false);
-            }
-            
-            void ICorDebugManagedCallback2.DestroyConnection(ICorDebugProcess process,uint connectionId)
-            {
-                // <strip>@TODO - </strip>Not Implemented
-                Debug.Assert(false);
-            }
-
-            void ICorDebugManagedCallback2.Exception(ICorDebugAppDomain ad, ICorDebugThread thread, 
-                                                     ICorDebugFrame frame, uint offset, 
-                                                     CorDebugExceptionCallbackType eventType, uint flags) //@TODO flags should not be UINT
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnException2,
-                                          new CorException2EventArgs(
-                                                            ad==null?null:new CorAppDomain(ad), 
-                                                            thread==null?null:new CorThread (thread),
-                                                            frame==null?null:new CorFrame(frame),
-                                                            (int)offset,
-                                                            eventType, 
-                                                            (int)flags
-                                                            ));
-            }
-            
-            void ICorDebugManagedCallback2.ExceptionUnwind(ICorDebugAppDomain ad, ICorDebugThread thread, 
-                                                           CorDebugExceptionUnwindCallbackType eventType, uint flags)
-            {
-                m_outer.InternalFireEvent(ManagedCallbackType.OnExceptionUnwind2,
-                                          new CorExceptionUnwind2EventArgs(
-                                                            ad==null?null:new CorAppDomain(ad), 
-                                                            thread==null?null:new CorThread (thread),
-                                                            eventType, 
-                                                            (int)flags
-                                                            ));
-            }
-
-            // Get process from controller 
-            private CorProcess GetProcessFromController(ICorDebugController pController)
-            {
-                CorProcess p;
-                ICorDebugProcess p2 = pController as ICorDebugProcess;
-                if (p2 != null)
-                {
-                    p = CorProcess.GetCorProcess(p2);
-                }
-                else
-                {
-                    ICorDebugAppDomain a2 = (ICorDebugAppDomain) pController;
-                    p = new CorAppDomain(a2).Process;
-                }
-                return p;
-            }
-
-            void ICorDebugManagedCallback2.MDANotification(ICorDebugController pController,
-                                                           ICorDebugThread   thread,
-                                                           ICorDebugMDA  pMDA)
-            {
-                CorMDA c = new CorMDA(pMDA);
-                string szName = c.Name;
-                CorDebugMDAFlags f = c.Flags;
-                CorProcess p = GetProcessFromController(pController);
-                
-                
-                m_outer.InternalFireEvent(ManagedCallbackType.OnMDANotification,
-                                          new CorMDAEventArgs (c, 
-                                                               thread==null?null:new CorThread (thread),
-                                                               p));
-            }
-            
             private CorDebugger m_outer;
         }
 
+         
         
-        
-#if MDBG_FEATURE_INTEROP
-        private class UnmanagedCallback : ICorDebugUnmanagedCallback
-        {
-            public UnmanagedCallback (CorDebugger outer)
-            {
-                Debug.Assert(outer!=null);
-                m_outer = outer;
-            }
-
-#if !FIXED_BUG21115 //<strip>@TODO  remove once we'll be able to call Continue from Win32 callbakck.</strip>
-            private struct Win32NativeEvent
-            {
-                public Win32NativeEvent(CorProcess process,CorDebugger outer,int threadId,DEBUG_EVENT debugEvent)
-                {
-                    Debug.Assert(process!=null);
-                    Debug.Assert(outer!=null);
-                    m_process = process;
-                    m_outer = outer;
-                    m_threadId = threadId;
-                    m_debugEvent = debugEvent;
-                }
-                private CorProcess m_process;
-                private CorDebugger m_outer;
-                private int m_threadId;
-                private DEBUG_EVENT m_debugEvent;
-
-				// This is always dispatched on the W32ET. That thread can't do anything useful so we
-				// hand off to another thread.
-                static public void DispatchEvent(Win32NativeEvent event_)
-                {
-					// If Mdbg has mutliple debuggees, they'll share this.
-					lock(g_lock)
-					{
-						if( g_workToDo == null )
-						{
-							g_workToDo     = new AutoResetEvent(false);
-							g_callWorkDone = new AutoResetEvent(true);
-							Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Win32NativeEvent.Dispatch));
-							t.IsBackground = true;
-							t.Start();
-						}
-					}
-
-					g_callWorkDone.WaitOne();
-					g_event = event_;
-					g_workToDo.Set();
-
-					// We now return without waiting for the DispatchThread to finish
-                }
-
-				// Statics 
-				static private object g_lock = new object();
-                static private AutoResetEvent g_callWorkDone=null;
-                static private AutoResetEvent g_workToDo = null;
-                static private Win32NativeEvent g_event;
-
-				// This is called on a separate thread from the W32ET. MDbg shares this thread across all debuggees
-				// (in the same way ICorDebug shares the RCET)
-                public static void Dispatch()
-                {
-                    while(true)
-                    {
-						try
-						{
-							g_workToDo.WaitOne();
-
-							g_event.m_outer.InternalFireEvent(ManagedCallbackType.OnNativeStop,
-								new CorNativeStopEventArgs (g_event.m_process,
-								g_event.m_threadId,
-								g_event.m_debugEvent,
-								false /*not OOB event*/));
-						}
-						finally
-						{
-							g_callWorkDone.Set();
-						}
-                    }
-                }
-            }
-#endif
-            void Microsoft.Samples.Debugging.CorDebug.NativeApi.ICorDebugUnmanagedCallback.DebugEvent(DEBUG_EVENT debugEvent, int isOutOfBand)
-            {
-                try 
-                {                
-                    CorProcess corProcess = m_outer.GetProcess((int)debugEvent.dwProcessId);
-                    string callArgs = NativeDebugEvent.DebugEventToString(corProcess,debugEvent);
-                    Trace.WriteLine("UnmanagedCallback::DebugEvent(fOutOfBand="+isOutOfBand+")" + callArgs);
-                    
-                    // Should never get Out-Of-Band Native BPs. <strip>(@TODO could happen in interop debugging scenarios)</strip>
-                    if( ((NativeDebugEventCode)debugEvent.dwDebugEventCode == NativeDebugEventCode.EXCEPTION_DEBUG_EVENT) &&
-                        (debugEvent.Exception.ExceptionRecord.ExceptionCode == 0x80000003) && (isOutOfBand != 0) )
-                    {
-                        Debug.Assert(false,"ERROR: Out-Of-Band native breakpoint recieved!");
-                    }
-                    
-                    // Should never get In-Of-Band ExitThread Event (for Whidbey, not true in Everett)
-                    if( ((NativeDebugEventCode)debugEvent.dwDebugEventCode == NativeDebugEventCode.EXIT_THREAD_DEBUG_EVENT) &&
-                        (isOutOfBand == 0) )
-                    {
-                        Debug.Assert(false,"ERROR: In-Band ExitThread unamanged event received!");
-                    }
-                    
-                    // dispatch the event
-                    if(isOutOfBand!=0)
-                    {
-                        /* note that in this event debugger cannot use any managed debuggger API,
-                         * therefore it in effect cannot stop.
-                         * The CorNativeStopEventArgs class has a check that Continue cannot be set to false
-                         * in this case.
-                         */
-                        m_outer.InternalFireEvent(ManagedCallbackType.OnNativeStop,
-                                                  new CorNativeStopEventArgs (corProcess,
-                                                                              (int)debugEvent.dwThreadId,
-                                                                              debugEvent,
-                                                                              true /*is OOB event*/));
-                        // since the user cannot signal that we want to stop on OOB event, InternalFireEvent will always call
-                        // continue for us.
-                    }
-                    else
-                    {
-                        // we need to dispatch handling and managing Win32 events
-                        // received to other thread (Need documentation).
-                        // 
-                        Win32NativeEvent.DispatchEvent(new Win32NativeEvent(corProcess,m_outer,(int)debugEvent.dwThreadId,debugEvent));
-                    }
-                    
-
-                    // We need to take care of closing *SOME* handles.
-                    // following sample give us some clues....
-                    // ms-help://MS.MSDNQTR.2002OCT.1033/debug/base/writing_the_debugger_s_main_loop.htm
-                    // some handles are closed by ContinueDebugEvent as described in
-                    // ms-help://MS.MSDNQTR.2002OCT.1033/debug/base/continuedebugevent.htm
-                    //
-                    switch((NativeDebugEventCode)debugEvent.dwDebugEventCode)
-                    {
-                    case NativeDebugEventCode.CREATE_PROCESS_DEBUG_EVENT:
-                        NativeMethods.CloseHandle(debugEvent.CreateProcess.hFile);
-                        break;
-                    case NativeDebugEventCode.LOAD_DLL_DEBUG_EVENT:
-                        NativeMethods.CloseHandle(debugEvent.LoadDll.hFile);
-                        break;
-                        
-                        // this special case is for debugging on Win2k, where
-                        // OUTPUT_DEBUG_STRING_EVENT requires clrearing exception
-                    case NativeDebugEventCode.OUTPUT_DEBUG_STRING_EVENT:
-                        corProcess.ClearCurrentException((int)debugEvent.dwThreadId);
-                        break;
-                    }
-                }
-                catch(Exception e) 
-                {
-                    Debug.Assert(false,"Exception in Win32 callback "+e.ToString());
-                    throw;
-                }
-            }
-            private CorDebugger m_outer = null;
-
-        }
-
-#endif	//	MDBG_FEATURE_INTEROP
         private ICorDebug m_debugger = null;
     } /* class Debugger */
 
@@ -1108,11 +544,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         private const string Kernel32LibraryName = "kernel32.dll";
         private const string Ole32LibraryName    = "ole32.dll";
-#if FEATURE_PAL
-        private const string ShimLibraryName = "sscoree.dll";
-#else
         private const string ShimLibraryName = "mscoree.dll";
-#endif
 
         [
          System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.Cer.Success),
@@ -1124,13 +556,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
         [
          DllImport(ShimLibraryName, CharSet=CharSet.Unicode, PreserveSig=false)
         ]
-#if MDBG_FAKE_COM
-        public static extern IntPtr CreateDebuggingInterfaceFromVersion(int iDebuggerVersion
-                                                                           ,string szDebuggeeVersion);
-#else
         public static extern ICorDebug CreateDebuggingInterfaceFromVersion(int iDebuggerVersion
                                                                            ,string szDebuggeeVersion);
-#endif
 
         [
          DllImport(ShimLibraryName, CharSet=CharSet.Unicode)
@@ -1184,47 +611,54 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                                    [MarshalAs(UnmanagedType.Interface)]out ICorDebug debuggingInterface
                                                    );
 
-        [
+		// [Xamarin] Output redirection.
+		[
 		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
-        ]
+		]
 		public static extern bool CreatePipe (out SafeFileHandle hReadPipe, out SafeFileHandle hWritePipe, SECURITY_ATTRIBUTES lpPipeAttributes, int nSize);
 
+		// [Xamarin] Output redirection.
 		[
 		 DllImport (Kernel32LibraryName)
 		]
 		public static extern bool DuplicateHandle (
-		  IntPtr hSourceProcessHandle,
-		  SafeFileHandle hSourceHandle,
-		  IntPtr hTargetProcessHandle,
-		  out SafeFileHandle lpTargetHandle,
-		  uint dwDesiredAccess,
-		  bool bInheritHandle,
-		  uint dwOptions
+			IntPtr hSourceProcessHandle,
+			SafeFileHandle hSourceHandle,
+			IntPtr hTargetProcessHandle,
+			out SafeFileHandle lpTargetHandle,
+			uint dwDesiredAccess,
+			bool bInheritHandle,
+			uint dwOptions
 		);
 
+		// [Xamarin] Output redirection.
 		public static uint DUPLICATE_CLOSE_SOURCE = 0x00000001;
 		public static uint DUPLICATE_SAME_ACCESS = 0x00000002;
 
+		// [Xamarin] Output redirection.
 		[
 		 DllImport (Kernel32LibraryName)
 		]
 		public static extern SafeFileHandle GetStdHandle (uint nStdHandle);
 
+		// [Xamarin] Output redirection.
 		public const uint STD_INPUT_HANDLE = unchecked ((uint)-10);
 		public const uint STD_OUTPUT_HANDLE = unchecked ((uint)-11);
 		public const uint STD_ERROR_HANDLE = unchecked ((uint)-12);
 
+		// [Xamarin] Output redirection.
 		[
 		 DllImport (Kernel32LibraryName)
 		]
 		public static extern bool ReadFile (
-		  SafeFileHandle hFile,
-		  byte[] lpBuffer,
-		  int nNumberOfBytesToRead,
-		  out int lpNumberOfBytesRead,
-		  IntPtr lpOverlapped
+			SafeFileHandle hFile,
+			byte[] lpBuffer,
+			int nNumberOfBytesToRead,
+			out int lpNumberOfBytesRead,
+			IntPtr lpOverlapped
 		);
 
+		// [Xamarin] Output redirection.
 		[
 		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
 		]
@@ -1236,7 +670,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     // CorEvent Classes & Corresponding delegates
     //
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     /**
      * All of the Debugger events make a Controller available (to specify
      * whether or not to continue the program, or to stop, etc.).
@@ -1248,22 +682,33 @@ namespace Microsoft.Samples.Debugging.CorDebug
      * <b>Continue</b> property to <b>false</b>.
      */
 
-    public class CorEventArgs : EventArgs 
+    public class CorEventArgs : EventArgs
     {
         private CorController m_controller;
 
         private bool m_continue;
 
-        public CorEventArgs (CorController controller)
+        private ManagedCallbackType m_callbackType;
+
+        private CorThread m_thread;
+
+        public CorEventArgs(CorController controller)
         {
             m_controller = controller;
             m_continue = true;
         }
 
-        /** The Controller of the current event. */
-        public CorController  Controller
+        public CorEventArgs(CorController controller, ManagedCallbackType callbackType)
         {
-            get 
+            m_controller = controller;
+            m_continue = true;
+            m_callbackType = callbackType;
+        }
+
+        /** The Controller of the current event. */
+        public CorController Controller
+        {
+            get
             {
                 return m_controller;
             }
@@ -1276,15 +721,43 @@ namespace Microsoft.Samples.Debugging.CorDebug
          */
         public virtual bool Continue
         {
-            get 
+            get
             {
                 return m_continue;
             }
-            set 
+            set
             {
                 m_continue = value;
             }
         }
+
+        /// <summary>
+        /// The type of callback that returned this CorEventArgs object.
+        /// </summary>
+        public ManagedCallbackType CallbackType
+        {
+            get
+            {
+                return m_callbackType;
+            }
+        }
+
+        /// <summary>
+        /// The CorThread associated with the callback event that returned
+        /// this CorEventArgs object. If here is no such thread, Thread is null.
+        /// </summary>
+        public CorThread Thread
+        {
+            get
+            {
+                return m_thread;
+            }
+            protected set
+            {
+                m_thread = value;
+            }
+        }
+
     }
 
 
@@ -1294,22 +767,41 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorProcessEventArgs : CorEventArgs
     {
-        public CorProcessEventArgs (CorProcess process)
-            : base (process)
+        public CorProcessEventArgs(CorProcess process)
+            : base(process)
+        {
+        }
+
+        public CorProcessEventArgs(CorProcess process, ManagedCallbackType callbackType)
+            : base(process, callbackType)
         {
         }
 
         /** The process that generated the event. */
         public CorProcess Process
         {
-            get 
+            get
             {
-                return (CorProcess) Controller;
+                return (CorProcess)Controller;
             }
+        }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnCreateProcess:
+                    return "Process Created";
+                case ManagedCallbackType.OnProcessExit:
+                    return "Process Exited";
+                case ManagedCallbackType.OnControlCTrap:
+                    break;
+            }
+            return base.ToString();
         }
     }
 
-    public delegate void CorProcessEventHandler (Object sender, 
+    public delegate void CorProcessEventHandler(Object sender,
                                                  CorProcessEventArgs e);
 
 
@@ -1321,8 +813,15 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         private CorAppDomain m_ad;
 
-        public CorAppDomainEventArgs (CorProcess process, CorAppDomain ad)
-            : base (process)
+        public CorAppDomainEventArgs(CorProcess process, CorAppDomain ad)
+            : base(process)
+        {
+            m_ad = ad;
+        }
+
+        public CorAppDomainEventArgs(CorProcess process, CorAppDomain ad,
+                                      ManagedCallbackType callbackType)
+            : base(process, callbackType)
         {
             m_ad = ad;
         }
@@ -1330,33 +829,50 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** The AppDomain that generated the event. */
         public CorAppDomain AppDomain
         {
-            get 
+            get
             {
                 return m_ad;
             }
         }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnCreateAppDomain:
+                    return "AppDomain Created: " + m_ad.Name;
+                case ManagedCallbackType.OnAppDomainExit:
+                    return "AppDomain Exited: " + m_ad.Name;
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void CorAppDomainEventHandler (Object sender, 
+    public delegate void CorAppDomainEventHandler(Object sender,
                                                    CorAppDomainEventArgs e);
 
-  
+
     /**
      * The base class for events which take an CorAppDomain as their
      * source, but not a CorProcess.
      */
     public class CorAppDomainBaseEventArgs : CorEventArgs
     {
-        public CorAppDomainBaseEventArgs (CorAppDomain ad)
-            : base (ad)
+        public CorAppDomainBaseEventArgs(CorAppDomain ad)
+            : base(ad)
+        {
+        }
+
+        public CorAppDomainBaseEventArgs(CorAppDomain ad, ManagedCallbackType callbackType)
+            : base(ad, callbackType)
         {
         }
 
         public CorAppDomain AppDomain
         {
-            get 
+            get
             {
-                return (CorAppDomain) Controller;
+                return (CorAppDomain)Controller;
             }
         }
     }
@@ -1367,25 +883,37 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorThreadEventArgs : CorAppDomainBaseEventArgs
     {
-        private CorThread m_thread;
-
-        public CorThreadEventArgs (CorAppDomain appDomain, CorThread thread)
-            : base (appDomain!=null?appDomain:thread.AppDomain)
+        public CorThreadEventArgs(CorAppDomain appDomain, CorThread thread)
+            : base(appDomain != null ? appDomain : thread.AppDomain)
         {
-            m_thread = thread;
+            Thread = thread;
         }
 
-        /** The CorThread of interest. */
-        public CorThread Thread
+        public CorThreadEventArgs(CorAppDomain appDomain, CorThread thread,
+            ManagedCallbackType callbackType)
+            : base(appDomain != null ? appDomain : thread.AppDomain, callbackType)
         {
-            get 
+            Thread = thread;
+        }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
             {
-                return m_thread;
+                case ManagedCallbackType.OnBreak:
+                    return "Break";
+                case ManagedCallbackType.OnCreateThread:
+                    return "Thread Created";
+                case ManagedCallbackType.OnThreadExit:
+                    return "Thread Exited";
+                case ManagedCallbackType.OnNameChange:
+                    return "Name Changed";
             }
+            return base.ToString();
         }
     }
 
-    public delegate void CorThreadEventHandler (Object sender, 
+    public delegate void CorThreadEventHandler(Object sender,
                                                 CorThreadEventArgs e);
 
 
@@ -1396,10 +924,19 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         private CorBreakpoint m_break;
 
-        public CorBreakpointEventArgs (CorAppDomain appDomain, 
-                                       CorThread thread, 
+        public CorBreakpointEventArgs(CorAppDomain appDomain,
+                                       CorThread thread,
                                        CorBreakpoint managedBreakpoint)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_break = managedBreakpoint;
+        }
+
+        public CorBreakpointEventArgs(CorAppDomain appDomain,
+                                       CorThread thread,
+                                       CorBreakpoint managedBreakpoint,
+                                       ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
             m_break = managedBreakpoint;
         }
@@ -1407,14 +944,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** The breakpoint involved. */
         public CorBreakpoint Breakpoint
         {
-            get 
+            get
             {
                 return m_break;
             }
         }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnBreakpoint)
+            {
+                return "Breakpoint Hit";
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void BreakpointEventHandler (Object sender, 
+    public delegate void BreakpointEventHandler(Object sender,
                                                  CorBreakpointEventArgs e);
 
 
@@ -1423,13 +969,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorStepCompleteEventArgs : CorThreadEventArgs
     {
-        private CorStepper    m_stepper;
-        private CorDebugStepReason  m_stepReason;
+        private CorStepper m_stepper;
+        private CorDebugStepReason m_stepReason;
 
         [CLSCompliant(false)]
-        public CorStepCompleteEventArgs (CorAppDomain appDomain, CorThread thread, 
+        public CorStepCompleteEventArgs(CorAppDomain appDomain, CorThread thread,
                                          CorStepper stepper, CorDebugStepReason stepReason)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_stepper = stepper;
+            m_stepReason = stepReason;
+        }
+
+        [CLSCompliant(false)]
+        public CorStepCompleteEventArgs(CorAppDomain appDomain, CorThread thread,
+                                         CorStepper stepper, CorDebugStepReason stepReason,
+                                         ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
             m_stepper = stepper;
             m_stepReason = stepReason;
@@ -1437,7 +993,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public CorStepper Stepper
         {
-            get 
+            get
             {
                 return m_stepper;
             }
@@ -1446,14 +1002,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
         [CLSCompliant(false)]
         public CorDebugStepReason StepReason
         {
-            get 
+            get
             {
                 return m_stepReason;
             }
         }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnStepComplete)
+            {
+                return "Step Complete";
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void StepCompleteEventHandler (Object sender, 
+    public delegate void StepCompleteEventHandler(Object sender,
                                                    CorStepCompleteEventArgs e);
 
 
@@ -1462,12 +1027,21 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorExceptionEventArgs : CorThreadEventArgs
     {
-        bool  m_unhandled;
+        bool m_unhandled;
 
-        public CorExceptionEventArgs (CorAppDomain appDomain, 
-                                      CorThread thread, 
+        public CorExceptionEventArgs(CorAppDomain appDomain,
+                                      CorThread thread,
                                       bool unhandled)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_unhandled = unhandled;
+        }
+
+        public CorExceptionEventArgs(CorAppDomain appDomain,
+                                      CorThread thread,
+                                      bool unhandled,
+                                      ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
             m_unhandled = unhandled;
         }
@@ -1475,14 +1049,14 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** Has the exception been handled yet? */
         public bool Unhandled
         {
-            get 
+            get
             {
                 return m_unhandled;
             }
         }
     }
 
-    public delegate void CorExceptionEventHandler (Object sender, 
+    public delegate void CorExceptionEventHandler(Object sender,
                                                    CorExceptionEventArgs e);
 
 
@@ -1493,24 +1067,43 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         CorEval m_eval;
 
-        public CorEvalEventArgs (CorAppDomain appDomain, CorThread thread, 
+        public CorEvalEventArgs(CorAppDomain appDomain, CorThread thread,
                                  CorEval eval)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_eval = eval;
+        }
+
+        public CorEvalEventArgs(CorAppDomain appDomain, CorThread thread,
+                                 CorEval eval, ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
             m_eval = eval;
         }
 
         /** The object being evaluated. */
-        public CorEval  Eval
+        public CorEval Eval
         {
-            get 
+            get
             {
                 return m_eval;
             }
         }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnEvalComplete:
+                    return "Eval Complete";
+                case ManagedCallbackType.OnEvalException:
+                    return "Eval Exception";
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void EvalEventHandler (Object sender, CorEvalEventArgs e);
+    public delegate void EvalEventHandler(Object sender, CorEvalEventArgs e);
 
 
     /**
@@ -1520,22 +1113,41 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         CorModule m_managedModule;
 
-        public CorModuleEventArgs (CorAppDomain appDomain, CorModule managedModule)
-            : base (appDomain)
+        public CorModuleEventArgs(CorAppDomain appDomain, CorModule managedModule)
+            : base(appDomain)
         {
             m_managedModule = managedModule;
         }
 
-        public CorModule  Module
+        public CorModuleEventArgs(CorAppDomain appDomain, CorModule managedModule,
+            ManagedCallbackType callbackType)
+            : base(appDomain, callbackType)
         {
-            get 
+            m_managedModule = managedModule;
+        }
+
+        public CorModule Module
+        {
+            get
             {
                 return m_managedModule;
             }
         }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnModuleLoad:
+                    return "Module loaded: " + m_managedModule.Name;
+                case ManagedCallbackType.OnModuleUnload:
+                    return "Module unloaded: " + m_managedModule.Name;
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void CorModuleEventHandler (Object sender, 
+    public delegate void CorModuleEventHandler(Object sender,
                                                 CorModuleEventArgs e);
 
 
@@ -1546,44 +1158,71 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         CorClass m_class;
 
-        public CorClassEventArgs (CorAppDomain appDomain, CorClass managedClass)
-            : base (appDomain)
+        public CorClassEventArgs(CorAppDomain appDomain, CorClass managedClass)
+            : base(appDomain)
         {
             m_class = managedClass;
         }
 
-        public CorClass  Class
+        public CorClassEventArgs(CorAppDomain appDomain, CorClass managedClass,
+            ManagedCallbackType callbackType)
+            : base(appDomain, callbackType)
         {
-            get 
+            m_class = managedClass;
+        }
+
+        public CorClass Class
+        {
+            get
             {
                 return m_class;
             }
         }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnClassLoad:
+                    return "Class loaded: " + m_class;
+                case ManagedCallbackType.OnClassUnload:
+                    return "Class unloaded: " + m_class;
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void CorClassEventHandler (Object sender, 
+    public delegate void CorClassEventHandler(Object sender,
                                                CorClassEventArgs e);
 
-  
+
     /**
      * For events dealing with debugger errors.
      */
     public class CorDebuggerErrorEventArgs : CorProcessEventArgs
     {
-        int   m_hresult;
-        int   m_errorCode;
+        int m_hresult;
+        int m_errorCode;
 
-        public CorDebuggerErrorEventArgs (CorProcess process, int hresult, 
+        public CorDebuggerErrorEventArgs(CorProcess process, int hresult,
                                           int errorCode)
-            : base (process)
+            : base(process)
         {
             m_hresult = hresult;
             m_errorCode = errorCode;
         }
-        
-        public int  HResult
+
+        public CorDebuggerErrorEventArgs(CorProcess process, int hresult,
+                                          int errorCode, ManagedCallbackType callbackType)
+            : base(process, callbackType)
         {
-            get 
+            m_hresult = hresult;
+            m_errorCode = errorCode;
+        }
+
+        public int HResult
+        {
+            get
             {
                 return m_hresult;
             }
@@ -1591,14 +1230,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public int ErrorCode
         {
-            get 
+            get
             {
                 return m_errorCode;
             }
         }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnDebuggerError)
+            {
+                return "Debugger Error";
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void DebuggerErrorEventHandler (Object sender, 
+    public delegate void DebuggerErrorEventHandler(Object sender,
                                                     CorDebuggerErrorEventArgs e);
 
 
@@ -1608,9 +1256,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public class CorAssemblyEventArgs : CorAppDomainBaseEventArgs
     {
         private CorAssembly m_assembly;
-        public CorAssemblyEventArgs (CorAppDomain appDomain, 
+        public CorAssemblyEventArgs(CorAppDomain appDomain,
                                      CorAssembly assembly)
-            : base (appDomain)
+            : base(appDomain)
+        {
+            m_assembly = assembly;
+        }
+
+        public CorAssemblyEventArgs(CorAppDomain appDomain,
+                                     CorAssembly assembly, ManagedCallbackType callbackType)
+            : base(appDomain, callbackType)
         {
             m_assembly = assembly;
         }
@@ -1618,14 +1273,26 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** The Assembly of interest. */
         public CorAssembly Assembly
         {
-            get 
+            get
             {
                 return m_assembly;
             }
         }
+
+        public override string ToString()
+        {
+            switch (CallbackType)
+            {
+                case ManagedCallbackType.OnAssemblyLoad:
+                    return "Assembly loaded: " + m_assembly.Name;
+                case ManagedCallbackType.OnAssemblyUnload:
+                    return "Assembly unloaded: " + m_assembly.Name;
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void CorAssemblyEventHandler (Object sender, 
+    public delegate void CorAssemblyEventHandler(Object sender,
                                                   CorAssemblyEventArgs e);
 
 
@@ -1638,26 +1305,36 @@ namespace Microsoft.Samples.Debugging.CorDebug
         string m_logSwitchName;
         string m_message;
 
-        public CorLogMessageEventArgs (CorAppDomain appDomain, CorThread thread,
+        public CorLogMessageEventArgs(CorAppDomain appDomain, CorThread thread,
                                        int level, string logSwitchName, string message)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
         {
             m_level = level;
             m_logSwitchName = logSwitchName;
             m_message = message;
         }
 
-        public int  Level
+        public CorLogMessageEventArgs(CorAppDomain appDomain, CorThread thread,
+                                       int level, string logSwitchName, string message,
+                                       ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
-            get 
+            m_level = level;
+            m_logSwitchName = logSwitchName;
+            m_message = message;
+        }
+
+        public int Level
+        {
+            get
             {
                 return m_level;
             }
         }
 
-        public string  LogSwitchName
+        public string LogSwitchName
         {
-            get 
+            get
             {
                 return m_logSwitchName;
             }
@@ -1665,14 +1342,23 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public string Message
         {
-            get 
+            get
             {
-                return  m_message;
+                return m_message;
             }
+        }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnLogMessage)
+            {
+                return "Log message(" + m_logSwitchName + ")";
+            }
+            return base.ToString();
         }
     }
 
-    public delegate void LogMessageEventHandler (Object sender, 
+    public delegate void LogMessageEventHandler(Object sender,
                                                  CorLogMessageEventArgs e);
 
 
@@ -1689,9 +1375,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         string m_parentName;
 
-        public CorLogSwitchEventArgs (CorAppDomain appDomain, CorThread thread,
+        public CorLogSwitchEventArgs(CorAppDomain appDomain, CorThread thread,
                                       int level, int reason, string logSwitchName, string parentName)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
         {
             m_level = level;
             m_reason = reason;
@@ -1699,9 +1385,20 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_parentName = parentName;
         }
 
-        public int  Level
+        public CorLogSwitchEventArgs(CorAppDomain appDomain, CorThread thread,
+                                      int level, int reason, string logSwitchName, string parentName,
+                                      ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
-            get 
+            m_level = level;
+            m_reason = reason;
+            m_logSwitchName = logSwitchName;
+            m_parentName = parentName;
+        }
+
+        public int Level
+        {
+            get
             {
                 return m_level;
             }
@@ -1709,15 +1406,15 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public int Reason
         {
-            get 
+            get
             {
                 return m_reason;
             }
         }
 
-        public string  LogSwitchName
+        public string LogSwitchName
         {
-            get 
+            get
             {
                 return m_logSwitchName;
             }
@@ -1725,43 +1422,70 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public string ParentName
         {
-            get 
+            get
             {
-                return  m_parentName;
+                return m_parentName;
             }
+        }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnLogSwitch)
+            {
+                return "Log Switch" + "\n" +
+                    "Level: " + m_level + "\n" +
+                    "Log Switch Name: " + m_logSwitchName;
+            }
+            return base.ToString();
         }
     }
 
-    public delegate void LogSwitchEventHandler (Object sender, 
+    public delegate void LogSwitchEventHandler(Object sender,
                                                 CorLogSwitchEventArgs e);
 
 
-	/**
-	 * For events dealing with MDA messages.
-	 */
-	public class CorMDAEventArgs : CorProcessEventArgs
+    /**
+     * For events dealing with MDA messages.
+     */
+    public class CorMDAEventArgs : CorProcessEventArgs
     {
         // Thread may be null.
-		public CorMDAEventArgs (CorMDA mda, CorThread thread, CorProcess proc)
-			: base (proc)
-		{
-		    m_mda = mda;
-		    m_thread = thread;
-		    //m_proc = proc;
-		}
+        public CorMDAEventArgs(CorMDA mda, CorThread thread, CorProcess proc)
+            : base(proc)
+        {
+            m_mda = mda;
+            Thread = thread;
+            //m_proc = proc;
+        }
+
+        public CorMDAEventArgs(CorMDA mda, CorThread thread, CorProcess proc,
+            ManagedCallbackType callbackType)
+            : base(proc, callbackType)
+        {
+            m_mda = mda;
+            Thread = thread;
+            //m_proc = proc;
+        }
 
         CorMDA m_mda;
         public CorMDA MDA { get { return m_mda; } }
-        
-        CorThread m_thread;
-        public CorThread Thread { get  {return m_thread; } }
-                
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnMDANotification)
+            {
+                return "MDANotification" + "\n" +
+                    "Name=" + m_mda.Name + "\n" +
+                    "XML=" + m_mda.XML;
+            }
+            return base.ToString();
+        }
+
         //CorProcess m_proc;
         //CorProcess Process { get { return m_proc; } }
     }
 
-	public delegate void MDANotificationEventHandler (Object sender, 
-												 CorMDAEventArgs e);
+    public delegate void MDANotificationEventHandler(Object sender, CorMDAEventArgs e);
 
 
 
@@ -1770,68 +1494,79 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorUpdateModuleSymbolsEventArgs : CorModuleEventArgs
     {
-#if MDBG_FAKE_COM
-        IntPtr m_stream;
-
-        [CLSCompliant(false)]
-        public CorUpdateModuleSymbolsEventArgs (CorAppDomain appDomain, 
-                                                CorModule managedModule, 
-                                                IntPtr stream)
-            : base (appDomain, managedModule)
-        {
-            m_stream = stream ;
-        }
-
-        [CLSCompliant(false)]
-        public IntPtr Stream
-        {
-            get 
-            {
-                return m_stream;
-            }
-        }
-
-
-#else
         IStream m_stream;
 
         [CLSCompliant(false)]
-        public CorUpdateModuleSymbolsEventArgs (CorAppDomain appDomain, 
-                                                CorModule managedModule, 
+        public CorUpdateModuleSymbolsEventArgs(CorAppDomain appDomain,
+                                                CorModule managedModule,
                                                 IStream stream)
-            : base (appDomain, managedModule)
+            : base(appDomain, managedModule)
         {
-            m_stream = stream ;
+            m_stream = stream;
+        }
+
+        [CLSCompliant(false)]
+        public CorUpdateModuleSymbolsEventArgs(CorAppDomain appDomain,
+                                                CorModule managedModule,
+                                                IStream stream,
+                                                ManagedCallbackType callbackType)
+            : base(appDomain, managedModule, callbackType)
+        {
+            m_stream = stream;
         }
 
         [CLSCompliant(false)]
         public IStream Stream
         {
-            get 
+            get
             {
                 return m_stream;
             }
         }
-#endif
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnUpdateModuleSymbols)
+            {
+                return "Module Symbols Updated";
+            }
+            return base.ToString();
+        }
     }
 
-    public delegate void UpdateModuleSymbolsEventHandler (Object sender, 
+    public delegate void UpdateModuleSymbolsEventHandler(Object sender,
                                                           CorUpdateModuleSymbolsEventArgs e);
 
-    public sealed  class CorExceptionInCallbackEventArgs: CorEventArgs
+    public sealed class CorExceptionInCallbackEventArgs : CorEventArgs
     {
-        public CorExceptionInCallbackEventArgs(CorController controller,Exception exceptionThrown)
+        public CorExceptionInCallbackEventArgs(CorController controller, Exception exceptionThrown)
             : base(controller)
         {
             m_exceptionThrown = exceptionThrown;
         }
 
+        public CorExceptionInCallbackEventArgs(CorController controller, Exception exceptionThrown,
+            ManagedCallbackType callbackType)
+            : base(controller, callbackType)
+        {
+            m_exceptionThrown = exceptionThrown;
+        }
+
         public Exception ExceptionThrown
-        { 
-            get 
-            { 
-                return m_exceptionThrown; 
-            } 
+        {
+            get
+            {
+                return m_exceptionThrown;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnExceptionInCallback)
+            {
+                return "Callback Exception: " + m_exceptionThrown.Message;
+            }
+            return base.ToString();
         }
 
         private Exception m_exceptionThrown;
@@ -1846,19 +1581,30 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorEditAndContinueRemapEventArgs : CorThreadEventArgs
     {
-        public CorEditAndContinueRemapEventArgs (CorAppDomain appDomain, 
+        public CorEditAndContinueRemapEventArgs(CorAppDomain appDomain,
                                         CorThread thread,
                                         CorFunction managedFunction,
-                                        int acccurate)
-            : base (appDomain, thread)
+                                        int accurate)
+            : base(appDomain, thread)
         {
-            m_managedFunction = managedFunction ;
-            m_accurate = acccurate;
+            m_managedFunction = managedFunction;
+            m_accurate = accurate;
+        }
+
+        public CorEditAndContinueRemapEventArgs(CorAppDomain appDomain,
+                                        CorThread thread,
+                                        CorFunction managedFunction,
+                                        int accurate,
+                                        ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
+        {
+            m_managedFunction = managedFunction;
+            m_accurate = accurate;
         }
 
         public CorFunction Function
         {
-            get 
+            get
             {
                 return m_managedFunction;
             }
@@ -1866,34 +1612,45 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public bool IsAccurate
         {
-            get 
+            get
             {
-                return m_accurate!=0;
+                return m_accurate != 0;
             }
         }
 
         private CorFunction m_managedFunction;
         private int m_accurate;
     }
-    public delegate void CorEditAndContinueRemapEventHandler (Object sender, 
+    public delegate void CorEditAndContinueRemapEventHandler(Object sender,
                                                               CorEditAndContinueRemapEventArgs e);
 
-    
+
     public class CorBreakpointSetErrorEventArgs : CorThreadEventArgs
     {
-        public CorBreakpointSetErrorEventArgs (CorAppDomain appDomain, 
+        public CorBreakpointSetErrorEventArgs(CorAppDomain appDomain,
                                         CorThread thread,
                                         CorBreakpoint breakpoint,
                                         int errorCode)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
         {
-            m_breakpoint = breakpoint ;
-            m_errorCode = errorCode ;
+            m_breakpoint = breakpoint;
+            m_errorCode = errorCode;
+        }
+
+        public CorBreakpointSetErrorEventArgs(CorAppDomain appDomain,
+                                        CorThread thread,
+                                        CorBreakpoint breakpoint,
+                                        int errorCode,
+                                        ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
+        {
+            m_breakpoint = breakpoint;
+            m_errorCode = errorCode;
         }
 
         public CorBreakpoint Breakpoint
         {
-            get 
+            get
             {
                 return m_breakpoint;
             }
@@ -1901,28 +1658,51 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public int ErrorCode
         {
-            get 
+            get
             {
                 return m_errorCode;
             }
         }
 
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnBreakpointSetError)
+            {
+                return "Error Setting Breakpoint";
+            }
+            return base.ToString();
+        }
+
         private CorBreakpoint m_breakpoint;
         private int m_errorCode;
     }
-    public delegate void CorBreakpointSetErrorEventHandler(Object sender, 
+    public delegate void CorBreakpointSetErrorEventHandler(Object sender,
                                                            CorBreakpointSetErrorEventArgs e);
 
 
-    public sealed  class CorFunctionRemapOpportunityEventArgs: CorThreadEventArgs
+    public sealed class CorFunctionRemapOpportunityEventArgs : CorThreadEventArgs
     {
-        public CorFunctionRemapOpportunityEventArgs(CorAppDomain appDomain, 
+        public CorFunctionRemapOpportunityEventArgs(CorAppDomain appDomain,
                                            CorThread thread,
                                            CorFunction oldFunction,
                                            CorFunction newFunction,
                                            int oldILoffset
                                            )
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_oldFunction = oldFunction;
+            m_newFunction = newFunction;
+            m_oldILoffset = oldILoffset;
+        }
+
+        public CorFunctionRemapOpportunityEventArgs(CorAppDomain appDomain,
+                                           CorThread thread,
+                                           CorFunction oldFunction,
+                                           CorFunction newFunction,
+                                           int oldILoffset,
+                                           ManagedCallbackType callbackType
+                                           )
+            : base(appDomain, thread, callbackType)
         {
             m_oldFunction = oldFunction;
             m_newFunction = newFunction;
@@ -1931,7 +1711,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public CorFunction OldFunction
         {
-            get 
+            get
             {
                 return m_oldFunction;
             }
@@ -1939,7 +1719,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public CorFunction NewFunction
         {
-            get 
+            get
             {
                 return m_newFunction;
             }
@@ -1947,33 +1727,52 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public int OldILOffset
         {
-            get 
+            get
             {
                 return m_oldILoffset;
             }
         }
-        
-        private CorFunction m_oldFunction,m_newFunction;
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnFunctionRemapOpportunity)
+            {
+                return "Function Remap Opportunity";
+            }
+            return base.ToString();
+        }
+
+        private CorFunction m_oldFunction, m_newFunction;
         private int m_oldILoffset;
     }
 
     public delegate void CorFunctionRemapOpportunityEventHandler(Object sender,
                                                        CorFunctionRemapOpportunityEventArgs e);
 
-    public sealed  class CorFunctionRemapCompleteEventArgs: CorThreadEventArgs
+    public sealed class CorFunctionRemapCompleteEventArgs : CorThreadEventArgs
     {
-        public CorFunctionRemapCompleteEventArgs(CorAppDomain appDomain, 
+        public CorFunctionRemapCompleteEventArgs(CorAppDomain appDomain,
                                            CorThread thread,
                                            CorFunction managedFunction
                                            )
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_managedFunction = managedFunction;
+        }
+
+        public CorFunctionRemapCompleteEventArgs(CorAppDomain appDomain,
+                                           CorThread thread,
+                                           CorFunction managedFunction,
+                                           ManagedCallbackType callbackType
+                                           )
+            : base(appDomain, thread, callbackType)
         {
             m_managedFunction = managedFunction;
         }
 
         public CorFunction Function
         {
-            get 
+            get
             {
                 return m_managedFunction;
             }
@@ -1988,53 +1787,90 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
     public class CorExceptionUnwind2EventArgs : CorThreadEventArgs
     {
-    
+
         [CLSCompliant(false)]
         public CorExceptionUnwind2EventArgs(CorAppDomain appDomain, CorThread thread,
                                             CorDebugExceptionUnwindCallbackType eventType,
                                             int flags)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
         {
             m_eventType = eventType;
             m_flags = flags;
         }
-        
+
+        [CLSCompliant(false)]
+        public CorExceptionUnwind2EventArgs(CorAppDomain appDomain, CorThread thread,
+                                            CorDebugExceptionUnwindCallbackType eventType,
+                                            int flags,
+                                            ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
+        {
+            m_eventType = eventType;
+            m_flags = flags;
+        }
+
         [CLSCompliant(false)]
         public CorDebugExceptionUnwindCallbackType EventType
-        { 
-            get 
-            { 
-                return m_eventType; 
+        {
+            get
+            {
+                return m_eventType;
             }
         }
 
         public int Flags
-        { 
-            get 
-            { 
-                return m_flags; 
-            } 
+        {
+            get
+            {
+                return m_flags;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnExceptionUnwind2)
+            {
+                return "Exception unwind\n" +
+                    "EventType: " + m_eventType;
+            }
+            return base.ToString();
         }
 
         CorDebugExceptionUnwindCallbackType m_eventType;
         int m_flags;
     }
 
-    public delegate void CorExceptionUnwind2EventHandler (Object sender, 
+    public delegate void CorExceptionUnwind2EventHandler(Object sender,
                                                    CorExceptionUnwind2EventArgs e);
 
 
     public class CorException2EventArgs : CorThreadEventArgs
     {
-    
+
         [CLSCompliant(false)]
-        public CorException2EventArgs(CorAppDomain appDomain, 
+        public CorException2EventArgs(CorAppDomain appDomain,
                                       CorThread thread,
-                                      CorFrame frame, 
+                                      CorFrame frame,
                                       int offset,
                                       CorDebugExceptionCallbackType eventType,
                                       int flags)
-            : base (appDomain, thread)
+            : base(appDomain, thread)
+        {
+            m_frame = frame;
+            m_offset = offset;
+            m_eventType = eventType;
+            m_flags = flags;
+        }
+
+        [CLSCompliant(false)]
+        public CorException2EventArgs(CorAppDomain appDomain,
+                                      CorThread thread,
+                                      CorFrame frame,
+                                      int offset,
+                                      CorDebugExceptionCallbackType eventType,
+                                      int flags,
+                                      ManagedCallbackType callbackType)
+            : base(appDomain, thread, callbackType)
         {
             m_frame = frame;
             m_offset = offset;
@@ -2044,35 +1880,44 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public CorFrame Frame
         {
-            get 
+            get
             {
                 return m_frame;
             }
         }
 
         public int Offset
-        { 
-            get 
-            { 
-                return m_offset; 
-            } 
+        {
+            get
+            {
+                return m_offset;
+            }
         }
 
         [CLSCompliant(false)]
         public CorDebugExceptionCallbackType EventType
-        { 
-            get 
-            { 
-                return m_eventType; 
-            } 
+        {
+            get
+            {
+                return m_eventType;
+            }
         }
 
         public int Flags
-        { 
-            get 
-            { 
-                return m_flags; 
-            } 
+        {
+            get
+            {
+                return m_flags;
+            }
+        }
+
+        public override string ToString()
+        {
+            if (CallbackType == ManagedCallbackType.OnException2)
+            {
+                return "Exception Thrown";
+            }
+            return base.ToString();
         }
 
         CorFrame m_frame;
@@ -2081,75 +1926,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
         int m_flags;
     }
 
-    public delegate void CorException2EventHandler (Object sender, 
+    public delegate void CorException2EventHandler(Object sender,
                                                    CorException2EventArgs e);
 
-#if MDBG_FEATURE_INTEROP
-    public class CorNativeStopEventArgs : CorProcessEventArgs
-    {
-        [CLSCompliant(false)]
-        public CorNativeStopEventArgs(CorProcess process, 
-                                      int threadId,
-                                      DEBUG_EVENT debugEvent,
-                                      bool isOutOfBand)
-            : base (process)
-        {
-            m_threadId = threadId;
-            m_debugEvent = debugEvent;
-            m_isOutOfBand = isOutOfBand;
-        }
-        
-        public int ThreadId
-        { 
-            get 
-            { 
-                return m_threadId; 
-            } 
-        }
-
-        public bool IsOutOfBand
-        { 
-            get 
-            { 
-                return m_isOutOfBand; 
-            } 
-        }
-
-        [CLSCompliant(false)]
-        public DEBUG_EVENT DebugEvent
-        { 
-            get 
-            { 
-                return m_debugEvent; 
-            } 
-        }
-
-        public override bool Continue
-        {
-            get 
-            {
-                // we should not be able to change default for OOB events
-                return base.Continue;
-            }
-            set 
-            {
-                if(m_isOutOfBand && (value == false))
-                {
-                    Debug.Assert(false,"Cannot stop on OOB events");
-                    throw new InvalidOperationException("Cannot stop on OOB events");
-                }
-                base.Continue = value;
-            }
-        }
-		
-        private int m_threadId;
-        private DEBUG_EVENT m_debugEvent;
-        private bool m_isOutOfBand;
-    }
-
-    public delegate void CorNativeStopEventHandler (Object sender, 
-                                                    CorNativeStopEventArgs e);
-#endif
 
     public enum ManagedCallbackType 
     {
@@ -2182,9 +1961,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         OnBreakpointSetError,
         OnException2,
         OnExceptionUnwind2,
-#if MDBG_FEATURE_INTEROP
-        OnNativeStop,
-#endif
         OnMDANotification,
         OnExceptionInCallback,
     }
@@ -2193,6 +1969,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         Last = ManagedCallbackType.OnExceptionInCallback,
     }
 
+	// [Xamarin] Output redirection.
 	public class CorTargetOutputEventArgs: EventArgs
 	{
 		public CorTargetOutputEventArgs (string text, bool isStdError)
@@ -2205,6 +1982,402 @@ namespace Microsoft.Samples.Debugging.CorDebug
 		public bool IsStdError { get; set; }
 	}
 
+	// [Xamarin] Output redirection.
 	public delegate void CorTargetOutputEventHandler (Object sender, CorTargetOutputEventArgs e);
+
+    // Helper class to convert from COM-classic callback interface into managed args.
+    // Derived classes can overide the HandleEvent method to define the handling.
+    abstract public class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
+    {
+        // Derived class overrides this methdos 
+        protected abstract void HandleEvent(ManagedCallbackType eventId, CorEventArgs args);
+
+        void ICorDebugManagedCallback.Breakpoint(ICorDebugAppDomain appDomain,
+                                ICorDebugThread thread,
+                                ICorDebugBreakpoint breakpoint)
+        {
+            HandleEvent(ManagedCallbackType.OnBreakpoint,
+                               new CorBreakpointEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                           thread == null ? null : new CorThread(thread),
+                                                           breakpoint == null ? null : new CorFunctionBreakpoint((ICorDebugFunctionBreakpoint)breakpoint),
+                                                           ManagedCallbackType.OnBreakpoint
+                                                           ));
+        }
+
+        void ICorDebugManagedCallback.StepComplete(ICorDebugAppDomain appDomain,
+                                   ICorDebugThread thread,
+                                   ICorDebugStepper stepper,
+                                   CorDebugStepReason stepReason)
+        {
+            HandleEvent(ManagedCallbackType.OnStepComplete,
+                               new CorStepCompleteEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                            thread == null ? null : new CorThread(thread),
+                                                            stepper == null ? null : new CorStepper(stepper),
+                                                            stepReason,
+                                                            ManagedCallbackType.OnStepComplete));
+        }
+
+        void ICorDebugManagedCallback.Break(
+                           ICorDebugAppDomain appDomain,
+                           ICorDebugThread thread)
+        {
+            HandleEvent(ManagedCallbackType.OnBreak,
+                               new CorThreadEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      thread == null ? null : new CorThread(thread),
+                                                      ManagedCallbackType.OnBreak));
+        }
+
+        void ICorDebugManagedCallback.Exception(
+                                                 ICorDebugAppDomain appDomain,
+                                                 ICorDebugThread thread,
+                                                 int unhandled)
+        {
+            HandleEvent(ManagedCallbackType.OnException,
+                               new CorExceptionEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                         thread == null ? null : new CorThread(thread),
+                                                         !(unhandled == 0),
+                                                         ManagedCallbackType.OnException));
+        }
+        /* pass false if ``unhandled'' is 0 -- mapping TRUE to true, etc. */
+
+        void ICorDebugManagedCallback.EvalComplete(
+                                  ICorDebugAppDomain appDomain,
+                                  ICorDebugThread thread,
+                                  ICorDebugEval eval)
+        {
+            HandleEvent(ManagedCallbackType.OnEvalComplete,
+                              new CorEvalEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                    thread == null ? null : new CorThread(thread),
+                                                    eval == null ? null : new CorEval(eval),
+                                                    ManagedCallbackType.OnEvalComplete));
+        }
+
+        void ICorDebugManagedCallback.EvalException(
+                                   ICorDebugAppDomain appDomain,
+                                   ICorDebugThread thread,
+                                   ICorDebugEval eval)
+        {
+            HandleEvent(ManagedCallbackType.OnEvalException,
+                              new CorEvalEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                    thread == null ? null : new CorThread(thread),
+                                                    eval == null ? null : new CorEval(eval),
+                                                    ManagedCallbackType.OnEvalException));
+        }
+
+        void ICorDebugManagedCallback.CreateProcess(
+                                   ICorDebugProcess process)
+        {
+            HandleEvent(ManagedCallbackType.OnCreateProcess,
+                              new CorProcessEventArgs( process == null ? null : CorProcess.GetCorProcess(process),
+                                                       ManagedCallbackType.OnCreateProcess));
+        }
+
+        void ICorDebugManagedCallback.ExitProcess(
+                                 ICorDebugProcess process)
+        {
+            HandleEvent(ManagedCallbackType.OnProcessExit,
+                               new CorProcessEventArgs(process == null ? null : CorProcess.GetCorProcess(process),
+                                                        ManagedCallbackType.OnProcessExit));
+        }
+
+        void ICorDebugManagedCallback.CreateThread(
+                                  ICorDebugAppDomain appDomain,
+                                  ICorDebugThread thread)
+        {
+            HandleEvent(ManagedCallbackType.OnCreateThread,
+                              new CorThreadEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      thread == null ? null : new CorThread(thread),
+                                                      ManagedCallbackType.OnCreateThread));
+        }
+
+        void ICorDebugManagedCallback.ExitThread(
+                                ICorDebugAppDomain appDomain,
+                                ICorDebugThread thread)
+        {
+            HandleEvent(ManagedCallbackType.OnThreadExit,
+                              new CorThreadEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      thread == null ? null : new CorThread(thread),
+                                                      ManagedCallbackType.OnThreadExit));
+        }
+
+        void ICorDebugManagedCallback.LoadModule(
+                                ICorDebugAppDomain appDomain,
+                                ICorDebugModule managedModule)
+        {
+            HandleEvent(ManagedCallbackType.OnModuleLoad,
+                              new CorModuleEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      managedModule == null ? null : new CorModule(managedModule),
+                                                      ManagedCallbackType.OnModuleLoad));
+        }
+
+        void ICorDebugManagedCallback.UnloadModule(
+                                  ICorDebugAppDomain appDomain,
+                                  ICorDebugModule managedModule)
+        {
+            HandleEvent(ManagedCallbackType.OnModuleUnload,
+                              new CorModuleEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      managedModule == null ? null : new CorModule(managedModule),
+                                                      ManagedCallbackType.OnModuleUnload));
+        }
+
+        void ICorDebugManagedCallback.LoadClass(
+                               ICorDebugAppDomain appDomain,
+                               ICorDebugClass c)
+        {
+            HandleEvent(ManagedCallbackType.OnClassLoad,
+                               new CorClassEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                     c == null ? null : new CorClass(c),
+                                                     ManagedCallbackType.OnClassLoad));
+        }
+
+        void ICorDebugManagedCallback.UnloadClass(
+                                 ICorDebugAppDomain appDomain,
+                                 ICorDebugClass c)
+        {
+            HandleEvent(ManagedCallbackType.OnClassUnload,
+                              new CorClassEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                     c == null ? null : new CorClass(c),
+                                                     ManagedCallbackType.OnClassUnload));
+        }
+
+        void ICorDebugManagedCallback.DebuggerError(
+                                   ICorDebugProcess process,
+                                   int errorHR,
+                                   uint errorCode)
+        {
+            HandleEvent(ManagedCallbackType.OnDebuggerError,
+                              new CorDebuggerErrorEventArgs( process == null ? null : CorProcess.GetCorProcess(process),
+                                                             errorHR,
+                                                             (int)errorCode,
+                                                             ManagedCallbackType.OnDebuggerError));
+        }
+
+        void ICorDebugManagedCallback.LogMessage(
+                                ICorDebugAppDomain appDomain,
+                                ICorDebugThread thread,
+                                int level,
+                                string logSwitchName,
+                                string message)
+        {
+            HandleEvent(ManagedCallbackType.OnLogMessage,
+                               new CorLogMessageEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                          thread == null ? null : new CorThread(thread),
+                                                          level, logSwitchName, message,
+                                                          ManagedCallbackType.OnLogMessage));
+        }
+
+        void ICorDebugManagedCallback.LogSwitch(
+                               ICorDebugAppDomain appDomain,
+                               ICorDebugThread thread,
+                               int level,
+                               uint reason,
+                               string logSwitchName,
+                               string parentName)
+        {
+            HandleEvent(ManagedCallbackType.OnLogSwitch,
+                              new CorLogSwitchEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                         thread == null ? null : new CorThread(thread),
+                                                         level, (int)reason, logSwitchName, parentName,
+                                                         ManagedCallbackType.OnLogSwitch));
+        }
+
+        void ICorDebugManagedCallback.CreateAppDomain(
+                                     ICorDebugProcess process,
+                                     ICorDebugAppDomain appDomain)
+        {
+            HandleEvent(ManagedCallbackType.OnCreateAppDomain,
+                              new CorAppDomainEventArgs( process == null ? null : CorProcess.GetCorProcess(process),
+                                                         appDomain == null ? null : new CorAppDomain(appDomain),
+                                                         ManagedCallbackType.OnCreateAppDomain));
+        }
+
+        void ICorDebugManagedCallback.ExitAppDomain(
+                                   ICorDebugProcess process,
+                                   ICorDebugAppDomain appDomain)
+        {
+            HandleEvent(ManagedCallbackType.OnAppDomainExit,
+                              new CorAppDomainEventArgs( process == null ? null : CorProcess.GetCorProcess(process),
+                                                         appDomain == null ? null : new CorAppDomain(appDomain),
+                                                         ManagedCallbackType.OnAppDomainExit));
+        }
+
+        void ICorDebugManagedCallback.LoadAssembly(
+                                  ICorDebugAppDomain appDomain,
+                                  ICorDebugAssembly assembly)
+        {
+            HandleEvent(ManagedCallbackType.OnAssemblyLoad,
+                              new CorAssemblyEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                        assembly == null ? null : new CorAssembly(assembly),
+                                                        ManagedCallbackType.OnAssemblyLoad));
+        }
+
+        void ICorDebugManagedCallback.UnloadAssembly(
+                                    ICorDebugAppDomain appDomain,
+                                    ICorDebugAssembly assembly)
+        {
+            HandleEvent(ManagedCallbackType.OnAssemblyUnload,
+                              new CorAssemblyEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                        assembly == null ? null : new CorAssembly(assembly),
+                                                        ManagedCallbackType.OnAssemblyUnload));
+        }
+
+        void ICorDebugManagedCallback.ControlCTrap(ICorDebugProcess process)
+        {
+            HandleEvent(ManagedCallbackType.OnControlCTrap,
+                              new CorProcessEventArgs( process == null ? null : CorProcess.GetCorProcess(process),
+                                                       ManagedCallbackType.OnControlCTrap));
+        }
+
+        void ICorDebugManagedCallback.NameChange(
+                                ICorDebugAppDomain appDomain,
+                                ICorDebugThread thread)
+        {
+            HandleEvent(ManagedCallbackType.OnNameChange,
+                              new CorThreadEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      thread == null ? null : new CorThread(thread),
+                                                      ManagedCallbackType.OnNameChange));
+        }
+
+        
+        void ICorDebugManagedCallback.UpdateModuleSymbols(
+                                         ICorDebugAppDomain appDomain,
+                                         ICorDebugModule managedModule,
+ IStream stream)
+        {
+            HandleEvent(ManagedCallbackType.OnUpdateModuleSymbols,
+                              new CorUpdateModuleSymbolsEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                                  managedModule == null ? null : new CorModule(managedModule),
+                                                                  stream,
+                                                                  ManagedCallbackType.OnUpdateModuleSymbols));
+        }
+
+        void ICorDebugManagedCallback.EditAndContinueRemap(
+                                         ICorDebugAppDomain appDomain,
+                                         ICorDebugThread thread,
+                                         ICorDebugFunction managedFunction,
+                                         int isAccurate)
+        {
+            Debug.Assert(false); //OBSOLETE callback
+        }
+
+
+        void ICorDebugManagedCallback.BreakpointSetError(
+                                       ICorDebugAppDomain appDomain,
+                                       ICorDebugThread thread,
+                                       ICorDebugBreakpoint breakpoint,
+                                       UInt32 errorCode)
+        {
+            HandleEvent(ManagedCallbackType.OnBreakpointSetError,
+                              new CorBreakpointSetErrorEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                        thread == null ? null : new CorThread(thread),
+                                                        null, 
+                                                        (int)errorCode,
+                                                        ManagedCallbackType.OnBreakpointSetError));
+        }
+
+        void ICorDebugManagedCallback2.FunctionRemapOpportunity(ICorDebugAppDomain appDomain,
+                                                                       ICorDebugThread thread,
+                                                                       ICorDebugFunction oldFunction,
+                                                                       ICorDebugFunction newFunction,
+                                                                       uint oldILoffset)
+        {
+            HandleEvent(ManagedCallbackType.OnFunctionRemapOpportunity,
+                                      new CorFunctionRemapOpportunityEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                                               thread == null ? null : new CorThread(thread),
+                                                                               oldFunction == null ? null : new CorFunction(oldFunction),
+                                                                               newFunction == null ? null : new CorFunction(newFunction),
+                                                                               (int)oldILoffset,
+                                                                               ManagedCallbackType.OnFunctionRemapOpportunity));
+        }
+
+        void ICorDebugManagedCallback2.FunctionRemapComplete(ICorDebugAppDomain appDomain,
+                                                             ICorDebugThread thread,
+                                                             ICorDebugFunction managedFunction)
+        {
+            HandleEvent(ManagedCallbackType.OnFunctionRemapComplete,
+                               new CorFunctionRemapCompleteEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
+                                                      thread == null ? null : new CorThread(thread),
+                                                      managedFunction == null ? null : new CorFunction(managedFunction),
+                                                      ManagedCallbackType.OnFunctionRemapComplete));
+        }
+
+        void ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess process, uint connectionId, ref ushort connectionName)
+        {
+            // Not Implemented
+            Debug.Assert(false);
+        }
+
+        void ICorDebugManagedCallback2.ChangeConnection(ICorDebugProcess process, uint connectionId)
+        {
+            //  Not Implemented
+            Debug.Assert(false);
+        }
+
+        void ICorDebugManagedCallback2.DestroyConnection(ICorDebugProcess process, uint connectionId)
+        {
+            // Not Implemented
+            Debug.Assert(false);
+        }
+
+        void ICorDebugManagedCallback2.Exception(ICorDebugAppDomain ad, ICorDebugThread thread,
+                                                 ICorDebugFrame frame, uint offset,
+                                                 CorDebugExceptionCallbackType eventType, uint flags) 
+        {
+            HandleEvent(ManagedCallbackType.OnException2,
+                                      new CorException2EventArgs(ad == null ? null : new CorAppDomain(ad),
+                                                        thread == null ? null : new CorThread(thread),
+                                                        frame == null ? null : new CorFrame(frame),
+                                                        (int)offset,
+                                                        eventType,
+                                                        (int)flags,
+                                                        ManagedCallbackType.OnException2));
+        }
+
+        void ICorDebugManagedCallback2.ExceptionUnwind(ICorDebugAppDomain ad, ICorDebugThread thread,
+                                                       CorDebugExceptionUnwindCallbackType eventType, uint flags)
+        {
+            HandleEvent(ManagedCallbackType.OnExceptionUnwind2,
+                                      new CorExceptionUnwind2EventArgs(ad == null ? null : new CorAppDomain(ad),
+                                                        thread == null ? null : new CorThread(thread),
+                                                        eventType,
+                                                        (int)flags,
+                                                        ManagedCallbackType.OnExceptionUnwind2));
+        }
+
+        // Get process from controller 
+        static private CorProcess GetProcessFromController(ICorDebugController pController)
+        {
+            CorProcess p;
+            ICorDebugProcess p2 = pController as ICorDebugProcess;
+            if (p2 != null)
+            {
+                p = CorProcess.GetCorProcess(p2);
+            }
+            else
+            {
+                ICorDebugAppDomain a2 = (ICorDebugAppDomain)pController;
+                p = new CorAppDomain(a2).Process;
+            }
+            return p;
+        }
+
+        void ICorDebugManagedCallback2.MDANotification(ICorDebugController pController,
+                                                       ICorDebugThread thread,
+                                                       ICorDebugMDA pMDA)
+        {
+            CorMDA c = new CorMDA(pMDA);
+            string szName = c.Name;
+            CorDebugMDAFlags f = c.Flags;
+            CorProcess p = GetProcessFromController(pController);
+
+
+            HandleEvent(ManagedCallbackType.OnMDANotification,
+                                      new CorMDAEventArgs(c,
+                                                           thread == null ? null : new CorThread(thread),
+                                                           p, ManagedCallbackType.OnMDANotification));
+        }
+
+
+    }
 
 } /* namespace */

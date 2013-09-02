@@ -26,16 +26,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return m_type;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugType Raw
-        {
-            get 
-            { 
-                return m_type;
-            }
-        }
-#endif
 
         /** Element type of the type. */
         public CorElementType Type
@@ -98,6 +88,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return dv==null?null:new CorValue (dv);
         }
 
+		// [Xamarin] Expression evaluator.
         // Expose IEnumerable, which can be used with for-each constructs.
         // This will provide an collection of CorType parameters.
         public CorType[] TypeParameters
