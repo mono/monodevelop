@@ -4,13 +4,11 @@
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
 using System;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 using Microsoft.Samples.Debugging.CorDebug; 
@@ -21,32 +19,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
     {
-		public static Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
-
-		static CorMetadataImport ( )
-		{
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_BOOLEAN, typeof (bool));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_CHAR, typeof (char));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I1, typeof (sbyte));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U1, typeof (byte));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I2, typeof (short));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U2, typeof (ushort));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I4, typeof (int));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U4, typeof (uint));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I8, typeof (long));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U8, typeof (ulong));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R4, typeof (float));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R8, typeof (double));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_STRING, typeof (string));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I, typeof (IntPtr));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
-		}
-
         public CorMetadataImport(CorModule managedModule)
         {
-            // GUID Copied from Cor.h
-            Guid IID_IMetadataImport = new Guid("7DAC8207-D3AE-4c75-9B67-92801A497D44");
-            m_importer = (IMetadataImport) managedModule.GetMetaDataInterface(IID_IMetadataImport);
+            m_importer = managedModule.GetMetaDataInterface <IMetadataImport>();
             Debug.Assert(m_importer != null);
         }
 
@@ -73,11 +48,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         // for 'Foo', returns 0.
         public int CountGenericParams(int typeToken)
         {
-            // <strip>@TODO resolve if GetMetaDataInterface should throw or return null.</strip>
+            
             // This may fail in pre V2.0 debuggees.
             //Guid IID_IMetadataImport2 = new Guid("FCE5EFA0-8BBA-4f8e-A036-8F2022B08466");
             if( ! (m_importer is IMetadataImport2) )
-                return 0; // this means we're pre v2.0 debugees.
+                return 0; // this means we're pre v2.0 debuggees.
             
 
             IMetadataImport2 importer2 = (m_importer as IMetadataImport2);
@@ -258,17 +233,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-#if USEOLDSYMREADER     
-        public IntPtr GetRawInterface()
-        {
-#if MDBG_FAKE_COM
-            System.Guid iid = new System.Guid( "7DAC8207-D3AE-4c75-9B67-92801A497D44");
-            return ((Microsoft.ClrTools.GenFakeCom.IFakeComWrapper)m_importer).GetIfacePtr( iid );
-#else
-            return Marshal.GetComInterfaceForObject(m_importer,typeof(IMetadataImport));
-#endif
-        }
-#else
         public object RawCOMObject
         {
             get 
@@ -276,7 +240,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 return m_importer;
             }
         }
-#endif  
 
 
         // properties
@@ -336,9 +299,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                     out pulCodeRVA,
                                     out pdwImplFlags);
 
-			CorCallingConvention callingConv;
-			MetadataHelperFunctions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
-			m_name = szMethodName.ToString ();
+            m_name = szMethodName.ToString();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
 
@@ -346,7 +307,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-				return m_retType;
+                throw new NotImplementedException();
             }
         }
 
@@ -435,7 +396,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             ArrayList al = new ArrayList();
             IntPtr hEnum = new IntPtr();
-			int nArg = 0;
             try 
             {
                 while(true) 
@@ -446,10 +406,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                           m_methodToken, out paramToken,1,out count);
                     if(count!=1)
                         break;
-					MetadataParameterInfo mp = new MetadataParameterInfo (m_importer, paramToken,
-													 this, DeclaringType, m_argTypes [nArg++]);
-					if (mp.Name != string.Empty)
-						al.Add(mp);
+                    al.Add(new MetadataParameterInfo(m_importer,paramToken,
+                                                     this,DeclaringType));
                 }
             }
             finally 
@@ -477,9 +435,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private int m_classToken;
         private int m_methodToken;
         private MethodAttributes m_methodAttributes;
-		private List<Type> m_argTypes;
-		private Type m_retType;
-	}
+    }
 
     public enum MetadataTokenType
     {
@@ -532,11 +488,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 
 
-    // <STRIP>
-    // 11/6/04 JKeljo:
-    // </STRIP>
+    
     // Struct isn't complete yet; just here for the IsTokenOfType method
-    // TODO: Re-do metadata token usage throughout to use this class
+    
     public struct MetadataToken
     {
         public MetadataToken(int value)
@@ -604,121 +558,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     {
         private static uint TokenFromRid(uint rid, uint tktype) {return (rid) | (tktype);}
 
-		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
-		{
-			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
-			uint numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
-			retType = MetadataHelperFunctions.ReadType (importer, ref pData);
-			argTypes = new List<Type> ();
-			for (int n = 0; n < numArgs; n++)
-				argTypes.Add (MetadataHelperFunctions.ReadType (importer, ref pData));
-		}
-
-		class GenericType
-		{
-			// Used as marker for generic method args
-		}
-
-		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
-		{
-			CorElementType et;
-			unsafe {
-				byte* pBytes = (byte*)pData;
-				et = (CorElementType) (*pBytes);
-				pData = (IntPtr) (pBytes + 1);
-			}
-
-			switch (et)
-			{
-				case CorElementType.ELEMENT_TYPE_VOID: return typeof (void);
-				case CorElementType.ELEMENT_TYPE_BOOLEAN: return typeof (bool);
-				case CorElementType.ELEMENT_TYPE_CHAR: return typeof (char);
-				case CorElementType.ELEMENT_TYPE_I1: return typeof (sbyte);
-				case CorElementType.ELEMENT_TYPE_U1: return typeof (byte);
-				case CorElementType.ELEMENT_TYPE_I2: return typeof (short);
-				case CorElementType.ELEMENT_TYPE_U2: return typeof (ushort);
-				case CorElementType.ELEMENT_TYPE_I4: return typeof (int);
-				case CorElementType.ELEMENT_TYPE_U4: return typeof (uint);
-				case CorElementType.ELEMENT_TYPE_I8: return typeof (long);
-				case CorElementType.ELEMENT_TYPE_U8: return typeof (ulong);
-				case CorElementType.ELEMENT_TYPE_R4: return typeof (float);
-				case CorElementType.ELEMENT_TYPE_R8: return typeof (double);
-				case CorElementType.ELEMENT_TYPE_STRING: return typeof (string);
-				case CorElementType.ELEMENT_TYPE_I: return typeof (IntPtr);
-				case CorElementType.ELEMENT_TYPE_U: return typeof (UIntPtr);
-				case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
-
-				case CorElementType.ELEMENT_TYPE_VAR:
-				case CorElementType.ELEMENT_TYPE_MVAR:
-					// Generic args in methods not supported. Return a dummy type.
-					CorSigUncompressData (ref pData);
-					return typeof(GenericType);
-
-				case CorElementType.ELEMENT_TYPE_GENERICINST: {
-					Type t = ReadType (importer, ref pData);
-					List<Type> typeArgs = new List<Type> ();
-					uint num = CorSigUncompressData (ref pData);
-					for (int n=0; n<num; n++) {
-						typeArgs.Add (ReadType (importer, ref pData));
-					}
-					return MetadataType.MakeGeneric (t, typeArgs);
-				}
-
-				case CorElementType.ELEMENT_TYPE_PTR: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakePointer (t);
-					}
-
-				case CorElementType.ELEMENT_TYPE_BYREF: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakeByRef(t);
-					}
-
-				case CorElementType.ELEMENT_TYPE_VALUETYPE:
-				case CorElementType.ELEMENT_TYPE_CLASS: {
-						uint token = CorSigUncompressToken (ref pData);
-						return new MetadataType (importer, (int) token);
-					}
-
-				case CorElementType.ELEMENT_TYPE_ARRAY: {
-						Type t = ReadType (importer, ref pData);
-						uint rank = CorSigUncompressData (ref pData);
-						uint numSizes = CorSigUncompressData (ref pData);
-						List<int> sizes = new List<int> ();
-						for (int n = 0; n < numSizes; n++)
-							sizes.Add ((int)CorSigUncompressData (ref pData));
-						uint numLoBounds = CorSigUncompressData (ref pData);
-						List<int> loBounds = new List<int> ();
-						for (int n = 0; n < numLoBounds; n++)
-							loBounds.Add ((int)CorSigUncompressData (ref pData));
-						return MetadataType.MakeArray (t, sizes, loBounds);
-					}
-
-				case CorElementType.ELEMENT_TYPE_SZARRAY: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakeArray (t, null, null);
-					}
-
-				case CorElementType.ELEMENT_TYPE_FNPTR: {
-						CorCallingConvention cconv;
-						Type retType;
-						List<Type> argTypes;
-						ReadMethodSignature (importer, ref pData, out cconv, out retType, out argTypes);
-						return MetadataType.MakeDelegate (retType, argTypes);
-					}
-
-				case CorElementType.ELEMENT_TYPE_CMOD_REQD:
-				case CorElementType.ELEMENT_TYPE_CMOD_OPT:
-						return ReadType (importer, ref pData);
-			}
-			throw new NotSupportedException ("Unknown sig element type: " + et);
-		}
-
         // The below have been translated manually from the inline C++ helpers in cor.h
-        // <STRIP>
-        // JKeljo 11/11/04: The only ones that have been tested at this point are
-        // CorSigUncompressCallingConv, CorSigUncompressToken, and CorSigUncompressElementType
-        // </STRIP>              
+        
         internal static uint CorSigUncompressBigData(
             ref IntPtr pData)             // [IN,OUT] compressed data 
         {
@@ -916,7 +757,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {          
             IMetadataImport2 importer2 = (importer as IMetadataImport2);
             if(importer2 == null)
-                return new string[0]; // this means we're pre v2.0 debugees.
+                return new string[0]; // this means we're pre v2.0 debuggees.
             
             Debug.Assert( importer2!=null );
 
@@ -976,94 +817,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
             return genargs;
         }
+    }
 
-		static object[] emptyAttributes = new object[0];
-
-		static internal object[] GetDebugAttributes (IMetadataImport importer, int token)
-		{
-			ArrayList attributes = new ArrayList ();
-			object attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerTypeProxyAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerDisplayAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-
-			if (attributes.Count == 0)
-				return emptyAttributes;
-			else
-				return attributes.ToArray ();
-		}
-
-		static internal object GetCustomAttribute (IMetadataImport importer, int token, Type type)
-		{
-			uint sigSize = 0;
-			IntPtr ppvSig = IntPtr.Zero;
-			int hr = importer.GetCustomAttributeByName (token, type.FullName, out ppvSig, out sigSize);
-			if (hr != 0)
-				return null;
-
-			byte[] data = new byte[sigSize];
-			Marshal.Copy (ppvSig, data, 0, (int)sigSize);
-			BinaryReader br = new BinaryReader (new MemoryStream (data));
-
-			// Prolog
-			if (br.ReadUInt16 () != 1)
-				throw new InvalidOperationException ("Incorrect attribute prolog");
-
-			ConstructorInfo ctor = type.GetConstructors ()[0];
-			ParameterInfo[] pars = ctor.GetParameters ();
-
-			object[] args = new object[pars.Length];
-
-			// Fixed args
-			for (int n=0; n<pars.Length; n++)
-				args [n] = ReadValue (br, pars[n].ParameterType);
-
-			object ob = Activator.CreateInstance (type, args);
-			
-			// Named args
-			uint nargs = br.ReadUInt16 ();
-			for (; nargs > 0; nargs--) {
-				byte fieldOrProp = br.ReadByte ();
-				byte atype = br.ReadByte ();
-
-				// Boxed primitive
-				if (atype == 0x51)
-					atype = br.ReadByte ();
-				CorElementType et = (CorElementType) atype;
-				string pname = br.ReadString ();
-				object val = ReadValue (br, CorMetadataImport.CoreTypes[et]);
-
-				if (fieldOrProp == 0x53) {
-					FieldInfo fi = type.GetField (pname);
-					fi.SetValue (ob, val);
-				}
-				else {
-					PropertyInfo pi = type.GetProperty (pname);
-					pi.SetValue (ob, val, null);
-				}
-			}
-			return ob;
-		}
-
-		static object ReadValue (BinaryReader br, Type type)
-		{
-			if (type.IsEnum) {
-				object ob = ReadValue (br, Enum.GetUnderlyingType (type));
-				return Enum.ToObject (type, Convert.ToInt64 (ob));
-			}
-			if (type == typeof (string) || type == typeof(Type))
-				return br.ReadString ();
-			if (type == typeof (int))
-				return br.ReadInt32 ();
-			throw new InvalidOperationException ("Can't parse value of type: " + type);
-		}
-	}
 } // namspace Microsoft.Debugger.MetadataWrapper

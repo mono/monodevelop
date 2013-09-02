@@ -58,31 +58,25 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
                 // Check whether the type is an enum
                 string baseTypeName = GetTypeName(importer, ptkExtends);
-
+                
                 IntPtr ppvSig;
-				if (baseTypeName == "System.Enum") {
-					m_isEnum = true;
-					m_enumUnderlyingType = GetEnumUnderlyingType (importer, classToken);
+                if (baseTypeName == "System.Enum")
+                {
+                    m_isEnum = true;
+                    m_enumUnderlyingType = GetEnumUnderlyingType(importer,classToken);
 
-					// Check for flags enum by looking for FlagsAttribute
-					uint sigSize = 0;
-					ppvSig = IntPtr.Zero;
-					int hr = importer.GetCustomAttributeByName (classToken, "System.FlagsAttribute", out ppvSig, out sigSize);
-					if (hr < 0) {
-						throw new COMException ("Exception looking for flags attribute", hr);
-					}
-					m_isFlagsEnum = (hr == 0);  // S_OK means the attribute is present.
-				}
+                    // Check for flags enum by looking for FlagsAttribute
+                    uint sigSize = 0;
+                    ppvSig = IntPtr.Zero;
+                    int hr = importer.GetCustomAttributeByName(classToken,"System.FlagsAttribute",out ppvSig,out sigSize);
+                    if (hr < 0)
+                    {
+                        throw new COMException("Exception looking for flags attribute",hr);
+                    }
+                    m_isFlagsEnum = (hr == 0);  // S_OK means the attribute is present.
+                }              
             }
         }
-
-		public override Type DeclaringType
-		{
-			get
-			{
-				return m_declaringType;
-			}
-		}
 
         private static string GetTypeName(IMetadataImport importer, int tk)
         {
@@ -193,13 +187,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-				int i = m_name.LastIndexOf ('+');
-				if (i == -1)
-					i = m_name.LastIndexOf ('.');
-				if (i != -1)
-					return m_name.Substring (i + 1);
-				else
-					return m_name;
+                return FullName;
             }
         }
 
@@ -236,37 +224,15 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-				int i = m_name.LastIndexOf ('.');
-				if (i != -1)
-					return m_name.Substring (0, i);
-				else
-					return "";
-			}
+                throw new NotImplementedException();
+            }
         }
 
         public override String FullName 
         {
-            get
+            get 
             {
-				StringBuilder sb = new StringBuilder (m_name);
-				if (m_typeArgs != null) {
-					sb.Append ("[");
-					for (int n = 0; n < m_typeArgs.Count; n++) {
-						if (n > 0)
-							sb.Append (",");
-						sb.Append (m_typeArgs[n].FullName);
-					}
-					sb.Append ("]");
-				}
-				if (IsPointer)
-					sb.Append ("*");
-				if (IsArray) {
-					sb.Append ("[");
-					for (int n = 1; n < m_arraySizes.Count; n++)
-						sb.Append (",");
-					sb.Append ("]");
-				}
-				return sb.ToString ();
+                return m_name;
             }
         }
 
@@ -303,34 +269,22 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-		public override Type[] GetGenericArguments ()
-		{
-			return m_typeArgs.ToArray ();
-		}
-
 
         // methods
 
         public override bool IsDefined (Type attributeType, bool inherit)
         {
-			return GetCustomAttributes (attributeType, inherit).Length > 0;
+            throw new NotImplementedException();
         }
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
-			ArrayList list = new ArrayList ();
-			foreach (object ob in GetCustomAttributes (inherit)) {
-				if (attributeType.IsInstanceOfType (ob))
-					list.Add (ob);
-			}
-			return list.ToArray ();
+            throw new NotImplementedException();
         }
 
         public override object[] GetCustomAttributes(bool inherit)
         {
-			if (m_customAttributes == null)
-				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_typeToken);
-			return m_customAttributes;
+            throw new NotImplementedException();
         }
 
         protected override bool HasElementTypeImpl()
@@ -355,31 +309,23 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         protected override bool IsPointerImpl()
         {
-			return m_isPtr;
+            throw new NotImplementedException();
         }
 
         protected override bool IsByRefImpl()
         {
-			return m_isByRef;
+            throw new NotImplementedException();
         }
 
         protected override bool IsArrayImpl()
         {
-			return m_arraySizes != null;
+            throw new NotImplementedException();
         }
 
         protected override TypeAttributes GetAttributeFlagsImpl()
         {
             throw new NotImplementedException();
         }
-
-		public override int GetArrayRank ()
-		{
-			if (m_arraySizes != null)
-				return m_arraySizes.Count;
-			else
-				return 0;
-		}
 
         public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
         {
@@ -398,35 +344,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
         {
-			ArrayList al = new ArrayList ();
-			IntPtr hEnum = new IntPtr ();
-
-			int methodToken;
-			try {
-				while (true) {
-					uint size;
-					((IMetadataImport2)m_importer).EnumProperties (ref hEnum, (int) m_typeToken, out methodToken, 1, out size);
-					if (size == 0)
-						break;
-					MetadataPropertyInfo prop = new MetadataPropertyInfo (m_importer, methodToken, this);
-					try {
-						MethodInfo mi = prop.GetGetMethod ();
-						if (mi == null)
-							mi = prop.GetSetMethod ();
-						if (FlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
-							al.Add (prop);
-					}
-					catch {
-						// Ignore
-					}
-				}
-			}
-			finally {
-				m_importer.CloseEnum (hEnum);
-			}
-			
-			return (PropertyInfo[]) al.ToArray (typeof (PropertyInfo));
-		}
+            throw new NotImplementedException();
+        }
 
         protected override PropertyInfo GetPropertyImpl(String name, BindingFlags bindingAttr,Binder binder,
                                                         Type returnType, Type[] types, ParameterModifier[] modifiers)
@@ -459,19 +378,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
-		bool FlagsMatch (bool ispublic, bool isstatic, BindingFlags flags)
-		{
-			if (ispublic && (flags & BindingFlags.Public) == 0)
-				return false;
-			if (!ispublic && (flags & BindingFlags.NonPublic) == 0)
-				return false;
-			if (isstatic && (flags & BindingFlags.Static) == 0)
-				return false;
-			if (!isstatic && (flags & BindingFlags.Instance) == 0)
-				return false;
-			return true;
-		}
-
         public override FieldInfo[] GetFields(BindingFlags bindingAttr)
         {
             ArrayList al = new ArrayList();
@@ -483,12 +389,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 while(true)
                 {
                     uint size;
-                    ((IMetadataImport2) m_importer).EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
+                    m_importer.EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
                     if(size==0)
                         break;
-					MetadataFieldInfo field = new MetadataFieldInfo (m_importer, fieldToken, this);
-					if (FlagsMatch (field.IsPublic, field.IsStatic, bindingAttr))
-						al.Add (field);
+                    al.Add(new MetadataFieldInfo(m_importer,fieldToken,this));
                 }
             }
             finally 
@@ -512,9 +416,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     m_importer.EnumMethods(ref hEnum,(int)m_typeToken,out methodToken,1,out size);
                     if(size==0)
                         break;
-					MetadataMethodInfo met = new MetadataMethodInfo (m_importer, methodToken);
-					if (FlagsMatch (met.IsPublic, met.IsStatic, bindingAttr))
-						al.Add (met);
+                    al.Add(new MetadataMethodInfo(m_importer,methodToken));
                 }
             }
             finally 
@@ -560,12 +462,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return MetadataHelperFunctions.GetGenericArgumentNames(m_importer,m_typeToken);
         }
 
-        // TODO: The need to give this method a name that doesn't collide with
-        // the non-virtual function Type.IsEnum is an example of why 
-        // inheriting from System.Type was a bad idea. The base implementation of 
-        // this method (and others like it) has no idea what's going on in this version 
-        // of "Type", but making this function "new IsEnum" would make it easier
-        // for people to call the wrong one with seemingly correct code.
+        
         public bool ReallyIsEnum
         {
             get
@@ -590,7 +487,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-        // TODO: Once generics are CLS-compliant, fix this
+        
         [CLSCompliant(false)]
         public IList<KeyValuePair<string,ulong>> EnumValues
         {
@@ -621,87 +518,29 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }
 
         // returns "" for normal classes, returns prefix for nested classes
-        private string GetNestedClassPrefix(IMetadataImport importer, int classToken, TypeAttributes attribs)
+        private static string GetNestedClassPrefix(IMetadataImport importer, int classToken, TypeAttributes attribs)
         {
             if( (attribs & TypeAttributes.VisibilityMask) > TypeAttributes.Public )
             {
                 // it is a nested class
                 int enclosingClass;
                 importer.GetNestedClassProps(classToken, out enclosingClass);
-				m_declaringType = new MetadataType (importer, enclosingClass);
-				return m_declaringType.FullName + "+";
+                MetadataType mt = new MetadataType(importer,enclosingClass);
+                return mt.Name+".";
             }
             else
                 return String.Empty;
         }
 
-		internal static Type MakeDelegate (Type retType, List<Type> argTypes)
-		{
-			
-			throw new NotImplementedException ();
-		}
-
-		public static Type MakeArray (Type t, List<int> sizes, List<int> loBounds)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				if (sizes == null) {
-					sizes = new List<int> ();
-					sizes.Add (1);
-				}
-				mt.m_arraySizes = sizes;
-				mt.m_arrayLoBounds = loBounds;
-				return mt;
-			}
-			if (sizes == null || sizes.Count == 1)
-				return t.MakeArrayType ();
-			else
-				return t.MakeArrayType (sizes.Count);
-		}
-
-		public static Type MakeByRef (Type t)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				mt.m_isByRef = true;
-				return mt;
-			}
-			return t.MakeByRefType ();
-		}
-
-		public static Type MakePointer (Type t)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				mt.m_isPtr = true;
-				return mt;
-			}
-			return t.MakeByRefType ();
-		}
-
-		public static Type MakeGeneric (Type t, List<Type> typeArgs)
-		{
-			MetadataType mt = (MetadataType)t;
-			mt.m_typeArgs = typeArgs;
-			return mt;
-		}
-
-		// member variables
-		private string m_name;
-		private IMetadataImport m_importer;
-		private int m_typeToken;
-		private bool m_isEnum;
-		private bool m_isFlagsEnum;
-		private CorElementType m_enumUnderlyingType;
-		private List<KeyValuePair<string, ulong>> m_enumValues;
-		private object[] m_customAttributes;
-		private Type m_declaringType;
-		private List<int> m_arraySizes;
-		private List<int> m_arrayLoBounds;
-		private bool m_isByRef, m_isPtr;
-		private List<Type> m_typeArgs;
-
-	}
+        // member variables
+        private string m_name;
+        private IMetadataImport m_importer;
+        private int m_typeToken;
+        private bool m_isEnum;
+        private bool m_isFlagsEnum;
+        private CorElementType m_enumUnderlyingType;
+        private List<KeyValuePair<string,ulong>> m_enumValues;
+    }
 
     // Sorts KeyValuePair<string,ulong>'s in increasing order by the value
     class AscendingValueComparer<K, V> : IComparer<KeyValuePair<K,V>> where V:IComparable
@@ -792,7 +631,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }
 
         private CorMetadataImport m_corMeta;
-        private IntPtr m_enum;                              // <strip>@TODO use Safehandle</strip>
+        private IntPtr m_enum;                              
         private Type m_type;
     } 
 }

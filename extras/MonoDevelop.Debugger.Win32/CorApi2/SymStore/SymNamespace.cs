@@ -31,11 +31,11 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     
         void GetNamespaces(int cNameSpaces,
                                 out int pcNameSpaces,
-                                ISymUnmanagedNamespace[] namespaces);
+                                [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedNamespace[] namespaces);
     
         void GetVariables(int cVars,
                              out int pcVars,
-                             ISymUnmanagedVariable[] pVars);
+                             [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedVariable[] pVars);
     }
 
 

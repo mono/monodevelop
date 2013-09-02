@@ -33,10 +33,10 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
          
          void GetSignature(int cSig,
                               out int pcSig,
-                              byte[] sig);
+                              [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] byte[] sig);
     }
 
-    class SymConstant : ISymbolConstant
+    internal class SymConstant : ISymbolConstant
     {
         ISymUnmanagedConstant m_target;
         
@@ -46,7 +46,6 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         }
         
         public String GetName()
-        
         {
             int count;
             m_target.GetName(0, out count, null);

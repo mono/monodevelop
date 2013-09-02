@@ -20,7 +20,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     public sealed class MetadataParameterInfo : ParameterInfo
     {
         internal MetadataParameterInfo(IMetadataImport importer,int paramToken,
-                                       MemberInfo memberImpl,Type typeImpl, Type argType)
+                                       MemberInfo memberImpl,Type typeImpl)
         {
             int parentToken;
             uint pulSequence,pdwAttr,pdwCPlusTypeFlag,pcchValue,size;
@@ -50,16 +50,16 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                    out pcchValue
                                    );
             NameImpl = szName.ToString();
-			ClassImpl = argType;
+            ClassImpl = typeImpl;
             PositionImpl = (int)pulSequence;
             AttrsImpl = (ParameterAttributes)pdwAttr;
-            //<strip>DefaultValueImpl=??;                   @TODO </strip>
+            
             MemberImpl=memberImpl;
         }
 
         private MetadataParameterInfo(SerializationInfo info, StreamingContext context)
         {
-            // <strip>@TODO (check why cannot call)         : base (context,info)</strip>
+            
         }
 
         public override String Name

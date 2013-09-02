@@ -5,7 +5,6 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 
@@ -26,16 +25,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return m_type;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugType Raw
-        {
-            get 
-            { 
-                return m_type;
-            }
-        }
-#endif
 
         /** Element type of the type. */
         public CorElementType Type
@@ -100,17 +89,14 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         // Expose IEnumerable, which can be used with for-each constructs.
         // This will provide an collection of CorType parameters.
-        public CorType[] TypeParameters
+        public IEnumerable TypeParameters
         {
             get
             {
-				List<CorType> list = new List<CorType> ();
                 ICorDebugTypeEnum etp = null;
                 m_type.EnumerateTypeParameters (out etp);
                 if (etp==null) return null;
-				foreach (CorType t in new CorTypeEnumerator (etp))
-					list.Add (t);
-				return list.ToArray ();
+                return new CorTypeEnumerator (etp);
             }
         }
     } /* class Type */

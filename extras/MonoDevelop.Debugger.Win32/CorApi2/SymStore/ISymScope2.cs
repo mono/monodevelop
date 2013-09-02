@@ -16,10 +16,12 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     using System.Runtime.InteropServices;
 
     
+    // This interface isn't directly returned, but SymbolScope which implements ISymbolScope
+    // also implements ISymbolScope2 and thus you may want to explicitly cast it to use these methods.
     [
         ComVisible(false)
     ]
-    internal interface ISymbolScope2 : ISymbolScope
+    public interface ISymbolScope2 : ISymbolScope
     {
     
         int LocalCount{ get; }

@@ -23,16 +23,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_asm = managedAssembly;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugAssembly Raw
-        {
-            get 
-            { 
-                return m_asm;
-            }
-        }
-#endif      
 
         /** Get the process containing the Assembly. */
         public CorProcess Process
