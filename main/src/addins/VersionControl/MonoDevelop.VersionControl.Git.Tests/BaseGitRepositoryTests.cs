@@ -39,7 +39,6 @@ using NGit.Revwalk;
 namespace MonoDevelop.VersionControl.Git.Tests
 {
 	[TestFixture]
-	[Ignore ("These are randomly failing on our build bots so I'm disabling them until they can be robustified")]
 	public class BaseGitUtilsTest : BaseRepoUtilsTest
 	{
 		[SetUp]
@@ -101,6 +100,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public override void UnlocksEntities ()
 		{
 			base.UnlocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("This test is failing because the file is showing up as Unversioned, not ScheduledForDelete")]
+		public override void DeletesFile ()
+		{
+			base.DeletesFile ();
 		}
 
 		[Test]
