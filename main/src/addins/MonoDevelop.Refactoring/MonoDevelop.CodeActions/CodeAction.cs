@@ -48,24 +48,13 @@ namespace MonoDevelop.CodeActions
 		public string IdString { get; set; }
 
 		/// <summary>
-		/// Gets or sets the code issue this action is bound to. 
-		/// This allows to split the action and the issue provider.
-		/// </summary>
-		public Type BoundToIssue { get; set; }
-
-		/// <summary>
 		/// The region of the code action.
 		/// </summary>
 		public DocumentRegion DocumentRegion { get; set; }
 		
 		/// <summary>
-		/// Gets or sets the type of the inspector that generated this action.
+		/// Gets or sets the type of the inspector that is the source of this action.
 		/// </summary>
-		/// <remarks>
-		/// While this looks the same as <see cref="BoundToIssue"/>, this is not the case.
-		/// BoundToIssue is used when an Action has been explicitly bound to an inspector,
-		/// while this property holds the type of the inspector that generated the action.
-		/// </remarks>
 		/// <value>The type of the inspector.</value>
 		public Type InspectorType { get; set; }
 		
