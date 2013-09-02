@@ -26,8 +26,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Xwt;
-using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -39,19 +37,18 @@ namespace MonoDevelop.CodeIssues
 	/// </remarks>
 	public class IssueGroup : IIssueTreeNode, IIssueSummarySink
 	{
-		object _lock = new object ();
+		readonly object _lock = new object ();
 		bool processingEnabled;
 		/// <summary>
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
-		ISet<IssueGroup> groups = new HashSet<IssueGroup>();
-		IList<IIssueTreeNode> children = new List<IIssueTreeNode>();
-		ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
+		readonly ISet<IssueGroup> groups = new HashSet<IssueGroup>();
+		readonly IList<IIssueTreeNode> children = new List<IIssueTreeNode>();
+		readonly ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.IssueGroup"/> class.
 		/// </summary>
-		/// <param name="sourceProvider">The <see cref="IGroupingProvider"/> that created this group.</param>
 		/// <param name="nextProvider">
 		/// The <see cref="IGroupingProvider"/> to use when grouping <see cref="IssueSummary"/> instances.
 		/// </param>
@@ -98,23 +95,25 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 		}
-		
+
 		bool IIssueTreeNode.HasVisibleChildren {
 			get {
-				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+				lock (_lock) {
+					return allIssues.Any (issue => ((IIssueTreeNode)issue).Visible);
+				}
 			}
 		}
-		
+
 		bool IIssueTreeNode.Visible {
 			get {
-				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+				return ((IIssueTreeNode)this).HasVisibleChildren;
 			}
 			
 			set {
 				throw new InvalidOperationException ("Not supported");
 			}
 		}
-		
+
 		ICollection<IIssueTreeNode> IIssueTreeNode.AllChildren {
 			get {
 				lock (_lock) {
@@ -124,6 +123,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
 			add {
 				childrenInvalidated += value;
@@ -142,6 +142,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueTreeNodeEventArgs> childAdded;
+
 		event EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
 			add {
 				childAdded += value;
@@ -160,6 +161,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> textChanged;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
 			add {
 				textChanged += value;
@@ -178,6 +180,7 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		event EventHandler<IssueGroupEventArgs> visibleChanged;
+
 		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.VisibleChanged {
 			add {
 				visibleChanged += value;

@@ -30,7 +30,7 @@ namespace MonoDevelop.CodeIssues
 {
 	public abstract class AbstractGroupingProvider<T>: IGroupingProvider
 	{
-		Dictionary<T, IssueGroup> groups = new Dictionary<T, IssueGroup> ();
+		readonly Dictionary<T, IssueGroup> groups = new Dictionary<T, IssueGroup> ();
 		
 		protected AbstractGroupingProvider()
 		{

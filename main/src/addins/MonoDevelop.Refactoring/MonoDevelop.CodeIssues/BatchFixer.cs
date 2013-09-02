@@ -44,9 +44,9 @@ namespace MonoDevelop.CodeIssues
 {
 	public class BatchFixer
 	{
-		IActionMatcher matcher;
+		readonly IActionMatcher matcher;
 
-		IProgressMonitor monitor;
+		readonly IProgressMonitor monitor;
 
 		public BatchFixer (IActionMatcher matcher, IProgressMonitor monitor)
 		{
@@ -55,22 +55,22 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		/// <summary>
-		/// Tries the fix the issues passed in <paramref name="issues"/>.
+		/// Tries to apply the actions passed in <paramref name="actions"/>.
 		/// </summary>
-		/// <param name="issues">The issues to fix.</param>
-		/// <returns>The fix issues.</returns>
+		/// <param name="actions">The actions to apply.</param>
+		/// <returns>The fixed code actions.</returns>
 		public IEnumerable<ActionSummary> TryFixIssues (IEnumerable<ActionSummary> actions)
 		{
 			if (actions == null)
 				throw new ArgumentNullException ("actions");
 				
 			// enumerate once
-			var actionSummaries = actions as IList<ActionSummary> ?? actions.ToArray ();
-			var issueSummaries = actionSummaries.Select (action => action.IssueSummary).ToArray ();
-			var files = issueSummaries.Select (issue => issue.File).ToList ();
+			var actionSummaries = actions as IList<ActionSummary> ?? actions.ToList ();
+			var issueSummaries = actionSummaries.Select (action => action.IssueSummary).ToList ();
+			var files = issueSummaries.Select (issue => issue.File).Distinct ().ToList ();
 			monitor.BeginTask ("Applying fixes", files.Count);
 			
-			var appliedActions = new List<ActionSummary> (issueSummaries.Length);
+			var appliedActions = new List<ActionSummary> (issueSummaries.Count);
 			Parallel.ForEach (files, file => {
 				monitor.Step (1);
 				
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 			return appliedActions;
 		}
 
-		IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
+		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
 			

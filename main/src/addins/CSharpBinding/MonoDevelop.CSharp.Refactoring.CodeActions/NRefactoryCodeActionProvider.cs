@@ -31,7 +31,6 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
 using System.Threading;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
@@ -44,18 +43,17 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public NRefactoryCodeActionProvider (CodeActionProvider provider, ContextActionAttribute attr)
 		{
 			if (provider == null)
-				throw new System.ArgumentNullException ("provider");
+				throw new ArgumentNullException ("provider");
 			if (attr == null)
-				throw new System.ArgumentNullException ("attr");
+				throw new ArgumentNullException ("attr");
 			this.provider = provider;
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			MimeType = "text/x-csharp";
-			BoundToIssue = attr.BoundToIssue;
 		}
 
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object _context, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (Document document, object _context, TextLocation loc, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;
@@ -73,9 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (actionId.Count <= num) {
 					actionId.Add (provider.GetType ().FullName + "'" + num);
 				}
-				yield return new NRefactoryCodeAction (actionId[num], GettextCatalog.GetString (action.Description ?? ""), action) {
-					BoundToIssue = this.BoundToIssue
-				};
+				yield return new NRefactoryCodeAction (actionId[num], GettextCatalog.GetString (action.Description ?? ""), action);
 				num++;
 			}
 		}
