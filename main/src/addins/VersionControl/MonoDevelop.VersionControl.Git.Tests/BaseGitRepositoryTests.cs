@@ -46,17 +46,17 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public override void Setup ()
 		{
 			// Generate directories and a svn util.
-			rootUrl = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			rootCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			Directory.CreateDirectory (rootUrl.FullPath + "repo.git");
-			repoLocation = "file:///" + rootUrl.FullPath + "repo.git";
+			RootUrl = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			RootCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			Directory.CreateDirectory (RootUrl.FullPath + "repo.git");
+			RepoLocation = "file:///" + RootUrl.FullPath + "repo.git";
 
 			// Initialize the bare repo.
 			InitCommand ci = new InitCommand ();
-			ci.SetDirectory (new Sharpen.FilePath (rootUrl.FullPath + "repo.git"));
+			ci.SetDirectory (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
 			ci.SetBare (true);
 			ci.Call ();
-			FileRepository bare = new FileRepository (new Sharpen.FilePath (rootUrl.FullPath + "repo.git"));
+			FileRepository bare = new FileRepository (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
 			string branch = Constants.R_HEADS + "master";
 
 			RefUpdate head = bare.UpdateRef (Constants.HEAD);
@@ -64,9 +64,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			head.Link (branch);
 
 			// Check out the repository.
-			Checkout (rootCheckout, repoLocation);
-			repo = GetRepo (rootCheckout, repoLocation);
-			DOT_DIR = ".git";
+			Checkout (RootCheckout, RepoLocation);
+			Repo = GetRepo (RootCheckout, RepoLocation);
+			DotDir= ".git";
 		}
 
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, Repo.GenerateDiff (RootCheckout + "testfile", Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]
@@ -126,14 +126,14 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 		protected override Revision GetHeadRevision ()
 		{
-			GitRepository repo2 = (GitRepository)repo;
+			GitRepository repo2 = (GitRepository)Repo;
 			RevWalk rw = new RevWalk (repo2.RootRepository);
 			ObjectId headId = repo2.RootRepository.Resolve (Constants.HEAD);
 			if (headId == null)
 				return null;
 
 			RevCommit commit = rw.ParseCommit (headId);
-			GitRevision rev = new GitRevision (repo, repo2.RootRepository, commit.Id.Name);
+			GitRevision rev = new GitRevision (Repo, repo2.RootRepository, commit.Id.Name);
 			rev.Commit = commit;
 			return rev;
 		}
@@ -148,8 +148,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			for (int i = 0; i < 2; i++) {
 				Assert.IsTrue (annotations [i].HasEmail);
-				Assert.IsNotNull (annotations [i].Author);
-				Assert.IsNotNull (annotations [i].Email);
+				Assert.AreEqual (Author, annotations [i].Author);
+				Assert.AreEqual (String.Format ("<{0}>", Email), annotations [i].Email);
 			}
 			Assert.IsTrue (annotations [2].HasDate);
 		}

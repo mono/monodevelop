@@ -44,13 +44,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			ProcessStartInfo info;
 
 			// Generate directories and a svn util.
-			rootCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			RootCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 
 			// Create repo in "repo".
 			svnAdmin = new Process ();
 			info = new ProcessStartInfo ();
 			info.FileName = "svnadmin";
-			info.Arguments = "create " + rootUrl + Path.DirectorySeparatorChar + "repo";
+			info.Arguments = "create " + RootUrl + Path.DirectorySeparatorChar + "repo";
 			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnAdmin.StartInfo = info;
 			svnAdmin.Start ();
@@ -62,13 +62,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			if (svnServe != null) {
 				info = new ProcessStartInfo ();
 				info.FileName = "svnserve";
-				info.Arguments = "-dr " + rootUrl;
+				info.Arguments = "-dr " + RootUrl;
 				info.WindowStyle = ProcessWindowStyle.Hidden;
 				svnServe.StartInfo = info;
 				svnServe.Start ();
 
 				// Create user to auth.
-				using (var perm = File. CreateText (rootUrl + Path.DirectorySeparatorChar + "repo" +
+				using (var perm = File. CreateText (RootUrl + Path.DirectorySeparatorChar + "repo" +
 				                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
 					perm.WriteLine ("[general]");
 					perm.WriteLine ("anon-access = write");
@@ -77,9 +77,9 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			}
 
 			// Check out the repository.
-			Checkout (rootCheckout, repoLocation);
-			repo = GetRepo (rootCheckout, repoLocation);
-			DOT_DIR = ".svn";
+			Checkout (RootCheckout, RepoLocation);
+			Repo = GetRepo (RootCheckout, RepoLocation);
+			DotDir = ".svn";
 		}
 
 		[Test]

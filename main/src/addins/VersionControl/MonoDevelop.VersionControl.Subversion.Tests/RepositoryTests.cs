@@ -39,18 +39,18 @@ namespace VersionControl.Subversion.Unix.Tests
 	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
 		SubversionBackend SvnClient {
-			get { return repo.Svn; }
+			get { return Repo.Svn; }
 		}
 
-		new SubversionRepository repo {
-			get { return (SubversionRepository) base.repo; }
+		new SubversionRepository Repo {
+			get { return (SubversionRepository) base.Repo; }
 		}
 
 		[SetUp]
 		public override void Setup ()
 		{
-			rootUrl = new FilePath (FileService.CreateTempDirectory ());
-			repoLocation = "file://" + rootUrl + "/repo";
+			RootUrl = new FilePath (FileService.CreateTempDirectory ());
+			RepoLocation = "file://" + RootUrl + "/repo";
 			base.Setup ();
 		}
 
@@ -59,7 +59,7 @@ namespace VersionControl.Subversion.Unix.Tests
 		{
 			AddFile ("test", "data", true, true);
 			AddDirectory ("foo", true, true);
-			var items = SvnClient.ListUrl (repo.Url, false).ToArray ();
+			var items = SvnClient.ListUrl (Repo.Url, false).ToArray ();
 			Assert.AreEqual (2, items.Length, "#1");
 			Assert.IsTrue (items.Any (item => item.Name == "test" && !item.IsDirectory), "#2a");
 			Assert.IsTrue (items.Any (item => item.Name == "foo" && item.IsDirectory), "#2b");
@@ -72,7 +72,7 @@ namespace VersionControl.Subversion.Unix.Tests
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
+			Assert.AreEqual (difftext, Repo.GenerateDiff (RootCheckout + "testfile", Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
 
 		// Tests that fail due to Subversion giving wrong data.
@@ -106,7 +106,7 @@ namespace VersionControl.Subversion.Unix.Tests
 
 		protected override void PostLock ()
 		{
-			string added = rootCheckout + "testfile";
+			string added = RootCheckout + "testfile";
 			Assert.Throws<Exception> (delegate {
 				File.WriteAllText (added, "text");
 			});
@@ -121,7 +121,7 @@ namespace VersionControl.Subversion.Unix.Tests
 
 		protected override void PostUnlock ()
 		{
-			string added = rootCheckout + "testfile";
+			string added = RootCheckout + "testfile";
 			Assert.DoesNotThrow (delegate {
 				File.WriteAllText (added, "text");
 			});
