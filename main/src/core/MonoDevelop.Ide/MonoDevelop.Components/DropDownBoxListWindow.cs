@@ -416,29 +416,17 @@ namespace MonoDevelop.Components
 				int n = (int)(vadj.Value / rowHeight);
 				while (ypos < winHeight - margin && n < win.DataProvider.IconCount) {
 					string text = win.DataProvider.GetMarkup (n) ?? "&lt;null&gt;";
-					layout.SetMarkup (text);
 
 					Gdk.Pixbuf icon = win.DataProvider.GetIcon (n);
 					int iconHeight = icon != null ? icon.Height : 24;
 					int iconWidth = icon != null ? icon.Width : 0;
 
+					layout.Ellipsize = Pango.EllipsizeMode.End;
+					layout.Width = (Allocation.Width - xpos - iconWidth - 2) * (int)Pango.Scale.PangoScale;
+					layout.SetMarkup (text);
+
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);
-					if (wi > Allocation.Width) {
-						int idx, trail;
-						if (layout.XyToIndex (
-							(int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale),
-							0,
-							out idx,
-							out trail
-						) && idx > 3) {
-							text = AmbienceService.UnescapeText (text);
-							text = text.Substring (0, idx - 3) + "...";
-							text = AmbienceService.EscapeText (text);
-							layout.SetMarkup (text);
-							layout.GetPixelSize (out wi, out he);
-						}
-					}
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					
@@ -447,7 +435,7 @@ namespace MonoDevelop.Components
 							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), 
 							                              true, margin, ypos, lineWidth, he + padding);
 							this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), 
-								                           xpos + iconWidth + 2, typos, layout);
+							                           xpos + iconWidth + 2, typos, layout);
 						} else {
 							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), 
 							                              false, margin, ypos, lineWidth, he + padding);
