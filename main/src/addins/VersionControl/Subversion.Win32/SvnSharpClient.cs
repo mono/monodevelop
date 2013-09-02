@@ -113,9 +113,15 @@ namespace SubversionAddinWindows
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
 			client.Authentication.UserNamePasswordHandlers += new EventHandler<SvnUserNamePasswordEventArgs> (AuthenticationUserNamePasswordHandlers);
 			client.Progress += delegate (object sender, SvnProgressEventArgs e) {
+				if (updateMonitor == null)
+					return;
+
 				ProgressWork (e, progressData, updateMonitor);
 			};
 			client.Cancel += delegate (object o, SvnCancelEventArgs a) {
+				if (updateMonitor == null)
+					return;
+
 				a.Cancel = updateMonitor.IsCancelRequested;
 			};
 		}
@@ -194,7 +200,7 @@ namespace SubversionAddinWindows
 			lock (client) {
 				try {
 					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
-				} catch (SvnOperationCanceledException e) {
+				} catch (SvnOperationCanceledException) {
 					if (Directory.Exists (path.ParentDirectory))
 						FileService.DeleteDirectory (path.ParentDirectory);
 				}

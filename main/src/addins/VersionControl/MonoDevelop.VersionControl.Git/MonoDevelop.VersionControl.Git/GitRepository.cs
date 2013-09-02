@@ -319,8 +319,10 @@ namespace MonoDevelop.VersionControl.Git
 				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
 					versionInfoCacheRepository = repository;
 					RevCommit headCommit = GetHeadCommit (repository);
-					if (headCommit != null)
+					if (headCommit != null) {
 						rev = new GitRevision (this, repository, headCommit.Id.Name);
+						versionInfoCacheRevision = rev;
+					}
 				} else
 					rev = versionInfoCacheRevision;
 

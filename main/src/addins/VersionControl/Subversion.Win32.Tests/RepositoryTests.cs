@@ -41,8 +41,8 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		[SetUp]
 		public override void Setup ()
 		{
-			rootUrl = new FilePath (FileService.CreateTempDirectory ());
-			repoLocation = "svn://localhost:3690/repo";
+			RootUrl = new FilePath (FileService.CreateTempDirectory ());
+			RepoLocation = "svn://localhost:3690/repo";
 			svnServe = new Process ();
 			base.Setup ();
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (rootCheckout + "testfile", repo.GetVersionInfo (rootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, Repo.GenerateDiff (RootCheckout + "testfile", Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		// Tests that fail due to SvnSharp giving wrong data.
@@ -96,7 +96,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		protected override void PostLock ()
 		{
-			string added = rootCheckout + "testfile";
+			string added = RootCheckout + "testfile";
 			Assert.Throws<Exception> (delegate {
 				File.WriteAllText (added, "text");
 			});
@@ -111,7 +111,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 		protected override void PostUnlock ()
 		{
-			string added = rootCheckout + "testfile";
+			string added = RootCheckout + "testfile";
 			Assert.DoesNotThrow (delegate {
 				File.WriteAllText (added, "text");
 			});
