@@ -156,6 +156,7 @@ namespace Microsoft.Samples.Debugging.CorDebug.NativeApi
         USER_UNSAFE_POINT      = 0x80        
     }
 
+	// [Xamarin] Expression evaluator.
     [CLSCompliant(true)]
     [Flags]
     public enum CorElementType
@@ -170,6 +171,7 @@ namespace Microsoft.Samples.Debugging.CorDebug.NativeApi
         ELEMENT_TYPE_CMOD_REQD = 0x1f,
         ELEMENT_TYPE_END = 0,
         ELEMENT_TYPE_FNPTR = 0x1b,
+		ELEMENT_TYPE_GENERICINST = 0x15,
         ELEMENT_TYPE_I = 0x18,
         ELEMENT_TYPE_I1 = 4,
         ELEMENT_TYPE_I2 = 6,
@@ -178,6 +180,7 @@ namespace Microsoft.Samples.Debugging.CorDebug.NativeApi
         ELEMENT_TYPE_INTERNAL = 0x21,
         ELEMENT_TYPE_MAX = 0x22,
         ELEMENT_TYPE_MODIFIER = 0x40,
+		ELEMENT_TYPE_MVAR = 0x1e,
         ELEMENT_TYPE_OBJECT = 0x1c,
         ELEMENT_TYPE_PINNED = 0x45,
         ELEMENT_TYPE_PTR = 15,
@@ -193,6 +196,7 @@ namespace Microsoft.Samples.Debugging.CorDebug.NativeApi
         ELEMENT_TYPE_U4 = 9,
         ELEMENT_TYPE_U8 = 11,
         ELEMENT_TYPE_VALUETYPE = 0x11,
+		ELEMENT_TYPE_VAR = 0x13,
         ELEMENT_TYPE_VOID = 1
     }
 

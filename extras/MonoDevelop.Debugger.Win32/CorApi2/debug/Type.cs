@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 
@@ -87,16 +88,20 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return dv==null?null:new CorValue (dv);
         }
 
+		// [Xamarin] Expression evaluator.
         // Expose IEnumerable, which can be used with for-each constructs.
         // This will provide an collection of CorType parameters.
-        public IEnumerable TypeParameters
+        public CorType[] TypeParameters
         {
             get
             {
+				List<CorType> list = new List<CorType> ();
                 ICorDebugTypeEnum etp = null;
                 m_type.EnumerateTypeParameters (out etp);
                 if (etp==null) return null;
-                return new CorTypeEnumerator (etp);
+				foreach (CorType t in new CorTypeEnumerator (etp))
+					list.Add (t);
+				return list.ToArray ();
             }
         }
     } /* class Type */

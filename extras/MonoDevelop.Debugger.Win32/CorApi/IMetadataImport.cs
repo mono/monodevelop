@@ -42,13 +42,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                             [ComAliasName("mdTypeDef*")] out int rTypeDefs,
                             uint cMax /*must be 1*/, 
                             [ComAliasName("ULONG*")] out uint pcTypeDefs); 
-
+#if !MDBG_FAKE_COM
         //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
         void EnumInterfaceImpls_(IntPtr phEnum, int td);
         
         //STDMETHOD(EnumTypeRefs)(HCORENUM *phEnum, mdTypeRef rTypeRefs[], ULONG cMax, ULONG* pcTypeRefs) PURE;
         void EnumTypeRefs_();
-
+#endif
         //     STDMETHOD(FindTypeDefByName)(           // S_OK or error.
         //         LPCWSTR     szTypeDef,              // [IN] Name of the Type.
         //         mdToken     tkEnclosingClass,       // [IN] TypeDef/TypeRef for Enclosing class.
@@ -70,11 +70,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
             [ComAliasName("ULONG*")] out int pchName,
             out Guid mvid    
 		);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetModuleFromScope)(          // S_OK.
         //         mdModule    *pmd) PURE;             // [OUT] Put mdModule token here.
         void GetModuleFromScope_();
-
+#endif
         //     STDMETHOD(GetTypeDefProps)(             // S_OK or error.
         //         mdTypeDef   td,                     // [IN] TypeDef token for inquiry.
         //         LPWSTR      szTypeDef,              // [OUT] Put name here.
@@ -89,13 +89,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                              [Out, MarshalAs(UnmanagedType.U4)] out System.Reflection.TypeAttributes pdwTypeDefFlags,
                              [ComAliasName("mdToken*")] [Out] out int ptkExtends
                              );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetInterfaceImplProps)(       // S_OK or error.
         //         mdInterfaceImpl iiImpl,             // [IN] InterfaceImpl token.
         //         mdTypeDef   *pClass,                // [OUT] Put implementing class token here.
         //         mdToken     *ptkIface) PURE;        // [OUT] Put implemented interface token here.
         void GetInterfaceImplProps_();
-
+#endif
         //     STDMETHOD(GetTypeRefProps)(             // S_OK or error.
         //         mdTypeRef   tr,                     // [IN] TypeRef token.
         //         mdToken     *ptkResolutionScope,    // [OUT] Resolution scope, ModuleRef or AssemblyRef.
@@ -109,7 +109,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                              [In] int cchName,
                              [ComAliasName("ULONG*")] out int pchName
                              );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(ResolveTypeRef)(mdTypeRef tr, REFIID riid, IUnknown **ppIScope, mdTypeDef *ptd) PURE;
         void ResolveTypeRef_();
 
@@ -129,7 +129,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         void EnumMembersWithName_();
-        
+#endif
         //     STDMETHOD(EnumMethods)(                 // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -142,7 +142,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                          int cMax, /*must be 1*/
                          [ComAliasName("ULONG*")] out int pcTokens
                          );
-        
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMethodsWithName)(         // S_OK, S_FALSE, or error.             
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.                
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -151,7 +151,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MethodDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         void EnumMethodsWithName_();
-
+#endif
         //     STDMETHOD(EnumFields)(                 // S_OK, S_FALSE, or error.  
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -166,7 +166,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                         int cMax /*must be 1*/, 
                         [ComAliasName("ULONG*")] out uint pcTokens); 
 
-        
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumFieldsWithName)(         // S_OK, S_FALSE, or error.              
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.                
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -175,7 +175,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         void EnumFieldsWithName_();
-
+#endif
         //     STDMETHOD(EnumParams)(                  // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdMethodDef mb,                     // [IN] MethodDef to scope the enumeration. 
@@ -187,7 +187,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                         [ComAliasName("mdParamDef*")] out int mdParamDef,
                         int cMax /*must be 1*/,
                         [ComAliasName("ULONG*")] out uint pcTokens);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMemberRefs)(              // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdToken     tkParent,               // [IN] Parent token to scope the enumeration.  
@@ -245,7 +245,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cbSigBlob,              // [IN] count of bytes in the signature blob    
         //         mdMemberRef *pmr) PURE;             // [OUT] matching memberref 
         void FindMemberRef_();
-
+#endif
         //     STDMETHOD (GetMethodProps)( 
         //         mdMethodDef mb,                     // The method for which to get props.   
         //         mdTypeDef   *pClass,                // Put method's class here. 
@@ -292,8 +292,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdProperty  rProperties[],          // [OUT] Put Properties here.   
         //         ULONG       cMax,                   // [IN] Max properties to put.  
         //         ULONG       *pcProperties) PURE;    // [OUT] Put # put here.    
-        void EnumProperties_();
-        
+        void EnumProperties(ref IntPtr phEnum,
+                            int td,
+                            [ComAliasName("mdProperty*")] out int mdProperty,
+                            int cMax /*must be 1*/,
+                            [ComAliasName("ULONG*")] out uint pcProperties);
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumEvents)(                  // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   td,                     // [IN] TypeDef to scope the enumeration.   
@@ -398,7 +402,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.  
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.
         void EnumUnresolvedMethods_();
-
+#endif
         //     STDMETHOD(GetUserString)(               // S_OK or error.
         //         mdString    stk,                    // [IN] String token.
         //         LPWSTR      szString,               // [OUT] Copy of string.
@@ -409,7 +413,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                            [In] int cchString,
                            [ComAliasName("ULONG*")] out  int pchString
                            );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetPinvokeMap)(               // S_OK or error.
         //         mdToken     tk,                     // [IN] FieldDef or MethodDef.
         //         DWORD       *pdwMappingFlags,       // [OUT] Flags used for mapping.
@@ -445,7 +449,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       ulParamSeq,             // [IN] Parameter sequence.
         //         mdParamDef  *ppd) PURE;             // [IN] Put Param token here.
         void GetParamForMethodIndex_();
-
+#endif
         //     STDMETHOD(EnumCustomAttributes)(        // S_OK or error.
         //         HCORENUM    *phEnum,                // [IN, OUT] COR enumerator.
         //         mdToken     tk,                     // [IN] Token to scope the enumeration, 0 for all.
@@ -460,7 +464,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                          uint cMax /*must be 1*/,
                          [ComAliasName("ULONG*")]out uint pcTokens
                          );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetCustomAttributeProps)(     // S_OK or error.
         //         mdCustomAttribute cv,               // [IN] CustomAttribute token.
         //         mdToken     *ptkObj,                // [OUT, OPTIONAL] Put object token here.
@@ -490,7 +494,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         void const  **ppValue,              // [OUT] constant value 
         //         ULONG       *pcchValue) PURE;       // [OUT] size of constant string in chars, 0 for non-strings.
         void GetMemberProps_();
-
+#endif
         //     STDMETHOD(GetFieldProps)(  
         //         mdFieldDef  mb,                     // The field for which to get props.    
         //         mdTypeDef   *pClass,                // Put field's class here.  
@@ -533,7 +537,23 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdMethodDef rmdOtherMethod[],       // [OUT] other method of the property   
         //         ULONG       cMax,                   // [IN] size of rmdOtherMethod  
         //         ULONG       *pcOtherMethod) PURE;   // [OUT] total number of other method of this property
-        void GetPropertyProps_();
+        void GetPropertyProps(int prop,
+                             [ComAliasName ("mdTypeDef*")] out int mdTypeDef,
+                             [Out, MarshalAs (UnmanagedType.LPWStr)] StringBuilder szProperty,
+                             int cchProperty,
+                             [ComAliasName ("ULONG*")] out int pchProperty,
+                             [ComAliasName ("DWORD*")] out int pdwPropFlags,
+                             [ComAliasName ("PCCOR_SIGNATURE*")] out IntPtr ppvSig,
+                             [ComAliasName ("ULONG*")] out int pbSig,
+                             [ComAliasName ("DWORD*")] out int pdwCPlusTypeFlag,
+                             [ComAliasName ("UVCP_CONSTANT*")] out IntPtr ppDefaultValue,
+                             [ComAliasName ("ULONG*")] out int pcchDefaultValue,
+                             [ComAliasName ("mdMethodDef*")] out int pmdSetter,
+                             [ComAliasName ("mdMethodDef*")] out int pmdGetter,
+                             [ComAliasName ("mdMethodDef*")] out int rmdOtherMethod,
+                             [ComAliasName ("ULONG*")] int cMax, /* must be 1 */
+                             [ComAliasName ("ULONG*")] out int pcOtherMethod
+                             );
 
         //     STDMETHOD(GetParamProps)(               // S_OK or error.
         //         mdParamDef  tk,                     // [IN]The Parameter.
@@ -578,7 +598,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdTypeDef   tdNestedClass,          // [IN] NestedClass token.
         //         mdTypeDef   *ptdEnclosingClass) PURE; // [OUT] EnclosingClass token.
         void GetNestedClassProps(int tdNestedClass, [ComAliasName("mdTypeDef*")] out int tdEnclosingClass);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetNativeCallConvFromSig)(    // S_OK or error.
         //         void const  *pvSig,                 // [IN] Pointer to signature.
         //         ULONG       cbSig,                  // [IN] Count of signature bytes.
@@ -589,7 +609,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdToken     pd,                     // [IN] Type, Field, or Method token.
         //         int         *pbGlobal) PURE;        // [OUT] Put 1 if global, 0 otherwise.
         void IsGlobal_();
-        
+#endif
     }      // IMetadataImport
 
 
@@ -620,13 +640,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                             [ComAliasName("mdTypeDef*")] out int rTypeDefs,
                             uint cMax /*must be 1*/, 
                             [ComAliasName("ULONG*")] out uint pcTypeDefs); 
-        
+#if !MDBG_FAKE_COM
         //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
         new void EnumInterfaceImpls_(IntPtr phEnum, int td);
 
         //STDMETHOD(EnumTypeRefs)(HCORENUM *phEnum, mdTypeRef rTypeRefs[], ULONG cMax, ULONG* pcTypeRefs) PURE;
         new void EnumTypeRefs_();
-
+#endif
         //     STDMETHOD(FindTypeDefByName)(           // S_OK or error.
         //         LPCWSTR     szTypeDef,              // [IN] Name of the Type.
         //         mdToken     tkEnclosingClass,       // [IN] TypeDef/TypeRef for Enclosing class.
@@ -648,11 +668,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
             [ComAliasName("ULONG*")] out int pchName,
             out Guid mvid    
 		);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetModuleFromScope)(          // S_OK.
         //         mdModule    *pmd) PURE;             // [OUT] Put mdModule token here.
         new void GetModuleFromScope_();
-
+#endif
         //     STDMETHOD(GetTypeDefProps)(             // S_OK or error.
         //         mdTypeDef   td,                     // [IN] TypeDef token for inquiry.
         //         LPWSTR      szTypeDef,              // [OUT] Put name here.
@@ -667,13 +687,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                              [Out, MarshalAs(UnmanagedType.U4)] out System.Reflection.TypeAttributes pdwTypeDefFlags,
                              [ComAliasName("mdToken*")] [Out] out int ptkExtends
                              );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetInterfaceImplProps)(       // S_OK or error.
         //         mdInterfaceImpl iiImpl,             // [IN] InterfaceImpl token.
         //         mdTypeDef   *pClass,                // [OUT] Put implementing class token here.
         //         mdToken     *ptkIface) PURE;        // [OUT] Put implemented interface token here.
         new void GetInterfaceImplProps_();
-
+#endif
         //     STDMETHOD(GetTypeRefProps)(             // S_OK or error.
         //         mdTypeRef   tr,                     // [IN] TypeRef token.
         //         mdToken     *ptkResolutionScope,    // [OUT] Resolution scope, ModuleRef or AssemblyRef.
@@ -687,7 +707,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                              [In] int cchName,
                              [ComAliasName("ULONG*")] out int pchName
                              );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(ResolveTypeRef)(mdTypeRef tr, REFIID riid, IUnknown **ppIScope, mdTypeDef *ptd) PURE;
         new void ResolveTypeRef_();
 
@@ -707,7 +727,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         new void EnumMembersWithName_();
-        
+#endif
         //     STDMETHOD(EnumMethods)(                 // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -720,7 +740,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                          int cMax, /*must be 1*/
                          [ComAliasName("ULONG*")] out int pcTokens
                          );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMethodsWithName)(         // S_OK, S_FALSE, or error.             
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.                
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -729,7 +749,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MethodDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         new void EnumMethodsWithName_();
-        
+#endif
         //     STDMETHOD(EnumFields)(                 // S_OK, S_FALSE, or error.  
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -742,7 +762,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                         [ComAliasName("mdFieldDef*")] out int mdFieldDef,
                         int cMax /*must be 1*/, 
                         [ComAliasName("ULONG*")] out uint pcTokens); 
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumFieldsWithName)(         // S_OK, S_FALSE, or error.              
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.                
         //         mdTypeDef   cl,                     // [IN] TypeDef to scope the enumeration.   
@@ -751,7 +771,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.              
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         new void EnumFieldsWithName_();
-
+#endif
         //     STDMETHOD(EnumParams)(                  // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdMethodDef mb,                     // [IN] MethodDef to scope the enumeration. 
@@ -763,7 +783,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                         [ComAliasName("mdParamDef*")] out int mdParamDef,
                         int cMax /*must be 1*/,
                         [ComAliasName("ULONG*")] out uint pcTokens);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMemberRefs)(              // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdToken     tkParent,               // [IN] Parent token to scope the enumeration.  
@@ -821,7 +841,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cbSigBlob,              // [IN] count of bytes in the signature blob    
         //         mdMemberRef *pmr) PURE;             // [OUT] matching memberref 
         new void FindMemberRef_();
-
+#endif
         //     STDMETHOD (GetMethodProps)( 
         //         mdMethodDef mb,                     // The method for which to get props.   
         //         mdTypeDef   *pClass,                // Put method's class here. 
@@ -868,8 +888,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdProperty  rProperties[],          // [OUT] Put Properties here.   
         //         ULONG       cMax,                   // [IN] Max properties to put.  
         //         ULONG       *pcProperties) PURE;    // [OUT] Put # put here.    
-        new void EnumProperties_();
-        
+        new void EnumProperties(ref IntPtr phEnum,
+                                int td,
+                                [ComAliasName("mdProperty*")] out int mdProperty,
+                                int cMax /*must be 1*/,
+                                [ComAliasName("ULONG*")] out uint pcProperties);
+#if !MDBG_FAKE_COM
         //     STDMETHOD(EnumEvents)(                  // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdTypeDef   td,                     // [IN] TypeDef to scope the enumeration.   
@@ -974,7 +998,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max MemberDefs to put.  
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.
         new void EnumUnresolvedMethods_();
-
+#endif
         //     STDMETHOD(GetUserString)(               // S_OK or error.
         //         mdString    stk,                    // [IN] String token.
         //         LPWSTR      szString,               // [OUT] Copy of string.
@@ -985,7 +1009,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                            [In] int cchString,
                            [ComAliasName("ULONG*")] out  int pchString
                            );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetPinvokeMap)(               // S_OK or error.
         //         mdToken     tk,                     // [IN] FieldDef or MethodDef.
         //         DWORD       *pdwMappingFlags,       // [OUT] Flags used for mapping.
@@ -1021,7 +1045,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       ulParamSeq,             // [IN] Parameter sequence.
         //         mdParamDef  *ppd) PURE;             // [IN] Put Param token here.
         new void GetParamForMethodIndex_();
-
+#endif
         //     STDMETHOD(EnumCustomAttributes)(        // S_OK or error.
         //         HCORENUM    *phEnum,                // [IN, OUT] COR enumerator.
         //         mdToken     tk,                     // [IN] Token to scope the enumeration, 0 for all.
@@ -1036,7 +1060,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                          uint cMax /*must be 1*/,
                          [ComAliasName("ULONG*")]out uint pcTokens
                          );
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetCustomAttributeProps)(     // S_OK or error.
         //         mdCustomAttribute cv,               // [IN] CustomAttribute token.
         //         mdToken     *ptkObj,                // [OUT, OPTIONAL] Put object token here.
@@ -1066,7 +1090,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         void const  **ppValue,              // [OUT] constant value 
         //         ULONG       *pcchValue) PURE;       // [OUT] size of constant string in chars, 0 for non-strings.
         new void GetMemberProps_();
-
+#endif
         //     STDMETHOD(GetFieldProps)(  
         //         mdFieldDef  mb,                     // The field for which to get props.    
         //         mdTypeDef   *pClass,                // Put field's class here.  
@@ -1109,7 +1133,23 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdMethodDef rmdOtherMethod[],       // [OUT] other method of the property   
         //         ULONG       cMax,                   // [IN] size of rmdOtherMethod  
         //         ULONG       *pcOtherMethod) PURE;   // [OUT] total number of other method of this property
-        new void GetPropertyProps_();
+        new void GetPropertyProps(int prop,
+                                 [ComAliasName ("mdTypeDef*")] out int mdTypeDef,
+                                 [Out, MarshalAs (UnmanagedType.LPWStr)] StringBuilder szProperty,
+                                 int cchProperty,
+                                 [ComAliasName ("ULONG*")] out int pchProperty,
+                                 [ComAliasName ("DWORD*")] out int pdwPropFlags,
+                                 [ComAliasName ("PCCOR_SIGNATURE*")] out IntPtr ppvSig,
+                                 [ComAliasName ("ULONG*")] out int pbSig,
+                                 [ComAliasName ("DWORD*")] out int pdwCPlusTypeFlag,
+                                 [ComAliasName ("UVCP_CONSTANT*")] out IntPtr ppDefaultValue,
+                                 [ComAliasName ("ULONG*")] out int pcchDefaultValue,
+                                 [ComAliasName ("mdMethodDef*")] out int pmdSetter,
+                                 [ComAliasName ("mdMethodDef*")] out int pmdGetter,
+                                 [ComAliasName ("mdMethodDef*")] out int rmdOtherMethod,
+                                 [ComAliasName ("ULONG*")] int cMax, /* must be 1 */
+                                 [ComAliasName ("ULONG*")] out int pcOtherMethod
+                                 );
 
         //     STDMETHOD(GetParamProps)(               // S_OK or error.
         //         mdParamDef  tk,                     // [IN]The Parameter.
@@ -1154,7 +1194,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdTypeDef   tdNestedClass,          // [IN] NestedClass token.
         //         mdTypeDef   *ptdEnclosingClass) PURE; // [OUT] EnclosingClass token.
         new void GetNestedClassProps(int tdNestedClass, [ComAliasName("mdTypeDef*")] out int tdEnclosingClass);
-
+#if !MDBG_FAKE_COM
         //     STDMETHOD(GetNativeCallConvFromSig)(    // S_OK or error.
         //         void const  *pvSig,                 // [IN] Pointer to signature.
         //         ULONG       cbSig,                  // [IN] Count of signature bytes.
@@ -1166,7 +1206,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         mdToken     pd,                     // [IN] Type, Field, or Method token.
         //         int         *pbGlobal) PURE;        // [OUT] Put 1 if global, 0 otherwise.
         new void IsGlobal_();
-
+#endif
         //-----------------------------------------------------------------------------
         // Begin IMetaDataImport2
         //-----------------------------------------------------------------------------
@@ -1217,7 +1257,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                                 [ComAliasName("PCCOR_SIGNATURE*")] out IntPtr ppvSigBlob,
                                 [ComAliasName("ULONG*")] out int pcbSigBlob
                                 );
-
+#if !MDBG_FAKE_COM
         //         STDMETHOD(EnumGenericParamConstraints)(
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
         //         mdGenericParam tk,                  // [IN] GenericParam whose constraints are requested
@@ -1250,6 +1290,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         //         ULONG       cMax,                   // [IN] Max tokens to put.  
         //         ULONG       *pcMethodSpecs) PURE;   // [OUT] Put actual count here.
         void EnumMethodSpecs_();
+#endif
     }
 
     // GUID Copied from Cor.h

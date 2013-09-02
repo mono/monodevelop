@@ -65,7 +65,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             {
                 m_value = ParseDefaultValue(declaringType,ppvSigBlob,ppvRawValue);
             }
-        }
+			// [Xamarin] Expression evaluator.
+			MetadataHelperFunctions.GetCustomAttribute (importer, m_fieldToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
+		}
 
         private static object ParseDefaultValue(MetadataType declaringType, IntPtr ppvSigBlob, IntPtr ppvRawValue)
         {
@@ -145,20 +147,30 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
-        public override Object[] GetCustomAttributes(bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override bool IsDefined (Type attributeType, bool inherit)
+		{
+			return GetCustomAttributes (attributeType, inherit).Length > 0;
+		}
 
-        public override Object[] GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override object[] GetCustomAttributes (Type attributeType, bool inherit)
+		{
+			ArrayList list = new ArrayList ();
+			foreach (object ob in GetCustomAttributes (inherit)) {
+				if (attributeType.IsInstanceOfType (ob))
+					list.Add (ob);
+			}
+			return list.ToArray ();
+		}
 
-        public override bool IsDefined (Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override object[] GetCustomAttributes (bool inherit)
+		{
+			if (m_customAttributes == null)
+				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_fieldToken);
+			return m_customAttributes;
+		}
 
 
         public  override Type FieldType 
@@ -232,5 +244,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private string m_name;
         private FieldAttributes m_fieldAttributes;
         private Object m_value;
-    }
+		// [Xamarin] Expression evaluator.
+		private object[] m_customAttributes;
+	}
 }
