@@ -15,10 +15,12 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
 	using System.Text;
     using System.Runtime.InteropServices;
 
+    // This interface is returned by ISymbolReaderSymbolSearchInfo
+    // and thus must be public
     [
         ComVisible(false)
     ]
-    internal interface ISymbolSearchInfo
+    public interface ISymbolSearchInfo
     {
         int SearchPathLength{ get; }
     

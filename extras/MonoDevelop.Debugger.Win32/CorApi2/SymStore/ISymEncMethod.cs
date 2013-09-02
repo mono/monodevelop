@@ -12,19 +12,22 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
 
 	using System.Runtime.InteropServices;
 	using System;
-    
+
+    // This interface isn't directly returned or used by any of the classes,
+    // but the implementation of the ISymbolMethod also implements ISymEncMethod
+    // so you could explicitly cast it to that.
     [
         ComVisible(false)
     ]
-    internal interface ISymbolEnCMethod: ISymbolMethod
+    public interface ISymbolEnCMethod: ISymbolMethod
     {
         String GetFileNameFromOffset(int dwOffset);
    
         int GetLineFromOffset(int dwOffset,
-                                  out int pcolumn,
-                                  out int pendLine,
-                                  out int pendColumn,
-                                  out int pdwStartOffset);
+                                  out int column,
+                                  out int endLine,
+                                  out int endColumn,
+                                  out int startOffset);
     }
 }
 

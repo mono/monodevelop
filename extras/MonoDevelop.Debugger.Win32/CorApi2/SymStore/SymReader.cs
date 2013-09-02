@@ -9,10 +9,11 @@
 namespace Microsoft.Samples.Debugging.CorSymbolStore 
 {
     using System.Diagnostics.SymbolStore;
+    using Microsoft.Samples.Debugging.CorDebug;
 
     // Interface does not need to be marked with the serializable attribute
     using System;
-	using System.Text;
+    using System.Text;
     using System.Runtime.InteropServices;
     using System.Runtime.InteropServices.ComTypes;
 
@@ -32,26 +33,33 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
   
         void GetDocuments(int cDocs,
                                out int pcDocs,
-                               [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] pDocs);
+                               [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedDocument[] pDocs);
         
+
+        // These methods will often return error HRs in common cases.
+        // Using PreserveSig and manually handling error cases provides a big performance win.
+        // Far fewer exceptions will be thrown and caught.
+        // Exceptions should be reserved for truely "exceptional" cases.
+        [PreserveSig]
+        int GetUserEntryPoint(out SymbolToken EntryPoint);
     
-        void GetUserEntryPoint(out SymbolToken EntryPoint);
-    
-        void GetMethod(SymbolToken methodToken,
+        [PreserveSig]
+        int GetMethod(SymbolToken methodToken,
                           [MarshalAs(UnmanagedType.Interface)] out ISymUnmanagedMethod retVal);
-    
-        void GetMethodByVersion(SymbolToken methodToken,
+
+        [PreserveSig]
+        int GetMethodByVersion(SymbolToken methodToken,
                                       int version,
                                       [MarshalAs(UnmanagedType.Interface)] out ISymUnmanagedMethod retVal);
     
         void GetVariables(SymbolToken parent,
-                            int pVars,
+                            int cVars,
                             out int pcVars,
-                            [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedVariable[] vars);
+                            [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] ISymUnmanagedVariable[] vars);
 
         void GetGlobalVariables(int cVars,
                                     out int pcVars,
-                                    [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedVariable[] vars);
+                                    [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedVariable[] vars);
 
          
         void GetMethodFromDocumentPosition(ISymUnmanagedDocument document,
@@ -63,11 +71,11 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
                                 [MarshalAs(UnmanagedType.LPWStr)] String name,
                                 int sizeBuffer,
                                 out int lengthBuffer,
-                                byte[] buffer);
+                                [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=2)] byte[] buffer);
     
         void GetNamespaces(int cNameSpaces,
                                 out int pcNameSpaces,
-                                [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedNamespace[] namespaces);
+                                [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedNamespace[] namespaces);
     
         void Initialize(IntPtr importer,
                        [MarshalAs(UnmanagedType.LPWStr)] String filename,
@@ -89,7 +97,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
                                                       int column,
                                                       int cMethod,
                                                       out int pcMethod,
-                                                      [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedMethod[] pRetVal);
+                                                      [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=3)] ISymUnmanagedMethod[] pRetVal);
     
         void GetDocumentVersion(ISymUnmanagedDocument pDoc,
                                       out int version,
@@ -109,7 +117,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     {
 
         void UpdateSymbolStore2(IStream stream,
-                                      [In, Out, MarshalAs(UnmanagedType.LPArray)] SymbolLineDelta[] iSymbolLineDeltas,
+                                      [MarshalAs(UnmanagedType.LPArray)] SymbolLineDelta[] iSymbolLineDeltas,
                                       int cDeltaLines);
     
         void GetLocalVariableCount(SymbolToken mdMethodToken,
@@ -117,7 +125,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     
         void GetLocalVariables(SymbolToken mdMethodToken,
                                   int cLocals,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedVariable[] rgLocals,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] ISymUnmanagedVariable[] rgLocals,
                                   out int pceltFetched);
     }
     
@@ -134,7 +142,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     
         void GetSymbolSearchInfo(int cSearchInfo,
                                     out int pcSearchInfo,
-                                    [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedSymbolSearchInfo[] searchInfo);
+                                    [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedSymbolSearchInfo[] searchInfo);
     }
     
 
@@ -161,6 +169,10 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         {
             ISymUnmanagedDocument document = null;
             m_reader.GetDocument(url, language, languageVendor, documentType, out document);
+            if (document == null)
+            {
+                return null;
+            }
             return new SymbolDocument(document);
         }
 
@@ -184,23 +196,53 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         { 
             get
             {
-                 SymbolToken entryPoint;
-                 m_reader.GetUserEntryPoint(out entryPoint);
-                 return entryPoint;
-             }
+                SymbolToken entryPoint;
+                int hr = m_reader.GetUserEntryPoint(out entryPoint);
+                if (hr == (int)HResult.E_FAIL)
+                {
+                    // Not all assemblies have entry points
+                    // dlls for example...
+                    return new SymbolToken(0);
+                }
+                else
+                {
+                    Marshal.ThrowExceptionForHR(hr);
+                }
+                return entryPoint;
+            }
         }
 
         public ISymbolMethod GetMethod(SymbolToken method)
         {
             ISymUnmanagedMethod unmanagedMethod = null;
-            m_reader.GetMethod(method, out unmanagedMethod);
+            int hr = m_reader.GetMethod(method, out unmanagedMethod);
+            if (hr == (int)HResult.E_FAIL)
+            {
+                // This means that the method has no symbol info because it's probably empty
+                // This can happen for virtual methods with no IL
+                return null;
+            }
+            else
+            {
+                Marshal.ThrowExceptionForHR(hr);
+            }
             return new SymMethod(unmanagedMethod);
         }
 
         public ISymbolMethod GetMethod(SymbolToken method, int version)
         {
             ISymUnmanagedMethod unmanagedMethod = null;
-            m_reader.GetMethodByVersion(method, version, out unmanagedMethod);
+            int hr = m_reader.GetMethodByVersion(method, version, out unmanagedMethod);
+            if (hr == (int)HResult.E_FAIL)
+            {
+                // This means that the method has no symbol info because it's probably empty
+                // This can happen for virtual methods with no IL
+                return null;
+            }
+            else
+            {
+                Marshal.ThrowExceptionForHR(hr);
+            }
             return new SymMethod(unmanagedMethod);
         }
         
@@ -300,9 +342,9 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
             StringBuilder fileName;
             int count = 0;
             
-            // @todo - there's a bug in Diasymreader where we can't query the size of the pdb filename.
-            // So we'll just estimate large as a workaround. See VSWhidbey bug 321941.
-            //m_reader.GetSymbolStoreFileName(0, out count, null);
+            // there's a known issue in Diasymreader where we can't query the size of the pdb filename.
+            // So we'll just estimate large as a workaround. 
+            
             count = 300;
             fileName = new StringBuilder(count);
             m_reader.GetSymbolStoreFileName(count, out count, fileName);

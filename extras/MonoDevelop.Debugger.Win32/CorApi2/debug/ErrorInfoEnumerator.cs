@@ -19,11 +19,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         private ICorDebugErrorInfoEnum m_enum;
 
-#if CORAPI_SKIP
-        private ErrorInfo m_einfo;
-#else
         private Object m_einfo;
-#endif
 
         internal CorErrorInfoEnumerator (ICorDebugErrorInfoEnum erroInfoEnumerator)
         {
@@ -53,18 +49,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         //
         public bool MoveNext ()
         {
-#if CORAPI_SKIP
-            ICorDebugErrorInfo[] a = new ICorDebugErrorInfo[1];
-            uint c = 0;
-            int r = m_enum.Next ((uint) a.Length, a, out c);
-            if (r==0 && c==1) // S_OK && we got 1 new element
-                m_einfo = new ErrorInfo (a[0]);
-            else
-                m_einfo = null;
-            return m_einfo != null;
-#else
             return false;
-#endif
         }
 
         public void Reset ()

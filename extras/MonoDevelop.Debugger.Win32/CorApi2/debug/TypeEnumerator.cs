@@ -16,8 +16,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private ICorDebugTypeEnum m_enum;
         private CorType m_ty;
 
-        [CLSCompliant(false)]
-        public CorTypeEnumerator (ICorDebugTypeEnum typeEnumerator)
+        internal CorTypeEnumerator (ICorDebugTypeEnum typeEnumerator)
         {
             m_enum = typeEnumerator;
         }

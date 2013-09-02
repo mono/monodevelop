@@ -56,16 +56,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return (ICorDebugProcess) GetController();
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugProcess Raw
-        {
-            get 
-            { 
-                return _p();
-            }
-        }
-#endif
+
 
         /** The OS ID of the process. */
         public int Id
@@ -126,6 +117,22 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return !(y==0);
         }
 
+        /** Gets managed thread for threadId. 
+         * Returns NULL if tid is not a managed thread. That's very common in interop-debugging cases.
+         */
+        public CorThread GetThread(int threadId)
+        {
+            ICorDebugThread thread = null;
+            try
+            {
+                _p().GetThread((uint)threadId, out thread);
+            }
+            catch (ArgumentException)
+            {
+            }
+            return (thread == null) ? null : (new CorThread(thread));
+        }
+
         /* Get the context for the given thread. */
         // See WIN32_CONTEXT structure declared in context.il
         public void GetThreadContext ( int threadId, IntPtr contextPtr, int context_size )
@@ -142,20 +149,20 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         /** Read memory from the process. */
-        public int ReadMemory (long address, byte[] buffer)
+        public long ReadMemory (long address, byte[] buffer)
         {
             Debug.Assert(buffer!=null);
-            uint read = 0;
+            IntPtr read = IntPtr.Zero;
             _p().ReadMemory ((ulong) address, (uint) buffer.Length, buffer, out read);
-            return (int) read;
+            return read.ToInt64();
         }
 
         /** Write memory in the process. */
-        public int WriteMemory (long address, byte[] buffer)
+        public long WriteMemory (long address, byte[] buffer)
         {
-            uint written = 0;
+            IntPtr written = IntPtr.Zero;
             _p().WriteMemory ((ulong) address, (uint) buffer.Length, buffer, out written);
-            return (int) written;
+            return written.ToInt64();
         }
 
         /** Clear the current unmanaged exception on the given thread. */
@@ -270,6 +277,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 base.Continue(outOfBand);
         }
 
+		// [Xamarin] Output redirection.
 		internal void TrackStdOutput (Microsoft.Win32.SafeHandles.SafeFileHandle outputPipe, Microsoft.Win32.SafeHandles.SafeFileHandle errorPipe)
 		{
 			Thread outputReader = new Thread (delegate ()
@@ -289,6 +297,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			errorReader.Start ();
 		}
 
+		// [Xamarin] Output redirection.
 		void ReadOutput (Microsoft.Win32.SafeHandles.SafeFileHandle pipe, bool isStdError)
 		{
 			byte[] buffer = new byte[256];
@@ -766,22 +775,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
-#if MDBG_FEATURE_INTEROP
-        public event CorNativeStopEventHandler OnNativeStop
-        {
-            add 
-            {
-                int i = (int)ManagedCallbackType.OnNativeStop;
-                m_callbacksArray[i] = (CorNativeStopEventHandler)m_callbacksArray[i] + value; 
-            } 
-            remove 
-            { 
-                int i = (int)ManagedCallbackType.OnNativeStop;
-                m_callbacksArray[i] = (CorNativeStopEventHandler)m_callbacksArray[i] - value; 
-            }
-        }
-
-#endif
         public event CorExceptionInCallbackEventHandler OnExceptionInCallback
         {
             add 
@@ -796,6 +789,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
+		// [Xamarin] Output redirection.
 		public event CorTargetOutputEventHandler OnStdOutput;
 
     } /* class Process */

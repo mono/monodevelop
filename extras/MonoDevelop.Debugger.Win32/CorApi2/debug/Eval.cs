@@ -24,16 +24,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugEval Raw
-        {
-            get 
-            { 
-                return m_eval;
-            }
-        }
-#endif
 
         public void CallFunction (CorFunction managedFunction, CorValue[] arguments)
         {
@@ -132,9 +122,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             eval2.NewParameterizedArray(type.m_type, (uint)rank, ref udims, ref ulowBounds);
         }
 
-#if CORAPI_SKIP
-        public void NewObject (Function ctor, Value[] args, uint nargs);
-#endif
 
         /** Create an object w/o invoking its constructor. */
         public void NewObjectNoContstructor (CorClass c)

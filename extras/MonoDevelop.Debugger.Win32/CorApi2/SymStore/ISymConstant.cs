@@ -14,17 +14,18 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     using System;
     using System.Text;
     using System.Runtime.InteropServices;
-	
-	// Interface does not need to be marked with the serializable attribute
+    
+    // Interface does not need to be marked with the serializable attribute
+    // Interface is returned by ISymbolScope2.GetConstants() so must be public
     [
         ComVisible(false)
     ]
-    internal interface ISymbolConstant
+    public interface ISymbolConstant
     {
         String GetName();
-        
+
         Object GetValue();
-         
+
         byte[] GetSignature();
     }
 }

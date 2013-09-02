@@ -18,16 +18,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_step = stepper;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugStepper Raw
-        {
-            get 
-            { 
-                return m_step;
-            }
-        }
-#endif
 
         /** Is the stepper active and stepping? */
         public bool IsActive ()
@@ -88,12 +78,18 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_step.SetRangeIL (value ? 1 : 0);
         }
 
-		public void SetJMC (bool enable)
-		{
-			ICorDebugStepper2 stepper2 = m_step as ICorDebugStepper2;
-			if (stepper2 != null)
-				stepper2.SetJMC (enable ? 1 : 0);
-		}
+        /// <summary>
+        /// Enable Just-my-code stepping for this stepper. The default is 'false.
+        /// </summary>
+        /// <param name="isJustMyCode">true to make this a JMC-stepper, false to make it a traditional stepper.</param>
+        public void SetJmcStatus(bool isJustMyCode)
+        {            
+            ICorDebugStepper2 stepper2 = m_step as ICorDebugStepper2;
+            if (stepper2 != null)
+            {
+                stepper2.SetJMC(isJustMyCode ? 1 : 0);
+            }
+        }
 
         private ICorDebugStepper m_step;
     } /* class Stepper */
