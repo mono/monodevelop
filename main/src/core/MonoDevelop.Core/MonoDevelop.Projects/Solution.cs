@@ -65,6 +65,9 @@ namespace MonoDevelop.Projects
 		
 		[ProjectPathItemProperty ("outputpath")]
 		string outputdir     = null;
+
+		[ItemProperty ("DisableVersionControl", DefaultValue = false)]
+		bool disableVersionControl;
 		
 		public Solution ()
 		{
@@ -492,6 +495,16 @@ namespace MonoDevelop.Projects
 					if (item.SyncVersionWithSolution)
 						item.Version = value;
 				}
+			}
+		}
+
+		public bool IsVersionControlDisabled {
+			get {
+				return disableVersionControl;
+			}
+			set {
+				disableVersionControl = value;
+				NotifyModified ();
 			}
 		}
 		

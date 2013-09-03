@@ -32,12 +32,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 		public VersionControlGeneralOptionsPanelWidget ()
 		{
 			this.Build ();
-			disableVersionControl.Active = VersionControlService.IsDisabled;
+			disableVersionControl.Active = VersionControlService.GlobalIsDisabled;
 		}
 
 		public void ApplyChanges ()
 		{
-			VersionControlService.IsDisabled = disableVersionControl.Active;
+			VersionControlService.GlobalIsDisabled = disableVersionControl.Active;
 			VersionControlService.SaveConfiguration ();
 		}
 	}
