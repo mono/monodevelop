@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 using NUnit.Core;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.NUnit
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.NUnit
 		public SolutionFolderTestGroup (SolutionFolder c): base (c.Name, c)
 		{
 			string storeId = c.ItemId;
-			string resultsPath = Path.Combine (c.BaseDirectory, "test-results");
+			string resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (c.BaseDirectory, true), "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			combine = c;

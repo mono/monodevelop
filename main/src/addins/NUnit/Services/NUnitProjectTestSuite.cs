@@ -54,7 +54,7 @@ namespace MonoDevelop.NUnit
 		public NUnitProjectTestSuite (DotNetProject project): base (project.Name, project)
 		{
 			storeId = Path.GetFileName (project.FileName);
-			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
+			resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (project.BaseDirectory, true), "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			this.project = project;
 			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
