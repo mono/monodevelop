@@ -71,13 +71,6 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public Severity DefaultSeverity { get; set; }
 
-		
-		/// <summary>
-		/// Gets or sets a value indicating how this issue should be marked inside the text editor.
-		/// Note: There is only one code issue provider generated therfore providers need to be state less.
-		/// </summary>
-		public virtual IssueMarker IssueMarker { get; set; }
-
 		/// <summary>
 		/// Gets the current (user defined) severity.
 		/// </summary>

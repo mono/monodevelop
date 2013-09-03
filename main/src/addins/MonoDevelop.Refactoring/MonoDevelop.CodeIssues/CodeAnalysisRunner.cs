@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 								r.Region, 
 								r.Description,
 								severity, 
-								provider.IssueMarker,
+								r.IssueMarker,
 								fixes.ToArray ()
 							));
 						}

@@ -28,6 +28,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -52,7 +53,16 @@ namespace MonoDevelop.CodeIssues
 			get;
 			private set;
 		}
+
 		
+
+		/// <summary>
+		/// Gets or sets a value indicating how this issue should be marked inside the text editor.
+		/// Note: There is only one code issue provider generated therfore providers need to be state less.
+		/// </summary>
+		public IssueMarker IssueMarker { get; private set; }
+
+
 		/// <summary>
 		/// Gets or sets the code actions to solve the issue.
 		/// </summary>
@@ -69,15 +79,16 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (fileName, start, end), inspectorIdString, actions)
+		public CodeIssue (IssueMarker issueMarker, string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)
 		{
 		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (string description, DomRegion region, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
+		public CodeIssue (IssueMarker issueMarker, string description, DomRegion region, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
 		{
+			IssueMarker = issueMarker;
 			Description = description;
 			Region = region;
 			Actions = actions;

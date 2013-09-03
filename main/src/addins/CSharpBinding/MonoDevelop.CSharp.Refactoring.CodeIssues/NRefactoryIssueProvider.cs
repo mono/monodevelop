@@ -77,12 +77,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
-			get {
-				return attr.IssueMarker;
-			}
-		}
-
 		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
@@ -167,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					}
 					actions.Add (nrefactoryCodeAction);
 				}
-				yield return new CodeIssue (GettextCatalog.GetString (issue.Description ?? ""), context.TextEditor.FileName, issue.Start, issue.End, IdString, actions);
+				yield return new CodeIssue (issue.IssueMarker, GettextCatalog.GetString (issue.Description ?? ""), context.TextEditor.FileName, issue.Start, issue.End, IdString, actions);
 			}
 		}	
 

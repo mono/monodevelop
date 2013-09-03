@@ -232,7 +232,6 @@ namespace MonoDevelop.CodeIssues
 				ProviderDescription = topLevelProvider.Description,
 				ProviderCategory = topLevelProvider.Category,
 				Severity = topLevelProvider.GetSeverity (),
-				IssueMarker = topLevelProvider.IssueMarker,
 				File = file,
 				Project = file.Project,
 				InspectorIdString = r.InspectorIdString

@@ -65,12 +65,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
-			get {
-				return parentIssue.IssueMarker;
-			}
-		}
-
 		public BaseNRefactoryIssueProvider (NRefactoryIssueProvider parentIssue, SubIssueAttribute subIssue)
 		{
 			this.parentIssue = parentIssue;
