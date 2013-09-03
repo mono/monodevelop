@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 		public SolutionFolderTestGroup (SolutionFolder c): base (c.Name, c)
 		{
 			string storeId = c.ItemId;
-			string resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (c.BaseDirectory, true), "test-results");
+			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (c.BaseDirectory);
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			combine = c;

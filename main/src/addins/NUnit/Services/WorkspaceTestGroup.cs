@@ -44,7 +44,7 @@ namespace MonoDevelop.NUnit
 		public WorkspaceTestGroup (Workspace ws): base (ws.Name, ws)
 		{
 			string storeId = ws.Name;
-			string resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (ws.BaseDirectory, true), "test-results");
+			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (ws.BaseDirectory);
 			ResultsStore = new XmlResultsStore (resultsPath, storeId);
 			
 			workspace = ws;

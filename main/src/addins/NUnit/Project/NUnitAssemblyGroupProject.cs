@@ -140,11 +140,34 @@ namespace MonoDevelop.NUnit
 		NUnitAssemblyGroupProject project;
 		string resultsPath;
 		NUnitAssemblyGroupProjectConfiguration lastConfig;
+			
+		
+		internal static string GetTestResultsDirectory (string baseDirectory)
+		{
+			var newCache = TypeSystemService.GetCacheDirectory (baseDirectory, false);
+			if (newCache == null) {
+				newCache = TypeSystemService.GetCacheDirectory (baseDirectory, true);
+				var oldDirectory = Path.Combine (baseDirectory, "test-results");
+				var newDirectory = Path.Combine (newCache, "test-results");
+				try {
+					Directory.CreateDirectory (newDirectory);
+					if (Directory.Exists (oldDirectory)) {
+						foreach (string file in Directory.GetFiles(oldDirectory, "*.*"))
+							File.Copy (file, file.Replace (oldDirectory, newDirectory));
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while copying old test-results", e);
+				}
+				return newDirectory;
+			}
+
+			return Path.Combine (newCache, "test-results");
+		}
 		
 		public RootTest (NUnitAssemblyGroupProject project): base (project.Name, project)
 		{
-			this.project = project; 
-			resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (project.BaseDirectory, true), "test-results");
+			this.project = project;
+			resultsPath = GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new XmlResultsStore (resultsPath, Path.GetFileName (project.FileName));
 			
 			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;
