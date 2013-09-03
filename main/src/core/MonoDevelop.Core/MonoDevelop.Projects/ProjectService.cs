@@ -789,6 +789,11 @@ namespace MonoDevelop.Projects
 		{
 			return callback (monitor, item, buildData);
 		}
+
+		public override IEnumerable<string> GetReferencedAssemblies (DotNetProject project, ConfigurationSelector configuration, bool includeProjectReferences)
+		{
+			return project.OnGetReferencedAssemblies (configuration, includeProjectReferences);
+		}
 	}	
 	
 	internal static class Counters

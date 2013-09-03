@@ -327,6 +327,11 @@ namespace MonoDevelop.Projects
 		{
 			return GetNext (item).Compile (monitor, item, buildData, compileCallbackStack.Peek ());
 		}
+
+		public virtual IEnumerable<string> GetReferencedAssemblies (DotNetProject project, ConfigurationSelector configuration, bool includeProjectReferences)
+		{
+			return GetNext (project).GetReferencedAssemblies (project, configuration, includeProjectReferences);
+		}
 	}
 
 	public class BuildData
