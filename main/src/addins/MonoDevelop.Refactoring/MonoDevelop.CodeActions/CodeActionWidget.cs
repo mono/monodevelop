@@ -109,7 +109,7 @@ namespace MonoDevelop.CodeActions
 			usages.Set (id, CodeActionUsages [id]);
 		}
 
-		int GetUsage (string id)
+		internal static int GetUsage (string id)
 		{
 			int result;
 			if (!CodeActionUsages.TryGetValue (id, out result)) 
@@ -117,10 +117,23 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
+		internal static bool IsAnalysisOrErrorFix (CodeAction act)
+		{
+			return act is AnalysisContextActionProvider.AnalysisCodeAction || act.Severity == Severity.Error;
+		} 
+
 		public void PopulateFixes (Gtk.Menu menu, ref int items)
 		{
 			int mnemonic = 1;
-			foreach (var fix_ in fixes.OrderByDescending (i => GetUsage (i.IdString))) {
+			bool gotImportantFix = false, addedSeparator = false;
+			foreach (var fix_ in fixes.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i), (int)i.Severity, GetUsage (i.IdString)))) {
+				if (IsAnalysisOrErrorFix (fix_))
+					gotImportantFix = true;
+				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_)) {
+					menu.Add (new Gtk.SeparatorMenuItem ());
+					addedSeparator = true;
+				}
+
 				var fix = fix_;
 				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
@@ -135,7 +148,8 @@ namespace MonoDevelop.CodeActions
 				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
-			var first = true;
+
+			bool first = true;
 			var alreadyInserted = new HashSet<BaseCodeIssueProvider> ();
 			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
 				var analysisFix = analysisFix_;
@@ -206,72 +220,6 @@ namespace MonoDevelop.CodeActions
 				subMenu.Add (optionsMenuItem);
 				subMenuItem.Submenu = subMenu;
 				menu.Add (subMenuItem);
-				items++;
-			}
-
-			foreach (var fix_ in fixes.Where (f => f.BoundToIssue != null)) {
-				var fix = fix_;
-				foreach (var inspector_ in RefactoringService.GetInspectors (document.Editor.MimeType).Where (i => i.GetSeverity () != Severity.None)) {
-					var inspector = inspector_;
-
-					if (inspector.IdString.IndexOf (fix.BoundToIssue.FullName, StringComparison.Ordinal) < 0)
-						continue;
-					if (first) {
-						menu.Add (new Gtk.SeparatorMenuItem ());
-						first = false;
-					}
-					if (alreadyInserted.Contains (inspector))
-						continue;
-					alreadyInserted.Add (inspector);
-					
-					var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (inspector));
-					var subMenuItem = new Gtk.MenuItem (label);
-					Gtk.Menu subMenu = new Gtk.Menu ();
-					if (inspector.CanSuppressWithAttribute) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
-						menuItem.Activated += delegate {
-							inspector.SuppressWithAttribute (document, fix.DocumentRegion); 
-						};
-						subMenu.Add (menuItem);
-					}
-
-					if (inspector.CanDisableWithPragma) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
-						menuItem.Activated += delegate {
-							inspector.DisableWithPragma (document, fix.DocumentRegion); 
-						};
-						subMenu.Add (menuItem);
-					}
-
-					if (inspector.CanDisableOnce) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
-						menuItem.Activated += delegate {
-							inspector.DisableOnce (document, fix.DocumentRegion); 
-						};
-						subMenu.Add (menuItem);
-					}
-
-					if (inspector.CanDisableAndRestore) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
-						menuItem.Activated += delegate {
-							inspector.DisableAndRestore (document, fix.DocumentRegion); 
-						};
-						subMenu.Add (menuItem);
-					}
-
-					var confItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection severity"));
-					confItem.Activated += delegate {
-						MessageService.RunCustomDialog (new CodeIssueOptionsDialog (inspector), MessageService.RootWindow);
-						menu.Destroy ();
-					};
-					subMenu.Add (confItem);
-
-					subMenuItem.Submenu = subMenu;
-					subMenu.ShowAll (); 
-					menu.Add (subMenuItem);
-					break;
-				}
-
 				items++;
 			}
 		}

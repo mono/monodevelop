@@ -93,7 +93,7 @@ namespace MonoDevelop.GtkCore
 
 		void OnFileEvent (object o, ProjectFileEventArgs args)
 		{
-			if (!IdeApp.Workspace.IsOpen || !File.Exists (ObjectsFile))
+			if (!IdeApp.IsInitialized || !IdeApp.Workspace.IsOpen || !File.Exists (ObjectsFile))
 				return;
 
 			UpdateObjectsFile ();

@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.AnalysisCore.Fixes;
 using Mono.TextEditor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeActions
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.CodeActions
 				Result = result;
 			}
 	
-			public override void Run (object context, object script)
+			public override void Run (IRefactoringContext context, object script)
 			{
 				Action.Fix ();
 			}

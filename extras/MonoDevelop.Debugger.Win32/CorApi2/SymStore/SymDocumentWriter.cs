@@ -27,11 +27,11 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     internal interface ISymUnmanagedDocumentWriter
     {
         void SetSource(int sourceSize,
-                          byte[] source);
+                          [MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] byte[] source);
     
         void SetCheckSum(Guid algorithmId,
                               int checkSumSize,
-                              byte[] checkSum);
+                              [MarshalAs(UnmanagedType.LPArray, SizeParamIndex=1)] byte[] checkSum);
     };
         
     

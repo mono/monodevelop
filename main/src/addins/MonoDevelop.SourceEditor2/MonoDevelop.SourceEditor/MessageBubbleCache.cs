@@ -100,6 +100,7 @@ namespace MonoDevelop.SourceEditor
 				ShowArrow = true;
 				Opacity = 0.93;
 				Theme.ArrowLength = 7;
+				TransientFor = IdeApp.Workbench.RootWindow;
 			}
 
 			// Layout constants

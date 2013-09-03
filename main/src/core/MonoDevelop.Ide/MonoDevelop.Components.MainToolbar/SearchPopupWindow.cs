@@ -254,18 +254,18 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		int calculatedItems;
 		Gdk.Size GetIdealSize ()
 		{
 			Gdk.Size retVal = new Gdk.Size ();
 			int ox, oy;
 			GetPosition (out ox, out oy);
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-
+			var maxHeight = geometry.Height * 4 / 5;
 			double startY = yMargin + ChildAllocation.Y;
 			double y = startY;
-			
+			calculatedItems = 0;
 			foreach (var result in results) {
-				//				var category = result.Item1;
 				var dataSrc = result.Item2;
 				if (dataSrc.ItemCount == 0)
 					continue;
@@ -274,7 +274,10 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 					int w, h;
 					layout.GetPixelSize (out w, out h);
+					if (y + h + itemSeparatorHeight > maxHeight)
+						break;
 					y += h + itemSeparatorHeight;
+					calculatedItems++;
 				}
 			}
 			retVal.Width = Math.Min (geometry.Width * 4 / 5, 480);
@@ -282,13 +285,17 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				y += h + itemSeparatorHeight + 4;
+				var realHeight = h + itemSeparatorHeight + 4;
+				y += realHeight;
 			} else {
 				y -= itemSeparatorHeight;
 			}
-			
-			var calculedHeight = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
-			retVal.Height = calculedHeight;
+
+			var calculatedHeight = Math.Min (
+				maxHeight, 
+				(int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight
+			);
+			retVal.Height = calculatedHeight;
 			return retVal;
 		}
 
@@ -444,6 +451,18 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		normalDown:
 			var i = SelectedCategoryIndex;
+
+			// check real upper bound
+			if (selectedItem != null) {
+				var curAbsoluteIndex = selectedItem == topItem ? 1 : 0;
+				for (int j = 0; j < i; j++) {
+					curAbsoluteIndex += Math.Min (maxItems, results [j].Item2.ItemCount);
+				}
+				curAbsoluteIndex += selectedItem.Item + 1;
+				if (curAbsoluteIndex + 1 > calculatedItems)
+					return;
+			}
+
 			var upperBound = Math.Min (maxItems, selectedItem.DataSource.ItemCount);
 			if (selectedItem.Item + 1 < upperBound) {
 				if (topItem.DataSource == selectedItem.DataSource && selectedItem.Item == upperBound - 1)
@@ -883,6 +902,10 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				headerLayout.SetText (category.Name);
 				headerLayout.GetPixelSize (out w, out h);
+
+				if (y + h > Allocation.Height)
+					break;
+
 				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y);
 				context.SetSourceColor (headerColor);
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
@@ -896,6 +919,8 @@ namespace MonoDevelop.Components.MainToolbar
 					context.SetSourceRGB (0, 0, 0);
 					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 					layout.GetPixelSize (out w, out h);
+					if (y + h + itemSeparatorHeight > Allocation.Height)
+						break;
 					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 						context.SetSourceColor (selectionBackgroundColor);
 						context.Rectangle (alloc.X + headerMarginSize, y, Allocation.Width - adjustedMarginSize, h);
@@ -916,10 +941,6 @@ namespace MonoDevelop.Components.MainToolbar
 					y += h + itemSeparatorHeight;
 				}
 				if (result != r.Last ()) {
-/*						context.MoveTo (alloc.X, y + categorySeparatorHeight / 2 + 0.5);
-					context.LineTo (alloc.X + alloc.Width, y + categorySeparatorHeight / 2 + 0.5);
-					context.Color = (HslColor)Style.Mid (StateType.Normal);
-					context.Stroke ();*/
 					y += categorySeparatorHeight;
 				}
 			}

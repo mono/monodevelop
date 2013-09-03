@@ -33,6 +33,7 @@ using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.NUnit
 {
@@ -142,8 +143,8 @@ namespace MonoDevelop.NUnit
 		
 		public RootTest (NUnitAssemblyGroupProject project): base (project.Name, project)
 		{
-			this.project = project;
-			resultsPath = Path.Combine (project.BaseDirectory, "test-results");
+			this.project = project; 
+			resultsPath = Path.Combine (TypeSystemService.GetCacheDirectory (project.BaseDirectory, true), "test-results");
 			ResultsStore = new XmlResultsStore (resultsPath, Path.GetFileName (project.FileName));
 			
 			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;

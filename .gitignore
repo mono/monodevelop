@@ -8,6 +8,7 @@ obj/
 /main/build/data/
 /main/build/locale/
 /extras/*/build
+/extras/*/*/bin
 /main/src/tools/SharpCoco/SharpCoco.exe*
 /main/vcrevision
 /main/tests/tmp

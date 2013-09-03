@@ -41,24 +41,24 @@ namespace MonoDevelop.CodeIssues
 		const int UpdatePeriod = 500;
 		const int BatchChoiceCount = 5;
 
-		TreeView view = new TreeView ();
-		DataField<string> textField = new DataField<string> ();
-		DataField<IIssueTreeNode> nodeField = new DataField<IIssueTreeNode> ();
-		Button runButton = new Button ("Run");
-		Button cancelButton = new Button ("Cancel");
-		CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+		readonly TreeView view = new TreeView ();
+		readonly DataField<string> textField = new DataField<string> ();
+		readonly DataField<IIssueTreeNode> nodeField = new DataField<IIssueTreeNode> ();
+		readonly Button runButton = new Button ("Run");
+		readonly Button cancelButton = new Button ("Cancel");
+		readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
 		
-		IssueGroup rootGroup;
-		TreeStore store;
+		readonly IssueGroup rootGroup;
+		readonly TreeStore store;
 		
-		ISet<IIssueTreeNode> syncedNodes = new HashSet<IIssueTreeNode> ();
-		Dictionary<IIssueTreeNode, TreePosition> nodePositions = new Dictionary<IIssueTreeNode, TreePosition> ();
+		readonly ISet<IIssueTreeNode> syncedNodes = new HashSet<IIssueTreeNode> ();
+		readonly Dictionary<IIssueTreeNode, TreePosition> nodePositions = new Dictionary<IIssueTreeNode, TreePosition> ();
 
 		bool runPeriodicUpdate;
-		object queueLock = new object ();
-		Queue<IIssueTreeNode> updateQueue = new Queue<IIssueTreeNode> ();
+		readonly object queueLock = new object ();
+		readonly Queue<IIssueTreeNode> updateQueue = new Queue<IIssueTreeNode> ();
 		
-		static Type[] groupingProviders = new[] {
+		static readonly Type[] groupingProviders = {
 			typeof(CategoryGroupingProvider),
 			typeof(ProviderGroupingProvider),
 			typeof(SeverityGroupingProvider)

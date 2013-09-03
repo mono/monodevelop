@@ -20,6 +20,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class MetadataType : Type
     {
+		// [Xamarin] Expression evaluator.
         internal MetadataType(IMetadataImport importer,int classToken)
         {
             Debug.Assert(importer!=null);
@@ -58,7 +59,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
                 // Check whether the type is an enum
                 string baseTypeName = GetTypeName(importer, ptkExtends);
-
+                
                 IntPtr ppvSig;
 				if (baseTypeName == "System.Enum") {
 					m_isEnum = true;
@@ -76,6 +77,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
+		// [Xamarin] Expression evaluator.
 		public override Type DeclaringType
 		{
 			get
@@ -189,6 +191,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
+		// [Xamarin] Expression evaluator.
         public override string Name 
         {
             get 
@@ -232,6 +235,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
+		// [Xamarin] Expression evaluator.
         public override String Namespace 
         {
             get 
@@ -244,9 +248,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			}
         }
 
+		// [Xamarin] Expression evaluator.
         public override String FullName 
         {
-            get
+            get 
             {
 				StringBuilder sb = new StringBuilder (m_name);
 				if (m_typeArgs != null) {
@@ -303,19 +308,21 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
+		// [Xamarin] Expression evaluator.
 		public override Type[] GetGenericArguments ()
 		{
 			return m_typeArgs.ToArray ();
 		}
 
-
         // methods
 
+		// [Xamarin] Expression evaluator.
         public override bool IsDefined (Type attributeType, bool inherit)
         {
 			return GetCustomAttributes (attributeType, inherit).Length > 0;
         }
 
+		// [Xamarin] Expression evaluator.
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
         {
 			ArrayList list = new ArrayList ();
@@ -326,6 +333,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return list.ToArray ();
         }
 
+		// [Xamarin] Expression evaluator.
         public override object[] GetCustomAttributes(bool inherit)
         {
 			if (m_customAttributes == null)
@@ -353,16 +361,19 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
+		// [Xamarin] Expression evaluator.
         protected override bool IsPointerImpl()
         {
 			return m_isPtr;
         }
 
+		// [Xamarin] Expression evaluator.
         protected override bool IsByRefImpl()
         {
 			return m_isByRef;
         }
 
+		// [Xamarin] Expression evaluator.
         protected override bool IsArrayImpl()
         {
 			return m_arraySizes != null;
@@ -373,6 +384,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
+		// [Xamarin] Expression evaluator.
 		public override int GetArrayRank ()
 		{
 			if (m_arraySizes != null)
@@ -396,6 +408,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
+		// [Xamarin] Expression evaluator.
         public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
         {
 			ArrayList al = new ArrayList ();
@@ -459,6 +472,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
+		// [Xamarin] Expression evaluator.
 		bool FlagsMatch (bool ispublic, bool isstatic, BindingFlags flags)
 		{
 			if (ispublic && (flags & BindingFlags.Public) == 0)
@@ -472,6 +486,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return true;
 		}
 
+		// [Xamarin] Expression evaluator.
         public override FieldInfo[] GetFields(BindingFlags bindingAttr)
         {
             ArrayList al = new ArrayList();
@@ -483,7 +498,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 while(true)
                 {
                     uint size;
-                    ((IMetadataImport2) m_importer).EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
+					// TODO: Check this. Was just m_importer.EnumFields.
+					((IMetadataImport2) m_importer).EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
                     if(size==0)
                         break;
 					MetadataFieldInfo field = new MetadataFieldInfo (m_importer, fieldToken, this);
@@ -498,6 +514,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return (FieldInfo[]) al.ToArray(typeof(FieldInfo));
         }
 
+		// [Xamarin] Expression evaluator.
         public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
         {
             ArrayList al = new ArrayList();
@@ -560,12 +577,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return MetadataHelperFunctions.GetGenericArgumentNames(m_importer,m_typeToken);
         }
 
-        // TODO: The need to give this method a name that doesn't collide with
-        // the non-virtual function Type.IsEnum is an example of why 
-        // inheriting from System.Type was a bad idea. The base implementation of 
-        // this method (and others like it) has no idea what's going on in this version 
-        // of "Type", but making this function "new IsEnum" would make it easier
-        // for people to call the wrong one with seemingly correct code.
+        
         public bool ReallyIsEnum
         {
             get
@@ -590,7 +602,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-        // TODO: Once generics are CLS-compliant, fix this
+        
         [CLSCompliant(false)]
         public IList<KeyValuePair<string,ulong>> EnumValues
         {
@@ -620,6 +632,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
+		// [Xamarin] Expression evaluator.
         // returns "" for normal classes, returns prefix for nested classes
         private string GetNestedClassPrefix(IMetadataImport importer, int classToken, TypeAttributes attribs)
         {
@@ -635,12 +648,14 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 return String.Empty;
         }
 
+		// [Xamarin] Expression evaluator.
 		internal static Type MakeDelegate (Type retType, List<Type> argTypes)
 		{
 			
 			throw new NotImplementedException ();
 		}
 
+		// [Xamarin] Expression evaluator.
 		public static Type MakeArray (Type t, List<int> sizes, List<int> loBounds)
 		{
 			MetadataType mt = t as MetadataType;
@@ -659,6 +674,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				return t.MakeArrayType (sizes.Count);
 		}
 
+		// [Xamarin] Expression evaluator.
 		public static Type MakeByRef (Type t)
 		{
 			MetadataType mt = t as MetadataType;
@@ -669,6 +685,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return t.MakeByRefType ();
 		}
 
+		// [Xamarin] Expression evaluator.
 		public static Type MakePointer (Type t)
 		{
 			MetadataType mt = t as MetadataType;
@@ -679,6 +696,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return t.MakeByRefType ();
 		}
 
+		// [Xamarin] Expression evaluator.
 		public static Type MakeGeneric (Type t, List<Type> typeArgs)
 		{
 			MetadataType mt = (MetadataType)t;
@@ -693,6 +711,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		private bool m_isEnum;
 		private bool m_isFlagsEnum;
 		private CorElementType m_enumUnderlyingType;
+		// [Xamarin] Expression evaluator.
 		private List<KeyValuePair<string, ulong>> m_enumValues;
 		private object[] m_customAttributes;
 		private Type m_declaringType;
@@ -792,7 +811,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }
 
         private CorMetadataImport m_corMeta;
-        private IntPtr m_enum;                              // <strip>@TODO use Safehandle</strip>
+        private IntPtr m_enum;                              
         private Type m_type;
     } 
 }

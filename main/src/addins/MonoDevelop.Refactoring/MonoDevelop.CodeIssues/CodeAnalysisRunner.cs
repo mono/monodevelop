@@ -77,7 +77,7 @@ namespace MonoDevelop.CodeIssues
 					foreach (var provider in EnumerateProvider (parentProvider)) {
 						var severity = provider.GetSeverity ();
 						if (severity == Severity.None)
-							return;
+							continue;
 	//					var now2 = DateTime.Now;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
 							var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
@@ -87,13 +87,8 @@ namespace MonoDevelop.CodeIssues
 								return new GenericFix (
 									a.Title,
 									() => {
-										var scriptProvider = context as IScriptProvider;
-										if (scriptProvider != null) {
-											using (var script = scriptProvider.CreateScript ()) {
-												a.Run (context, script);
-											}
-										} else {
-											a.Run (context, null);
+										using (var script = context.CreateScript ()) {
+											a.Run (context, script);
 										}
 									},
 									batchAction) {
@@ -105,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 								r.Region, 
 								r.Description,
 								severity, 
-								provider.IssueMarker,
+								r.IssueMarker,
 								fixes.ToArray ()
 							));
 						}

@@ -21,9 +21,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
     {
+		// [Xamarin] Expression evaluator.
 		public static Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
 
-		static CorMetadataImport ( )
+		// [Xamarin] Expression evaluator.
+		static CorMetadataImport ()
 		{
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_BOOLEAN, typeof (bool));
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_CHAR, typeof (char));
@@ -44,9 +46,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public CorMetadataImport(CorModule managedModule)
         {
-            // GUID Copied from Cor.h
-            Guid IID_IMetadataImport = new Guid("7DAC8207-D3AE-4c75-9B67-92801A497D44");
-            m_importer = (IMetadataImport) managedModule.GetMetaDataInterface(IID_IMetadataImport);
+            m_importer = managedModule.GetMetaDataInterface <IMetadataImport>();
             Debug.Assert(m_importer != null);
         }
 
@@ -73,11 +73,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         // for 'Foo', returns 0.
         public int CountGenericParams(int typeToken)
         {
-            // <strip>@TODO resolve if GetMetaDataInterface should throw or return null.</strip>
+            
             // This may fail in pre V2.0 debuggees.
             //Guid IID_IMetadataImport2 = new Guid("FCE5EFA0-8BBA-4f8e-A036-8F2022B08466");
             if( ! (m_importer is IMetadataImport2) )
-                return 0; // this means we're pre v2.0 debugees.
+                return 0; // this means we're pre v2.0 debuggees.
             
 
             IMetadataImport2 importer2 = (m_importer as IMetadataImport2);
@@ -258,17 +258,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-#if USEOLDSYMREADER     
-        public IntPtr GetRawInterface()
-        {
-#if MDBG_FAKE_COM
-            System.Guid iid = new System.Guid( "7DAC8207-D3AE-4c75-9B67-92801A497D44");
-            return ((Microsoft.ClrTools.GenFakeCom.IFakeComWrapper)m_importer).GetIfacePtr( iid );
-#else
-            return Marshal.GetComInterfaceForObject(m_importer,typeof(IMetadataImport));
-#endif
-        }
-#else
         public object RawCOMObject
         {
             get 
@@ -276,7 +265,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 return m_importer;
             }
         }
-#endif  
 
 
         // properties
@@ -336,12 +324,14 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                     out pulCodeRVA,
                                     out pdwImplFlags);
 
+			// [Xamarin] Expression evaluator.
 			CorCallingConvention callingConv;
 			MetadataHelperFunctions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
 			m_name = szMethodName.ToString ();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
 
+		// [Xamarin] Expression evaluator.
         public override Type ReturnType 
         {
             get 
@@ -431,6 +421,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
+		// [Xamarin] Expression evaluator.
         public override System.Reflection.ParameterInfo[] GetParameters()
         {
             ArrayList al = new ArrayList();
@@ -477,6 +468,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private int m_classToken;
         private int m_methodToken;
         private MethodAttributes m_methodAttributes;
+		// [Xamarin] Expression evaluator.
 		private List<Type> m_argTypes;
 		private Type m_retType;
 	}
@@ -532,11 +524,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 
 
-    // <STRIP>
-    // 11/6/04 JKeljo:
-    // </STRIP>
+    
     // Struct isn't complete yet; just here for the IsTokenOfType method
-    // TODO: Re-do metadata token usage throughout to use this class
+    
     public struct MetadataToken
     {
         public MetadataToken(int value)
@@ -604,6 +594,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     {
         private static uint TokenFromRid(uint rid, uint tktype) {return (rid) | (tktype);}
 
+		// [Xamarin] Expression evaluator.
 		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
@@ -614,11 +605,13 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				argTypes.Add (MetadataHelperFunctions.ReadType (importer, ref pData));
 		}
 
+		// [Xamarin] Expression evaluator.
 		class GenericType
 		{
 			// Used as marker for generic method args
 		}
 
+		// [Xamarin] Expression evaluator.
 		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
 		{
 			CorElementType et;
@@ -715,10 +708,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		}
 
         // The below have been translated manually from the inline C++ helpers in cor.h
-        // <STRIP>
-        // JKeljo 11/11/04: The only ones that have been tested at this point are
-        // CorSigUncompressCallingConv, CorSigUncompressToken, and CorSigUncompressElementType
-        // </STRIP>              
+        
         internal static uint CorSigUncompressBigData(
             ref IntPtr pData)             // [IN,OUT] compressed data 
         {
@@ -916,7 +906,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {          
             IMetadataImport2 importer2 = (importer as IMetadataImport2);
             if(importer2 == null)
-                return new string[0]; // this means we're pre v2.0 debugees.
+                return new string[0]; // this means we're pre v2.0 debuggees.
             
             Debug.Assert( importer2!=null );
 
@@ -977,6 +967,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return genargs;
         }
 
+		// [Xamarin] Expression evaluator.
 		static object[] emptyAttributes = new object[0];
 
 		static internal object[] GetDebugAttributes (IMetadataImport importer, int token)
@@ -1001,6 +992,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				return attributes.ToArray ();
 		}
 
+		// [Xamarin] Expression evaluator.
 		static internal object GetCustomAttribute (IMetadataImport importer, int token, Type type)
 		{
 			uint sigSize = 0;
@@ -1053,6 +1045,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			return ob;
 		}
 
+		// [Xamarin] Expression evaluator.
 		static object ReadValue (BinaryReader br, Type type)
 		{
 			if (type.IsEnum) {

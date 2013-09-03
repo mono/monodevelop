@@ -177,6 +177,8 @@ namespace MonoDevelop.Ide
 
 		public static AlertButton ShowException (Gtk.Window parent, Exception e, string message, string title, params AlertButton[] buttons)
 		{
+			if (!IdeApp.IsInitialized)
+				throw new Exception ("IdeApp has not been initialized. Progagating the exception.", e); 
 			return messageService.ShowException (parent, title, message, e, buttons);
 		}
 		#endregion

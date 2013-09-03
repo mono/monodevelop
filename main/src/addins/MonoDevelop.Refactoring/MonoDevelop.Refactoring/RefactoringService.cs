@@ -250,7 +250,7 @@ namespace MonoDevelop.Refactoring
 			});
 		}	
 
-		public static IList<CodeAction> ApplyFixes (IEnumerable<CodeAction> fixes, object refactoringContext)
+		public static IList<CodeAction> ApplyFixes (IEnumerable<CodeAction> fixes, IRefactoringContext refactoringContext)
 		{
 			if (fixes == null)
 				throw new ArgumentNullException ("fixes");
@@ -260,7 +260,7 @@ namespace MonoDevelop.Refactoring
 			if (allFixes.Count == 0)
 				return new List<CodeAction> ();
 				
-			var scriptProvider = refactoringContext as IScriptProvider;
+			var scriptProvider = refactoringContext as IRefactoringContext;
 			if (scriptProvider == null) {
 				return RunAll (allFixes, refactoringContext, null);
 			}
@@ -269,19 +269,14 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public static void ApplyFix (CodeAction action, object context)
+		public static void ApplyFix (CodeAction action, IRefactoringContext context)
 		{
-			var scriptProvider = context as IScriptProvider;
-			if (scriptProvider != null) {
-				using(var script = scriptProvider.CreateScript ()) {
-					action.Run (context, script);
-				}
-			} else {
-				action.Run (context, null);
+			using(var script = context.CreateScript ()) {
+				action.Run (context, script);
 			}
 		}
 
-		static List<CodeAction> RunAll (IEnumerable<CodeAction> allFixes, object refactoringContext, object script)
+		static List<CodeAction> RunAll (IEnumerable<CodeAction> allFixes, IRefactoringContext refactoringContext, object script)
 		{
 			var appliedFixes = new List<CodeAction> ();
 			foreach (var fix in allFixes) {
@@ -294,7 +289,7 @@ namespace MonoDevelop.Refactoring
 		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
 		{
 			if (doc == null)
-				throw new ArgumentNullException ("doc");
+				return location;
 			var editor = doc.Editor;
 			if (editor == null || location.Column == 1)
 				return location;

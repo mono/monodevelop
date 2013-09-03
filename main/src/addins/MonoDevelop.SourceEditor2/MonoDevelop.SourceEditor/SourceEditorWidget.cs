@@ -1653,7 +1653,7 @@ namespace MonoDevelop.SourceEditor
 			// may be null if no line is assigned to the error.
 			Wave = true;
 			
-			StartCol = Info.Region.BeginColumn + 1;
+			StartCol = Info.Region.BeginColumn;
 			if (Info.Region.EndColumn > StartCol) {
 				EndCol = Info.Region.EndColumn;
 			} else {

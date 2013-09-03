@@ -43,7 +43,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
 		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
-		TimerCounter counter;
+		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider boundActionProvider;
+		readonly TimerCounter counter;
 
 		public override string IdString {
 			get {
@@ -76,12 +77,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public override ICSharpCode.NRefactory.Refactoring.IssueMarker IssueMarker {
-			get {
-				return attr.IssueMarker;
-			}
-		}
-
 		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
@@ -93,6 +88,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			DefaultSeverity = attr.Severity;
 			SetMimeType ("text/x-csharp");
 			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
+
+			// Additional source of actions
+			var actionProvider = attr.ActionProvider;
+			if (actionProvider != null) {
+				var actionAttr = actionProvider.GetCustomAttributes (typeof(ContextActionAttribute), false);
+				if (actionAttr != null && actionAttr.Length == 1)
+					boundActionProvider = (ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider)Activator.CreateInstance (actionProvider);
+			}
+
 			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");
 		}
 
@@ -100,10 +104,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null || context.ParsedDocument.HasErrors)
-				yield break;
+				return new CodeIssue[0];
 				
 			// Holds all the actions in a particular sibling group.
-			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
 			IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues;
 			using (var timer = counter.BeginTiming ()) {
 				// We need to enumerate here in order to time it. 
@@ -111,15 +114,34 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				var _issues = issueProvider.GetIssues (context);
 				issues = _issues as IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> ?? _issues.ToList ();
 			}
-			foreach (var action in issues) {
+			return ToMonoDevelopRepresentation (cancellationToken, context, issues);
+		}
+
+		IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> GetActions (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue issue, MDRefactoringContext context)
+		{
+			foreach (var action in issue.Actions)
+				yield return action;
+			if (boundActionProvider != null) {
+				// We need to se the correct location here. Seems very fragile to do so...
+				context.SetLocation (issue.Start);
+				foreach (var action in boundActionProvider.GetActions (context)) {
+					yield return action;
+				}
+			}
+		}
+
+		internal IEnumerable<CodeIssue> ToMonoDevelopRepresentation (CancellationToken cancellationToken, MDRefactoringContext context, IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues)
+		{
+			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
+			foreach (var issue in issues) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
-				if (action.Actions == null) {
+				if (issue.Actions == null) {
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
 				}
 				var actions = new List<NRefactoryCodeAction> ();
-				foreach (var act in action.Actions) {
+				foreach (var act in GetActions(issue, context)) {
 					if (cancellationToken.IsCancellationRequested)
 						yield break;
 					if (act == null) {
@@ -139,18 +161,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					}
 					actions.Add (nrefactoryCodeAction);
 				}
-				var issue = new CodeIssue (
-					GettextCatalog.GetString (action.Description ?? ""),
-					context.TextEditor.FileName,
-					action.Start,
-					action.End,
-					IdString,
-					actions
-				);
-				yield return issue;
+				yield return new CodeIssue (issue.IssueMarker, GettextCatalog.GetString (issue.Description ?? ""), context.TextEditor.FileName, issue.Start, issue.End, IdString, actions);
 			}
-		}
-	
+		}	
 
 		public override bool CanDisableOnce { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
 

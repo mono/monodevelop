@@ -32,7 +32,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
 
         void GetSignature(int cSig,
                              out int pcSig,
-                             byte[] sig);
+                             [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] byte[] sig);
 
         void GetAddressKind(out int  pRetVal);
 

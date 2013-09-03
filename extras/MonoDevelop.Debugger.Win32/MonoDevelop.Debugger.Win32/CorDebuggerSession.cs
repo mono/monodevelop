@@ -265,12 +265,10 @@ namespace MonoDevelop.Debugger.Win32
 			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
 				e.Continue = true;
 				Breakpoint bp = (Breakpoint)binfo.BreakEvent;
-				
-				if (bp.HitCount > 1) {
-					// Just update the count and continue
-					binfo.UpdateHitCount (bp.HitCount - 1);
+
+				binfo.IncrementHitCount();
+				if (!binfo.HitCountReached)
 					return;
-				}
 				
 				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
@@ -828,7 +826,7 @@ namespace MonoDevelop.Debugger.Win32
 			activeThread = t;
 			stepper = activeThread.CreateStepper (); 
 			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
-			stepper.SetJMC (true);
+			stepper.SetJmcStatus (true);
 		}
 
 		protected override void OnStepInstruction ( )

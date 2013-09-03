@@ -74,15 +74,5 @@ namespace MonoDevelop.Debugger.Win32
 				return obj.Val.ExactType.FirstTypeParameter;
 			}
 		}
-
-		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
-		{
-			if (array != null) {
-				CorValRef elem = (CorValRef) GetElement (indices);
-				return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
-			}
-			else
-				return ObjectValue.CreateUnknown ("?");
-		}
 	}
 }

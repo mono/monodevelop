@@ -22,16 +22,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_val = value;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugValue Raw
-        {
-            get 
-            { 
-                return m_val;
-            }
-        }
-#endif
         /** The simple type of the value. */
         public CorElementType Type
         {
@@ -749,9 +739,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             Debug.Assert(Rank!=0);
             uint[] dims = new uint[Rank];
-            m_arrayVal.GetDimensions((uint)dims.Length,dims);
+            m_arrayVal.GetDimensions((uint)dims.Length, dims);
 
-            int[] sdims = Array.ConvertAll<uint,int>( dims, delegate(uint u) { return (int)u; } );
+            int[] sdims = Array.ConvertAll<uint,int>(dims, delegate(uint u) { return (int)u; });
             return sdims;
         }
 

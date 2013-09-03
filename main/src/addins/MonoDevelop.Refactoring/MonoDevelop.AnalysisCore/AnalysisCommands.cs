@@ -39,6 +39,8 @@ using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.CodeActions;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -106,8 +108,23 @@ namespace MonoDevelop.AnalysisCore
 				((System.Action)dataItem) ();
 				return;
 			}
-			var action = (IAnalysisFixAction)dataItem;
-			action.Fix ();
+			var action = dataItem as IAnalysisFixAction;
+			if (action != null) {
+				action.Fix (); 
+				return;
+			}
+			var ca = dataItem as CodeAction;
+			if (ca != null) {
+				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+
+				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc, default(CancellationToken)) : null;
+				using (var script = context.CreateScript ()) {
+					ca.Run (context, script);
+				}
+				return;
+			}
+
+
 		}
 		
 		public static bool GetFixes (out Document document, out IList<FixableResult> results)
@@ -124,7 +141,17 @@ namespace MonoDevelop.AnalysisCore
 			var list = ext.GetResultsAtOffset (document.Editor.Caret.Offset).OfType<FixableResult> ().ToList ();
 			list.Sort (ResultCompareImportanceDesc);
 			results = list;
-			return results.Count > 0;
+
+			if (results.Count > 0)
+				return true;
+
+			var codeActionExtension = document.GetContent <CodeActionEditorExtension> ();
+			if (codeActionExtension != null) {
+				var fixes = codeActionExtension.GetCurrentFixes ();
+				if (fixes != null)
+					return fixes.Any (CodeActionWidget.IsAnalysisOrErrorFix);
+			} 
+			return false;
 		}
 		
 		static int ResultCompareImportanceDesc (Result r1, Result r2)
@@ -132,13 +159,28 @@ namespace MonoDevelop.AnalysisCore
 			int c = ((int)r1.Level).CompareTo ((int)r2.Level);
 			if (c != 0)
 				return c;
-			return r1.Message.CompareTo (r2.Message);
+			return string.Compare (r1.Message, r2.Message, StringComparison.Ordinal);
 		}
 		
 		public static void PopulateInfos (CommandArrayInfo infos, Document doc, IEnumerable<FixableResult> results)
 		{
 			//FIXME: ellipsize long messages
 			int mnemonic = 1;
+
+			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
+			var fixes = codeActionExtension.GetCurrentFixes ();
+			if (fixes != null) {
+				foreach (var fix in fixes.Where (CodeActionWidget.IsAnalysisOrErrorFix)) {
+					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
+						continue;
+					var escapedLabel = fix.Title.Replace ("_", "__");
+					var label = (mnemonic <= 10)
+						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+							: "  " + escapedLabel;
+					infos.Add (label, fix);
+				}
+			}
+
 			foreach (var result in results) {
 				bool firstAction = true;
 				foreach (var action in GetActions (doc, result)) {
@@ -201,6 +243,7 @@ namespace MonoDevelop.AnalysisCore
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
 					foreach (var action in handler.GetFixes (doc, fix))
 						yield return action;
+
 		}
 		
 		static string GetIcon (Severity severity)

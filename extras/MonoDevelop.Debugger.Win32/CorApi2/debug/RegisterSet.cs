@@ -47,16 +47,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_rs = registerSet;
         }
         
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugRegisterSet Raw
-        {
-            get 
-            { 
-                return m_rs;
-            }
-        }
-#endif
 
         /*
          * GetRegistersAvailable returns a mask indicating which registers
@@ -167,8 +157,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             SetRegisters(mask,new UInt64[]{value});
         }
 
-        // @TODO make sure that following functions can be called only by
-        // code with enough privilage that is passing correct values.
         
         public void GetThreadContext ( IntPtr contextPtr, int contextSize )
         {

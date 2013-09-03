@@ -138,7 +138,6 @@
     <Compile Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
-    <Compile Include="MonoDevelop.CodeActions\IScriptProvider.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />

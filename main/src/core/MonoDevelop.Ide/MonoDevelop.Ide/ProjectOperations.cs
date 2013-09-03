@@ -2045,10 +2045,12 @@ namespace MonoDevelop.Ide
 		
 		public IEditableTextFile GetEditableTextFile (FilePath filePath)
 		{
-			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == filePath) {
-					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
-					if (ef != null) return ef;
+			if (IdeApp.IsInitialized) {
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					if (doc.FileName == filePath) {
+						IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+						if (ef != null) return ef;
+					}
 				}
 			}
 			

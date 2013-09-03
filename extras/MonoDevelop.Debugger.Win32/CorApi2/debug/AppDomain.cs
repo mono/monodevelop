@@ -19,16 +19,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugAppDomain Raw
-        {
-            get 
-            { 
-                return _ad();
-            }
-        }
-#endif
         /** Get the ICorDebugAppDomain interface back from the Controller. */
         private ICorDebugAppDomain _ad ()
         {
@@ -57,15 +47,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
-#if CORAPI_SKIP
-        /* Get the module for the given metadata interface */
-        public CorModule GetModuleFromMetaDataInterface (IUnknown metadataInterface)
-        {
-            ICorDebugModule module = null;
-            _ad().GetModuleFromMetaDataInterface (metadataInterface, out module);
-            return new CorModule (module);
-        }
-#endif
 
         /** All active breakpoints in the CorAppDomain */
         public IEnumerable Breakpoints

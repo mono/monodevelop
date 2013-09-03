@@ -375,25 +375,27 @@ namespace MonoDevelop.SourceEditor
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
 			var drawLayout = layouts[0].Layout;
 			int ex = 0 , ey = 0;
-			bool customLayout = sx + width > editor.Allocation.Width;
+			bool customLayout = true; //sx + width > editor.Allocation.Width;
 			bool hideText = false;
 			bubbleIsReduced = customLayout;
+			var showErrorCount = errorCounterWidth > 0 && errorCountLayout != null;
 			if (customLayout) {
 				width = editor.Allocation.Width - sx;
 				string text = layouts[0].Layout.Text;
 				drawLayout = new Pango.Layout (editor.PangoContext);
 				drawLayout.FontDescription = cache.fontDescription;
-				for (int j = text.Length - 4; j > 0; j--) {
-					drawLayout.SetText (text.Substring (0, j) + "...");
-					drawLayout.GetPixelSize (out ex, out ey);
-					if (ex + (errorCountLayout != null ? errorCounterWidth : 0) + editor.LineHeight < width)
-						break;
-				}
-				if (ex + (errorCountLayout != null ? errorCounterWidth : 0) + editor.LineHeight > width) {
+				var paintWidth = (width - errorCounterWidth - editor.LineHeight + 4);
+				var minWidth = Math.Max (17, errorCounterWidth) + editor.LineHeight;
+				if (paintWidth < minWidth) {
 					hideText = true;
 					drawLayout.SetMarkup ("<span weight='heavy'>···</span>");
-					width = Math.Max (17, errorCounterWidth) + editor.LineHeight;
+					width = minWidth;
+					showErrorCount = false;
 					sx = Math.Min (sx, editor.Allocation.Width - width);
+				} else {
+					drawLayout.Ellipsize = Pango.EllipsizeMode.End;
+					drawLayout.Width = (int)(paintWidth * Pango.Scale.PangoScale);
+					drawLayout.SetText (text);
 				}
 			}
 			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
@@ -406,7 +408,7 @@ namespace MonoDevelop.SourceEditor
 			g.Fill ();
 
 			// Draw error count icon
-			if (errorCounterWidth > 0 && errorCountLayout != null) {
+			if (showErrorCount) {
 				var errorCounterHeight = bubbleHeight - 2;
 				var errorCounterX = sx + width - errorCounterWidth - 3;
 				var errorCounterY = y + 1 + (bubbleHeight - errorCounterHeight) / 2;
@@ -428,7 +430,7 @@ namespace MonoDevelop.SourceEditor
 					errorCounterWidth, 
 					errorCounterHeight, 
 					editor.LineHeight / 2 - 3
-					);
+				);
 				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
 					lg.AddColorStop (0, CounterColor.Color);
 					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
@@ -451,7 +453,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			// Draw label text
-			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
+			if (!showErrorCount || !hideText) {
 				g.Save ();
 				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
 

@@ -707,6 +707,11 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public virtual IEnumerable<string> GetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
 		{
+			return Services.ProjectService.GetExtensionChain (this).GetReferencedAssemblies (this, configuration, includeProjectReferences);
+		}
+
+		internal protected virtual IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
+		{
 			IAssemblyReferenceHandler handler = this.ItemHandler as IAssemblyReferenceHandler;
 			if (handler != null) {
 				if (includeProjectReferences) {
@@ -726,6 +731,11 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
+
+			// System.Core is an implicit reference
+			var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+			if (sa != null)
+				yield return sa.Location;
 		}
 
 		protected internal override void OnSave (IProgressMonitor monitor)

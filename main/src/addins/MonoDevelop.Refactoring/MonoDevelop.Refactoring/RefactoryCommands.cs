@@ -284,15 +284,19 @@ namespace MonoDevelop.Refactoring
 				lastLocation = loc;
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
-			if (refactoringInfo.validActions != null) {
+			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null) {
 				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-				foreach (var fix_ in refactoringInfo.validActions) {
+
+				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionWidget.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionWidget.GetUsage (i.IdString)))) {
+					if (CodeActionWidget.IsAnalysisOrErrorFix (fix_))
+						continue;
 					var fix = fix_;
 					if (first) {
 						first = false;
 						if (ciset.CommandInfos.Count > 0)
 							ciset.CommandInfos.AddSeparator ();
 					}
+
 					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
 				}
 			}

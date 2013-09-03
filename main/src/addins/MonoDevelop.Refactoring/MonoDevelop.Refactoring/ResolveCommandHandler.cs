@@ -54,8 +54,21 @@ namespace MonoDevelop.Refactoring
 {
 	public class ResolveCommandHandler : CommandHandler
 	{
-
 		public static bool ResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		{
+			if (!InternalResolveAt (doc, out resolveResult, out node)) {
+				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+				resolveResult = GetHeuristicResult (doc, location, ref node);
+				if (resolveResult == null)
+					return false;
+			}
+			var oce = node as ObjectCreateExpression;
+			if (oce != null)
+				node = oce.Type;
+			return true;
+		}
+
+		static bool InternalResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -88,12 +101,8 @@ namespace MonoDevelop.Refactoring
 
 			ResolveResult resolveResult;
 			AstNode node;
-			if (!ResolveAt (doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
-				resolveResult = GetHeuristicResult (doc, location, ref node);
-				if (resolveResult == null)
-					return;
-			}
+			if (!ResolveAt (doc, out resolveResult, out node))
+				return;
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
@@ -127,8 +136,6 @@ namespace MonoDevelop.Refactoring
 			if (resolveDirect) {
 				if (resolveMenu.CommandInfos.Count > 0)
 					resolveMenu.CommandInfos.AddSeparator ();
-				if (node is ObjectCreateExpression)
-					node = ((ObjectCreateExpression)node).Type;
 				foreach (var t in possibleNamespaces) {
 					string ns = t.Namespace;
 					var reference = t.Reference;

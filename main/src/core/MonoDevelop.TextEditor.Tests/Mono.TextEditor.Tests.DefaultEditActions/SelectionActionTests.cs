@@ -235,5 +235,20 @@ namespace Mono.TextEditor.Tests.Actions
 1234567890");
 		}
 
+		[Test]
+		public void TestClearSelection ()
+		{
+			var data = Create (@"1234567890
+1234567890
+12345$<-67890
+->1234567890
+1234567890");
+			SelectionActions.ClearSelection (data);
+			Check (data, @"1234567890
+1234567890
+12345$67890
+1234567890
+1234567890");
+		}
 	}
 }

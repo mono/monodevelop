@@ -107,16 +107,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_module = managedModule;
         }
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugModule Raw
-        {
-            get 
-            { 
-                return m_module;
-            }
-        }
-#endif
 
         /** The process this module is in. */
         public CorProcess Process
@@ -156,7 +146,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             get
             {
-                // <strip>@TODO: is this big enough?</strip>
+                
                 char[] name = new Char[300];
                 uint fetched = 0;
                 m_module.GetName ((uint) name.Length, out fetched, name);
@@ -220,10 +210,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return (corFunction==null?null:new CorFunction(corFunction));
         }
 
-#if CORAPI_SKIP
-        /** Get the function from the relative address */
-        public CorFunction GetFunctionFromRVA (long address);
-#endif
 
         /** get the class from metadata info. */
         public CorClass GetClassFromToken (int classToken)
@@ -244,18 +230,29 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return new CorModuleBreakpoint (mbr);
         }
 
-#if CORAPI_SKIP
-        /** Edit & continue support */
-        public EditAndContinueSnapshot GetEditAndContinueSnapshot ();
-
-        /** ??? */
-#endif
 
         public object GetMetaDataInterface (Guid interfaceGuid)
         {
             IMetadataImport obj;
             m_module.GetMetaDataInterface(ref interfaceGuid,out obj);
             return obj;
+        }
+
+        /// <summary>
+        /// Typesafe wrapper around GetMetaDataInterface. 
+        /// </summary>
+        /// <typeparam name="T">type of interface to query for</typeparam>
+        /// <returns>interface to the metadata</returns>
+        public T GetMetaDataInterface<T>()
+        {
+            // Ideally, this would be declared as Object to match the unmanaged
+            // CorDebug.idl definition; but the managed wrappers we build
+            // on import it as an IMetadataImport, so we need to start with
+            // that. 
+            IMetadataImport obj;
+            Guid interfaceGuid = typeof(T).GUID;
+            m_module.GetMetaDataInterface(ref interfaceGuid, out obj);
+            return (T) obj;
         }
             
 
@@ -319,7 +316,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public void SetJmcStatus(bool isJustMyCOde,int[] tokens)
         {
-            Debug.Assert(tokens==null); // <strip>@TODO not yet implemented</strip>
+            Debug.Assert(tokens==null); 
             uint i=0;
             (m_module as ICorDebugModule2).SetJMCStatus(isJustMyCOde?1:0,0,ref i);
         }

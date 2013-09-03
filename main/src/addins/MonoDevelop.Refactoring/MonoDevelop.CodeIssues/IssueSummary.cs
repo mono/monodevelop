@@ -102,21 +102,21 @@ namespace MonoDevelop.CodeIssues
 		}
 		
 		// no-op events, these never happen in this implementation
-		event System.EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
 			add {
 			}
 			remove {
 			}
 		}
 
-		event System.EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
+		event EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
 			add {
 			}
 			remove {
 			}
 		}
 
-		event System.EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
 			add {
 			}
 			remove {

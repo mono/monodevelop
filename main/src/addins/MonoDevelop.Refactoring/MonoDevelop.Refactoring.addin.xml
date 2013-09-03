@@ -54,10 +54,9 @@
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
 	
-	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>
-	</Extension>-->
+	</Extension>
 	
 	<!-- Text editor integration -->
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

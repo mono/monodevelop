@@ -1325,6 +1325,8 @@ namespace MonoDevelop.CSharp.Completion
 					endOffset = int.MaxValue;
 				result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, type));
 				foreach (var entity in type.Members) {
+					if (entity.IsSynthetic)
+						continue;
 					offset = document.Editor.LocationToOffset (entity.Region.Begin);
 					endOffset = document.Editor.LocationToOffset (entity.Region.End);
 					if (endOffset < 0)
@@ -1359,6 +1361,7 @@ namespace MonoDevelop.CSharp.Completion
 				member = unstableTypeSystemSegmentTree.GetMemberAt (offset);
 			if (member == null && validTypeSystemSegmentTree != null)
 				member = validTypeSystemSegmentTree.GetMemberAt (offset);
+
 			return member;
 		}
 		#endregion

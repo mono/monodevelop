@@ -71,6 +71,7 @@
     <Compile Include="debug\Class.cs" />
     <Compile Include="debug\Constants.cs" />
     <Compile Include="debug\Controller.cs" />
+    <Compile Include="debug\CorAPIAssemblyAttributes.cs" />
     <Compile Include="debug\Debugger.cs" />
     <Compile Include="debug\ErrorInfoEnumerator.cs" />
     <Compile Include="debug\Eval.cs" />
@@ -92,7 +93,6 @@
     <Compile Include="debug\Value.cs" />
     <Compile Include="debug\ValueBreakpoint.cs" />
     <Compile Include="debug\WrapperBase.cs" />
-    <Compile Include="Metadata\Constants.cs" />
     <Compile Include="Metadata\CorMetadata.cs" />
     <Compile Include="Metadata\MetadataFieldInfo.cs" />
     <Compile Include="Metadata\MetadataParameterInfo.cs" />
@@ -106,6 +106,7 @@
     <Compile Include="SymStore\ISymScope2.cs" />
     <Compile Include="SymStore\ISymSearchInfo.cs" />
     <Compile Include="SymStore\ISymWriter2.cs" />
+    <Compile Include="SymStore\SymAccess.cs" />
     <Compile Include="SymStore\symbinder.cs" />
     <Compile Include="SymStore\SymConstant.cs" />
     <Compile Include="SymStore\SymDocument.cs" />

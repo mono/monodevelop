@@ -84,14 +84,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		static void InitializeService ()
 		{
-			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
-			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
+			if (IdeApp.IsInitialized) {
+				IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
+				IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
+			}
 		}
 
 		static void ShutdownService ()
 		{
-			IdeApp.ProjectOperations.EndBuild -= OnProjectCompiled;
-			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
+			if (IdeApp.IsInitialized) {
+				IdeApp.ProjectOperations.EndBuild -= OnProjectCompiled;
+				IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
+			}
 			if (steticApp != null) {
 				StoreConfiguration ();
 				steticApp.Dispose ();

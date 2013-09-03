@@ -35,10 +35,10 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
                           int column,
                           int cRanges,
                           out int pcRanges,
-                          [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] ranges);
+                          [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=3)] int[] ranges);
         void GetParameters(int cParams,
                               out int pcParams,
-                              [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedVariable[] parms);
+                              [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedVariable[] parms);
         void GetNamespace([MarshalAs(UnmanagedType.Interface)] out ISymUnmanagedNamespace retVal);
         void GetSourceStartEnd(ISymUnmanagedDocument[] docs,
                                   [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] lines,
@@ -46,12 +46,12 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
                                   out Boolean retVal);
         void GetSequencePoints(int cPoints,
                                   out int pcPoints,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] offsets,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymUnmanagedDocument[] documents,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] lines,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] columns,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] endLines,
-                                  [In, Out, MarshalAs(UnmanagedType.LPArray)] int[] endColumns);
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] int[] offsets,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] ISymUnmanagedDocument[] documents,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] int[] lines,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] int[] columns,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] int[] endLines,
+                                  [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] int[] endColumns);
     }
     
     [
@@ -76,7 +76,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
     }
     
 
-    class SymMethod : ISymbolMethod, ISymbolEnCMethod
+    internal class SymMethod : ISymbolMethod, ISymbolEnCMethod
     {
         ISymUnmanagedMethod m_unmanagedMethod;
 
@@ -106,7 +106,7 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
         }
 
         public void GetSequencePoints(int[] offsets,
-                               [In, Out, MarshalAs(UnmanagedType.LPArray)] ISymbolDocument[] documents,
+                               ISymbolDocument[] documents,
                                int[] lines,
                                int[] columns,
                                int[] endLines,

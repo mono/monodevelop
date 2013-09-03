@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
-			Refresh ();
 		}
 
 		public void Dispose ()
@@ -161,7 +160,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (HasXbuildFileBug ()) {
 							// Workaround for Xamarin bug #14295: Project.Load incorrectly resets the FullFileName property
 							var t = p.GetType ();
-							t.InvokeMember ("project_load_settings", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField, null, p, new object[] { ProjectLoadSettings.None });
 							t.InvokeMember ("PushThisFileProperty", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { p.FullFileName });
 							t.InvokeMember ("DoLoad", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { new StringReader (content) });
 						} else {

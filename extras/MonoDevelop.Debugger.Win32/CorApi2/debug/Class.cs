@@ -20,16 +20,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
 
-#if CORAPI_EXPOSE_RAW_INTERFACES
-        [CLSCompliant(false)]
-        public ICorDebugClass Raw
-        {
-            get 
-            { 
-                return m_class;
-            }
-        }
-#endif
 
         /** The module containing the class */
         public CorModule Module

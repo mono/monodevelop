@@ -48,6 +48,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -55,20 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="context.il" />
-    <None Include="cordblib.il" />
-    <None Include="corpublib.il" />
-    <None Include="refs.il" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="IMetadataImport.cs" />
+    <Compile Include="ICorDebugWrappers.cs" />
+    <Compile Include="ICorPublishWrappers.cs" />
+    <Compile Include="RawAssemblyAttributes.cs" />
+    <Compile Include="WindowsImports.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>call "$(FrameworkSDKDir)bin\ildasm.exe" /NOBAR "$(TargetDir)CorApi.dll" /OUT="$(TargetDir)CorApiMDImp.il"
-del /F /Q "$(TargetDir)CorApi.dll" 
-call "$(FrameworkDir)\$(FrameworkVersion)\ilasm.exe" /DLL /DEBUG /OUT="$(TargetDir)CorApi.dll" "$(ProjectDir)refs.il" "$(ProjectDir)context.il" "$(ProjectDir)cordblib.il" "$(ProjectDir)corpublib.il" "$(TargetDir)CorApiMDImp.il"
-del /F /Q "$(TargetDir)CorApiMDImp.il"
-del /F /Q "$(TargetDir)CorApiMDImp.res"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -1900,6 +1900,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacters.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacterCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IRefactoringContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

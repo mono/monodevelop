@@ -33,10 +33,10 @@ namespace MonoDevelop.CodeIssues
 {
 	public class GroupingProviderChainControl: HBox
 	{
-		IList<Type> availableProviders;
+		readonly IList<Type> availableProviders;
 		
-		IList<ComboBox> providerPickers = new List<ComboBox>();
-		IList<Label> labels = new List<Label>();
+		readonly IList<ComboBox> providerPickers = new List<ComboBox>();
+		readonly IList<Label> labels = new List<Label>();
 
 		public GroupingProviderChainControl(IssueGroup rootGroup, IEnumerable<Type> providers)
 		{
@@ -99,8 +99,7 @@ namespace MonoDevelop.CodeIssues
 			}
 			if (selectedProvider != null) {
 				combo.SelectedItem = selectedProvider.GetType ();
-			}
-			else {
+			} else {
 				combo.SelectedItem = typeof(NullGroupingProvider);
 			}
 			return combo;
@@ -108,7 +107,7 @@ namespace MonoDevelop.CodeIssues
 		
 		class GroupingProvider: IGroupingProvider
 		{
-			IssueGroup rootGroup;
+			readonly IssueGroup rootGroup;
 			
 			public GroupingProvider (IssueGroup rootGroup)
 			{

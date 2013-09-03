@@ -319,8 +319,10 @@ namespace MonoDevelop.VersionControl.Git
 				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
 					versionInfoCacheRepository = repository;
 					RevCommit headCommit = GetHeadCommit (repository);
-					if (headCommit != null)
+					if (headCommit != null) {
 						rev = new GitRevision (this, repository, headCommit.Id.Name);
+						versionInfoCacheRevision = rev;
+					}
 				} else
 					rev = versionInfoCacheRevision;
 
@@ -872,8 +874,10 @@ namespace MonoDevelop.VersionControl.Git
 					cmd.Call ();
 				} catch (NGit.Api.Errors.JGitInternalException e) {
 					// We cancelled and NGit throws.
+					// Or URL is wrong.
 					if (e.InnerException is NGit.Errors.MissingObjectException ||
-						e.InnerException is NGit.Errors.TransportException) {
+						e.InnerException is NGit.Errors.TransportException ||
+						e.InnerException is NGit.Errors.NotSupportedException) {
 						FileService.DeleteDirectory (targetLocalPath);
 					}
 				}
@@ -1641,7 +1645,9 @@ namespace MonoDevelop.VersionControl.Git
 				var author = result.GetSourceAuthor (i);
 				if (commit != null && author != null) {
 					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
-					list.Add (new Annotation (commit.Name, author.GetName (), commitTime, String.Format ("<{0}>", author.GetEmailAddress ())));
+					string authorName = author.GetName () ?? commit.GetAuthorIdent ().GetName ();
+					string email = author.GetEmailAddress () ?? commit.GetAuthorIdent ().GetEmailAddress ();
+					list.Add (new Annotation (commit.Name, authorName, commitTime, String.Format ("<{0}>", email)));
 				} else {
 					list.Add (new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.Now));
 				}
