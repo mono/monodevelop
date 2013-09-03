@@ -171,6 +171,8 @@ namespace MonoDevelop.AnalysisCore
 			var fixes = codeActionExtension.GetCurrentFixes ();
 			if (fixes != null) {
 				foreach (var fix in fixes.Where (CodeActionWidget.IsAnalysisOrErrorFix)) {
+					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
+						continue;
 					var escapedLabel = fix.Title.Replace ("_", "__");
 					var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
