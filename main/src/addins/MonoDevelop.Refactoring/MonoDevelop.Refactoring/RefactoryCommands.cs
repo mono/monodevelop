@@ -284,7 +284,7 @@ namespace MonoDevelop.Refactoring
 				lastLocation = loc;
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
-			if (refactoringInfo.validActions != null) {
+			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null) {
 				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
 				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionWidget.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionWidget.GetUsage (i.IdString)))) {
