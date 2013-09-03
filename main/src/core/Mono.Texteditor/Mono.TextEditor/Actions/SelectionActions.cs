@@ -231,5 +231,10 @@ namespace Mono.TextEditor
 			data.Caret.PreserveSelection = false;
 			data.SelectionRange = selection;
 		}
+
+		public static void ClearSelection (TextEditorData data)
+		{
+			data.ClearSelection ();
+		}
 	}
 }
