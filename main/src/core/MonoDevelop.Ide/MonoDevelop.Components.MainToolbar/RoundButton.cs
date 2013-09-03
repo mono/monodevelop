@@ -189,8 +189,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var icon = GetIcon();
 				icon.Show (
 					context,
-					Allocation.X + (icon.Width - Allocation.Width) / 2,
-					Allocation.Y + (icon.Height - Allocation.Height) / 2
+					Allocation.X + Math.Max (0, (Allocation.Width - icon.Width) / 2),
+					Allocation.Y + Math.Max (0, (Allocation.Height - icon.Height) / 2)
 				);
 			}
 			return base.OnExposeEvent (evnt);
