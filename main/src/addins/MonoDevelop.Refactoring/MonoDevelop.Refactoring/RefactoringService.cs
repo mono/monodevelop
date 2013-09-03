@@ -289,7 +289,7 @@ namespace MonoDevelop.Refactoring
 		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
 		{
 			if (doc == null)
-				throw new ArgumentNullException ("doc");
+				return location;
 			var editor = doc.Editor;
 			if (editor == null || location.Column == 1)
 				return location;
