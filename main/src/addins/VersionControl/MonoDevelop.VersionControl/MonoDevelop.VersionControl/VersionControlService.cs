@@ -45,12 +45,13 @@ namespace MonoDevelop.VersionControl
 		static List<VersionControlSystem> handlers = new List<VersionControlSystem> ();
 		static VersionControlConfiguration configuration;
 		static DataContext dataContext = new DataContext ();
-		internal static bool SolutionIsDisabled;
+		static bool solutionIsDisabled;
 		
 		public static event FileUpdateEventHandler FileStatusChanged;
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
 		public static event CommitEventHandler EndCommit;
+		public static event EventHandler SolutionIsDisabledModified;
 		
 		static VersionControlService ()
 		{
@@ -77,14 +78,19 @@ namespace MonoDevelop.VersionControl
 				}
 
 				IdeApp.Workspace.SolutionLoaded += delegate (object sender, SolutionEventArgs e) {
-					SolutionIsDisabled = e.Solution.IsVersionControlDisabled;
+					solutionIsDisabled = e.Solution.IsVersionControlDisabled;
 
 					e.Solution.Modified += delegate {
-						SolutionIsDisabled = e.Solution.IsVersionControlDisabled;
+						solutionIsDisabled = e.Solution.IsVersionControlDisabled;
+					};
+
+					SolutionIsDisabledModified += delegate {
+						e.Solution.IsVersionControlDisabled = solutionIsDisabled;
 					};
 				};
 				IdeApp.Workspace.SolutionUnloaded += delegate {
-					SolutionIsDisabled = false;
+					solutionIsDisabled = false;
+					SolutionIsDisabledModified = null;
 				};
 
 				IdeApp.Workspace.FileAddedToProject += OnFileAdded;
@@ -613,6 +619,15 @@ namespace MonoDevelop.VersionControl
 		internal static bool GlobalIsDisabled {
 			get { return GetConfiguration ().Disabled; }
 			set { GetConfiguration ().Disabled = value; }
+		}
+
+		internal static bool SolutionIsDisabled {
+			get { return solutionIsDisabled; }
+			set {
+				solutionIsDisabled = value;
+				if (SolutionIsDisabledModified != null)
+					SolutionIsDisabledModified (null, null);
+			}
 		}
 
 		public static bool IsDisabled {

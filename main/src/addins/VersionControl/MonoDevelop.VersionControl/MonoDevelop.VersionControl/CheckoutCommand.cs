@@ -10,7 +10,7 @@ namespace MonoDevelop.VersionControl
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = VersionControlService.CheckVersionControlInstalled ();
-			info.Visible = VersionControlService.IsDisabled;
+			info.Visible = !VersionControlService.IsDisabled;
 		}
 
 		protected override void Run()

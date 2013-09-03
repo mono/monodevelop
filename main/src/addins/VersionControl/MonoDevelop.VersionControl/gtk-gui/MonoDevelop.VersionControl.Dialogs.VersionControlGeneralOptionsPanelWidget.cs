@@ -4,7 +4,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 {
 	public partial class VersionControlGeneralOptionsPanelWidget
 	{
-		private global::Gtk.VBox vbox2;
+		private global::Gtk.VBox vbox1;
 		private global::Gtk.CheckButton disableVersionControl;
 
 		protected virtual void Build ()
@@ -14,22 +14,22 @@ namespace MonoDevelop.VersionControl.Dialogs
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.VersionControl.Dialogs.VersionControlGeneralOptionsPanelWidget";
 			// Container child MonoDevelop.VersionControl.Dialogs.VersionControlGeneralOptionsPanelWidget.Gtk.Container+ContainerChild
-			this.vbox2 = new global::Gtk.VBox ();
-			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
-			// Container child vbox2.Gtk.Box+BoxChild
+			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1.Name = "vbox1";
+			this.vbox1.Spacing = 6;
+			// Container child vbox1.Gtk.Box+BoxChild
 			this.disableVersionControl = new global::Gtk.CheckButton ();
 			this.disableVersionControl.CanFocus = true;
 			this.disableVersionControl.Name = "disableVersionControl";
-			this.disableVersionControl.Label = global::Mono.Unix.Catalog.GetString ("Disable Version Control");
+			this.disableVersionControl.Label = global::Mono.Unix.Catalog.GetString ("Disable Version Control globally");
 			this.disableVersionControl.DrawIndicator = true;
 			this.disableVersionControl.UseUnderline = true;
-			this.vbox2.Add (this.disableVersionControl);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.disableVersionControl]));
+			this.vbox1.Add (this.disableVersionControl);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.disableVersionControl]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
-			this.Add (this.vbox2);
+			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
