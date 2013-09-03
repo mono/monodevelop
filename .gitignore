@@ -21,6 +21,7 @@ obj/
 /main/build/tests
 /main/monodevelop_version
 /main/tests/TestResult.xml
+/main/tests/Ide.Tests/bin
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
