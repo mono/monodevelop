@@ -13,17 +13,10 @@ EXE_PATH="${0%%/bin/monodevelop}/lib/monodevelop/bin/MonoDevelop.exe"
 
 _MD_REDIRECT_LOG="${MD_REDIRECT_LOG:-${XDG_CONFIG_HOME:-$HOME/.config}/MonoDevelop/log}"
 
-##NOTE: remove this for stable releases
-if [ -z "$MD_NO_DEBUG" ]; then
-	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
-else
-	_MONO_OPTIONS=$MONO_OPTIONS
-fi
-
 if [ -n "$_MD_REDIRECT_LOG" ]; then
 	mkdir -p `dirname "$_MD_REDIRECT_LOG"`
-	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 | tee "$_MD_REDIRECT_LOG"
+	$MONO_EXEC $MONO_OPTIONS "$EXE_PATH" $* 2>&1 | tee "$_MD_REDIRECT_LOG"
 else
-	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*
+	$MONO_EXEC $MONO_OPTIONS "$EXE_PATH" $*
 fi
 
