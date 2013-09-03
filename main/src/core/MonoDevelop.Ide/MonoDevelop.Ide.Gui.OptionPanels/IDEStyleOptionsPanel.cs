@@ -116,12 +116,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					continue;
 				foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
 					if (System.IO.File.Exists (dir.Combine (gtkrc))) {
-						if (!IdeStartup.FailingGtkThemes.Any (t => t == dir.FileName))
-							themes.Add (dir.FileName);
+						var themeName = dir.FileName;
+						if (!IsBadGtkTheme (themeName))
+							themes.Add (themeName);
 					}
 				}
 			}
 			return themes;
+		}
+
+		internal static bool IsBadGtkTheme (string theme)
+		{
+			if (string.Equals ("QtCurve", theme, StringComparison.OrdinalIgnoreCase))
+				return true;
+			if (string.Equals ("oxygen-gtk", theme, StringComparison.OrdinalIgnoreCase))
+				return Environment.GetEnvironmentVariable ("OXYGEN_DISABLE_INNER_SHADOWS_HACK") != "1";
+			return false;
 		}
 		
 		public void Store()
