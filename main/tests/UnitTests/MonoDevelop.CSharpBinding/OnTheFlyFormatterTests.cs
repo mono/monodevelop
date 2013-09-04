@@ -144,6 +144,28 @@ namespace MonoDevelop.CSharpBinding
 			var newText = content.Text;
 			Assert.AreEqual ("\"Hello\n", newText);
 		}
+
+
+		[Test]
+		public void TestVerbatimToNonVerbatimConversion ()
+		{
+			TestViewContent content;
+			var ext = Setup ("@$\"\t\"", out content);
+			content.GetTextEditorData ().Remove (0, 1);
+			var newText = content.Text;
+			Assert.AreEqual ("\"\\t\"", newText);
+		}
+
+		[Test]
+		public void TestNonVerbatimToVerbatimConversion ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\t\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\t\"", newText);
+		}
 	}
 }
 

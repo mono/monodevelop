@@ -227,11 +227,9 @@ namespace MonoDevelop.CSharp.Formatting
 			if (wasInVerbatimString && !stateTracker.IsInsideVerbatimString) {
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;
 				textEditorData.Document.TextReplaced -= HandleTextReplaced;
-				;
 				ConvertVerbatimStringToNormal (textEditorData, e.Offset + e.InsertionLength + 1);
 				textEditorData.Document.TextReplacing += HandleTextReplacing;
 				textEditorData.Document.TextReplaced += HandleTextReplaced;
-				;
 			}
 		}
 
@@ -429,8 +427,8 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				endOffset++;
 			}
-
-			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var plainText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
 			textEditorData.Replace (offset, endOffset - offset, newText);
 		}
 
@@ -448,7 +446,8 @@ namespace MonoDevelop.CSharp.Formatting
 				endOffset++;
 			}
 
-			var newText = TextPasteUtils.VerbatimStringStrategy.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var plainText = TextPasteUtils.VerbatimStringStrategy.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
+			var newText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Encode (plainText);
 			textEditorData.Replace (offset, endOffset - offset, newText);
 		}
 
