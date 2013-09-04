@@ -182,6 +182,9 @@ namespace MonoDevelop.VersionControl
 		internal static Dictionary<Repository, InternalRepositoryReference> referenceCache = new Dictionary<Repository, InternalRepositoryReference> ();
 		public static Repository GetRepository (IWorkspaceObject entry)
 		{
+			if (IsGloballyDisabled)
+				return null;
+
 			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
 			if (repoRef != null)
 				return repoRef.Repo;
@@ -594,6 +597,11 @@ namespace MonoDevelop.VersionControl
 		{
 			GetConfiguration ().Repositories.Remove (repo);
 		}
+
+		public static bool IsGloballyDisabled {
+			get { return GetConfiguration ().Disabled; }
+			set { GetConfiguration ().Disabled = value; }
+		}
 		
 		static public IEnumerable<Repository> GetRepositories ()
 		{
@@ -641,6 +649,9 @@ namespace MonoDevelop.VersionControl
 		
 		public static bool CheckVersionControlInstalled ()
 		{
+			if (IsGloballyDisabled)
+				return false;
+
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				if (vcs.IsInstalled)
 					return true;
