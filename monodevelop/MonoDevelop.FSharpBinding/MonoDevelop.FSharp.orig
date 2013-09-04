@@ -144,7 +144,7 @@
     </Reference>
     <Reference Include="Xwt.Gtk">
       <Private>False</Private>
-      <HintPath>.INSERT_FSPROJ_MDROOT/xwt/Xwt.Gtk.dll</HintPath>
+      <HintPath>.INSERT_FSPROJ_MDROOT/bin/Xwt.Gtk.dll</HintPath>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
