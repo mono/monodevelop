@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			var ext = Setup ("\"Hello\n\t$", out content);
-			ext.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+			ext.ReindentOnTab ();
 
 			var newText = content.Text;
 			Assert.AreEqual ("\"Hello\n", newText);

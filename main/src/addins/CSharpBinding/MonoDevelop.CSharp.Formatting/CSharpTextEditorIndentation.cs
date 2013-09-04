@@ -504,6 +504,36 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		internal void ReindentOnTab ()
+		{
+			int cursor = textEditorData.Caret.Offset;
+			if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Document.TextLength && textEditorData.GetCharAt (cursor - 1) == '"')
+				stateTracker.Update (cursor + 1);
+			if (stateTracker.IsInsideVerbatimString) {
+				// insert normal tab inside @" ... "
+				if (textEditorData.IsSomethingSelected) {
+					textEditorData.SelectedText = "\t";
+				}
+				else {
+					textEditorData.Insert (cursor, "\t");
+				}
+				textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
+			}
+			else
+				if (cursor >= 1) {
+					if (textEditorData.Caret.Column > 1) {
+						int delta = cursor - cursorPositionBeforeKeyPress;
+						if (delta < 2 && delta > 0) {
+							textEditorData.Remove (cursor - delta, delta);
+							textEditorData.Caret.Offset = cursor - delta;
+							textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
+						}
+					}
+					stateTracker.Update (textEditorData.Caret.Offset);
+					DoReSmartIndent ();
+				}
+		}
+
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool skipFormatting = StateTracker.IsInsideOrdinaryCommentOrString ||
@@ -558,30 +588,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			if (key == Gdk.Key.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
-				int cursor = textEditorData.Caret.Offset;
-				if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Document.TextLength && textEditorData.GetCharAt (cursor - 1) == '"')
-					stateTracker.Update (cursor + 1);
+				ReindentOnTab ();
 
-				if (stateTracker.IsInsideVerbatimString) {
-					// insert normal tab inside @" ... "
-					if (textEditorData.IsSomethingSelected) {
-						textEditorData.SelectedText = "\t";
-					} else {
-						textEditorData.Insert (cursor, "\t");
-					}
-					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
-				} else if (cursor >= 1) {
-					if (textEditorData.Caret.Column > 1) {
-						int delta = cursor - cursorPositionBeforeKeyPress;
-						if (delta < 2 && delta > 0) {
-							textEditorData.Remove (cursor - delta, delta);
-							textEditorData.Caret.Offset = cursor - delta;
-							textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
-						}
-					}
-					stateTracker.Update (textEditorData.Caret.Offset);
-					DoReSmartIndent ();
-				}
 				return false;
 			}
 
