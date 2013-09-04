@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharpBinding
 			ext.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
 
 			var newText = content.Text;
-			Assert.AreEqual ("\"Hello\n\t", newText);
+			Assert.AreEqual ("\"Hello\n", newText);
 		}
 	}
 }
