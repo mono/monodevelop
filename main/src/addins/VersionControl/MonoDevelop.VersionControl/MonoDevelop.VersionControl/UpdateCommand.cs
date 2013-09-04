@@ -9,6 +9,7 @@ namespace MonoDevelop.VersionControl
 		{
 			if (!items.All (i => i.VersionInfo.CanUpdate))
 				return false;
+
 			if (test)
 				return true;
 			

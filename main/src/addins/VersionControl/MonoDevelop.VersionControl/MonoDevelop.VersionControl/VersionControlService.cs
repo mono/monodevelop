@@ -45,11 +45,13 @@ namespace MonoDevelop.VersionControl
 		static List<VersionControlSystem> handlers = new List<VersionControlSystem> ();
 		static VersionControlConfiguration configuration;
 		static DataContext dataContext = new DataContext ();
+		static bool solutionIsDisabled;
 		
 		public static event FileUpdateEventHandler FileStatusChanged;
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
 		public static event CommitEventHandler EndCommit;
+		public static event EventHandler SolutionIsDisabledModified;
 		
 		static VersionControlService ()
 		{
@@ -74,6 +76,22 @@ namespace MonoDevelop.VersionControl
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading icons.", e);
 				}
+
+				IdeApp.Workspace.SolutionLoaded += delegate (object sender, SolutionEventArgs e) {
+					solutionIsDisabled = e.Solution.IsVersionControlDisabled;
+
+					e.Solution.Modified += delegate {
+						solutionIsDisabled = e.Solution.IsVersionControlDisabled;
+					};
+
+					SolutionIsDisabledModified += delegate {
+						e.Solution.IsVersionControlDisabled = solutionIsDisabled;
+					};
+				};
+				IdeApp.Workspace.SolutionUnloaded += delegate {
+					solutionIsDisabled = false;
+					SolutionIsDisabledModified = null;
+				};
 
 				IdeApp.Workspace.FileAddedToProject += OnFileAdded;
 				//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
@@ -182,6 +200,9 @@ namespace MonoDevelop.VersionControl
 		internal static Dictionary<Repository, InternalRepositoryReference> referenceCache = new Dictionary<Repository, InternalRepositoryReference> ();
 		public static Repository GetRepository (IWorkspaceObject entry)
 		{
+			if (IsDisabled)
+				return null;
+
 			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
 			if (repoRef != null)
 				return repoRef.Repo;
@@ -594,6 +615,24 @@ namespace MonoDevelop.VersionControl
 		{
 			GetConfiguration ().Repositories.Remove (repo);
 		}
+
+		internal static bool GlobalIsDisabled {
+			get { return GetConfiguration ().Disabled; }
+			set { GetConfiguration ().Disabled = value; }
+		}
+
+		internal static bool SolutionIsDisabled {
+			get { return solutionIsDisabled; }
+			set {
+				solutionIsDisabled = value;
+				if (SolutionIsDisabledModified != null)
+					SolutionIsDisabledModified (null, null);
+			}
+		}
+
+		public static bool IsDisabled {
+			get { return GlobalIsDisabled || SolutionIsDisabled; }
+		}
 		
 		static public IEnumerable<Repository> GetRepositories ()
 		{
@@ -641,6 +680,9 @@ namespace MonoDevelop.VersionControl
 		
 		public static bool CheckVersionControlInstalled ()
 		{
+			if (IsDisabled)
+				return false;
+
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				if (vcs.IsInstalled)
 					return true;

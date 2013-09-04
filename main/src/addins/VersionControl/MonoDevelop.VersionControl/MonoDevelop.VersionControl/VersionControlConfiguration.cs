@@ -12,5 +12,8 @@ namespace MonoDevelop.VersionControl
 		public List<Repository> Repositories {
 			get { return repositories; }
 		}
+
+		[ItemProperty]
+		public bool Disabled;
 	}
 }
