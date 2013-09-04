@@ -50,9 +50,9 @@ namespace MonoDevelop.CSharp.Formatting
 	class IndentVirtualSpaceManager : Mono.TextEditor.IIndentationTracker
 	{
 		Mono.TextEditor.TextEditorData data;
-		DocumentStateTracker<CSharpIndentEngine> stateTracker;
+		IStateMachineIndentEngine stateTracker;
 
-		public IndentVirtualSpaceManager (Mono.TextEditor.TextEditorData data, DocumentStateTracker<CSharpIndentEngine> stateTracker)
+		public IndentVirtualSpaceManager(Mono.TextEditor.TextEditorData data, IStateMachineIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
@@ -60,20 +60,19 @@ namespace MonoDevelop.CSharp.Formatting
 
 		string GetIndentationString (int offset, DocumentLocation loc)
 		{
-			stateTracker.UpdateEngine (Math.Min (data.Length, offset + 1));
+			stateTracker.Update (Math.Min (data.Length, offset));
 			DocumentLine line = data.Document.GetLine (loc.Line);
 			if (line == null)
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
-			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = offset; max < line.Offset + line.Length; max++) {
-				ctx.Push (data.Document.GetCharAt (max));
-			}
+			var ctx = stateTracker.Clone ();
+			ctx.Update(line.Offset + line.Length);
+
 //			int pos = line.Offset;
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
 //			int o = offset > pos + nlwsp ? offset - (pos + nlwsp) : 0;
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
+			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
 				return ctx.ThisLineIndent;
 			}
 			return curIndent;
@@ -95,8 +94,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			int offset = line.Offset + Math.Min (line.Length, column - 1);
  
-			stateTracker.UpdateEngine (offset);
-			return stateTracker.Engine.NewLineIndent;
+			stateTracker.Update (offset);
+			return stateTracker.NextLineIndent;
 		}
 
 		public int GetVirtualIndentationColumn (int offset)
