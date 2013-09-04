@@ -349,7 +349,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
-		static object projectWrapperUpdateLock = new object ();
+		static readonly object projectWrapperUpdateLock = new object ();
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
 			if (fileName == null)
@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					// The parsed file could be included in other projects as well, therefore
 					// they need to be updated.
-					foreach (var cnt in projectContents) {
+					foreach (var cnt in projectContents.ToArray ()) {
 						if (cnt.Key == project)
 							continue;
 						// Use the project context because file lookup is faster there than in the project class.
