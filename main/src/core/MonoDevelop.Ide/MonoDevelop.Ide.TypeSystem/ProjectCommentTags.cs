@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal void Update (Project project)
 		{
 			foreach (var file in project.Files) {
+				if (file.BuildAction != BuildAction.Compile)
+					continue;
 				TypeSystemService.ParseFile (project, file.FilePath);
 			}
 		}
