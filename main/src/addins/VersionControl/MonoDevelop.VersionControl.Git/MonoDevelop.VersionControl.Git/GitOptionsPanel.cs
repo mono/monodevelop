@@ -30,10 +30,6 @@ namespace MonoDevelop.VersionControl.Git
 	public class GitOptionsPanel : OptionsPanel
 	{
 		GitOptionsPanelWidget widget;
-		
-		public GitOptionsPanel ()
-		{
-		}
 
 		public override Gtk.Widget CreatePanelWidget ()
 		{
