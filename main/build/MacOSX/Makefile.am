@@ -64,7 +64,6 @@ app: monostub
 	cp -pR ../../external/fsharpbinding/monodevelop/bin/local/Debug $(MAC_APP_LIB_DIR)/AddIns/fsharpbinding
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
-	cp -pR ../bin $(MAC_APP_LIB_DIR)
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
