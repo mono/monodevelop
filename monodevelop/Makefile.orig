@@ -74,7 +74,7 @@ clean:
 
 
 # Apply the known binding versions and MonoDevelop versions to the project file
-MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig
+MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig Makefile
 	sed \
 		-e "s,INSERT_FSPROJ_MDROOT,$(MDROOT),g" \
 		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
@@ -82,7 +82,7 @@ MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj: MonoDevelop.FSharp
 		$< > $@
 
 # Apply the known binding versions and MonoDevelop versions to the addin description
-MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig
+MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig Makefile
 	sed \
 		-e "s,INSERT_FSPROJ_VERSION,$(VERSION),g" \
 		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
@@ -90,7 +90,7 @@ MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml: MonoDevelop.FSharpBi
 		$< > $@
 
 # Update the files for use on Windows
-MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig
+MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig Makefile
 	sed \
 		-e "s,INSERT_FSPROJ_MDROOT,c:\\\\Program Files (x86)\\\\MonoDevelop,g" \
 		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
@@ -99,7 +99,7 @@ MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj: MonoDevelop.FSharpB
 
 
 # Update the files for use on Windows
-MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig
+MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig Makefile
 	sed \
 		-e "s,INSERT_FSPROJ_VERSION,$(VERSION),g" \
 		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
