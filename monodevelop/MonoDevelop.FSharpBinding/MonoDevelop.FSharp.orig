@@ -127,12 +127,6 @@
     <Reference Include="glib-sharp">
       <HintPath>../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="Xwt">
-      <HintPath>../dependencies/xwt/Xwt.dll</HintPath>
-    </Reference>
-    <Reference Include="Xwt.Gtk">
-      <HintPath>../dependencies/xwt/Xwt.Gtk.dll</HintPath>
-    </Reference>
 
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -143,6 +137,14 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Addins">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Xwt">
+      <Private>False</Private>
+      <HintPath>INSERT_FSPROJ_MDROOT/bin/Xwt.dll</HintPath>
+    </Reference>
+    <Reference Include="Xwt.Gtk">
+      <Private>False</Private>
+      <HintPath>.INSERT_FSPROJ_MDROOT/xwt/Xwt.Gtk.dll</HintPath>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
