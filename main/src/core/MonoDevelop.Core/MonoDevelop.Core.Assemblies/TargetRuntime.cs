@@ -292,7 +292,7 @@ namespace MonoDevelop.Core.Assemblies
 				return Directory.GetFiles (facades, "*.dll");
 			}
 
-			return null;
+			return new string[0];
 		}
 
 		/// <summary>
