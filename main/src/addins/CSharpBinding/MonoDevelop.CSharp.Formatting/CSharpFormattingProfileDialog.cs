@@ -538,7 +538,17 @@ namespace TestSpace {
 			AddOption (indentOptions, category, "IndentSwitchBody", GettextCatalog.GetString ("Indent 'switch' body"), spaceExample);
 			AddOption (indentOptions, category, "IndentCaseBody", GettextCatalog.GetString ("Indent 'case' body"), spaceExample);
 			AddOption (indentOptions, category, "IndentBreakStatements", GettextCatalog.GetString ("Indent 'break' statements"), spaceExample);
-			
+			AddOption (indentOptions, category, "IndentPreprocessorDirectives", GettextCatalog.GetString ("Indent pre processor directives"), 
+			           @"#define DEBUG
+class Test {
+	#if DEBUG
+	void Example ()
+	{
+	}
+	#endif
+}
+");
+
 			AddOption (indentOptions, category, "AlignEmbeddedIfStatements", GettextCatalog.GetString ("Align embedded 'if' statements"), "class AClass { void AMethod () { if (a) if (b) { int c; } } } ");
 			AddOption (indentOptions, category, "AlignEmbeddedUsingStatements", GettextCatalog.GetString ("Align embedded 'using' statements"), "class AClass { void AMethod () {using (IDisposable a = null) using (IDisposable b = null) { int c; } } }");
 			treeviewIndentOptions.ExpandAll ();

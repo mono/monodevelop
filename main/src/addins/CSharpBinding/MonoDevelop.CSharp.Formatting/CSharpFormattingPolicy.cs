@@ -234,6 +234,15 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
+		public bool IndentPreprocessorDirectives {
+			get {
+				return options.IndentPreprocessorDirectives;
+			}
+			set {
+				options.IndentPreprocessorDirectives = value;
+			}
+		}
 		#endregion
 		
 		#region Braces
