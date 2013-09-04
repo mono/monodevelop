@@ -40,12 +40,16 @@ searchpaths()
 # Find all paths that we need in order to generate the make file. Paths
 # later in the list are preferred.
 
-PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop '/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop' `pwd`/../../../build )
-searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
-MDDIR=$RESULT
-echo "Successfully found MonoDevelop root directory." $MDDIR
-
-echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
+if [ -f ../../../monodevelop.pc.in ] ;then
+	MDDIR=`pwd`/../../../build
+	echo "Successfully found MonoDevelop build directory." $MDDIR
+else
+	PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/	monodevelop /opt/mono/lib/monodevelop '/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop' )
+	searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
+	MDDIR=$RESULT
+	echo "Successfully found MonoDevelop root directory." $MDDIR
+	echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
+fi
 
 if [  -f "$MDDIR"/../../XamarinStudio ]
 then
