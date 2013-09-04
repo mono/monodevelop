@@ -86,7 +86,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="FSharpBinding.INSERT_FSPROJ_MDTAG.addin.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
