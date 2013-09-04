@@ -359,8 +359,8 @@
     <EmbeddedResource Include="icons\element-interface-16.png">
       <LogicalName>element-interface-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-literal-16.png">
-      <LogicalName>element-literal-16.png</LogicalName>
+    <EmbeddedResource Include="icons\element-constant-16.png">
+      <LogicalName>element-constant-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-16.png">
       <LogicalName>element-method-16.png</LogicalName>
