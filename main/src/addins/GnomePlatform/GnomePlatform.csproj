@@ -19,7 +19,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <GenerateDocumentation>true</GenerateDocumentation>
-    <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

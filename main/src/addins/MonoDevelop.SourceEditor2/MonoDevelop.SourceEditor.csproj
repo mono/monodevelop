@@ -28,7 +28,6 @@
     <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <GenerateDocumentation>true</GenerateDocumentation>
-    <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
