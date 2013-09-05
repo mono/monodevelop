@@ -900,11 +900,11 @@
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-resource-folder-16.png">
-      <LogicalName>open-resource-folder-16.png</LogicalName>
+    <EmbeddedResource Include="icons\resource-folder-open-16.png">
+      <LogicalName>resource-folder-open-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-resource-folder-16@2x.png">
-      <LogicalName>open-resource-folder-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\resource-folder-open-16@2x.png">
+      <LogicalName>resource-folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\output-icon-16.png">
       <LogicalName>output-icon-16.png</LogicalName>
