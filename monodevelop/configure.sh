@@ -40,12 +40,16 @@ searchpaths()
 # Find all paths that we need in order to generate the make file. Paths
 # later in the list are preferred.
 
-PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop '/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop')
-searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
-MDDIR=$RESULT
-echo "Successfully found MonoDevelop root directory." $MDDIR
-
-echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
+if [ -f ../../../monodevelop.pc.in ] ;then
+	MDDIR=`pwd`/../../../build
+	echo "Successfully found MonoDevelop build directory." $MDDIR
+else
+	PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/	monodevelop /opt/mono/lib/monodevelop '/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop' )
+	searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
+	MDDIR=$RESULT
+	echo "Successfully found MonoDevelop root directory." $MDDIR
+	echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
+fi
 
 if [  -f "$MDDIR"/../../XamarinStudio ]
 then
@@ -55,6 +59,10 @@ then
 elif [  -f "$MDDIR"/../../MonoDevelop ] ;then
   # e.g. 3.0.4.7
   MDVERSION4=`"$MDDIR"/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
+  echo "Detected MonoDevelop version " $MDVERSION4
+elif [  -f "$MDDIR"/../../main/monodevelop.pc.in ] ;then
+  # e.g. 3.0.4.7
+  MDVERSION4=`grep -o -m 1 "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?" "$MDDIR"/../configure.in`
   echo "Detected MonoDevelop version " $MDVERSION4
 else
   MDVERSION4=4.1.6
