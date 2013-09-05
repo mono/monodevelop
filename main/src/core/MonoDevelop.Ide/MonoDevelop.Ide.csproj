@@ -861,11 +861,11 @@
     <EmbeddedResource Include="icons\folder-closed-16@2x.png">
       <LogicalName>folder-closed-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\closed-resource-folder-16.png">
-      <LogicalName>closed-resource-folder-16.png</LogicalName>
+    <EmbeddedResource Include="icons\resource-folder-closed-16.png">
+      <LogicalName>resource-folder-closed-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\closed-resource-folder-16@2x.png">
-      <LogicalName>closed-resource-folder-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\resource-folder-closed-16@2x.png">
+      <LogicalName>resource-folder-closed-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-16.png">
       <LogicalName>empty-16.png</LogicalName>
