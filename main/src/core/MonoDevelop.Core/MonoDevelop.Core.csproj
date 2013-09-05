@@ -50,7 +50,6 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>DEBUG</DefineConstants>
     <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>

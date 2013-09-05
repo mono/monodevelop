@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
-    <DefineConstants>GMCS_SOURCE;NET_2_0;MS_COMPATIBLE;DEBUG</DefineConstants>
+    <DefineConstants>GMCS_SOURCE;NET_2_0;MS_COMPATIBLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
