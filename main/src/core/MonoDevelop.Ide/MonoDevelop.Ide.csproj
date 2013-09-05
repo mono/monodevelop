@@ -1134,11 +1134,11 @@
     <EmbeddedResource Include="icons\assembly-reference-overlay-16@2x.png">
       <LogicalName>assembly-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-overlay-16.png">
-      <LogicalName>project-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\project-reference-overlay-16.png">
+      <LogicalName>project-reference-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-overlay-16@2x.png">
-      <LogicalName>project-overlay-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-reference-overlay-16@2x.png">
+      <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-item-group-16.png">
       <LogicalName>project-item-group-16.png</LogicalName>
