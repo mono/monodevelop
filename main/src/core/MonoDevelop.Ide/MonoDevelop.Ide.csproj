@@ -855,11 +855,11 @@
     <EmbeddedResource Include="icons\close-solution-16.png">
       <LogicalName>close-solution-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\closed-folder-16.png">
-      <LogicalName>closed-folder-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-closed-16.png">
+      <LogicalName>folder-closed-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\closed-folder-16@2x.png">
-      <LogicalName>closed-folder-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-closed-16@2x.png">
+      <LogicalName>folder-closed-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\closed-resource-folder-16.png">
       <LogicalName>closed-resource-folder-16.png</LogicalName>
