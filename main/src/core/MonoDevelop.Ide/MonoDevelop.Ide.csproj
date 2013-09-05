@@ -891,11 +891,11 @@
     <EmbeddedResource Include="icons\misc-files-16.png">
       <LogicalName>misc-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-folder-16.png">
-      <LogicalName>open-folder-16.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-open-16.png">
+      <LogicalName>folder-open-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-folder-16@2x.png">
-      <LogicalName>open-folder-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\folder-open-16@2x.png">
+      <LogicalName>folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
