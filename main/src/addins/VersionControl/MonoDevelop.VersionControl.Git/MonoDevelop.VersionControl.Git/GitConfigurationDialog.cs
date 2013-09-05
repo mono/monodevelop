@@ -36,6 +36,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		readonly GitRepository repo;
 		readonly ListStore storeBranches;
+		readonly ListStore storeTags;
 		readonly TreeStore storeRemotes;
 		
 		public GitConfigurationDialog (GitRepository repo)
@@ -61,11 +62,20 @@ namespace MonoDevelop.VersionControl.Git
 			
 			treeRemotes.AppendColumn ("Remote Source / Branch", new CellRendererText (), "markup", 1);
 			treeRemotes.AppendColumn ("Url", new CellRendererText (), "text", 2);
+
+			// Tags list
 			
+			storeTags = new ListStore (typeof(string));
+			listTags.Model = storeTags;
+			listTags.HeadersVisible = true;
+
+			listTags.AppendColumn (GettextCatalog.GetString ("Tag"), new CellRendererText (), "text", 0);
+
 			// Fill data
 			
 			FillBranches ();
 			FillRemotes ();
+			FillTags ();
 		}
 		
 		void FillBranches ()
@@ -97,6 +107,17 @@ namespace MonoDevelop.VersionControl.Git
 				TreeIter it = storeRemotes.AppendValues (remote, text, url, null, remote.Name);
 				foreach (string branch in repo.GetRemoteBranches (remote.Name))
 					storeRemotes.AppendValues (it, null, branch, null, branch, remote.Name + "/" + branch);
+			}
+			state.Load ();
+		}
+
+		void FillTags ()
+		{
+			TreeViewState state = new TreeViewState (listTags, 1);
+			state.Save ();
+			storeTags.Clear ();
+			foreach (string tag in repo.GetTags ()) {
+				storeTags.AppendValues (tag);
 			}
 			state.Load ();
 		}
@@ -259,6 +280,37 @@ namespace MonoDevelop.VersionControl.Git
 			} finally {
 				dlg.Destroy ();
 			}
+		}
+
+		protected void OnButtonNewTagClicked (object sender, EventArgs e)
+		{
+			// Create dialog with revisions of current branch.
+			// Select revision to tag at.
+			// Create tag.
+
+			using (var dlg = new GitSelectRevisionDialog (repo)) {
+				if (dlg.Run () != Xwt.Command.Ok)
+					return;
+
+				repo.AddTag (dlg.TagName, dlg.SelectedRevision, dlg.TagMessage);
+				FillTags ();
+			}
+		}
+
+		protected void OnButtonRemoveTagClicked (object sender, EventArgs e)
+		{
+			TreeIter it;
+			if (!listTags.Selection.GetSelected (out it))
+				return;
+
+			string tagName = (string) storeTags.GetValue (it, 0);
+			repo.RemoveTag (tagName);
+			FillTags ();
+		}
+
+		protected virtual void OnButtonPushTagClicked (object sender, EventArgs e)
+		{
+			repo.PushAllTags ();
 		}
 	}
 }
