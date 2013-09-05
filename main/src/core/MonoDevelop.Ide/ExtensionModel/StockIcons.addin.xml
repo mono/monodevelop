@@ -43,7 +43,7 @@
 	<StockIcon stockid = "md-find-in-files" resource = "find-in-files-16.png" size="Menu" />
 	<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-16.png" size="Menu"/>
 	<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-24.png" />
-	<StockIcon stockid = "md-folder-overlay" resource = "folder-overlay-16.png" size="Menu" />
+	<StockIcon stockid = "md-folder-overlay" resource = "assembly-reference-overlay-16.png" size="Menu" />
 	<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
 	<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
 	<StockIcon stockid = "md-goto-nextbookmark" resource = "goto-next-bookmark-16.png" size="Menu"/>
