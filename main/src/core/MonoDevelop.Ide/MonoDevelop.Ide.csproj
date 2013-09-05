@@ -341,29 +341,56 @@
     <EmbeddedResource Include="icons\element-class-16.png">
       <LogicalName>element-class-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-class-16@2x.png">
+      <LogicalName>element-class-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-delegate-16.png">
       <LogicalName>element-delegate-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-delegate-16@2x.png">
+      <LogicalName>element-delegate-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-enumeration-16.png">
       <LogicalName>element-enumeration-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-enumeration-16@2x.png">
+      <LogicalName>element-enumeration-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-event-16.png">
       <LogicalName>element-event-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-event-16@2x.png">
+      <LogicalName>element-event-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-extensionmethod-16.png">
       <LogicalName>element-extensionmethod-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-extensionmethod-16@2x.png">
+      <LogicalName>element-extensionmethod-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-field-16.png">
       <LogicalName>element-field-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-field-16@2x.png">
+      <LogicalName>element-field-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-interface-16.png">
       <LogicalName>element-interface-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-interface-16@2x.png">
+      <LogicalName>element-interface-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-constant-16.png">
       <LogicalName>element-constant-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-constant-16@2x.png">
+      <LogicalName>element-constant-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-16.png">
       <LogicalName>element-method-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-method-16@2x.png">
+      <LogicalName>element-method-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-new-16.png">
       <LogicalName>element-method-new-16.png</LogicalName>
@@ -371,11 +398,20 @@
     <EmbeddedResource Include="icons\element-namespace-16.png">
       <LogicalName>element-namespace-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-namespace-16@2x.png">
+      <LogicalName>element-namespace-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-property-16.png">
       <LogicalName>element-property-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-property-16@2x.png">
+      <LogicalName>element-property-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-structure-16.png">
       <LogicalName>element-structure-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-structure-16@2x.png">
+      <LogicalName>element-structure-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-category-16.png">
       <LogicalName>empty-category-16.png</LogicalName>
@@ -473,6 +509,9 @@
     <EmbeddedResource Include="icons\project-16.png">
       <LogicalName>project-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16@2x.png">
+      <LogicalName>project-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-32.png">
       <LogicalName>project-32.png</LogicalName>
     </EmbeddedResource>
@@ -491,11 +530,17 @@
     <EmbeddedResource Include="icons\project-reference-16.png">
       <LogicalName>project-reference-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-16@2x.png">
+      <LogicalName>project-reference-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-namespace-16.png">
       <LogicalName>remove-namespace-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16.png">
       <LogicalName>solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16@2x.png">
+      <LogicalName>solution-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-32.png">
       <LogicalName>solution-32.png</LogicalName>
@@ -503,11 +548,17 @@
     <EmbeddedResource Include="icons\solution-folder-closed-16.png">
       <LogicalName>solution-folder-closed-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-closed-16@2x.png">
+      <LogicalName>solution-folder-closed-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-open-16.png">
       <LogicalName>solution-folder-open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-open-16@2x.png">
+      <LogicalName>solution-folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-new-16.png">
       <LogicalName>solution-new-16.png</LogicalName>
@@ -584,6 +635,9 @@
     <EmbeddedResource Include="icons\warning-overlay.png">
       <LogicalName>warning-overlay.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-overlay@2x.png">
+      <LogicalName>warning-overlay@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\web-overlay-16.png">
       <LogicalName>web-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -592,6 +646,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16.png">
       <LogicalName>workspace-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16@2x.png">
+      <LogicalName>workspace-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-32.png">
       <LogicalName>workspace-32.png</LogicalName>
@@ -801,8 +858,14 @@
     <EmbeddedResource Include="icons\closed-folder-16.png">
       <LogicalName>closed-folder-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\closed-folder-16@2x.png">
+      <LogicalName>closed-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\closed-resource-folder-16.png">
       <LogicalName>closed-resource-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\closed-resource-folder-16@2x.png">
+      <LogicalName>closed-resource-folder-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-16.png">
       <LogicalName>empty-16.png</LogicalName>
@@ -831,11 +894,17 @@
     <EmbeddedResource Include="icons\open-folder-16.png">
       <LogicalName>open-folder-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-folder-16@2x.png">
+      <LogicalName>open-folder-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-resource-folder-16.png">
       <LogicalName>open-resource-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-resource-folder-16@2x.png">
+      <LogicalName>open-resource-folder-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\output-icon-16.png">
       <LogicalName>output-icon-16.png</LogicalName>
@@ -1062,8 +1131,14 @@
     <EmbeddedResource Include="icons\folder-overlay-16.png">
       <LogicalName>folder-overlay-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-overlay-16@2x.png">
+      <LogicalName>folder-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-overlay-16.png">
       <LogicalName>project-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-overlay-16@2x.png">
+      <LogicalName>project-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-item-group-16.png">
       <LogicalName>project-item-group-16.png</LogicalName>
