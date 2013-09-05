@@ -632,11 +632,11 @@
     <EmbeddedResource Include="icons\visual-style-24.png">
       <LogicalName>visual-style-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-overlay.png">
-      <LogicalName>warning-overlay.png</LogicalName>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16.png">
+      <LogicalName>invalid-reference-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-overlay@2x.png">
-      <LogicalName>warning-overlay@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16@2x.png">
+      <LogicalName>invalid-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web-overlay-16.png">
       <LogicalName>web-overlay-16.png</LogicalName>
