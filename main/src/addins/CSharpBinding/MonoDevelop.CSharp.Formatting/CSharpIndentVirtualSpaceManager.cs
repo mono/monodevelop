@@ -26,6 +26,7 @@
 
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using System;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -47,13 +48,11 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
 			var offset = line.Offset;
-			var ctx = stateTracker.GetEngine (offset).Clone ();
-			ctx.Update(offset + line.Length);
-
+			stateTracker.Update (Math.Min (data.Length, offset + line.Length));
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
 			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
-				return ctx.ThisLineIndent;
+				return stateTracker.ThisLineIndent;
 			return curIndent;
 		}
 
