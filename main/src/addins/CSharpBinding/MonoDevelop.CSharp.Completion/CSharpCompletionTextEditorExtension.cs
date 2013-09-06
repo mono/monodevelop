@@ -1232,8 +1232,9 @@ namespace MonoDevelop.CSharp.Completion
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> indexers, AstNode resolvedNode)
 		{
-			if (type is ArrayType)
-				return new ArrayTypeParameterDataProvider (startOffset, this, (ArrayType)type, resolvedNode);
+			var arrayType = type as ArrayType;
+			if (arrayType != null)
+				return new ArrayTypeParameterDataProvider (startOffset, this, arrayType);
 			return new IndexerParameterDataProvider (startOffset, this, type, indexers, resolvedNode);
 		}
 		

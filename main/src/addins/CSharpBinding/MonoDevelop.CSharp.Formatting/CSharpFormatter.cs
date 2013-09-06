@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var tracker = new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
+			var tracker = new CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
 
 			tracker.Update (lineSegment.Offset);
 			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 
-		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
+		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
 			var data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var currentVersion = data.Document.Version;
 
-			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default));
+			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset));
 			data.Dispose ();
 			return result;
 		}

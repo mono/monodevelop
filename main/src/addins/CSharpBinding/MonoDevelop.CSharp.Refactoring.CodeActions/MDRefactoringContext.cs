@@ -39,7 +39,6 @@ using MonoDevelop.CSharp.Refactoring.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -161,7 +160,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			location = RefactoringService.GetCorrectResolveLocation (document, loc);
 		}
 
-		CSharpFormattingOptions formattingOptions;
+		readonly CSharpFormattingOptions formattingOptions;
 
 		public Script StartScript ()
 		{

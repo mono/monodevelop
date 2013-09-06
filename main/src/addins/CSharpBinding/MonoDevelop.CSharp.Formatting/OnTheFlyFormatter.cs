@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class OnTheFlyFormatter
+	static class OnTheFlyFormatter
 	{
 		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}		
 		
 
-		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int startOffset, int endOffset, out int memberStartOffset)
+		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
 		{
 			var pf = data.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (pf == null) {
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			string text;
 			int formatStartOffset, formatLength, realTextDelta;
-			DomRegion formattingRegion = DomRegion.Empty;
+			DomRegion formattingRegion;
 			int startDelta = 1;
 			if (exact) {
 				text = data.Editor.Text;
@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 						return;
 
-					text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
+					text = BuildStub (data, seg, startOffset, out formatStartOffset);
 					startDelta = startOffset - seg.Offset;
 					formatLength = endOffset - startOffset + startDelta;
 					realTextDelta = seg.Offset - formatStartOffset;
@@ -227,7 +227,7 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 	
 				// Build stub
-				text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
+				text = BuildStub (data, seg, startOffset, out formatStartOffset);
 				formattingRegion = new DomRegion (data.Editor.OffsetToLocation (formatStartOffset), data.Editor.OffsetToLocation (endOffset));
 
 				formatLength = endOffset - seg.Offset;

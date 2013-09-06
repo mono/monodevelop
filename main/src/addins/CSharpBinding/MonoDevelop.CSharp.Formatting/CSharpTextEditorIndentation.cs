@@ -287,7 +287,7 @@ namespace MonoDevelop.CSharp.Formatting
 			textEditorData.Replace (offset, endOffset - offset, newText);
 		}
 
-		void ConvertVerbatimStringToNormal (TextEditorData textEditorData, int offset)
+		static void ConvertVerbatimStringToNormal (TextEditorData textEditorData, int offset)
 		{
 			var endOffset = offset;
 			while (endOffset < textEditorData.Length) {
@@ -465,7 +465,6 @@ namespace MonoDevelop.CSharp.Formatting
 				//capture some of the current state
 				int oldBufLen = textEditorData.Length;
 				int oldLine = textEditorData.Caret.Line + 1;
-				bool hadSelection = textEditorData.IsSomethingSelected;
 				bool reIndent = false;
 
 				//pass through to the base class, which actually inserts the character
@@ -493,7 +492,7 @@ namespace MonoDevelop.CSharp.Formatting
 						FixLineStart (textEditorData, stateTracker, textEditorData.Caret.Line + 1);
 					} else {
 						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
-							DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+							DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
 					}
 					//reindent the line after the insertion, if needed
 					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
@@ -563,7 +562,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return false;
 		}
 
-		public static bool GuessSemicolonInsertionOffset (TextEditorData data, IDocumentLine curLine, int caretOffset, out int outOffset)
+		public static bool GuessSemicolonInsertionOffset (TextEditorData data, ISegment curLine, int caretOffset, out int outOffset)
 		{
 			int lastNonWsOffset = caretOffset;
 			char lastNonWsChar = '\0';
@@ -717,7 +716,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		//special handling for certain characters just inserted , for comments etc
-		void DoPostInsertionSmartIndent (char charInserted, bool hadSelection, out bool reIndent)
+		void DoPostInsertionSmartIndent (char charInserted, out bool reIndent)
 		{
 			stateTracker.Update (textEditorData.Caret.Offset);
 			reIndent = false;

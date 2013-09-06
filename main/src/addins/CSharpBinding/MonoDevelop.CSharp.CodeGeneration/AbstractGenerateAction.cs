@@ -29,7 +29,6 @@ using System.Linq;
 using System.Text;
 using Gtk;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -39,29 +38,29 @@ namespace MonoDevelop.CodeGeneration
 {
 	abstract class AbstractGenerateAction : IGenerateAction
 	{
-		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(object));
-		CodeGenerationOptions options;
+		readonly TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(object));
+		readonly CodeGenerationOptions options;
 		
 		public CodeGenerationOptions Options {
 			get {
-				return this.options; 
+				return options; 
 			}
 		}
 		
 		public TreeStore Store {
-			get { return this.store; }
+			get { return store; }
 		}
 		
-		public AbstractGenerateAction (CodeGenerationOptions options)
+		protected AbstractGenerateAction (CodeGenerationOptions options)
 		{
 			this.options = options;
 		}
 		
-		public void Initialize (Gtk.TreeView treeView)
+		public void Initialize (TreeView treeView)
 		{
-			TreeViewColumn column = new TreeViewColumn ();
+			var column = new TreeViewColumn ();
 
-			CellRendererToggle toggleRenderer = new CellRendererToggle ();
+			var toggleRenderer = new CellRendererToggle ();
 			toggleRenderer.Toggled += ToggleRendererToggled;
 			column.PackStart (toggleRenderer, false);
 			column.AddAttribute (toggleRenderer, "active", 0);
@@ -70,7 +69,7 @@ namespace MonoDevelop.CodeGeneration
 			column.PackStart (pixbufRenderer, false);
 			column.AddAttribute (pixbufRenderer, "pixbuf", 1);
 
-			CellRendererText textRenderer = new CellRendererText ();
+			var textRenderer = new CellRendererText ();
 			column.PackStart (textRenderer, true);
 			column.AddAttribute (textRenderer, "text", 2);
 			column.Expand = true;
@@ -100,7 +99,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		void ToggleRendererToggled (object o, ToggledArgs args)
 		{
-			Gtk.TreeIter iter;
+			TreeIter iter;
 			if (store.GetIterFromString (out iter, args.Path)) {
 				bool active = (bool)store.GetValue (iter, 0);
 				store.SetValue (iter, 0, !active);
@@ -118,9 +117,9 @@ namespace MonoDevelop.CodeGeneration
 		
 		static string AddIndent (string text, string indent)
 		{
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			foreach (var line in doc.Lines) {
 				result.Append (indent);
 				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
@@ -141,7 +140,7 @@ namespace MonoDevelop.CodeGeneration
 			} while (store.IterNext (ref iter));
 
 			var output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? (IEntity)options.EnclosingMember : options.EnclosingType) + "\t";
+			string indent = RefactoringOptions.GetIndent (options.Document, (IEntity)options.EnclosingMember ?? options.EnclosingType) + "\t";
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();

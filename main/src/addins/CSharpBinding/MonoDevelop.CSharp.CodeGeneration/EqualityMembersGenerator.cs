@@ -24,11 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Gtk;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
@@ -60,7 +58,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView)
 		{
-			CreateEquality createEventMethod = new CreateEquality (options);
+			var createEventMethod = new CreateEquality (options);
 			createEventMethod.Initialize (treeView);
 			return createEventMethod;
 		}
@@ -96,11 +94,11 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Name = "Equals";
 
 				methodDeclaration.ReturnType = new PrimitiveType ("bool");
-				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
+				methodDeclaration.Modifiers = Modifiers.Public | Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 				methodDeclaration.Parameters.Add (new ParameterDeclaration (new PrimitiveType ("object"), "obj"));
 				var paramId = new IdentifierExpression ("obj");
-				IfElseStatement ifStatement = new IfElseStatement ();
+				var ifStatement = new IfElseStatement ();
 				ifStatement.Condition = new BinaryOperatorExpression (paramId, BinaryOperatorType.Equality, new PrimitiveExpression (null));
 				ifStatement.TrueStatement = new ReturnStatement (new PrimitiveExpression (false));
 				methodDeclaration.Body.Statements.Add (ifStatement);
@@ -126,11 +124,7 @@ namespace MonoDevelop.CodeGeneration
 				Expression binOp = null;
 				foreach (IMember member in includedMembers) {
 					Expression right = new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.Equality, new MemberReferenceExpression (otherId.Clone (), member.Name));
-					if (binOp == null) {
-						binOp = right;
-					} else {
-						binOp = new BinaryOperatorExpression (binOp, BinaryOperatorType.ConditionalAnd, right);
-					}
+					binOp = binOp == null ? right : new BinaryOperatorExpression (binOp, BinaryOperatorType.ConditionalAnd, right);
 				}
 
 				methodDeclaration.Body.Statements.Add (new ReturnStatement (binOp));
@@ -140,7 +134,7 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Name = "GetHashCode";
 
 				methodDeclaration.ReturnType = new PrimitiveType ("int");
-				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
+				methodDeclaration.Modifiers = Modifiers.Public | Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
 
 				binOp = null;
@@ -152,11 +146,7 @@ namespace MonoDevelop.CodeGeneration
 					if (type != null && type.Kind != TypeKind.Struct && type.Kind != TypeKind.Enum)
 						right = new ParenthesizedExpression (new ConditionalExpression (new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.InEquality, new PrimitiveExpression (null)), right, new PrimitiveExpression (0)));
 
-					if (binOp == null) {
-						binOp = right;
-					} else {
-						binOp = new BinaryOperatorExpression (binOp, BinaryOperatorType.ExclusiveOr, right);
-					}
+					binOp = binOp == null ? right : new BinaryOperatorExpression (binOp, BinaryOperatorType.ExclusiveOr, right);
 				}
 				var uncheckedBlock = new BlockStatement ();
 				uncheckedBlock.Statements.Add (new ReturnStatement (binOp));
