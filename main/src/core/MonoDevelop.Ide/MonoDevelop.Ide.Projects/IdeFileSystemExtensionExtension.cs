@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects
 			} else
 				return;
 
-			var btn = new AlertButton (readOnlyFiles.Count == 1 ? GettextCatalog.GetString ("Make Writtable") : GettextCatalog.GetString ("Make Writtable"));
+			var btn = new AlertButton (GettextCatalog.GetString ("Make Writable"));
 			var res = MessageService.AskQuestion (error, GettextCatalog.GetString ("Would you like MonoDevelop to attempt to make the file writable and try again?"), btn, AlertButton.Cancel);
 			if (res == AlertButton.Cancel)
 				throw new UserException (error) { AlreadyReportedToUser = true };
