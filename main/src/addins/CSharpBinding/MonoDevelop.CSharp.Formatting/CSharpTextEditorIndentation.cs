@@ -457,7 +457,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var policy = Policy.CreateOptions ();
 			var options = Editor.CreateNRefactoryTextEditorOptions ();
-			options.IndentBlankLines = true;
 			stateTracker = new CacheIndentEngine (new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine (Editor.Document, options, policy));
 		}
 

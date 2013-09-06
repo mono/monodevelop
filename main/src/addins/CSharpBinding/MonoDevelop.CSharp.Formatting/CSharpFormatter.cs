@@ -55,23 +55,22 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textPolicy), data);
-			tracker.UpdateEngine (lineSegment.Offset);
+			var tracker = new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
+
+			tracker.Update (lineSegment.Offset);
 			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-				tracker.Engine.Push (data.Document.GetCharAt (i));
+				tracker.Push (data.Document.GetCharAt (i));
 			}
 
 			string curIndent = lineSegment.GetIndentation (data.Document);
 
 			int nlwsp = curIndent.Length;
-			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+			if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
-				string newIndent = tracker.Engine.ThisLineIndent;
+				string newIndent = tracker.ThisLineIndent;
 				if (newIndent != curIndent) 
 					data.Replace (lineSegment.Offset, nlwsp, newIndent);
 			}
-			tracker.Dispose ();
 		}
 
 		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
