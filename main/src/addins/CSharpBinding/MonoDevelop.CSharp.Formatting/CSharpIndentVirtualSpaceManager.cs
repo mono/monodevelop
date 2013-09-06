@@ -32,9 +32,9 @@ namespace MonoDevelop.CSharp.Formatting
 	class IndentVirtualSpaceManager : IIndentationTracker
 	{
 		readonly TextEditorData data;
-		readonly IStateMachineIndentEngine stateTracker;
+		readonly CacheIndentEngine stateTracker;
 
-		public IndentVirtualSpaceManager(TextEditorData data, IStateMachineIndentEngine stateTracker)
+		public IndentVirtualSpaceManager(TextEditorData data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
@@ -45,11 +45,14 @@ namespace MonoDevelop.CSharp.Formatting
 			var line = data.Document.GetLine (loc.Line);
 			if (line == null)
 				return "";
-			stateTracker.Update(line.EndOffset);
+			// Get context to the end of the line w/o changing the main engine's state
+			var ctx = stateTracker.GetEngine (line.Offset).Clone ();
+			ctx.Update(line.EndOffset);
+
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
 			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*'))
-				return stateTracker.ThisLineIndent;
+				return ctx.ThisLineIndent;
 			return curIndent;
 		}
 
