@@ -77,6 +77,9 @@ namespace MonoDevelop.Core
 			}
 
 			timestamp = DateTime.Now;
+
+			//add a new listener that just logs failed asserts
+			System.Diagnostics.Debug.Listeners.Add (new AssertLoggingTraceListener ());
 		}
 
 		static string GenericLogFile {
@@ -350,4 +353,5 @@ namespace MonoDevelop.Core
 
 #endregion
 	}
+
 }
