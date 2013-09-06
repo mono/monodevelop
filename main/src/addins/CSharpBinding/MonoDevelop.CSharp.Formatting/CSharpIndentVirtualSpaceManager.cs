@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
 			var offset = line.Offset;
-			stateTracker.Update (Math.Min (data.Length, offset + line.Length));
+			stateTracker.Update (Math.Min (data.Length, offset + loc.Column - 1));
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
 			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
