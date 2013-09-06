@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 						return;
 
-					text = BuildStub (data, seg, startOffset, out formatStartOffset);
+					text = BuildStub (data, seg, endOffset, out formatStartOffset);
 					startDelta = startOffset - seg.Offset;
 					formatLength = endOffset - startOffset + startDelta;
 					realTextDelta = seg.Offset - formatStartOffset;
