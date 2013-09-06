@@ -46,12 +46,13 @@ namespace MonoDevelop.CSharp.Formatting
 			if (line == null)
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
-			var ctx = stateTracker.GetEngine (line.Offset).Clone ();
-			ctx.Update(line.EndOffset);
+			var offset = line.Offset;
+			var ctx = stateTracker.GetEngine (offset).Clone ();
+			ctx.Update(offset + line.Length);
 
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
-			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*'))
+			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
 				return ctx.ThisLineIndent;
 			return curIndent;
 		}
