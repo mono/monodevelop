@@ -620,7 +620,6 @@ namespace MonoDevelop.VersionControl.Git
 							submoduleUpdate.AddPath (submodule);
 
 						submoduleUpdate.Call ();
-						monitor.Step (1);
 					}
 				} catch {
 					if (!aborted) {
