@@ -42,7 +42,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 
 	public static class RazorCompletionTesting
 	{
-		static string extension = ".cshtml";
+		static readonly string extension = ".cshtml";
 
 		public static CompletionDataList CreateRazorCtrlSpaceProvider (string text, bool isInCSharpContext)
 		{
