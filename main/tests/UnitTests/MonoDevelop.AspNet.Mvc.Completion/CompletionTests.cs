@@ -48,7 +48,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 			Assert.IsNotNull (provider.Find ("li"));
 		}
 
-		[Ignore("ASP.NET completion broken.")]
 		[Test]
 		public void RazorDirectivesAndStatementsCompletion ()
 		{
@@ -72,7 +71,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 			Assert.IsNotNull (provider.Find ("try"));
 		}
 
-		[Ignore("ASP.NET completion broken.")]
 		[Test]
 		public void CSharpIdentifiersCompletion ()
 		{
@@ -82,7 +80,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 			Assert.IsNotNull (provider.Find ("var"));
 		}
 
-		[Ignore("ASP.NET completion broken.")]
 		[Test]
 		public void CSharpIdentifiersCtrlSpaceCompletion ()
 		{
@@ -92,7 +89,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 			Assert.IsNotNull (provider.Find ("var"));
 		}
 
-		[Ignore("ASP.NET completion broken.")]
 		[Test]
 		public void CSharpMembersCompletion ()
 		{
@@ -101,7 +97,6 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 			Assert.IsNotNull (provider.Find ("IsLetter"));
 		}
 
-		[Ignore("ASP.NET completion broken.")]
 		[Test]
 		public void CSharpMembersCtrlSpaceCompletion ()
 		{
