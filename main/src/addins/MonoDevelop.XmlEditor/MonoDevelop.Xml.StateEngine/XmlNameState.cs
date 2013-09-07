@@ -48,16 +48,6 @@ namespace MonoDevelop.Xml.StateEngine
 			Debug.Assert (context.CurrentStateLength > 1 || context.KeywordBuilder.Length == 0,
 				"Keyword builder must be empty when state begins.");
 			
-			if (c == ':') {
-				if (namedObject.Name.Name != null || context.KeywordBuilder.Length == 0) {
-					context.LogError ("Unexpected ':' in name.");
-					return Parent;
-				}
-				namedObject.Name = new XName (context.KeywordBuilder.ToString ());
-				context.KeywordBuilder.Length = 0;
-				return null;
-			}
-			
 			if (XmlChar.IsWhitespace (c) || c == '<' || c == '>' || c == '/' || c == '=') {
 				rollback = string.Empty;
 				if (context.KeywordBuilder.Length == 0) {
@@ -75,10 +65,9 @@ namespace MonoDevelop.Xml.StateEngine
 				return Parent;
 			}
 			if (c == ':') {
-				if (namedObject.Name.Name != null || context.KeywordBuilder.ToString ().IndexOf (':') <= 0) {
+				if (context.KeywordBuilder.ToString ().IndexOf (':') > 0)
 					context.LogError ("Unexpected ':' in name.");
-					return Parent;
-				}
+				context.KeywordBuilder.Append (c);
 				return null;
 			}
 			
