@@ -1201,7 +1201,13 @@ namespace Mono.TextEditor
 		public int PasteText (int offset, string text, byte[] copyData, ref IDisposable undoGroup)
 		{
 			if (TextPasteHandler != null) {
-				var newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
+				string newText;
+				try {
+					newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
+				} catch (Exception e) {
+					Console.WriteLine ("Text paste handler exception:" + e);
+					newText = text;
+				}
 				if (newText != text) {
 					var inserted = Insert (offset, text);
 					undoGroup.Dispose ();

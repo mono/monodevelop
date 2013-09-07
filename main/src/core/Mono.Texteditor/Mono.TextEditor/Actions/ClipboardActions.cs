@@ -208,8 +208,13 @@ namespace Mono.TextEditor
 						var segment = selection.GetSelectionRange (data);
 						copiedColoredChunks = ColoredSegment.GetChunks (data, segment);
 						var pasteHandler = data.TextPasteHandler;
-						if (pasteHandler != null)
-							copyData = pasteHandler.GetCopyData (segment);
+						if (pasteHandler != null) {
+							try {
+								copyData = pasteHandler.GetCopyData (segment);
+							} catch (Exception e) {
+								Console.WriteLine ("Exception while getting copy data:" + e);
+							}
+						}
 						break;
 					case SelectionMode.Block:
 						isBlockMode = true;
