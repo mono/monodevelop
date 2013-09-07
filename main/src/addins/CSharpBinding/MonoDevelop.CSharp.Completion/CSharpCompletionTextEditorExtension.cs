@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
 			}
-			if (Document.HasProject) {
+			if (Document.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
 				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 				if (par != null)
