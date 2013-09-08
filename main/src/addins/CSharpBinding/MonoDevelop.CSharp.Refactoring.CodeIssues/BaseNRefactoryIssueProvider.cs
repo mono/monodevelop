@@ -72,7 +72,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.Title = subIssue.Title;
 			this.Description = subIssue.Description;
 
-			DefaultSeverity = subIssue.HasOwnSeverity ? subIssue.Severity : parentIssue.DefaultSeverity;
+			DefaultSeverity = subIssue.Severity.HasValue ? subIssue.Severity.Value : parentIssue.DefaultSeverity;
+			IsEnabledByDefault = subIssue.IsEnabledByDefault.HasValue ? subIssue.IsEnabledByDefault.Value : parentIssue.IsEnabledByDefault;
 			UpdateSeverity ();
 
 			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");

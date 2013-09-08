@@ -231,7 +231,7 @@ namespace MonoDevelop.AnalysisCore
 						}
 					}
 
-					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection severity"), result);
+					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection"), result);
 
 					infos.Add (declSet);
 				}

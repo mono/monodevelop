@@ -57,14 +57,18 @@ namespace MonoDevelop.CodeIssues
 		readonly string mimeType;
 		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(BaseCodeIssueProvider));
 		readonly Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
+		readonly Dictionary<BaseCodeIssueProvider, bool> enableState = new Dictionary<BaseCodeIssueProvider, bool> ();
 
 		void GetAllSeverities ()
 		{
 			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
 				severities [node] = node.GetSeverity ();
+				enableState [node] = node.GetIsEnabled ();
 				if (node.HasSubIssues) {
-					foreach (var subIssue in node.SubIssues)
+					foreach (var subIssue in node.SubIssues) {
 						severities [subIssue] = subIssue.GetSeverity ();
+						enableState [subIssue] = subIssue.GetIsEnabled ();
+					}
 				}
 			}
 		}
@@ -185,6 +189,27 @@ namespace MonoDevelop.CodeIssues
 			searchentryFilter.Visible = true;
 			searchentryFilter.Entry.Changed += ApplyFilter;
 
+			var toggleRenderer = new CellRendererToggle ();
+			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
+				Gtk.TreeIter iter;
+				if (treeStore.GetIterFromString (out iter, args.Path)) {
+					var provider = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
+					enableState[provider] = !enableState[provider];
+				}
+			};
+
+			var isEnabledCol = treeviewInspections.AppendColumn ("Enabled", toggleRenderer);
+			isEnabledCol.Sizing = TreeViewColumnSizing.Autosize;
+			isEnabledCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
+				var provider = (BaseCodeIssueProvider)model.GetValue (iter, 1);
+				if (provider == null) {
+					toggleRenderer.Visible = false;
+					return;
+				}
+				toggleRenderer.Visible = true;
+				toggleRenderer.Active = enableState[provider];
+			});
+
 			var comboRenderer = new CellRendererCombo {
 				Alignment = Pango.Alignment.Center
 			};
@@ -270,7 +295,8 @@ namespace MonoDevelop.CodeIssues
 		{
 			foreach (var kv in severities)
 				kv.Key.SetSeverity (kv.Value);
+			foreach (var kv in enableState)
+				kv.Key.SetIsEnabled (kv.Value);
 		}
 	}
 }
-

@@ -72,9 +72,16 @@ namespace MonoDevelop.CodeIssues
 		public Severity DefaultSeverity { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this issue is enabled. Note that GetIsEnabled () should be called to get the valid value inside the IDE.
+		/// </summary>
+		/// <value><c>true</c> if this instance is enabled; otherwise, <c>false</c>.</value>
+		public bool IsEnabledByDefault { get; set; }
+
+		/// <summary>
 		/// Gets the current (user defined) severity.
 		/// </summary>
 		protected Severity severity;
+
 		public Severity GetSeverity ()
 		{
 			return severity;
@@ -91,9 +98,29 @@ namespace MonoDevelop.CodeIssues
 			PropertyService.Set (IdString, severity);
 		}
 
+
+		protected bool isEnabled;
+		
+		public bool GetIsEnabled ()
+		{
+			return isEnabled;
+		}
+		
+		/// <summary>
+		/// Sets the user defined severity.
+		/// </summary>
+		public void SetIsEnabled (bool isEnabled)
+		{
+			if (this.isEnabled == isEnabled)
+				return;
+			this.isEnabled = isEnabled;
+			PropertyService.Set (IdString + ".isEnabled", isEnabled);
+		}
+
 		protected void UpdateSeverity ()
 		{
 			severity = PropertyService.Get<Severity> (IdString, DefaultSeverity);
+			isEnabled = PropertyService.Get<bool> (IdString+ ".isEnabled", IsEnabledByDefault);
 		}
 
 		/// <summary>
