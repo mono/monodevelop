@@ -30,7 +30,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Tests
 {
-	[Ignore]
 	[TestFixture]
 	public class RtfWriterTests : TextEditorTestBase
 	{
@@ -67,10 +66,11 @@ namespace Mono.TextEditor.Tests
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;}\viewkind4\uc1\pard
+{\colortbl ;\red68\green68\blue68;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
-class Foo \{\}}", generatedRtf);
+\cf1 class Foo \{\}\line
+}", generatedRtf);
 		}
 
 		/// <summary>
@@ -87,10 +87,11 @@ class Foo \{\}}", generatedRtf);
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;}\viewkind4\uc1\pard
+{\colortbl ;\red68\green68\blue68;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
-\uc1\u10004*}", generatedRtf);
+\cf1 \uc1\u10004*\line
+}", generatedRtf);
 		}
 
 		[Test]
