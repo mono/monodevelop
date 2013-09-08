@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var offset = line.Offset;
 			string curIndent = line.GetIndentation (data.Document);
 			try {
-				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column) - 1));
+				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
 				int nlwsp = curIndent.Length;
 				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
 					return stateTracker.ThisLineIndent;
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			return GetIndentationString (new DocumentLocation (lineNumber, column));
 		}
-		
+
 		public string GetIndentationString (int offset)
 		{
 			return GetIndentationString (data.OffsetToLocation (offset));

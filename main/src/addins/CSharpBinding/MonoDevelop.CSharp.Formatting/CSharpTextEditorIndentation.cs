@@ -805,20 +805,28 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void DoReSmartIndent (int cursor)
 		{
+			SafeUpdateIndentEngine (cursor);
 			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)
 				return;
-			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
+			var line = textEditorData.Document.GetLineByOffset (cursor);
 
 			// Get context to the end of the line w/o changing the main engine's state
-			SafeUpdateIndentEngine (line.EndOffset);
-
+			var curTracker = stateTracker.Clone ();
+			try {
+				for (int max = cursor; max < line.EndOffset; max++) {
+					curTracker.Push (textEditorData.Document.GetCharAt (max));
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception during indentation", e);
+			}
+			
 			int pos = line.Offset;
 			string curIndent = line.GetIndentation (textEditorData.Document);
 			int nlwsp = curIndent.Length;
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
 			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
-				string newIndent = stateTracker.ThisLineIndent;
+				string newIndent = curTracker.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
 					if (CompletionWindowManager.IsVisible) {

@@ -233,7 +233,8 @@ namespace Mono.TextEditor
 			using (var undo = data.OpenUndoGroup ()) {
 				data.EnsureCaretIsNotVirtual ();
 				data.InsertAtCaret (data.EolMarker);
-				data.InsertAtCaret (data.GetIndentationString (data.Caret.Location));
+				var line = data.Document.GetLine (data.Caret.Line);
+				data.InsertAtCaret (data.GetIndentationString (line.EndOffset));
 			}
 		}
 		
