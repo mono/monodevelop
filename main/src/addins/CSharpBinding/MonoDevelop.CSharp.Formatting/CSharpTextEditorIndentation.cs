@@ -201,7 +201,7 @@ namespace MonoDevelop.CSharp.Formatting
 				stateTracker.Dispose ();
 			stateTracker = new CacheIndentEngine (indentEngine);
 			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
-			textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options);
+			textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options, policy);
 		}
 
 		public override void Dispose ()
@@ -847,6 +847,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			textEditorData.FixVirtualIndentation ();
 		}
+
 		/*
 		[MonoDevelop.Components.Commands.CommandHandler (MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer)]
 		public void FormatBuffer ()
