@@ -527,8 +527,13 @@ namespace MonoDevelop.Ide
 		
 		public void MarkFileDirty (string filename)
 		{
-			FileInfo fi = new FileInfo (filename);
-			fi.LastWriteTime = DateTime.Now;
+			try {
+				var fi = new FileInfo (filename);
+				if (fi.Exists)
+					fi.LastWriteTime = DateTime.Now;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while marking file as dirty", e);
+			}
 		}
 		
 		public void ShowOptions (IWorkspaceObject entry)
