@@ -83,6 +83,20 @@ namespace Mono.TextEditor.Tests
 			MiscActions.Undo (data);
 			Check (data, @"$");
 		}
+
+		[Test]
+		public void TestPasteDoesntInsertVirtualIndent ()
+		{
+			var data = VirtualIndentModeTests.CreateData ("");
+			data.Caret.Location =  new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
+			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			clipboard.Text = "\n\n";
+
+			ClipboardActions.Paste (data);
+
+			Assert.AreEqual ("\n\n", data.Document.Text);
+		}
+
 	}
 }
 

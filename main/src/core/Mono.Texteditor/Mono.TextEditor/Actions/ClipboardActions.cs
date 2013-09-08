@@ -151,7 +151,7 @@ namespace Mono.TextEditor
 			internal List<List<ColoredSegment>> copiedColoredChunks;
 			byte[] copyData;
 
-			public Mono.TextEditor.Highlighting.ColorScheme docStyle;
+			public ColorScheme docStyle;
 			ITextEditorOptions options;
 
 			public static readonly TargetEntry[] TargetEntries;
@@ -292,7 +292,7 @@ namespace Mono.TextEditor
 						byte[] copyData = new byte[selBytes[1]];
 						Array.Copy (selBytes, 2, copyData, 0, copyData.Length);
 						var rawTextOffset = 1 + 1 + copyData.Length;
-						string text = System.Text.Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);
+						string text = Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
 						if (pasteBlock) {
@@ -300,6 +300,7 @@ namespace Mono.TextEditor
 								var version = data.Document.Version;
 								if (!preserveSelection)
 									data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+								int startLine = data.Caret.Line;
 								data.EnsureCaretIsNotVirtual ();
 								insertionOffset = version.MoveOffsetTo (data.Document.Version, insertionOffset);
 
@@ -344,6 +345,7 @@ namespace Mono.TextEditor
 								}
 								if (!preserveState)
 									data.ClearSelection ();
+								data.FixVirtualIndentation (startLine); 
 								data.Caret.PreserveSelection = false;
 							}
 						} else if (pasteLine) {
@@ -360,6 +362,7 @@ namespace Mono.TextEditor
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
+								data.FixVirtualIndentation (curLine.LineNumber); 
 							}
 						} else {
 							result = PastePlainText (data, insertionOffset, text, preserveSelection, copyData);
@@ -388,6 +391,7 @@ namespace Mono.TextEditor
 			var version = data.Document.Version;
 			if (!preserveSelection)
 				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+			int startLine = data.Caret.Line;
 			data.EnsureCaretIsNotVirtual ();
 			if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
 				var selection = data.MainSelection;
@@ -411,6 +415,8 @@ namespace Mono.TextEditor
 				offset = version.MoveOffsetTo (data.Document.Version, offset);
 				inserted = data.PasteText (offset, text, copyData, ref undo);
 			}
+			data.FixVirtualIndentation (startLine); 
+
 			undo.Dispose ();
 			return inserted;
 		}
