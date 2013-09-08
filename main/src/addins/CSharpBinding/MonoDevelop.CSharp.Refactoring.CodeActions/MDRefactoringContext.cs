@@ -76,11 +76,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override string DefaultNamespace {
 			get {
-				// Fix Project.GetDefaultNamespace method.
-				return null;
-//				if (Project == null || string.IsNullOrEmpty (document.FileName))
-//					return null;
-//				return Project.GetDefaultNamespace (document.FileName);
+				if (Project == null || string.IsNullOrEmpty (document.FileName))
+					return null;
+				return Project.GetDefaultNamespace (document.FileName);
 			}
 		}
 
@@ -106,25 +104,25 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				return TextEditor.CreateNRefactoryTextEditorOptions ();
 			}
 		}
-		
+
 		public override bool IsSomethingSelected { 
 			get {
 				return TextEditor.IsSomethingSelected;
 			}
 		}
-		
+
 		public override string SelectedText {
 			get {
 				return TextEditor.SelectedText;
 			}
 		}
-		
+
 		public override TextLocation SelectionStart {
 			get {
 				return TextEditor.MainSelection.Start;
 			}
 		}
-		
+
 		public override TextLocation SelectionEnd { 
 			get {
 				return TextEditor.MainSelection.End;
@@ -135,7 +133,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			return TextEditor.LocationToOffset (location);
 		}
-		
+
 		public override TextLocation GetLocation (int offset)
 		{
 			return TextEditor.OffsetToLocation (offset);
@@ -145,26 +143,26 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			return TextEditor.GetTextAt (offset, length);
 		}
-		
+
 		public override string GetText (ICSharpCode.NRefactory.Editor.ISegment segment)
 		{
 			return TextEditor.GetTextAt (segment.Offset, segment.Length);
 		}
-		
+
 		public override ICSharpCode.NRefactory.Editor.IDocumentLine GetLineByOffset (int offset)
 		{
 			return TextEditor.GetLineByOffset (offset);
 		}
 
 		readonly Document document;
-
 		TextLocation location;
+
 		public override TextLocation Location {
 			get {
 				return location;
 			}
 		}
-		
+
 		internal void SetLocation (TextLocation loc)
 		{
 			location = RefactoringService.GetCorrectResolveLocation (document, loc);
@@ -176,7 +174,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			return new MDRefactoringScript (this, formattingOptions);
 		}
-		
+
 		public IDisposable CreateScript ()
 		{
 			return StartScript ();
