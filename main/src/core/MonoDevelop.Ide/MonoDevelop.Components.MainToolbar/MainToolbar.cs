@@ -133,6 +133,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
 			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
 			var renderer = (CellRendererText) cell;
+			TreeIter parent;
 
 			renderer.Sensitive = !(target is ExecutionTargetGroup);
 
@@ -141,12 +142,17 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 			}
 
-			renderer.Xpad = indent ? (uint) 18 : (uint) 3;
-
-			if (!runtimeCombo.PopupShown)
+			if (!runtimeCombo.PopupShown) {
 				renderer.Text = target.FullName;
-			else
-				renderer.Text = target.Name;
+				renderer.Xpad = 3;
+			} else {
+				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
+
+				if (!runtimeStore.IterParent (out parent, iter))
+					renderer.Text = target.FullName;
+				else
+					renderer.Text = target.Name;
+			}
 		}
 
 		public MainToolbar ()
@@ -715,11 +721,17 @@ namespace MonoDevelop.Components.MainToolbar
 						runtimeStore.AppendValues (target, false);
 						foreach (var device in devices) {
 							if (device is ExecutionTargetGroup) {
-								var iter = runtimeStore.AppendValues (device, true);
 								var versions = (ExecutionTargetGroup) device;
 
-								foreach (var version in versions) {
-									runtimeStore.AppendValues (iter, version, false);
+								if (versions.Count > 1) {
+									var iter = runtimeStore.AppendValues (device, true);
+
+									foreach (var version in versions) {
+										runtimeStore.AppendValues (iter, version, false);
+										runtimes++;
+									}
+								} else {
+									runtimeStore.AppendValues (versions[0], true);
 									runtimes++;
 								}
 							} else {
