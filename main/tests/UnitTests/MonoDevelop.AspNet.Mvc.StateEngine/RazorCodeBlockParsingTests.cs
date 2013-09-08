@@ -31,7 +31,7 @@ using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
 	[TestFixture]
 	public class RazorCodeBlockParsingTests : RazorParsingTests

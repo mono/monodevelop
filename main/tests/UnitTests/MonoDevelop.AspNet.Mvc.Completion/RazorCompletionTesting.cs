@@ -36,7 +36,7 @@ using MonoDevelop.AspNet.Mvc.Gui;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Completion;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
+namespace MonoDevelop.AspNet.Mvc.Completion
 {
 	//largely copied from MonoDevelop.AspNet.Tests.AspNetTesting
 

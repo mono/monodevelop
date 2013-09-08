@@ -28,7 +28,7 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 using NUnit.Framework;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
 	[TestFixture]
 	public abstract class RazorParsingTests

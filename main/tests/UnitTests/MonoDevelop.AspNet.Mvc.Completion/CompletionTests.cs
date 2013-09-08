@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using NUnit.Framework;
+using UnitTests;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
+namespace MonoDevelop.AspNet.Mvc.Completion
 {
 	[TestFixture]
 	public class CompletionTests : TestBase
