@@ -107,5 +107,32 @@ namespace MonoDevelop.AspNet.Tests
 			Assert.IsNull (provider.Find ("StyleSheetTheme"));
 			Assert.IsNotNull (provider.Find ("Inherits"));
 		}
+
+		void HeadBodyCompletion (bool ctrlSpace)
+		{
+			const string test = @"<%@ Page Language=""C#"" %>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">
+<html>
+<$";
+			var provider = AspNetTesting.CreateProvider (test, ".aspx", ctrlSpace);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("head"));
+			Assert.IsNotNull (provider.Find ("body"));
+			Assert.IsNotNull (provider.Find ("/html>"));
+			Assert.IsNull (provider.Find ("div"));
+			Assert.IsNotNull (provider.Find ("asp:Button"));
+		}
+
+		[Test]
+		public void HeadBodyCompletionAuto ()
+		{
+			HeadBodyCompletion (false);
+		}
+
+		[Test]
+		public void HeadBodyCompletionCtrlSpace ()
+		{
+			HeadBodyCompletion (true);
+		}
 	}
 }
