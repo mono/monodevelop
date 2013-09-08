@@ -561,6 +561,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
 		{
+			filename = filename.CanonicalPath;
+
 			lock (cacheDirectoryCache) {
 				CacheDirectoryInfo info;
 				if (!cacheDirectoryCache.TryGetValue (candidate, out info)) {
@@ -602,9 +604,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				return baseName;
 			return baseName + "-" + i;
 		}
-		
-		static string CreateCacheDirectory (string fileName)
+
+		static string CreateCacheDirectory (FilePath fileName)
 		{
+			fileName = fileName.CanonicalPath;
+
 			try {
 				string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
 				string name = Path.GetFileNameWithoutExtension (fileName);
@@ -2049,8 +2053,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			#endregion
 		}
 		static object assemblyContextLock = new object ();
-		static AssemblyContext LoadAssemblyContext (string fileName)
+		static AssemblyContext LoadAssemblyContext (FilePath fileName)
 		{
+			fileName = fileName.CanonicalPath;
 			AssemblyContext loadedContext;
 			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
 				CheckModifiedFile (loadedContext);
