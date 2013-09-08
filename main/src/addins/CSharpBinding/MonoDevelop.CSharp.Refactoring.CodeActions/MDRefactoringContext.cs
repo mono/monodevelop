@@ -74,6 +74,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
+		public override string DefaultNamespace {
+			get {
+				// Fix Project.GetDefaultNamespace method.
+				return null;
+//				if (Project == null || string.IsNullOrEmpty (document.FileName))
+//					return null;
+//				return Project.GetDefaultNamespace (document.FileName);
+			}
+		}
+
 		public override bool Supports (Version version)
 		{
 			var project = Project;
