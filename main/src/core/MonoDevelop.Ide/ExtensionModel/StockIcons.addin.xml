@@ -7,13 +7,13 @@
 
 <Extension path = "/MonoDevelop/Core/StockIcons">
 	<StockIcon stockid = "md-closed-folder" resource = "folder-closed-16.png" size="Menu" />
-	<StockIcon stockid = "md-closed-reference-folder" icon = "reference-folder-closed-16.png" size="Menu" />
+	<StockIcon stockid = "md-closed-reference-folder" resource = "reference-folder-closed-16.png" size="Menu" />
 	<StockIcon stockid = "md-closed-resource-folder" resource = "resource-folder-closed-16.png" size="Menu" />
 	<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
 	<StockIcon stockid = "md-component-folder-closed" resource = "component-folder-closed-16.png" size="Menu"/>
     
 	<StockIcon stockid = "md-open-folder" resource = "folder-open-16.png" size="Menu" />
-	<StockIcon stockid = "md-open-reference-folder" icon = "reference-folder-open-16.png" size="Menu" />
+	<StockIcon stockid = "md-open-reference-folder" resource = "reference-folder-open-16.png" size="Menu" />
 	<StockIcon stockid = "md-open-resource-folder" resource = "resource-folder-open-16.png" size="Menu" />
 	<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
 	<StockIcon stockid = "md-component-folder-open" resource = "component-folder-open-16.png" size="Menu"/>
