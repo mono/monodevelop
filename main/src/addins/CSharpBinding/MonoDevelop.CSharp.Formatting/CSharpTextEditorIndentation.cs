@@ -197,8 +197,6 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
 				indentEngine = new NullIStateMachineIndentEngine (textEditorData.Document);
 			}
-			if (stateTracker != null)
-				stateTracker.Dispose ();
 			stateTracker = new CacheIndentEngine (indentEngine);
 			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
 			textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options, policy);
@@ -214,10 +212,7 @@ namespace MonoDevelop.CSharp.Formatting
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;
 				textEditorData.Document.TextReplaced -= HandleTextReplaced;
 			}
-			if (stateTracker != null) {
-				stateTracker.Dispose ();
-				stateTracker = null;
-			}
+			stateTracker = null;
 			base.Dispose ();
 		}
 
@@ -225,6 +220,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
+			stateTracker.ResetEngineToPosition (e.Offset); 
 			if (e.RemovalLength != 1 || textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
 			SafeUpdateIndentEngine (Math.Min (textEditorData.Document.TextLength, e.Offset + e.InsertionLength + 1));
