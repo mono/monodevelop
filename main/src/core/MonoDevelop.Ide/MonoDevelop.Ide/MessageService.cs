@@ -334,7 +334,24 @@ namespace MonoDevelop.Ide
 			PlaceDialog (dialog, parent);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
-		
+
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog)
+		{
+			return RunCustomDialog (dialog, null);
+		}
+
+		public static Xwt.Command RunCustomDialog (Xwt.Dialog dialog, Xwt.WindowFrame parent)
+		{
+			if (dialog.Title == null)
+				dialog.Title = BrandingService.ApplicationName;
+			return dialog.Run (parent ?? GetDefaultParent(dialog));
+		}
+
+		static Xwt.WindowFrame GetDefaultParent (Xwt.WindowFrame child)
+		{
+			return Xwt.Toolkit.CurrentEngine.WrapWindow (GetDefaultModalParent ());
+		}
+
 		//make sure modal children are parented on top of other modal children
 		static Window GetDefaultParent (Window child)
 		{
@@ -371,7 +388,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
+
 		/// <summary>Centers a window relative to its parent.</summary>
 		static void CenterWindow (Window child, Window parent)
 		{

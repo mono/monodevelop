@@ -51,6 +51,7 @@ using System.Diagnostics;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide
 {
@@ -686,6 +687,12 @@ namespace MonoDevelop.Ide
 				return item;
 			}
 			return null;
+		}
+
+		public SolutionEntityItem CreateProject (string templateId, SolutionItem policyParent, ProjectCreateInformation createInformation)
+		{
+			var template = ProjectTemplate.ProjectTemplates.Single (t => t.Id == templateId);
+			return template.CreateProject (policyParent, createInformation);
 		}
 
 		public SolutionItem AddSolutionItem (SolutionFolder parentFolder)
