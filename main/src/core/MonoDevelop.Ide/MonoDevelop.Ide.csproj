@@ -220,6 +220,13 @@
       <LogicalName>solution-folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     
+    <EmbeddedResource Include="icons\component-16.png">
+      <LogicalName>component-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\component-16@2x.png">
+      <LogicalName>component-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    
     <EmbeddedResource Include="icons\mono-powered.png">
       <LogicalName>mono-powered.png</LogicalName>
     </EmbeddedResource>
