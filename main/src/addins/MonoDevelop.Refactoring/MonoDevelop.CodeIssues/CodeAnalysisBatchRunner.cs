@@ -42,144 +42,82 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Refactoring;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class CodeAnalysisBatchRunner
 	{
-		readonly object _lock = new object ();
-		CancellationTokenSource tokenSource;
-		IIssueSummarySink destinationGroup;
+		readonly object _lock = new object();
 
-		ConcurrentDictionary<string, object> processedFiles;
-		
-		public IIssueSummarySink IssueSink {
-			get {
-				lock (_lock) {
-					return destinationGroup;
-				}
-			}
-			set {
-				lock (_lock) {
-					if (state == AnalysisState.Running) {
-						throw new InvalidOperationException ("Cannot change destination group while the analysis is running.");
-					}
-					destinationGroup = value;
-				}
-			}
-		}
-		
-		AnalysisState state = AnalysisState.NeverStarted;
-		/// <summary>
-		/// Gets or sets the state.
-		/// </summary>
-		/// <value>The state.</value>
-		public AnalysisState State {
-			get {
-				lock (_lock) {
-					return state;
-				}
-			}
-			private set {
-				AnalysisState old;
-				lock (_lock) {
-					old = state;
-					state = value;
-				}
-				OnAnalysisStateChanged (new AnalysisStateChangeEventArgs (old, value));
-			}
-		}
-		
-		protected virtual void OnAnalysisStateChanged (AnalysisStateChangeEventArgs e)
+		int workerCount;
+
+		readonly AnalysisJobQueue jobQueue = new AnalysisJobQueue();
+
+		readonly IList<QueueItem> currentlyRunningItems = new List<QueueItem>(Environment.ProcessorCount);
+
+		public IJobContext QueueJob (IAnalysisJob job)
 		{
-			var handler = analysisStateChanged;
-			if (handler != null)
-				handler (this, e);
+			jobQueue.Add (job);
+			EnsureRunning ();
+			return new JobContext (job, jobQueue, this);
 		}
 
-		event EventHandler<AnalysisStateChangeEventArgs> analysisStateChanged;
-		/// <summary>
-		/// Occurs when the state of the runner is changed.
-		/// </summary>		
-		public event EventHandler<AnalysisStateChangeEventArgs> AnalysisStateChanged {
-			add {
-				lock (_lock) {
-					analysisStateChanged += value;
-				}
-			}
-			remove {
-				lock (_lock) {
-					analysisStateChanged -= value;
-				}
-			}
-		}
-		
-		public void StartAnalysis (WorkspaceItem solution)
+		internal void CancelRunningJob (IAnalysisJob job)
 		{
 			lock (_lock) {
-				tokenSource = new CancellationTokenSource ();
-				processedFiles = new ConcurrentDictionary<string, object> ();
-				ThreadPool.QueueUserWorkItem (delegate {
-					State = AnalysisState.Running;
+				foreach (var item in currentlyRunningItems) {
+					item.RemoveJob (job);
+				}
 
-					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
-						AnalysisState oldState;
-						AnalysisState newState;
-						try {
-							int work = 0;
-							foreach (var project in solution.GetAllProjects ()) {
-								work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
-							}
-							monitor.BeginTask ("Analyzing solution", work);
-							foreach (var project in solution.GetAllProjects ()) {
-								if (tokenSource.IsCancellationRequested)
-									break;
-								var content = TypeSystemService.GetProjectContext (project);
-								Parallel.ForEach (project.Files, file => {
-									try {
-										AnalyzeFile (file, content);
-										monitor.Step (1);
-									} catch (Exception ex) {
-										LoggingService.LogError ("Error while running code issue on:" + file.Name, ex);
-									}
-								});
-							}
-							// Cleanup
-							lock (_lock) {
-								oldState = state;
-								if (tokenSource.IsCancellationRequested) {
-									newState = AnalysisState.Cancelled;
-								} else {
-									newState = AnalysisState.Completed;
-								}
-								state = newState;
-								tokenSource = null;
-							}
-							OnAnalysisStateChanged (new AnalysisStateChangeEventArgs (oldState, newState));
-						} catch (Exception e) {
-							lock (_lock) {
-								oldState = state;
-								state = AnalysisState.Error;
-								newState = state;
-								tokenSource = null;
-							}
-							OnAnalysisStateChanged (new AnalysisStateChangeEventArgs (oldState, newState));
-							// Do not rethrow in a thread pool
-							MessageService.ShowException (e);
-						}
-					}
-				});
 			}
 		}
 
-		void AnalyzeFile (ProjectFile file, IProjectContent content)
+		void EnsureRunning ()
 		{
-			var me = new object ();
-			var owner = processedFiles.AddOrUpdate (file.Name, me, (key, old) => old);
-			if (me != owner)
-				return;
+			for (; Interlocked.Add (ref workerCount, 1) < Environment.ProcessorCount;) {
+				new Thread (() => {
+					try {
+						ProcessQueue();
+					} finally {
+						Interlocked.Add (ref workerCount, -1);
+					}
+				}).Start ();
+			}
+		}
 
-			if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
+		void ProcessQueue()
+		{
+			while (true) {
+				try {
+					QueueItem item;
+					lock (_lock) {
+						item = jobQueue.Dequeue (1).FirstOrDefault ();
+						if (item == null)
+							// TODO: Do something smarter if the queue is empty
+							return;
+						currentlyRunningItems.Add (item);
+					}
+
+					var codeIssueProviders = item.GetJobs ().SelectMany (job => job.GetIssueProviders (item.File));
+					AnalyzeFile (item, codeIssueProviders);
+
+					lock (_lock) {
+						currentlyRunningItems.Remove (item);
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Unhandled exception", e);
+					MessageService.ShowException (e);
+				}
+			}
+		}
+
+		void AnalyzeFile (QueueItem item, IEnumerable<BaseCodeIssueProvider> codeIssueProviders)
+		{
+			var file = item.File;
+
+			if (file.BuildAction != BuildAction.Compile)
 				return;
 
 			TextEditorData editor;
@@ -193,6 +131,7 @@ namespace MonoDevelop.CodeIssues
 			if (document == null)
 				return;
 
+			var content = TypeSystemService.GetProjectContext (file.Project);
 			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 
 			CSharpAstResolver resolver;
@@ -200,58 +139,26 @@ namespace MonoDevelop.CodeIssues
 				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 				resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
 			}
-			var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
+			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
 
-			var codeIssueProviders = RefactoringService.GetInspectors (editor.MimeType)
-				.SelectMany (p => p.GetEffectiveProviderSet ())
-				.ToList ();
 			foreach (var provider in codeIssueProviders) {
 				var severity = provider.GetSeverity ();
-				if (severity == Severity.None || !provider.GetIsEnabled () || tokenSource.IsCancellationRequested)
-					continue;
+				if (severity == Severity.None)
+					return;
 				try {
-					foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
-						AddIssue (file, provider, issue);
+					var issues = provider.GetIssues (context, CancellationToken.None).ToList ();
+					IList<IAnalysisJob> jobs;
+					lock (_lock)
+						jobs = item.GetJobs ().ToList ();
+					foreach (var job in jobs.Where (j => j.GetIssueProviders (file).Contains (provider))) {
+						// Call AddResult even if issues.Count == 0, to enable a job implementation to keep
+						// track of progress information.
+						job.AddResult (file, provider, issues);
 					}
 				} catch (OperationCanceledException) {
 					// The operation was cancelled, no-op as the user-visible parts are
 					// handled elsewhere
 				}
-			}
-		}
-
-		void AddIssue (ProjectFile file, BaseCodeIssueProvider provider, CodeIssue r)
-		{
-			var topLevelProvider = (provider as CodeIssueProvider) ?? provider.Parent;
-			if (topLevelProvider == null)
-				throw new ArgumentException ("must be a CodeIssueProvider or a BaseCodeIssueProvider with Parent != null", "provider");
-			var issue = new IssueSummary {
-				IssueDescription = r.Description,
-				Region = r.Region,
-				ProviderTitle = topLevelProvider.Title,
-				ProviderDescription = topLevelProvider.Description,
-				ProviderCategory = topLevelProvider.Category,
-				Severity = topLevelProvider.GetSeverity (),
-				File = file,
-				Project = file.Project,
-				InspectorIdString = r.InspectorIdString
-			};
-			issue.Actions = r.Actions.Select (a => new ActionSummary {
-				Batchable = a.SupportsBatchRunning,
-				SiblingKey = a.SiblingKey,
-				Title = a.Title,
-				Region = a.DocumentRegion,
-				IssueSummary = issue
-			}).ToList ();
-			IssueSink.AddIssue (issue);
-		}
-		
-		public void Stop() {
-			lock (_lock) {
-				if (state != AnalysisState.Running) {
-					throw new InvalidOperationException ("Cannot stop the runner since it is not running");
-				}
-				tokenSource.Cancel ();
 			}
 		}
 	}

@@ -33,6 +33,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -46,9 +47,9 @@ namespace MonoDevelop.CodeIssues
 		readonly DataField<IIssueTreeNode> nodeField = new DataField<IIssueTreeNode> ();
 		readonly Button runButton = new Button ("Run");
 		readonly Button cancelButton = new Button ("Cancel");
-		readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
 		
 		readonly IssueGroup rootGroup;
+
 		readonly TreeStore store;
 		
 		readonly ISet<IIssueTreeNode> syncedNodes = new HashSet<IIssueTreeNode> ();
@@ -57,7 +58,21 @@ namespace MonoDevelop.CodeIssues
 		bool runPeriodicUpdate;
 		readonly object queueLock = new object ();
 		readonly Queue<IIssueTreeNode> updateQueue = new Queue<IIssueTreeNode> ();
-		
+
+		IJobContext currentJobContext;
+
+		public IJobContext CurrentJobContext {
+			get {
+				return currentJobContext;
+			}
+			set {
+				currentJobContext = value;
+				bool working = currentJobContext != null;
+				runButton.Sensitive = !working;
+				cancelButton.Sensitive = working;
+			}
+		}
+
 		static readonly Type[] groupingProviders = {
 			typeof(CategoryGroupingProvider),
 			typeof(ProviderGroupingProvider),
@@ -100,7 +115,6 @@ namespace MonoDevelop.CodeIssues
 				Application.Invoke (delegate {
 					ClearSiblingNodes (store.GetFirstNode ());
 					store.Clear ();
-					SyncStateToUi (runner.State);
 					foreach(var child in ((IIssueTreeNode)rootGroup).Children) {
 						var navigator = store.AddNode ();
 						SetNode (navigator, child);
@@ -109,9 +123,6 @@ namespace MonoDevelop.CodeIssues
 				});
 			};
 			node.ChildAdded += HandleRootChildAdded;
-			
-			runner.IssueSink = rootGroup;
-			runner.AnalysisStateChanged += HandleAnalysisStateChanged;
 		}
 		
 		void ClearState ()
@@ -125,18 +136,6 @@ namespace MonoDevelop.CodeIssues
 			lock (queueLock) {
 				updateQueue.Clear ();
 			}
-		}
-
-		void HandleAnalysisStateChanged (object sender, AnalysisStateChangeEventArgs e)
-		{
-			Application.Invoke (delegate {
-				SyncStateToUi (e.NewState);
-				if (e.NewState == AnalysisState.Running) {
-					StartPeriodicUpdate ();
-				} else if (e.NewState == AnalysisState.Completed || e.NewState == AnalysisState.Cancelled) {
-					EndPeriodicUpdate ();
-				}
-			});
 		}
 
 		void StartPeriodicUpdate ()
@@ -202,41 +201,6 @@ namespace MonoDevelop.CodeIssues
 				SyncNode (navigator);
 			});
 		}
-
-		void SyncStateToUi (AnalysisState state)
-		{
-			// Update the top row
-			string text = null;
-			switch (state) {
-			case AnalysisState.Running:
-				text = "Running...";
-				break;
-			case AnalysisState.Cancelled:
-				text = string.Format ("Found issues: {0} (Cancelled)", rootGroup.IssueCount);
-				break;
-			case AnalysisState.Error:
-				text = string.Format ("Found issues: {0} (Failed)", rootGroup.IssueCount);
-				break;
-			case AnalysisState.Completed:
-				text = string.Format ("Found issues: {0}", rootGroup.IssueCount);
-				break;
-			}
-
-			if (text != null) {
-				var topRow = store.GetFirstNode ();
-				// Weird way to check if the store was empty during the call above.
-				// Might not be portable...
-				if (topRow.CurrentPosition == null) {
-					topRow = store.AddNode ();
-				}
-				topRow.SetValue (textField, text);
-			}
-			
-			// Set button sensitivity
-			bool running = state == AnalysisState.Running;
-			runButton.Sensitive = !running;
-			cancelButton.Sensitive = running;
-		}
 		
 		void StartAnalyzation (object sender, EventArgs e)
 		{
@@ -245,13 +209,29 @@ namespace MonoDevelop.CodeIssues
 				return;
 				
 			ClearState ();
-			
-			runner.StartAnalysis (solution);
+
+			var job = new SolutionAnalysisJob (solution);
+			job.CodeIssueAdded += HandleCodeIssueAdded;
+			CurrentJobContext = RefactoringService.QueueCodeIssueAnalysis (job, "Analyzing solution");
+			StartPeriodicUpdate ();
+		}
+
+		void HandleCodeIssueAdded (object sender, CodeIssueEventArgs e)
+		{
+			foreach (var issue in e.CodeIssues) {
+				var summary = IssueSummary.FromCodeIssue (e.File, e.Provider, issue);
+				rootGroup.AddIssue (summary);
+			}
+
 		}
 
 		void StopAnalyzation (object sender, EventArgs e)
 		{
-			runner.Stop ();
+			if (CurrentJobContext != null) {
+				CurrentJobContext.CancelJob ();
+				CurrentJobContext = null;
+			}
+
 		}
 
 		void SetNode (TreeNavigator navigator, IIssueTreeNode node)
