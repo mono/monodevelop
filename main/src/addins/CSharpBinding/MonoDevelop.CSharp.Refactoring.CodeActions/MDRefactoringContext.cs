@@ -76,9 +76,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override string DefaultNamespace {
 			get {
-				if (Project == null || string.IsNullOrEmpty (document.FileName))
+				if (Project == null || TextEditor == null || string.IsNullOrEmpty (TextEditor.FileName))
 					return null;
-				return Project.GetDefaultNamespace (document.FileName);
+				return Project.GetDefaultNamespace (TextEditor.FileName);
 			}
 		}
 
