@@ -491,6 +491,19 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 		}
 
+		public XAttribute this [int index] {
+			get {
+				XAttribute current = firstChild;
+				while (current != null) {
+					if (index == 0)
+						return current;
+					index--;
+					current = current.NextSibling;
+				}
+				throw new IndexOutOfRangeException ();
+			}
+		}
+
 		public XAttribute Get (XName name, bool ignoreCase)
 		{
 			XAttribute current = firstChild;
