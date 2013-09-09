@@ -1340,19 +1340,23 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					
 					// Get the assembly references throught the project, since it may have custom references
-					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-						string fileName;
-						if (!Path.IsPathRooted (file)) {
-							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-						} else {
-							fileName = Path.GetFullPath (file);
+					try {
+						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+							string fileName;
+							if (!Path.IsPathRooted (file)) {
+								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+							} else {
+								fileName = Path.GetFullPath (file);
+							}
+							ctx = LoadAssemblyContext (fileName);
+							if (ctx != null) {
+								contexts.Add (ctx);
+							} else {
+								LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
+							}
 						}
-						ctx = LoadAssemblyContext (fileName);
-						if (ctx != null) {
-							contexts.Add (ctx);
-						} else {
-							LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
-						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while getting assembly references", e);
 					}
 					bool changed = WasChanged;
 					UpdateContent (c => c.RemoveAssemblyReferences (Content.AssemblyReferences));
