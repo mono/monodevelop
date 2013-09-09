@@ -91,9 +91,7 @@ namespace MonoDevelop.VersionControl
 			
 			VersionInfo vi = repo.GetVersionInfo (file);
 
-			Xwt.Drawing.Image overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
-			if (overlay != null)
-				nodeInfo.Icon = AddOverlay (nodeInfo.Icon, overlay);
+			nodeInfo.OverlayBottomRight = VersionControlService.LoadOverlayIconForStatus (vi.Status);
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)
@@ -126,28 +124,7 @@ namespace MonoDevelop.VersionControl
 			} else {
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
 			}
-			if (overlay != null) {
-				nodeInfo.Icon = AddOverlay (nodeInfo.Icon, overlay);
-				if (nodeInfo.ClosedIcon != null)
-					nodeInfo.ClosedIcon = AddOverlay (nodeInfo.ClosedIcon, overlay);
-			}
-		}
-		
-		Xwt.Drawing.Image AddOverlay (Xwt.Drawing.Image icon, Xwt.Drawing.Image overlay)
-		{
-			var cached = Context.GetComposedIcon (icon, overlay);
-			if (cached != null)
-				return cached;
-			
-			int dx = 2;
-			int dy = 2;
-
-			var ib = new Xwt.Drawing.ImageBuilder (icon.Width + dx, icon.Height + dy);
-			ib.Context.DrawImage (icon, 0, 0);
-			ib.Context.DrawImage (overlay, ib.Width - overlay.Width, ib.Height - overlay.Height);
-			var res = ib.ToVectorImage ();
-			Context.CacheComposedIcon (icon, overlay, res);
-			return res;
+			nodeInfo.OverlayBottomRight = overlay;
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
