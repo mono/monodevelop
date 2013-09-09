@@ -50,8 +50,11 @@ namespace MonoDevelop.CSharp
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentParsed; 
-
+			if (IdeApp.Workbench == null)
+				return;
 			var pad = IdeApp.Workbench.GetPad<TestPad> ();
+			if (pad == null)
+				return;
 			testPad = (TestPad)pad.Content;
 			if (testPad != null)
 				testPad.TestSessionCompleted += HandleTestSessionCompleted;
@@ -77,6 +80,28 @@ namespace MonoDevelop.CSharp
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 
+		internal IList<UnitTestLocation> GatherUnitTests ()
+		{
+			var resolver = document.GetSharedResolver ();
+			if (resolver == null || resolver.Result == null)
+				return null;
+			var parsedDocument = document.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
+			var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();
+			if (syntaxTree == null)
+				return null;
+
+			var visitor = new NUnitVisitor (resolver.Result);
+			try {
+				visitor.VisitSyntaxTree (syntaxTree);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
+				return null;
+			}
+			return visitor.FoundTests;
+		}
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			if (!AnalysisOptions.EnableUnitTestEditorIntegration)
@@ -85,24 +110,10 @@ namespace MonoDevelop.CSharp
 			src = new CancellationTokenSource ();
 			var token = src.Token;
 			ThreadPool.QueueUserWorkItem (delegate {
-				var resolver = document.GetSharedResolver ();
-				if (resolver == null || resolver.Result == null)
-					return;
-				var parsedDocument = document.ParsedDocument;
-				if (parsedDocument == null)
-					return;
-				var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();
-				if (syntaxTree == null)
-					return;
-				var visitor = new NUnitVisitor (resolver.Result);
-				try {
-					visitor.VisitSyntaxTree (syntaxTree);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
-					return;
-				}
 				if (token.IsCancellationRequested)
 					return;
+				var foundTests = GatherUnitTests ();
+
 				Application.Invoke (delegate {
 					var editor = document.Editor;
 					if (editor == null)
@@ -113,13 +124,13 @@ namespace MonoDevelop.CSharp
 					var actionMargin = textEditor.ActionMargin;
 					if (actionMargin == null)
 						return;
-					if (actionMargin.IsVisible ^ (visitor.FoundTests.Count > 0))
+					if (actionMargin.IsVisible ^ (foundTests.Count > 0))
 						textEditor.QueueDraw ();
-					actionMargin.IsVisible = visitor.FoundTests.Count > 0;
+					actionMargin.IsVisible = foundTests.Count > 0;
 					foreach (var oldMarker in currentMarker)
 						editor.Document.RemoveMarker (oldMarker);
 
-					foreach (var foundTest in visitor.FoundTests) {
+					foreach (var foundTest in foundTests) {
 						if (token.IsCancellationRequested)
 							return;
 						var unitTestMarker = new UnitTestMarker (foundTest, document);
@@ -145,10 +156,10 @@ namespace MonoDevelop.CSharp
 
 		class UnitTestMarker : MarginMarker
 		{
-			readonly NUnitVisitor.UnitTest unitTest;
+			readonly UnitTestLocation unitTest;
 			readonly MonoDevelop.Ide.Gui.Document doc;
 
-			public UnitTestMarker(NUnitVisitor.UnitTest unitTest, MonoDevelop.Ide.Gui.Document doc)
+			public UnitTestMarker(UnitTestLocation unitTest, MonoDevelop.Ide.Gui.Document doc)
 			{
 				this.unitTest = unitTest;
 				this.doc = doc;
@@ -479,29 +490,29 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
+		public class UnitTestLocation
+		{
+			public int LineNumber { get; set; }
+			public bool IsFixture { get; set; }
+			public string UnitTestIdentifier { get; set; }
+			public bool IsIgnored { get; set; }
+
+			public List<string> TestCases = new List<string> ();
+
+			public UnitTestLocation (int lineNumber)
+			{
+				this.LineNumber = lineNumber;
+			}
+		}
+
 		class NUnitVisitor : DepthFirstAstVisitor
 		{
 			readonly CSharpAstResolver resolver;
-			List<UnitTest> foundTests = new List<UnitTest> ();
+			List<UnitTestLocation> foundTests = new List<UnitTestLocation> ();
 
-			public IList<UnitTest> FoundTests {
+			public IList<UnitTestLocation> FoundTests {
 				get {
 					return foundTests;
-				}
-			}
-
-			public class UnitTest
-			{
-				public int LineNumber { get; set; }
-				public bool IsFixture { get; set; }
-				public string UnitTestIdentifier { get; set; }
-				public bool IsIgnored { get; set; }
-
-				public List<string> TestCases = new List<string> ();
-
-				public UnitTest (int lineNumber)
-				{
-					this.LineNumber = lineNumber;
 				}
 			}
 
@@ -565,12 +576,14 @@ namespace MonoDevelop.CSharp
 				if (result == null)
 					return;
 				var method = result.Member as IMethod;
+				if (method == null)
+					return;
 
-				UnitTest test = null;
+				UnitTestLocation test = null;
 				foreach (var attr in method.Attributes) {
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestAttribute") {
 						if (test == null) {
-							test = new UnitTest (methodDeclaration.NameToken.StartLocation.Line);
+							test = new UnitTestLocation (methodDeclaration.NameToken.StartLocation.Line);
 							test.UnitTestIdentifier = GetFullName ((TypeDeclaration)methodDeclaration.Parent) + "." + methodDeclaration.Name;
 							foundTests.Add (test);
 						}
@@ -580,32 +593,29 @@ namespace MonoDevelop.CSharp
 					foreach (var attr in method.Attributes) {
 						if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
 							test.TestCases.Add ("(" + BuildArguments (attr) + ")");
-						} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
-							test.IsIgnored = true;
-						}
+						} else
+							test.IsIgnored |= attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute";
 					}
 				}
 			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
+				if (typeDeclaration.HasModifier (Modifiers.Abstract))
+					return;
 				var result = resolver.Resolve (typeDeclaration);
 				if (result == null || result.Type.GetDefinition () == null)
 					return;
-				UnitTest unitTest = null;
+				UnitTestLocation unitTest = null;
 				bool isIgnored = false;
-
-				foreach (var attr in result.Type.GetDefinition ().Attributes) {
-					
+				foreach (var attr in result.Type.GetDefinition ().GetAttributes ()) {
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestFixtureAttribute") {
-						unitTest = new UnitTest (typeDeclaration.NameToken.StartLocation.Line);
+						unitTest = new UnitTestLocation (typeDeclaration.NameToken.StartLocation.Line);
 						unitTest.IsFixture = true;
 						unitTest.UnitTestIdentifier = GetFullName (typeDeclaration);
 						foundTests.Add (unitTest);
-					}
-					else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
-						isIgnored = true;
-					}
+					} else
+						isIgnored |= attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute";
 				}
 				if (unitTest != null) {
 					unitTest.IsIgnored = isIgnored;
