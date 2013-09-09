@@ -574,6 +574,8 @@ namespace MonoDevelop.Components
 
 			string GetMarkup (int n);
 
+			Xwt.Drawing.Image GetIcon (int n);
+
 			object GetTag (int n);
 
 			void ActivateItem (int n);
