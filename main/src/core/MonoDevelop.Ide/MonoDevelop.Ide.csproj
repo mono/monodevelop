@@ -227,6 +227,31 @@
       <LogicalName>component-16@2x.png</LogicalName>
     </EmbeddedResource>
     
+    <EmbeddedResource Include="icons\assembly-reference-overlay-16.png">
+      <LogicalName>assembly-reference-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-reference-overlay-16@2x.png">
+      <LogicalName>assembly-reference-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\component-reference-overlay-16.png">
+      <LogicalName>component-reference-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\component-reference-overlay-16@2x.png">
+      <LogicalName>component-reference-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16.png">
+      <LogicalName>invalid-reference-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16@2x.png">
+      <LogicalName>invalid-reference-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-overlay-16.png">
+      <LogicalName>project-reference-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-overlay-16@2x.png">
+      <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    
     <EmbeddedResource Include="icons\mono-powered.png">
       <LogicalName>mono-powered.png</LogicalName>
     </EmbeddedResource>
@@ -679,12 +704,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visual-style-24.png">
       <LogicalName>visual-style-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\invalid-reference-overlay-16.png">
-      <LogicalName>invalid-reference-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\invalid-reference-overlay-16@2x.png">
-      <LogicalName>invalid-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web-overlay-16.png">
       <LogicalName>web-overlay-16.png</LogicalName>
@@ -1151,18 +1170,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\chain-overlay-16.png">
       <LogicalName>chain-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-reference-overlay-16.png">
-      <LogicalName>assembly-reference-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-reference-overlay-16@2x.png">
-      <LogicalName>assembly-reference-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-overlay-16.png">
-      <LogicalName>project-reference-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-overlay-16@2x.png">
-      <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-item-group-16.png">
       <LogicalName>project-item-group-16.png</LogicalName>
