@@ -30,6 +30,15 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlAttributeValueState : State
 	{
+		const int FREE = 0;
+		const int UNQUOTED = 1;
+		const int SINGLEQUOTE = 2;
+		const int DOUBLEQUOTE = 3;
+
+		//derived classes should use these if they need to store info in the tag
+		protected const int TagMask = 3;
+		protected const int TagShift = 2;
+
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			System.Diagnostics.Debug.Assert (((XAttribute) context.Nodes.Peek ()).Value == null);
@@ -41,16 +50,24 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 
 			if (context.CurrentStateLength == 1) {
-				if (c == '\'' || c == '"') {
-					context.StateTag = c;
+				if (c == '"') {
+					context.StateTag = DOUBLEQUOTE;
 					return null;
 				}
-				context.StateTag = '\0';
-			} else if (context.StateTag == '\0') {
+				if (c == '\'') {
+					context.StateTag = SINGLEQUOTE;
+					return null;
+				}
+				context.StateTag = UNQUOTED;
+			}
+
+			int maskedTag = context.StateTag & TagMask;
+
+			if (maskedTag == UNQUOTED) {
 				return BuildUnquotedValue (c, context, ref rollback);
 			}
 
-			if (c == context.StateTag) {
+			if ((c == '"' && maskedTag == DOUBLEQUOTE) || c == '\'' && maskedTag == SINGLEQUOTE) {
 				//ending the value
 				var att = (XAttribute) context.Nodes.Peek ();
 				att.Value = context.KeywordBuilder.ToString ();
@@ -63,16 +80,16 @@ namespace MonoDevelop.Xml.StateEngine
 
 		State BuildUnquotedValue (char c, IParseContext context, ref string rollback)
 		{
-			if (c == '>' && context.KeywordBuilder.Length > 0) {
+			if (char.IsLetterOrDigit (c) || c == '_' || c == '.') {
+				context.KeywordBuilder.Append (c);
+				return null;
+			}
+
+			if (context.KeywordBuilder.Length == 0) {
 				string fullName = ((XAttribute)context.Nodes.Peek ()).Name.FullName;
 				context.LogError ("The value of attribute '" + fullName + "' ended unexpectedly.");
 				rollback = string.Empty;
 				return Parent;
-			}
-			
-			if (char.IsLetterOrDigit(c) || c == '_' || c == '.') {
-				context.KeywordBuilder.Append (c);
-				return null;
 			}
 
 			var att = (XAttribute)context.Nodes.Peek ();
