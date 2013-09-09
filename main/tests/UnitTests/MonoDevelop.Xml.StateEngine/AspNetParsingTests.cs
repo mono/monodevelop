@@ -31,15 +31,28 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
-	public class AspNetParsingTests : ParsingTests
+	[TestFixture]
+	public class AspNetParsingTests : HtmlParsingTests
 	{
-		
 		public override XmlFreeState CreateRootState ()
 		{
 			return new AspNetFreeState ();
 		}
-		
+
+		[Test]
+		public void Directives ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"<%@ Page Language=""C#"" %>");
+			parser.AssertNoErrors ();
+			var doc = (XDocument) parser.Nodes.Peek ();
+			var directive = doc.Nodes.First () as AspNetDirective;
+			Assert.NotNull (directive);
+			Assert.AreEqual ("Page", directive.Name.FullName);
+			Assert.AreEqual (1, directive.Attributes.Count ());
+			var att = directive.Attributes.First ();
+			Assert.AreEqual ("Language", att.Name.FullName);
+			Assert.AreEqual ("C#", att.Value);
+		}
 	}
 }

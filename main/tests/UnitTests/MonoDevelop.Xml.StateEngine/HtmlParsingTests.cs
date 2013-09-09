@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace MonoDevelop.Xml.StateEngine
 {
 	
-	
+	[TestFixture]
 	public class HtmlParsingTests : ParsingTests
 	{
 		
