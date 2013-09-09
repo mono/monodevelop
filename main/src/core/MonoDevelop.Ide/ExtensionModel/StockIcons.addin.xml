@@ -6,6 +6,17 @@
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Core/StockIcons">
+	<StockIcon stockid = "md-closed-folder" resource = "folder-closed-16.png" size="Menu" />
+	<StockIcon stockid = "md-closed-reference-folder" icon = "reference-folder-closed-16.png" size="Menu" />
+	<StockIcon stockid = "md-closed-resource-folder" resource = "resource-folder-closed-16.png" size="Menu" />
+	<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
+	<StockIcon stockid = "md-component-folder-closed" resource = "component-folder-closed-16.png" size="Menu"/>
+    
+	<StockIcon stockid = "md-open-folder" resource = "folder-open-16.png" size="Menu" />
+	<StockIcon stockid = "md-open-reference-folder" icon = "reference-folder-open-16.png" size="Menu" />
+	<StockIcon stockid = "md-open-resource-folder" resource = "resource-folder-open-16.png" size="Menu" />
+	<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
+	<StockIcon stockid = "md-component-folder-open" resource = "component-folder-open-16.png" size="Menu"/>
 	<StockIcon stockid = "md-add-namespace" resource = "add-namespace-16.png"/>
 	<StockIcon stockid = "md-breakpoint" resource = "breakpoint-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-16.png" size="Menu"/>
@@ -23,9 +34,6 @@
 	<StockIcon stockid = "md-clear-all-bookmarks" resource = "clear-all-bookmarks-22.png" />
 	<StockIcon stockid = "md-close-all-documents" resource = "close-all-documents-16.png" size="Menu" />
 	<StockIcon stockid = "md-close-combine-icon" resource = "close-solution-16.png" size="Menu" />
-	<StockIcon stockid = "md-closed-folder" resource = "folder-closed-16.png" size="Menu" />
-	<StockIcon stockid = "md-closed-reference-folder" icon = "md-project-item-group" size="Menu" />
-	<StockIcon stockid = "md-closed-resource-folder" resource = "resource-folder-closed-16.png" />
 	<StockIcon stockid = "md-solution" resource = "solution-16.png" size = "Menu" />
 	<StockIcon stockid = "md-solution" resource = "solution-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-delegate" resource = "element-delegate-16.png" size="Menu" />
@@ -93,10 +101,7 @@
 	<StockIcon stockid = "md-new-folder-icon" resource = "folder-new-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-project" resource = "project-new-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-solution" resource = "solution-new-16.png" size="Menu" />
-	<StockIcon stockid = "md-open-folder" resource = "folder-open-16.png" size="Menu" />
 	<StockIcon stockid = "md-open-project-icon" resource = "open-project-16.png" size="Menu" />
-	<StockIcon stockid = "md-open-reference-folder" icon = "md-project-item-group" size="Menu" />
-	<StockIcon stockid = "md-open-resource-folder" resource = "resource-folder-open-16.png" size="Menu" />
 	<StockIcon stockid = "md-output-icon" resource = "output-icon-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-class" icon = "res:element-class-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-16.png|res:visibility-private-16.png" size="Menu" />
@@ -216,8 +221,6 @@
 	<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
 	<StockIcon stockid = "md-workspace" resource = "workspace-32.png" size="Dnd" />
 	<StockIcon stockid = "md-new-solution-folder" resource = "solution-folder-new-16.png" size="Menu"/>
-	<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
-	<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
 	<StockIcon stockid = "md-regular-file" resource = "gnome-fs-regular.png" />
 	<StockIcon stockid = "md-empty-category" resource = "empty-category-22.png" />
 	<StockIcon stockid = "md-empty-category" resource = "empty-category-16.png" size = "Menu"/>

@@ -167,6 +167,59 @@
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml">
       <LogicalName>EmptyXMLFile.xft.xml</LogicalName>
     </EmbeddedResource>
+    
+    
+    
+    <EmbeddedResource Include="icons\folder-closed-16.png">
+      <LogicalName>folder-closed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-closed-16@2x.png">
+      <LogicalName>folder-closed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-folder-closed-16.png">
+      <LogicalName>reference-folder-closed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-folder-closed-16@2x.png">
+      <LogicalName>reference-folder-closed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-folder-closed-16.png">
+      <LogicalName>resource-folder-closed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-folder-closed-16@2x.png">
+      <LogicalName>resource-folder-closed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-closed-16.png">
+      <LogicalName>solution-folder-closed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-closed-16@2x.png">
+      <LogicalName>solution-folder-closed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    
+    <EmbeddedResource Include="icons\folder-open-16.png">
+      <LogicalName>folder-open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-open-16@2x.png">
+      <LogicalName>folder-open-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-folder-open-16.png">
+      <LogicalName>reference-folder-open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-folder-open-16@2x.png">
+      <LogicalName>reference-folder-open-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-folder-open-16.png">
+      <LogicalName>resource-folder-open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-folder-open-16@2x.png">
+      <LogicalName>resource-folder-open-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-open-16.png">
+      <LogicalName>solution-folder-open-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-folder-open-16@2x.png">
+      <LogicalName>solution-folder-open-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    
     <EmbeddedResource Include="icons\mono-powered.png">
       <LogicalName>mono-powered.png</LogicalName>
     </EmbeddedResource>
@@ -545,20 +598,8 @@
     <EmbeddedResource Include="icons\solution-32.png">
       <LogicalName>solution-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-closed-16.png">
-      <LogicalName>solution-folder-closed-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-closed-16@2x.png">
-      <LogicalName>solution-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-open-16.png">
-      <LogicalName>solution-folder-open-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-open-16@2x.png">
-      <LogicalName>solution-folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-new-16.png">
       <LogicalName>solution-new-16.png</LogicalName>
@@ -855,18 +896,6 @@
     <EmbeddedResource Include="icons\close-solution-16.png">
       <LogicalName>close-solution-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-closed-16.png">
-      <LogicalName>folder-closed-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-closed-16@2x.png">
-      <LogicalName>folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-closed-16.png">
-      <LogicalName>resource-folder-closed-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-closed-16@2x.png">
-      <LogicalName>resource-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-16.png">
       <LogicalName>empty-16.png</LogicalName>
     </EmbeddedResource>
@@ -891,20 +920,8 @@
     <EmbeddedResource Include="icons\misc-files-16.png">
       <LogicalName>misc-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-open-16.png">
-      <LogicalName>folder-open-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-open-16@2x.png">
-      <LogicalName>folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-open-16.png">
-      <LogicalName>resource-folder-open-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-open-16@2x.png">
-      <LogicalName>resource-folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\output-icon-16.png">
       <LogicalName>output-icon-16.png</LogicalName>
