@@ -62,6 +62,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal const int BuilderChainColumn = 4;
 		internal const int FilledColumn       = 5;
 		internal const int ShowPopupColumn    = 6;
+		internal const int OverlayBottomRightColumn = 7;
+		internal const int OverlayBottomLeftColumn  = 8;
+		internal const int OverlayTopLeftColumn     = 9;
+		internal const int OverlayTopRightColumn    = 10;
 
 		NodeBuilder[] builders;
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
@@ -159,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			4 -- Builder chain
 			5 -- Expanded
 			*/
-			store = new Gtk.TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(object), typeof(object), typeof(bool), typeof(bool));
+			store = new Gtk.TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(object), typeof(object), typeof(bool), typeof(bool), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 			
@@ -173,11 +177,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column.Title = "column";
 
 			pix_render = new ZoomableCellRendererPixbuf ();
+			pix_render.Xpad = 0;
 			complete_column.PackStart (pix_render, false);
 			complete_column.AddAttribute (pix_render, "image", OpenIconColumn);
 			complete_column.AddAttribute (pix_render, "image-expander-open", OpenIconColumn);
 			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
-			
+			complete_column.AddAttribute (pix_render, "overlay-image-bottom-left", OverlayBottomLeftColumn);
+			complete_column.AddAttribute (pix_render, "overlay-image-bottom-right", OverlayBottomRightColumn);
+			complete_column.AddAttribute (pix_render, "overlay-image-top-left", OverlayTopLeftColumn);
+			complete_column.AddAttribute (pix_render, "overlay-image-top-right", OverlayTopRightColumn);
+
 			text_render = new CustomCellRendererText (this);
 			text_render.Ypad = 0;
 			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
@@ -2154,7 +2163,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 
 			public delegate object[] GetDragObjects (out Gdk.Pixbuf dragIcon);
-			public delegate bool CheckAndDrop (int x, int y, bool drop, Gdk.DragContext ctx, object[] obj);
+			public delegate bool CheckAndDrop (int x,int y,bool drop,Gdk.DragContext ctx,object[] obj);
 
 			protected override void OnDragBegin (Gdk.DragContext context)
 			{
@@ -2189,6 +2198,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 
 			int x, y;
+
 			protected override void OnDragDataReceived (Gdk.DragContext context, int x, int y, Gtk.SelectionData selection_data, uint info, uint time)
 			{
 				x = this.x;
@@ -2224,7 +2234,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (dragObjects == null || nodeToUri == null)
 					return;
 
-				uint uriListTarget = targetTable[0].Info;
+				uint uriListTarget = targetTable [0].Info;
 				if (info == uriListTarget) {
 					var sb = new StringBuilder ();
 					foreach (var dobj in dragObjects) {
@@ -2323,7 +2333,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 
-				int tx = cell_area.X + (int) Xpad;
+				int tx = cell_area.X + (int)Xpad;
 				int ty = cell_area.Y + (cell_area.Height - h) / 2;
 
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
@@ -2333,7 +2343,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						bound = true;
 						((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
 							foreach (var r in parent.Tree.Selection.GetSelectedRows ()) {
-								var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns[0]);
+								var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns [0]);
 								parent.Tree.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
 							}
 						};
@@ -2345,7 +2355,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						var y = cell_area.Y + dy;
 						var x = cell_area.X + cell_area.Width - icon.Width - dy;
 
-						var sw = (Gtk.ScrolledWindow) widget.Parent;
+						var sw = (Gtk.ScrolledWindow)widget.Parent;
 						int ox, oy, ow, oh;
 						sw.GdkWindow.GetOrigin (out ox, out oy);
 						sw.GdkWindow.GetSize (out ow, out oh);
@@ -2483,7 +2493,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		double zoom = 1f;
 		
 		Dictionary<Xwt.Drawing.Image,Xwt.Drawing.Image> resizedCache = new Dictionary<Xwt.Drawing.Image, Xwt.Drawing.Image> ();
-		
+
+		Xwt.Drawing.Image overlayBottomLeft;
+		Xwt.Drawing.Image overlayBottomRight;
+		Xwt.Drawing.Image overlayTopLeft;
+		Xwt.Drawing.Image overlayTopRight;
+
 		public double Zoom {
 			get { return zoom; }
 			set {
@@ -2522,6 +2537,46 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
+		[GLib.Property ("overlay-image-top-left")]
+		public Xwt.Drawing.Image OverlayTopLeft {
+			get {
+				return overlayTopLeft;
+			}
+			set {
+				overlayTopLeft = GetResized (value);
+			}
+		}
+
+		[GLib.Property ("overlay-image-top-right")]
+		public Xwt.Drawing.Image OverlayTopRight {
+			get {
+				return overlayTopRight;
+			}
+			set {
+				overlayTopRight = GetResized (value);
+			}
+		}
+
+		[GLib.Property ("overlay-image-bottom-left")]
+		public Xwt.Drawing.Image OverlayBottomLeft {
+			get {
+				return overlayBottomLeft;
+			}
+			set {
+				overlayBottomLeft = GetResized (value);
+			}
+		}
+
+		[GLib.Property ("overlay-image-bottom-right")]
+		public Xwt.Drawing.Image OverlayBottomRight {
+			get {
+				return overlayBottomRight;
+			}
+			set {
+				overlayBottomRight = GetResized (value);
+			}
+		}
+
 		Xwt.Drawing.Image GetResized (Xwt.Drawing.Image value)
 		{
 			if (zoom == 1)
@@ -2543,6 +2598,41 @@ namespace MonoDevelop.Ide.Gui.Components
 			resized = value.WithSize (w, h);
 			resizedCache [value] = resized;
 			return resized;
+		}
+
+		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+		{
+			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+			if (overlayBottomLeft != null || overlayBottomRight != null)
+				height += overlayOverflow;
+			if (overlayTopLeft != null || overlayTopRight != null)
+				height += overlayOverflow;
+			if (overlayBottomRight != null || overlayTopRight != null)
+				width += overlayOverflow;
+		}
+
+		const int overlayOverflow = 2;
+
+		protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
+		{
+			base.Render (window, widget, background_area, cell_area, expose_area, flags);
+
+			if (overlayBottomLeft != null || overlayBottomRight != null || overlayTopLeft != null || overlayTopRight != null) {
+				int x, y;
+				Xwt.Drawing.Image image;
+				GetImageInfo (cell_area, out image, out x, out y);
+
+				using (var ctx = Gdk.CairoHelper.Create (window)) {
+					if (overlayBottomLeft != null)
+						ctx.DrawImage (widget, overlayBottomLeft, x - overlayOverflow, y + image.Height - overlayBottomLeft.Height + overlayOverflow);
+					if (overlayBottomRight != null)
+						ctx.DrawImage (widget, overlayBottomRight, x + image.Width - overlayBottomRight.Width + overlayOverflow, y + image.Height - overlayBottomRight.Height + overlayOverflow);
+					if (overlayTopLeft != null)
+						ctx.DrawImage (widget, overlayTopLeft, x - overlayOverflow, y - overlayOverflow);
+					if (overlayTopRight != null)
+						ctx.DrawImage (widget, overlayTopRight, x + image.Width - overlayTopRight.Width + overlayOverflow, y - overlayOverflow);
+				}
+			}
 		}
 	}
 

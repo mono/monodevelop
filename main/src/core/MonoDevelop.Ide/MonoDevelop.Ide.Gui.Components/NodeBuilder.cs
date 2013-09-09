@@ -157,5 +157,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		public string Label { get; set; }
 		public Xwt.Drawing.Image Icon { get; set; }
 		public Xwt.Drawing.Image ClosedIcon { get; set; }
+		public Xwt.Drawing.Image OverlayBottomLeft { get; set; }
+		public Xwt.Drawing.Image OverlayBottomRight { get; set; }
+		public Xwt.Drawing.Image OverlayTopLeft { get; set; }
+		public Xwt.Drawing.Image OverlayTopRight { get; set; }
 	}
 }

@@ -81,6 +81,13 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		protected void GetImageInfo (Gdk.Rectangle cell_area, out Image img, out int x, out int y)
+		{
+			img = IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
+			x = (int)(Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2));
+			y = (int)(Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2));
+		}
+
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
 			if (image != null) {

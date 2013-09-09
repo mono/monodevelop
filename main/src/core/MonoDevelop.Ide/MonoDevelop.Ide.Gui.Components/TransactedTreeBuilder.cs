@@ -838,6 +838,14 @@ namespace MonoDevelop.Ide.Gui.Components
 						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OpenIconColumn, node.NodeInfo.Icon);
 					if (node.NodeInfo.ClosedIcon != null)
 						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.ClosedIconColumn, node.NodeInfo.ClosedIcon);
+					if (node.NodeInfo.OverlayBottomRight != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayBottomRightColumn, node.NodeInfo.OverlayBottomRight);
+					if (node.NodeInfo.OverlayBottomLeft != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayBottomLeftColumn, node.NodeInfo.OverlayBottomLeft);
+					if (node.NodeInfo.OverlayTopLeft != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayTopLeftColumn, node.NodeInfo.OverlayTopLeft);
+					if (node.NodeInfo.OverlayTopRight != null)
+						tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayTopRightColumn, node.NodeInfo.OverlayTopRight);
 				}
 				if (node.Children != null) {
 					foreach (TreeNode cn in node.Children) {
