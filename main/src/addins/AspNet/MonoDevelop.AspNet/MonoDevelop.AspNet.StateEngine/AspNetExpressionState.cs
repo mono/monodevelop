@@ -33,8 +33,6 @@ using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.StateEngine
 {
-	
-	
 	public class AspNetExpressionState : State
 	{
 		const int NONE = 0;
@@ -44,37 +42,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
-				Debug.Assert (c != '@' && c!= '-', 
-					"AspNetExpressionState should not be passed a directive or comment");
-				
-				switch (c) {
-				
-				//DATABINDING EXPRESSION <%#
-				case '#':
-					context.Nodes.Push (new AspNetDataBindingExpression (context.LocationMinus (3)));
-					break;
-					
-				//RESOURCE EXPRESSION <%$
-				case '$':
-					context.Nodes.Push (new AspNetResourceExpression (context.LocationMinus (3)));
-					break;
-				
-				//RENDER EXPRESSION <%=
-				case '=':
-					context.Nodes.Push (new AspNetRenderExpression (context.LocationMinus (3)));
-					break;
-				
-				//HTML ENCODED EXPRESSION <%:
-				case ':':
-					context.Nodes.Push (new AspNetHtmlEncodedExpression (context.LocationMinus (3)));
-					break;
-				
-				// RENDER BLOCK
-				default:
-					context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (2)));
-					break;
-				}
-				return null;
+				AddExpressionNode (c, context);
 			}
 			else if (c == '%') {
 				if (context.StateTag != PERCENT)
@@ -98,6 +66,34 @@ namespace MonoDevelop.AspNet.StateEngine
 			}
 			
 			return null;
+		}
+
+		internal static void AddExpressionNode (char c, IParseContext context)
+		{
+			Debug.Assert (c != '@' && c!= '-', "AspNetExpressionState should not be passed a directive or comment");
+
+			switch (c) {
+			//DATABINDING EXPRESSION <%#
+			case '#':
+				context.Nodes.Push (new AspNetDataBindingExpression (context.LocationMinus (3)));
+				break;
+			//RESOURCE EXPRESSION <%$
+			case '$':
+				context.Nodes.Push (new AspNetResourceExpression (context.LocationMinus (3)));
+				break;
+			//RENDER EXPRESSION <%=
+			case '=':
+				context.Nodes.Push (new AspNetRenderExpression (context.LocationMinus (3)));
+				break;
+			//HTML ENCODED EXPRESSION <%:
+			case ':':
+				context.Nodes.Push (new AspNetHtmlEncodedExpression (context.LocationMinus (3)));
+				break;
+			// RENDER BLOCK
+			default:
+				context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (2)));
+				break;
+			}
 		}
 	}
 }

@@ -37,12 +37,12 @@ namespace MonoDevelop.AspNet.StateEngine
 	{
 		protected const int BRACKET_PERCENT = MAXCONST + 1;
 		
-		AspNetExpressionState expressionState;
-		AspNetDirectiveState directiveState;
-		AspNetServerCommentState serverCommentState;
+		readonly AspNetExpressionState expressionState;
+		readonly AspNetDirectiveState directiveState;
+		readonly AspNetServerCommentState serverCommentState;
 		
 		public AspNetFreeState () : this (
-			new HtmlTagState (true),
+			new HtmlTagState (true, new XmlAttributeState (new XmlNameState (), new AspNetAttributeValueState ())),
 			new HtmlClosingTagState (true),
 			new XmlCommentState (),
 			new XmlCDataState (),

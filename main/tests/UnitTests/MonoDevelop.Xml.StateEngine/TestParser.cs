@@ -36,11 +36,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
 	public class TestParser : Parser
 	{
-		List<Error> errors = new List<Error> ();
+		readonly List<Error> errors = new List<Error> ();
 		
 		public TestParser (RootState rootState) : this (rootState, false)
 		{
@@ -65,13 +63,17 @@ namespace MonoDevelop.Xml.StateEngine
 			for (int i = 0; i < doc.Length; i++) {
 				char c = doc[i];
 				if (c == trigger) {
+					if (i + 1 < doc.Length && doc [i + 1] == trigger) {
+						Push (c);
+						i++;
+						continue;
+					}
 					asserts[assertNo] ();
 					assertNo++;
 				} else {
 					Push (c);
 				}
 			}
-			Assert.AreEqual (Position, doc.Length - assertNo);
 		}
 		
 		public string GetPath ()

@@ -57,5 +57,30 @@ namespace MonoDevelop.Xml.StateEngine
 			Assert.AreEqual ("Inherits", att.Name.FullName);
 			Assert.AreEqual ("SomeGenericType<int>", att.Value);
 		}
+
+		[Test]
+		public void AttributeWithExpression ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"<tag
+foo='<%=5$%>'
+bar=""<%$$5$%><%--$--%>""
+baz='<%#5$%>=<%:fhfjhf %0 $%>'
+quux = <% 5 $%>  />", delegate {
+				parser.AssertNodeIs<AspNetRenderExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetResourceExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetServerComment> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetDataBindingExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetHtmlEncodedExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetRenderBlock> ();
+			});
+			parser.AssertNoErrors ();
+			var doc = (XDocument) parser.Nodes.Peek ();
+		}
 	}
 }
