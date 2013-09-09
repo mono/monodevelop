@@ -136,6 +136,7 @@ namespace MonoDevelop.Ide
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					var id = GetStockIdForImageSpec (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize);
 					pixbuf = GetPixbuf (id, iconCodon.IconSize);
+					pixbuf2x = Get2xIconVariant (pixbuf);
 					// This may be an animation, get it
 					animationFactory.TryGetValue (id, out animatedIcon);
 				} else if (!string.IsNullOrEmpty (iconCodon.Animation)) {
@@ -693,9 +694,10 @@ namespace MonoDevelop.Ide
 			foreach (Gtk.IconSize sz in col) {
 				if (sz == Gtk.IconSize.Invalid)
 					continue;
-				Gdk.Pixbuf icon = null;
+				Xwt.Drawing.ImageBuilder ib = null;
+				Xwt.Drawing.Image icon = null;
 				for (int n = 0; n < ids.Length; n++) {
-					Gdk.Pixbuf px = GetPixbuf (ids[n], sz);
+					var px = GetIcon (ids[n], sz);
 					if (px == null) {
 						LoggingService.LogError ("Error creating composed icon {0} at size {1}. Icon {2} is missing.", id, sz, ids[n]);
 						icon = null;
@@ -703,17 +705,19 @@ namespace MonoDevelop.Ide
 					}
 
 					if (n == 0) {
+						ib = new Xwt.Drawing.ImageBuilder (px.Width, px.Height);
+						ib.Context.DrawImage (px, 0, 0);
 						icon = px;
 						continue;
 					}
 
 					if (icon.Width != px.Width || icon.Height != px.Height) 
-						px = ScaleIcon (icon, icon.Width, icon.Height);
+						px = px.WithSize (icon.Width, icon.Height);
 
-					icon = MergeIcons (icon, px);
+					ib.Context.DrawImage (px, 0, 0);
 				}
 				if (icon != null)
-					AddToIconFactory (id, icon, null, sz);
+					AddToIconFactory (id, ib.ToBitmap ().ToPixbuf (), ib.ToBitmap (2f).WithSize (icon.Width * 2, icon.Height * 2).ToPixbuf (), sz);
 			}
 			composedIcons[id] = id;
 			return id;
