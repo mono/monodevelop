@@ -432,7 +432,9 @@ namespace MonoDevelop.CSharp
 							isFailed = true;
 						} else if (result.IsInconclusive) {
 							cr.SetSourceRGBA (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
-						} 
+						} else {
+							cr.SetSourceRGB (0.5, 0.5, 0.5);
+						}
 					} else {
 						cr.SetSourceRGB (0.5, 0.5, 0.5);
 						searchCases = true;
