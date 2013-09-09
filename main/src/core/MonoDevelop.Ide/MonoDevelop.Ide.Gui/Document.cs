@@ -547,7 +547,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			DetachExtensionChain ();
-			ClearAnnotations ();
+			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;

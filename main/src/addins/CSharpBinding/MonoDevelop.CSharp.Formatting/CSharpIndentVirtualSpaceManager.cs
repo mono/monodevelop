@@ -23,80 +23,52 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Xml;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.CodeCompletion;
-
-using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
-using MonoDevelop.Ide.CodeTemplates;
-using MonoDevelop.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
+using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class IndentVirtualSpaceManager : Mono.TextEditor.IIndentationTracker
+	class IndentVirtualSpaceManager : IIndentationTracker
 	{
-		Mono.TextEditor.TextEditorData data;
-		DocumentStateTracker<CSharpIndentEngine> stateTracker;
+		readonly TextEditorData data;
+		readonly CacheIndentEngine stateTracker;
 
-		public IndentVirtualSpaceManager (Mono.TextEditor.TextEditorData data, DocumentStateTracker<CSharpIndentEngine> stateTracker)
+		public IndentVirtualSpaceManager(TextEditorData data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
 		}
 
-		string GetIndentationString (int offset, DocumentLocation loc)
+		string GetIndentationString (DocumentLocation loc)
 		{
-			stateTracker.UpdateEngine (Math.Min (data.Length, offset + 1));
-			DocumentLine line = data.Document.GetLine (loc.Line);
+			var line = data.Document.GetLine (loc.Line);
 			if (line == null)
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
-			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = offset; max < line.Offset + line.Length; max++) {
-				ctx.Push (data.Document.GetCharAt (max));
-			}
-//			int pos = line.Offset;
+			var offset = line.Offset;
 			string curIndent = line.GetIndentation (data.Document);
-			int nlwsp = curIndent.Length;
-//			int o = offset > pos + nlwsp ? offset - (pos + nlwsp) : 0;
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
-				return ctx.ThisLineIndent;
+			try {
+				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
+				int nlwsp = curIndent.Length;
+				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
+					return stateTracker.ThisLineIndent;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while indenting at "+ loc, e); 
 			}
 			return curIndent;
 		}
+
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			return GetIndentationString (data.LocationToOffset (lineNumber, column), new DocumentLocation (lineNumber, column));
-		}
-		
-		public string GetIndentationString (int offset)
-		{
-			return GetIndentationString (offset, data.OffsetToLocation (offset));
+			return GetIndentationString (new DocumentLocation (lineNumber, column));
 		}
 
-		string GetIndent (int lineNumber, int column)
+		public string GetIndentationString (int offset)
 		{
-			var line = data.GetLine (lineNumber);
-			if (line == null)
-				return "";
-			int offset = line.Offset + Math.Min (line.Length, column - 1);
- 
-			stateTracker.UpdateEngine (offset);
-			return stateTracker.Engine.NewLineIndent;
+			return GetIndentationString (data.OffsetToLocation (offset));
 		}
 
 		public int GetVirtualIndentationColumn (int offset)

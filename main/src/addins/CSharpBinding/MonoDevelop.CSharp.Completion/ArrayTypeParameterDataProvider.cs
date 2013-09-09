@@ -23,27 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Project;
-using System.Linq;
 using MonoDevelop.CSharp.Formatting;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Text;
-using MonoDevelop.Ide.CodeTemplates;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using Mono.TextEditor;
 
@@ -51,9 +35,9 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class ArrayTypeParameterDataProvider : AbstractParameterDataProvider
 	{
-		ArrayType arrayType;
+		readonly ArrayType arrayType;
 
-		public ArrayTypeParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, ArrayType arrayType, AstNode resolvedNode) : base (ext, startOffset)
+		public ArrayTypeParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, ArrayType arrayType) : base (ext, startOffset)
 		{
 			this.arrayType = arrayType;
 		}

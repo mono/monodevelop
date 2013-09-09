@@ -1,10 +1,10 @@
-﻿//
-// RazorParsingTests.cs
+//
+// VersionControlGeneralOptionsPanel.cs
 //
 // Author:
-//		Piotr Dowgiallo <sparekd@gmail.com>
+//       Therzok <teromario@yahoo.com>
 //
-// Copyright (c) 2012 Piotr Dowgiallo
+// Copyright (c) 2013 Therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.AspNet.Mvc.StateEngine;
-using NUnit.Framework;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.VersionControl
 {
-	[TestFixture]
-	public abstract class RazorParsingTests
+	public class VersionControlGeneralOptionsPanel : OptionsPanel
 	{
-		protected TestParser parser;
+		Xwt.CheckBox disableVersionControl;
 
-		[SetUp]
-		public void Init ()
+		public override Gtk.Widget CreatePanelWidget ()
 		{
-			parser = new TestParser (new RazorTestFreeState ());
+			Xwt.VBox box = new Xwt.VBox ();
+			box.Spacing = 6;
+			box.Margin = 12;
+
+			disableVersionControl = new Xwt.CheckBox (GettextCatalog.GetString ("Disable Version Control globally")) {
+				Active = VersionControlService.IsGloballyDisabled,
+			};
+			box.PackStart (disableVersionControl);
+			box.Show ();
+			return box.ToGtkWidget ();
 		}
-	}
 
-	class RazorTestFreeState : RazorFreeState
-	{
-		public RazorTestFreeState ()
+		public override void ApplyChanges ()
 		{
-			UseSimplifiedBracketTracker = true;
+			VersionControlService.IsGloballyDisabled = disableVersionControl.Active;
+			VersionControlService.SaveConfiguration ();
 		}
 	}
 }
+

@@ -432,6 +432,9 @@ namespace MonoDevelop.Components.MainToolbar
 			Xwt.Drawing.Image[] images;
 			TooltipPopoverWindow tooltipWindow;
 			bool mouseOver;
+			uint tipShowTimeoutId;
+			DateTime scheduledTipTime;
+			const int TooltipTimeout = 350;
 			
 			public StatusIcon (StatusArea statusBar, Xwt.Drawing.Image icon)
 			{
@@ -465,6 +468,25 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			void ShowTooltip ()
 			{
+				scheduledTipTime = DateTime.Now + TimeSpan.FromMilliseconds (TooltipTimeout);
+				if (tipShowTimeoutId == 0)
+					tipShowTimeoutId = GLib.Timeout.Add (TooltipTimeout, ShowTooltipEvent);
+			}
+
+			bool ShowTooltipEvent ()
+			{
+				tipShowTimeoutId = 0;
+
+				if (!mouseOver)
+					return false;
+
+				int remainingMs = (int) (scheduledTipTime - DateTime.Now).TotalMilliseconds;
+				if (remainingMs > 50) {
+					// Still some significant time left. Re-schedule the timer
+					tipShowTimeoutId = GLib.Timeout.Add ((uint) remainingMs, ShowTooltipEvent);
+					return false;
+				}
+
 				if (!string.IsNullOrEmpty (tip)) {
 					HideTooltip ();
 					tooltipWindow = new TooltipPopoverWindow ();
@@ -472,6 +494,7 @@ namespace MonoDevelop.Components.MainToolbar
 					tooltipWindow.Text = tip;
 					tooltipWindow.ShowPopup (box, PopupPosition.Top);
 				}
+				return false;
 			}
 			
 			void HideTooltip ()

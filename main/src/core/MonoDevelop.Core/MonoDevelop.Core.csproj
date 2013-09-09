@@ -460,6 +460,7 @@
     <Compile Include="MonoDevelop.Core.Web\IHttpWebResponse.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
     <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
+    <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

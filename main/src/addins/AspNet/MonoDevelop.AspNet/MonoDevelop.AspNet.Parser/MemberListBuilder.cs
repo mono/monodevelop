@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -62,7 +63,8 @@ namespace MonoDevelop.AspNet.Parser
 		public void Build ()
 		{
 			try {
-				AddMember (xDocument.RootElement);
+				foreach (XElement el in xDocument.Nodes.OfType<XElement> ())
+					AddMember (el);
 			} catch (Exception ex) {
 				Errors.Add (new Error (ErrorType.Error, "Unknown parser error: " + ex.ToString ()));
 			}
@@ -93,17 +95,15 @@ namespace MonoDevelop.AspNet.Parser
 						                          element.Name.HasPrefix ? string.Empty : ":", 
 						                          element.Name.Name),
 								element.Region
-						)
+							)
 						);
 					} else
 						Members [id] = new CodeBehindMember (id, type, element.Region.Begin);
 				}
 
 			}
-			foreach (XNode node in element.Nodes) {
-				if (node is XElement)
-					AddMember (node as XElement);
-			}
+			foreach (XElement child in element.Nodes.OfType<XElement> ())
+				AddMember (child);
 		}
 	}
 	

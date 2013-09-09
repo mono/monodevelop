@@ -24,23 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
-using System.Threading;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
 	{
-		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
+		readonly CodeAction act;
 		
-		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act, object siblingKey = null)
+		public NRefactoryCodeAction (string id, string title, CodeAction act, object siblingKey = null)
 		{
 			this.IdString = id;
 			this.Title = title;

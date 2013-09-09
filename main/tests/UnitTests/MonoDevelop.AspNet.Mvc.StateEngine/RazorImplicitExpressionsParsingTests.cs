@@ -24,20 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorImplicitExpressionsParsingTests : RazorParsingTests
 	{
 		// Can't use $ as a trigger, because implicit expression terminates
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpression ()
 		{
 			parser.Parse ("@FoobarX", 'X', () => {
@@ -47,7 +44,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionMethodCall ()
 		{
 			parser.Parse ("@Foo.Bar()X", 'X', () => {
@@ -57,7 +54,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionArray ()
 		{
 			parser.Parse ("@Foo[][]X", 'X', () => {
@@ -67,7 +64,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionQuotes ()
 		{
 			parser.Parse ("@ViewData[\"Foo$\"]", 'X', () => {
@@ -77,7 +74,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionTerminatesAtWhitespace ()
 		{
 			parser.Parse ("@Foo X", 'X', () => {
@@ -86,7 +83,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionNotTerminatesAtWhitespaceInsideBrackets ()
 		{
 			parser.Parse ("@Html.Raw(a, bX, c) X", 'X', () => {
@@ -99,7 +96,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionTerminatesAtTag ()
 		{
 			parser.Parse ("@Foo<p>X", 'X', () => {
@@ -108,7 +105,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionTerminatesAtTransition ()
 		{
 			parser.Parse ("@Foo@X", 'X', () => {
@@ -117,7 +114,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionInHtml ()
 		{
 			parser.Parse ("<body><p>@FoXo</p></body>X", 'X', () => {
@@ -130,7 +127,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void EmailAddressNotRecognizedAsExpression ()
 		{
 			parser.Parse ("foo@barX.com", 'X', () => {

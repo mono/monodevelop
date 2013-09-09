@@ -133,8 +133,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			);
 			parser.AssertEmpty ();
-			parser.AssertErrorCount (3, x => x.ErrorType == ErrorType.Error);
-			parser.AssertErrorCount (2, x => x.ErrorType == ErrorType.Warning);
+			parser.AssertErrorCount (5, x => x.ErrorType == ErrorType.Error);
 		}
 		
 		[Test]
@@ -217,6 +216,26 @@ namespace MonoDevelop.Xml.StateEngine
 			Assert.AreEqual (dt.InternalDeclarationRegion.End.Line, 7);
 			parser.AssertNoErrors ();
 		}
+
+		[Test]
+		public void NamespacedAttributes ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"<tag foo:bar='1' foo:bar:baz='2' foo='3' />");
+			parser.AssertEmpty ();
+			var doc = (XDocument) parser.Nodes.Peek ();
+			var el = (XElement) doc.FirstChild;
+			Assert.AreEqual (3, el.Attributes.Count ());
+			Assert.AreEqual ("foo", el.Attributes.ElementAt (0).Name.Prefix);
+			Assert.AreEqual ("bar", el.Attributes.ElementAt (0).Name.Name);
+			Assert.AreEqual ("foo", el.Attributes.ElementAt (1).Name.Prefix);
+			Assert.AreEqual ("bar:baz", el.Attributes.ElementAt (1).Name.Name);
+			Assert.IsNull (el.Attributes.ElementAt (2).Name.Prefix);
+			Assert.AreEqual ("foo", el.Attributes.ElementAt (2).Name.Name);
+			Assert.AreEqual (3, el.Attributes.Count ());
+			parser.AssertErrorCount (1);
+			Assert.AreEqual (1, parser.Errors [0].Region.BeginLine);
+			Assert.AreEqual (25, parser.Errors [0].Region.BeginColumn);
+		}
 	}
-	
 }

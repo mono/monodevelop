@@ -31,15 +31,56 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
-	public class AspNetParsingTests : ParsingTests
+	[TestFixture]
+	public class AspNetParsingTests : HtmlParsingTests
 	{
-		
 		public override XmlFreeState CreateRootState ()
 		{
 			return new AspNetFreeState ();
 		}
-		
+
+		[Test]
+		public void Directives ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"<%@ Page Language=""C#"" Inherits=""SomeGenericType<int>"" %>");
+			parser.AssertNoErrors ();
+			var doc = (XDocument) parser.Nodes.Peek ();
+			var directive = doc.Nodes.First () as AspNetDirective;
+			Assert.NotNull (directive);
+			Assert.AreEqual ("Page", directive.Name.FullName);
+			Assert.AreEqual (2, directive.Attributes.Count ());
+			var att = directive.Attributes[0];
+			Assert.AreEqual ("Language", att.Name.FullName);
+			Assert.AreEqual ("C#", att.Value);
+			att = directive.Attributes[1];
+			Assert.AreEqual ("Inherits", att.Name.FullName);
+			Assert.AreEqual ("SomeGenericType<int>", att.Value);
+		}
+
+		[Test]
+		public void AttributeWithExpression ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"<tag
+foo='<%=5$%>'
+bar=""<%$$5$%><%--$--%>""
+baz='<%#5$%>=<%:fhfjhf %0 $%>'
+quux = <% 5 $%>  />", delegate {
+				parser.AssertNodeIs<AspNetRenderExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetResourceExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetServerComment> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetDataBindingExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetHtmlEncodedExpression> ();
+			}, delegate {
+				parser.AssertNodeIs<AspNetRenderBlock> ();
+			});
+			parser.AssertNoErrors ();
+			var doc = (XDocument) parser.Nodes.Peek ();
+		}
 	}
 }

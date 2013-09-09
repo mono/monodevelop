@@ -24,20 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorCodeFragmentsParsingTests : RazorParsingTests
 	{
 		// Tests that are common for code fragments, i.e. code blocks, directives and statements
 
-		[Test ()]
+		[Test]
 		public void StateNotSwitchedToHtmlTagInGenerics ()
 		{
 			parser.Parse ("@{ IEnumerable<string$> foo = new List<$string> (); }", () => {
@@ -48,7 +45,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void StateNotSwitchedToHtmlTagInBrackets ()
 		{
 			parser.Parse ("@foreach (var item in Model) { if (item <$ 1) { } }", () => {
@@ -57,7 +54,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ExplicitExpressionInCodeFragment ()
 		{
 			parser.Parse ("@section Foo { <p>@(Bar.$Baz)</p> }", () => {
@@ -66,7 +63,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ImplicitExpressionInCodeFragment ()
 		{
 			parser.Parse ("@{ <p>@Foo.Xbar</p> }", 'X', () => {
@@ -75,7 +72,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void NestedCodeFragments ()
 		{
 			parser.Parse (
@@ -100,7 +97,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			  });
 		}
 
-		[Test ()]
+		[Test]
 		public void StateSwitchesBetweenHtmlAndCode ()
 		{
 			parser.Parse (

@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
 
 #this script should be in $PREFIX/bin
-MONO_EXEC="exec -a mdtool mono"
+MONO_EXEC="exec -a mdtool mono-sgen"
 EXE_PATH="${0%%/bin/mdtool}/lib/monodevelop/bin/mdtool.exe"
 
-##NOTE: remove this for stable releases
-if [ -z "$MD_NO_DEBUG" ]; then
-	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
-else
-	_MONO_OPTIONS=$MONO_OPTIONS
-fi
-
-$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" "$@"
+$MONO_EXEC $MONO_OPTIONS "$EXE_PATH" "$@"

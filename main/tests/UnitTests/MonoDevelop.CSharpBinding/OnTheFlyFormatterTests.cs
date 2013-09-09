@@ -139,10 +139,69 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			var ext = Setup ("\"Hello\n\t$", out content);
-			ext.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+			ext.ReindentOnTab ();
 
 			var newText = content.Text;
-			Assert.AreEqual ("\"Hello\n\t", newText);
+			Assert.AreEqual ("\"Hello\n", newText);
+		}
+
+
+		[Test]
+		public void TestVerbatimToNonVerbatimConversion ()
+		{
+			TestViewContent content;
+			var ext = Setup ("@$\"\t\"", out content);
+			content.GetTextEditorData ().Remove (0, 1);
+			var newText = content.Text;
+			Assert.AreEqual ("\"\\t\"", newText);
+		}
+
+		[Test]
+		public void TestNonVerbatimToVerbatimConversion ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\t\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\t\"", newText);
+		}
+
+
+		[Test]
+		public void TestCorrectReindentNextLine ()
+		{
+			TestViewContent content;
+			var ext = Setup (@"
+class Foo
+{
+	void Bar ()
+	{
+		try {
+		} catch (Exception e) {$}
+	}
+}
+", out content);
+			ext.ReindentOnTab ();
+			MiscActions.InsertNewLine (content.Data);
+			ext.KeyPress ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None);
+
+			var newText = content.Text;
+
+			var expected = @"
+class Foo
+{
+	void Bar ()
+	{
+		try {
+		} catch (Exception e) {
+		}
+	}
+}
+";
+			if (newText != expected)
+				Console.WriteLine (newText);
+			Assert.AreEqual (expected, newText);
 		}
 	}
 }

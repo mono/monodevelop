@@ -150,12 +150,13 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing theme and splash window");
 
 			DefaultTheme = Gtk.Settings.Default.ThemeName;
-			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme)) {
-				string theme;
-				if (!ValidateGtkTheme (IdeApp.Preferences.UserInterfaceTheme, out theme))
-					return 1;
+			string theme = IdeApp.Preferences.UserInterfaceTheme;
+			if (string.IsNullOrEmpty (theme))
+				theme = DefaultTheme;
+			ValidateGtkTheme (ref theme);
+			if (theme != DefaultTheme)
 				Gtk.Settings.Default.ThemeName = theme;
-			}
+
 			
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
@@ -258,8 +259,11 @@ namespace MonoDevelop.Ide
 			
 			if (error != null) {
 				LoggingService.LogFatalError (null, error);
-				MessageService.ShowException (error,
-				                              BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message));
+				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString (
+					"MonoDevelop failed to start. The following error has been reported: {0}",
+					error.Message
+				));
+				MessageService.ShowException (error, message);
 				return 1;
 			}
 
@@ -415,46 +419,45 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
-		internal readonly static string[] FailingGtkThemes = new string[] {
-			"QtCurve",
-			"oxygen-gtk"
-		};
-
 		internal static string[] gtkThemeFallbacks = new string[] {
+			"Xamarin",// the best!
 			"Gilouche", // SUSE
 			"Mint-X", // MINT
 			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
 			"Clearlooks" // GTK theme
 		};
 
-		bool ValidateGtkTheme (string requestedTheme, out string validTheme)
+		static void ValidateGtkTheme (ref string theme)
 		{
-			foreach (var theme in FailingGtkThemes) {
-				if (string.Equals (requestedTheme, theme, StringComparison.OrdinalIgnoreCase)) {
-					string msg = theme +" theme not supported";
-					string desc = "Your system is using the " + theme + " GTK+ theme. This theme is known to cause stability issues in MonoDevelop. Please select another theme in the GTK+ Theme Selector.\n\nIf you click on Proceed, MonoDevelop will switch to the default GTK+ theme.";
-					AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);
-					if (res == AlertButton.Cancel) {
-						validTheme = null;
-						return false;
-					}
-					var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
-					string fallback = null;
-					foreach (string fb in gtkThemeFallbacks) {
-						var foundTheme = themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0);
-						if (foundTheme != null) {
-							fallback = foundTheme;
-							break;
-						}
-					}
+			if (!MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.IsBadGtkTheme (theme))
+				return;
 
-					validTheme = fallback ?? themes.FirstOrDefault () ?? requestedTheme;
-					return validTheme != null;
-				}
+			var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
+
+			string fallback = gtkThemeFallbacks
+				.Select (fb => themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0))
+				.FirstOrDefault (t => t != null);
+
+			string message = "Theme Not Supported";
+
+			string detail;
+			if (themes.Count > 0) {
+				detail =
+					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable. MonoDevelop will " +
+					"now switch to an alternate GTK+ theme.\n\n" +
+					"This message will continue to be shown at startup until you set a alternate GTK+ theme as your " +
+					"default in the GTK+ Theme Selector or MonoDevelop Preferences.";
+			} else {
+				detail =
+					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable, and no other GTK+ " +
+					"themes appear to be installed. Please install another GTK+ theme.\n\n" +
+					"This message will continue to be shown at startup until you install a different GTK+ theme and " +
+					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
 			}
 
-			validTheme = requestedTheme;
-			return true;
+			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, detail, AlertButton.Ok);
+
+			theme = fallback ?? themes.FirstOrDefault () ?? theme;
 		}
 		
 		void CheckFileWatcher ()

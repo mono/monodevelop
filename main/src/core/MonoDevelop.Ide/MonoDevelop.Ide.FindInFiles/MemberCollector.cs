@@ -173,6 +173,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				}
 			}
+			if (!result.Contains (member))
+				result.Add (member);
 			return result;
 		}
 	

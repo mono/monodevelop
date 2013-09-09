@@ -54,24 +54,27 @@ namespace MonoDevelop.CSharp.Formatting
 			if (lineSegment == null)
 				return;
 
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textPolicy), data);
-			tracker.UpdateEngine (lineSegment.Offset);
-			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-				tracker.Engine.Push (data.Document.GetCharAt (i));
-			}
+			try {
+				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+				var tracker = new CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
 
-			string curIndent = lineSegment.GetIndentation (data.Document);
+				tracker.Update (lineSegment.Offset);
+				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
+					tracker.Push (data.Document.GetCharAt (i));
+				}
 
-			int nlwsp = curIndent.Length;
-			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
-				// Possibly replace the indent
-				string newIndent = tracker.Engine.ThisLineIndent;
-				if (newIndent != curIndent) 
-					data.Replace (lineSegment.Offset, nlwsp, newIndent);
+				string curIndent = lineSegment.GetIndentation (data.Document);
+
+				int nlwsp = curIndent.Length;
+				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+					// Possibly replace the indent
+					string newIndent = tracker.ThisLineIndent;
+					if (newIndent != curIndent) 
+						data.Replace (lineSegment.Offset, nlwsp, newIndent);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while indenting", e);
 			}
-			tracker.Dispose ();
 		}
 
 		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
@@ -80,7 +83,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 
-		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
+		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
 			var data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
@@ -136,7 +139,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var currentVersion = data.Document.Version;
 
-			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default));
+			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset));
 			data.Dispose ();
 			return result;
 		}

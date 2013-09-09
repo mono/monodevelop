@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		
-		public void GotoPrev () 
+		public void GotoNext () 
 		{
 			if (this.Diff == null)
 				return;
@@ -117,7 +117,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public void GotoNext ()
+		public void GotoPrev ()
 		{
 			if (this.Diff == null)
 				return;

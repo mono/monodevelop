@@ -29,7 +29,7 @@ fi
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-MONO_REQUIRED_VERSION=2.10.9
+MONO_REQUIRED_VERSION=3.0.4
 
 if ! $PKG_CONFIG --atleast-version=$MONO_REQUIRED_VERSION mono; then
 	AC_MSG_ERROR([You need mono $MONO_REQUIRED_VERSION or newer])

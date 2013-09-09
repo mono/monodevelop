@@ -170,7 +170,8 @@ namespace MonoDevelop.AnalysisCore
 			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
 			var fixes = codeActionExtension.GetCurrentFixes ();
 			if (fixes != null) {
-				foreach (var fix in fixes.Where (CodeActionWidget.IsAnalysisOrErrorFix)) {
+				foreach (var _fix in fixes.Where (CodeActionWidget.IsAnalysisOrErrorFix)) {
+					var fix = _fix;
 					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
 						continue;
 					var escapedLabel = fix.Title.Replace ("_", "__");
@@ -230,7 +231,7 @@ namespace MonoDevelop.AnalysisCore
 						}
 					}
 
-					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection severity"), result);
+					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection"), result);
 
 					infos.Add (declSet);
 				}

@@ -207,7 +207,7 @@ namespace MonoDevelop.CodeIssues
 				.ToList ();
 			foreach (var provider in codeIssueProviders) {
 				var severity = provider.GetSeverity ();
-				if (severity == Severity.None || tokenSource.IsCancellationRequested)
+				if (severity == Severity.None || !provider.GetIsEnabled () || tokenSource.IsCancellationRequested)
 					return;
 				try {
 					foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {

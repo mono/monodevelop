@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+//#define PROFILE
 using System;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
@@ -42,6 +42,7 @@ using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
+using System.Diagnostics;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -59,26 +60,28 @@ namespace MonoDevelop.CodeIssues
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
 
-//			var now = DateTime.Now;
-
+			#if PROFILE
+			var runList = new List<Tuple<long, string>> ();
+			#endif
 			var editor = input.Editor;
 			if (editor == null)
 				return Enumerable.Empty<Result> ();
 			var loc = editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
-			//var siblingGroups = new ConcurrentDictionary<object, >
 		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType).ToArray ();
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
 				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
-//			Console.WriteLine ("start check:"+ (DateTime.Now - now).TotalMilliseconds);
 			Parallel.ForEach (codeIssueProvider, (parentProvider) => {
 				try {
+					#if PROFILE
+					var clock = new Stopwatch();
+					clock.Start ();
+					#endif
 					foreach (var provider in EnumerateProvider (parentProvider)) {
 						var severity = provider.GetSeverity ();
-						if (severity == Severity.None)
+						if (severity == Severity.None || !provider.GetIsEnabled ())
 							continue;
-	//					var now2 = DateTime.Now;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
 							var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 								Action batchAction = null;
@@ -105,16 +108,24 @@ namespace MonoDevelop.CodeIssues
 							));
 						}
 					}
-/*					var ms = (DateTime.Now - now2).TotalMilliseconds;
-					if (ms > 1000)
-						Console.WriteLine (ms +"\t\t"+ provider.Title);*/
+					#if PROFILE
+					clock.Stop ();
+					lock (runList) {
+						runList.Add (Tuple.Create (clock.ElapsedMilliseconds, parentProvider.Title)); 
+					}
+					#endif
 				} catch (OperationCanceledException) {
 					//ignore
 				} catch (Exception e) {
 					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + parentProvider + "'", e);
 				}
 			});
-//			Console.WriteLine ("END check:"+ (DateTime.Now - now).TotalMilliseconds);
+#if PROFILE
+			runList.Sort ();
+			foreach (var item in runList) {
+				Console.WriteLine (item.Item1 +"ms\t: " + item.Item2);
+			}
+#endif
 			return result;
 		}
 	}

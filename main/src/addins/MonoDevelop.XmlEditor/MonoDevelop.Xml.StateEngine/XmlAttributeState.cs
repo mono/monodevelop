@@ -62,15 +62,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
 			XAttribute att = context.Nodes.Peek () as XAttribute;
-			
-			if (c == '<') {
-				//parent handles message
-				if (att != null)
-					context.Nodes.Pop ();
-				rollback = string.Empty;
-				return Parent;
-			}
-			
+
 			//state has just been entered
 			if (context.CurrentStateLength == 1)  {
 				if (context.PreviousState is XmlNameState) {
@@ -101,15 +93,7 @@ namespace MonoDevelop.Xml.StateEngine
 					return XmlNameState;
 				}
 			}
-			
-			if (c == '>') {
-				context.LogWarning ("Attribute ended unexpectedly with '>' character.");
-				if (att != null)
-					context.Nodes.Pop ();
-				rollback = string.Empty;
-				return Parent;
-			}
-			
+
 			if (context.StateTag == GETTINGEQ) {
 				if (char.IsWhiteSpace (c)) {
 					return null;
@@ -123,12 +107,10 @@ namespace MonoDevelop.Xml.StateEngine
 				if (char.IsWhiteSpace (c)) {
 					return null;
 				}
-				if (c == '"' || c == '\'' || char.IsLetterOrDigit (c)) {
-					rollback = string.Empty;
-					return AttributeValueState;
-				}
-				context.LogError ("Expecting attribute value, got '" + c + "'.");
-			} else {
+				rollback = string.Empty;
+				return AttributeValueState;
+			} else if (c != '<') {
+				//parent handles message for '<'
 				context.LogError ("Unexpected character '" + c + "' in attribute.");
 			}
 

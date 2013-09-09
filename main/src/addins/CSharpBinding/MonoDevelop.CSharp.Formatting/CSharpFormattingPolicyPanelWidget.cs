@@ -24,11 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using System.Collections.Generic;
-using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Ide.Gui.Content;
 
 
@@ -37,7 +33,7 @@ namespace MonoDevelop.CSharp.Formatting
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
 	{
-		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
+		readonly Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 //		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
 //		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
 		const string example = @"using System;
@@ -61,9 +57,9 @@ namespace Example {
 		}
 
 
-		public void SetPolicy (CSharpFormattingPolicy cSharpFormattingPolicy, TextStylePolicy textStylePolicy)
+		public void SetPolicy (CSharpFormattingPolicy formattingPolicy, TextStylePolicy textStylePolicy)
 		{
-			this.policy = cSharpFormattingPolicy;
+			policy = formattingPolicy;
 			this.textStylePolicy = textStylePolicy;
 			FormatSample ();
 		}
@@ -76,6 +72,7 @@ namespace Example {
 
 		public CSharpFormattingPolicyPanelWidget ()
 		{
+			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			this.Build ();
 			policy = new CSharpFormattingPolicy ();
 			buttonEdit.Clicked += HandleButtonEditClicked;
@@ -94,13 +91,12 @@ namespace Example {
 
 		public void FormatSample ()
 		{
-			var formatter = new CSharpFormatter ();
 			if (textStylePolicy != null) {
 				texteditor.Options.IndentationSize = textStylePolicy.IndentWidth;
 				texteditor.Options.TabSize = textStylePolicy.TabWidth;
 				texteditor.Options.TabsToSpaces = textStylePolicy.TabsToSpaces;
 			}
-			texteditor.Document.Text = formatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
+			texteditor.Document.Text = CSharpFormatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)

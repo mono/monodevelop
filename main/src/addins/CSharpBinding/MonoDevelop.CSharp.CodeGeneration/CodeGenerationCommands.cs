@@ -24,11 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide;
-
 namespace MonoDevelop.CodeGeneration
 {
 	enum CodeGenerationCommands

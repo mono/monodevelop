@@ -155,7 +155,7 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				DrawBackground (context, Allocation, 15, State);
 				var icon = GetIcon();
-				context.DrawImage (this, icon, Allocation.X + (icon.Size.Width - Allocation.Width) / 2, Allocation.Y + (icon.Size.Height - Allocation.Height) / 2);
+				context.DrawImage (this, icon, Allocation.X + Math.Max (0, (Allocation.Width - icon.Width) / 2), Allocation.Y + Math.Max (0, (Allocation.Height - icon.Height) / 2));
 			}
 			return base.OnExposeEvent (evnt);
 		}

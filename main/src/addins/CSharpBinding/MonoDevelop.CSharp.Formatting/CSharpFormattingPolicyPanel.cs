@@ -25,11 +25,7 @@
 // THE SOFTWARE.
 
 using Gtk;
-using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Projects.Text;
-using System.Xml;
 using MonoDevelop.Ide.Gui.Dialogs;
-using System;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharp.Formatting

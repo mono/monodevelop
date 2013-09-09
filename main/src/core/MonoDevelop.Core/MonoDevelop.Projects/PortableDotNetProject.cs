@@ -27,6 +27,8 @@ using System;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -88,6 +90,13 @@ namespace MonoDevelop.Projects
 		{
 			// Profile136 includes .NET 4.0+, Silverlight 5, Windows Phone 8, and Xamarin.iOS/Android, so make that our default.
 			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile136");
+		}
+
+		protected internal override IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
+		{
+			var res = base.OnGetReferencedAssemblies (configuration, includeProjectReferences);
+			var asms = TargetRuntime.AssemblyContext.GetAssemblies (TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => a.Location);
+			return res.Concat (asms).Distinct ();
 		}
 	}
 }

@@ -2824,15 +2824,20 @@ namespace Mono.TextEditor
 			}
 			
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
-				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
-				if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
-				if (textEditor.MainSelection.Contains (lineNr, 2 + line.Length) && 
-					!(lineNr == Caret.Line && Caret.Column > 1 && textEditor.MainSelection.Anchor.Line < textEditor.MainSelection.Lead.Line) &&
-					textEditor.MainSelection.Anchor.Line != textEditor.MainSelection.Lead.Line
-					) {
+				switch (textEditor.Options.ShowWhitespaces) {
+				case ShowWhitespaces.Selection:
+					if (!isEolFolded && isEolSelected)
+					if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
+					if (textEditor.MainSelection.Contains (lineNr, 2 + line.Length) &&
+					    !(lineNr == Caret.Line && Caret.Column > 1 && textEditor.MainSelection.Anchor.Line < textEditor.MainSelection.Lead.Line) &&
+					    textEditor.MainSelection.Anchor.Line != textEditor.MainSelection.Lead.Line)
+						goto case ShowWhitespaces.Always;
+					break;
+				case ShowWhitespaces.Always:
 					if (wrapper == null)
 						wrapper = GetLayout (line);
 					DrawEolMarker (cr, line, isEolSelected, position, y + System.Math.Max (0, wrapper.Height - LineHeight));
+					break;
 				}
 			}
 

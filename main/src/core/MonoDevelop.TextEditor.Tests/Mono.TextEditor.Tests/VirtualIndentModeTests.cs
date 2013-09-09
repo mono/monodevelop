@@ -34,7 +34,7 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class VirtualIndentModeTests
 	{
-		TextEditorData CreateData (string content)
+		public static TextEditorData CreateData (string content)
 		{
 			var data = new TextEditorData (new TextDocument (content));
 			data.IndentationTracker = SmartIndentModeTests.IndentTracker;
@@ -419,26 +419,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\t\tfoo\n\t\t\t\tbar", data.Document.Text);
 		}
 
-		/// <summary>
-		/// Bug 7012 - Paste does not replace entire selection made by the Shift key.
-		/// </summary>
-		[Ignore("Test broken.")]
-		[Test]
-		public void TestBug7012 ()
-		{
-			var data = CreateData ("\n\t\tthrow new NotImplementedException();");
-			var loc1 = new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
-			var loc2 = new DocumentLocation (3, data.GetLine (2).Length);
-			data.Caret.Location = loc2;
-			data.SetSelection (loc1, loc2);
-			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
-			clipboard.Text = "Console.WriteLine(\"Hello\");";
-			
-			ClipboardActions.Paste (data);
-			
-			Assert.AreEqual ("\t\tConsole.WriteLine(\"Hello\");", data.Document.Text);
-		}
-
+	
 		[Test]
 		public void TestEmptyLineSelectionBehaviorMoveUp ()
 		{

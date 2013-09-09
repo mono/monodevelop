@@ -118,7 +118,7 @@ namespace MonoDevelop.CodeIssues
 			var context = refactoringContext;
 			foreach (var provider in GetInspectors (data, inspectorIds)) {
 				var severity = provider.GetSeverity ();
-				if (severity == Severity.None)
+				if (severity == Severity.None || !provider.GetIsEnabled ())
 					continue;
 				try {
 					lock (issues) {
