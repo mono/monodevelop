@@ -208,7 +208,7 @@ namespace MonoDevelop.CodeIssues
 			foreach (var provider in codeIssueProviders) {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None || !provider.GetIsEnabled () || tokenSource.IsCancellationRequested)
-					return;
+					continue;
 				try {
 					foreach (var issue in provider.GetIssues (context, tokenSource.Token)) {
 						AddIssue (file, provider, issue);
