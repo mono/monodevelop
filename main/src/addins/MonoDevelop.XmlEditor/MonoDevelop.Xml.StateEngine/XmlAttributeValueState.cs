@@ -30,10 +30,10 @@ namespace MonoDevelop.Xml.StateEngine
 {
 	public class XmlAttributeValueState : State
 	{
-		const int FREE = 0;
-		const int UNQUOTED = 1;
-		const int SINGLEQUOTE = 2;
-		const int DOUBLEQUOTE = 3;
+		protected const int FREE = 0;
+		protected const int UNQUOTED = 1;
+		protected const int SINGLEQUOTE = 2;
+		protected const int DOUBLEQUOTE = 3;
 
 		//derived classes should use these if they need to store info in the tag
 		protected const int TagMask = 3;
