@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor
 				foreach (var view in openFiles) {
 					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
 						continue;
-					if (!view.IsDirty && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload))
+					if (!view.IsDirty/* && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload)*/)
 						view.SourceEditorWidget.Reload ();
 					else
 						foundOneChange = true;
@@ -101,7 +101,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (view.ContentName))
 					continue;
-				if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
+				if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)
 					view.SourceEditorWidget.Reload ();
 				else
 					changedViews.Add (view);
@@ -128,7 +128,7 @@ namespace MonoDevelop.SourceEditor
 				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
 					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
 						continue;
-					if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
+					if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)
 						view.SourceEditorWidget.Reload ();
 					else
 						changedViews.Add (view);
