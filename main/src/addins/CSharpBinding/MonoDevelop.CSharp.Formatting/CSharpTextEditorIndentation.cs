@@ -199,7 +199,13 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			stateTracker = new CacheIndentEngine (indentEngine);
 			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
-			textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options, policy);
+
+
+			if (textEditorData.Options.IndentStyle == IndentStyle.Auto || textEditorData.Options.IndentStyle == IndentStyle.None) {
+				textEditorData.TextPasteHandler = null;
+			} else {
+				textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options, policy);
+			}
 		}
 
 		public override void Dispose ()
