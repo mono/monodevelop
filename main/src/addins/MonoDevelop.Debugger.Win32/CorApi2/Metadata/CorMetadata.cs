@@ -675,15 +675,20 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 				case CorElementType.ELEMENT_TYPE_ARRAY: {
 						Type t = ReadType (importer, ref pData);
-						uint rank = CorSigUncompressData (ref pData);
+						int rank = (int)CorSigUncompressData (ref pData);
+						if (rank == 0)
+							return MetadataType.MakeArray (t, null, null);
+
 						uint numSizes = CorSigUncompressData (ref pData);
-						List<int> sizes = new List<int> ();
-						for (int n = 0; n < numSizes; n++)
+						var sizes = new List<int> (rank);
+						for (int n = 0; n < numSizes && n < rank; n++)
 							sizes.Add ((int)CorSigUncompressData (ref pData));
+
 						uint numLoBounds = CorSigUncompressData (ref pData);
-						List<int> loBounds = new List<int> ();
-						for (int n = 0; n < numLoBounds; n++)
+						var loBounds = new List<int> (rank);
+						for (int n = 0; n < numLoBounds && n < rank; n++)
 							loBounds.Add ((int)CorSigUncompressData (ref pData));
+
 						return MetadataType.MakeArray (t, sizes, loBounds);
 					}
 
