@@ -56,8 +56,13 @@ namespace MonoDevelop.Refactoring
 	{
 		public static bool ResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
 			if (!InternalResolveAt (doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+				var editor = doc.Editor;
+				if (editor == null)
+					return false;
+				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.Caret.Location);
 				resolveResult = GetHeuristicResult (doc, location, ref node);
 				if (resolveResult == null)
 					return false;
@@ -201,6 +206,10 @@ namespace MonoDevelop.Refactoring
 
 		public static HashSet<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ref ResolveResult resolveResult)
 		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			if (node == null)
+				throw new ArgumentNullException ("node");
 			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
