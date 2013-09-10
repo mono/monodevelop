@@ -671,7 +671,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			if (sizes == null || sizes.Count == 1)
 				return t.MakeArrayType ();
 			else
-				return t.MakeArrayType (sizes.Count);
+				return t.MakeArrayType (sizes.Capacity);
 		}
 
 		// [Xamarin] Expression evaluator.
