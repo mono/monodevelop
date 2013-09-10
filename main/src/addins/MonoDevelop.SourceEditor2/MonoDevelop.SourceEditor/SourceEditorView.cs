@@ -2415,13 +2415,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.ShowGotoLineNumberWidget ();
 		}
-		
+
 		[CommandHandler (SearchCommands.FindNext)]
 		public SearchResult FindNext ()
 		{
 			return widget.FindNext ();
 		}
-		
+
+		[CommandUpdateHandler (SearchCommands.FindNext)]
+		[CommandUpdateHandler (SearchCommands.FindPrevious)]
+		void UpdateFindNextAndPrev (CommandInfo cinfo)
+		{
+			cinfo.Enabled = !string.IsNullOrEmpty (widget.TextEditor.SearchPattern);
+		}
+
 		[CommandHandler (SearchCommands.FindPrevious)]
 		public SearchResult FindPrevious ()
 		{

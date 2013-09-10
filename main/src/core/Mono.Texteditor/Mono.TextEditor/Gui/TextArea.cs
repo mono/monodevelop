@@ -2402,7 +2402,9 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindNext (bool setSelection)
 		{
-			SearchResult result = textEditorData.FindNext (setSelection);
+			var result = textEditorData.FindNext (setSelection);
+			if (result == null)
+				return result;
 			TryToResetHorizontalScrollPosition ();
 			AnimateSearchResult (result);
 			return result;
@@ -2598,7 +2600,9 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindPrevious (bool setSelection)
 		{
-			SearchResult result = textEditorData.FindPrevious (setSelection);
+			var result = textEditorData.FindPrevious (setSelection);
+			if (result == null)
+				return result;
 			TryToResetHorizontalScrollPosition ();
 			AnimateSearchResult (result);
 			return result;
