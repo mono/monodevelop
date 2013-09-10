@@ -30,6 +30,7 @@ using System.IO;
 using MonoDevelop.Core;
 using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -77,7 +78,8 @@ namespace MonoDevelop.SourceEditor
 
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
-			if (SuspendFileWatch)
+			// The Ide.Document generates a file service changed event this needs to be skipped.
+			if (!TypeSystemService.TrackFileChanges)
 				return;
 			bool foundOneChange = false;
 			foreach (var file in e) {
