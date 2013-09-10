@@ -1,27 +1,10 @@
-<Addin id          = "AspNet"
-       namespace   = "MonoDevelop"
-       name        = "ASP.NET Project Support"
-       author      = "Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com/"
-       description = "Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers."
-       category    = "Web Development"
-       version     = "4.1.7">
+<ExtensionModel>
 	
 	<Runtime>
 		<Import file="Schemas/xhtml1-strict.xsd" />
 		<Import file="Schemas/xhtml1-transitional.xsd" />
 		<Import file="Schemas/xhtml1-frameset.xsd" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="DesignerSupport" version="4.1.7"/>
-		<Addin id="Deployment" version="4.1.7"/>
-		<Addin id="XmlEditor" version="4.1.7" />
-		<Addin id="SourceEditor2" version="4.1.7"/>
-	</Dependencies>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
@@ -281,4 +264,4 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Html" insertbefore="Other" insertafter="C#" language="Html" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-</Addin>
+</ExtensionModel>
