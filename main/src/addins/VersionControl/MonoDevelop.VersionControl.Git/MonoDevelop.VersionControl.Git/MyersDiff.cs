@@ -94,7 +94,7 @@ namespace MonoDevelop.VersionControl.Git
 			} catch (ArgumentException) {
 				// This means diff algorithm is not supported.
 			} finally {
-				diffFmt.SetDiffAlgorithm (MyersDiff<RawText>.INSTANCE);
+				diffFmt.SetDiffAlgorithm (DiffAlgorithm.GetAlgorithm (DiffAlgorithm.SupportedAlgorithm.MYERS));
 			}
 
 			diffFmt.SetProgressMonitor(monitor);

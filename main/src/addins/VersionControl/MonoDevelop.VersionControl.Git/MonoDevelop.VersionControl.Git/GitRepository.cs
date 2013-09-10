@@ -1219,7 +1219,8 @@ namespace MonoDevelop.VersionControl.Git
 			var text1 = new RawText (data1);
 			var text2 = new RawText (data2);
 
-			var edits = MyersDiff<RawText>.INSTANCE.Diff(RawTextComparator.DEFAULT, text1, text2);
+			var edits = DiffAlgorithm.GetAlgorithm (DiffAlgorithm.SupportedAlgorithm.MYERS)
+					.Diff (RawTextComparator.DEFAULT, text1, text2);
 			MemoryStream s = new MemoryStream ();
 			var formatter = new DiffFormatter (s);
 			formatter.Format (edits, text1, text2);
