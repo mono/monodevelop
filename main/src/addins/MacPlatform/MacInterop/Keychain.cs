@@ -507,9 +507,11 @@ namespace MonoDevelop.MacInterop
 
 			var rawData = certificate.RawData;
 			var certData = CFDataCreate (IntPtr.Zero, rawData, rawData.Length);
-			var status = SecCertificateAddToKeychain (certData, CurrentKeychain);
+			var cert = SecCertificateCreateWithData (IntPtr.Zero, certData);
+			var status = SecCertificateAddToKeychain (cert, CurrentKeychain);
 
 			CFRelease (certData);
+			CFRelease (cert);
 
 			if (status != OSStatus.Ok)
 				throw new Exception ("Cannot add certificate to keychain: " + GetError (status));
