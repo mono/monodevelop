@@ -705,12 +705,6 @@ namespace MonoDevelop.Debugger.Win32
 				if (obj is CorGenericValue)
 					return obj;
 
-				if (obj is CorGenericValue)
-					return obj;
-
-				if (obj is CorArrayValue)
-					return obj;
-
 				CorArrayValue arrayVal = obj.CastToArrayValue ();
 				if (arrayVal != null)
 					return arrayVal;
