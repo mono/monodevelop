@@ -77,6 +77,8 @@ namespace MonoDevelop.SourceEditor
 
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
+			if (SuspendFileWatch)
+				return;
 			bool foundOneChange = false;
 			foreach (var file in e) {
 				foreach (var view in openFiles) {
