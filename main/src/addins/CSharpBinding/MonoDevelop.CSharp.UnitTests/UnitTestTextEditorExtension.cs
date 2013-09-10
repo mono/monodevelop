@@ -113,7 +113,8 @@ namespace MonoDevelop.CSharp
 				if (token.IsCancellationRequested)
 					return;
 				var foundTests = GatherUnitTests ();
-
+				if (foundTests == null)
+					return;
 				Application.Invoke (delegate {
 					var editor = document.Editor;
 					if (editor == null)

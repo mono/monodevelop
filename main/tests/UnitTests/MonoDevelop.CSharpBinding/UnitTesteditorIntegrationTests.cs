@@ -86,6 +86,23 @@ class Test
 			Assert.AreEqual (2, tests.Count);
 		}
 
+		[Test]
+		public void TestNoTests ()
+		{
+			TestViewContent content;
+			var ext = Setup (@"using NUnit.Framework;
+class Test
+{
+	public void MyTest () {}
+}
+", out content);
+			var tests = ext.GatherUnitTests ();
+			Assert.IsNotNull (tests);
+			Assert.AreEqual (0, tests.Count);
+		}
+
+
+
 		/// <summary>
 		/// Bug 14522 - Unit test editor integration does not work for derived classes 
 		/// </summary>
