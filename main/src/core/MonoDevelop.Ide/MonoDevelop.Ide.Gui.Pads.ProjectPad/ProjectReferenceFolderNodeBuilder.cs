@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			// For portable libraries, add node that represents all framework assemblies
 			var project = ctx.GetParentDataItem (typeof(DotNetProject), false) as PortableDotNetProject;
 			if (project != null)
-				ctx.AddChild (new TreeViewItem (GettextCatalog.GetString (".NET Portable Subset"), "md-reference-package"));
+				ctx.AddChild (new PortableFrameworkSubset (project));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

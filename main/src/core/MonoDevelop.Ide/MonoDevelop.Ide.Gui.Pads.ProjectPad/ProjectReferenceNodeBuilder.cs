@@ -126,8 +126,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null)
 				tb.UpdateAll ();
 		}
-
-
 	}
 	
 	class ProjectReferenceNodeCommandHandler: NodeCommandHandler

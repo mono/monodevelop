@@ -59,6 +59,8 @@
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.FileOperationsBuilderExtension"/>
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.UnknownEntryNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionFolderFileNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.PortableFrameworkSubsetNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ImplicitFrameworkAssemblyReferenceNodeBuilder"/>
 	</SolutionPad>
 	
 	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-class" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
