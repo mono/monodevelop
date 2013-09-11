@@ -40,6 +40,7 @@ using ICSharpCode.NRefactory.Editor;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -183,7 +184,9 @@ namespace MonoDevelop.CSharp.Formatting
 				textEditorData.Document.TextReplaced += HandleTextReplaced;
 				textEditorData.Paste += HandleTextPaste;
 			}
+			IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
 		}
+
 
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
@@ -192,7 +195,12 @@ namespace MonoDevelop.CSharp.Formatting
 			options.IndentBlankLines = true;
 			IStateMachineIndentEngine indentEngine;
 			try {
-				indentEngine = new CSharpIndentEngine (textEditorData.Document, options, policy);
+				var csharpIndentEngine = new CSharpIndentEngine (textEditorData.Document, options, policy);
+				csharpIndentEngine.EnableCustomIndentLevels = true;
+				foreach (var symbol in MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode.GetDefinedSymbols (document.Project)) {
+					csharpIndentEngine.DefineSymbol (symbol);
+				}
+				indentEngine = csharpIndentEngine;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
 				indentEngine = new NullIStateMachineIndentEngine (textEditorData.Document);
@@ -218,6 +226,7 @@ namespace MonoDevelop.CSharp.Formatting
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;
 				textEditorData.Document.TextReplaced -= HandleTextReplaced;
 			}
+			IdeApp.Workspace.ActiveConfigurationChanged -= HandleTextOptionsChanged;
 			stateTracker = null;
 			base.Dispose ();
 		}
