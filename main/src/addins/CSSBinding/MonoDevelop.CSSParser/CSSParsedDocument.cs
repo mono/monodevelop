@@ -60,15 +60,47 @@ namespace MonoDevelop.CSSParser
 			this.fileName = fileName;
 			this.errors = errors;
 			this.Segments = segments;
+			AssignComments (segments);
+
 		}
 
+		void AssignComments (List<ISegment> segments)
+		{
+			this.Add(FilterComments(segments));
+		}
 
-	
+		private IEnumerable<Comment> FilterComments(List<ISegment> segments)
+		{
+			List<Comment> comments = new List<Comment> ();
+			foreach (var item in segments) {
+				CodeSegment ts = item as CodeSegment;
 
+				if (ts.Type == CodeSegmentType.Comment) {
+					comments.Add (new Comment () {
+						ClosingTag = "*/",
+						OpenTag = "/*",
+						CommentType = CommentType.Block,
+						Text = ts.Text,
+						Region = new DomRegion (ts.StartLocation.Line, (ts.StartLocation.Column +1), ts.EndLocation.Line, (ts.EndLocation.Column +1))
+					});
+
+					Console.WriteLine ("Comments: Text: "+ ts.Text+ "start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
+
+				}
+
+				Console.WriteLine ("Thkajsdknadadnakndkn asdada");
+			}
+
+			return comments;
+
+		}
+		
 		public override IEnumerable<FoldingRegion> Foldings 
 		{
 			get 
 			{
+				foreach (var region in Comments.ToFolds ()) 
+					yield return region;
 				foreach (var segment in Segments) 
 				{
 					CodeSegment ts = segment as CodeSegment;
@@ -76,7 +108,7 @@ namespace MonoDevelop.CSSParser
 					DomRegion region = new DomRegion (segment.StartLocation.Line, (segment.StartLocation.Column +1),
 					                                  segment.EndLocation.Line, (segment.EndLocation.Column +1));
 
-					yield return new FoldingRegion (ts.Text, region,FoldType.Member ,true);
+					yield return new FoldingRegion (ts.Text, region, FoldType.Member, false);
 
 				}
 

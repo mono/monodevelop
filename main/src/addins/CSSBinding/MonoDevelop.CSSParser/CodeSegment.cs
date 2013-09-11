@@ -37,6 +37,14 @@ namespace MonoDevelop.CSSParser
 			this.Text = text;
 			this.EndLocation = end;
 		}
+
+		public CodeSegment(string text, Location start, Location end , CodeSegmentType type)
+		{
+			this.StartLocation = start;
+			this.Text = text;
+			this.EndLocation = end;
+			this.Type = type;
+		}
 		
 		public string Text { 
 			get{
@@ -47,6 +55,7 @@ namespace MonoDevelop.CSSParser
 			private set{ 
 				_text = GetFoldingStringTag (value);
 			} }
+		public CodeSegmentType Type { get; set; }
 		public Location TagStartLocation { get; set; }
 		public Location StartLocation { get; private set; }
 		public Location EndLocation { get; set; }
@@ -55,6 +64,13 @@ namespace MonoDevelop.CSSParser
 		{
 			return fullString.Split(new char[]{'{'} ).GetValue(0).ToString() +"{..." ;
 		}
+	}
+
+	public enum CodeSegmentType
+	{
+		CSSElement,
+		Comment
+
 	}
 }
 
