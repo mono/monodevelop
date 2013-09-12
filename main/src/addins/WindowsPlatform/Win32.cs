@@ -89,7 +89,7 @@ namespace CustomControls.OS
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref RECT rect);
         [DllImport("shell32.dll")]
-        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
+        public static extern IntPtr SHGetFileInfo([In] string pszPath, ulong dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
         #endregion
     }
 }

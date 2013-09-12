@@ -168,8 +168,8 @@ namespace CustomControls.OS
     public struct SHFILEINFO
     {
         public IntPtr hIcon;
-        public IntPtr iIcon;
-        public uint dwAttributes;
+        public int iIcon;
+        public ulong dwAttributes;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szDisplayName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
