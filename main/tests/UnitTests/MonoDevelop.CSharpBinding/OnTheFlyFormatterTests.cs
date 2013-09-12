@@ -183,6 +183,23 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
+		public void TestBug14686Case2 ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\\\"", newText);
+
+			ext = Setup ("$\"\\\"a", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			newText = content.Text;
+			Assert.AreEqual ("@\"\\\"a", newText);
+
+		}
+		[Test]
 		public void TestCorrectReindentNextLine ()
 		{
 			TestViewContent content;

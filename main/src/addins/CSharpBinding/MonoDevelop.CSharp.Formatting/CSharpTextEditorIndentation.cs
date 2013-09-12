@@ -280,19 +280,19 @@ namespace MonoDevelop.CSharp.Formatting
 			while (endOffset < textEditorData.Length) {
 				char ch = textEditorData.GetCharAt (endOffset);
 				if (ch == '\\') {
-					if (endOffset + 1 < textEditorData.Length && NewLine.IsNewLine (textEditorData.GetCharAt (endOffset + 1))) {
-						break;
-					}
+					if (endOffset + 1 < textEditorData.Length && NewLine.IsNewLine (textEditorData.GetCharAt (endOffset + 1)))
+						return;
+
 					endOffset += 2;
 					continue;
 				}
-				if (ch == '"' || NewLine.IsNewLine (ch)) {
+				if (ch == '"')
 					break;
-				}
+				if (NewLine.IsNewLine (ch))
+					return;
 				endOffset++;
 			}
-
-			if (offset > endOffset)
+			if (offset > endOffset || endOffset == textEditorData.Length)
 				return;
 			var plainText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
 			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
