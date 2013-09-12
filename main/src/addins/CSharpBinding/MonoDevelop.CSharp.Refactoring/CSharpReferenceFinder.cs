@@ -264,7 +264,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
-				if (obj is IVariable && !(obj is IParameter)) {
+				if (obj is IVariable && !(obj is IParameter) && !(obj is IField)) {
 					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
