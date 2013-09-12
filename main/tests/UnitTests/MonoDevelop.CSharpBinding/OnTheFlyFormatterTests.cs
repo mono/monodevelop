@@ -51,10 +51,11 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
+			content.Data.Options.IndentStyle = IndentStyle.Auto;
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
-			
+
 			Document doc = new Document (tww);
 
 			var text = input;
@@ -166,7 +167,6 @@ namespace MonoDevelop.CSharpBinding
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\t\"", newText);
 		}
-
 
 		[Test]
 		public void TestCorrectReindentNextLine ()

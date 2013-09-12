@@ -128,7 +128,10 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
 		{
-			var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			var workspace = IdeApp.Workspace;
+			if (workspace == null)
+				yield break;
+			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration != null) {
 				var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
 				if (cparams != null) {
@@ -355,24 +358,26 @@ namespace MonoDevelop.CSharp.Highlighting
 		static CSharpSyntaxMode ()
 		{
 			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
-			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					TextEditorData data = doc.Editor;
-					if (data == null)
-						continue;
-					// Force syntax mode reparse (required for #if directives)
-					var editor = doc.Editor;
-					if (editor != null) {
-						if (data.Document.SyntaxMode is SyntaxMode) {
-							((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
-							SyntaxModeService.WaitUpdate (data.Document);
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.ActiveConfigurationChanged += delegate {
+					foreach (var doc in IdeApp.Workbench.Documents) {
+						TextEditorData data = doc.Editor;
+						if (data == null)
+							continue;
+						// Force syntax mode reparse (required for #if directives)
+						var editor = doc.Editor;
+						if (editor != null) {
+							if (data.Document.SyntaxMode is SyntaxMode) {
+								((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
+								SyntaxModeService.WaitUpdate (data.Document);
+							}
+							editor.Parent.TextViewMargin.PurgeLayoutCache ();
+							doc.ReparseDocument ();
+							editor.Parent.QueueDraw ();
 						}
-						editor.Parent.TextViewMargin.PurgeLayoutCache ();
-						doc.ReparseDocument ();
-						editor.Parent.QueueDraw ();
 					}
-				}
-			};
+				};
+			}
 			CommentTag.SpecialCommentTagsChanged += (sender, e) => {
 				UpdateCommentRule ();
 				var actDoc = IdeApp.Workbench.ActiveDocument;
