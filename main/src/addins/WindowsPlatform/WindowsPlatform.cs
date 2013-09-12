@@ -95,7 +95,9 @@ namespace MonoDevelop.Platform
 		}
 		
 		Dictionary<string, Gdk.Pixbuf> icons = new Dictionary<string, Gdk.Pixbuf> ();
-		
+
+		// http://msdn.microsoft.com/en-us/library/windows/desktop/bb762179(v=vs.85).aspx
+		// FIXME: You should call this function from a background thread. Failure to do so could cause the UI to stop responding.
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
 		{
 			SHFILEINFO shinfo = new SHFILEINFO();
