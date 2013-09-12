@@ -119,7 +119,7 @@ namespace MonoDevelop.CodeIssues
 			
 			public event EventHandler<GroupingProviderEventArgs> NextChanged;
 			
-			public IssueGroup GetIssueGroup (IssueSummary issue)
+			public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
 			{
 				throw new NotImplementedException ();
 			}

@@ -30,7 +30,10 @@ namespace MonoDevelop.CodeIssues
 {
 	public abstract class AbstractGroupingProvider<T>: IGroupingProvider
 	{
-		readonly Dictionary<T, IssueGroup> groups = new Dictionary<T, IssueGroup> ();
+		/// <summary>
+		/// Associates a parent group and grouping key to a child group.
+		/// </summary>
+		readonly Dictionary<Tuple<IssueGroup, T>, IssueGroup> groups = new Dictionary<Tuple<IssueGroup, T>, IssueGroup> ();
 		
 		protected AbstractGroupingProvider()
 		{
@@ -43,15 +46,16 @@ namespace MonoDevelop.CodeIssues
 		
 		protected abstract string GetGroupName (IssueSummary issue);
 
-		public IssueGroup GetIssueGroup (IssueSummary issue)
+		public IssueGroup GetIssueGroup (IssueGroup parentGroup, IssueSummary issue)
 		{
 			IssueGroup group;
 			var providerCategory = GetGroupingKey (issue);
 			if (providerCategory == null)
 				return null;
-			if (!groups.TryGetValue(providerCategory, out group)) {
+			var key = Tuple.Create (parentGroup, providerCategory);
+			if (!groups.TryGetValue (key, out group)) {
 				group = new IssueGroup (Next, GetGroupName(issue));
-				groups.Add (providerCategory, group);
+				groups.Add (key, group);
 			}
 			return group;
 		}
