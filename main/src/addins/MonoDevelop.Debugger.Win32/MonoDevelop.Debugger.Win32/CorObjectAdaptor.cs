@@ -497,7 +497,7 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (Type t in GetAllTypes (ctx)) {
 				if (t.Namespace == namspace)
 					types.Add (t.FullName);
-				else if (t.Namespace.StartsWith (namspace + ".")) {
+				else if (t.Namespace.StartsWith (namspace + ".", StringComparison.Ordinal)) {
 					if (t.Namespace.IndexOf ('.', namspace.Length + 1) == -1)
 						nss.Add (t.Namespace);
 				}
@@ -939,7 +939,6 @@ namespace MonoDevelop.Debugger.Win32
 			if (arr != null)
                 return base.TargetObjectToObject(ctx, objr);
 
-			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectValue co = obj as CorObjectValue;
 			if (co != null)
                 return base.TargetObjectToObject(ctx, objr);
@@ -1067,7 +1066,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			foreach (ISymbolScope cs in scope.GetChildren ()) {
 				if (cs.StartOffset <= offset && cs.EndOffset >= offset) {
-					foreach (VariableReference var in GetLocals (ctx, cs, offset, showHidden))
+					foreach (ValueReference var in GetLocals (ctx, cs, offset, showHidden))
 						yield return var;
 				}
 			}

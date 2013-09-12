@@ -581,7 +581,7 @@ namespace MonoDevelop.Debugger.Win32
 			return MtaThread.Run (() => new ProcessInfo[] { GetProcess (process) });
 		}
 
-		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (long processId, long threadId)
+		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			return MtaThread.Run (delegate
 			{
@@ -913,7 +913,7 @@ namespace MonoDevelop.Debugger.Win32
 				eval.Abort ();
 			};
 			mc.OnGetDescription = delegate {
-				System.Reflection.MethodInfo met = function.GetMethodInfo (ctx.Session);
+				MethodInfo met = function.GetMethodInfo (ctx.Session);
 				if (met != null)
 					return met.Name;
 				else
@@ -1131,7 +1131,7 @@ namespace MonoDevelop.Debugger.Win32
 		        { 
 					Type classType = val.ExactType.GetTypeInfo (this);
 		            // Loop through all private instance fields in the thread class 
-		            foreach (MetadataFieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
+		            foreach (FieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
 		            { 
 		                if (fi.Name == "m_Name")
 						{
@@ -1290,7 +1290,7 @@ namespace MonoDevelop.Debugger.Win32
 			return reader.GetMethod (new SymbolToken (func.Token));
 		}
 
-		public static System.Reflection.MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
+		public static MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
 		{
 			CorMetadataImport mi = session.GetMetadataForModule (func.Module.Name);
 			if (mi != null)

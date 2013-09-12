@@ -86,7 +86,7 @@ namespace MonoDevelop.Debugger.Win32
 				else {
 					if (field.IsLiteral && field.IsStatic) {
 						object oval = field.GetValue (null);
-						CorObjectAdaptor ad = (CorObjectAdaptor)ctx.Adapter;
+						CorObjectAdaptor ad = ctx.Adapter;
 						// When getting enum members, convert the integer value to an enum value
 						if (ad.IsEnum (ctx, type))
 							return ad.CreateEnum (ctx, type, Context.Adapter.CreateValue (ctx, oval));
