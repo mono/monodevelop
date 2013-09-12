@@ -164,7 +164,7 @@ namespace CustomControls.OS
     }
     #endregion
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct SHFILEINFO
     {
         public IntPtr hIcon;
