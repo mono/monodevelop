@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,7 +69,8 @@ namespace configure
 			if (!IsWindows) {
 				// Update the makefile. We don't use that on windows
 				FileReplace ("Makefile.orig", "Makefile", "INSERT_MDROOT", mdDir);
-				FileReplace ("Makefile.orig", "Makefile", "INSERT_MDVERSION4", mdVersion);
+				FileReplace ("Makefile", "Makefile", "INSERT_MDVERSION4", mdVersion);
+				FileReplace ("Makefile", "Makefile", "INSERT_VERSION", FSharpVersion);
 			}
 			
 			if (mdDir != null)
