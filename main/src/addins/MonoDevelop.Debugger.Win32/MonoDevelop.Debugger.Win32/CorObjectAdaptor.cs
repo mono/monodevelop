@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsClass (object type)
 		{
-			return ((CorType)type).Class != null;
+			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_CLASS && ((CorType)type).Class != null;
 		}
 
 		public override string GetTypeName (EvaluationContext ctx, object gtype)
@@ -703,12 +703,6 @@ namespace MonoDevelop.Debugger.Win32
 					return obj;
 
 				if (obj is CorGenericValue)
-					return obj;
-
-				if (obj is CorGenericValue)
-					return obj;
-
-				if (obj is CorArrayValue)
 					return obj;
 
 				CorArrayValue arrayVal = obj.CastToArrayValue ();
