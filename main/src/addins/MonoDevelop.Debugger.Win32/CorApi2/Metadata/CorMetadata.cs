@@ -667,6 +667,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						return MetadataType.MakeByRef(t);
 					}
 
+				case CorElementType.ELEMENT_TYPE_END:
 				case CorElementType.ELEMENT_TYPE_VALUETYPE:
 				case CorElementType.ELEMENT_TYPE_CLASS: {
 						uint token = CorSigUncompressToken (ref pData);
