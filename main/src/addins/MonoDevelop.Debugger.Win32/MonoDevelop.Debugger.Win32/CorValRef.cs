@@ -46,14 +46,21 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		public void Reload ()
+		{
+			if (loader != null) {
+				// Obsolete value, get a new one
+				CorValue v = loader ();
+				version = CorDebuggerSession.EvaluationTimestamp;
+				if (v != null)
+					val = v;
+			}
+		}
+
 		public CorValue Val {
 			get {
-				if (version < CorDebuggerSession.EvaluationTimestamp && loader != null) {
-					// Obsolete value, get a new one
-					CorValue v = loader ();
-					version = CorDebuggerSession.EvaluationTimestamp;
-					if (v != null)
-						val = v;
+				if (version < CorDebuggerSession.EvaluationTimestamp) {
+					Reload ();
 				}
 				return val;
 			}
