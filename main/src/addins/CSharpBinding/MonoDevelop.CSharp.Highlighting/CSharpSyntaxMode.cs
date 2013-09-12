@@ -126,7 +126,24 @@ namespace MonoDevelop.CSharp.Highlighting
 			set;
 		}
 
-
+		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
+		{
+			var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			if (configuration != null) {
+				var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
+				if (cparams != null) {
+					string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
+					foreach (string s in syms) {
+						string ss = s.Trim ();
+						if (ss.Length > 0)
+							yield return ss;
+					}
+				}
+				// Workaround for mcs defined symbol
+				if (configuration.TargetRuntime.RuntimeId == "Mono") 
+					yield return "__MonoCS__";
+			}
+		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
@@ -741,6 +758,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					return project;
 				}
 
+
+
 				public ConditinalExpressionEvaluator (TextDocument doc, IEnumerable<string> symbols)
 				{
 					this.symbols = new HashSet<string> (symbols);
@@ -756,22 +775,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
 					
 					if (project != null) {
-						var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-						if (configuration != null) {
-							var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
-							if (cparams != null) {
-								string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
-								foreach (string s in syms) {
-									string ss = s.Trim ();
-									if (ss.Length > 0 && !symbols.Contains (ss))
-										this.symbols.Add (ss);
-								}
-							}
-							// Workaround for mcs defined symbol
-							if (configuration.TargetRuntime.RuntimeId == "Mono") 
-								this.symbols.Add ("__MonoCS__");
-						} else {
-							Console.WriteLine ("NO CONFIGURATION");
+						foreach (var ss in GetDefinedSymbols (project)) {
+							if (!symbols.Contains (ss))
+								this.symbols.Add (ss);
 						}
 					}
 /*					var parsedDocument = TypeSystemService.ParseFile (document.ProjectContent, doc.FileName, doc.MimeType, doc.Text);

@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor.Tests
 {
@@ -40,7 +41,7 @@ namespace Mono.TextEditor.Tests
 			return "Hello World";
 		}
 
-		public byte[] GetCopyData (TextSegment segment)
+		public byte[] GetCopyData (ISegment segment)
 		{
 			return null;
 		}
@@ -82,6 +83,20 @@ namespace Mono.TextEditor.Tests
 			MiscActions.Undo (data);
 			Check (data, @"$");
 		}
+
+		[Test]
+		public void TestPasteDoesntInsertVirtualIndent ()
+		{
+			var data = VirtualIndentModeTests.CreateData ("");
+			data.Caret.Location =  new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
+			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			clipboard.Text = "\n\n";
+
+			ClipboardActions.Paste (data);
+
+			Assert.AreEqual ("\n\n", data.Document.Text);
+		}
+
 	}
 }
 

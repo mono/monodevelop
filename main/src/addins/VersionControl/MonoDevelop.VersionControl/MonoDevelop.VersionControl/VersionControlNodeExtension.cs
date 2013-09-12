@@ -435,7 +435,10 @@ namespace MonoDevelop.VersionControl
 				// Use the update command to show the "not available" message
 				item.Icon = null;
 				item.Enabled = false;
-				item.Text = GettextCatalog.GetString ("This project or folder is not under version control");
+				if (VersionControlService.IsGloballyDisabled)
+					item.Text = GettextCatalog.GetString ("Version Control support is disabled");
+				else
+					item.Text = GettextCatalog.GetString ("This project or folder is not under version control");
 			} else
 				item.Visible = res == TestResult.Enable;
 		}

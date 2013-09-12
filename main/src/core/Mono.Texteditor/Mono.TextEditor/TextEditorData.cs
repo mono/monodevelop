@@ -1006,6 +1006,9 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindNext (bool setSelection)
 		{
+			if (SearchEngine.SearchRequest == null || string.IsNullOrEmpty (SearchEngine.SearchRequest.SearchPattern))
+				return null;
+
 			int startOffset = Caret.Offset;
 			if (IsSomethingSelected && IsMatchAt (startOffset)) {
 				startOffset = MainSelection.GetLeadOffset (this);
@@ -1022,6 +1025,8 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindPrevious (bool setSelection)
 		{
+			if (SearchEngine.SearchRequest == null || string.IsNullOrEmpty (SearchEngine.SearchRequest.SearchPattern))
+				return null;
 			int startOffset = Caret.Offset - SearchEngine.SearchRequest.SearchPattern.Length;
 			if (IsSomethingSelected && IsMatchAt (MainSelection.GetAnchorOffset (this))) 
 				startOffset = MainSelection.GetAnchorOffset (this);
@@ -1201,7 +1206,13 @@ namespace Mono.TextEditor
 		public int PasteText (int offset, string text, byte[] copyData, ref IDisposable undoGroup)
 		{
 			if (TextPasteHandler != null) {
-				var newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
+				string newText;
+				try {
+					newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
+				} catch (Exception e) {
+					Console.WriteLine ("Text paste handler exception:" + e);
+					newText = text;
+				}
 				if (newText != text) {
 					var inserted = Insert (offset, text);
 					undoGroup.Dispose ();

@@ -24,19 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 using MonoDevelop.Xml.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorStatementsParsingTests : RazorParsingTests
 	{
-		[Test ()]
+		[Test]
 		public void ForStatement ()
 		{
 			parser.Parse ("@for(int i = 0; i++; i < length) { foo($); }$", () => {
@@ -49,7 +46,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ForeachStatement ()
 		{
 			parser.Parse ("@foreach (var item in Model) { foo($); }$", () => {
@@ -62,7 +59,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SwitchStatement ()
 		{
 			parser.Parse ("@switch (foo) { case bar: $break; }$", () => {
@@ -75,7 +72,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void WhileStatement ()
 		{
 			parser.Parse ("@while (foo !=$ bar) { foo (); }$", () => {
@@ -88,7 +85,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void LockStatement ()
 		{
 			parser.Parse ("@lock (foo) { bar()$; }$", () => {
@@ -101,7 +98,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void DoStatement ()
 		{
 			parser.Parse ("@do { bar()$; } while (true)$", () => {
@@ -114,7 +111,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void UsingStatement ()
 		{
 			parser.Parse ("@using (resource) { foo ($); }$", () => {
@@ -127,7 +124,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void IfStatementRemainsInStatementStateIfCanBeContinued ()
 		{
 			parser.Parse ("@if(true) { $foo(); }$", () => {
@@ -141,7 +138,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void IfStatementReturnsToParentStateWhenNotContinued ()
 		{
 			parser.Parse ("@if(true) { $foo(); } bar$", () => {
@@ -154,7 +151,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void IfStatementCanBeContinuedWithElseIf ()
 		{
 			parser.Parse ("@if (true) { $foo(); } else if (false) { $foo(); }", () => {
@@ -168,7 +165,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void IfStatementCanBeContinuedWithElse ()
 		{
 			parser.Parse ("@if (true) { $foo(); } else { $foo(); }", () => {
@@ -182,7 +179,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ElseIfStatementCanBeContinuedWithElse ()
 		{
 			parser.Parse ("@if (true) { foo(); } else if (false) { $foo(); } else { bar $(); }", () => {
@@ -196,7 +193,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ElseIfStatementCanBeContinuedWithElseIf ()
 		{
 			parser.Parse ("@if (true) { foo(); } else if (true) { $foo(); } else if (false) { bar $(); }", () => {
@@ -210,7 +207,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void TryStatementRemainsInStatementStateIfCanBeContinued ()
 		{
 			parser.Parse ("@try { $foo(); }$", () => {
@@ -224,7 +221,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void TryStatementReturnsToParentStateWhenNotContinued ()
 		{
 			parser.Parse ("@try { $foo(); } bar$", () => {
@@ -237,7 +234,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void TryStatementCanBeContinuedWithCatch ()
 		{
 			parser.Parse ("@try { $foo(); } catch(Exception e) { $Foo(); }", () => {
@@ -251,7 +248,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void TryStatementCanBeContinuedWithFinally ()
 		{
 			parser.Parse ("@try { $foo(); } finally { $Foo(); }", () => {
@@ -265,7 +262,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void CatchStatementCanBeContinuedWithCatchOrFinally ()
 		{
 			parser.Parse ("@try { foo(); } catch { $Foo(); } catch (Exception e) { $Foo(); } finally { $Foo(); }", () => {
@@ -283,7 +280,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void StatementWithNestedBrackets ()
 		{
 			parser.Parse ("@foreach (var item in Foo) { { { $ } } $}$", () => {
@@ -298,7 +295,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void StatementInHtml ()
 		{
 			parser.Parse ("<foo><bar>@if (true) { Foo $ bar }</bar></foo>", () => {
@@ -307,7 +304,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void StatementSupportsHtml ()
 		{
 			parser.Parse ("@while (true) {<foo><bar>$</bar></foo> }", () => {

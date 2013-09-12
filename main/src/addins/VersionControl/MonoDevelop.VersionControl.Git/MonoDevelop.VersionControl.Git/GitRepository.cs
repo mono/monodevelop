@@ -620,7 +620,6 @@ namespace MonoDevelop.VersionControl.Git
 							submoduleUpdate.AddPath (submodule);
 
 						submoduleUpdate.Call ();
-						monitor.Step (1);
 					}
 				} catch {
 					if (!aborted) {
@@ -1219,9 +1218,11 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			var text1 = new RawText (data1);
 			var text2 = new RawText (data2);
-			var edits = MyersDiff<RawText>.INSTANCE.Diff(RawTextComparator.DEFAULT, text1, text2);
+
+			var edits = DiffAlgorithm.GetAlgorithm (DiffAlgorithm.SupportedAlgorithm.MYERS)
+					.Diff (RawTextComparator.DEFAULT, text1, text2);
 			MemoryStream s = new MemoryStream ();
-			var formatter = new NGit.Diff.DiffFormatter (s);
+			var formatter = new DiffFormatter (s);
 			formatter.Format (edits, text1, text2);
 			return Encoding.UTF8.GetString (s.ToArray ());
 		}

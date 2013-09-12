@@ -721,7 +721,7 @@ namespace MonoDevelop.SourceEditor
 			} catch (UnauthorizedAccessException e) {
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
-				} finally {
+			} finally {
 				FileRegistry.SuspendFileWatch = false;
 			}
 				
@@ -854,14 +854,14 @@ namespace MonoDevelop.SourceEditor
 			LoadExtensions ();
 			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
-			widget.TextEditor.SizeAllocated += HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.TextArea.SizeAllocated += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly)
 				Document.InformLoadComplete ();
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
 		{
-			widget.TextEditor.SizeAllocated -= HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.TextArea.SizeAllocated -= HandleTextEditorVAdjustmentChanged;
 			LoadSettings ();
 		}
 
@@ -2415,13 +2415,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.ShowGotoLineNumberWidget ();
 		}
-		
+
 		[CommandHandler (SearchCommands.FindNext)]
 		public SearchResult FindNext ()
 		{
 			return widget.FindNext ();
 		}
-		
+
+		[CommandUpdateHandler (SearchCommands.FindNext)]
+		[CommandUpdateHandler (SearchCommands.FindPrevious)]
+		void UpdateFindNextAndPrev (CommandInfo cinfo)
+		{
+			cinfo.Enabled = !string.IsNullOrEmpty (widget.TextEditor.SearchPattern);
+		}
+
 		[CommandHandler (SearchCommands.FindPrevious)]
 		public SearchResult FindPrevious ()
 		{

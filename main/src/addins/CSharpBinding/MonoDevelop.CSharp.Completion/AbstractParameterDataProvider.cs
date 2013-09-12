@@ -24,15 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Core;
-using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Completion;
-using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -44,18 +39,18 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		protected CSharpCompletionTextEditorExtension ext;
 
-		public AbstractParameterDataProvider (CSharpCompletionTextEditorExtension ext, int startOffset) : base (startOffset)
+		protected AbstractParameterDataProvider (CSharpCompletionTextEditorExtension ext, int startOffset) : base (startOffset)
 		{
 			if (ext == null)
 				throw new ArgumentNullException ("ext");
 			this.ext = ext;
 		}
 
-		TypeSystemAstBuilder builder = null;
+		TypeSystemAstBuilder builder;
 		protected string GetShortType (IType type)
 		{
 			if (builder == null) {
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.Caret.Location);
 				var state = new CSharpResolver (ctx);
 				builder = new TypeSystemAstBuilder (state);
 				var dt = state.CurrentTypeDefinition;

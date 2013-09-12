@@ -31,11 +31,12 @@ using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorCodeBlockParsingTests : RazorParsingTests
 	{
-		[Test ()]
+		[Test]
 		public void EmptyCodeBlock ()
 		{
 			parser.Parse ("@{$}$", () => {
@@ -48,7 +49,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void CodeBlock ()
 		{
 			parser.Parse ("@{Foo Bar() \n\n $ Baz}$", () => {
@@ -61,7 +62,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void CodeBlockInHtml ()
 		{
 			parser.Parse ("<foo><bar>@{ $ }</bar></foo>", () => {
@@ -70,7 +71,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void CodeBlockSupportsHtml ()
 		{
 			parser.Parse ("@{<foo><bar>$</bar></foo> }", () => {
@@ -79,7 +80,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void CodeBlockWithNestedBrackets ()
 		{
 			parser.Parse ("@{ { { $ } } $}", () => {

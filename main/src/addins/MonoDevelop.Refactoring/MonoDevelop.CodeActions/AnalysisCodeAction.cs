@@ -102,6 +102,13 @@ namespace MonoDevelop.CodeActions
 				if (inspectorResults != null)
 					inspectorResults.ShowResultOptionsDialog ();
 			}
+
+			public void HideCodeIssue (object sender, EventArgs e)
+			{
+				var inspectorResults = Result as InspectorResults;
+				if (inspectorResults != null)
+					inspectorResults.Inspector.SetIsEnabled (false);
+			}
 		}
 	}
 }

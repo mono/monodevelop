@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
 			}
-			if (Document.HasProject) {
+			if (Document.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
 				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 				if (par != null)
@@ -1232,8 +1232,9 @@ namespace MonoDevelop.CSharp.Completion
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> indexers, AstNode resolvedNode)
 		{
-			if (type is ArrayType)
-				return new ArrayTypeParameterDataProvider (startOffset, this, (ArrayType)type, resolvedNode);
+			var arrayType = type as ArrayType;
+			if (arrayType != null)
+				return new ArrayTypeParameterDataProvider (startOffset, this, arrayType);
 			return new IndexerParameterDataProvider (startOffset, this, type, indexers, resolvedNode);
 		}
 		

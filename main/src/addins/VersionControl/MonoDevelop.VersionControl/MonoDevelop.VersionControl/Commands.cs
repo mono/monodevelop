@@ -62,6 +62,11 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Update (CommandInfo info)
 		{
+			if (VersionControlService.IsGloballyDisabled) {
+				info.Visible = false;
+				return;
+			}
+
 			VersionControlItemList items = GetItems ();
 			info.Enabled = items.Count > 0 && RunCommand (items, true);
 		}
@@ -109,6 +114,11 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Update (CommandInfo info)
 		{
+			if (VersionControlService.IsGloballyDisabled) {
+				info.Visible = false;
+				return;
+			}
+
 			VersionControlItemList items = GetItems ();
 			info.Enabled = items.Count > 0 && RunCommand (items, true);
 		}

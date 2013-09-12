@@ -1,24 +1,9 @@
-<Addin id          = "DocFood"
-       namespace   = "MonoDevelop"
-       name        = "DocFood"
-       author      = "Mike Krüger"
-       copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com/"
-       description = "DocFood is an automated comment generator"
-       category    = "IDE extensions"
-       version     = "4.1.7">
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="MonoDevelop.DocFood.dll" />
 	</Runtime>
 
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="Refactoring" version="4.1.7"/>
-	</Dependencies>
-	
-	
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 <!--		<Command id = "MonoDevelop.DocFood.Commands.DocumentThis"
 		         defaultHandler = "MonoDevelop.DocFood.DocumentThisHandler"
@@ -56,4 +41,4 @@
 			<Section id = "Rules" _label = "Rules" class = "MonoDevelop.DocFood.Options.RulesPanel" />
 		</Section>
 	</Extension> -->
-</Addin>
+</ExtensionModel>

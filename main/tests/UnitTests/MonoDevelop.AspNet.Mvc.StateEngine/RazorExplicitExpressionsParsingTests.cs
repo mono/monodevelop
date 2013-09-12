@@ -24,18 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorExplicitExpressionsParsingTests : RazorParsingTests
 	{
-		[Test ()]
+		[Test]
 		public void EmptyExplicitExpression ()
 		{
 			parser.Parse ("@($)$", () => {

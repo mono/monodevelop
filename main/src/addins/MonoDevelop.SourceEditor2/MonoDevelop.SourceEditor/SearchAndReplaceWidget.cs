@@ -830,6 +830,8 @@ But I leave it in in the case I've missed something. Mike
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);
+			if (result == null)
+				return null;
 			textEditor.CenterToCaret ();
 
 			if (result == null) {
@@ -849,7 +851,8 @@ But I leave it in in the case I've missed something. Mike
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindPrevious (true);
-
+			if (result == null)
+				return null;
 			textEditor.CenterToCaret ();
 			if (result == null) {
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));

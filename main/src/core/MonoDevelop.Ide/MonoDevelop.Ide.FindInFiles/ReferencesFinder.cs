@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
 		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
 		{
-			if (!(node is IField) && node is IVariable || scope == RefactoryScope.File) {
+			if (!(node is IField) && !(node is IParameter) && node is IVariable || scope == RefactoryScope.File) {
 				string fileName;
 				if (node is IEntity) {
 					fileName = ((IEntity)node).Region.FileName;
@@ -122,6 +122,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (fileList != null)
 					yield return fileList;
 				yield break;
+			}
+			var par = node as IParameter;
+			if (par != null) {
+				node = par.Owner;
 			}
 
 			var compilationProvider = (ICompilationProvider)node;

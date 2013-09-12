@@ -264,35 +264,23 @@ namespace MonoDevelop.CSharp.Refactoring
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
-				if (obj is IEntity) {
-					var entity = (IEntity)obj;
-
-					// May happen for anonymous types since empty constructors are always generated.
-					// But there is no declaring type definition for them - we filter out this case.
-					if (entity.SymbolKind == SymbolKind.Constructor && entity.DeclaringTypeDefinition == null)
-						continue;
-
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
-						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor)); 
-					}, CancellationToken.None);
-				} else if (obj is IVariable) {
+				if (obj is IVariable && !(obj is IParameter) && !(obj is IField)) {
 					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
 					}, CancellationToken.None);
-				} else if (obj is ITypeParameter) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((ITypeParameter)obj), file, unit, doc.Compilation, (astNode, r) => { 
-						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
-					}, CancellationToken.None);
-				} else if (obj is INamespace) {
-					var entity = (INamespace)obj;
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
+				} else if (obj is ISymbol) {
+					var sym = (ISymbol)obj;
+
+					// May happen for anonymous types since empty constructors are always generated.
+					// But there is no declaring type definition for them - we filter out this case.
+					if (sym.SymbolKind == SymbolKind.Constructor && ((IEntity)sym).DeclaringTypeDefinition == null)
+						continue;
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (sym), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor)); 
 					}, CancellationToken.None);
-				} 
+				}
 			}
 			return result;
 		}
@@ -303,8 +291,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				throw new ArgumentNullException ("content", "Project content not set.");
 			SetPossibleFiles (possibleFiles);
 			SetSearchedMembers (members);
-
-			var scopes = searchedMembers.Select (e => e is IEntity ? refFinder.GetSearchScopes ((IEntity)e) : refFinder.GetSearchScopes ((INamespace)e));
+			var scopes = searchedMembers.Select (e => e is INamespace ? refFinder.GetSearchScopes ((INamespace)e) : refFinder.GetSearchScopes ((ISymbol)e));
 			var compilation = project != null ? TypeSystemService.GetCompilation (project) : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {

@@ -547,7 +547,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			DetachExtensionChain ();
-			ClearAnnotations ();
+			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
@@ -746,10 +746,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void HandleProjectModified (object sender, SolutionItemModifiedEventArgs e)
 		{
-			if (!e.Any (
-					x => x is SolutionItemModifiedEventInfo &&
-				(((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" ||
-				((SolutionItemModifiedEventInfo)x).Hint == "References")))
+			if (!e.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
 			StartReparseThread ();
 		}

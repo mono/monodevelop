@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	internal class StatusProgressMonitor: BaseProgressMonitor
 	{
-		IconId icon;
+		string icon;
 		bool showErrorDialogs;
 		bool showTaskTitles;
 		bool lockGui;

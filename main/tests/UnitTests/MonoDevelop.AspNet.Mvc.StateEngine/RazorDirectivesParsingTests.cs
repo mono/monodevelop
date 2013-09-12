@@ -24,19 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 using NUnit.Framework;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorDirectivesParsingTests : RazorParsingTests
 	{
-		[Test ()]
+		[Test]
 		public void InheritsDirective ()
 		{
 			parser.Parse ("@inherits Class.Foo.Bar$\n$", () => {
@@ -48,7 +44,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void ModelDirective ()
 		{
 			parser.Parse ("@model Foo.Bar$\n$", () => {
@@ -60,7 +56,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SessionstateDirective ()
 		{
 			parser.Parse ("@sessionstate Bar$\n$", () => {
@@ -72,7 +68,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void LayoutDirective ()
 		{
 			parser.Parse ("@layout Foo Bar$\n$", () => {
@@ -84,7 +80,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void UsingDirective ()
 		{
 			parser.Parse ("@using System.Foo.Bar$\n", () => {
@@ -96,7 +92,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void UsingDirectiveAsTypeAlias ()
 		{
 			parser.Parse ("@using Foo = System.Foo.Bar$\n$", () => {
@@ -108,7 +104,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void UsingDirectivesCanBeInOneLine ()
 		{
 			parser.Parse ("@using Foo.Bar$  @using Bar.Foo$\n$", () => {
@@ -123,7 +119,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SimpleDirectiveSupportsGenerics ()
 		{
 			parser.Parse ("@inherits Web.Foo<IEnumerable<Model<Bar>>$\n$", () => {
@@ -135,7 +131,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SimpleDirectiveSupportsArray ()
 		{
 			parser.Parse ("@inherits Web.Foo[][]$\n$", () => {
@@ -147,7 +143,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SimpleDirectiveSupportsSpacesInsideName ()
 		{
 			parser.Parse ("@model    Web.Foo [] [] $\n$", () => {
@@ -159,7 +155,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void FunctionsDirective ()
 		{
 			parser.Parse ("@functions ${ foo();$\n bar(); }$", () => {
@@ -174,7 +170,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void SectionDirective ()
 		{
 			parser.Parse ("@section $Section { <p>Foo $ Bar</p> }$", () => {
@@ -189,7 +185,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void HelperDirective ()
 		{
 			parser.Parse ("@helper $Strong(string value) {\n foo($); }$", () => {
@@ -204,7 +200,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void DirectiveWithNestedBrackets ()
 		{
 			parser.Parse ("@helper Strong (string value) { { { $ } } $}$", () => {
@@ -219,7 +215,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void DirectiveInHtml ()
 		{
 			parser.Parse ("<foo><bar>@section Section { Foo $ bar }</bar></foo>", () => {
@@ -228,7 +224,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void DirectiveSupportsHtml ()
 		{
 			parser.Parse ("@section Section {<foo><bar>$</bar></foo> }", () => {

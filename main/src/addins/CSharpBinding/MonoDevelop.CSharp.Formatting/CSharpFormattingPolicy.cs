@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Formatting
 	[PolicyType ("C# formatting")]
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
-		CSharpFormattingOptions options = FormattingOptionsFactory.CreateMono ();
+		readonly CSharpFormattingOptions options = FormattingOptionsFactory.CreateMono ();
 		
 		public string Name {
 			get;
@@ -234,6 +234,15 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
+		public bool IndentPreprocessorDirectives {
+			get {
+				return options.IndentPreprocessorDirectives;
+			}
+			set {
+				options.IndentPreprocessorDirectives = value;
+			}
+		}
 		#endregion
 		
 		#region Braces
@@ -1629,9 +1638,9 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public static CSharpFormattingPolicy Load (System.IO.Stream input)
 		{
-			CSharpFormattingPolicy result = new CSharpFormattingPolicy ();
+			var result = new CSharpFormattingPolicy ();
 			result.Name = "noname";
-			using (XmlTextReader reader = new XmlTextReader (input)) {
+			using (var reader = new XmlTextReader (input)) {
 				while (reader.Read ()) {
 					if (reader.NodeType == XmlNodeType.Element) {
 						if (reader.LocalName == "Property") {

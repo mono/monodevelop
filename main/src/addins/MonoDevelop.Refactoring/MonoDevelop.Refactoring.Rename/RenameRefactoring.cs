@@ -191,6 +191,12 @@ namespace MonoDevelop.Refactoring.Rename
 					return;
 				}
 
+				var par = options.SelectedItem as IParameter;
+				if (par != null && (par.Owner.Accessibility != Accessibility.Private || par.Owner.DeclaringTypeDefinition != null && par.Owner.DeclaringTypeDefinition.Parts.Count > 1)) {
+					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+					return;
+				}
+
 				var col = ReferenceFinder.FindReferences (options.SelectedItem, true);
 				if (col == null)
 					return;

@@ -37,8 +37,10 @@ namespace MonoDevelop.AspNet.StateEngine
 	{
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			if (c == '<') {
-
+			// allow < in values
+			if (context.StateTag != '\0' && context.CurrentStateLength > 1 && c == '<') {
+				context.KeywordBuilder.Append (c);
+				return null;
 			}
 			return base.PushChar (c, context, ref rollback);
 		}
@@ -46,14 +48,17 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class AspNetDirectiveState : State
 	{
-		XmlAttributeState AttributeState;
-		XmlNameState NameState;
+		readonly XmlAttributeState AttributeState;
+		readonly XmlNameState NameState;
 		
-		public AspNetDirectiveState () : this (new XmlAttributeState (new XmlNameState (), new AspNetDirectiveAttributeState ()), new XmlNameState ())
+		public AspNetDirectiveState () : this (
+			new XmlNameState (),
+			new XmlAttributeState (new XmlNameState (), new AspNetDirectiveAttributeState ())
+			)
 		{
 		}
 		
-		public AspNetDirectiveState (XmlAttributeState attributeState, XmlNameState nameState)
+		public AspNetDirectiveState (XmlNameState nameState, XmlAttributeState attributeState)
 		{
 			this.AttributeState = attributeState;
 			this.NameState = nameState;

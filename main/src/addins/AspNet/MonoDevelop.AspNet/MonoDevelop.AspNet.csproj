@@ -276,7 +276,6 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDom.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDirectiveState.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetServerCommentState.cs" />
-    <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetSpeculativeExpressionState.cs" />
     <Compile Include="MonoDevelop.AspNet.MD1Serialization\MD1AspNetCustomDataItem.cs" />
     <Compile Include="MonoDevelop.AspNet.Deployment\AspNetDeployServiceExtension.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\Directive.cs" />
@@ -300,6 +299,8 @@
     <Compile Include="MonoDevelop.AspNet\RegistrationCache.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlScriptBodyState.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\MemberListBuilder.cs" />
+    <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetAttributeValueState.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

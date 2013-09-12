@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static IEnumerable<DiffEntry> CompareCommits (NGit.Repository repo, AnyObjectId reference, ObjectId compared)
 		{
-			var diff = new NGit.Api.Git (repo).Diff ();
+			var diff = new MyersDiff (repo);
 
 			var firstTree = new CanonicalTreeParser ();
 			firstTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (reference));

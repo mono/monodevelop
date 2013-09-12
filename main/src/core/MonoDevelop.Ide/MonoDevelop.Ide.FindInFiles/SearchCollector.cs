@@ -126,9 +126,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			projectOnly = true;
 			foreach (var o in entities) {
 				var entity = o as IEntity;
-				if (entity == null)
+				if (entity != null) {
+					Collect (TypeSystemService.GetProject (entity), entity);
 					continue;
-				Collect (TypeSystemService.GetProject (entity), entity);
+				}
+				var par = o as IParameter;
+				if (par != null) {
+					Collect (TypeSystemService.GetProject (par.Owner), par.Owner);
+					continue;
+				}
 			}
 			return collectedProjects;
 		}
@@ -142,11 +148,15 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				}
 
-
-				var entity = o as IEntity;
-				if (entity == null)
-					continue;
-				Collect (TypeSystemService.GetProject(entity), entity);
+				var par = o as IParameter;
+				if (par != null) {
+					Collect (TypeSystemService.GetProject (par.Owner), par.Owner);
+				} else {
+					var entity = o as IEntity;
+					if (entity == null)
+						continue;
+					Collect (TypeSystemService.GetProject (entity), entity);
+				}
 
 				if (searchProjectAdded) break;
 			}

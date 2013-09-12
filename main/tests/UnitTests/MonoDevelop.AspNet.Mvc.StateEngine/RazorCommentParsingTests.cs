@@ -24,18 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Mvc.StateEngine;
 
-namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
+namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
+	[TestFixture]
 	public class RazorCommentParsingTests : RazorParsingTests
 	{
-		[Test ()]
+		[Test]
 		public void RazorEmptyComment ()
 		{
 			parser.Parse ("@*$*@$", () => {
@@ -47,7 +44,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorSimpleComment ()
 		{
 			parser.Parse ("@*foo$bar*@$", () => {
@@ -59,7 +56,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorMultilineComment ()
 		{
 			parser.Parse ("@* Foo \n Bar \r\n FooBar$ *@$", () => {
@@ -71,7 +68,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorCommentInHtml ()
 		{
 			parser.Parse ("<foo><bar>This is @* $not *@ visible</bar></foo>", () => {
@@ -80,7 +77,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void StateNotChangedInsideRazorComment ()
 		{
 			parser.Parse ("@* <p>$</p> @(Fo$o) @{ab$c} *@$", () => {
@@ -98,7 +95,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorCommentInCodeBlock ()
 		{
 			parser.Parse ("@{ This is @* not$ *@ visible }", () => {
@@ -107,7 +104,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorCommentInStatement ()
 		{
 			parser.Parse ("@foreach (var item in Model)\n{ This is @* not$ *@ visible }", () => {
@@ -116,7 +113,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.StateEngine
 			});
 		}
 
-		[Test ()]
+		[Test]
 		public void RazorCommentInDirective ()
 		{
 			parser.Parse ("@section Section { This is @* not$ *@ visible }", () => {

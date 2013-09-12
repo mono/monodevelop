@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,9 +42,10 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		List<CSharpFormattingPolicy> policies;
+		readonly List<CSharpFormattingPolicy> policies;
 		public NewFormattingProfileDialog (List<CSharpFormattingPolicy> policies)
 		{
+			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			this.Build ();
 			this.policies = policies;
 			this.entryProfileName.Changed += delegate {
@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Formatting
 				buttonOk.Sensitive = !string.IsNullOrEmpty (NewProfileName) && !this.policies.Any (p => p.Name == NewProfileName);
 			};
 			
-			Gtk.ListStore model = new Gtk.ListStore (typeof(string));
+			var model = new Gtk.ListStore (typeof(string));
 			foreach (var p in policies) {
 				model.AppendValues (p.Name);
 			}

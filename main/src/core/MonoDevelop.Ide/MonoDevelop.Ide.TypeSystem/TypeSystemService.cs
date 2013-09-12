@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
-			return TypeSystemService.GetProject (type.Compilation.MainAssembly.UnresolvedAssembly.Location);
+			return TypeSystemService.GetProject (type.ParentAssembly.UnresolvedAssembly.Location);
 		}
 		
 		public static Project GetSourceProject (this IType type)
@@ -349,7 +349,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
-		static object projectWrapperUpdateLock = new object ();
+		static readonly object projectWrapperUpdateLock = new object ();
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
 			if (fileName == null)
@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					// The parsed file could be included in other projects as well, therefore
 					// they need to be updated.
-					foreach (var cnt in projectContents) {
+					foreach (var cnt in projectContents.ToArray ()) {
 						if (cnt.Key == project)
 							continue;
 						// Use the project context because file lookup is faster there than in the project class.
@@ -489,10 +489,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return result;
 		}
-		static string InternalGetCacheDirectory (string filename)
+		static string InternalGetCacheDirectory (FilePath filename)
 		{
+			CanonicalizePath (ref filename);
 			string result;
-			var nameNoExtension = Path.GetFileNameWithoutExtension (filename);
+			var nameNoExtension = Path.GetFileName (filename);
 			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
 			try {
 				// First try to access what we think could be the correct file directly
@@ -531,6 +532,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return GetCacheDirectory (project.FileName, forceCreation);
 		}
 
+		static readonly object cacheLocker = new object();
 		/// <summary>
 		/// Gets the cache directory for arbitrary file names.
 		/// If forceCreation is set to false the method may return null, if the cache doesn't exist.
@@ -542,12 +544,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			var result = InternalGetCacheDirectory (fileName);
-			if (result != null)
-				TouchCache (result);
-			if (forceCreation && result == null)
-				result = CreateCacheDirectory (fileName);
-			return result;
+			lock (cacheLocker) {
+				var result = InternalGetCacheDirectory (fileName);
+				if (result != null)
+					TouchCache (result);
+				if (forceCreation && result == null)
+					result = CreateCacheDirectory (fileName);
+				return result;
+			}
 		}
 
 		struct CacheDirectoryInfo
@@ -559,16 +563,32 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		static Dictionary<FilePath, CacheDirectoryInfo> cacheDirectoryCache = new Dictionary<FilePath, CacheDirectoryInfo> ();
 
+		static void CanonicalizePath (ref FilePath fileName)
+		{
+			try {
+				// There are some situations where that may cause an exception.
+				fileName = fileName.CanonicalPath;
+			} catch (Exception) {
+				// Fallback
+				string fp = fileName;
+				if (fp.Length > 0 && fp [fp.Length - 1] == Path.DirectorySeparatorChar)
+					fileName = fp.TrimEnd (Path.DirectorySeparatorChar);
+				if (fp.Length > 0 && fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
+					fileName = fp.TrimEnd (Path.AltDirectorySeparatorChar);
+			}
+		}
+
 		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
 		{
+			CanonicalizePath (ref filename);
+			CanonicalizePath (ref candidate);
 			lock (cacheDirectoryCache) {
 				CacheDirectoryInfo info;
 				if (!cacheDirectoryCache.TryGetValue (candidate, out info)) {
 					var dataPath = candidate.Combine ("data.xml");
-				
+
 					try {
 						if (!File.Exists (dataPath)) {
-							cacheDirectoryCache [candidate] = CacheDirectoryInfo.Empty;
 							result = null;
 							return false;
 						}
@@ -602,12 +622,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				return baseName;
 			return baseName + "-" + i;
 		}
-		
-		static string CreateCacheDirectory (string fileName)
+
+		static string CreateCacheDirectory (FilePath fileName)
 		{
+			CanonicalizePath (ref fileName);
 			try {
 				string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-				string name = Path.GetFileNameWithoutExtension (fileName);
+				string name = Path.GetFileName (fileName);
 				string baseName = Path.Combine (derivedDataPath, name);
 				int i = 0;
 				while (Directory.Exists (GetName (baseName, i)))
@@ -1319,19 +1340,23 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					
 					// Get the assembly references throught the project, since it may have custom references
-					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-						string fileName;
-						if (!Path.IsPathRooted (file)) {
-							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-						} else {
-							fileName = Path.GetFullPath (file);
+					try {
+						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+							string fileName;
+							if (!Path.IsPathRooted (file)) {
+								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+							} else {
+								fileName = Path.GetFullPath (file);
+							}
+							ctx = LoadAssemblyContext (fileName);
+							if (ctx != null) {
+								contexts.Add (ctx);
+							} else {
+								LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
+							}
 						}
-						ctx = LoadAssemblyContext (fileName);
-						if (ctx != null) {
-							contexts.Add (ctx);
-						} else {
-							LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
-						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while getting assembly references", e);
 					}
 					bool changed = WasChanged;
 					UpdateContent (c => c.RemoveAssemblyReferences (Content.AssemblyReferences));
@@ -2049,8 +2074,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			#endregion
 		}
 		static object assemblyContextLock = new object ();
-		static AssemblyContext LoadAssemblyContext (string fileName)
+		static AssemblyContext LoadAssemblyContext (FilePath fileName)
 		{
+			CanonicalizePath (ref fileName);
+
 			AssemblyContext loadedContext;
 			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
 				CheckModifiedFile (loadedContext);

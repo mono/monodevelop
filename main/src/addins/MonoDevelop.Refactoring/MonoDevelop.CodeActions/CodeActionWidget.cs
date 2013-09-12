@@ -212,7 +212,7 @@ namespace MonoDevelop.CodeActions
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
 				var subMenuItem = new Gtk.MenuItem (label);
 
-				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection severity"));
+				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection"));
 				optionsMenuItem.Activated += analysisFix.ShowOptions;
 				optionsMenuItem.Activated += delegate {
 					menu.Destroy ();

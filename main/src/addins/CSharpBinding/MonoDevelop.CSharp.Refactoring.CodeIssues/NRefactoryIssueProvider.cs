@@ -86,6 +86,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
+			IsEnabledByDefault = attr.IsEnabledByDefault;
 			SetMimeType ("text/x-csharp");
 			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
 

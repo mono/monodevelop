@@ -126,8 +126,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb != null)
 				tb.UpdateAll ();
 		}
-
-
 	}
 	
 	class ProjectReferenceNodeCommandHandler: NodeCommandHandler
@@ -137,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
 			if (pref != null) {
 				foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
-					IdeApp.Workbench.OpenDocument (fileName);
+					IdeApp.Workbench.OpenDocument (fileName, pref.OwnerProject);
 			}
 		}
 				

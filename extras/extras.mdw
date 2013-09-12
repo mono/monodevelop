@@ -9,6 +9,5 @@
     <Item>MonoDevelop.Database/MonoDevelop.Database.sln</Item>
     <Item>MonoDevelop.CodeAnalysis/MonoDevelop.CodeAnalysis.sln</Item>
     <Item>JavaBinding/JavaBinding.sln</Item>
-    <Item>MonoDevelop.Debugger.Win32/MonoDevelop.Debugger.Win32.sln</Item>
   </Items>
 </WorkspaceItem>

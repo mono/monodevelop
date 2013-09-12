@@ -28,12 +28,10 @@ var MONO_PRODUCT_VERSION = "" + MAJOR_VERSION + format (MINOR_VERSION, 2) + form
 
 // Build the main solution and the windows-specific add-ins
 
-if (build ("main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"") != 0)
+if (build ("main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"AnyCPU\"") != 0)
     WScript.Quit (1);
 if (build ("extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.Win32.sln") != 0)
     WScript.Quit(1);
-if (build ("extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln") != 0)
-    WScript.Quit (1);
 
 // Copy support assemblies
 

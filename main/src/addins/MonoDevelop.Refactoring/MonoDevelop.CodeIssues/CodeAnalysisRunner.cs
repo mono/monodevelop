@@ -80,7 +80,7 @@ namespace MonoDevelop.CodeIssues
 					#endif
 					foreach (var provider in EnumerateProvider (parentProvider)) {
 						var severity = provider.GetSeverity ();
-						if (severity == Severity.None)
+						if (severity == Severity.None || !provider.GetIsEnabled ())
 							continue;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
 							var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {

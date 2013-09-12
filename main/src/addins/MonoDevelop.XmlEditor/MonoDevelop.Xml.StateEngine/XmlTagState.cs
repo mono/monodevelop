@@ -41,8 +41,8 @@ namespace MonoDevelop.Xml.StateEngine
 		const int MAYBE_SELF_CLOSING = 2;
 		const int OK = 0;
 
-		XmlAttributeState AttributeState;
-		XmlNameState NameState;
+		readonly XmlAttributeState AttributeState;
+		readonly XmlNameState NameState;
 		
 		public XmlTagState () : this (new XmlAttributeState ()) {}
 		

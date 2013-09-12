@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Templates
 		bool requireExists = false;
 		string projectType = null;
 		
-		//these specify the paths within the project in which the file may or may ne be created
+		//these specify the paths within the project in which the file may or may not be created
 		string[] permittedCreationPaths = null;
 		string[] excludedCreationPaths = null;
 		

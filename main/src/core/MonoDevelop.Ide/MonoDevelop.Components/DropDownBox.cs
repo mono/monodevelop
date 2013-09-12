@@ -57,7 +57,17 @@ namespace MonoDevelop.Components
 			set;
 		}
 		
+		public bool DrawButtonShape {
+			get;
+			set;
+		}
+		
 		public bool DrawRightBorder {
+			get;
+			set;
+		}
+		
+		public bool DrawLeftBorder {
 			get;
 			set;
 		}
@@ -91,6 +101,28 @@ namespace MonoDevelop.Components
 			}
 		}
 		
+		int fixedWidth;
+		public int FixedWidth {
+			get {
+				return fixedWidth;
+			}
+			set {
+				fixedWidth = value;
+				WidthRequest = fixedWidth;
+			}
+		}
+
+		int fixedHeight;
+		public int FixedHeight {
+			get {
+				return fixedHeight;
+			}
+			set {
+				fixedHeight = value;
+				HeightRequest = fixedHeight;
+			}
+		}
+		
 		public DropDownBox ()
 		{
 			layout = new Pango.Layout (this.PangoContext);
@@ -118,10 +150,11 @@ namespace MonoDevelop.Components
 				dx = geometry.Right - width;
 			
 			window.Move (dx, dy);
+			window.ShowAll ();
 			window.GetSizeRequest (out width, out height);
 			window.GrabFocus ();
 		}
-		
+
 		public void SetItem (string text, Gdk.Pixbuf icon, object currentItem)
 		{
 			if (currentItem != CurrentItem) {// don't update when the same item is set.
@@ -149,8 +182,7 @@ namespace MonoDevelop.Components
 			}
 			base.OnDestroyed ();
 		}
-		
-		
+
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			int width, height;
@@ -168,8 +200,8 @@ namespace MonoDevelop.Components
 			int arrowHeight = height / 2; 
 			int arrowWidth = arrowHeight + 1;
 			
-			requisition.Width = width + arrowWidth + leftSpacing;
-			requisition.Height = height + ySpacing * 2;
+			requisition.Width = FixedWidth > 0 ? FixedWidth : width + arrowWidth + leftSpacing;
+			requisition.Height = FixedHeight >0 ? FixedHeight : height + ySpacing * 2;
 		}
 		
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
@@ -258,9 +290,12 @@ namespace MonoDevelop.Components
 			int arrowHeight = height / 2; 
 			int arrowWidth = arrowHeight + 1;
 			int arrowXPos = this.Allocation.X + this.Allocation.Width - arrowWidth;
-			if (DrawRightBorder)
+			if (DrawButtonShape) {
+				arrowXPos -= 4;
+			} else if (DrawRightBorder) {
 				arrowXPos -= 2;
-			
+			}
+
 			//HACK: don't ever draw insensitive, only active/prelight/normal, because insensitive generally looks really ugly
 			//this *might* cause some theme issues with the state of the text/arrows rendering on top of it
 			var state = window != null? StateType.Active
@@ -271,24 +306,42 @@ namespace MonoDevelop.Components
 			//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
 			// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
 			const int padding = 4;
-			Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
-			                Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
-			
+			if (DrawButtonShape){
+				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
+				            Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+
+			} else {
+				Style.PaintBox (Style, args.Window, state, ShadowType.None, args.Area, this, "button", 
+				            Allocation.X - padding, Allocation.Y - padding, Allocation.Width + padding * 2, Allocation.Height + padding * 2);
+			}
+
 			int xPos = Allocation.Left;
 			if (Pixbuf != null) {
 				win.DrawPixbuf (this.Style.BaseGC (StateType.Normal), Pixbuf, 0, 0, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2, Pixbuf.Width, Pixbuf.Height, Gdk.RgbDither.None, 0, 0);
 				xPos += Pixbuf.Width + pixbufSpacing * 2;
 			}
+			if (DrawButtonShape)
+				xPos += 4;
 			
 			//constrain the text area so it doesn't get rendered under the arrows
 			var textArea = new Gdk.Rectangle (xPos, Allocation.Y + ySpacing, arrowXPos - xPos - 2, Allocation.Height - ySpacing);
-			Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y, layout);
+
+			if (FixedWidth > 0) {
+				layout.Ellipsize = Pango.EllipsizeMode.End;
+				layout.Width = Allocation.Width - textArea.X;
+			}
+
+			Style.PaintLayout (Style, win, state, true, textArea, this, "", textArea.X, textArea.Y + Math.Max (0, (textArea.Height - height) / 2), layout);
 			
 			state = Sensitive ? StateType.Normal : StateType.Insensitive;
 			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Up, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2 - arrowHeight, arrowWidth, arrowHeight);
 			Gtk.Style.PaintArrow (this.Style, win, state, ShadowType.None, args.Area, this, "", ArrowType.Down, true, arrowXPos, Allocation.Y + (Allocation.Height) / 2, arrowWidth, arrowHeight);
-			if (DrawRightBorder)
-				win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
+			if (!DrawButtonShape) {
+				if (DrawRightBorder)
+					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X + Allocation.Width - 1, Allocation.Y, Allocation.X + Allocation.Width - 1, Allocation.Y + Allocation.Height);			
+				if (DrawLeftBorder)
+					win.DrawLine (this.Style.DarkGC (StateType.Normal), Allocation.X, Allocation.Y, Allocation.X, Allocation.Y + Allocation.Height);			
+			}
 			return false;
 		}
 		

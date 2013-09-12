@@ -1520,11 +1520,11 @@ msgstr "_Sagna la selecció"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "Unindent selected lines of code"
-msgstr "Desagna les línies de codi seleccionades"
+msgstr "Desfés el sagnat de les línies de codi seleccionades"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "_Unindent Selection"
-msgstr "_Desagna la selecció"
+msgstr "_Desfés el sagnat la selecció"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "Convert the selected text to uppercase"
@@ -2543,7 +2543,7 @@ msgstr "Navega a..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:14
 msgid "Jump to a item in the current workspace"
-msgstr "Vés a l'elemenet a l'espai de treball actual"
+msgstr "Vés a l'element a l'espai de treball actual"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:14
 msgid "Toggle bookmark"
@@ -2696,12 +2696,12 @@ msgstr "Suprimeix la línia sencera"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Delete to end of line"
-msgstr "Suprimeix fins el final de la línia"
+msgstr "Suprimeix fins al final de la línia"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
-"Suprimeix fins el final de la línia, o si és al final, suprimeix el final de "
+"Suprimeix fins al final de la línia, o si és al final, suprimeix el final de "
 "línia"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
@@ -2815,7 +2815,7 @@ msgstr "Mou el cursor al final de línia i insereix una línia nova"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Completes the current statement"
-msgstr "Completa la sentencia actual"
+msgstr "Completa la sentència actual"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Delete previous word"
@@ -6773,7 +6773,7 @@ msgstr "_Versió:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:2
 msgid "_Sign this assembly"
-msgstr "_Signa aquesta assemblat"
+msgstr "_Signa aquest assemblat"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:2
 msgid "S_trong Name File:"
@@ -12409,7 +12409,7 @@ msgstr "No s'ha pogut suprimir el fitxer {0}"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpBindingCompilerManager.cs:12
 msgid "{0} could not be found or is invalid."
-msgstr "El fitxer {0} no s'ha pogut trobar o no es vàlid."
+msgstr "El fitxer {0} no s'ha pogut trobar o no és vàlid."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpBindingCompilerManager.cs:23
 #, fuzzy

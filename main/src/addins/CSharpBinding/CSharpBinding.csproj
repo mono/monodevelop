@@ -233,9 +233,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProperties.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
@@ -323,6 +320,7 @@
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\BaseNRefactoryIssueProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

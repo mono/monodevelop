@@ -905,13 +905,17 @@ namespace MonoDevelop.SourceEditor
 		internal void ConvertLineEndings ()
 		{
 			string correctEol = TextEditor.Options.DefaultEolMarker;
-			var newText = new System.Text.StringBuilder ();
+			var newText = new StringBuilder ();
+			int offset = 0;
 			foreach (var line in Document.Lines) {
-				newText.Append (TextEditor.GetTextAt (line.Offset, line.Length));
+				newText.Append (TextEditor.GetTextAt (offset, line.Length));
+				offset += line.LengthIncludingDelimiter;
 				if (line.DelimiterLength > 0)
 					newText.Append (correctEol);
 			}
+			view.StoreSettings ();
 			TextEditor.Text = newText.ToString ();
+			view.LoadSettings ();
 		}
 
 		void ShowIncorretEolMarkers (string fileName, bool multiple)

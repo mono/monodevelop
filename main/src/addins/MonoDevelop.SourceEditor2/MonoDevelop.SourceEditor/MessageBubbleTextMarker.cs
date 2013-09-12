@@ -396,6 +396,9 @@ namespace MonoDevelop.SourceEditor
 					drawLayout.Ellipsize = Pango.EllipsizeMode.End;
 					drawLayout.Width = (int)(paintWidth * Pango.Scale.PangoScale);
 					drawLayout.SetText (text);
+					int w2, h2;
+					drawLayout.GetPixelSize (out w2, out h2);
+					width = w2 + errorCounterWidth + editor.LineHeight;
 				}
 			}
 			bubbleDrawX = sx - editor.TextViewMargin.XOffset;

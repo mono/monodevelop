@@ -438,9 +438,14 @@
             <Directory Id="MonoDevelop.Debugger" Name="MonoDevelop.Debugger">
               <Component Id="MonoDevelop_AddIns_MonoDevelop_Debugger" Guid="81b0e56f-9881-4b59-9c69-4ba48380b6d1">
                 <File Name="MonoDevelop.Debugger.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll" />
-                <File Name="CorApi.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\CorApi.dll" />
-                <File Name="CorApi2.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\CorApi2.dll" />
-                <File Name="MonoDevelop.Debugger.Win32.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.Win32.dll" />
+              </Component>
+            </Directory>
+            <Directory Id="MonoDevelop.Debugger.Win32" Name="MonoDevelop.Debugger.Win32">
+              <Component Id="MonoDevelop_AddIns_MonoDevelop_Debugger_Win32" Guid="dab2fc46-f5e2-411d-b86a-5cc8e625b737">
+                <File Name="MonoDevelop.Debugger.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll" />
+                <File Name="CorApi.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Win32\CorApi.dll" />
+                <File Name="CorApi2.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Win32\CorApi2.dll" />
+                <File Name="MonoDevelop.Debugger.Win32.dll" Source="$(var.BuildRoot)\AddIns\MonoDevelop.Debugger.Win32\MonoDevelop.Debugger.Win32.dll" />
               </Component>
             </Directory>
             <Directory Id="MonoDevelop.Debugger.Soft" Name="MonoDevelop.Debugger.Soft">
@@ -695,6 +700,7 @@
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Autotools" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_CodeMetrics" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger" />
+      <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger_Win32" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Debugger_Soft" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_Deployment" />
       <ComponentRef Id="MonoDevelop_AddIns_MonoDevelop_DesignerSupport" />
