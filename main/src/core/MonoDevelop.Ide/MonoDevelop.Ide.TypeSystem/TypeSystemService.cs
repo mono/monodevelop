@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
-			return TypeSystemService.GetProject (type.Compilation.MainAssembly.UnresolvedAssembly.Location);
+			return TypeSystemService.GetProject (type.ParentAssembly.UnresolvedAssembly.Location);
 		}
 		
 		public static Project GetSourceProject (this IType type)

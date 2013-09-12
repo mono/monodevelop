@@ -357,68 +357,129 @@ namespace MonoDevelop.Ide.Gui
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]
 		public Document OpenDocument (FilePath fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 		public Document OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 		public Document OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, encoding, null);
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 		public Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, null, null);
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 		public Document OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, encoding, null);
 		}
 
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)")]
 		internal Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
-			if (string.IsNullOrEmpty (fileName))
+			var openFileInfo = new FileOpenInformation (fileName, null) {
+				Options = options,
+				Line = line,
+				Column = column,
+				DisplayBinding = binding,
+				Encoding = encoding
+			};
+			return OpenDocument (openFileInfo);
+		}
+
+
+		public Document OpenDocument (FilePath fileName, Project project, bool bringToFront)
+		{
+			return OpenDocument (fileName, project, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
+		}
+
+		public Document OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		{
+			return OpenDocument (fileName, project, -1, -1, options, null, null);
+		}
+
+		public Document OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		{
+			return OpenDocument (fileName, project, -1, -1, options, encoding, null);
+		}
+
+		public Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		{
+			return OpenDocument (fileName, project, line, column, options, null, null);
+		}
+
+		public Document OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		{
+			return OpenDocument (fileName, project, line, column, options, encoding, null);
+		}
+
+		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		{
+			var openFileInfo = new FileOpenInformation (fileName, project) {
+				Options = options,
+				Line = line,
+				Column = column,
+				DisplayBinding = binding,
+				Encoding = encoding
+			};
+			return OpenDocument (openFileInfo);
+		}
+
+
+		public Document OpenDocument (FileOpenInformation info)
+		{
+			if (string.IsNullOrEmpty (info.FileName))
 				return null;
 			// Ensure that paths like /a/./a.cs are equalized 
-			var uniqueName = Path.GetFullPath (fileName);
-			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + uniqueName)) {
+			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName)) {
 				NavigationHistoryService.LogActiveDocument ();
-				if (options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
+				if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
 						int vcIndex = 0;
 
 						//search all ViewContents to see if they can "re-use" this filename
-						if (doc.Window.ViewContent.CanReuseView (uniqueName))
+						if (doc.Window.ViewContent.CanReuseView (info.FileName))
 							vcFound = doc.Window.ViewContent;
 						
 						//old method as fallback
-						if ((vcFound == null) && (doc.FileName == uniqueName || doc.FileName == fileName))
+						if ((vcFound == null) && (doc.FileName.CanonicalPath == info.FileName)) // info.FileName is already Canonical
 							vcFound = doc.Window.ViewContent;
 						//if found, select window and jump to line
 						if (vcFound != null) {
+							if (info.Project != null && doc.Project != info.Project) {
+								MessageService.ShowWarning ("File is already open in another project."); 
+								return null;
+							}
+
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
-							if (line >= 1 && ipos != null) {
+							if (info.Line >= 1 && ipos != null) {
 								doc.DisableAutoScroll ();
-								doc.RunWhenLoaded (() => {
+								doc.RunWhenLoaded (() =>
 									ipos.SetCaretTo (
-										line,
-										column >= 1 ? column : 1,
-										options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-										options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-									);
-								});
+										info.Line,
+										info.Column >= 1 ? info.Column : 1,
+										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+										info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine)
+									)
+								);
 							}
 							
-							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
 								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
@@ -431,26 +492,18 @@ namespace MonoDevelop.Ide.Gui
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-					GettextCatalog.GetString ("Opening {0}", uniqueName),
+					GettextCatalog.GetString ("Opening {0}", info.FileName),
 					Stock.StatusSolutionOperation,
 					true
 				);
-				var openFileInfo = new FileOpenInformation () {
-					FileName = uniqueName,
-					Options = options,
-					Line = line,
-					Column = column,
-					DisplayBinding = binding,
-					Encoding = encoding
-				};
-				
-				RealOpenFile (pm, openFileInfo);
+
+				RealOpenFile (pm, info);
 				pm.Dispose ();
 				
-				if (openFileInfo.NewContent != null) {
+				if (info.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
-					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					if (doc != null && options.HasFlag (OpenDocumentOptions.BringToFront)) {
+					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
+					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
 						doc.RunWhenLoaded (() => {
 							if (doc.Window != null)
@@ -463,14 +516,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, int line, int column)
+		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
 			
 			using (Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName)) {
-				var openFileInfo = new FileOpenInformation () {
-					FileName = fileName,
+				var openFileInfo = new FileOpenInformation (fileName, project) {
 					Options = OpenDocumentOptions.OnlyInternalViewer,
 					Line = line,
 					Column = column,
@@ -808,7 +860,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
-			Project project = GetProjectContainingFile (fileName);
+			Project project = openFileInfo.Project ?? GetProjectContainingFile (fileName);
 			
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
@@ -913,7 +965,8 @@ namespace MonoDevelop.Ide.Gui
 				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ())) {
 					string fileName = baseDir.Combine (doc.FileName).FullPath;
 					if (File.Exists (fileName)) {
-						var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
+						// TODO: Get the correct project.
+						var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column);
 						if (fileName == currentFileName)
 							currentView = view;
 						
@@ -1131,24 +1184,68 @@ namespace MonoDevelop.Ide.Gui
 
 	public class FileOpenInformation
 	{
-		public string FileName { get; set; }
+		FilePath fileName;
+		public FilePath FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value.CanonicalPath;
+				if (fileName.IsNullOrEmpty)
+					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
+			}
+		}
+
 		public OpenDocumentOptions Options { get; set; }
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
-		
+		public Project Project { get; set; }
+
+
+		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project)")]
 		public FileOpenInformation ()
 		{
 		}
-		
+
+		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options) 
 		{
 			this.FileName = fileName;
 			this.Line = line;
 			this.Column = column;
 			this.Options = options;
+
+		}
+
+		public FileOpenInformation (FilePath filePath, Project project)
+		{
+			this.FileName = filePath;
+			this.Project = project;
+			this.Options = OpenDocumentOptions.Default;
+		}
+		
+		public FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options) 
+		{
+			this.FileName = filePath;
+			this.Project = project;
+			this.Line = line;
+			this.Column = column;
+			this.Options = options;
+		}
+
+		public FileOpenInformation (FilePath filePath, Project project, bool bringToFront)
+		{
+			this.FileName = filePath;
+			this.Project = project;
+			this.Options = OpenDocumentOptions.Default;
+			if (bringToFront) {
+				this.Options |= OpenDocumentOptions.BringToFront;
+			} else {
+				this.Options &= ~OpenDocumentOptions.BringToFront;
+			}
 		}
 	}
 	
