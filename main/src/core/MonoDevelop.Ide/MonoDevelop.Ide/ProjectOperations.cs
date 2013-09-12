@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide
 			} else {
 				fileName = entity.Region.FileName;
 			}
-			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetSourceProject ();
+			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetProjectWhereTypeIsDefined ();
 			var doc = IdeApp.Workbench.OpenDocument (fileName,
 				project,
 				entity.Region.BeginLine,
