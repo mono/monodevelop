@@ -99,9 +99,11 @@ namespace MonoDevelop.Platform
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
 		{
 			SHFILEINFO shinfo = new SHFILEINFO();
-			Win32.SHGetFileInfo (filename, (ulong)0, ref shinfo, (uint)Marshal.SizeOf (shinfo), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_ICONLOCATION | Win32.SHGFI_TYPENAME);
-			if (shinfo.iIcon == 0)
+			Win32.SHGetFileInfo (filename, Win32.SHGFI_USEFILEATTRIBUTES, ref shinfo, (uint)Marshal.SizeOf (shinfo), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_ICONLOCATION | Win32.SHGFI_TYPENAME);
+			if (shinfo.iIcon == 0) {
+				Win32.DestroyIcon (shinfo.hIcon);
 				return null;
+			}
 			string key = shinfo.iIcon + " - " + shinfo.szDisplayName;
 			Gdk.Pixbuf pix;
 			if (!icons.TryGetValue (key, out pix)) {
@@ -109,6 +111,7 @@ namespace MonoDevelop.Platform
 				pix = CreateFromResource (icon.ToBitmap ());
 				icons[key] = pix;
 			}
+			Win32.DestroyIcon (shinfo.hIcon);
 			return pix;
 		}
 

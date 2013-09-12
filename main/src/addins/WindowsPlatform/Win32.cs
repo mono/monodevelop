@@ -33,6 +33,8 @@ namespace CustomControls.OS
         public const uint SHGFI_ICONLOCATION = 0x1000;
         public const uint SHGFI_TYPENAME = 0x400;
 
+        public const uint SHGFI_USEFILEATTRIBUTES = 0x000000010;
+
         #region Delegates
         public delegate bool EnumWindowsCallBack(IntPtr hWnd, int lParam);
         #endregion
@@ -88,8 +90,10 @@ namespace CustomControls.OS
         public static extern bool GetWindowRect(IntPtr hwnd, ref RECT rect);
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref RECT rect);
+        [DllImport("user32.dll")]
+        public static extern bool DestroyIcon([In] IntPtr hIcon);
         [DllImport("shell32.dll")]
-        public static extern IntPtr SHGetFileInfo([In] string pszPath, ulong dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
+        public static extern IntPtr SHGetFileInfo([In] string pszPath, uint dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
         #endregion
     }
 }

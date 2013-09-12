@@ -169,7 +169,7 @@ namespace CustomControls.OS
     {
         public IntPtr hIcon;
         public int iIcon;
-        public ulong dwAttributes;
+        public uint dwAttributes;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szDisplayName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
