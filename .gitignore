@@ -29,3 +29,5 @@ emacs/deps
 emacs/tmp
 
 .DS_Store
+
+/monodevelop/configure-app.exe
