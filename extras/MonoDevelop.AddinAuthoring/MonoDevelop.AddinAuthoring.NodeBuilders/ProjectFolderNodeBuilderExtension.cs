@@ -61,7 +61,7 @@ namespace MonoDevelop.AddinAuthoring.NodeBuilders
 			base.GetNodeAttributes (parentNode, dataObject, ref attributes);
 			if (dataObject is ProjectFile) {
 				string fname = ((ProjectFile)dataObject).Name;
-				if (fname.EndsWith (".addin.xml") || fname.EndsWith (".addin")) {
+				if (fname.EndsWith (".addin.xml", StringComparison.Ordinal) || fname.EndsWith (".addin", StringComparison.Ordinal)) {
 					if (!(parentNode.DataItem is AddinData)) {
 						DotNetProject dp = (DotNetProject) parentNode.GetParentDataItem (typeof(DotNetProject), true);
 						if (dp != null && dp.GetAddinData () != null) {
