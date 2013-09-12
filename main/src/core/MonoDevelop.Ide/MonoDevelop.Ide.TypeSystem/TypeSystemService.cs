@@ -56,11 +56,13 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class TypeSystemServiceExt
 	{
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetProject (this IProjectContent content)
 		{
 			return TypeSystemService.GetProject (content.Location);
 		}
-		
+
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
 			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
@@ -69,13 +71,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (location);
 		}
 		
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetSourceProject (this IType type)
 		{
 			return type.GetDefinition ().GetSourceProject ();
 		}
 
-
-		public static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
+		internal static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
 		{
 			var location = type.ParentAssembly.UnresolvedAssembly.Location;
 			if (string.IsNullOrEmpty (location))
@@ -83,12 +85,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (location);
 		}
 
-		public static Project GetProjectWhereTypeIsDefined (this IType type)
+		internal static Project GetProjectWhereTypeIsDefined (this IType type)
 		{
 			return type.GetDefinition ().GetSourceProject ();
 		}
 
 
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static IProjectContent GetProjectContent (this IType type)
 		{
 			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
