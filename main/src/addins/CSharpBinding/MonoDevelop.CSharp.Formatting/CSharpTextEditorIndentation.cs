@@ -165,7 +165,8 @@ namespace MonoDevelop.CSharp.Formatting
 				textEditorData.Document.TextReplaced += HandleTextReplaced;
 				textEditorData.Paste += HandleTextPaste;
 			}
-			IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
 		}
 
 
