@@ -41,7 +41,7 @@ namespace MonoDevelop.Refactoring
 
 		public IssueGroup Group { get; set; }
 		
-		public IssueGroup GetIssueGroup (IssueSummary issue)
+		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
 		{
 			GetIssueGroupCalled = true;
 			return Group;
