@@ -39,11 +39,13 @@ namespace MonoDevelop.CodeIssues
 
 		IProgressMonitor monitor;
 
+		int work;
+
 		public ProgressMonitorWrapperJob (IAnalysisJob wrappedJob, string message)
 		{
 			this.wrappedJob = wrappedJob;
 			monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (message, null, false);
-			int work = wrappedJob.GetFiles ().Sum (f => wrappedJob.GetIssueProviders (f).Count ());
+			work = wrappedJob.GetFiles ().Sum (f => wrappedJob.GetIssueProviders (f).Count ());
 			monitor.BeginTask (message, work);
 		}
 
@@ -71,17 +73,26 @@ namespace MonoDevelop.CodeIssues
 		public void AddResult (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> issues)
 		{
 			lock (_lock) {
-				if (monitor != null)
+				if (monitor != null) {
 					monitor.Step (1);
+					work--;
+					if (work == 0)
+						StopReporting ();
+				}
 				wrappedJob.AddResult (file, provider, issues);
 			}
+		}
+
+		void StopReporting ()
+		{
+			monitor.Dispose ();
+			monitor = null;
 		}
 
 		public void NotifyCancelled ()
 		{
 			lock (_lock) {
-				monitor.Dispose ();
-				monitor = null;
+				StopReporting ();
 			}
 		}
 
