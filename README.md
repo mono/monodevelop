@@ -18,7 +18,7 @@ The core component is the FSharp.CompilerBinding.dll. This is used by both fsaut
 
 This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe. To understand how to use these components, see the other projects.
 
-## MonoDevelop support
+## MonoDevelop and Xamarin Studio support
 
 Adds open source F# support to the open source editor MonoDevelop. Features:
 * Code completion
@@ -33,13 +33,21 @@ Adds open source F# support to the open source editor MonoDevelop. Features:
 * xbuild support for Visual Studio .fsproj and .sln files without change (requires Mono 3.0 and F# 3.0)
 * MonoDevelop also includes C# 5.0 and other features
 
-Requires MonoDevelop 3.0 and later versions
+Requires MonoDevelop or Xamarin Studio 4.0.12 and later versions
 
 ### Installation
 
-[Install F#](http://fsharp.org). Then install the F# Language Binding via the MonoDeveop Add-in manager.
+First check install MonoDevelop/Xamarin Studio. Check if F# support is already installed using the AddIn manager.
+   MonoDevelop/Xxamarin Studio 
+        --> Add-in manager 
+        --> Language Bindings 
+		--> Check for F# binding
 
-   MonoDevelop 
+If so, just use it, no installation is required.
+
+If not, install the F# Language Binding via the AddIn manager.
+
+   MonoDevelop/Xxamarin Studio 
         --> Add-in manager 
         --> Gallery
         --> Language Bindings 
@@ -56,10 +64,18 @@ On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DL
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
+Linux/Mac:
 	cd monodevelop
-	./configure.sh
+	./configure.sh 
 	make 
 	make install
+
+Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
+	cd monodevelop
+	configure.bat
+	.\install-debug-xamarin-studio.bat
+
+
 
 ### Can't get it to work?  
 
@@ -68,6 +84,9 @@ Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsh
 Users of Windows XP wishing to use this project are advised to read the instruction in this [fork](https://github.com/satyagraha/fsharpbinding/tree/windows-xp)
 
 ### Notes for Developers
+
+Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
+of MonoDevelop and Xamarin Studio. Some of the information below will be obsolete once this is done.
 
 To check things are working try a few different things somewhat at random:
   - Check the F# templates are appearing
@@ -83,9 +102,11 @@ To check things are working try a few different things somewhat at random:
 
 There are a couple of known issues, see https://github.com/fsharp/fsharpbinding/issues.
 
-On windows, use the file MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj. Be aware that this is not the original file, which is MonoDevelop.FSharp.orig.  The windows file is created automatically now and then to help development on Windows.
+On Windows, the configuration creates the file MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj. 
+Be aware that this is not the original file, which is MonoDevelop.FSharp.fsproj.orig.  The windows file is 
+created automatically by the configuration script (configure.bat)
 
-On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. There is an old Makefile for the days before xbuild works, but this is not used to prepare distributions.
+On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. 
 
 On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MonoDevelop you can use the command:  
 ```
@@ -106,6 +127,9 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 
 ## Notes for People Preparing Releases
+
+Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
+of MonoDevelop and Xamarin Studio. The information below will be obsolete once this is done.
 
 The MonoDevelop Addin mechanism can be hard to easily find information for so here are a couple of links to help get a better understanding.  
 
