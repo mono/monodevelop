@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharp.Formatting
 			IStateMachineIndentEngine indentEngine;
 			try {
 				var csharpIndentEngine = new CSharpIndentEngine (textEditorData.Document, options, policy);
-				csharpIndentEngine.EnableCustomIndentLevels = true;
+				//csharpIndentEngine.EnableCustomIndentLevels = true;
 				foreach (var symbol in MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode.GetDefinedSymbols (document.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
 				}
