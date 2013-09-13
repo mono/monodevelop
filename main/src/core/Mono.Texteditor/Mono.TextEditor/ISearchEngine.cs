@@ -35,39 +35,44 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
+
 		TextEditorData TextEditorData {
 			get;
 			set;
 		}
-		
+
 		void CompilePattern ();
-		
+
 		bool IsValidPattern (string pattern, out string error);
+
 		bool IsMatchAt (int offset);
+
 		bool IsMatchAt (int offset, int length);
-		
+
 		SearchResult GetMatchAt (int offset);
+
 		SearchResult GetMatchAt (int offset, int length);
-		
+
 		SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset);
+
 		SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset);
-		
+
 		SearchResult SearchForward (int fromOffset);
+
 		SearchResult SearchBackward (int fromOffset);
-		
+
 		void Replace (SearchResult result, string pattern);
 
 		int ReplaceAll (string withPattern);
-		
+
 		ISearchEngine Clone ();
 	}
-	
+
 	public abstract class AbstractSearchEngine : ISearchEngine
 	{
 		protected SearchRequest searchRequest;
 		protected TextEditorData textEditorData;
-		
+
 		public TextEditorData TextEditorData {
 			get {
 				return textEditorData;
@@ -76,7 +81,7 @@ namespace Mono.TextEditor
 				textEditorData = value;
 			}
 		}
-		
+
 		public SearchRequest SearchRequest {
 			get {
 				return searchRequest;
@@ -91,90 +96,73 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		void OnRequestChanged (object ob, EventArgs args)
 		{
 			if (searchRequest != null)
 				CompilePattern ();
 		}
-		
+
 		public bool IsMatchAt (int offset)
 		{
 			return GetMatchAt (offset) != null;
 		}
-		
+
 		public bool IsMatchAt (int offset, int length)
 		{
 			return GetMatchAt (offset, length) != null;
 		}
-		
+
 		public abstract void CompilePattern ();
-		
+
 		public abstract bool IsValidPattern (string pattern, out string error);
+
 		public abstract SearchResult GetMatchAt (int offset);
+
 		public abstract SearchResult GetMatchAt (int offset, int length);
-		
+
 		public abstract SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset);
+
 		public abstract SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset);
-		
+
 		public SearchResult SearchForward (int fromOffset)
 		{
-			return SearchForward (null, new TextViewMargin.SearchWorkerArguments () { Text = textEditorData.Text }, fromOffset);
+			return SearchForward (null, new TextViewMargin.SearchWorkerArguments { Text = textEditorData.Text }, fromOffset);
 		}
 
 		public SearchResult SearchBackward (int fromOffset)
 		{
-			return SearchBackward (null, new TextViewMargin.SearchWorkerArguments () { Text = textEditorData.Text }, fromOffset);
+			return SearchBackward (null, new TextViewMargin.SearchWorkerArguments { Text = textEditorData.Text }, fromOffset);
 		}
+
 		public abstract void Replace (SearchResult result, string pattern);
 
-		public virtual int ReplaceAll (string withPattern)
-		{
-			int result = 0;
-			using (var undo = textEditorData.OpenUndoGroup ()) {
-				int offset = 0;
-				if (!SearchRequest.SearchRegion.IsInvalid)
-					offset = SearchRequest.SearchRegion.Offset;
-				SearchResult searchResult; 
-				var text = textEditorData.Text;
-				var args = new TextViewMargin.SearchWorkerArguments () { Text = text };
-				while (true) {
-					searchResult = SearchForward (null, args, offset);
-					if (searchResult == null || searchResult.SearchWrapped)
-						break;
-					Replace (searchResult, withPattern);
-					offset = searchResult.EndOffset;
-					result++;
-				}
-				if (result > 0)
-					textEditorData.ClearSelection ();
-			}
-			return result;
-		}
+		public abstract int ReplaceAll (string withPattern);
 
 		public virtual ISearchEngine Clone ()
 		{
-			ISearchEngine result = (ISearchEngine)MemberwiseClone ();
+			var result = (ISearchEngine)MemberwiseClone ();
 			result.SearchRequest = searchRequest.Clone ();
 			return result;
 		}
 	}
-	
+
 	public class BasicSearchEngine : AbstractSearchEngine
 	{
 		string compiledPattern = "";
+
 		public override void CompilePattern ()
 		{
 			if (searchRequest.SearchPattern != null)
 				compiledPattern = searchRequest.CaseSensitive ? searchRequest.SearchPattern : searchRequest.SearchPattern.ToUpper ();
 		}
-		
+
 		public override bool IsValidPattern (string pattern, out string error)
 		{
 			error = "";
 			return pattern != null;
 		}
-		
+
 		public override SearchResult GetMatchAt (int offset, int length)
 		{
 			if (compiledPattern.Length == length) {
@@ -184,22 +172,22 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+
 		public override SearchResult GetMatchAt (int offset)
 		{
 			if (offset < 0)
 				return null;
-			var doc = this.textEditorData.Document;
-			
+			var doc = textEditorData.Document;
+
 			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.TextLength && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
 					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
-						if (doc.GetCharAt (offset + i) != compiledPattern [i]) 
+						if (doc.GetCharAt (offset + i) != compiledPattern [i])
 							return null;
 					}
 				} else {
 					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
-						if (System.Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern [i]) 
+						if (Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern [i])
 							return null;
 					}
 				}
@@ -211,7 +199,7 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+
 		public override SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset)
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
@@ -226,7 +214,7 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+
 		public override SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset)
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
@@ -256,7 +244,7 @@ namespace Mono.TextEditor
 				offset = SearchRequest.SearchRegion.Offset;
 			SearchResult searchResult; 
 			var text = textEditorData.Text;
-			var args = new TextViewMargin.SearchWorkerArguments () { Text = text };
+			var args = new TextViewMargin.SearchWorkerArguments { Text = text };
 			while (true) {
 				searchResult = SearchForward (null, args, offset);
 				if (searchResult == null || searchResult.SearchWrapped)
@@ -274,7 +262,7 @@ namespace Mono.TextEditor
 				}
 			} else {
 				char[] oldText = text.ToCharArray ();
-				char[] newText = new char[oldText.Length + searchResults.Count * (withPattern.Length - compiledPattern.Length)];
+				var newText = new char[oldText.Length + searchResults.Count * (withPattern.Length - compiledPattern.Length)];
 				char[] pattern = withPattern.ToCharArray ();
 				int curOffset = 0, destOffset = 0;
 				foreach (var sr in searchResults) {
@@ -294,11 +282,11 @@ namespace Mono.TextEditor
 			return searchResults.Count;
 		}
 	}
-	
+
 	public class RegexSearchEngine : AbstractSearchEngine
 	{
-		Regex regex = null;
-		
+		Regex regex;
+
 		public override void CompilePattern ()
 		{
 			try {
@@ -310,7 +298,7 @@ namespace Mono.TextEditor
 				regex = null;
 			}
 		}
-		
+
 		public override bool IsValidPattern (string pattern, out string error)
 		{
 			error = "";
@@ -318,60 +306,58 @@ namespace Mono.TextEditor
 				RegexOptions options = RegexOptions.Compiled;
 				if (!searchRequest.CaseSensitive)
 					options |= RegexOptions.IgnoreCase;
-				Regex r = new Regex (searchRequest.SearchPattern, options);
+				var r = new Regex (searchRequest.SearchPattern, options);
 				return r != null;
 			} catch (Exception e) {
 				error = e.Message;
 				return false;
 			}
 		}
-		
+
 		public override SearchResult GetMatchAt (int offset)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, offset);
+			var match = regex.Match (textEditorData.Document.Text, offset);
 			if (match != null && match.Success && match.Index == offset) {
 				return new SearchResult (offset, match.Length, false);
 			}
 			return null;
 		}
-		
+
 		public override SearchResult GetMatchAt (int offset, int length)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (this.textEditorData.Document.Text, offset, length);
+			var match = regex.Match (textEditorData.Document.Text, offset, length);
 			if (match != null && match.Success && match.Index == offset) {
 				return new SearchResult (offset, match.Length, false);
 			}
 			return null;
 		}
-		
+
 		public override SearchResult SearchForward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match match = regex.Match (args.Text, fromOffset);
+			var match = regex.Match (args.Text, fromOffset);
 			if (match.Success) {
-				return new SearchResult (match.Index, 
-				                         match.Length, false);
+				return new SearchResult (match.Index, match.Length, false);
 			}
 			match = regex.Match (args.Text, 0, fromOffset);
 			if (match.Success) {
-				return new SearchResult (match.Index, 
-				                         match.Length, true);
+				return new SearchResult (match.Index, match.Length, true);
 			}
 			return null;
 		}
-		
-		public override SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args,  int fromOffset)
+
+		public override SearchResult SearchBackward (System.ComponentModel.BackgroundWorker worker, TextViewMargin.SearchWorkerArguments args, int fromOffset)
 		{
 			if (regex == null || String.IsNullOrEmpty (searchRequest.SearchPattern))
 				return null;
-			System.Text.RegularExpressions.Match found = null; 
-			System.Text.RegularExpressions.Match last = null; 
-			foreach (System.Text.RegularExpressions.Match match in regex.Matches (args.Text)) {
+			Match found = null; 
+			Match last = null; 
+			foreach (Match match in regex.Matches (args.Text)) {
 				if (match.Index < fromOffset) {
 					found = match;
 				}
@@ -382,19 +368,41 @@ namespace Mono.TextEditor
 				found = last;
 				wrapped = true;
 			}
-			
-			if (found != null) {
-				return new SearchResult (found.Index, found.Length, wrapped);
-			}
-			return null;
+
+			return found != null ? new SearchResult (found.Index, found.Length, wrapped) : null;
 		}
-		
+
 		public override void Replace (SearchResult result, string pattern)
 		{
-			string text = this.textEditorData.Document.GetTextAt (result.Segment);
-			this.textEditorData.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
+			string text = textEditorData.Document.GetTextAt (result.Segment);
+			textEditorData.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
 		}
-		
+
+		public override int ReplaceAll (string withPattern)
+		{
+			var searchResults = new List<SearchResult> ();
+
+			int offset = 0;
+			if (!SearchRequest.SearchRegion.IsInvalid)
+				offset = SearchRequest.SearchRegion.Offset;
+			SearchResult searchResult; 
+			var text = textEditorData.Text;
+			var args = new TextViewMargin.SearchWorkerArguments { Text = text };
+			while (true) {
+				searchResult = SearchForward (null, args, offset);
+				if (searchResult == null || searchResult.SearchWrapped)
+					break;
+				searchResults.Add (searchResult);
+				offset = searchResult.EndOffset;
+			}
+			using (var undo = textEditorData.OpenUndoGroup ()) {
+				for (int i = searchResults.Count - 1; i >= 0; i--) {
+					Replace (searchResults [i], withPattern);
+				}
+				if (searchResults.Count > 0)
+					textEditorData.ClearSelection ();
+			}
+			return searchResults.Count;
+		}
 	}
-	
 }
