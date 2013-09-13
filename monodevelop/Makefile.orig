@@ -4,7 +4,7 @@
 #   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
 #   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
 
-VERSION=3.2.16
+VERSION=3.2.17
 
 MDTOOL = mono 'INSERT_MDROOT/bin/mdtool.exe'
 
@@ -90,15 +90,6 @@ MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml: MonoDevelop.FSharpBi
 		$< > $@
 
 # Update the files for use on Windows
-MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig Makefile
-	sed \
-		-e "s,INSERT_FSPROJ_MDROOT,c:\\\\Program Files (x86)\\\\MonoDevelop,g" \
-		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
-		-e "s,INSERT_FSPROJ_MDTAG,windows,g" \
-		$< > $@
-
-
-# Update the files for use on Windows
 MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig Makefile
 	sed \
 		-e "s,INSERT_FSPROJ_VERSION,$(VERSION),g" \
@@ -106,5 +97,5 @@ MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBin
 		-e "s,INSERT_FSPROJ_MDTAG,windows,g" \
 		$< > $@
 
-build-support: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml \
+build-support: MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml \
 	MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml

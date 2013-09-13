@@ -49,7 +49,8 @@
     <GenerateTailCalls>false</GenerateTailCalls>
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
-  <Import Project="$(MSBuildProjectDirectory)\..\..\lib\fsharp\Microsoft.FSharp.Targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
   <ItemGroup>
     <EmbeddedResource Include="icons.fsharp-icon-32.png" />
     <EmbeddedResource Include="icons.fsharp-script-32.png" />
@@ -148,7 +149,7 @@
     </Reference>
     <Reference Include="Xwt.Gtk">
       <Private>False</Private>
-      <HintPath>.INSERT_FSPROJ_MDROOT/bin/Xwt.Gtk.dll</HintPath>
+      <HintPath>INSERT_FSPROJ_MDROOT/bin/Xwt.Gtk.dll</HintPath>
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
