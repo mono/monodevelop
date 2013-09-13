@@ -698,7 +698,8 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe void AddInternetPassword (Uri uri, string username, string password)
 		{
-			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
 			byte[] passwd = Encoding.UTF8.GetBytes (password);
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			byte[] user = Encoding.UTF8.GetBytes (username);
@@ -736,7 +737,8 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe void AddInternetPassword (Uri uri, string password)
 		{
-			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
 			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
 			byte[] passwd = Encoding.UTF8.GetBytes (password);
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
@@ -806,7 +808,8 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
 		{
-			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
 			var protocol = GetSecProtocolType (uri.Scheme);
@@ -831,7 +834,8 @@ namespace MonoDevelop.MacInterop
 
 		public static string FindInternetPassword (Uri uri)
 		{
-			byte[] path = Encoding.UTF8.GetBytes (string.Join (string.Empty, uri.Segments).Substring (1)); // don't include the leading '/'
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
 			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
