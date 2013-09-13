@@ -55,8 +55,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsPointer (EvaluationContext ctx, object val)
 		{
-			// FIXME: implement this correctly.
-			return false;
+			CorType type = (CorType) GetValueType (ctx, val);
+			return IsPointer (type);
 		}
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
@@ -590,6 +590,11 @@ namespace MonoDevelop.Debugger.Win32
             }
             return null;
         }
+
+		public bool IsPointer (CorType targetType)
+		{
+			return targetType.Type == CorElementType.ELEMENT_TYPE_PTR;
+		}
 
 		public object CreateEnum (EvaluationContext ctx, CorType type, object val)
 		{
