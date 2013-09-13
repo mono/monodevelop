@@ -73,6 +73,10 @@ else
             mdExe <- GetPath[mdDir; "../../XamarinStudio"]
         elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
             mdExe <- GetPath [mdDir; "../../MonoDevelop"]
+        elif (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
+            mdExe <- GetPath[mdDir; "bin/XamarinStudio.exe"]
+        elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
+            mdExe <- GetPath [mdDir; "bin/MonoDevelop.exe"]
         if (mdExe <> null) then
             let outp = Run(mdExe, "/?").ReadLine()
             mdVersion <- outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
