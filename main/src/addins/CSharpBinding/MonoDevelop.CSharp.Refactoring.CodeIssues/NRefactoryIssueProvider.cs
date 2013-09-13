@@ -166,19 +166,21 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}	
 
-		public override bool CanDisableOnce { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
+		public override bool CanDisableOnce { get { return !string.IsNullOrEmpty (attr.AnalysisDisableKeyword); } }
 
-		public override bool CanDisableAndRestore { get { return !string.IsNullOrEmpty (attr.ResharperDisableKeyword); } }
+		public override bool CanDisableAndRestore { get { return !string.IsNullOrEmpty (attr.AnalysisDisableKeyword); } }
 
 		public override bool CanDisableWithPragma { get { return attr.PragmaWarning > 0; } }
 
 		public override bool CanSuppressWithAttribute { get { return !string.IsNullOrEmpty (attr.SuppressMessageCheckId); } }
 
+		const string analysisDisableTag = "Analysis ";
+
 		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
 		{
 			document.Editor.Insert (
 				document.Editor.LocationToOffset (loc.BeginLine, 1), 
-				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable once " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 			); 
 		}
 
@@ -187,11 +189,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			using (document.Editor.OpenUndoGroup ()) {
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "// ReSharper restore " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 				); 
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.BeginLine, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// ReSharper disable " + attr.ResharperDisableKeyword + document.Editor.EolMarker
+					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 				); 
 			}
 		}
