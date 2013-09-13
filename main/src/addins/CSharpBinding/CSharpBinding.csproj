@@ -321,6 +321,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\BaseNRefactoryIssueProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -343,5 +344,6 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
     <Folder Include="MonoDevelop.CSharp.Tooltips\" />
     <Folder Include="MonoDevelop.CSharp.UnitTests\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\" />
   </ItemGroup>
 </Project>
