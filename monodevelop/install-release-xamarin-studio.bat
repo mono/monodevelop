@@ -6,5 +6,5 @@ set MDROOT="%ProgramFiles(x86)%\Xamarin Studio"
 rmdir /s /q pack
 mkdir pack\windows\Release
 xcopy /s /I /y dependencies\AspNetMvc4 bin\windows\Release\packages\AspNetMvc4
-%MDROOT%\bin\mdtool.exe setup pack bin\windows\Release\FSharpBinding.addin.xml -d:pack\windows\Release
+%MDROOT%\bin\mdtool.exe setup pack bin\windows\Release\FSharpBinding.dll -d:pack\windows\Release
 %MDROOT%\bin\mdtool.exe setup install -y pack\windows\Release\MonoDevelop.FSharpBinding_3.2.17.mpack 
