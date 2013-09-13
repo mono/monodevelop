@@ -173,14 +173,6 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public abstract void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor);
 
-		public virtual void Resolve (FilePath[] paths, bool recurse, IProgressMonitor monitor)
-		{
-			foreach (string path in paths)
-				Resolve (path, recurse, monitor);
-		}
-
-		public abstract void Resolve (FilePath path, bool recurse, IProgressMonitor monitor);
-
 		public abstract void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor);
 
 		public abstract void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor);

@@ -732,21 +732,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
-		{
-			if (path == FilePath.Null || monitor == null)
-				throw new ArgumentNullException();
-
-			var localpool = TryStartOperation (monitor);
-			try {
-				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_resolved (pathorurl, recurse, ctx, localpool));
-			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
-			}
-		}
-
 		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			if (path == FilePath.Null || monitor == null)

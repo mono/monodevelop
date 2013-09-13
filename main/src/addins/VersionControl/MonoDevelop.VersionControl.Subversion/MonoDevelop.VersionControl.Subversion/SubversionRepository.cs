@@ -195,15 +195,6 @@ namespace MonoDevelop.VersionControl.Subversion
 			Svn.Checkout (this.Url, targetLocalPath, rev, recurse, monitor);
 		}
 
-		public void Resolve (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
-		{
-			Svn.Resolve (localPaths, recurse, monitor);
-			FileUpdateEventArgs args = new FileUpdateEventArgs ();
-			foreach (var path in localPaths)
-				args.Add (new FileUpdateEventInfo (this, path, Directory.Exists (path)));
-			VersionControlService.NotifyFileStatusChanged (args);
-		}
-
 		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			// If we have an array of paths such as: new [] { "/Foo/Directory", "/Foo/Directory/File1", "/Foo/Directory/File2" }

@@ -363,15 +363,6 @@ namespace SubversionAddinWindows
 			}
 		}
 
-		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
-		{
-			SvnResolveArgs args = new SvnResolveArgs ();
-			BindMonitor (args, monitor);
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			lock (client) 
-				client.Resolve (path, SvnAccept.MineFull, args);
-		}
-
 		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 			SvnRevertArgs args = new SvnRevertArgs ();
