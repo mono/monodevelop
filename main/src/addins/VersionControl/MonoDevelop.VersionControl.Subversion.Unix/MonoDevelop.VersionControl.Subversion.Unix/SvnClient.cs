@@ -18,8 +18,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	public class SvnClient : SubversionVersionControl
 	{
 		internal static LibApr apr;
-		static Lazy<bool> isInstalled;
+		static readonly Lazy<bool> isInstalled;
 		internal static LibSvnClient svn;
+		static readonly Lazy<bool> pre_1_7;
 
 		internal static void CheckError (IntPtr error)
 		{
@@ -98,7 +99,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			return true;
 		}
-		
+
+		internal static bool CheckVersion ()
+		{
+			return GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);
+		}
+
+		public static string GetVersion ()
+		{
+			IntPtr ptr = svn.client_version ();
+			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t)Marshal.PtrToStructure (ptr, typeof(LibSvnClient.svn_version_t));
+			return ver.major + "." + ver.minor + "." + ver.patch;
+		}
+
 		static int GetLoadAprLib (int oldVersion)
 		{
 			// Get the version of the loaded libapr
@@ -123,9 +136,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			get { return isInstalled.Value; }
 		}
 
+		public static bool Pre_1_7 {
+			get { return pre_1_7.Value; }
+		}
+
 		static SvnClient ()
 		{
 			isInstalled = new Lazy<bool> (CheckInstalled);
+			pre_1_7 = new Lazy<bool> (CheckVersion);
 		}
 
 		public override SubversionBackend CreateBackend ()
@@ -155,12 +173,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
-			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
-			bool pre_1_7;
-			string new_path = backend.GetDirectoryDotSvnInternal (path, out pre_1_7);
-			if (pre_1_7)
+			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
-			return new_path;
+
+			IntPtr localpool = newpool (IntPtr.Zero);
+			try {
+				IntPtr res = svn.repos_find_root_path (path, localpool);
+				return Marshal.PtrToStringAnsi (res);
+			} finally {
+				apr.pool_destroy (localpool);
+			}
 		}
 	}
 
@@ -193,7 +215,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.newpool (parent);
 		}
 
-		bool pre_1_7;
 		bool disposed = false;
 		IntPtr auth_baton;
 		IntPtr pool;
@@ -228,7 +249,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public UnixSvnBackend ()
 		{
-			pre_1_7 = GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
 
@@ -266,7 +286,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "config"),
 			                     config_hash);
 
-			if (!pre_1_7) {
+			if (!SvnClient.Pre_1_7) {
 				IntPtr scratch = newpool (IntPtr.Zero);
 				svn.wc_context_create (out wc_ctx, config_hash, pool, scratch);
 				Marshal.WriteIntPtr (ctx,
@@ -455,9 +475,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		public override string GetVersion ()
 		{
-			IntPtr ptr = svn.client_version ();
-			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t) Marshal.PtrToStructure (ptr, typeof (LibSvnClient.svn_version_t));				
-			return ver.major + "." + ver.minor + "." + ver.patch;
+			return SvnClient.GetVersion ();
 		}
 
 		public override IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev)
@@ -1430,39 +1448,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
-		internal string GetDirectoryDotSvnInternal (FilePath path, out bool pre_1_7)
-		{
-			pre_1_7 = this.pre_1_7;
-			if (pre_1_7)
-				return "";
-
-			IntPtr result;
-			IntPtr scratch = newpool (pool);
-			var localpool = TryStartOperation (null);
-			try {
-				string new_path = NormalizePath (path.FullPath, localpool);
-				try {
-					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
-				} catch (SubversionException e) {
-					// We are not in a working copy.
-					switch (e.ErrorCode) {
-					// SVN_ERR_WC_NOT_DIRECTORY
-					case 155007:
-					// SVN_ERR_WC_NOT_FILE
-					case 155008:
-						return "";
-					}
-
-					throw;
-				}
-				return Marshal.PtrToStringAnsi (result);
-			} finally {
-				apr.pool_destroy (localpool);
-				apr.pool_destroy (scratch);
-				TryEndOperation ();
-			}
-		}
-		
 		public class StatusCollector {
 			ArrayList statuses;
 
