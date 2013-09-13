@@ -2,8 +2,7 @@
 
 # Here are a few paths that need to be configured first:
 MONOBIN = INSERT_MONO_BIN
-FSBIN = lib/fsharp
-FSC = lib/fsharp/fsharpc
+FSC = mono $(MONOBIN)/fsc.exe
 
 FILES_FCB = \
 	FSharp.CompilerBinding/Common.fs \
@@ -30,7 +29,7 @@ REFERENCES = \
 	-r:Microsoft.Build.Utilities.v4.0.dll \
 	-r:lib/ndesk-options/NDesk.Options.dll \
 	-r:lib/newtonsoft.json/Newtonsoft.Json.dll \
-	-r:$(FSBIN)/FSharp.Core.dll 
+	-r:$(MONOBIN)/FSharp.Core.dll 
 
 config=Release
 
@@ -54,9 +53,9 @@ bin/FSharp.CompilerBinding.dll: $(FILES_FCB)
 	@-mkdir -p bin
 	$(FSC) $(FSC_OPTS) --target:library --out:bin/FSharp.CompilerBinding.dll $(REFERENCES) $(FILES_FCB)
 
-bin/FSharp.Core.dll: $(FSBIN)/FSharp.Core.dll
+bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
 	@-mkdir -p  bin
-	cp -p $(FSBIN)/FSharp.Core.dll bin/FSharp.Core.dll
+	cp -p $(MONOBIN)/FSharp.Core.dll bin/FSharp.Core.dll
 
 clean:
 	-rm -fr bin
