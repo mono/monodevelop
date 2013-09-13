@@ -13,9 +13,6 @@
     <!-- disable this for now, xbuild hangs if it launches the terminate-and-stay-resident server -->
     <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
-
-    <MonoDevelopVersion>INSERT_FSPROJ_MDVERSION4</MonoDevelopVersion>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '4.0'">M$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
 
