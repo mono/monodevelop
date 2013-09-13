@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Debugging.Backend;
-using Mono.Debugging.Client;
+﻿using Mono.Debugging.Backend;
 
 namespace MonoDevelop.Debugger.Win32
 {

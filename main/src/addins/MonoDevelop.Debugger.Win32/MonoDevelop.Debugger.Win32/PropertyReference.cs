@@ -25,7 +25,6 @@
 //
 //
 
-using System;
 using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;

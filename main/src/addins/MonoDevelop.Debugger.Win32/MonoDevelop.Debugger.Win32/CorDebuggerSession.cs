@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Threading;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
-using System.Runtime.InteropServices;
 using System.Diagnostics.SymbolStore;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using Microsoft.Samples.Debugging.CorDebug;
+using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorSymbolStore;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using System.Reflection;
 
 namespace MonoDevelop.Debugger.Win32
 {

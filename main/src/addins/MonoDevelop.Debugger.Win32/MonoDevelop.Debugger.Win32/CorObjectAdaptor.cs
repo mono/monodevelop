@@ -27,21 +27,21 @@
 
 using System;
 using System.Collections;
-using System.Reflection;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using SR = System.Reflection;
-using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
-using Microsoft.Samples.Debugging.CorDebug;
-using Mono.Debugging.Evaluation;
-using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
-using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
-using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
 using System.Diagnostics.SymbolStore;
+using System.Reflection;
+using System.Text;
+using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 using MonoDevelop.Core.Collections;
+using SR = System.Reflection;
+using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
+using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
+using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 
 namespace MonoDevelop.Debugger.Win32
 {

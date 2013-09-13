@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Threading;
 using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32

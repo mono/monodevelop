@@ -25,11 +25,10 @@
 //
 //
 
-using System;
 using System.Reflection;
+using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {

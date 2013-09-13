@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Debugging.Evaluation;
-using DC=Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
+using Mono.Debugging.Evaluation;
+using DC = Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Win32
 {
