@@ -144,8 +144,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 
 		public abstract IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool);
 
-		public abstract IntPtr wc_context_destroy (IntPtr svn_wc_context_t);
-
 		public abstract IntPtr client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool);
 
 		// TODO: Check if intptr

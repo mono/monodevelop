@@ -331,8 +331,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (!disposed) {
 				if (apr != null)
 					apr.pool_destroy(pool);
-				if (wc_ctx != IntPtr.Zero)
-					LibSvnClient.wc_context_destroy (wc_ctx);
 				disposed = true;
 			}
 		}
