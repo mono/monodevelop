@@ -5,7 +5,7 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaBacktrace: IBacktrace
 	{
-		IBacktrace backtrace;
+		readonly IBacktrace backtrace;
 
 		public MtaBacktrace (IBacktrace bt)
 		{

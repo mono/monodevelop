@@ -34,12 +34,12 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class PropertyReference: ValueReference
 	{
-		PropertyInfo prop;
-		CorValRef thisobj;
-		CorValRef[] index;
-		CorModule module;
-		CorType declaringType;
-		CorValRef.ValueLoader loader;
+		readonly PropertyInfo prop;
+		readonly CorValRef thisobj;
+		readonly CorValRef[] index;
+		readonly CorModule module;
+		readonly CorType declaringType;
+		readonly CorValRef.ValueLoader loader;
 		CorValRef cachedValue;
 
 		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
@@ -130,8 +130,7 @@ namespace MonoDevelop.Debugger.Win32
 					sb.Append ("]");
 					return sb.ToString ();
 				}
-				else
-					return prop.Name;
+				return prop.Name;
 			}
 		}
 

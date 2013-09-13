@@ -5,7 +5,7 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaObjectValueSource: IObjectValueSource
 	{
-		IObjectValueSource source;
+		readonly IObjectValueSource source;
 
 		public MtaObjectValueSource (IObjectValueSource s)
 		{

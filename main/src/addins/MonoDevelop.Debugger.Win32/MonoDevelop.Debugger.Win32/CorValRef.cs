@@ -5,7 +5,7 @@ namespace MonoDevelop.Debugger.Win32
 	public class CorValRef
 	{
 		CorValue val;
-		ValueLoader loader;
+		readonly ValueLoader loader;
 		int version;
 
 		public delegate CorValue ValueLoader ( );

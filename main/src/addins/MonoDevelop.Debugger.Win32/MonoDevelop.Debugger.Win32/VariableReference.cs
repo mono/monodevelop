@@ -32,9 +32,9 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class VariableReference: ValueReference
 	{
-		CorValRef var;
-		DC.ObjectValueFlags flags;
-		string name;
+		readonly CorValRef var;
+		readonly DC.ObjectValueFlags flags;
+		readonly string name;
 
 		public VariableReference (EvaluationContext ctx, CorValRef var, string name, DC.ObjectValueFlags flags)
 			: base (ctx)

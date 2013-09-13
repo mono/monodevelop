@@ -18,8 +18,8 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
-		object debugLock = new object ();
-		object terminateLock = new object ();
+		readonly object debugLock = new object ();
+		readonly object terminateLock = new object ();
 
 		CorDebugger dbg;
 		CorProcess process;
@@ -31,13 +31,13 @@ namespace MonoDevelop.Debugger.Win32
 
 		static int evaluationTimestamp;
 
-		SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = new SymbolBinder ();
 		Dictionary<string, DocInfo> documents;
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		Dictionary<string, ModuleInfo> modules;
-		Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
-		Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
+		readonly Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
+		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 		
 
 		public CorObjectAdaptor ObjectAdapter;
@@ -142,7 +142,7 @@ namespace MonoDevelop.Debugger.Win32
 
 				int flags = 0;
 				if (!startInfo.UseExternalConsole) {
-					flags = 0x08000000; /* CREATE_NO_WINDOW*/
+					flags = (int)CreationFlags.CREATE_NO_WINDOW;
 					flags |= CorDebugger.CREATE_REDIRECT_STD;
 				}
 

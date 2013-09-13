@@ -32,9 +32,9 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class ArrayAdaptor: ICollectionAdaptor
 	{
-		CorEvaluationContext ctx;
+		readonly CorEvaluationContext ctx;
 		CorArrayValue array;
-		CorValRef obj;
+		readonly CorValRef obj;
 
 		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj, CorArrayValue array)
 		{

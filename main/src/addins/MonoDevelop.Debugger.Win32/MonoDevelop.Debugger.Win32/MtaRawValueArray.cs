@@ -5,7 +5,7 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaRawValueArray : IRawValueArray
 	{
-		IRawValueArray source;
+		readonly IRawValueArray source;
 
 		public MtaRawValueArray (IRawValueArray s)
 		{

@@ -4,7 +4,7 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaObjectValueUpdater : IObjectValueUpdater
 	{
-		IObjectValueUpdater source;
+		readonly IObjectValueUpdater source;
 
 		public MtaObjectValueUpdater (IObjectValueUpdater s)
 		{

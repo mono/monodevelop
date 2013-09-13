@@ -12,8 +12,8 @@ namespace MonoDevelop.Debugger.Win32
 	class CorBacktrace: BaseBacktrace
 	{
 		CorThread thread;
-		int threadId;
-		CorDebuggerSession session;
+		readonly int threadId;
+		readonly CorDebuggerSession session;
 		List<CorFrame> frames;
 		int evalTimestamp;
 

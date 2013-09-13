@@ -4,7 +4,7 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaRawValueString : IRawValueString
 	{
-		IRawValueString source;
+		readonly IRawValueString source;
 
 		public MtaRawValueString (IRawValueString s)
 		{

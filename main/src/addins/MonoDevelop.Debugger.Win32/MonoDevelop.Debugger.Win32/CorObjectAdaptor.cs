@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		T[] CastArray<T> (object[] array)
+		static T[] CastArray<T> (object[] array)
 		{
 			if (array == null)
 				return null;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Debugger.Win32
 				return val;
 		}
 
-		bool IsValueType (CorEvaluationContext ctx, CorValRef val)
+		static bool IsValueType (CorEvaluationContext ctx, CorValRef val)
 		{
 			CorValue v = GetRealObject (ctx, val);
 			if (v.Type == CorElementType.ELEMENT_TYPE_VALUETYPE)

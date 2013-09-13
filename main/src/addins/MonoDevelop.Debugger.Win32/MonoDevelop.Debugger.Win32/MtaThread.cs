@@ -5,12 +5,12 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class MtaThread
 	{
-		static AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
 		static Action workDelegate;
-		static object workLock = new object ();
+		static readonly object workLock = new object ();
 		static Thread workThread;
 		static Exception workError;
-		static object threadLock = new object ();
+		static readonly object threadLock = new object ();
 
 		public static R Run<R> (Func<R> ts)
 		{

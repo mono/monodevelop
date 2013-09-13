@@ -11,7 +11,7 @@ namespace MonoDevelop.Debugger.Win32
 		CorFrame frame;
 		int frameIndex;
 		int evalTimestamp;
-		CorBacktrace backtrace;
+		readonly CorBacktrace backtrace;
 		CorThread thread;
 		int threadId;
 
