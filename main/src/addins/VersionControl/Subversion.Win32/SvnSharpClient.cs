@@ -16,8 +16,8 @@ namespace SubversionAddinWindows
 	public class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
-		static bool installError;
-		static SvnClient client;
+		static readonly bool installError;
+		static readonly SvnClient client;
 		
 		static SvnSharpClient ()
 		{
@@ -81,14 +81,14 @@ namespace SubversionAddinWindows
 		IProgressMonitor updateMonitor;
 		ProgressData progressData;
 
-		public override string GetTextBase (string file)
+		public override string GetTextBase (string sourcefile)
 		{
 			MemoryStream data = new MemoryStream ();
 			try {
 				// This outputs the contents of the base revision
 				// of a file to a stream.
-				client.Write (new SvnPathTarget (file), data);
-				return TextFile.ReadFile (file, data).Text;
+				client.Write (new SvnPathTarget (sourcefile), data);
+				return TextFile.ReadFile (sourcefile, data).Text;
 			} catch (SvnIllegalTargetException e) {
 				// This occurs when we don't have a base file for
 				// the target file. We have no way of knowing if
@@ -648,7 +648,7 @@ namespace SubversionAddinWindows
 				return;
 
 			data.LogTimer.Interval = 1000;
-			data.LogTimer.Elapsed += delegate (object sender, ElapsedEventArgs eea) {
+			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
 				monitor.Log.WriteLine ("{0} bytes in {1} seconds", data.Bytes, data.Seconds);
 			};
