@@ -215,28 +215,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.newpool (parent);
 		}
 
-		bool disposed = false;
-		IntPtr auth_baton;
-		IntPtr pool;
-		IntPtr ctx;
+		bool disposed;
+		readonly IntPtr auth_baton;
+		readonly IntPtr pool;
+		readonly IntPtr ctx;
 
-		object sync = new object();
-		bool inProgress = false;
+		readonly object sync = new object();
+		bool inProgress;
 
 		IProgressMonitor updatemonitor;
 		ArrayList updateFileList;
-		string commitmessage = null;
+		string commitmessage;
 
 		ArrayList lockFileList;
 		LibSvnClient.NotifyLockState requiredLockState;
 
 		// retain this so the delegates aren't GC'ed
-		LibSvnClient.svn_cancel_func_t cancel_func;
-		LibSvnClient.svn_ra_progress_notify_func_t progress_func;
-		LibSvnClient.svn_wc_notify_func2_t notify_func;
-		LibSvnClient.svn_client_get_commit_log_t log_func;
-		IntPtr config_hash;
-		IntPtr wc_ctx;
+		readonly LibSvnClient.svn_cancel_func_t cancel_func;
+		readonly LibSvnClient.svn_ra_progress_notify_func_t progress_func;
+		readonly LibSvnClient.svn_wc_notify_func2_t notify_func;
+		readonly LibSvnClient.svn_client_get_commit_log_t log_func;
+		readonly IntPtr config_hash;
+		readonly IntPtr wc_ctx;
 
 		static bool IsBinary (byte[] buffer, long length)
 		{
@@ -373,7 +373,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return apr.pcalloc (localpool, error);
 		}
 
-		static LibSvnClient.svn_auth_simple_prompt_func_t OnAuthSimplePromptCallback = OnAuthSimplePrompt;
+		static readonly LibSvnClient.svn_auth_simple_prompt_func_t OnAuthSimplePromptCallback = OnAuthSimplePrompt;
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
@@ -391,7 +391,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_username_prompt_func_t OnAuthUsernamePromptCallback = OnAuthUsernamePrompt;
+		static readonly LibSvnClient.svn_auth_username_prompt_func_t OnAuthUsernamePromptCallback = OnAuthUsernamePrompt;
 		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_username_t data = new LibSvnClient.svn_auth_cred_username_t ();
@@ -409,7 +409,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
 		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, string realm, UInt32 failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
@@ -437,7 +437,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t OnAuthSslClientCertPromptCallback = OnAuthSslClientCertPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t OnAuthSslClientCertPromptCallback = OnAuthSslClientCertPrompt;
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
@@ -454,7 +454,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t OnAuthSslClientCertPwPromptCallback = OnAuthSslClientCertPwPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t OnAuthSslClientCertPwPromptCallback = OnAuthSslClientCertPwPrompt;
 		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data;
@@ -488,9 +488,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.NormalizePath (pathOrUrl, localpool);
 		}
 		
-		public override IEnumerable<DirectoryEntry> ListUrl (string pathorurl, bool recurse, SvnRevision rev)
+		public override IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev)
 		{
-			if (pathorurl == null)
+			if (url == null)
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
@@ -500,9 +500,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				IntPtr hash;
 				
-				pathorurl = NormalizePath (pathorurl, localpool);
+				url = NormalizePath (url, localpool);
 				
-				CheckError (svn.client_ls (out hash, pathorurl, ref revision,
+				CheckError (svn.client_ls (out hash, url, ref revision,
 				                           recurse, ctx, localpool));
 				
 				IntPtr item = apr.hash_first (localpool, hash);
@@ -631,16 +631,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return annotations;
 		}
 
-		public override string GetTextAtRevision (string pathorurl, Revision revision)
+		public override string GetTextAtRevision (string repositoryPath, Revision revision)
 		{
 			return null;
 		}
 
-		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
+		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
 		{
 			MemoryStream memstream = new MemoryStream ();
 			try {
-				Cat (pathorurl, (SvnRevision) revision, memstream);
+				Cat (repositoryPath, (SvnRevision) revision, memstream);
 			} catch (SubversionException e) {
 				// File got added/removed at some point.
 				// SVN_ERR_FS_NOT_FOUND
@@ -1308,14 +1308,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				break;
 //			case LibSvnClient.NotifyAction.Exists:
 //				// original is untranslated, we'll make it a bit shorter
-///*				actiondesc = data.content_state == LibSvnClient.NotifyState.Conflicted ? "C" : "E";
+//				actiondesc = data.content_state == LibSvnClient.NotifyState.Conflicted ? "C" : "E";
 //				if (data.prop_state == LibSvnClient.NotifyState.Conflicted) {
 //					actiondesc += "C";
 //				} else if (data.prop_state == LibSvnClient.NotifyState.Merged) {
 //					actiondesc += "G";
 //				}
 //				actiondesc += " {0}";
-//				actiondesc = string.Format (actiondesc, file); */
+//				actiondesc = string.Format (actiondesc, file);
 //				actiondesc = string.Format (GettextCatalog.GetString ("Exists   {0}"), file);
 //				break;
 			case LibSvnClient.NotifyAction.Restore: 
@@ -1449,7 +1449,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 
 		public class StatusCollector {
-			ArrayList statuses;
+			readonly ArrayList statuses;
 
 			public LibSvnClient.svn_wc_status_func2_t Func {
 				get; private set;
@@ -1476,9 +1476,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			
-			List<SvnRevision> logs;
-			SubversionRepository repo;
-			IntPtr ctx;
+			readonly List<SvnRevision> logs;
+			readonly SubversionRepository repo;
+			readonly IntPtr ctx;
 
 			public LibSvnClient.svn_log_message_receiver_t Func {
 				get; private set;
@@ -1540,7 +1540,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 		
 		public class StreamCollector {
-			Stream buf;
+			readonly Stream buf;
 
 			public LibSvnClient.svn_readwrite_fn_t Func {
 				get; private set;
@@ -1570,7 +1570,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		/// </summary>
 		private class AnnotationCollector
 		{
-			Annotation[] annotations;
+			readonly Annotation[] annotations;
 			public LibSvnClient.svn_client_blame_receiver_t Func {
 				get; private set;
 			}
