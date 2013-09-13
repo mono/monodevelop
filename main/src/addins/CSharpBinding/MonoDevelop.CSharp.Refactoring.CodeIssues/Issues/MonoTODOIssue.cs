@@ -76,18 +76,25 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				this.issue = issue;
 				this.ctx = ctx;
 			}
-
+			static readonly Dictionary<string, string> attributes = new Dictionary<string, string> {
+				{ "MonoTODOAttribute", "Mono TODO" },
+				{ "MonoNotSupportedAttribute", "Mono NOT SUPPORTED" },
+				{ "MonoLimitationAttribute", "Mono LIMITATION" }
+			};
 			void Check (AstNode node, IMember member)
 			{
 				foreach (var attr in member.Attributes) {
-					if (attr.AttributeType.Namespace == "System" &&
-						attr.AttributeType.Name == "MonoTODOAttribute") {
+					if (attr.AttributeType.Namespace != "System")
+						continue;
+
+					string val;
+					if (attributes.TryGetValue (attr.AttributeType.Name, out val)) {
 						string msg = null;
 						var arg = attr.PositionalArguments.FirstOrDefault ();
 						if (arg != null)
 							msg = arg.ConstantValue != null ? arg.ConstantValue.ToString () : null;
 						Issues.Add (new CodeIssue (ICSharpCode.NRefactory.Refactoring.IssueMarker.WavedLine,
-							string.IsNullOrEmpty (msg) ? "Mono TODO" : string.Format ("Mono TODO: {0}", msg),
+							string.IsNullOrEmpty (msg) ? val : val + ": " + msg,
 							new DomRegion (node.StartLocation, node.EndLocation),
 							issue.IdString
 						)); 
