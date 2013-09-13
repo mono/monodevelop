@@ -1,4 +1,9 @@
 
+// Configuration script to create
+//     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj (unix)
+//     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj (windows)
+//     MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
+
 open System
 open System.Collections.Generic
 open System.Linq
@@ -9,7 +14,7 @@ open System.Text.RegularExpressions
 
 let FSharpVersion = "3.2.17"
 
-let LinuxPaths = 
+let UnixPaths = 
     [ "/usr/lib/monodevelop"
       "/usr/local/monodevelop/lib/monodevelop"
       "/usr/local/lib/monodevelop"
@@ -27,10 +32,10 @@ let WindowsPaths =
 let MdCheckFile = "bin/MonoDevelop.Core.dll"
 
 
-let IsWindows = (Path.DirectorySeparatorChar = '\\')
+let isWindows = (Path.DirectorySeparatorChar = '\\')
 
 let GetPath (str: string list) =
-    Path.GetFullPath (System.String.Join (Path.DirectorySeparatorChar.ToString (), str.Select(fun (s:string) -> s.Replace ('/', Path.DirectorySeparatorChar))))
+    Path.GetFullPath (String.Join (Path.DirectorySeparatorChar.ToString (), str.Select(fun (s:string) -> s.Replace ('/', Path.DirectorySeparatorChar))))
 
 
 let Grep (file, regex, group:string) =
@@ -65,36 +70,38 @@ if (File.Exists (GetPath ["../../../monodevelop.pc.in"])) then
         mdVersion <- Grep (GetPath [mdDir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
 else
     // Using installed MonoDevelop
-    let searchPaths = if IsWindows then WindowsPaths else LinuxPaths
+    let searchPaths = if isWindows then WindowsPaths else UnixPaths
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
     if (mdDir <> null) then
-        let mutable mdExe = null
-        if (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
-            mdExe <- GetPath[mdDir; "../../XamarinStudio"]
-        elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
-            mdExe <- GetPath [mdDir; "../../MonoDevelop"]
-        elif (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
-            mdExe <- GetPath[mdDir; "bin/XamarinStudio.exe"]
-        elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
-            mdExe <- GetPath [mdDir; "bin/MonoDevelop.exe"]
+        let mdExe = 
+            if (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
+                GetPath[mdDir; "../../XamarinStudio"]
+            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
+                GetPath [mdDir; "../../MonoDevelop"]
+            elif (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
+                GetPath[mdDir; "bin/XamarinStudio.exe"]
+            elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
+                GetPath [mdDir; "bin/MonoDevelop.exe"]
+            else
+                null
         if (mdExe <> null) then
             let outp = Run(mdExe, "/?").ReadLine()
             mdVersion <- outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
 
-if not IsWindows then
+if not isWindows then
     // Update the makefile. We don't use that on windows
     FileReplace ("Makefile.orig", "Makefile", "INSERT_MDROOT", mdDir)
     FileReplace ("Makefile", "Makefile", "INSERT_MDVERSION4", mdVersion)
     FileReplace ("Makefile", "Makefile", "INSERT_VERSION", FSharpVersion)
     
-if (mdDir <> null) then
-    Console.WriteLine ("MonoDevelop binaries found at: {0}", mdDir)
-else
+if (mdDir = null) then
     Console.WriteLine ("MonoDevelop binaries not found. Continuing anyway")
+else
+    Console.WriteLine ("MonoDevelop binaries found at: {0}", mdDir)
 
 Console.WriteLine ("Detected version: {0}", mdVersion)
 
-let tag = if IsWindows then "windows" else "local"
+let tag = if isWindows then "windows" else "local"
 
 let fsprojFile = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp." + tag + ".fsproj"
 let xmlFile = "MonoDevelop.FSharpBinding/FSharpBinding.addin.xml"
