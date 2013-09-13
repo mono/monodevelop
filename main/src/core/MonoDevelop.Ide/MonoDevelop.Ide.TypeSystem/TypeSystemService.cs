@@ -1131,14 +1131,20 @@ namespace MonoDevelop.Ide.TypeSystem
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
 						var context = LoadProjectCache (this.wrapper.Project);
+						var output = this.wrapper.Project.GetOutputFileName (wrapper.Project.ParentSolution.DefaultConfigurationSelector);
+
+						string assemblyName = output.FileNameWithoutExtension;
+						if (string.IsNullOrEmpty (assemblyName))
+							assemblyName = this.wrapper.Project.Name;
+
 						if (context != null) {
-							return context.SetAssemblyName (this.wrapper.Project.Name) ?? context;
+							return context.SetAssemblyName (assemblyName) ?? context;
 						}
 
 						context = new MonoDevelopProjectContent (this.wrapper.Project);
 						wrapper.InLoad = true;
 						context = context.SetLocation (this.wrapper.Project.FileName);
-						context = context.SetAssemblyName (this.wrapper.Project.Name);
+						context = context.SetAssemblyName (assemblyName);
 						QueueParseJob (this.wrapper);
 						return context;
 					});
