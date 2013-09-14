@@ -32,6 +32,8 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using DFA = Antlr4.Runtime.Dfa.DFA;
+using MonoDevelop.CSSBinding.Parse.Interfaces;
+using MonoDevelop.CSSBinding.Parse.Models;
 
 namespace MonoDevelop.CSSParser 
 {
@@ -94,7 +96,7 @@ namespace MonoDevelop.CSSParser
 			return comments;
 
 		}
-		
+
 		public override IEnumerable<FoldingRegion> Foldings 
 		{
 			get 
@@ -116,8 +118,8 @@ namespace MonoDevelop.CSSParser
 			}
 
 		}
-		
-						
+
+
 	}
 
 

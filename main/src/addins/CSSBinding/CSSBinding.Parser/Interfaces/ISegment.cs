@@ -24,8 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.CSSBinding.Parse.Models;
 
-namespace MonoDevelop.CSSParser
+namespace MonoDevelop.CSSBinding.Parse.Interfaces
 {
 
 	public interface ISegment

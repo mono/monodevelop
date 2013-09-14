@@ -29,7 +29,7 @@
 //using MonoDevelop.Core;
 //using Mono.TextEditor;
 //
-//namespace MonoDevelop.Completion
+//namespace CSSBinding.Completion
 //{
 //	public class CSSCompletionExtension : CompletionTextEditorExtension
 //	{

@@ -34,28 +34,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSParsedDocument.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSParserAdapter.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSParserManager.cs" />
-    <Compile Include="MonoDevelop.CSSParser\Location.cs" />
-    <Compile Include="MonoDevelop.CSSParser\ParserException.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSParser.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSLexer.cs" />
-    <Compile Include="MonoDevelop.CSSParser\ISegment.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CodeSegment.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSBaseListener.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSBaseVisitor.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSListener.cs" />
-    <Compile Include="MonoDevelop.CSSParser\CSSVisitor.cs" />
-    <Compile Include="MonoDevelop.Completion\CSSCompletionExtension.cs" />
-    <Compile Include="MonoDevelop.Completion\ElementTypes.cs" />
+    <Compile Include="CSSBinding.Completion\CSSCompletionExtension.cs" />
+    <Compile Include="CSSBinding.Completion\ElementTypes.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSBaseListener.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSBaseVisitor.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSLexer.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSListener.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSParser.cs" />
+    <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSVisitor.cs" />
+    <Compile Include="CSSBinding.Parser\Models\CodeSegment.cs" />
+    <Compile Include="CSSBinding.Parser\Models\Location.cs" />
+    <Compile Include="CSSBinding.Parser\Models\ParserException.cs" />
+    <Compile Include="CSSBinding.Parser\Interfaces\ISegment.cs" />
+    <Compile Include="CSSBinding.Parser\CSSParsedDocument.cs" />
+    <Compile Include="CSSBinding.Parser\CSSParserAdapter.cs" />
+    <Compile Include="CSSBinding.Parser\CSSParserManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Templates\" />
     <Folder Include="Icons\" />
-    <Folder Include="MonoDevelop.CSSParser\" />
-    <Folder Include="MonoDevelop.Completion\" />
+    <Folder Include="CSSBinding.Completion\" />
+    <Folder Include="CSSBinding.Parser\" />
+    <Folder Include="CSSBinding.Parser\Antlr4Parser\" />
+    <Folder Include="CSSBinding.Parser\Models\" />
+    <Folder Include="CSSBinding.Parser\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CSSBinding.addin.xml">

@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Completion
+namespace MonoDevelop.CSSBinding.Completion
 {
 	public class ElementTypes
 	{

@@ -1,5 +1,5 @@
 //
-// CodeSegment.cs
+// CSSParserManager.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -24,53 +24,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.CodeDom.Compiler;
+using MonoDevelop.CSSBinding.Parse.Models;
 
 namespace MonoDevelop.CSSParser
 {
-	public class CodeSegment : ISegment
+	public class CSSParserManager
 	{
-		private string _text ;
+		string rootFileName;
+		CompilerErrorCollection errors = new CompilerErrorCollection ();
 
-		public CodeSegment(string text, Location start, Location end)
+		public CSSParserManager (string rootFileName)
 		{
-			this.StartLocation = start;
-			this.Text = text;
-			this.EndLocation = end;
+			this.rootFileName = rootFileName;
 		}
 
-		public CodeSegment(string text, Location start, Location end , CodeSegmentType type)
-		{
-			this.StartLocation = start;
-			this.Text = text;
-			this.EndLocation = end;
-			this.Type = type;
+		public CompilerErrorCollection Errors {
+			get { return errors; }
 		}
-		
-		public string Text { 
-			get{
-				if(_text !=null )
-					return _text;
-				else return "Not Defined";
-			} 
-			private set{ 
-				_text = GetFoldingStringTag (value);
-			} }
-		public CodeSegmentType Type { get; set; }
-		public Location TagStartLocation { get; set; }
-		public Location StartLocation { get; private set; }
-		public Location EndLocation { get; set; }
 
-		private string GetFoldingStringTag(string fullString)
+
+		void LogError (string message, Location location, bool isWarning)
 		{
-			return fullString.Split(new char[]{'{'} ).GetValue(0).ToString() +"{..." ;
+			CompilerError err = new CompilerError ();
+			err.ErrorText = message;
+			if (location.FileName != null) {
+				err.Line = location.Line;
+				err.Column = location.Column;
+				err.FileName = location.FileName ?? string.Empty;
+			} else {
+				err.FileName = rootFileName ?? string.Empty;
+			}
+			err.IsWarning = isWarning;
+			errors.Add (err);
+		}
+
+		public void LogError (string message)
+		{
+			LogError (message, Location.Empty, false);
+		}
+
+		public void LogWarning (string message)
+		{
+			LogError (message, Location.Empty, true);
+		}
+
+		public void LogError (string message, Location location)
+		{
+			LogError (message, location, false);
+		}
+
+		public void LogWarning (string message, Location location)
+		{
+			LogError (message, location, true);
 		}
 	}
 
-	public enum CodeSegmentType
-	{
-		CSSElement,
-		Comment
 
-	}
 }
 

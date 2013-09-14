@@ -1,5 +1,5 @@
 //
-// Location.cs
+// ParserException.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -25,49 +25,16 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.CSSParser
+namespace MonoDevelop.CSSBinding.Parse.Models
 {
-	public struct Location : IEquatable<Location>
+	public class ParserException : Exception
 	{
-		public Location (string fileName, int line, int column) : this()
+		public ParserException (string message, Location location) : base (message)
 		{
-			FileName = fileName;
-			Column = column;
-			Line = line;
+			Location = location;
 		}
 
-		public int Line { get; private set; }
-		public int Column { get; private set; }
-		public string FileName { get; private set; }
-
-		public static Location Empty {
-			get { return new Location (null, -1, -1); }
-		}
-
-		public Location AddLine ()
-		{
-			return new Location (this.FileName, this.Line + 1, 1);
-		}
-
-		public Location AddCol ()
-		{
-			return AddCols (1);
-		}
-
-		public Location AddCols (int number)
-		{
-			return new Location (this.FileName, this.Line, this.Column + number);
-		}
-
-		public override string ToString ()
-		{
-			return string.Format("[{0} ({1},{2})]", FileName, Line, Column);
-		}
-
-		public bool Equals (Location other)
-		{
-			return other.Line == Line && other.Column == Column && other.FileName == FileName;
-		}
+		public Location Location { get; private set; }
 	}
 }
 

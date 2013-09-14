@@ -34,6 +34,8 @@ using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using DFA = Antlr4.Runtime.Dfa.DFA;
+using MonoDevelop.CSSBinding.Parse.Interfaces;
+using MonoDevelop.CSSBinding.Parse.Models;
 
 
 namespace MonoDevelop.CSSParser
@@ -51,26 +53,35 @@ namespace MonoDevelop.CSSParser
 		}
 
 		private string GetSelectionFoldingText(string text){
-		
+
 			return text.Split(new char[] { '{' }).GetValue (0).ToString () + "{...}";
 		}
 
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			CSSParserManager template = new CSSParserManager (fileName);
+			string parsingString = content.ReadToEnd ();
+			AntlrInputStream input = new AntlrInputStream (parsingString);
 
-			AntlrInputStream input = new AntlrInputStream(content.ReadToEnd());
 
-			var lexer = new CSSLexer(input);
+
+
+
+			Console.WriteLine (parsingString);
+
+			CSSLexer lexer = new CSSLexer (input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			CSSParser parser = new CSSParser(tokens);
 
-			var d = tokens.GetTokens ();
+			IList<IToken> d = tokens.GetTokens ();
+
+			int tokenCount = tokens.GetNumberOfOnChannelTokens(); //this is caled to load d
 
 			IList<IToken> cs  = new List<IToken>();
 
-			foreach (var item in d) {
+			foreach (IToken item in d) {
 				if (item.Channel == 2) {
+					Console.WriteLine ("hehee:"+item.Text);
 					cs.Add (item);
 				}
 			}
@@ -102,9 +113,9 @@ namespace MonoDevelop.CSSParser
 
 			var errors = new List<Error> ();
 			errors.AddRange (parserErrorHandler.parserErrors);
-//			foreach (var item in errors) {
-//				Console.WriteLine (item.ErrorType +"----em:" + item.Message + "-----bc:" + item.Region.BeginColumn +"-----el:"+ item.Region.EndColumn);
-//			}
+			//			foreach (var item in errors) {
+			//				Console.WriteLine (item.ErrorType +"----em:" + item.Message + "-----bc:" + item.Region.BeginColumn +"-----el:"+ item.Region.EndColumn);
+			//			}
 			var doc = new CSSParsedDocument (fileName,foldingSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 
@@ -112,17 +123,17 @@ namespace MonoDevelop.CSSParser
 		}  
 	}
 
-//	public class CSSLexerErrorHandle : IAntlrErrorListener<IToken>
-//	{
-//		public List<Error> lexerErrors = new List<Error>();
-//
-//		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
-//		{
-//			lexerErrors.Add (new Error (ErrorType.Error, msg,new DomRegion(line,charPositionInLine)));
-//
-//		}
-//
-//	}
+	//	public class CSSLexerErrorHandle : IAntlrErrorListener<IToken>
+	//	{
+	//		public List<Error> lexerErrors = new List<Error>();
+	//
+	//		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+	//		{
+	//			lexerErrors.Add (new Error (ErrorType.Error, msg,new DomRegion(line,charPositionInLine)));
+	//
+	//		}
+	//
+	//	}
 
 	public class CSSParserErrorHandle : IAntlrErrorListener<IToken>
 	{
@@ -131,7 +142,6 @@ namespace MonoDevelop.CSSParser
 		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
 		{
 			parserErrors.Add (new Error (ErrorType.Error, msg,new DomRegion(line,charPositionInLine)));
-//			Console.WriteLine (msg + " ---" + line +"-----:" + offendingSymbol.Text);
 
 		}
 
