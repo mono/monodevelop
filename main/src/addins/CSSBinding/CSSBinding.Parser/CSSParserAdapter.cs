@@ -42,13 +42,50 @@ namespace MonoDevelop.CSSParser
 {
 	public class CSSParserAdapter : TypeSystemParser
 	{
+
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
+		{
+			CSSParserManager template = new CSSParserManager (fileName);
+			string parsingString = content.ReadToEnd ();
+			AntlrInputStream input = new AntlrInputStream (parsingString);
+			CSSLexer lexer = new CSSLexer (input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			CSSParser parser = new CSSParser(tokens);
+
+			var foldingList = new FoldingTokensVM ();
+
+			IList<IToken> allTokens = tokens.GetTokens ();
+			int tokenCount = tokens.GetNumberOfOnChannelTokens(); //Do not remove this line of code. This forces tokens to be filled
+
+			foldingList.commentList = AccumilateComments (fileName, allTokens);
+
+
+			var parserErrorHandler = new CSSParserErrorHandle ();
+			parser.AddErrorListener(parserErrorHandler);
+			var x = parser.styleSheet();
+			var bodySetContext = x.bodylist().bodyset();
+
+			foldingList.cssSelectionList= AccumilateCSSElements (fileName, bodySetContext);
+
+			var errors = new List<Error> ();
+
+			errors.AddRange( parserErrorHandler.ParserErrors);
+
+
+
+			var doc = new CSSParsedDocument (fileName,foldingList, errors);
+			doc.Flags |= ParsedDocumentFlags.NonSerializable;
+
+			return doc;
+		}
+
 		private object[] GetFolStringAndRelEndCoord(string text)
 		{
 			var stringList = text.Split (new string[] {  System.Environment.NewLine },StringSplitOptions.None);
 			if (stringList.Length == 1) {
 				return new object[] {text, 1, text.Length };
 			} else {
-				return new object[] {stringList.GetValue(0), stringList.Length, stringList.GetValue(stringList.Length-1) };
+				return new object[] {stringList[0], stringList.Length, stringList[stringList.Length-1].Length };
 			}
 		}
 
@@ -57,70 +94,38 @@ namespace MonoDevelop.CSSParser
 			return text.Split(new char[] { '{' }).GetValue (0).ToString () + "{...}";
 		}
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
+		private List<ISegment> AccumilateComments(string fileName, IList<IToken> allTokens)
 		{
-			CSSParserManager template = new CSSParserManager (fileName);
-			string parsingString = content.ReadToEnd ();
-			AntlrInputStream input = new AntlrInputStream (parsingString);
+			IList<IToken> commentTokens  = new List<IToken>();
+			List<ISegment> foldingSegments = new List<ISegment> ();
 
-
-
-
-
-			Console.WriteLine (parsingString);
-
-			CSSLexer lexer = new CSSLexer (input);
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			CSSParser parser = new CSSParser(tokens);
-
-			IList<IToken> d = tokens.GetTokens ();
-
-			int tokenCount = tokens.GetNumberOfOnChannelTokens(); //this is caled to load d
-
-			IList<IToken> cs  = new List<IToken>();
-
-			foreach (IToken item in d) {
+			foreach (IToken item in allTokens) {
 				if (item.Channel == 2) {
-					Console.WriteLine ("hehee:"+item.Text);
-					cs.Add (item);
+					commentTokens.Add (item);
 				}
 			}
 
-			var parserErrorHandler = new CSSParserErrorHandle ();
-			parser.AddErrorListener(parserErrorHandler);
-			var x = parser.styleSheet();
-
-			var bodySetContext = x.bodylist().bodyset();
-			List<ISegment> foldingSegments = new List<ISegment> ();
-
-			foreach (var item in cs) {
+			foreach (var item in commentTokens) {
 				var relativeEndCoordinates = GetFolStringAndRelEndCoord(item.Text);
 				foldingSegments.Add(new CodeSegment (relativeEndCoordinates.GetValue(0).ToString(), 
 				                                     new Location (fileName, item.Line, item.Column), 
-				                                     new Location (fileName, item.Line + Int32.Parse( relativeEndCoordinates.GetValue(1).ToString())-1, item.Column+ Int32.Parse( relativeEndCoordinates.GetValue(1).ToString())-1),CodeSegmentType.Comment));
+				                                     new Location (fileName, item.Line + Int32.Parse( relativeEndCoordinates.GetValue(1).ToString())-1, Int32.Parse( relativeEndCoordinates.GetValue(2).ToString())-1),CodeSegmentType.Comment));
 			}
 
+			return foldingSegments;
+		}
 
-
+		private List<ISegment> AccumilateCSSElements (string fileName, IList<CSSParser.BodysetContext> bodySetContext)
+		{
+			List<ISegment> foldingSegments = new List<ISegment> ();
 			foreach (var item in bodySetContext)
 			{
 				string foldingString = GetSelectionFoldingText(item.GetText());
-				Console.WriteLine ("Passing info test: "+foldingString+" start line num:" + item.Start.Line + " start comumn:" + item.Start.Column + " end lime: " + item.Stop.Line + " end column: " + item.Stop.Column);
-
 				foldingSegments.Add(new CodeSegment(foldingString,new Location(fileName,item.Start.Line ,item.Start.Column), new Location(fileName,item.Stop.Line,item.Stop.Column),CodeSegmentType.CSSElement));
 
 			}
-
-			var errors = new List<Error> ();
-			errors.AddRange (parserErrorHandler.parserErrors);
-			//			foreach (var item in errors) {
-			//				Console.WriteLine (item.ErrorType +"----em:" + item.Message + "-----bc:" + item.Region.BeginColumn +"-----el:"+ item.Region.EndColumn);
-			//			}
-			var doc = new CSSParsedDocument (fileName,foldingSegments, errors);
-			doc.Flags |= ParsedDocumentFlags.NonSerializable;
-
-			return doc;
-		}  
+			return foldingSegments;
+		}
 	}
 
 	//	public class CSSLexerErrorHandle : IAntlrErrorListener<IToken>
@@ -135,14 +140,27 @@ namespace MonoDevelop.CSSParser
 	//
 	//	}
 
-	public class CSSParserErrorHandle : IAntlrErrorListener<IToken>
+	// Accumilate parser errors
+	public class CSSParserErrorHandle : IAntlrErrorListener<IToken> 
 	{
-		public List<Error> parserErrors = new List<Error>();
+		private IList<Error> parserErrors;
+
+		public CSSParserErrorHandle()
+		{
+			parserErrors = new List<Error>();
+		}
+
+		public IList<Error> ParserErrors
+		{
+			get{
+				return parserErrors;
+			}
+		}
 
 		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
 		{
-			parserErrors.Add (new Error (ErrorType.Error, msg,new DomRegion(line,charPositionInLine)));
-
+			parserErrors.Add (new Error (ErrorType.Error, msg,line,(charPositionInLine)));
+			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
 		}
 
 	}

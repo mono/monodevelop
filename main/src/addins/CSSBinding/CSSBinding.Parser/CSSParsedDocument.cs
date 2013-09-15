@@ -40,12 +40,14 @@ namespace MonoDevelop.CSSParser
 	public class CSSParsedDocument : ParsedDocument
 	{
 		string fileName;
-		IList<Error> errors;
+		List<Error> errors;
 
 
-		public List<ISegment> Segments { get; private set; }
+		public FoldingTokensVM Segments { get; private set; }
+
 		public override IList<Error> Errors {
 			get {
+				Console.WriteLine ("Number of errors: " + errors.Count);
 				return errors;
 			}
 		}
@@ -57,12 +59,12 @@ namespace MonoDevelop.CSSParser
 			}
 		}
 
-		public CSSParsedDocument (string fileName, List<ISegment> segments, IList<Error> errors)
+		public CSSParsedDocument (string fileName, FoldingTokensVM segments, IList<Error> errors)
 		{
 			this.fileName = fileName;
-			this.errors = errors;
+			this.errors.AddRange(errors);
 			this.Segments = segments;
-			AssignComments (segments);
+			AssignComments (segments.commentList);
 
 		}
 
@@ -86,11 +88,11 @@ namespace MonoDevelop.CSSParser
 						Region = new DomRegion (ts.StartLocation.Line, (ts.StartLocation.Column +1), ts.EndLocation.Line, (ts.EndLocation.Column +1))
 					});
 
-					Console.WriteLine ("Comments: Text: "+ ts.Text+ "start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
+//					Console.WriteLine ("Comments: Text: "+ ts.Text+ "start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
 
 				}
 
-				Console.WriteLine ("Thkajsdknadadnakndkn asdada");
+//				Console.WriteLine ("Thkajsdknadadnakndkn asdada");
 			}
 
 			return comments;
@@ -103,10 +105,10 @@ namespace MonoDevelop.CSSParser
 			{
 				foreach (var region in Comments.ToFolds ()) 
 					yield return region;
-				foreach (var segment in Segments) 
+				foreach (var segment in Segments.cssSelectionList) 
 				{
 					CodeSegment ts = segment as CodeSegment;
-					Console.WriteLine ("Text: "+ ts.Text+ "start line num:" + segment.TagStartLocation.Line + " start comumn:" + segment.TagStartLocation.Column + " end lime: " + segment.EndLocation.Line + " end column: " + segment.EndLocation.Column);
+//					Console.WriteLine ("Text: "+ ts.Text+ "start line num:" + segment.TagStartLocation.Line + " start comumn:" + segment.TagStartLocation.Column + " end lime: " + segment.EndLocation.Line + " end column: " + segment.EndLocation.Column);
 					DomRegion region = new DomRegion (segment.StartLocation.Line, (segment.StartLocation.Column +1),
 					                                  segment.EndLocation.Line, (segment.EndLocation.Column +1));
 

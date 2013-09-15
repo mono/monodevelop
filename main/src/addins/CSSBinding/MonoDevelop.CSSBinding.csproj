@@ -44,11 +44,12 @@
     <Compile Include="CSSBinding.Parser\Antlr4Parser\CSSVisitor.cs" />
     <Compile Include="CSSBinding.Parser\Models\CodeSegment.cs" />
     <Compile Include="CSSBinding.Parser\Models\Location.cs" />
-    <Compile Include="CSSBinding.Parser\Models\ParserException.cs" />
     <Compile Include="CSSBinding.Parser\Interfaces\ISegment.cs" />
     <Compile Include="CSSBinding.Parser\CSSParsedDocument.cs" />
     <Compile Include="CSSBinding.Parser\CSSParserAdapter.cs" />
     <Compile Include="CSSBinding.Parser\CSSParserManager.cs" />
+    <Compile Include="CSSBinding.Parser\Models\FoldingTokensVM.cs" />
+    <Compile Include="CSSServices.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

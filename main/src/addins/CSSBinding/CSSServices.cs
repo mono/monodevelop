@@ -1,5 +1,5 @@
 //
-// ParserException.cs
+// CSSServices.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -24,17 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.CodeDom.Compiler;
+using MonoDevelop.Ide.Tasks;
 
-namespace MonoDevelop.CSSBinding.Parse.Models
+namespace CSSBinding
 {
-	public class ParserException : Exception
+	public static class CSSServices
 	{
-		public ParserException (string message, Location location) : base (message)
-		{
-			Location = location;
-		}
 
-		public Location Location { get; private set; }
+		public static void ShowTemplateHostErrors (CompilerErrorCollection errors)
+		{
+			if (errors.Count == 0)
+				return;
+
+			TaskService.Errors.Clear ();
+			foreach (CompilerError err in errors) {
+				TaskService.Errors.Add (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
+				                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
+			}
+			TaskService.ShowErrors ();
+		}
 	}
 }
 
