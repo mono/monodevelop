@@ -1086,6 +1086,8 @@ namespace MonoDevelop.Debugger.Win32
 			if (t == null)
 				return null;
 
+			// FIXME: find out how to implement CompilerGenerated.
+			//bool isCompilerGenerated = false;
 			string proxyType = null;
 			string nameDisplayString = null;
 			string typeDisplayString = null;
@@ -1093,39 +1095,43 @@ namespace MonoDevelop.Debugger.Win32
 			Dictionary<string, DebuggerBrowsableState> memberData = null;
 			bool hasTypeData = false;
 
-			foreach (object att in t.GetCustomAttributes (false)) {
-				DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
-				if (patt != null) {
-					proxyType = patt.ProxyTypeName;
-					hasTypeData = true;
-					continue;
+			try {
+				foreach (object att in t.GetCustomAttributes (false)) {
+					DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
+					if (patt != null) {
+						proxyType = patt.ProxyTypeName;
+						hasTypeData = true;
+						continue;
+					}
+					DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
+					if (datt != null) {
+						hasTypeData = true;
+						nameDisplayString = datt.Name;
+						typeDisplayString = datt.Type;
+						valueDisplayString = datt.Value;
+						continue;
+					}
 				}
-				DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
-				if (datt != null) {
-					hasTypeData = true;
-					nameDisplayString = datt.Name;
-					typeDisplayString = datt.Type;
-					valueDisplayString = datt.Value;
-					continue;
-				}
-			}
 
-			ArrayList mems = new ArrayList ();
-			mems.AddRange (t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
-			mems.AddRange (t.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
+				ArrayList mems = new ArrayList ();
+				mems.AddRange (t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
+				mems.AddRange (t.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
 
-			foreach (MemberInfo m in mems) {
-				object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
-				if (atts.Length == 0) {
-					atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
-					if (atts.Length > 0)
-						atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+				foreach (MemberInfo m in mems) {
+					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
+					if (atts.Length == 0) {
+						atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+						if (atts.Length > 0)
+							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+					}
+					if (atts.Length > 0) {
+						hasTypeData = true;
+						if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
+						memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
+					}
 				}
-				if (atts.Length > 0) {
-					hasTypeData = true;
-					if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
-					memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
-				}
+			} catch (Exception ex) {
+				ctx.WriteDebuggerError (ex);
 			}
 			if (hasTypeData)
 				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);
