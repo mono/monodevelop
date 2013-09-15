@@ -45,8 +45,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				AddExpressionNode (c, context);
 			}
 			else if (c == '%') {
-				if (context.StateTag != PERCENT)
-					context.StateTag = PERCENT;
+				context.StateTag = PERCENT;
 			}
 			else if (c == '>') {
 				if (context.StateTag == PERCENT) {
@@ -54,8 +53,9 @@ namespace MonoDevelop.AspNet.StateEngine
 					expr.End (context.Location);
 					if (context.BuildTree) {
 						XObject ob = context.Nodes.Peek ();
-						if (ob is XContainer) {
-							((XContainer)ob).AddChildNode (expr);
+						var xc = ob as XContainer;
+						if (xc != null) {
+							xc.AddChildNode (expr);
 						}
 					 	//FIXME: add to other kinds of node, e.g. if used within a tag
 					}
@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				break;
 			// RENDER BLOCK
 			default:
-				context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (2)));
+				context.Nodes.Push (new AspNetRenderBlock (context.LocationMinus (3)));
 				break;
 			}
 		}
