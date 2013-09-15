@@ -32,11 +32,11 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class GitConfigurationDialog : Gtk.Dialog
+	public partial class GitConfigurationDialog : Dialog
 	{
-		GitRepository repo;
-		ListStore storeBranches;
-		TreeStore storeRemotes;
+		readonly GitRepository repo;
+		readonly ListStore storeBranches;
+		readonly TreeStore storeRemotes;
 		
 		public GitConfigurationDialog (GitRepository repo)
 		{
@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Git
 			state.Load ();
 		}
 		
-		protected virtual void OnButtonAddBranchClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
 		{
 			var dlg = new EditBranchDialog (repo, null, true);
 			try {
@@ -114,7 +114,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected virtual void OnButtonEditBranchClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonEditBranchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
@@ -138,7 +138,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected virtual void OnButtonRemoveBranchClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonRemoveBranchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
@@ -157,7 +157,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected virtual void OnButtonSetDefaultBranchClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonSetDefaultBranchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
@@ -167,12 +167,12 @@ namespace MonoDevelop.VersionControl.Git
 			FillBranches ();
 		}
 		
-		protected virtual void OnButtonAddRemoteClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)
 		{
 			var remote = new RemoteSource ();
 			var dlg = new EditRemoteDialog (remote, true);
 			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					repo.AddRemote (remote, dlg.ImportTags);
 					FillRemotes ();
 				}
@@ -181,7 +181,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected virtual void OnButtonEditRemoteClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonEditRemoteClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
@@ -195,7 +195,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			var dlg = new EditRemoteDialog (remote, false);
 			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (remote.Name != oldName)
 						repo.RenameRemote (oldName, remote.Name);
 					repo.UpdateRemote (remote);
@@ -206,7 +206,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected virtual void OnButtonRemoveRemoteClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonRemoveRemoteClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
@@ -234,7 +234,7 @@ namespace MonoDevelop.VersionControl.Git
 			buttonAddRemote.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = remote != null;
 		}
 		
-		protected virtual void OnButtonTrackRemoteClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonTrackRemoteClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))

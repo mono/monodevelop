@@ -31,13 +31,13 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class MergeDialog : Gtk.Dialog
+	public partial class MergeDialog : Dialog
 	{
-		TreeStore store;
-		GitRepository repo;
+		readonly TreeStore store;
+		readonly GitRepository repo;
 		string currentSel;
 		string currentType;
-		bool rebasing;
+		readonly bool rebasing;
 		
 		public MergeDialog (GitRepository repo, bool rebasing)
 		{

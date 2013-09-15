@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public partial class PushDialog : Gtk.Dialog
 	{
-		GitRepository repo;
+		readonly GitRepository repo;
 		
 		public PushDialog (GitRepository repo)
 		{

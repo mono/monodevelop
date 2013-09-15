@@ -30,10 +30,10 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class StashManagerDialog : Gtk.Dialog
+	public partial class StashManagerDialog : Dialog
 	{
-		ListStore store;
-		StashCollection stashes;
+		readonly ListStore store;
+		readonly StashCollection stashes;
 		
 		public StashManagerDialog (GitRepository repo)
 		{

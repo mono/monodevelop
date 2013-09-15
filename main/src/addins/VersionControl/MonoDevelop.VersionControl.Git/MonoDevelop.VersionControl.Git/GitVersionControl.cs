@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public abstract class GitVersionControl : VersionControlSystem
 	{
-		Dictionary<FilePath,GitRepository> repositories = new Dictionary<FilePath,GitRepository> ();
+		readonly Dictionary<FilePath,GitRepository> repositories = new Dictionary<FilePath,GitRepository> ();
 		
 		static GitVersionControl ()
 		{
@@ -59,8 +59,7 @@ namespace MonoDevelop.VersionControl.Git
 					repositories [path.CanonicalPath] = repo = new GitRepository (path, null);
 				return repo;
 			}
-			else
-				return GetRepositoryReference (path.ParentDirectory, id);
+			return GetRepositoryReference (path.ParentDirectory, id);
 		}
 		
 		protected override Repository OnCreateRepositoryInstance ()

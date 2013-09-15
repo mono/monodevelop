@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public partial class CredentialsDialog : Gtk.Dialog
 	{
-		CredentialItem.YesNoType singleYesNoCred;
+		readonly CredentialItem.YesNoType singleYesNoCred;
 		
 		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
 		{
