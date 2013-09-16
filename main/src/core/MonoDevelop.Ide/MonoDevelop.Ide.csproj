@@ -596,8 +596,11 @@
     <EmbeddedResource Include="icons\project-gui-32.png">
       <LogicalName>project-gui-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-32.png">
-      <LogicalName>project-library-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-library-overlay-32.png">
+      <LogicalName>project-library-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-overlay-32@2x.png">
+      <LogicalName>project-library-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
