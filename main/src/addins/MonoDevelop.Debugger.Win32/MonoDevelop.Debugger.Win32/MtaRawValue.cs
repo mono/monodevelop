@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Debugging.Backend;
+﻿using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Win32
 {
 	class MtaRawValue : IRawValue
 	{
-		IRawValue source;
+		readonly IRawValue source;
 
 		public MtaRawValue (IRawValue s)
 		{

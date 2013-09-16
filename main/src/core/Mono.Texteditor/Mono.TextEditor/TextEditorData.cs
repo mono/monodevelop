@@ -190,6 +190,7 @@ namespace Mono.TextEditor
 
 			HeightTree = new HeightTree (this);
 			HeightTree.Rebuild ();
+			IndentationTracker = new DefaultIndentationTracker (document);
 		}
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
@@ -1006,6 +1007,9 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindNext (bool setSelection)
 		{
+			if (SearchEngine.SearchRequest == null || string.IsNullOrEmpty (SearchEngine.SearchRequest.SearchPattern))
+				return null;
+
 			int startOffset = Caret.Offset;
 			if (IsSomethingSelected && IsMatchAt (startOffset)) {
 				startOffset = MainSelection.GetLeadOffset (this);
@@ -1022,6 +1026,8 @@ namespace Mono.TextEditor
 		
 		public SearchResult FindPrevious (bool setSelection)
 		{
+			if (SearchEngine.SearchRequest == null || string.IsNullOrEmpty (SearchEngine.SearchRequest.SearchPattern))
+				return null;
 			int startOffset = Caret.Offset - SearchEngine.SearchRequest.SearchPattern.Length;
 			if (IsSomethingSelected && IsMatchAt (MainSelection.GetAnchorOffset (this))) 
 				startOffset = MainSelection.GetAnchorOffset (this);

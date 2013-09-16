@@ -126,7 +126,27 @@ namespace MonoDevelop.CSharp.Highlighting
 			set;
 		}
 
-
+		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
+		{
+			var workspace = IdeApp.Workspace;
+			if (workspace == null)
+				yield break;
+			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			if (configuration != null) {
+				var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
+				if (cparams != null) {
+					string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
+					foreach (string s in syms) {
+						string ss = s.Trim ();
+						if (ss.Length > 0)
+							yield return ss;
+					}
+				}
+				// Workaround for mcs defined symbol
+				if (configuration.TargetRuntime.RuntimeId == "Mono") 
+					yield return "__MonoCS__";
+			}
+		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
@@ -338,24 +358,26 @@ namespace MonoDevelop.CSharp.Highlighting
 		static CSharpSyntaxMode ()
 		{
 			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
-			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					TextEditorData data = doc.Editor;
-					if (data == null)
-						continue;
-					// Force syntax mode reparse (required for #if directives)
-					var editor = doc.Editor;
-					if (editor != null) {
-						if (data.Document.SyntaxMode is SyntaxMode) {
-							((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
-							SyntaxModeService.WaitUpdate (data.Document);
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.ActiveConfigurationChanged += delegate {
+					foreach (var doc in IdeApp.Workbench.Documents) {
+						TextEditorData data = doc.Editor;
+						if (data == null)
+							continue;
+						// Force syntax mode reparse (required for #if directives)
+						var editor = doc.Editor;
+						if (editor != null) {
+							if (data.Document.SyntaxMode is SyntaxMode) {
+								((SyntaxMode)data.Document.SyntaxMode).UpdateDocumentHighlighting ();
+								SyntaxModeService.WaitUpdate (data.Document);
+							}
+							editor.Parent.TextViewMargin.PurgeLayoutCache ();
+							doc.ReparseDocument ();
+							editor.Parent.QueueDraw ();
 						}
-						editor.Parent.TextViewMargin.PurgeLayoutCache ();
-						doc.ReparseDocument ();
-						editor.Parent.QueueDraw ();
 					}
-				}
-			};
+				};
+			}
 			CommentTag.SpecialCommentTagsChanged += (sender, e) => {
 				UpdateCommentRule ();
 				var actDoc = IdeApp.Workbench.ActiveDocument;
@@ -741,6 +763,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					return project;
 				}
 
+
+
 				public ConditinalExpressionEvaluator (TextDocument doc, IEnumerable<string> symbols)
 				{
 					this.symbols = new HashSet<string> (symbols);
@@ -756,22 +780,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
 					
 					if (project != null) {
-						var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-						if (configuration != null) {
-							var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
-							if (cparams != null) {
-								string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
-								foreach (string s in syms) {
-									string ss = s.Trim ();
-									if (ss.Length > 0 && !symbols.Contains (ss))
-										this.symbols.Add (ss);
-								}
-							}
-							// Workaround for mcs defined symbol
-							if (configuration.TargetRuntime.RuntimeId == "Mono") 
-								this.symbols.Add ("__MonoCS__");
-						} else {
-							Console.WriteLine ("NO CONFIGURATION");
+						foreach (var ss in GetDefinedSymbols (project)) {
+							if (!symbols.Contains (ss))
+								this.symbols.Add (ss);
 						}
 					}
 /*					var parsedDocument = TypeSystemService.ParseFile (document.ProjectContent, doc.FileName, doc.MimeType, doc.Text);

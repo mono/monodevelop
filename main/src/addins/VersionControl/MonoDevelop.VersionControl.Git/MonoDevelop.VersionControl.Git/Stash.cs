@@ -143,7 +143,7 @@ namespace MonoDevelop.VersionControl.Git
 			return s;
 		}
 		
-		public MergeCommandResult Apply (NGit.ProgressMonitor monitor)
+		public MergeCommandResult Apply (ProgressMonitor monitor)
 		{
 			return StashCollection.Apply (monitor, this);
 		}
@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Git
 	
 	public class StashCollection: IEnumerable<Stash>
 	{
-		NGit.Repository _repo;
+		readonly NGit.Repository _repo;
 		
 		internal StashCollection (NGit.Repository repo)
 		{
@@ -173,12 +173,12 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public Stash Create (NGit.ProgressMonitor monitor)
+		public Stash Create (ProgressMonitor monitor)
 		{
 			return Create (monitor, null);
 		}
 		
-		public Stash Create (NGit.ProgressMonitor monitor, string message)
+		public Stash Create (ProgressMonitor monitor, string message)
 		{
 			if (monitor != null) {
 				monitor.Start (1);
@@ -194,7 +194,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			if (string.IsNullOrEmpty (message)) {
 				// Use the commit summary as message
-				message = parent.Abbreviate (7).ToString () + " " + parent.GetShortMessage ();
+				message = parent.Abbreviate (7) + " " + parent.GetShortMessage ();
 				int i = message.IndexOfAny (new char[] { '\r', '\n' });
 				if (i != -1)
 					message = message.Substring (0, i);
@@ -300,7 +300,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		internal MergeCommandResult Apply (NGit.ProgressMonitor monitor, Stash stash)
+		internal MergeCommandResult Apply (ProgressMonitor monitor, Stash stash)
 		{
 			monitor.Start (1);
 			monitor.BeginTask ("Applying stash", 100);
@@ -320,7 +320,7 @@ namespace MonoDevelop.VersionControl.Git
 			Remove (stashes, s);
 		}
 		
-		public MergeCommandResult Pop (NGit.ProgressMonitor monitor)
+		public MergeCommandResult Pop (ProgressMonitor monitor)
 		{
 			List<Stash> stashes = ReadStashes ();
 			Stash last = stashes.Last ();

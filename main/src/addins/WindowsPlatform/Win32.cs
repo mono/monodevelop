@@ -32,6 +32,8 @@ namespace CustomControls.OS
         public const uint SHGFI_SMALLICON = 0x1; // 'Small icon
         public const uint SHGFI_ICONLOCATION = 0x1000;
         public const uint SHGFI_TYPENAME = 0x400;
+        public const uint SHGFI_USEFILEATTRIBUTES = 0x10;
+        public const uint FILE_ATTRIBUTES_NORMAL = 0x80;
 
         #region Delegates
         public delegate bool EnumWindowsCallBack(IntPtr hWnd, int lParam);
@@ -88,8 +90,25 @@ namespace CustomControls.OS
         public static extern bool GetWindowRect(IntPtr hwnd, ref RECT rect);
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref RECT rect);
-        [DllImport("shell32.dll")]
-        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
+        [DllImport("user32.dll")]
+        public static extern bool DestroyIcon([In] IntPtr hIcon);
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SHGetFileInfoW([In] string pszPath, uint dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
         #endregion
     }
+
+	[AttributeUsage(AttributeTargets.Class |
+		AttributeTargets.Enum |
+		AttributeTargets.Interface |
+		AttributeTargets.Struct,
+		AllowMultiple = true)]
+	[Author("Franco, Gustavo")]
+	internal class AuthorAttribute : Attribute
+	{
+		#region Constructors
+		public AuthorAttribute(string authorName)
+		{
+		}
+		#endregion
+	}
 }

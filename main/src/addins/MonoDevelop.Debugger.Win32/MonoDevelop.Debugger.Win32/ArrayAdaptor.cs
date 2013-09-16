@@ -25,8 +25,6 @@
 //
 //
 
-using System;
-using Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 
@@ -34,9 +32,9 @@ namespace MonoDevelop.Debugger.Win32
 {
 	class ArrayAdaptor: ICollectionAdaptor
 	{
-		CorEvaluationContext ctx;
+		readonly CorEvaluationContext ctx;
 		CorArrayValue array;
-		CorValRef obj;
+		readonly CorValRef obj;
 
 		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj, CorArrayValue array)
 		{
@@ -47,19 +45,19 @@ namespace MonoDevelop.Debugger.Win32
 		
 		public int[] GetDimensions ()
 		{
-			if (array != null)
-				return array.GetDimensions ();
-			else
-				return new int[0];
+			return array != null ? array.GetDimensions () : new int[0];
 		}
 		
 		public object GetElement (int[] indices)
 		{
 			return new CorValRef (delegate {
-				if (array != null)
-					return array.GetElement (indices);
-				else
-					return null;
+				// If we have a zombie state array, reload it.
+				if (!obj.IsValid) {
+					obj.Reload ();
+					array = CorObjectAdaptor.GetRealObject (ctx, obj) as CorArrayValue;
+				}
+
+				return array != null ? array.GetElement (indices) : null;
 			});
 		}
 		

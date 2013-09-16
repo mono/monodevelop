@@ -134,11 +134,14 @@ namespace MonoDevelop.Core.Execution
 			ProcessWrapper p = new ProcessWrapper();
 
 			if (outputStreamChanged != null) {
+				startInfo.RedirectStandardOutput = true;
 				p.OutputStreamChanged += outputStreamChanged;
 			}
 				
-			if (errorStreamChanged != null)
+			if (errorStreamChanged != null) {
+				startInfo.RedirectStandardError = true;
 				p.ErrorStreamChanged += errorStreamChanged;
+			}
 
 			startInfo.CreateNoWindow = true;
 			p.StartInfo = startInfo;

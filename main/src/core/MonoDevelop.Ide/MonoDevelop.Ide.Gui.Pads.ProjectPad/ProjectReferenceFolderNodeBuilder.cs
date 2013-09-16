@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			addedHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnAddReference));
-			removedHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (OnRemoveReference));
+			addedHandler = DispatchService.GuiDispatch<ProjectReferenceEventHandler> (OnAddReference);
+			removedHandler = DispatchService.GuiDispatch<ProjectReferenceEventHandler> (OnRemoveReference);
 
 			IdeApp.Workspace.ReferenceAddedToProject += addedHandler;
 			IdeApp.Workspace.ReferenceRemovedFromProject += removedHandler;
@@ -87,12 +87,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			// For portable libraries, add node that represents all framework assemblies
 			var project = ctx.GetParentDataItem (typeof(DotNetProject), false) as PortableDotNetProject;
 			if (project != null)
-				ctx.AddChild (new TreeViewItem (GettextCatalog.GetString (".NET Portable Subset"), "md-reference-package"));
+				ctx.AddChild (new PortableFrameworkSubset (project));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((ProjectReferenceCollection) dataObject).Count > 0;
+			return ((ProjectReferenceCollection) dataObject).Count > 0
+				|| builder.GetParentDataItem (typeof(DotNetProject), false) is PortableDotNetProject;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

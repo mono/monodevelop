@@ -76,9 +76,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override string DefaultNamespace {
 			get {
-				if (Project == null || string.IsNullOrEmpty (document.FileName))
+				if (Project == null || TextEditor == null || string.IsNullOrEmpty (TextEditor.FileName))
 					return null;
-				return Project.GetDefaultNamespace (document.FileName);
+				return Project.GetDefaultNamespace (TextEditor.FileName);
 			}
 		}
 
@@ -192,6 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.location = loc;
 			var policy = document.HasProject ? Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
+			Services.AddService (typeof(ICSharpCode.NRefactory.CSharp.CodeGenerationService), new CSharpCodeGenerationService());
 		}
 
 		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)

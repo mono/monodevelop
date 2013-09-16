@@ -1,12 +1,4 @@
-<Addin id          = "AspNet.Mvc"
-       namespace   = "MonoDevelop"
-       name        = "ASP.NET MVC Support"
-       author      = "Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://monodevelop.com/"
-       description = "Support for ASP.NET MVC projects."
-       category    = "Web Development"
-       version     = "4.1.7">
+<ExtensionModel>
 	
 	<Runtime>
 		<Import file = "Templates/Controller.xft.xml"/>
@@ -37,15 +29,6 @@
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="XmlEditor" version="4.1.7" />
-		<Addin id="AspNet" version="4.1.7" />
-		<Addin id="SourceEditor2" version="4.1.7" />
-		<Addin id="TextTemplating" version="4.1.7" />
-	</Dependencies>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
@@ -216,4 +199,4 @@
 		<!-- NOTE: we explicitly do no call this "RazorGenerator" to avoid conflicts with http://razorgenerator.codeplex.com/ -->
 		<Tool name="RazorTemplatePreprocessor" type="MonoDevelop.RazorGenerator.RazorTemplatePreprocessor"/>
 	</Extension>
-</Addin>
+</ExtensionModel>

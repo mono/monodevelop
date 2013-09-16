@@ -598,7 +598,15 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
-			uint numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+			uint numArgs = 0;
+			// FIXME: Use number of <T>s.
+			uint types = 0;
+			if ((cconv & CorCallingConvention.Generic) == CorCallingConvention.Generic)
+				types = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+
+			if (cconv != CorCallingConvention.Field)
+				numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+
 			retType = MetadataHelperFunctions.ReadType (importer, ref pData);
 			argTypes = new List<Type> ();
 			for (int n = 0; n < numArgs; n++)
@@ -667,6 +675,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						return MetadataType.MakeByRef(t);
 					}
 
+				case CorElementType.ELEMENT_TYPE_END:
 				case CorElementType.ELEMENT_TYPE_VALUETYPE:
 				case CorElementType.ELEMENT_TYPE_CLASS: {
 						uint token = CorSigUncompressToken (ref pData);
@@ -675,15 +684,20 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 				case CorElementType.ELEMENT_TYPE_ARRAY: {
 						Type t = ReadType (importer, ref pData);
-						uint rank = CorSigUncompressData (ref pData);
+						int rank = (int)CorSigUncompressData (ref pData);
+						if (rank == 0)
+							return MetadataType.MakeArray (t, null, null);
+
 						uint numSizes = CorSigUncompressData (ref pData);
-						List<int> sizes = new List<int> ();
-						for (int n = 0; n < numSizes; n++)
+						var sizes = new List<int> (rank);
+						for (int n = 0; n < numSizes && n < rank; n++)
 							sizes.Add ((int)CorSigUncompressData (ref pData));
+
 						uint numLoBounds = CorSigUncompressData (ref pData);
-						List<int> loBounds = new List<int> ();
-						for (int n = 0; n < numLoBounds; n++)
+						var loBounds = new List<int> (rank);
+						for (int n = 0; n < numLoBounds && n < rank; n++)
 							loBounds.Add ((int)CorSigUncompressData (ref pData));
+
 						return MetadataType.MakeArray (t, sizes, loBounds);
 					}
 

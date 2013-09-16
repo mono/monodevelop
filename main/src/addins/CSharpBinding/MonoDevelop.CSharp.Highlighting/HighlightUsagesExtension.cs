@@ -217,6 +217,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
 			} else if (resolveResult is LocalResolveResult) { 
 				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
+			} else if (resolveResult is NamedArgumentResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)resolveResult).Parameter });
 			} else {
 				return emptyList;
 			}

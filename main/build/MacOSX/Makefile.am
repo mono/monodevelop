@@ -32,8 +32,8 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.m
-	gcc -Wall -mmacosx-version-min=10.6 -m32 -o monostub monostub.m $(MONOSTUB_EXTRA_SOURCES) -framework AppKit
+monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
+	gcc -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit
 
 clean-local:
 	rm -rf MonoDevelop.app

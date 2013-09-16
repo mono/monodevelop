@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Navigation
 	{
 		Document doc;
 		FilePath fileName;
+		string project;
 		
 		public DocumentNavigationPoint (Document doc)
 		{
@@ -62,6 +63,7 @@ namespace MonoDevelop.Ide.Navigation
 		void HandleClosed (object sender, EventArgs e)
 		{
 			fileName = doc.FileName;
+			project = doc.HasProject ? doc.Project.ItemId : null;
 			if (fileName == FilePath.Null) {
 				// If the document is not a file, dispose the navigation point because the document can't be reopened
 				Dispose ();
@@ -92,7 +94,14 @@ namespace MonoDevelop.Ide.Navigation
 				doc.Select ();
 				return doc;
 			}
-			return IdeApp.Workbench.OpenDocument (fileName, true);
+			MonoDevelop.Projects.Project p = null;
+			foreach (var curP in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+				if (curP.ItemId == project) {
+					p = curP;
+					break;
+				}
+			}
+			return IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
 		}
 		
 		public override string DisplayName {

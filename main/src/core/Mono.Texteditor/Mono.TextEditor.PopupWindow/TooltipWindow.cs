@@ -40,14 +40,14 @@ namespace Mono.TextEditor.PopupWindow
 		bool nudgeVertical = false;
 		bool nudgeHorizontal = false;
 		WindowTransparencyDecorator decorator;
-		FixedWidthWrapLabel label;
-		
+		Label label;
+		string markup;
 		public string Markup {
 			get {
-				return label.Markup;
+				return markup;
 			}
 			set {
-				label.Markup = value;
+				label.Markup = markup = value;
 			}
 		}
 		
@@ -64,11 +64,9 @@ namespace Mono.TextEditor.PopupWindow
 			//fake widget name for stupid theme engines
 			this.Name = "gtk-tooltip";
 			
-			label = new FixedWidthWrapLabel ();
-			label.Wrap = Pango.WrapMode.WordChar;
-			label.Indent = -20;
-			label.BreakOnCamelCasing = true;
-			label.BreakOnPunctuation = true;
+			label = new Label ();
+			label.UseMarkup = true;
+			label.Ellipsize =  Pango.EllipsizeMode.End;
 			this.BorderWidth = 3;
 			this.Title = "tooltip";
 			Add (label);
@@ -78,9 +76,11 @@ namespace Mono.TextEditor.PopupWindow
 		
 		public int SetMaxWidth (int maxWidth)
 		{
-			FixedWidthWrapLabel l = (FixedWidthWrapLabel)Child;
-			l.MaxWidth = maxWidth;
-			return l.RealWidth;
+			var l = (Label)Child;
+			l.Layout.Width = maxWidth;
+			int pw, ph;
+			l.Layout.GetPixelSize (out pw, out ph);
+			return pw;
 		}
 		
 		public bool NudgeVertical {

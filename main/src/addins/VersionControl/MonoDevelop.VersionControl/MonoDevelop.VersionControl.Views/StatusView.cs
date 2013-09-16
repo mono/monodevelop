@@ -734,9 +734,10 @@ namespace MonoDevelop.VersionControl.Views
 				  AlertButton.Cancel, AlertButton.Proceed) != AlertButton.Proceed)
 					return;
 			}
-			
-			if (!CommitCommand.Commit (vc, changeSet.Clone (), false))
-				return;
+
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
+			CommitCommand.Commit (vc, changeSet.Clone (), false);
+			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
 		

@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public class GitNodeBuilderExtension: NodeBuilderExtension
 	{
-		Dictionary<FilePath,IWorkspaceObject> repos = new Dictionary<FilePath, IWorkspaceObject> ();
+		readonly Dictionary<FilePath,IWorkspaceObject> repos = new Dictionary<FilePath, IWorkspaceObject> ();
 		
 		protected override void Initialize ()
 		{

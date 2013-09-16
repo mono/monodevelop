@@ -1,7 +1,6 @@
 
-using System;
-using System.ComponentModel;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -9,15 +8,20 @@ namespace MonoDevelop.DesignerSupport.Projects
 	{
 		public object CreateProvider (object obj)
 		{
-			if (obj is ProjectFile)
-				return new ProjectFileDescriptor ((ProjectFile)obj);
-			else
-				return new ProjectReferenceDescriptor ((ProjectReference)obj);
+			var projectFile = obj as ProjectFile;
+			if (projectFile != null)
+				return new ProjectFileDescriptor (projectFile);
+
+			var projectReference = obj as ProjectReference;
+			if (projectReference != null)
+				return new ProjectReferenceDescriptor (projectReference);
+
+			return new ImplicitFrameworkAssemblyReferenceDescriptor ((ImplicitFrameworkAssemblyReference)obj);
 		}
 
 		public bool SupportsObject (object obj)
 		{
-			return obj is ProjectFile || obj is ProjectReference;
+			return obj is ProjectFile || obj is ProjectReference || obj is ImplicitFrameworkAssemblyReference;
 		}
 	}
 }

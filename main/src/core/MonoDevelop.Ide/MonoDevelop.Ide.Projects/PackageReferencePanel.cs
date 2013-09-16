@@ -134,8 +134,10 @@ namespace MonoDevelop.Ide.Projects
         {
             store.Clear ();
 
+			bool isPcl = configureProject is PortableDotNetProject;
+
             foreach (SystemAssembly systemAssembly in targetContext.GetAssemblies (targetVersion)) {
-                if (systemAssembly.Package.IsFrameworkPackage && systemAssembly.Name == "mscorlib")
+				if (systemAssembly.Package.IsFrameworkPackage && (isPcl || systemAssembly.Name == "mscorlib"))
                     continue;
 				
 				bool selected = IsSelected (ReferenceType.Package, systemAssembly.FullName, systemAssembly.Package.Name);

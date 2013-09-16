@@ -66,9 +66,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project project = builder.GetParentDataItem (typeof(Project), true) as Project;
 			if (project == null)
 				return;
-			
+
 			ProjectFileCollection files;
-			ArrayList folders;
+			List<string> folders;
+
 			GetFolderContent (project, path, out files, out folders);
 			
 			foreach (ProjectFile file in files)
@@ -78,11 +79,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				builder.AddChild (new ProjectFolder (folder, project, dataObject));
 		}
 				
-		void GetFolderContent (Project project, string folder, out ProjectFileCollection files, out ArrayList folders)
+		void GetFolderContent (Project project, string folder, out ProjectFileCollection files, out List<string> folders)
 		{
-			files = new ProjectFileCollection ();
-			folders = new ArrayList ();
 			string folderPrefix = folder + Path.DirectorySeparatorChar;
+
+			files = new ProjectFileCollection ();
+			folders = new List<string> ();
 			
 			foreach (ProjectFile file in project.Files)
 			{
@@ -104,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					dir = file.Name;
 				
 				// add the directory if it isn't already present
-				if (dir.StartsWith (folderPrefix)) {
+				if (dir.StartsWith (folderPrefix, StringComparison.Ordinal)) {
 					int i = dir.IndexOf (Path.DirectorySeparatorChar, folderPrefix.Length);
 					if (i != -1) dir = dir.Substring (0,i);
 					if (!folders.Contains (dir))

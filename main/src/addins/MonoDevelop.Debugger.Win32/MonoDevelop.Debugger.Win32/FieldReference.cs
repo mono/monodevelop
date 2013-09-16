@@ -25,11 +25,10 @@
 //
 //
 
-using System;
 using System.Reflection;
+using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -86,7 +85,7 @@ namespace MonoDevelop.Debugger.Win32
 				else {
 					if (field.IsLiteral && field.IsStatic) {
 						object oval = field.GetValue (null);
-						CorObjectAdaptor ad = (CorObjectAdaptor)ctx.Adapter;
+						CorObjectAdaptor ad = ctx.Adapter;
 						// When getting enum members, convert the integer value to an enum value
 						if (ad.IsEnum (ctx, type))
 							return ad.CreateEnum (ctx, type, Context.Adapter.CreateValue (ctx, oval));

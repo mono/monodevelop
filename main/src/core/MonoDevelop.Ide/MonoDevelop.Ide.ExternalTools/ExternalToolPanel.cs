@@ -308,14 +308,23 @@ namespace MonoDevelop.Ide.ExternalTools
 				do {
 					// loop through items in the tree
 					ExternalTool tool = toolListBox.Model.GetValue (current, 1) as ExternalTool;
+					if (tool == null) {
+						continue;
+					}
+
+					if (String.IsNullOrEmpty (tool.Command)) {
+						MessageService.ShowError (String.Format (GettextCatalog.GetString ("The command of tool \"{0}\" is not set."), tool.MenuCommand));
+						return false;
+					}
+
 					string path = FilterPath (tool.Command);
 					if (!FileService.IsValidPath (path)) {
-						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
+						MessageService.ShowError (String.Format (GettextCatalog.GetString ("The command of tool \"{0}\" is invalid."), tool.MenuCommand));
 						return false;
 					}
 					path = FilterPath (tool.InitialDirectory);
 					if ((tool.InitialDirectory != "") && !FileService.IsValidPath (path)) {
-						MessageService.ShowError (String.Format(GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
+						MessageService.ShowError (String.Format (GettextCatalog.GetString ("The working directory of tool \"{0}\" is invalid.") ,tool.MenuCommand));
 						return false;
 					}
 				} while (toolListBox.Model.IterNext (ref current));

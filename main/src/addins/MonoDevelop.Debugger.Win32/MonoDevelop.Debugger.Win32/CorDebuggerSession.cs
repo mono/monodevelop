@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Threading;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
-using System.Runtime.InteropServices;
 using System.Diagnostics.SymbolStore;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using Microsoft.Samples.Debugging.CorDebug;
+using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorSymbolStore;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using System.Reflection;
 
 namespace MonoDevelop.Debugger.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
-		object debugLock = new object ();
-		object terminateLock = new object ();
+		readonly object debugLock = new object ();
+		readonly object terminateLock = new object ();
 
 		CorDebugger dbg;
 		CorProcess process;
@@ -32,13 +31,13 @@ namespace MonoDevelop.Debugger.Win32
 
 		static int evaluationTimestamp;
 
-		SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = new SymbolBinder ();
 		Dictionary<string, DocInfo> documents;
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		Dictionary<string, ModuleInfo> modules;
-		Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
-		Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
+		readonly Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
+		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 		
 
 		public CorObjectAdaptor ObjectAdapter;
@@ -143,7 +142,7 @@ namespace MonoDevelop.Debugger.Win32
 
 				int flags = 0;
 				if (!startInfo.UseExternalConsole) {
-					flags = 0x08000000; /* CREATE_NO_WINDOW*/
+					flags = (int)CreationFlags.CREATE_NO_WINDOW;
 					flags |= CorDebugger.CREATE_REDIRECT_STD;
 				}
 
@@ -581,7 +580,7 @@ namespace MonoDevelop.Debugger.Win32
 			return MtaThread.Run (() => new ProcessInfo[] { GetProcess (process) });
 		}
 
-		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (long processId, long threadId)
+		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			return MtaThread.Run (delegate
 			{
@@ -913,7 +912,7 @@ namespace MonoDevelop.Debugger.Win32
 				eval.Abort ();
 			};
 			mc.OnGetDescription = delegate {
-				System.Reflection.MethodInfo met = function.GetMethodInfo (ctx.Session);
+				MethodInfo met = function.GetMethodInfo (ctx.Session);
 				if (met != null)
 					return met.Name;
 				else
@@ -1131,7 +1130,7 @@ namespace MonoDevelop.Debugger.Win32
 		        { 
 					Type classType = val.ExactType.GetTypeInfo (this);
 		            // Loop through all private instance fields in the thread class 
-		            foreach (MetadataFieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
+		            foreach (FieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
 		            { 
 		                if (fi.Name == "m_Name")
 						{
@@ -1290,7 +1289,7 @@ namespace MonoDevelop.Debugger.Win32
 			return reader.GetMethod (new SymbolToken (func.Token));
 		}
 
-		public static System.Reflection.MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
+		public static MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
 		{
 			CorMetadataImport mi = session.GetMetadataForModule (func.Module.Name);
 			if (mi != null)

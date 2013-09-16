@@ -27,21 +27,21 @@
 
 using System;
 using System.Collections;
-using System.Reflection;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using SR = System.Reflection;
-using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
-using Microsoft.Samples.Debugging.CorDebug;
-using Mono.Debugging.Evaluation;
-using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
-using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
-using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
 using System.Diagnostics.SymbolStore;
+using System.Reflection;
+using System.Text;
+using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata;
+using Mono.Debugging.Backend;
+using Mono.Debugging.Client;
+using Mono.Debugging.Evaluation;
 using MonoDevelop.Core.Collections;
+using SR = System.Reflection;
+using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
+using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
+using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -55,8 +55,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsPointer (EvaluationContext ctx, object val)
 		{
-			// FIXME: implement this correctly.
-			return false;
+			CorType type = (CorType) GetValueType (ctx, val);
+			return IsPointer (type);
 		}
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsClass (object type)
 		{
-			return ((CorType)type).Class != null;
+			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_CLASS && ((CorType)type).Class != null;
 		}
 
 		public override string GetTypeName (EvaluationContext ctx, object gtype)
@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger.Win32
 			return null;
 		}
 
-		T[] CastArray<T> (object[] array)
+		static T[] CastArray<T> (object[] array)
 		{
 			if (array == null)
 				return null;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Debugger.Win32
 				return val;
 		}
 
-		bool IsValueType (CorEvaluationContext ctx, CorValRef val)
+		static bool IsValueType (CorEvaluationContext ctx, CorValRef val)
 		{
 			CorValue v = GetRealObject (ctx, val);
 			if (v.Type == CorElementType.ELEMENT_TYPE_VALUETYPE)
@@ -497,7 +497,7 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (Type t in GetAllTypes (ctx)) {
 				if (t.Namespace == namspace)
 					types.Add (t.FullName);
-				else if (t.Namespace.StartsWith (namspace + ".")) {
+				else if (t.Namespace.StartsWith (namspace + ".", StringComparison.Ordinal)) {
 					if (t.Namespace.IndexOf ('.', namspace.Length + 1) == -1)
 						nss.Add (t.Namespace);
 				}
@@ -590,6 +590,11 @@ namespace MonoDevelop.Debugger.Win32
             }
             return null;
         }
+
+		public bool IsPointer (CorType targetType)
+		{
+			return targetType.Type == CorElementType.ELEMENT_TYPE_PTR;
+		}
 
 		public object CreateEnum (EvaluationContext ctx, CorType type, object val)
 		{
@@ -703,12 +708,6 @@ namespace MonoDevelop.Debugger.Win32
 					return obj;
 
 				if (obj is CorGenericValue)
-					return obj;
-
-				if (obj is CorGenericValue)
-					return obj;
-
-				if (obj is CorArrayValue)
 					return obj;
 
 				CorArrayValue arrayVal = obj.CastToArrayValue ();
@@ -945,7 +944,6 @@ namespace MonoDevelop.Debugger.Win32
 			if (arr != null)
                 return base.TargetObjectToObject(ctx, objr);
 
-			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectValue co = obj as CorObjectValue;
 			if (co != null)
                 return base.TargetObjectToObject(ctx, objr);
@@ -1073,7 +1071,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			foreach (ISymbolScope cs in scope.GetChildren ()) {
 				if (cs.StartOffset <= offset && cs.EndOffset >= offset) {
-					foreach (VariableReference var in GetLocals (ctx, cs, offset, showHidden))
+					foreach (ValueReference var in GetLocals (ctx, cs, offset, showHidden))
 						yield return var;
 				}
 			}
@@ -1088,6 +1086,8 @@ namespace MonoDevelop.Debugger.Win32
 			if (t == null)
 				return null;
 
+			// FIXME: find out how to implement CompilerGenerated.
+			//bool isCompilerGenerated = false;
 			string proxyType = null;
 			string nameDisplayString = null;
 			string typeDisplayString = null;
@@ -1095,39 +1095,43 @@ namespace MonoDevelop.Debugger.Win32
 			Dictionary<string, DebuggerBrowsableState> memberData = null;
 			bool hasTypeData = false;
 
-			foreach (object att in t.GetCustomAttributes (false)) {
-				DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
-				if (patt != null) {
-					proxyType = patt.ProxyTypeName;
-					hasTypeData = true;
-					continue;
+			try {
+				foreach (object att in t.GetCustomAttributes (false)) {
+					DebuggerTypeProxyAttribute patt = att as DebuggerTypeProxyAttribute;
+					if (patt != null) {
+						proxyType = patt.ProxyTypeName;
+						hasTypeData = true;
+						continue;
+					}
+					DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
+					if (datt != null) {
+						hasTypeData = true;
+						nameDisplayString = datt.Name;
+						typeDisplayString = datt.Type;
+						valueDisplayString = datt.Value;
+						continue;
+					}
 				}
-				DebuggerDisplayAttribute datt = att as DebuggerDisplayAttribute;
-				if (datt != null) {
-					hasTypeData = true;
-					nameDisplayString = datt.Name;
-					typeDisplayString = datt.Type;
-					valueDisplayString = datt.Value;
-					continue;
-				}
-			}
 
-			ArrayList mems = new ArrayList ();
-			mems.AddRange (t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
-			mems.AddRange (t.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
+				ArrayList mems = new ArrayList ();
+				mems.AddRange (t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
+				mems.AddRange (t.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
 
-			foreach (MemberInfo m in mems) {
-				object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
-				if (atts.Length == 0) {
-					atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
-					if (atts.Length > 0)
-						atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+				foreach (MemberInfo m in mems) {
+					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
+					if (atts.Length == 0) {
+						atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+						if (atts.Length > 0)
+							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
+					}
+					if (atts.Length > 0) {
+						hasTypeData = true;
+						if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
+						memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
+					}
 				}
-				if (atts.Length > 0) {
-					hasTypeData = true;
-					if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
-					memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
-				}
+			} catch (Exception ex) {
+				ctx.WriteDebuggerError (ex);
 			}
 			if (hasTypeData)
 				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);

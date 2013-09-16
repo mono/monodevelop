@@ -430,6 +430,8 @@ namespace MonoDevelop.Projects
 			pf.dependsOnFile = null;
 			pf.dependentChildren = null;
 			pf.project = null;
+			pf.VirtualPathChanged = null;
+			pf.PathChanged = null;
 			return pf;
 		}
 

@@ -259,6 +259,7 @@ namespace CustomControls.OS
 
 	#region Window Extended Styles
     [Author("Franco, Gustavo")]
+	[Flags]
 	public enum WindowExStyles
 	{
 		WS_EX_DLGMODALFRAME     = 0x00000001,
@@ -549,6 +550,7 @@ namespace CustomControls.OS
 
 	#region SetWindowPosFlags
     [Author("Franco, Gustavo")]
+	[Flags]
 	public enum SetWindowPosFlags
 	{
 		SWP_NOSIZE          = 0x0001,

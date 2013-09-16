@@ -17,9 +17,26 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	public class SvnClient : SubversionVersionControl
 	{
-		internal static LibApr apr;
-		static Lazy<bool> isInstalled;
-		internal static LibSvnClient svn;
+		static LibApr apr;
+		static readonly Lazy<bool> isInstalled;
+		static LibSvnClient svn;
+		static readonly Lazy<bool> pre_1_7;
+
+		internal static LibApr Apr {
+			get {
+				if (apr == null)
+					CheckInstalled ();
+				return apr;
+			}
+		}
+
+		internal static LibSvnClient Svn {
+			get {
+				if (svn == null)
+					CheckInstalled ();
+				return svn;
+			}
+		}
 
 		internal static void CheckError (IntPtr error)
 		{
@@ -55,7 +72,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return error.message;
 			else {
 				byte[] buf = new byte [300];
-				svn.strerror (error.apr_err, buf, buf.Length);
+				Svn.strerror (error.apr_err, buf, buf.Length);
 				return Encoding.UTF8.GetString (buf);
 			}
 		}
@@ -63,7 +80,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		internal static IntPtr newpool (IntPtr parent)
 		{
 			IntPtr p;
-			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
+
+			Apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
 			if (p == IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create an APR pool.");
 			return p;
@@ -73,7 +91,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (pathOrUrl == null)
 				return null;
-			IntPtr res = svn.path_internal_style (pathOrUrl, localpool);
+			IntPtr res = Svn.path_internal_style (pathOrUrl, localpool);
 			return Marshal.PtrToStringAnsi (res);
 		}
 
@@ -98,7 +116,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			return true;
 		}
-		
+
+		internal static bool CheckVersion ()
+		{
+			return GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);
+		}
+
+		public static string GetVersion ()
+		{
+			IntPtr ptr = Svn.client_version ();
+			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t)Marshal.PtrToStructure (ptr, typeof(LibSvnClient.svn_version_t));
+			return ver.major + "." + ver.minor + "." + ver.patch;
+		}
+
 		static int GetLoadAprLib (int oldVersion)
 		{
 			// Get the version of the loaded libapr
@@ -123,9 +153,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			get { return isInstalled.Value; }
 		}
 
+		public static bool Pre_1_7 {
+			get { return pre_1_7.Value; }
+		}
+
 		static SvnClient ()
 		{
 			isInstalled = new Lazy<bool> (CheckInstalled);
+			pre_1_7 = new Lazy<bool> (CheckVersion);
 		}
 
 		public override SubversionBackend CreateBackend ()
@@ -142,9 +177,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (IntPtr.Zero);
 			try {
 				string npath = NormalizePath (path, localpool);
-				CheckError (svn.client_url_from_path (ref ret, npath, localpool));
+				CheckError (Svn.client_url_from_path (ref ret, npath, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
+				Apr.pool_destroy (localpool);
 			}
 
 			if (ret == IntPtr.Zero)
@@ -155,26 +190,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
-			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
-			bool pre_1_7;
-			string new_path = backend.GetDirectoryDotSvnInternal (path, out pre_1_7);
-			if (pre_1_7)
+			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
-			return new_path;
+
+			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
+			if (backend == null)
+				return String.Empty;
+
+			return backend.GetDirectoryDotSvnInternal (path);
 		}
 	}
 
 	public class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
-			get { return SvnClient.apr; }
+			get {
+				return SvnClient.Apr;
+			}
 		}
 		
 		protected static LibSvnClient svn {
 			get {
-				if (SvnClient.svn == null)
-					SvnClient.CheckInstalled ();
-				return SvnClient.svn;
+				return SvnClient.Svn;
 			}
 		}
 
@@ -193,29 +230,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.newpool (parent);
 		}
 
-		bool pre_1_7;
-		bool disposed = false;
-		IntPtr auth_baton;
-		IntPtr pool;
-		IntPtr ctx;
+		bool disposed;
+		readonly IntPtr auth_baton;
+		readonly IntPtr pool;
+		readonly IntPtr ctx;
 
-		object sync = new object();
-		bool inProgress = false;
+		readonly object sync = new object();
+		bool inProgress;
 
 		IProgressMonitor updatemonitor;
 		ArrayList updateFileList;
-		string commitmessage = null;
+		string commitmessage;
 
 		ArrayList lockFileList;
 		LibSvnClient.NotifyLockState requiredLockState;
 
 		// retain this so the delegates aren't GC'ed
-		LibSvnClient.svn_cancel_func_t cancel_func;
-		LibSvnClient.svn_ra_progress_notify_func_t progress_func;
-		LibSvnClient.svn_wc_notify_func2_t notify_func;
-		LibSvnClient.svn_client_get_commit_log_t log_func;
-		IntPtr config_hash;
-		IntPtr wc_ctx;
+		readonly LibSvnClient.svn_cancel_func_t cancel_func;
+		readonly LibSvnClient.svn_ra_progress_notify_func_t progress_func;
+		readonly LibSvnClient.svn_wc_notify_func2_t notify_func;
+		readonly LibSvnClient.svn_client_get_commit_log_t log_func;
+		readonly IntPtr config_hash;
+		readonly IntPtr wc_ctx;
 
 		static bool IsBinary (byte[] buffer, long length)
 		{
@@ -228,7 +264,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public UnixSvnBackend ()
 		{
-			pre_1_7 = GetVersion ().StartsWith ("1.6", StringComparison.Ordinal);
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
 
@@ -237,7 +272,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// for the authentication providers don't exist, authentication
 			// data won't be saved and no error is given.
 			svn.config_ensure (null, pool);
-			
+
+			// Load user and system configuration
+			svn.config_get_config (ref config_hash, null, pool);
+
 			if (svn.client_create_context (out ctx, pool) != IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create a Subversion client context.");
 			
@@ -259,16 +297,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "cancel_func"),
 			                     Marshal.GetFunctionPointerForDelegate (cancel_func));
 
-
-			// Load user and system configuration
-			svn.config_get_config (ref config_hash, null, pool);
 			Marshal.WriteIntPtr (ctx,
 			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "config"),
 			                     config_hash);
 
-			if (!pre_1_7) {
+			if (!SvnClient.Pre_1_7) {
 				IntPtr scratch = newpool (IntPtr.Zero);
-				svn.wc_context_create (out wc_ctx, config_hash, pool, scratch);
+				svn.wc_context_create (out wc_ctx, IntPtr.Zero, pool, scratch);
 				Marshal.WriteIntPtr (ctx,
 				                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "wc_ctx"),
 				                     wc_ctx);
@@ -353,7 +388,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return apr.pcalloc (localpool, error);
 		}
 
-		static LibSvnClient.svn_auth_simple_prompt_func_t OnAuthSimplePromptCallback = OnAuthSimplePrompt;
+		static readonly LibSvnClient.svn_auth_simple_prompt_func_t OnAuthSimplePromptCallback = OnAuthSimplePrompt;
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
@@ -371,7 +406,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_username_prompt_func_t OnAuthUsernamePromptCallback = OnAuthUsernamePrompt;
+		static readonly LibSvnClient.svn_auth_username_prompt_func_t OnAuthUsernamePromptCallback = OnAuthUsernamePrompt;
 		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_username_t data = new LibSvnClient.svn_auth_cred_username_t ();
@@ -389,7 +424,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
 		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, string realm, UInt32 failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
@@ -417,7 +452,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t OnAuthSslClientCertPromptCallback = OnAuthSslClientCertPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t OnAuthSslClientCertPromptCallback = OnAuthSslClientCertPrompt;
 		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
@@ -434,7 +469,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		static LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t OnAuthSslClientCertPwPromptCallback = OnAuthSslClientCertPwPrompt;
+		static readonly LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t OnAuthSslClientCertPwPromptCallback = OnAuthSslClientCertPwPrompt;
 		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data;
@@ -455,9 +490,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		public override string GetVersion ()
 		{
-			IntPtr ptr = svn.client_version ();
-			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t) Marshal.PtrToStructure (ptr, typeof (LibSvnClient.svn_version_t));				
-			return ver.major + "." + ver.minor + "." + ver.patch;
+			return SvnClient.GetVersion ();
 		}
 
 		public override IEnumerable<DirectoryEntry> List (FilePath path, bool recurse, SvnRevision rev)
@@ -470,9 +503,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.NormalizePath (pathOrUrl, localpool);
 		}
 		
-		public override IEnumerable<DirectoryEntry> ListUrl (string pathorurl, bool recurse, SvnRevision rev)
+		public override IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev)
 		{
-			if (pathorurl == null)
+			if (url == null)
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
@@ -482,9 +515,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				IntPtr hash;
 				
-				pathorurl = NormalizePath (pathorurl, localpool);
+				url = NormalizePath (url, localpool);
 				
-				CheckError (svn.client_ls (out hash, pathorurl, ref revision,
+				CheckError (svn.client_ls (out hash, url, ref revision,
 				                           recurse, ctx, localpool));
 				
 				IntPtr item = apr.hash_first (localpool, hash);
@@ -613,16 +646,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return annotations;
 		}
 
-		public override string GetTextAtRevision (string pathorurl, Revision revision)
+		public override string GetTextAtRevision (string repositoryPath, Revision revision)
 		{
 			return null;
 		}
 
-		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
+		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
 		{
 			MemoryStream memstream = new MemoryStream ();
 			try {
-				Cat (pathorurl, (SvnRevision) revision, memstream);
+				Cat (repositoryPath, (SvnRevision) revision, memstream);
 			} catch (SubversionException e) {
 				// File got added/removed at some point.
 				// SVN_ERR_FS_NOT_FOUND
@@ -708,21 +741,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 			
 				CheckError (svn.client_revert (array, recurse, ctx, localpool));
-			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
-			}
-		}
-
-		public override void Resolve (FilePath path, bool recurse, IProgressMonitor monitor)
-		{
-			if (path == FilePath.Null || monitor == null)
-				throw new ArgumentNullException();
-
-			var localpool = TryStartOperation (monitor);
-			try {
-				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_resolved (pathorurl, recurse, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
@@ -1290,14 +1308,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				break;
 //			case LibSvnClient.NotifyAction.Exists:
 //				// original is untranslated, we'll make it a bit shorter
-///*				actiondesc = data.content_state == LibSvnClient.NotifyState.Conflicted ? "C" : "E";
+//				actiondesc = data.content_state == LibSvnClient.NotifyState.Conflicted ? "C" : "E";
 //				if (data.prop_state == LibSvnClient.NotifyState.Conflicted) {
 //					actiondesc += "C";
 //				} else if (data.prop_state == LibSvnClient.NotifyState.Merged) {
 //					actiondesc += "G";
 //				}
 //				actiondesc += " {0}";
-//				actiondesc = string.Format (actiondesc, file); */
+//				actiondesc = string.Format (actiondesc, file);
 //				actiondesc = string.Format (GettextCatalog.GetString ("Exists   {0}"), file);
 //				break;
 			case LibSvnClient.NotifyAction.Restore: 
@@ -1430,12 +1448,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
-		internal string GetDirectoryDotSvnInternal (FilePath path, out bool pre_1_7)
+		internal string GetDirectoryDotSvnInternal (FilePath path)
 		{
-			pre_1_7 = this.pre_1_7;
-			if (pre_1_7)
-				return "";
-
 			IntPtr result;
 			IntPtr scratch = newpool (pool);
 			var localpool = TryStartOperation (null);
@@ -1448,11 +1462,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					switch (e.ErrorCode) {
 					// SVN_ERR_WC_NOT_DIRECTORY
 					case 155007:
-					// SVN_ERR_WC_NOT_FILE
+						// SVN_ERR_WC_NOT_FILE
 					case 155008:
 						return "";
 					}
-
 					throw;
 				}
 				return Marshal.PtrToStringAnsi (result);
@@ -1462,9 +1475,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				TryEndOperation ();
 			}
 		}
-		
+
 		public class StatusCollector {
-			ArrayList statuses;
+			readonly ArrayList statuses;
 
 			public LibSvnClient.svn_wc_status_func2_t Func {
 				get; private set;
@@ -1491,9 +1504,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			
-			List<SvnRevision> logs;
-			SubversionRepository repo;
-			IntPtr ctx;
+			readonly List<SvnRevision> logs;
+			readonly SubversionRepository repo;
+			readonly IntPtr ctx;
 
 			public LibSvnClient.svn_log_message_receiver_t Func {
 				get; private set;
@@ -1555,7 +1568,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 		
 		public class StreamCollector {
-			Stream buf;
+			readonly Stream buf;
 
 			public LibSvnClient.svn_readwrite_fn_t Func {
 				get; private set;
@@ -1585,7 +1598,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		/// </summary>
 		private class AnnotationCollector
 		{
-			Annotation[] annotations;
+			readonly Annotation[] annotations;
 			public LibSvnClient.svn_client_blame_receiver_t Func {
 				get; private set;
 			}

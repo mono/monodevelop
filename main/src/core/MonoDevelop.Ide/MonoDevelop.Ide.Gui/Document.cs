@@ -746,10 +746,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void HandleProjectModified (object sender, SolutionItemModifiedEventArgs e)
 		{
-			if (!e.Any (
-					x => x is SolutionItemModifiedEventInfo &&
-				(((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" ||
-				((SolutionItemModifiedEventInfo)x).Hint == "References")))
+			if (!e.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
 			StartReparseThread ();
 		}
