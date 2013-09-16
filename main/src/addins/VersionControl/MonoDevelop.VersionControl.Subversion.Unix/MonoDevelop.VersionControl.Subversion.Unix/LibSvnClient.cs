@@ -146,8 +146,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 
 		public abstract IntPtr client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool);
 
-		public abstract IntPtr repos_find_root_path (string path, IntPtr pool);
-
 		// TODO: Check if intptr
 		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);
 		
