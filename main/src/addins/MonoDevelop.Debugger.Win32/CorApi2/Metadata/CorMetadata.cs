@@ -598,7 +598,15 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
 		{
 			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
-			uint numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+			uint numArgs = 0;
+			// FIXME: Use number of <T>s.
+			uint types = 0;
+			if ((cconv & CorCallingConvention.Generic) == CorCallingConvention.Generic)
+				types = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+
+			if (cconv != CorCallingConvention.Field)
+				numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
+
 			retType = MetadataHelperFunctions.ReadType (importer, ref pData);
 			argTypes = new List<Type> ();
 			for (int n = 0; n < numArgs; n++)
