@@ -17,10 +17,26 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	public class SvnClient : SubversionVersionControl
 	{
-		internal static LibApr apr;
+		static LibApr apr;
 		static readonly Lazy<bool> isInstalled;
-		internal static LibSvnClient svn;
+		static LibSvnClient svn;
 		static readonly Lazy<bool> pre_1_7;
+
+		internal static LibApr Apr {
+			get {
+				if (apr == null)
+					CheckInstalled ();
+				return apr;
+			}
+		}
+
+		internal static LibSvnClient Svn {
+			get {
+				if (svn == null)
+					CheckInstalled ();
+				return svn;
+			}
+		}
 
 		internal static void CheckError (IntPtr error)
 		{
@@ -56,7 +72,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return error.message;
 			else {
 				byte[] buf = new byte [300];
-				svn.strerror (error.apr_err, buf, buf.Length);
+				Svn.strerror (error.apr_err, buf, buf.Length);
 				return Encoding.UTF8.GetString (buf);
 			}
 		}
@@ -64,10 +80,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		internal static IntPtr newpool (IntPtr parent)
 		{
 			IntPtr p;
-			if (apr == null)
-				CheckInstalled ();
 
-			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
+			Apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
 			if (p == IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create an APR pool.");
 			return p;
@@ -77,7 +91,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (pathOrUrl == null)
 				return null;
-			IntPtr res = svn.path_internal_style (pathOrUrl, localpool);
+			IntPtr res = Svn.path_internal_style (pathOrUrl, localpool);
 			return Marshal.PtrToStringAnsi (res);
 		}
 
@@ -110,7 +124,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public static string GetVersion ()
 		{
-			IntPtr ptr = svn.client_version ();
+			IntPtr ptr = Svn.client_version ();
 			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t)Marshal.PtrToStructure (ptr, typeof(LibSvnClient.svn_version_t));
 			return ver.major + "." + ver.minor + "." + ver.patch;
 		}
@@ -163,9 +177,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (IntPtr.Zero);
 			try {
 				string npath = NormalizePath (path, localpool);
-				CheckError (svn.client_url_from_path (ref ret, npath, localpool));
+				CheckError (Svn.client_url_from_path (ref ret, npath, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
+				Apr.pool_destroy (localpool);
 			}
 
 			if (ret == IntPtr.Zero)
@@ -180,6 +194,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return base.GetDirectoryDotSvn (path);
 
 			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
+			if (backend == null)
+				return String.Empty;
+
 			return backend.GetDirectoryDotSvnInternal (path);
 		}
 	}
@@ -188,17 +205,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	{
 		protected static LibApr apr {
 			get {
-				if (SvnClient.apr == null)
-					SvnClient.CheckInstalled ();
-				return SvnClient.apr;
+				return SvnClient.Apr;
 			}
 		}
 		
 		protected static LibSvnClient svn {
 			get {
-				if (SvnClient.svn == null)
-					SvnClient.CheckInstalled ();
-				return SvnClient.svn;
+				return SvnClient.Svn;
 			}
 		}
 
