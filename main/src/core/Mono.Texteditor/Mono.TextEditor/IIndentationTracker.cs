@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			DocumentLine line = doc.GetLine (lineNumber);
+			DocumentLine line = doc.GetLine (lineNumber - 1);
 			while (line != null) {
 				var indent = line.GetIndentation (doc);
 				if (indent.Length > 0)
