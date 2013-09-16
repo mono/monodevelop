@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class MtaThread
+	static class MtaThread
 	{
 		static readonly AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
 		static Action workDelegate;
