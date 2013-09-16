@@ -701,8 +701,11 @@
     <EmbeddedResource Include="icons\web-overlay-16.png">
       <LogicalName>web-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\web-overlay-32.png">
-      <LogicalName>web-overlay-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-web-overlay-32.png">
+      <LogicalName>project-web-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-web-overlay-32@2x.png">
+      <LogicalName>project-web-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16.png">
       <LogicalName>workspace-16.png</LogicalName>
