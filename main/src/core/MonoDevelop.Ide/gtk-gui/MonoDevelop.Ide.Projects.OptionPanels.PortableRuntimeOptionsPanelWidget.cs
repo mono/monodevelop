@@ -5,7 +5,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	public partial class PortableRuntimeOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-		private global::Gtk.Label labelTargetFrameworks;
 
 		protected virtual void Build ()
 		{
@@ -17,16 +16,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.labelTargetFrameworks = new global::Gtk.Label ();
-			this.labelTargetFrameworks.Name = "labelTargetFrameworks";
-			this.labelTargetFrameworks.Xalign = 0F;
-			this.labelTargetFrameworks.LabelProp = global::Mono.Unix.Catalog.GetString ("Target Frameworks:");
-			this.vbox1.Add (this.labelTargetFrameworks);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.labelTargetFrameworks]));
-			w1.Position = 0;
-			w1.Expand = false;
-			w1.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

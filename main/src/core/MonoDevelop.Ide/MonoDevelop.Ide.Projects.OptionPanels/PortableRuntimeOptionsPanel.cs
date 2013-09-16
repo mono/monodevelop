@@ -25,6 +25,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,12 +64,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		static TargetFramework NetPortableProfile3;
 		static TargetFramework NetPortableProfile4;
 
-		Dictionary<CheckButton, List<TargetFramework>> checkboxes = new Dictionary<CheckButton, List<TargetFramework>> ();
-		Dictionary<CheckButton, ComboBox> comboboxes = new Dictionary<CheckButton, ComboBox> ();
+		readonly TargetFramework missingFramework;
+		readonly List<TargetFramework> targetFrameworks;
+		readonly SortedDictionary<string, List<SupportedFramework>> supportedFrameworks;
+		readonly List<OptionCombo> options;
+
 		PortableDotNetProject project;
 		TargetFramework target;
 		HBox warningHBox;
 		Label warning;
+		Image warningImage;
+		Image infoImage;
+		ComboBox selectorCombo;
+		bool disableEvents;
+
+		const bool UseShortDescriptionInSelector = false;
 
 		static void InitProfiles ()
 		{
@@ -110,6 +120,40 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			NetPortableProfile4.SupportedFrameworks.Add (Silverlight);
 			NetPortableProfile4.SupportedFrameworks.Add (WindowsPhone);
 		}
+
+		class OptionComboItem {
+			public readonly string Name;
+			public readonly SupportedFramework Framework;
+			public readonly List<TargetFramework> Targets;
+
+			public OptionComboItem (string name, SupportedFramework sfx)
+			{
+				this.Name = name;
+				this.Framework = sfx;
+				this.Targets = new List<TargetFramework> ();
+			}
+		}
+
+		class OptionCombo {
+			public readonly string Name;
+			public IList<OptionComboItem> Items;
+			public ComboBox Combo;
+			public CheckButton Check;
+
+			public OptionComboItem Current {
+				get {
+					if (Combo != null)
+						return Items [Combo.Active];
+					else
+						return Items [0];
+				}
+			}
+
+			public OptionCombo (string name)
+			{
+				Name = name;
+			}
+		}
 		
 		public PortableRuntimeOptionsPanelWidget (PortableDotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
@@ -118,14 +162,21 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.Build ();
 
 			// Aggregate all SupportedFrameworks from .NETPortable TargetFrameworks
-			SortedDictionary<string, List<SupportedFramework>> frameworks = new SortedDictionary<string, List<SupportedFramework>> ();
-			foreach (var fx in GetPortableTargetFrameworks ()) {
+			targetFrameworks = GetPortableTargetFrameworks ().ToList ();
+			supportedFrameworks = new SortedDictionary<string, List<SupportedFramework>> ();
+
+			if (!targetFrameworks.Contains (project.TargetFramework)) {
+				missingFramework = project.TargetFramework;
+				targetFrameworks.Insert (0, project.TargetFramework);
+			}
+
+			foreach (var fx in targetFrameworks) {
 				foreach (var sfx in fx.SupportedFrameworks) {
 					List<SupportedFramework> list;
 					
-					if (!frameworks.TryGetValue (sfx.DisplayName, out list)) {
+					if (!supportedFrameworks.TryGetValue (sfx.DisplayName, out list)) {
 						list = new List<SupportedFramework> ();
-						frameworks.Add (sfx.DisplayName, list);
+						supportedFrameworks.Add (sfx.DisplayName, list);
 					}
 					
 					list.Add (sfx);
@@ -133,47 +184,89 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 
 			// Now create a list of config options from our supported frameworks
-			var options = new List<SortedDictionary<string, List<TargetFramework>>> ();
-			foreach (var fx in frameworks) {
-				var dict = new SortedDictionary<string, List<TargetFramework>> ();
-				List<SupportedFramework> versions = fx.Value;
-				List<TargetFramework> targets;
-				string label;
+			options = new List<OptionCombo> ();
+			foreach (var fx in supportedFrameworks) {
+				var combo = new OptionCombo (fx.Key);
 
-				foreach (var sfx in versions) {
-					if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
-						label = sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
-					else
-						label = sfx.DisplayName;
+				var dict = new SortedDictionary<string, OptionComboItem> ();
+				foreach (var sfx in fx.Value) {
+					var label = GetDisplayName (sfx);
 
-					if (!dict.TryGetValue (label, out targets)) {
-						targets = new List<TargetFramework> ();
-						dict.Add (label, targets);
+					OptionComboItem item;
+					if (!dict.TryGetValue (label, out item)) {
+						item = new OptionComboItem (label, sfx);
+						dict.Add (label, item);
 					}
 
-					targets.Add (sfx.TargetFramework);
+					item.Targets.Add (sfx.TargetFramework);
 				}
 
-				options.Add (dict);
+				combo.Items = dict.Values.ToList ();
+
+				options.Add (combo);
 			}
 
-			// Add multi-option combo boxes first
-			foreach (var opt in options) {
-				if (opt.Count > 1)
-					AddMultiOptionCombo (opt);
+			CreateUI ();
+
+			CurrentProfileChanged (project.TargetFramework);
+		}
+
+		static string GetDisplayName (SupportedFramework sfx)
+		{
+			if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
+				return sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
+			else if (!string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
+				return sfx.DisplayName + " " + sfx.MonoSpecificVersionDisplayName;
+			else
+				return sfx.DisplayName;
+		}
+
+		static string GetShortName (SupportedFramework sfx)
+		{
+			switch (sfx.DisplayName) {
+			case ".NET Framework":
+				return "NET" + sfx.MinimumVersionDisplayName.Replace (".", "");
+			case "Silverlight":
+				return "SL" + sfx.MinimumVersionDisplayName;
+			case "Xamarin.Android":
+				return "Android";
+			case ".NET for Windows Store apps":
+				return "WinStore";
+			case "Windows Phone":
+				return "WP" + sfx.MinimumVersionDisplayName.Replace (".", "");
+			case "Xbox 360":
+				return "XBox";
+			case "Xamarin.iOS":
+				if (string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
+					return "iOS";
+				else
+					return "iOS/" + sfx.MonoSpecificVersion;
+			default:
+				return GetDisplayName (sfx);
 			}
+		}
 
-			// Now add the single-option check boxes
-			foreach (var opt in options) {
-				if (opt.Count == 1) {
-					var kvp = opt.FirstOrDefault ();
-
-					AddSingleOptionCheckbox (kvp.Key, kvp.Value);
+		string FormatTargetFramework (TargetFramework fx)
+		{
+			string description;
+			if (fx == missingFramework)
+				description = " - not installed";
+			else if (UseShortDescriptionInSelector) {
+				var sb = new StringBuilder ();
+				sb.Append (" (");
+				foreach (var sfx in fx.SupportedFrameworks) {
+					var label = GetShortName (sfx);
+					if (sb.Length > 2)
+						sb.Append (", ");
+					sb.Append (label);
 				}
-			}
+				sb.Append (")");
+				description = sb.ToString ();
+			} else
+				description = string.Empty;
 
-			AddWarningLabel ();
-			UpdateWarning ();
+			return string.Format (
+				"{0} - {1}{2}", fx.Id.Version, fx.Id.Profile, description);
 		}
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
@@ -200,216 +293,421 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			yield return NetPortableProfile4;
 		}
 
-		void AddMultiOptionCombo (SortedDictionary<string, List<TargetFramework>> options)
+		void CreateUI ()
 		{
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
+			AddLabel ("Current Profile:", 0);
+
+			AddTopSelectorCombo ();
+
+			AddLabel ("Target Frameworks:", 18);
+
+			// Add multi-option combo boxes first
+			foreach (var opt in options) {
+				if (opt.Items.Count > 1)
+					AddMultiOptionCombo (opt);
+			}
+
+			// Now add the single-option check boxes
+			foreach (var opt in options) {
+				if (opt.Items.Count == 1)
+					AddSingleOptionCheckbox (opt);
+			}
+
+			AddWarningLabel ();
+		}
+
+		void AddLabel (string text, uint top)
+		{
+			var label = new Label (text);
+			label.SetAlignment (0.0f, 0.5f);
+			label.Show ();
+
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
+				TopPadding = top, BottomPadding = 4
+			};
+			alignment.Add (label);
+			alignment.Show ();
+
+			vbox1.PackStart (alignment, false, true, 0);
+		}
+
+		void AddTopSelectorCombo ()
+		{
 			var model = new ListStore (new Type[] { typeof (string), typeof (object) });
 			var renderer = new CellRendererText ();
-			var combo = new ComboBox (model);
-			var check = new CheckButton ();
-			List<TargetFramework> targets;
-			var hbox = new HBox ();
-			int current = 0;
-			int active = -1;
-			string label;
+			var combo = selectorCombo = new ComboBox (model);
 
-			foreach (var kvp in options) {
-				label = kvp.Key;
+			for (int i = 0; i < targetFrameworks.Count; i++) {
+				var fx = targetFrameworks [i];
 
-				if (current + 1 < options.Count)
-					label += " or later";
-
-				targets = kvp.Value;
-				if (active == -1) {
-					foreach (var target in targets) {
-						if (target.Id.Equals (project.TargetFramework.Id)) {
-							active = current;
-							break;
-						}
-					}
-				}
-
-				model.AppendValues (label, targets);
-				current++;
+				model.AppendValues (FormatTargetFramework (fx), fx);
+				if (fx.Id.Equals (project.TargetFramework.Id))
+					combo.Active = i;
 			}
 
 			combo.PackStart (renderer, true);
-			combo.AddAttribute (renderer, "text", 0);
+			combo.SetCellDataFunc (renderer, (l, c, m, i) => {
+				((CellRendererText)c).Text = (string)model.GetValue (i, 0);
+			});
 
-			check.Show ();
 			combo.Show ();
 
-			if (active != -1) {
-				combo.Active = active;
-				check.Active = true;
-			} else {
-				check.Active = false;
-				combo.Active = 0;
+			combo.Changed += (sender, e) => {
+				if (combo.Active >= 0)
+					CurrentProfileChanged (targetFrameworks [combo.Active]);
+			};
+
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
+				LeftPadding = 18, RightPadding = 18
+			};
+			alignment.Add (combo);
+
+			alignment.Show ();
+
+			vbox1.PackStart (alignment, false, true, 0);
+		}
+
+		void AddMultiOptionCombo (OptionCombo option)
+		{
+			if (option.Items.Count < 2)
+				throw new InvalidOperationException ();
+
+			var model = new ListStore (new Type[] { typeof (string), typeof (object) });
+			var renderer = new CellRendererText ();
+
+			foreach (var item in option.Items) {
+				var label = item.Name;
+				var sfx = item.Framework;
+
+				bool hasOtherVersions = false;
+				foreach (var other in option.Items) {
+					if (sfx == other.Framework)
+						continue;
+					if (!string.IsNullOrEmpty (other.Framework.MonoSpecificVersionDisplayName))
+						continue;
+					hasOtherVersions = true;
+					break;
+				}
+
+				if (hasOtherVersions && string.IsNullOrEmpty (sfx.MonoSpecificVersionDisplayName))
+					label += " or later";
+
+				model.AppendValues (label, item.Targets);
 			}
 
-			combo.Changed += (sender, e) => {
-				if (check.Active)
-					TargetFrameworkChanged (check, combo);
+			option.Combo = new ComboBox (model);
+			option.Check = new CheckButton ();
+
+			option.Combo.PackStart (renderer, true);
+			option.Combo.AddAttribute (renderer, "text", 0);
+
+			option.Combo.Active = 0;
+
+			option.Check.Show ();
+			option.Combo.Show ();
+
+			option.Combo.Changed += (sender, e) => {
+				if (option.Check.Active)
+					TargetFrameworkChanged (option);
 			};
-			check.Toggled += (sender, e) => {
-				TargetFrameworkChanged (check, combo);
+			option.Check.Toggled += (sender, e) => {
+				TargetFrameworkChanged (option);
 			};
 
-			comboboxes.Add (check, combo);
-
-			hbox.PackStart (check, false, false, 0);
-			hbox.PackStart (combo, false, true, 0);
+			var hbox = new HBox ();
+			hbox.PackStart (option.Check, false, false, 0);
+			hbox.PackStart (option.Combo, true, true, 0);
 			hbox.Show ();
 
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
+				LeftPadding = 18, RightPadding = 18
+			};
 			alignment.Add (hbox);
 			alignment.Show ();
 
-			vbox1.PackStart (alignment, false, false, 0);
+			vbox1.PackStart (alignment, false, true, 0);
 		}
 
-		void AddSingleOptionCheckbox (string label, List<TargetFramework> targetFrameworks)
+		void AddSingleOptionCheckbox (OptionCombo option)
 		{
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
-			var check = new CheckButton (label);
+			if (option.Items.Count != 1)
+				throw new InvalidOperationException ();
 
-			foreach (var fx in targetFrameworks) {
-				if (fx.Id.Equals (project.TargetFramework.Id)) {
-					check.Active = true;
-					break;
-				}
-			}
+			option.Check = new CheckButton (option.Items [0].Name);
 
-			check.Toggled += (sender, e) => {
-				TargetFrameworkChanged (check, targetFrameworks);
+			option.Check.Toggled += (sender, e) => {
+				TargetFrameworkChanged (option);
 			};
 
-			checkboxes.Add (check, targetFrameworks);
+			option.Check.Show ();
 
-			check.Show ();
-			alignment.Add (check);
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
+				LeftPadding = 18, RightPadding = 18
+			};
+			alignment.Add (option.Check);
 			alignment.Show ();
 
-			vbox1.PackStart (alignment, false, false, 0);
+			vbox1.PackStart (alignment, false, true, 0);
 		}
 
 		void AddWarningLabel ()
 		{
-			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
-			var image = new Image (GetType ().Assembly, "warning-16.png");
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) {
+				TopPadding = 8, LeftPadding = 18, RightPadding = 18
+			};
 
-			warning = new Label ("");
+			warning = new Label ("Test Error");
 			warning.SetAlignment (0.0f, 0.5f);
 			warning.Show ();
-			image.Show ();
+
+			infoImage = new Image (GetType ().Assembly, "warning-16.png");
+			warningImage = new Image (GetType ().Assembly, "error-16.png");
 
 			warningHBox = new HBox (false, 6);
-			warningHBox.PackStart (image, false, false, 0);
+			warningHBox.PackStart (infoImage, false, false, 0);
+			warningHBox.PackStart (warningImage, false, false, 0);
 			warningHBox.PackStart (warning, false, true, 0);
 
 			alignment.Child = warningHBox;
 			alignment.Show ();
 
-			vbox1.PackStart (alignment, false, false, 0);
+			vbox1.PackStart (alignment, false, true, 0);
 		}
 
-		List<TargetFramework> GetTargetFrameworks (ComboBox combo)
+		void ClearWarnings ()
 		{
-			TreeIter iter;
+			warning.LabelProp = string.Empty;
+			warningHBox.Hide ();
 
-			if (!combo.GetActiveIter (out iter))
-				return new List<TargetFramework> ();
-
-			return (List<TargetFramework>) combo.Model.GetValue (iter, 1);
+			infoImage.Hide ();
+			warningImage.Hide ();
 		}
 
-		TargetFramework GetTargetFramework (CheckButton checkbox, List<TargetFramework> initial)
+		void SetWarning (string message)
 		{
-			var list = new List<TargetFramework> (initial);
-			int nchecked = 0;
-
-			foreach (var kvp in comboboxes) {
-				var combo = kvp.Value;
-				var check = kvp.Key;
-
-				if (check.Active)
-					nchecked++;
-
-				if (!check.Active || check == checkbox)
-					continue;
-
-				var filtered = new List<TargetFramework> ();
-				foreach (var target in GetTargetFrameworks (combo)) {
-					if (list.Contains (target))
-						filtered.Add (target);
-				}
-				list = filtered;
-			}
-
-			foreach (var kvp in checkboxes) {
-				var targets = kvp.Value;
-				var check = kvp.Key;
-
-				if (check.Active)
-					nchecked++;
-				
-				if (!check.Active || check == checkbox)
-					continue;
-				
-				var filtered = new List<TargetFramework> ();
-				foreach (var target in targets) {
-					if (list.Contains (target))
-						filtered.Add (target);
-				}
-				list = filtered;
-			}
-
-			// Choose the TargetFramework with the smallest subset of supported frameworks
-			TargetFramework smallest = this.target;
-			int min = Int32.MaxValue;
-
-			foreach (var target in list) {
-				if (target.SupportedFrameworks.Count < min) {
-					min = target.SupportedFrameworks.Count;
-					smallest = target;
-				}
-			}
-
-			return smallest;
-		}
-
-		void UpdateWarning ()
-		{
-			if (target.SupportedFrameworks.Count > 0) {
-				warningHBox.Hide ();
-				return;
-			}
-
-			var moniker = target.Id.Profile == null ? TargetFrameworkMoniker.PORTABLE_4_0 : target.Id;
-			warning.LabelProp = GettextCatalog.GetString ("The {0} framework is not installed.", moniker);
-
+			warning.LabelProp = message;
+			infoImage.Hide ();
+			warningImage.Show ();
 			warningHBox.Show ();
 		}
 
-		void TargetFrameworkChanged (CheckButton check, List<TargetFramework> targetFrameworks)
+		void SetWarning (string message, params object[] args)
 		{
-			if (!check.Active)
-				targetFrameworks = new List<TargetFramework> (GetPortableTargetFrameworks ());
-
-			target = GetTargetFramework (check, targetFrameworks);
-			UpdateWarning ();
+			SetWarning (string.Format (message, args));
 		}
 
-		void TargetFrameworkChanged (CheckButton check, ComboBox combo)
+		void AddWarning (string message, params object[] args)
 		{
-			List<TargetFramework> targetFrameworks;
+			AddWarning (string.Format (message, args));
+		}
 
-			if (!check.Active)
-				targetFrameworks = new List<TargetFramework> (GetPortableTargetFrameworks ());
-			else
-				targetFrameworks = GetTargetFrameworks (combo);
+		void AddWarning (string message)
+		{
+			if (!string.IsNullOrEmpty (warning.LabelProp))
+				warning.LabelProp += Environment.NewLine;
+			warning.LabelProp += message;
+			infoImage.Hide ();
+			warningImage.Show ();
+			warningHBox.Show ();
+		}
 
-			target = GetTargetFramework (check, targetFrameworks);
-			UpdateWarning ();
+		void AddInfo (string message, params object[] args)
+		{
+			AddInfo (string.Format (message, args));
+		}
+
+		void AddInfo (string message)
+		{
+			if (string.IsNullOrEmpty (warning.LabelProp)) {
+				warningImage.Hide ();
+				infoImage.Show ();
+			} else {
+				warning.LabelProp += Environment.NewLine;
+			}
+			warning.LabelProp += message;
+			warningHBox.Show ();
+		}
+
+		void TargetFrameworkChanged (OptionCombo option)
+		{
+			if (disableEvents)
+				return;
+
+			try {
+				disableEvents = true;
+				TargetFrameworkChanged_internal (option);
+			} finally {
+				disableEvents = false;
+			}
+		}
+
+		void TargetFrameworkChanged_internal (OptionCombo option)
+		{
+			ClearWarnings ();
+			selectorCombo.Active = -1;
+
+			// The currently selected combo boxes.
+			var selectedOptions = options.Where (o => o.Check.Active).ToList ();
+
+			if (selectedOptions.Count < 2) {
+				SetWarning ("Need to select at least two frameworks.");
+				return;
+			}
+
+			// SupportedFramework from each of the currently selected combo boxes.
+			var selectedFrameworks = selectedOptions.Select (s => s.Current.Framework).ToList ();
+			SelectFrameworks (selectedFrameworks);
+		}
+
+		void SelectFrameworks (List<SupportedFramework> selectedFrameworks)
+		{
+			// Which TargetFramework's match these?
+			var applicable = targetFrameworks.Where (
+				f => IsApplicable (f, true, selectedFrameworks)).ToList ();
+
+			if (applicable.Count == 0) {
+				AddWarning ("No applicable frameworks for this selection!");
+				return;
+			}
+
+			//
+			// 'applicable' contains all TargetFrameworks that match _at least_
+			// the list of 'selectedFrameworks'.
+			//
+			// 'exactMatches' is where they do not contain any additional
+			// (non-selected) 'SupportedFramework's.
+			//
+
+			var exactMatches = applicable.Where (
+				a => IsApplicable (a, false, selectedFrameworks)).ToList ();
+			if (exactMatches.Count == 1) {
+				// Found an exact match.
+				SelectFramework (exactMatches [0]);
+				return;
+			} else if (exactMatches.Count > 1) {
+				// This should never happen.
+				AddWarning ("Multiple frameworks match the current selection:");
+				exactMatches.ForEach (e => AddWarning ("     " + e.Id));
+				AddWarning ("You must manually pick a profile in the drop-down selector.");
+				// This is very bad UX, we should really disable "Ok" / add an "Apply"
+				// button, but it's better than nothing.
+				target = exactMatches [0];
+				return;
+			}
+
+			// Union of all the SupportedFrameworks from our applicable TargetFrameworks.
+			var all = applicable.SelectMany (
+				a => a.SupportedFrameworks).Distinct (SupportedFramework.EqualityComparer);
+
+			// Minus the ones that we already selected.
+			var extra = all.Where (a => !selectedFrameworks.Contains (a)).ToList ();
+
+			// Are there any SupportedFrameworks that all our applicable TargetFrameworks
+			// have in common?
+			var common = extra.Where (
+				e => applicable.All (a => a.SupportedFrameworks.Contains (e))).ToList ();
+
+			if (common.Count == 0) {
+				// Ok, the user must pick something.
+				AddWarning ("Found multiple applicable frameworks, you need to " +
+					"select additional check boxes.");
+				// Same here: randomly pick a profile to make "Ok" happy.
+				target = applicable [0];
+				return;
+			}
+
+			AddInfo ("The following frameworks have been implicitly selected:");
+			AddInfo ("   " + string.Join (", ", common.Select (c => GetDisplayName (c))));
+
+			// Implicitly select them.
+			var implicitlySelected = new List<SupportedFramework> ();
+			implicitlySelected.AddRange (selectedFrameworks);
+			implicitlySelected.AddRange (common);
+
+			// And let's try again ...
+			SelectFrameworks (implicitlySelected);
+		}
+
+		void SelectOption (SupportedFramework sfx)
+		{
+			foreach (var option in options) {
+				for (int i = 0; i < option.Items.Count; i++) {
+					var item = option.Items [i];
+					if (!item.Framework.Equals (sfx))
+						continue;
+
+					option.Check.Active = true;
+					if (option.Combo != null)
+						option.Combo.Active = i;
+					return;
+				}
+			}
+
+			throw new InvalidOperationException ();
+		}
+
+		void SelectFramework (TargetFramework framework)
+		{
+			var frameworks = targetFrameworks.Select ((t, i) => new { Framework = t, Index = i });
+			var index = frameworks.First (t => t.Framework == framework).Index;
+			selectorCombo.Active = index;
+			target = framework;
+		}
+
+		bool IsApplicable (TargetFramework fx, bool allowExtra, IEnumerable<SupportedFramework> selected)
+		{
+			return IsApplicable (fx, allowExtra, selected.ToArray ());
+		}
+
+		bool IsApplicable (TargetFramework fx, bool allowExtra, params SupportedFramework[] required)
+		{
+			if (fx == missingFramework)
+				return false;
+
+			var present = new List<SupportedFramework> (fx.SupportedFrameworks);
+			var matches = required.All (r => present.Remove (r));
+			return matches && (allowExtra || present.Count == 0);
+		}
+
+		void CurrentProfileChanged (TargetFramework framework)
+		{
+			if (disableEvents)
+				return;
+
+			try {
+				disableEvents = true;
+				CurrentProfileChanged_internal (framework);
+				target = framework;
+			} finally {
+				disableEvents = false;
+			}
+		}
+
+		void CurrentProfileChanged_internal (TargetFramework framework)
+		{
+			ClearWarnings ();
+
+			foreach (var option in options) {
+				var sfx = framework.SupportedFrameworks.FirstOrDefault (
+					s => s.DisplayName.Equals (option.Name));
+				if (sfx == null) {
+					option.Check.Active = false;
+					continue;
+				}
+
+				option.Check.Active = true;
+
+				if (option.Combo == null)
+					continue;
+
+				var label = GetDisplayName (sfx);
+				for (int i = 0; i < option.Items.Count; i++) {
+					if (!option.Items [i].Name.Equals (label))
+						continue;
+					option.Combo.Active = i;
+					break;
+				}
+			}
 		}
 		
 		public void Store ()
