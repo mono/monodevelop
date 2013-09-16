@@ -84,7 +84,7 @@ namespace Mono.MHex.Rendering
 				ISegment selection = Data.MainSelection.Segment;
 				HandleSelection (selection.Offset, selection.EndOffset, startOffset, endOffset, null, delegate(long start, long end) {
 					result.Layout.SetForeground (Style.Selection, (int)(start - startOffset), (int)(end - start));
-					result.Layout.SetBackgound (Style.SelectionBg, (int)(start - startOffset), (int)(end - start));
+					result.Layout.SetBackground (Style.SelectionBg, (int)(start - startOffset), (int)(end - start));
 				});
 			}
 			return result;
