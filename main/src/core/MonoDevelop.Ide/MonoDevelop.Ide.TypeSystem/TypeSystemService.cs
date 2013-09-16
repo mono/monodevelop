@@ -1112,7 +1112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			class LazyProjectLoader : IProjectContent
 			{
 				readonly ProjectContentWrapper wrapper;
-				Task<IProjectContent> contextTask;
+				readonly Task<IProjectContent> contextTask;
 
 				public Task<IProjectContent> ContextTask {
 					get {
@@ -1130,20 +1130,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
-						var context = LoadProjectCache (this.wrapper.Project);
-						var output = this.wrapper.Project.GetOutputFileName (wrapper.Project.ParentSolution.DefaultConfigurationSelector);
+						var p = this.wrapper.Project;
+						var context = LoadProjectCache (p);
 
-						string assemblyName = output.FileNameWithoutExtension;
+						var assemblyName = p.ParentSolution != null ? p.GetOutputFileName (p.ParentSolution.DefaultConfigurationSelector).FileNameWithoutExtension : p.Name;
 						if (string.IsNullOrEmpty (assemblyName))
-							assemblyName = this.wrapper.Project.Name;
+							assemblyName = p.Name;
 
 						if (context != null) {
 							return context.SetAssemblyName (assemblyName) ?? context;
 						}
 
-						context = new MonoDevelopProjectContent (this.wrapper.Project);
+						context = new MonoDevelopProjectContent (p);
 						wrapper.InLoad = true;
-						context = context.SetLocation (this.wrapper.Project.FileName);
+						context = context.SetLocation (p.FileName);
 						context = context.SetAssemblyName (assemblyName);
 						QueueParseJob (this.wrapper);
 						return context;
