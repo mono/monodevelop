@@ -379,17 +379,20 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyEndOffset = result.Length;
 			AppendLine (result);
 		}
-		
+
+		internal static string[] MonoTouchComments = {
+			" NOTE: Don't call the base implementation on a Model class",
+			" see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events"
+		};
+
 		void AppendMonoTouchTodo (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
 		{
 			AppendIndent (result);
 			bodyStartOffset = result.Length;
-			result.AppendLine ("// NOTE: Don't call the base implementation on a Model class");
-			
-			AppendIndent (result);
-			result.AppendLine ("// see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events ");
-
-			AppendIndent (result);
+			foreach (var cmt in MonoTouchComments) {
+				result.AppendLine ("//" + cmt);
+				AppendIndent (result);
+			}
 			result.Append ("throw new ");
 			result.Append (options.GetShortType ("System", "NotImplementedException"));
 
@@ -809,7 +812,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new CodeGeneratorMemberResult (result.ToString (), regions);
 		}
 		
-		static bool IsMonoTouchModelMember (IMember member)
+		internal static bool IsMonoTouchModelMember (IMember member)
 		{
 			if (member == null || member.DeclaringType == null)
 				return false;

@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var declaringType = context.ParsedDocument.GetInnermostTypeDefinition (loc);
 			var mode = new InsertionCursorEditMode (
 				editor.Parent,
-				CodeGenerationService.GetInsertionPoints (context.TextEditor, context.ParsedDocument, declaringType));
+				MonoDevelop.Ide.TypeSystem.CodeGenerationService.GetInsertionPoints (context.TextEditor, context.ParsedDocument, declaringType));
 			if (mode.InsertionPoints.Count == 0) {
 				MessageService.ShowError (
 					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						iCArgs.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 					}
 					foreach (var node in nodes.Reverse ()) {
-						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+						var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 						var offset = context.TextEditor.LocationToOffset (iCArgs.InsertionPoint.Location);
 						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
 						output.RegisterTrackedSegments (this, delta + offset);
@@ -183,7 +183,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var nodes = nodeCallback (script, script.context);
 				var mode = new InsertionCursorEditMode (
 					editor.Parent,
-					CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType));
+					MonoDevelop.Ide.TypeSystem.CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType));
 				if (mode.InsertionPoints.Count == 0) {
 					MessageService.ShowError (
 						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				}
 				if (declaringType.Kind == TypeKind.Enum) {
 					foreach (var node in nodes.Reverse ()) {
-						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+						var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 						var point = mode.InsertionPoints.First ();
 						var offset = loadedDocument.Editor.LocationToOffset (point.Location);
 						var text = output.Text + ",";
@@ -217,7 +217,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 							iCArgs.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 						}
 						foreach (var node in nodes.Reverse ()) {
-							var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+							var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
 							var text = output.Text;
 							var delta = iCArgs.InsertionPoint.Insert (editor, text);

@@ -192,6 +192,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.location = loc;
 			var policy = document.HasProject ? Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
+			Services.AddService (typeof(ICSharpCode.NRefactory.CSharp.CodeGenerationService), new CSharpCodeGenerationService());
 		}
 
 		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
