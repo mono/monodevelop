@@ -26,6 +26,7 @@
 using MonoDevelop.Projects;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -37,7 +38,10 @@ namespace MonoDevelop.CodeIssues
 
 		static IList<ProjectFile> GetApplicableFiles (Solution solution)
 		{
+			var configurationSelector = IdeApp.Workspace.ActiveConfiguration;
+			var config = solution.GetConfiguration (configurationSelector);
 			return solution.GetAllProjects ()
+				.Where (config.BuildEnabledForItem)
 				.SelectMany (p => p.Files)
 				.Where (f => f.BuildAction == BuildAction.Compile)
 				.Distinct (new FilePathComparer())
