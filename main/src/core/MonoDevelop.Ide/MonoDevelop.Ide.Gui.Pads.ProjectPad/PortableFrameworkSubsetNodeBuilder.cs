@@ -53,16 +53,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ".NET Portable Subset";
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo node)
 		{
-			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
+			base.BuildNode (treeBuilder, dataObject, node);
 
 			var project = ((PortableFrameworkSubset) dataObject).Project;
-			label = GLib.Markup.EscapeText (GettextCatalog.GetString (".NET Portable Subset"));
+			node.Label = GLib.Markup.EscapeText (GettextCatalog.GetString (".NET Portable Subset"));
 			if (!project.TargetRuntime.IsInstalled (project.TargetFramework))
-				label = "<span color='red'>" + label + "</span>";
+				node.Label = "<span color='red'>" + node.Label + "</span>";
 
-			icon = closedIcon = Context.GetIcon ("md-reference-package");
+			node.Icon = Context.GetIcon ("md-reference-package");
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

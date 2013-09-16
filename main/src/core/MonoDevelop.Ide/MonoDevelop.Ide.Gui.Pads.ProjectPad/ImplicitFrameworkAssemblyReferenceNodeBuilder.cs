@@ -61,11 +61,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return aref.Assembly.Name;
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo node)
 		{
 			var aref = (ImplicitFrameworkAssemblyReference) dataObject;
-			icon = Context.GetIcon ("md-reference-package");
-			label = aref.Assembly.Name;
+			node.Icon = Context.GetIcon ("md-reference-package");
+			node.Label = aref.Assembly.Name;
 		}
 	}
 
