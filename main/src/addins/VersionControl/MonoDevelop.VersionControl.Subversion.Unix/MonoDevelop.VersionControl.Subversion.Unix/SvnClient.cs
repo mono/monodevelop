@@ -64,6 +64,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		internal static IntPtr newpool (IntPtr parent)
 		{
 			IntPtr p;
+			if (apr == null)
+				CheckInstalled ();
+
 			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
 			if (p == IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create an APR pool.");
