@@ -96,4 +96,19 @@ namespace CustomControls.OS
         public static extern IntPtr SHGetFileInfoW([In] string pszPath, uint dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
         #endregion
     }
+
+	[AttributeUsage(AttributeTargets.Class |
+		AttributeTargets.Enum |
+		AttributeTargets.Interface |
+		AttributeTargets.Struct,
+		AllowMultiple = true)]
+	[Author("Franco, Gustavo")]
+	internal class AuthorAttribute : Attribute
+	{
+		#region Constructors
+		public AuthorAttribute(string authorName)
+		{
+		}
+		#endregion
+	}
 }
