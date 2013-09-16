@@ -189,7 +189,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	public class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
-			get { return SvnClient.apr; }
+			get {
+				if (SvnClient.apr == null)
+					SvnClient.CheckInstalled ();
+				return SvnClient.apr;
+			}
 		}
 		
 		protected static LibSvnClient svn {
