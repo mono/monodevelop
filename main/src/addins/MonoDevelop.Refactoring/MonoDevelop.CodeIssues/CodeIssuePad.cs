@@ -123,6 +123,13 @@ namespace MonoDevelop.CodeIssues
 				});
 			};
 			node.ChildAdded += HandleRootChildAdded;
+
+			IdeApp.Workspace.LastWorkspaceItemClosed += HandleLastWorkspaceItemClosed;
+		}
+
+		void HandleLastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			ClearState ();
 		}
 		
 		void ClearState ()
@@ -231,7 +238,6 @@ namespace MonoDevelop.CodeIssues
 				CurrentJobContext.CancelJob ();
 				CurrentJobContext = null;
 			}
-
 		}
 
 		void SetNode (TreeNavigator navigator, IIssueTreeNode node)
