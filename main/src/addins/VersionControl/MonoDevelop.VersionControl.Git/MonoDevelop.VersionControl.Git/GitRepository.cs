@@ -883,6 +883,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			// Replace with NGit.Api.Git.Reset ()
+			// FIXME: we lack info about what happened to files
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
 				var files = group.ToArray ();
@@ -1461,43 +1462,22 @@ namespace MonoDevelop.VersionControl.Git
 
 			// Replace with NGit.Api.Git ().Checkout ()
 			// Switch to the target branch
-			DirCache dc = RootRepository.LockDirCache ();
+			var checkout = new NGit.Api.Git (RootRepository).Checkout ();
+			checkout.SetName (branch);
 			try {
-				RevWalk rw = new RevWalk (RootRepository);
-				ObjectId branchHeadId = RootRepository.Resolve (branch);
-				if (branchHeadId == null)
-					throw new InvalidOperationException ("Branch head commit not found");
-				
-				RevCommit branchCommit = rw.ParseCommit (branchHeadId);
-				DirCacheCheckout checkout = new DirCacheCheckout (RootRepository, null, dc, branchCommit.Tree);
-				checkout.Checkout ();
-				
-				RefUpdate u = RootRepository.UpdateRef(Constants.HEAD);
-				u.Link ("refs/heads/" + branch);
-				monitor.Step (1);
-			} catch {
-				dc.Unlock ();
+				checkout.Call ();
+			} finally {
+				// Restore the branch stash
 				if (GitService.StashUnstashWhenSwitchingBranches) {
-					// If something goes wrong, restore the work tree status
-					using (var gm = new GitMonitor (monitor))
-						stash.Apply (gm);
-					stashes.Remove (stash);
+					stash = GetStashForBranch (stashes, branch);
+					if (stash != null) {
+						using (var gm = new GitMonitor (monitor))
+							stash.Apply (gm);
+						stashes.Remove (stash);
+					}
+					monitor.Step (1);
 				}
-				throw;
 			}
-			
-			// Restore the branch stash
-			
-			if (GitService.StashUnstashWhenSwitchingBranches) {
-				stash = GetStashForBranch (stashes, branch);
-				if (stash != null) {
-					using (var gm = new GitMonitor (monitor))
-						stash.Apply (gm);
-					stashes.Remove (stash);
-				}
-				monitor.Step (1);
-			}
-			
 			// Notify file changes
 			
 			NotifyFileChanges (monitor, statusList);
