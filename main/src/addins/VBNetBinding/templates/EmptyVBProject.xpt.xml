@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
                 <_Name>Empty Project</_Name>
                 <_Category>VBNet</_Category>
-                <Icon>md-project|res:vb-icon-32.png</Icon>
+                <Icon>md-project</Icon>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net solution.</_Description>
                 <DefaultFilename>EmptyVBProject</DefaultFilename>

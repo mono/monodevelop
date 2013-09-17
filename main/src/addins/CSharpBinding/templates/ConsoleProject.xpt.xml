@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<_Category>C#</_Category>
-		<Icon>md-project-console|res:csharp-icon-32.png</Icon>
+		<Icon>md-project-console</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a new C# console project.</_Description>
 		<DefaultFilename>ConsoleProject</DefaultFilename>

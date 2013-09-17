@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Shared Library</_Name>
 		<_Category>C</_Category>
-		<Icon>md-project-library|res:c-icon-32.png</Icon>
+		<Icon>md-project-library</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple shared library C project.</_Description>
 		<DefaultFilename>SharedLibraryCProject</DefaultFilename>
