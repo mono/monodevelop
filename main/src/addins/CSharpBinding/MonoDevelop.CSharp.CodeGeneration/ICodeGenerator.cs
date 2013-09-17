@@ -64,7 +64,6 @@ namespace MonoDevelop.CodeGeneration
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					Console.WriteLine ("add:"+ ((TypeExtensionNode)args.ExtensionNode).CreateInstance ());
 					codeGenerators.Add ((ICodeGenerator)args.ExtensionObject);
 					break;
 				case ExtensionChange.Remove:
