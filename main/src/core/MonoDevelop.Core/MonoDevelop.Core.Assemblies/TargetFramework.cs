@@ -197,17 +197,6 @@ namespace MonoDevelop.Core.Assemblies
 					return true;
 			}
 
-			// FIXME: this is a hack for systems w/o Portable Class Library definitions
-			if (fx.Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE) {
-				switch (id.Identifier) {
-				case TargetFrameworkMoniker.ID_NET_FRAMEWORK:
-					return new Version (fx.Id.Version).CompareTo (new Version (id.Version)) <= 0;
-				case TargetFrameworkMoniker.ID_MONOTOUCH:
-				case TargetFrameworkMoniker.ID_MONODROID:
-					return true;
-				}
-			}
-
 			return fx.Id.Identifier == id.Identifier && new Version (fx.Id.Version).CompareTo (new Version (id.Version)) <= 0;
 		}
 		
