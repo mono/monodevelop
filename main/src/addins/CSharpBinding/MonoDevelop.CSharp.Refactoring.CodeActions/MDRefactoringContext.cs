@@ -42,7 +42,7 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	class MDRefactoringContext : RefactoringContext, IRefactoringContext
+	public class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
 		public TextEditorData TextEditor {
 			get;
