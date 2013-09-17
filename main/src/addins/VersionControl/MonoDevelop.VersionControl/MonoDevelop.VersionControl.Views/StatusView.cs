@@ -924,16 +924,17 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			bool found = false;
-			int oldStatusIndex = 0;
+			int oldStatusIndex;
 			TreeIter oldStatusIter = TreeIter.Zero;
 			
 			// Locate the file in the status object list
-			if (statuses != null) {
-				for (oldStatusIndex = 0; oldStatusIndex < statuses.Count; oldStatusIndex++) {
-					if (statuses [oldStatusIndex].LocalPath == args.FilePath) {
-						found = true;
-						break;
-					}
+			if (statuses == null)
+				return false;
+
+			for (oldStatusIndex = 0; oldStatusIndex < statuses.Count; oldStatusIndex++) {
+				if (statuses [oldStatusIndex].LocalPath == args.FilePath) {
+					found = true;
+					break;
 				}
 			}
 
