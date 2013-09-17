@@ -55,23 +55,11 @@ namespace MonoDevelop.CodeIssues
 
 		readonly AnalysisJobQueue jobQueue = new AnalysisJobQueue();
 
-		readonly IList<JobSlice> currentlyRunningItems = new List<JobSlice>(Environment.ProcessorCount);
-
 		public IJobContext QueueJob (IAnalysisJob job)
 		{
 			jobQueue.Add (job);
 			EnsureRunning ();
 			return new JobContext (job, jobQueue, this);
-		}
-
-		internal void CancelRunningJob (IAnalysisJob job)
-		{
-			lock (_lock) {
-				foreach (var item in currentlyRunningItems) {
-					item.RemoveJob (job);
-				}
-
-			}
 		}
 
 		void EnsureRunning ()

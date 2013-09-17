@@ -219,6 +219,9 @@ namespace MonoDevelop.CodeIssues
 
 			var job = new SolutionAnalysisJob (solution);
 			job.CodeIssueAdded += HandleCodeIssueAdded;
+			job.Completed += delegate {
+				CurrentJobContext = null;
+			};
 			CurrentJobContext = RefactoringService.QueueCodeIssueAnalysis (job, "Analyzing solution");
 			StartPeriodicUpdate ();
 		}
@@ -229,7 +232,6 @@ namespace MonoDevelop.CodeIssues
 				var summary = IssueSummary.FromCodeIssue (e.File, e.Provider, issue);
 				rootGroup.AddIssue (summary);
 			}
-
 		}
 
 		void StopAnalyzation (object sender, EventArgs e)

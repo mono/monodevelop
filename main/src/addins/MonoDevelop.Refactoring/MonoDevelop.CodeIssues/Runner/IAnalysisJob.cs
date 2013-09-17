@@ -83,6 +83,11 @@ namespace MonoDevelop.CodeIssues
 		/// Notifies the job that all files have been processed.
 		/// </summary>
 		void SetCompleted ();
+
+		/// <summary>
+		/// Occurs when the job is completed.
+		/// </summary>
+		event EventHandler<EventArgs> Completed;
 	}
 }
 

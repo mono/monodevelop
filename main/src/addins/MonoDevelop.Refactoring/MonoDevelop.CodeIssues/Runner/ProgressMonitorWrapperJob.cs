@@ -28,7 +28,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeIssues
 
 		#region IAnalysisJob implementation
 
-		public event System.EventHandler<CodeIssueEventArgs> CodeIssueAdded {
+		public event EventHandler<CodeIssueEventArgs> CodeIssueAdded {
 			add {
 				wrappedJob.CodeIssueAdded += value;
 			}
@@ -85,6 +85,15 @@ namespace MonoDevelop.CodeIssues
 			wrappedJob.AddError (file, provider);
 		}
 
+		public event EventHandler<EventArgs> Completed {
+			add {
+				wrappedJob.Completed += value;
+			}
+			remove {
+				wrappedJob.Completed -= value;
+			}
+		}
+
 		public void SetCompleted ()
 		{
 			lock (_lock) {
@@ -102,10 +111,10 @@ namespace MonoDevelop.CodeIssues
 
 		void StopReporting ()
 		{
-			Debug.Assert (monitor != null);
-
-			monitor.Dispose ();
-			monitor = null;
+			if (monitor != null) {
+				monitor.Dispose ();
+				monitor = null;
+			}
 		}
 
 		public void NotifyCancelled ()

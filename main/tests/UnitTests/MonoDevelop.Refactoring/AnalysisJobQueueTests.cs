@@ -103,9 +103,9 @@ namespace MonoDevelop.Refactoring
 		{
 			queue.Add (job);
 			queue.Dequeue (1).First ().Dispose ();
-			Assert.IsFalse (job.Completed, "should now be completed yet");
+			Assert.IsFalse (job.IsCompleted, "should now be completed yet");
 			queue.Dequeue (1).First ().Dispose ();
-			Assert.IsTrue (job.Completed, "should be completed");
+			Assert.IsTrue (job.IsCompleted, "should be completed");
 
 		}
 	}

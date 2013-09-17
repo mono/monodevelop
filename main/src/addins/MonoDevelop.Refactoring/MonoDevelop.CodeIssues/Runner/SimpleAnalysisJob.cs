@@ -51,9 +51,14 @@ namespace MonoDevelop.CodeIssues
 			this.files = files;
 		}
 
-		public bool Completed {
+		public bool IsCompleted {
 			get;
 			private set;
+		}
+
+		bool IsCancelled {
+			get;
+			set;
 		}
 
 		#region IAnalysisJob implementation
@@ -94,12 +99,34 @@ namespace MonoDevelop.CodeIssues
 
 		public void NotifyCancelled ()
 		{
-			// empty for now
+			IsCancelled = true;
+		}
+
+		event EventHandler<EventArgs> completed;
+		public event EventHandler<EventArgs> Completed {
+			add {
+				completed += value;
+				if (IsCompleted && !IsCancelled)
+					OnCompleted (new EventArgs());
+			}
+			remove {
+				completed += value;
+			}
+		}
+
+		protected virtual void OnCompleted (EventArgs e)
+		{
+			var handler = completed;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		public void SetCompleted ()
 		{
-			Completed = true;
+			IsCompleted = true;
+
+			if (!IsCancelled)
+				OnCompleted (new EventArgs());
 		}
 
 		#endregion

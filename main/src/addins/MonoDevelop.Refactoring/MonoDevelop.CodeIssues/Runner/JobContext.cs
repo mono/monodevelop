@@ -51,9 +51,8 @@ namespace MonoDevelop.CodeIssues
 		#region IJobContext implementation
 		public void CancelJob ()
 		{
-			queue.Remove (job);
-			runner.CancelRunningJob (job);
 			job.NotifyCancelled ();
+			queue.Remove (job);
 		}
 
 		public IAnalysisJob Job {
