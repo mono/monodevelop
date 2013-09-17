@@ -37,11 +37,11 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
-		EventHandler recentChangesHandler;
-		VBox box;
+		readonly EventHandler recentChangesHandler;
+		readonly VBox box;
 		int itemCount = 10;
-		Gdk.Pixbuf openProjectIcon;
-		Gdk.Pixbuf newProjectIcon;
+		readonly Gdk.Pixbuf openProjectIcon;
+		readonly Gdk.Pixbuf newProjectIcon;
 		
 		public WelcomePageRecentProjectsList (string title = null, int count = 10): base (title)
 		{
@@ -98,6 +98,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			//TODO: pinned files
 			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
 				var filename = recent.FileName;
+				if (!System.IO.File.Exists (filename))
+					continue;
+
 				var accessed = recent.TimeStamp;
 				var pixbuf = ImageService.GetPixbuf (GetIcon (filename), IconSize.Dnd);
 				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
@@ -141,8 +144,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			//string icon;
 			//getting the icon requires probing the file, so handle IO errors
 			try {
-				if (!System.IO.File.Exists (fileName))
-					return null;
 /* delay project service creation. 
 				icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
 						(fileName, typeof(Solution)).Length > 0
