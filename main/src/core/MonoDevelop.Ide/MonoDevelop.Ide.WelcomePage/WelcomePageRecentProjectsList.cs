@@ -37,16 +37,16 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
-		EventHandler recentChangesHandler;
-		VBox box;
+		readonly EventHandler recentChangesHandler;
+		readonly VBox box;
 		int itemCount = 10;
-		Gdk.Pixbuf openProjectIcon;
-		Gdk.Pixbuf newProjectIcon;
+		readonly Xwt.Drawing.Image openProjectIcon;
+		readonly Xwt.Drawing.Image newProjectIcon;
 		
 		public WelcomePageRecentProjectsList (string title = null, int count = 10): base (title)
 		{
-			openProjectIcon = Gdk.Pixbuf.LoadFromResource ("open_solution.png");
-			newProjectIcon = Gdk.Pixbuf.LoadFromResource ("new_solution.png");
+			openProjectIcon = Xwt.Drawing.Image.FromResource ("open_solution.png");
+			newProjectIcon = Xwt.Drawing.Image.FromResource ("new_solution.png");
 
 			box = new VBox ();
 
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
 				var filename = recent.FileName;
 				var accessed = recent.TimeStamp;
-				var pixbuf = ImageService.GetPixbuf (GetIcon (filename), IconSize.Dnd);
+				var pixbuf = ImageService.GetIcon (GetIcon (filename), IconSize.Dnd);
 				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
 				button.BorderPadding = 2;
 				button.AllowPinning = true;

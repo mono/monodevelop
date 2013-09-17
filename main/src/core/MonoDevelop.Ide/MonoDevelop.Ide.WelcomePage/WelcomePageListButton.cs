@@ -35,16 +35,16 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 		string title, subtitle, actionUrl;
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		bool mouseOver;
 		bool pinned;
 		Gdk.Rectangle starRect;
 		bool mouseOverStar;
 
-		static Gdk.Pixbuf starNormal;
-		static Gdk.Pixbuf starNormalHover;
-		static Gdk.Pixbuf starPinned;
-		static Gdk.Pixbuf starPinnedHover;
+		static readonly Xwt.Drawing.Image starNormal;
+		static readonly Xwt.Drawing.Image starNormalHover;
+		static readonly Xwt.Drawing.Image starPinned;
+		static readonly Xwt.Drawing.Image starPinnedHover;
 
 		public event EventHandler PinClicked;
 
@@ -58,13 +58,13 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageListButton ()
 		{
-			starNormal = Gdk.Pixbuf.LoadFromResource ("star-normal.png");
-			starNormalHover = Gdk.Pixbuf.LoadFromResource ("star-normal-hover.png");
-			starPinned = Gdk.Pixbuf.LoadFromResource ("star-pinned.png");
-			starPinnedHover = Gdk.Pixbuf.LoadFromResource ("star-pinned-hover.png");
+			starNormal = Xwt.Drawing.Image.FromResource ("star-normal.png");
+			starNormalHover = Xwt.Drawing.Image.FromResource ("star-normal-hover.png");
+			starPinned = Xwt.Drawing.Image.FromResource ("star-pinned.png");
+			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-pinned-hover.png");
 		}
 
-		public WelcomePageListButton (string title, string subtitle, Gdk.Pixbuf icon, string actionUrl)
+		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
 		{
 			VisibleWindow = false;
 			this.title = title;
@@ -174,12 +174,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				// Draw the icon
 
 				int x = Allocation.X + InternalPadding;
-				int y = Allocation.Y + (Allocation.Height - icon.Height) / 2;
-				Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
-				ctx.Paint ();
+				int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
+				ctx.DrawImage (this, icon, x, y);
 
 				if (AllowPinning && (mouseOver || pinned)) {
-					Gdk.Pixbuf star;
+					Xwt.Drawing.Image star;
 					if (pinned) {
 						if (mouseOverStar)
 							star = starPinnedHover;
@@ -191,11 +190,10 @@ namespace MonoDevelop.Ide.WelcomePage
 						else
 							star = starNormal;
 					}
-					x = x + icon.Width - star.Width + 3;
-					y = y + icon.Height - star.Height + 3;
-					Gdk.CairoHelper.SetSourcePixbuf (ctx, star, x, y);
-					ctx.Paint ();
-					starRect = new Gdk.Rectangle (x, y, star.Width, star.Height);
+					x = x + (int)icon.Width - (int)star.Width + 3;
+					y = y + (int)icon.Height - (int)star.Height + 3;
+					ctx.DrawImage (this, star, x, y);
+					starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
 				}
 
 				// Draw the text
