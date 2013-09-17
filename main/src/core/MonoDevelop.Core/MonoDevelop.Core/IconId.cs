@@ -88,7 +88,7 @@ namespace MonoDevelop.Core
 
 		public override bool Equals (object obj)
 		{
-			if (obj == null && !(obj is IconId))
+			if (!(obj is IconId))
 				return false;
 
 			IconId fn = (IconId) obj;
