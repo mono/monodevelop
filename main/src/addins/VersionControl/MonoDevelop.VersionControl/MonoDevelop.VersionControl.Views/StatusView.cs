@@ -924,7 +924,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			bool found = false;
-			int oldStatusIndex;
+			int oldStatusIndex = 0;
 			TreeIter oldStatusIter = TreeIter.Zero;
 			
 			// Locate the file in the status object list
