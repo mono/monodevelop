@@ -512,8 +512,11 @@
     <EmbeddedResource Include="icons\project-console-overlay-32.png">
       <LogicalName>project-console-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gui-32.png">
-      <LogicalName>project-gui-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-gui-overlay-32.png">
+      <LogicalName>project-gui-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-overlay-32@2x.png">
+      <LogicalName>project-gui-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-library-overlay-32.png">
       <LogicalName>project-library-overlay-32.png</LogicalName>
