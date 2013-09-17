@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using System.Runtime.InteropServices;
+using Mono.Addins;
 
 namespace MonoDevelop.Components
 {
@@ -73,7 +74,54 @@ namespace MonoDevelop.Components
 		{
 			return (Gtk.Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (widget);
 		}
-		
+
+		public static void DrawImage (this Cairo.Context s, Gtk.Widget widget, Xwt.Drawing.Image image, double x, double y)
+		{
+			Xwt.Toolkit.CurrentEngine.RenderImage (widget, s, image, x, y);
+		}
+
+		public static Xwt.Drawing.Image ToXwtImage (this Gdk.Pixbuf pix)
+		{
+			return Xwt.Toolkit.CurrentEngine.WrapImage (pix);
+		}
+
+		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image)
+		{
+			return (Gdk.Pixbuf)Xwt.Toolkit.CurrentEngine.GetNativeImage (image);
+		}
+
+		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image, Gtk.IconSize size)
+		{
+			return (Gdk.Pixbuf)Xwt.Toolkit.CurrentEngine.GetNativeImage (image.WithSize (size));
+		}
+
+		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
+		{
+			int w, h;
+			if (!Gtk.Icon.SizeLookup (size, out w, out h))
+				return image;
+			return image.WithSize (w, h);
+		}
+
+		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)
+		{
+			using (var s = addin.GetResource (resource)) {
+				var img = Xwt.Drawing.Image.FromStream (s);
+				int i = resource.LastIndexOf ('.');
+				if (i != -1) {
+					var resource2x = resource.Substring (0, i) + "@2x" + resource.Substring (i);
+					var s2x = addin.GetResource (resource2x);
+					if (s2x != null) {
+						using (s2x) {
+							var img2x = Xwt.Drawing.Image.FromStream (s2x);
+							return Xwt.Drawing.Image.CreateMultiSizeIcon (new Xwt.Drawing.Image[] {img, img2x});
+						}
+					}
+				}
+				return img;
+			}
+		}
+
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
