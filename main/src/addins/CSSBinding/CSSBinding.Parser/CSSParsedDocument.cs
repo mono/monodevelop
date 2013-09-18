@@ -40,7 +40,7 @@ namespace MonoDevelop.CSSParser
 	public class CSSParsedDocument : ParsedDocument
 	{
 		string fileName;
-		List<Error> errors = new List<Error>();
+		List<Error> errors;
 
 
 		public FoldingTokensVM Segments { get; private set; }
