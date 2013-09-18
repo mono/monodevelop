@@ -81,8 +81,11 @@ namespace MonoDevelop.VersionControl.Git
 			revisionStore = new Xwt.ListStore (messageField, dateField, authorField, shaField, revisionField);
 			revisionList.DataSource = revisionStore;
 
-			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), new Xwt.TextCellView (messageField));
+			var message = new Xwt.TextCellView (messageField);
+			message.Ellipsize = Xwt.EllipsizeMode.End;
+			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), message);
 			revisionList.Columns.Add (messageColumn);
+
 			dateColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Date"), new Xwt.TextCellView (dateField));
 			revisionList.Columns.Add (dateColumn);
 			authorColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Author"), new Xwt.TextCellView (authorField));
