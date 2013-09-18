@@ -39,4 +39,4 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/fsharpbinding"]
 	path = main/external/fsharpbinding
-	url = git://github.com/slluis/fsharpbinding.git
+	url = git://github.com/fsharp/fsharpbinding.git
