@@ -52,17 +52,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			store = new ListStore (language, completeOnSpace, completeOnChars);
 
 			var languageColumn = list.Columns.Add (GettextCatalog.GetString ("Language"), language);
-			languageColumn.IsResizeable = true;
+			languageColumn.CanResize = true;
 
 			var checkBoxCellView = new CheckBoxCellView (completeOnSpace);
 			checkBoxCellView.Editable = true;
 			var completeOnSpaceColumn = list.Columns.Add (GettextCatalog.GetString ("Complete on space"), checkBoxCellView);
-			completeOnSpaceColumn.IsResizeable = true;
+			completeOnSpaceColumn.CanResize = true;
 
 			var textCellView = new TextCellView (completeOnChars);
 			textCellView.Editable = true;
 			var doNotCompleteOnColumn = list.Columns.Add (GettextCatalog.GetString ("Do complete on"), textCellView);
-			doNotCompleteOnColumn.IsResizeable = true;
+			doNotCompleteOnColumn.CanResize = true;
 			list.DataSource = store;
 			PackStart (list, true, true);
 
