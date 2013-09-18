@@ -158,7 +158,7 @@ namespace MonoDevelop.Core.Assemblies
 					return false;
 
 				var prefix = pattern.Substring (0, star);
-				return profile.StartsWith (prefix);
+				return profile.StartsWith (prefix, StringComparison.Ordinal);
 			}
 
 			return profile == pattern;
