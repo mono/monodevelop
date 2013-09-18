@@ -54,9 +54,6 @@ namespace MonoDevelop.VersionControl.Git
 			Title = GettextCatalog.GetString ("Select a revision");
 
 			Xwt.VBox vbox = new Xwt.VBox ();
-			vbox.MinWidth = 350;
-			vbox.Spacing = 6;
-			vbox.Margin = 12;
 
 			vbox.PackStart(new Xwt.Label (GettextCatalog.GetString ("Tag Name")));
 
@@ -81,11 +78,8 @@ namespace MonoDevelop.VersionControl.Git
 			revisionStore = new Xwt.ListStore (messageField, dateField, authorField, shaField, revisionField);
 			revisionList.DataSource = revisionStore;
 
-			var message = new Xwt.TextCellView (messageField);
-			message.Ellipsize = Xwt.EllipsizeMode.End;
-			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), message);
+			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), new Xwt.TextCellView (messageField) { Ellipsize = Xwt.EllipsizeMode.End });
 			revisionList.Columns.Add (messageColumn);
-
 			dateColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Date"), new Xwt.TextCellView (dateField));
 			revisionList.Columns.Add (dateColumn);
 			authorColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Author"), new Xwt.TextCellView (authorField));
@@ -94,12 +88,13 @@ namespace MonoDevelop.VersionControl.Git
 			revisionList.Columns.Add (shaColumn);
 
 			var history = repo.GetHistory (repo.RootPath, null);
-			for (int i = 0; i < history.Length; ++i) {
+			var min = Math.Min (history.Length, 150);
+			for (int i = 0; i < min; ++i) {
 				var rev = history [i];
 
+				// Convert to foreach and use i = AddRow ();
 				revisionStore.AddRow ();
-				// Temporary fix until we have ellipsize.
-				revisionStore.SetValue (i, messageField, rev.ShortMessage.Length < 40 ? rev.ShortMessage : rev.ShortMessage.Substring (0, 39));
+				revisionStore.SetValue (i, messageField, rev.ShortMessage);
 				revisionStore.SetValue (i, dateField, ParseDate (rev.Time));
 				revisionStore.SetValue (i, authorField, rev.Author);
 				revisionStore.SetValue (i, shaField, ((GitRevision)rev).ShortName);
