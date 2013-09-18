@@ -47,8 +47,10 @@ namespace MonoDevelop.CSSBinding.Parse.Models
 			this.Type = type;
 		}
 
+
 		public string Text { 
 			get{
+
 				if(_text !=null )
 					return _text;
 				else return "Not Defined";
