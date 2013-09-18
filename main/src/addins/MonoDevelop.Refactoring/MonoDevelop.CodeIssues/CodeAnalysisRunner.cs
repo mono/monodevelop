@@ -95,7 +95,8 @@ namespace MonoDevelop.CodeIssues
 										}
 									},
 									batchAction) {
-									DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
+									DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End),
+									IdString = a.IdString
 								};
 							}));
 							result.Add (new InspectorResults (

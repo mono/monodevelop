@@ -43,7 +43,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssueProvider issueProvider;
 		readonly IssueDescriptionAttribute attr;
 		readonly string providerIdString;
-		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider boundActionProvider;
 		readonly TimerCounter counter;
 
 		public override string IdString {
@@ -90,14 +89,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			SetMimeType ("text/x-csharp");
 			subIssues = issueProvider.SubIssues.Select (subIssue => (BaseCodeIssueProvider)new BaseNRefactoryIssueProvider (this, subIssue)).ToList ();
 
-			// Additional source of actions
-			var actionProvider = attr.ActionProvider;
-			if (actionProvider != null) {
-				var actionAttr = actionProvider.GetCustomAttributes (typeof(ContextActionAttribute), false);
-				if (actionAttr != null && actionAttr.Length == 1)
-					boundActionProvider = (ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider)Activator.CreateInstance (actionProvider);
-			}
-
 			counter = InstrumentationService.CreateTimerCounter (IdString, "CodeIssueProvider run times");
 		}
 
@@ -118,17 +109,33 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			return ToMonoDevelopRepresentation (cancellationToken, context, issues);
 		}
 
-		IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> GetActions (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue issue, MDRefactoringContext context)
+		IEnumerable<NRefactoryCodeAction> GetActions (ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue issue, MDRefactoringContext context)
 		{
 			foreach (var action in issue.Actions)
-				yield return action;
-			if (boundActionProvider != null) {
-				// We need to se the correct location here. Seems very fragile to do so...
-				context.SetLocation (issue.Start);
-				foreach (var action in boundActionProvider.GetActions (context)) {
-					yield return action;
+				yield return new NRefactoryCodeAction (IdString, action.Description, action, action.SiblingKey);
+
+			if (issue.ActionProvider != null) {
+				foreach (var provider in issue.ActionProvider) {
+					var boundActionProvider = (ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider)Activator.CreateInstance (provider);
+					context.SetLocation (issue.Start);
+					foreach (var action in boundActionProvider.GetActions (context)) {
+						yield return new NRefactoryCodeAction (provider.FullName, action.Description, action, action.SiblingKey);
+					}
 				}
 			}
+			/*
+			var nrefactoryCodeAction = new NRefactoryCodeAction (IdString, act.Description, act, act.SiblingKey);
+			if (act.SiblingKey != null) {
+				// make sure the action has a list of its siblings
+				IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
+				if (!actionGroups.TryGetValue (act.SiblingKey, out siblingGroup)) {
+					siblingGroup = new List<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ();
+					actionGroups.Add (act.SiblingKey, siblingGroup);
+				}
+				siblingGroup.Add (act);
+				nrefactoryCodeAction.SiblingActions = siblingGroup;
+			}
+			*/
 		}
 
 		internal IEnumerable<CodeIssue> ToMonoDevelopRepresentation (CancellationToken cancellationToken, MDRefactoringContext context, IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue> issues)
@@ -142,27 +149,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					continue;
 				}
 				var actions = new List<NRefactoryCodeAction> ();
-				foreach (var act in GetActions(issue, context)) {
+				foreach (var nrefactoryCodeAction in GetActions(issue, context)) {
 					if (cancellationToken.IsCancellationRequested)
 						yield break;
-					if (act == null) {
+					if (nrefactoryCodeAction == null) {
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
 					}
-					var nrefactoryCodeAction = new NRefactoryCodeAction (IdString, act.Description, act, act.SiblingKey);
-					if (act.SiblingKey != null) {
-						// make sure the action has a list of its siblings
-						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
-						if (!actionGroups.TryGetValue (act.SiblingKey, out siblingGroup)) {
-							siblingGroup = new List<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ();
-							actionGroups.Add (act.SiblingKey, siblingGroup);
-						}
-						siblingGroup.Add (act);
-						nrefactoryCodeAction.SiblingActions = siblingGroup;
-					}
 					actions.Add (nrefactoryCodeAction);
 				}
-				yield return new CodeIssue (issue.IssueMarker, GettextCatalog.GetString (issue.Description ?? ""), context.TextEditor.FileName, issue.Start, issue.End, IdString, actions);
+				yield return new CodeIssue (issue.IssueMarker, GettextCatalog.GetString (issue.Description ?? ""), context.TextEditor.FileName, issue.Start, issue.End, IdString, actions) {
+					ActionProvider = issue.ActionProvider
+				};
 			}
 		}	
 

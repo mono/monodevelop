@@ -126,7 +126,12 @@ namespace MonoDevelop.CodeActions
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
+			var fixesAdded = new List<string> ();
 			foreach (var fix_ in fixes.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i), (int)i.Severity, GetUsage (i.IdString)))) {
+				// filter out code actions that are already resolutions of a code issue
+				if (fixesAdded.Any (f => fix_.IdString.IndexOf (f, StringComparison.Ordinal) >= 0))
+					continue;
+				fixesAdded.Add (fix_.IdString);
 				if (IsAnalysisOrErrorFix (fix_))
 					gotImportantFix = true;
 				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_)) {

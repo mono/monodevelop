@@ -77,6 +77,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		Action batchFix;
 		string label;
 		public DocumentRegion DocumentRegion { get; set; }
+		public string IdString { get; set; }
 
 		public GenericFix (string label, Action fix, Action batchFix = null)
 		{
