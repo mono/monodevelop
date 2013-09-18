@@ -40,7 +40,7 @@ namespace MonoDevelop.CSSParser
 	public class CSSParsedDocument : ParsedDocument
 	{
 		string fileName;
-		List<Error> errors;
+		List<Error> errors = new List<Error>();
 
 
 		public FoldingTokensVM Segments { get; private set; }
@@ -60,7 +60,7 @@ namespace MonoDevelop.CSSParser
 		}
 
 		public CSSParsedDocument (string fileName, FoldingTokensVM segments, IList<Error> errors)
-		{
+		{ 
 			this.fileName = fileName;
 			this.errors.AddRange(errors);
 			this.Segments = segments;
