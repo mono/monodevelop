@@ -29,7 +29,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Antlr4.Runtime.v4.0">
-      <HintPath>..\..\..\..\..\..\2013-02-27-antlr4-csharp-4.0.1-SNAPSHOT\Antlr4.Runtime.v4.0.dll</HintPath>
+      <HintPath>Reference\Antlr4\Antlr4.Runtime.v4.0.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
