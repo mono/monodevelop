@@ -32,9 +32,6 @@ endif
 all: pack
 
 build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
-	rm -fr bin/$(MDTAG)/$(config)/packages
-	mkdir -p bin/$(MDTAG)/$(config)/packages
-	cp -pr dependencies/AspNetMvc4 bin/$(MDTAG)/$(config)/packages/AspNetMvc4
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.$(MDTAG).fsproj /p:Configuration=$(config))
 
 

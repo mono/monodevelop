@@ -84,7 +84,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="FSharpBinding.addin.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
@@ -191,4 +190,13 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\*" />
+  </ItemGroup>
+  <Target Name="AfterBuild">
+      <Copy SourceFiles="@(Mvc4Files)" DestinationFolder="$(OutputPath)\packages\AspNetMvc4" />
+  </Target>
+  <Target Name="AfterClean">
+      <RemoveDir Directories="$(OutputPath)\packages" />
+  </Target>
 </Project>
