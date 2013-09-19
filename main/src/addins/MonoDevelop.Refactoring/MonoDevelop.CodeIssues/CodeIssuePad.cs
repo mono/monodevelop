@@ -34,6 +34,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Refactoring;
+using Xwt.Drawing;
+using IconSize = Gtk.IconSize;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -47,7 +49,7 @@ namespace MonoDevelop.CodeIssues
 		readonly DataField<IIssueTreeNode> nodeField = new DataField<IIssueTreeNode> ();
 		readonly Button runButton = new Button ("Run");
 		readonly Button cancelButton = new Button ("Cancel");
-		
+
 		readonly IssueGroup rootGroup;
 
 		readonly TreeStore store;
@@ -82,13 +84,14 @@ namespace MonoDevelop.CodeIssues
 		public CodeIssuePadControl ()
 		{
 			var buttonRow = new HBox();
+			runButton.Image = GetStockImage(Gtk.Stock.Execute);
 			runButton.Clicked += StartAnalyzation;
 			buttonRow.PackStart (runButton);
-			
+
+			cancelButton.Image = GetStockImage(Gtk.Stock.Stop);
 			cancelButton.Clicked += StopAnalyzation;
 			cancelButton.Sensitive = false;
 			buttonRow.PackStart (cancelButton);
-			
 			var groupingProvider = new CategoryGroupingProvider {
 				Next = new ProviderGroupingProvider()
 			};
@@ -127,7 +130,13 @@ namespace MonoDevelop.CodeIssues
 			IdeApp.Workspace.LastWorkspaceItemClosed += HandleLastWorkspaceItemClosed;
 		}
 
-		void HandleLastWorkspaceItemClosed (object sender, EventArgs e)
+	    private static Image GetStockImage (string name)
+	    {
+            // HACK: Assume we are running with the GTK backend, which supports the pixbuf type
+	        return Toolkit.CurrentEngine.WrapImage (ImageService.GetPixbuf (name, IconSize.SmallToolbar));
+	    }
+
+	    void HandleLastWorkspaceItemClosed (object sender, EventArgs e)
 		{
 			ClearState ();
 		}
