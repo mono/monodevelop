@@ -97,7 +97,12 @@ namespace MonoDevelop.CSSParser
 			if (stringList.Length == 1) {
 				return new object[] {text, 1, text.Length };
 			} else {
-				return new object[] {stringList[0], stringList.Length, stringList[stringList.Length-1].Length };
+				return new object[] {
+					stringList[0].Split(new string[] {  "/*" },
+					StringSplitOptions.None).GetValue(1), 
+					stringList.Length, 
+					stringList[stringList.Length-1].Length 
+				};
 			}
 		}
 
