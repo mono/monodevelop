@@ -115,8 +115,14 @@ namespace MonoDevelop.Debugger.Win32
 		public override ObjectValueFlags Flags {
 			get {
 				ObjectValueFlags flags = ObjectValueFlags.Field;
-				if (field.IsFamilyOrAssembly || field.IsFamilyAndAssembly)
-					flags |= ObjectValueFlags.Internal;
+
+				if (field.IsStatic)
+					flags |= ObjectValueFlags.Global;
+
+				if (field.IsFamilyOrAssembly)
+					flags |= ObjectValueFlags.InternalProtected;
+				else if (field.IsFamilyAndAssembly)
+					flags != ObjectValueFlags.Internal;
 				else if (field.IsFamily)
 					flags |= ObjectValueFlags.Protected;
 				else if (field.IsPublic)
