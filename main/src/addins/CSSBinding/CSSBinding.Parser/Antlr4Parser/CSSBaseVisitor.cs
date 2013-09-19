@@ -30,6 +30,9 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
 namespace MonoDevelop.CSSParser
 {
+	/// <summary>
+	/// CSS base visitor.
+	/// </summary>
 	public partial class CSSBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, ICSSVisitor<Result>
 	{
 		public virtual Result VisitOperatorx(CSSParser.OperatorxContext context) { return VisitChildren(context); }

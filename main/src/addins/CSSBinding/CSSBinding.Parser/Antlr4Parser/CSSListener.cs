@@ -30,6 +30,9 @@ using IToken = Antlr4.Runtime.IToken;
 namespace MonoDevelop.CSSParser
 {
 
+	/// <summary>
+	/// ICSS listener.
+	/// </summary>
 	public interface ICSSListener : IParseTreeListener
 	{
 		void EnterOperatorx(CSSParser.OperatorxContext context);

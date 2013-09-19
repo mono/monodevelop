@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Misc;
@@ -40,14 +41,14 @@ namespace MonoDevelop.CSSParser
 	public class CSSParsedDocument : ParsedDocument
 	{
 		string fileName;
-		List<Error> errors;
+		IList<Error> errors;
 
 
 		public FoldingTokensVM Segments { get; private set; }
 
 		public override IList<Error> Errors {
 			get {
-//				Console.WriteLine ("Number of errors: " + errors.Count);
+//				Console.WriteLine ("Number of css errors: " + errors.Count);
 				return errors;
 			}
 		}
@@ -62,8 +63,7 @@ namespace MonoDevelop.CSSParser
 		public CSSParsedDocument (string fileName, FoldingTokensVM segments, IList<Error> errors)
 		{ 
 			this.fileName = fileName;
-			this.errors = new List<Error> ();
-			this.errors.AddRange(errors);
+			this.errors = errors;
 			this.Segments = segments;
 			AssignComments (segments.commentList);
 
@@ -80,19 +80,16 @@ namespace MonoDevelop.CSSParser
 			foreach (var item in segments) {
 				CodeSegment ts = item as CodeSegment;
 
-				if (ts.Type == CodeSegmentType.Comment) {
-					comments.Add (new Comment () {
-						ClosingTag = "*/",
-						OpenTag = "/*",
-						CommentType = CommentType.Block,
-						Text = ts.Text,
-						Region = new DomRegion (ts.StartLocation.Line, (ts.StartLocation.Column +1), ts.EndLocation.Line, (ts.EndLocation.Column +1))
-					});
+				Console.WriteLine ("Comments: Text: "+ ts.Text+ " start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
 
-//					Console.WriteLine ("Comments: Text: "+ ts.Text+ "start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
+				comments.Add (new Comment (ts.Text) {
+//					ClosingTag = "*/",
+//					OpenTag = "/*",
+//					CommentType = CommentType.,
+					Region = new DomRegion (ts.StartLocation.Line, (ts.StartLocation.Column +1), ts.EndLocation.Line, (ts.EndLocation.Column +2))
+				});
 
-				}
-
+					
 //				Console.WriteLine ("Thkajsdknadadnakndkn asdada");
 			}
 
@@ -111,9 +108,9 @@ namespace MonoDevelop.CSSParser
 					CodeSegment ts = segment as CodeSegment;
 //					Console.WriteLine ("Text: "+ ts.Text+ "start line num:" + segment.TagStartLocation.Line + " start comumn:" + segment.TagStartLocation.Column + " end lime: " + segment.EndLocation.Line + " end column: " + segment.EndLocation.Column);
 					DomRegion region = new DomRegion (segment.StartLocation.Line, (segment.StartLocation.Column +1),
-					                                  segment.EndLocation.Line, (segment.EndLocation.Column +1));
+					                                  segment.EndLocation.Line, (segment.EndLocation.Column +2));
 
-					yield return new FoldingRegion (ts.Text, region, FoldType.Member, false);
+					yield return new FoldingRegion (ts.Text + "{...}", region, FoldType.Member, false);
 
 				}
 

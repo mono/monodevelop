@@ -43,6 +43,13 @@ namespace MonoDevelop.CSSParser
 	public class CSSParserAdapter : TypeSystemParser
 	{
 
+		/// <summary>
+		/// Parse the specified file. The file content is provided as text reader.
+		/// </summary>
+		/// <param name="storeAst">If set to <c>true</c> store ast.</param>
+		/// <param name="fileName">File name.</param>
+		/// <param name="content">Content.</param>
+		/// <param name="project">Project.</param>
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			CSSParserManager template = new CSSParserManager (fileName);
@@ -79,6 +86,11 @@ namespace MonoDevelop.CSSParser
 			return doc;
 		}
 
+		/// <summary>
+		/// Gets the folding string and relative end coordinates.
+		/// </summary>
+		/// <returns>The folding string and relative end coordinates.</returns>
+		/// <param name="text">full comment string including newline characters</param>
 		private object[] GetFolStringAndRelEndCoord(string text)
 		{
 			var stringList = text.Split (new string[] {  System.Environment.NewLine },StringSplitOptions.None);
@@ -89,11 +101,23 @@ namespace MonoDevelop.CSSParser
 			}
 		}
 
+
+		/// <summary>
+		/// Gets the selection folding text.
+		/// </summary>
+		/// <returns>The selection folding text</returns>
+		/// <param name="text">token</param>
 		private string GetSelectionFoldingText(string text){
 
-			return text.Split(new char[] { '{' }).GetValue (0).ToString () + "{...}";
+			return text.Split(new char[] { '{' }).GetValue (0).ToString ();
 		}
 
+		/// <summary>
+		/// Accumilates the comments
+		/// </summary>
+		/// <returns>The comments.</returns>
+		/// <param name="fileName">File name.</param>
+		/// <param name="allTokens">All tokens.</param>
 		private List<ISegment> AccumilateComments(string fileName, IList<IToken> allTokens)
 		{
 			IList<IToken> commentTokens  = new List<IToken>();
@@ -115,6 +139,12 @@ namespace MonoDevelop.CSSParser
 			return foldingSegments;
 		}
 
+		/// <summary>
+		/// Accumilates the CSS elements.
+		/// </summary>
+		/// <returns>The CSS elements.</returns>
+		/// <param name="fileName">File name.</param>
+		/// <param name="bodySetContext">Body set context.</param>
 		private List<ISegment> AccumilateCSSElements (string fileName, IList<CSSParser.BodysetContext> bodySetContext)
 		{
 			List<ISegment> foldingSegments = new List<ISegment> ();
@@ -140,7 +170,9 @@ namespace MonoDevelop.CSSParser
 	//
 	//	}
 
-	// Accumilate parser errors
+	/// <summary>
+	/// CSS parser error handle accumilates parser errors.
+	/// </summary>
 	public class CSSParserErrorHandle : IAntlrErrorListener<IToken> 
 	{
 		private IList<Error> parserErrors;

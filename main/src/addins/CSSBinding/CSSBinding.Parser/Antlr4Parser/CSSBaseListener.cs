@@ -32,6 +32,9 @@ namespace MonoDevelop.CSSParser
 	using IToken = Antlr4.Runtime.IToken;
 	using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
+	/// <summary>
+	/// CSS base listener
+	/// </summary>
 	public partial class CSSBaseListener : ICSSListener
 	{
 		public virtual void EnterOperatorx(CSSParser.OperatorxContext context) { }

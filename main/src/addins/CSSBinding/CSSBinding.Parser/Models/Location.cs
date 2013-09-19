@@ -27,6 +27,9 @@ using System;
 
 namespace MonoDevelop.CSSBinding.Parse.Models
 {
+	/// <summary>
+	/// Location struct represent a location in the editor.
+	/// </summary>
 	public struct Location : IEquatable<Location>
 	{
 		public Location (string fileName, int line, int column) : this()

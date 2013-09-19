@@ -38,6 +38,10 @@ namespace MonoDevelop.CSSParser {
 	using Antlr4.Runtime.Tree;
 	using System.Collections.Generic;
 	using DFA = Antlr4.Runtime.Dfa.DFA;
+
+	/// <summary>
+	/// CSS parser.
+	/// </summary>
 	public partial class CSSParser : Parser
 	{
 		public const int

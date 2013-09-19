@@ -28,7 +28,9 @@ using MonoDevelop.CSSBinding.Parse.Models;
 
 namespace MonoDevelop.CSSBinding.Parse.Interfaces
 {
-
+	/// <summary>
+	/// Interface segment
+	/// </summary>
 	public interface ISegment
 	{
 		Location StartLocation { get; }

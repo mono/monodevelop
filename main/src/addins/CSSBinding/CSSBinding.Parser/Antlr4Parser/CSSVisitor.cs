@@ -30,6 +30,9 @@ using IToken = Antlr4.Runtime.IToken;
 namespace MonoDevelop.CSSParser
 {
 
+	/// <summary>
+	/// Iiterface CSSvisitor.
+	/// </summary>
 	public interface ICSSVisitor<Result> : IParseTreeVisitor<Result>
 	{
 		Result VisitOperatorx(CSSParser.OperatorxContext context);

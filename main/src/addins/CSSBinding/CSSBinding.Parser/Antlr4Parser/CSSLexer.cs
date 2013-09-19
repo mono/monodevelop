@@ -37,6 +37,9 @@ namespace MonoDevelop.CSSParser {
 	using Antlr4.Runtime.Misc;
 	using DFA = Antlr4.Runtime.Dfa.DFA;
 
+	/// <summary>
+	/// CSS lexer
+	/// </summary>
 	public partial class CSSLexer : Lexer
 	{
 		public const int

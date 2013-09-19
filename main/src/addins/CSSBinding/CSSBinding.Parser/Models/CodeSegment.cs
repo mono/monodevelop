@@ -28,6 +28,9 @@ using MonoDevelop.CSSBinding.Parse.Interfaces;
 
 namespace MonoDevelop.CSSBinding.Parse.Models
 {
+	/// <summary>
+	/// CodeSegment
+	/// </summary>
 	public class CodeSegment : ISegment
 	{
 		private string _text ;
@@ -56,17 +59,17 @@ namespace MonoDevelop.CSSBinding.Parse.Models
 				else return "Not Defined";
 			} 
 			private set{ 
-				_text = GetFoldingStringTag (value);
+				_text = value;
 			} }
 		public CodeSegmentType Type { get; set; }
 		public Location TagStartLocation { get; set; }
 		public Location StartLocation { get; private set; }
 		public Location EndLocation { get; set; }
 
-		private string GetFoldingStringTag(string fullString)
-		{
-			return fullString.Split(new char[]{'{'} ).GetValue(0).ToString() +"{..." ;
-		}
+//		private string GetFoldingStringTag(string fullString)
+//		{
+//			return fullString.Split(new char[]{'{'} ).GetValue(0).ToString() +"{..." ;
+//		}
 	}
 
 	public enum CodeSegmentType

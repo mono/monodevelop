@@ -30,7 +30,9 @@ using MonoDevelop.CSSBinding.Parse.Interfaces;
 
 namespace MonoDevelop.CSSBinding.Parse.Models
 {
-	//Folding tokens View Model
+	/// <summary>
+	/// Folding tokens View Model Class. This will carry all the comments and selection lists.
+	/// </summary>
 	public class FoldingTokensVM
 	{
 		public List<ISegment> commentList{ get; set;}
