@@ -43,8 +43,7 @@ namespace MonoDevelop.WebReferences.WS
 				protocol.Url = url;
 				return new WebServiceDiscoveryResultWS (protocol, null);
 			}
-			else
-				return null;
+			return null;
 		}
 
 		public override WebServiceDiscoveryResult Load (WebReferenceItem item)

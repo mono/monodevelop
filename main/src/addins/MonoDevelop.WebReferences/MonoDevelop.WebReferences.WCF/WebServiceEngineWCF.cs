@@ -38,7 +38,7 @@ namespace MonoDevelop.WebReferences.WCF
 {
 	public class WebServiceEngineWCF: WebServiceEngine
 	{
-		ClientOptions defaultOptions = new ClientOptions ();
+		readonly ClientOptions defaultOptions = new ClientOptions ();
 
 		public ClientOptions DefaultClientOptions {
 			get { return defaultOptions; }
@@ -117,13 +117,13 @@ namespace MonoDevelop.WebReferences.WCF
 				DiscoveryReference dr;
 				switch (dcr.MetadataType) {
 					case "Wsdl":
-						dr = new System.Web.Services.Discovery.ContractReference ();
+						dr = new ContractReference ();
 						break;
 					case "Disco":
-						dr = new System.Web.Services.Discovery.DiscoveryDocumentReference ();
+						dr = new DiscoveryDocumentReference ();
 						break;
 					case "Schema":
-						dr = new System.Web.Services.Discovery.SchemaReference ();
+						dr = new SchemaReference ();
 						break;
 					default:
 						continue;

@@ -36,7 +36,7 @@ namespace MonoDevelop.WebReferences
 	public abstract class WebServiceDiscoveryResult
 	{
 		WebReferenceItem item;
-		WebServiceEngine engine;
+		readonly WebServiceEngine engine;
 		
 		public WebServiceDiscoveryResult (WebServiceEngine engine, WebReferenceItem item)
 		{
@@ -45,7 +45,7 @@ namespace MonoDevelop.WebReferences
 		}
 
 		public WebReferenceItem Item {
-			get { return this.item; }
+			get { return item; }
 		}
 		
 		CodeDomProvider provider;

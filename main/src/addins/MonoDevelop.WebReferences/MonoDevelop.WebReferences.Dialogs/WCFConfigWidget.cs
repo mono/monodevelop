@@ -33,7 +33,7 @@ using Gtk;
 namespace MonoDevelop.WebReferences.Dialogs
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class WCFConfigWidget : Gtk.Bin
+	public partial class WCFConfigWidget : Bin
 	{
 		public WCFConfigWidget (ClientOptions options)
 		{
@@ -53,17 +53,17 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		static readonly Type[] DefaultListTypes = {
 			typeof (Array),
-			typeof (System.Collections.Generic.LinkedList<>),
-			typeof (System.Collections.Generic.List<>),
+			typeof (LinkedList<>),
+			typeof (List<>),
 			typeof (System.Collections.ObjectModel.Collection<>),
 			typeof (System.Collections.ObjectModel.ObservableCollection<>),
 			typeof (System.ComponentModel.BindingList<>)
 		};
 		
 		static readonly Type[] DefaultDictionaryTypes = {
-			typeof (System.Collections.Generic.Dictionary<,>),
-			typeof (System.Collections.Generic.SortedList<,>),
-			typeof (System.Collections.Generic.SortedDictionary<,>)
+			typeof (Dictionary<, >),
+			typeof (SortedList<, >),
+			typeof (SortedDictionary<, >)
 		};
 		
 		public bool Modified {
@@ -71,8 +71,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 			private set;
 		}
 		
-		List<Type> listTypes;
-		List<Type> dictTypes;
+		readonly List<Type> listTypes;
+		readonly List<Type> dictTypes;
 		
 		static bool? runtimeSupport;
 		
@@ -106,7 +106,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			var type = typeof (char).Assembly.GetType (name);
 			if (type != null)
 				return type;
-			type = typeof (System.Collections.Generic.LinkedList<>).Assembly.GetType (name);
+			type = typeof (LinkedList<>).Assembly.GetType (name);
 			if (type != null)
 				return type;
 			return null;
@@ -115,7 +115,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		internal static string GetTypeName (Type type)
 		{
 			var name = type.FullName;
-			var pos = name.IndexOf ("`");
+			var pos = name.IndexOf ("`", StringComparison.Ordinal);
 			if (pos < 0)
 				return name;
 			return name.Substring (0, pos);

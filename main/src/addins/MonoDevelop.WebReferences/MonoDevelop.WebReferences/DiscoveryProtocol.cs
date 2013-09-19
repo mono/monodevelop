@@ -7,7 +7,7 @@ namespace MonoDevelop.WebReferences
 {
 	/// <summary>Provides support for programmatically invoking XML Web services discovery.</summary>
 	[System.ComponentModel.DesignerCategory ("Code")]
-	public class DiscoveryProtocol : System.Web.Services.Discovery.DiscoveryClientProtocol
+	public class DiscoveryProtocol : DiscoveryClientProtocol
 	{
 		/// <summary>
 		/// Reads in a file containing a map of saved discovery documents populating the Documents and References properties, 
@@ -30,14 +30,14 @@ namespace MonoDevelop.WebReferences
 			foreach (DiscoveryClientResult dcr in resfile.Results)
 			{
 				// Done this cause Type.GetType(dcr.ReferenceTypeName) returned null
-				Type type = null;
+				Type type;
 				switch (dcr.ReferenceTypeName)
 				{
 					case "System.Web.Services.Discovery.ContractReference":
-						type = typeof(System.Web.Services.Discovery.ContractReference);
+						type = typeof(ContractReference);
 						break;
 					case "System.Web.Services.Discovery.DiscoveryDocumentReference":
-						type = typeof(System.Web.Services.Discovery.DiscoveryDocumentReference);
+						type = typeof(DiscoveryDocumentReference);
 						break;
 					default:
 						continue;

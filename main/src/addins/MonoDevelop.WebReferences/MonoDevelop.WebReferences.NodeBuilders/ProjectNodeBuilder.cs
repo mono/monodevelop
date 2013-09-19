@@ -1,10 +1,6 @@
 using System;
 using System.Linq;
-using System.Collections;
 using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.WebReferences.Commands;
 using MonoDevelop.Ide.Gui.Components;
 
@@ -41,14 +37,14 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 			return WebReferencesService.GetWebReferenceItems (project).Any ();
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			DotNetProject project = (DotNetProject) dataObject;
 			if (WebReferencesService.GetWebReferenceItems (project).Any ())
-				builder.AddChild (new WebReferenceFolder (project));
+				treeBuilder.AddChild (new WebReferenceFolder (project));
 		}
 
-		void HandleWebReferencesServiceWebReferencesChanged (object sender, WebReferencesChangedArgs e)
+		void HandleWebReferencesServiceWebReferencesChanged (object sender, WebReferencesChangedEventArgs e)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (e.Project);
 			if (builder != null)

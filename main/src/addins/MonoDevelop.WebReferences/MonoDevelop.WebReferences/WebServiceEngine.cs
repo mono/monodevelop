@@ -66,8 +66,8 @@ namespace MonoDevelop.WebReferences
 					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
 						unauthorized = true;
 						continue;
-					} else
-						throw;
+					}
+					throw;
 				}
 			} while (unauthorized);
 			

@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
-using System.Xml;
 using System.Xml.Schema;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -14,7 +13,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.WebReferences
 {
 	/// <summary>A Library class containig generic static methods for Web Services.</summary>
-	public class Library
+	public static class Library
 	{
 		/// <summary>Read the service description for a specified uri.</summary>
 		/// <param name="uri">A string containing the unique reference identifier for the service.</param>
@@ -68,7 +67,7 @@ namespace MonoDevelop.WebReferences
 				if (dref == null)
 					continue;
 				if (dref is ContractReference) {
-					text.AppendFormat ("<b>Service: {0}</b>\n<span size='small'>{1}</span>", System.IO.Path.GetFileNameWithoutExtension (dref.DefaultFilename), dref.Url);
+					text.AppendFormat ("<b>Service: {0}</b>\n<span size='small'>{1}</span>", Path.GetFileNameWithoutExtension (dref.DefaultFilename), dref.Url);
 				}
 				else if (dref is DiscoveryDocumentReference) {
 					text.AppendFormat ("<b>Discovery document</b>\n<small>{0}</small>", dref.Url);
@@ -109,16 +108,16 @@ namespace MonoDevelop.WebReferences
 						// Method
 						// Asynch Begin & End Results
 						string returnType = met.ReturnType.BaseType;
-						if (met.Name.StartsWith ("Begin") && returnType == "System.IAsyncResult") 
+						if (met.Name.StartsWith ("Begin", StringComparison.Ordinal) && returnType == "System.IAsyncResult") 
 							continue;	// BeginXXX method
-						if (met.Name.EndsWith ("Async"))
+						if (met.Name.EndsWith ("Async", StringComparison.Ordinal))
 							continue;
-						if (met.Name.StartsWith ("On") && met.Name.EndsWith ("Completed"))
+						if (met.Name.StartsWith ("On", StringComparison.Ordinal) && met.Name.EndsWith ("Completed", StringComparison.Ordinal))
 							continue;
 						if (met.Parameters.Count > 0)
 						{
 							CodeParameterDeclarationExpression par = met.Parameters [met.Parameters.Count-1];
-							if (met.Name.StartsWith ("End") && par.Type.BaseType == "System.IAsyncResult")
+							if (met.Name.StartsWith ("End", StringComparison.Ordinal) && par.Type.BaseType == "System.IAsyncResult")
 								continue;	// EndXXX method
 						}
 						text.AppendFormat ("<b>{0}</b> (", met.Name);
@@ -156,10 +155,7 @@ namespace MonoDevelop.WebReferences
 				if (com.Length > 0)
 					coms.Append (com);
 			}
-			if (coms.Length > 0)
-				return coms.ToString ();
-			else
-				return null;
+			return coms.Length > 0 ? coms.ToString () : null;
 		}
 		
 		/// <summary>Gets the path where all web references will be stored for the specified project.</summary>
@@ -170,8 +166,7 @@ namespace MonoDevelop.WebReferences
 			FilePath fp = project.BaseDirectory.Combine ("WebReferences");
 			if (Directory.Exists (fp))
 				return fp;
-			else
-				return project.BaseDirectory.Combine ("Web References");
+			return project.BaseDirectory.Combine ("Web References");
 		}
 		
 		/// <summary>Checks whether or not the current project does contain any web references.</summary>

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -9,8 +8,6 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
-using System.Threading.Tasks;
-using System.ServiceModel;
 
 namespace MonoDevelop.WebReferences.Commands
 {
@@ -22,7 +19,7 @@ namespace MonoDevelop.WebReferences.Commands
 		}
 		
 		/// <summary>Execute the command for adding a new web reference to a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.Add)]
+		[CommandHandler (WebReferenceCommands.Add)]
 		public void NewWebReference()
 		{
 			// Get the project and project folder
@@ -58,8 +55,8 @@ namespace MonoDevelop.WebReferences.Commands
 			}
 		}
 
-		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.Update)]
-		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll)]
+		[CommandUpdateHandler (WebReferenceCommands.Update)]
+		[CommandUpdateHandler (WebReferenceCommands.UpdateAll)]
 		void CanUpdateWebReferences (CommandInfo ci)
 		{
 			// This does not appear to work.
@@ -67,14 +64,14 @@ namespace MonoDevelop.WebReferences.Commands
 		}
 		
 		/// <summary>Execute the command for updating a web reference in a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.Update)]
+		[CommandHandler (WebReferenceCommands.Update)]
 		public void Update()
 		{
 			UpdateReferences (new [] { (WebReferenceItem) CurrentNode.DataItem });
 		}
 
 		/// <summary>Execute the command for updating all web reference in a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll)]
+		[CommandHandler (WebReferenceCommands.UpdateAll)]
 		public void UpdateAll()
 		{
 			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
@@ -125,7 +122,7 @@ namespace MonoDevelop.WebReferences.Commands
 		}
 		
 		/// <summary>Execute the command for removing a web reference from a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.Delete)]
+		[CommandHandler (WebReferenceCommands.Delete)]
 		public void Delete()
 		{
 			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
@@ -137,7 +134,7 @@ namespace MonoDevelop.WebReferences.Commands
 		}
 		
 		/// <summary>Execute the command for removing all web references from a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll)]
+		[CommandHandler (WebReferenceCommands.DeleteAll)]
 		public void DeleteAll()
 		{
 			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
@@ -149,7 +146,7 @@ namespace MonoDevelop.WebReferences.Commands
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
 		}
 
-		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.Configure)]
+		[CommandUpdateHandler (WebReferenceCommands.Configure)]
 		void CanConfigureWebReferences (CommandInfo ci)
 		{
 			var item = CurrentNode.DataItem as WebReferenceItem;
@@ -157,7 +154,7 @@ namespace MonoDevelop.WebReferences.Commands
 		}
 
 		/// <summary>Execute the command for configuring a web reference in a project.</summary>
-		[CommandHandler (MonoDevelop.WebReferences.WebReferenceCommands.Configure)]
+		[CommandHandler (WebReferenceCommands.Configure)]
 		public void Configure ()
 		{
 			var item = (WebReferenceItem) CurrentNode.DataItem;

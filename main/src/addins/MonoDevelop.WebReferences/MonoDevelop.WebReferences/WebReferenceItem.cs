@@ -1,18 +1,5 @@
-using System;
-using System.Collections;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using System.Net;
-using System.Text.RegularExpressions;
-
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
-using System.Collections.Generic;
 
 
 namespace MonoDevelop.WebReferences
@@ -20,10 +7,10 @@ namespace MonoDevelop.WebReferences
 	/// <summary>Defines the properties and methods for the WebReferenceItem class.</summary>
 	public class WebReferenceItem
 	{
-		DotNetProject project;
+		readonly DotNetProject project;
 		string name;
-		ProjectFile mapFile;
-		WebServiceEngine engine;
+		readonly ProjectFile mapFile;
+		readonly WebServiceEngine engine;
 		
 		public string Name
 		{
@@ -32,13 +19,13 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		public ProjectFile MapFile {
-			get { return this.mapFile; }
+			get { return mapFile; }
 		}
 		
 		public FilePath BasePath { get; private set; }
 		
 		public DotNetProject Project {
-			get { return this.project; }
+			get { return project; }
 		}
 		
 		/// <summary>Initializes a new instance of the WebReferenceItem class.</summary>
