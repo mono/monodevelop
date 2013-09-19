@@ -138,8 +138,17 @@ namespace MonoDevelop.Debugger.Win32
 			get {
 				ObjectValueFlags flags = ObjectValueFlags.Property;
 				MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
-				if (mi.IsFamilyOrAssembly || mi.IsFamilyAndAssembly)
+
+				if (prop.GetSetMethod (true) == null)
+					flags |= ObjectValueFlags.ReadOnly;
+
+				if (mi.IsStatic)
+					flags |= ObjectValueFlags.Global;
+
+				if (mi.IsFamilyAndAssembly)
 					flags |= ObjectValueFlags.Internal;
+				else if (mi.IsFamilyOrAssembly)
+					flags |= ObjectValueFlags.InternalProtected;
 				else if (mi.IsFamily)
 					flags |= ObjectValueFlags.Protected;
 				else if (mi.IsPublic)
