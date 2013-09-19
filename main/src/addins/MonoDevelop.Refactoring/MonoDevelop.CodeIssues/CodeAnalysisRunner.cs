@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeIssues
 						if (severity == Severity.None || !provider.GetIsEnabled ())
 							continue;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
-							var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
+							var fixes = r.Actions == null ? new List<GenericFix> () : new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 								Action batchAction = null;
 								if (a.SupportsBatchRunning)
 									batchAction = () => a.BatchRun (input, loc);
@@ -95,7 +95,8 @@ namespace MonoDevelop.CodeIssues
 										}
 									},
 									batchAction) {
-									DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
+									DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End),
+									IdString = a.IdString
 								};
 							}));
 							result.Add (new InspectorResults (

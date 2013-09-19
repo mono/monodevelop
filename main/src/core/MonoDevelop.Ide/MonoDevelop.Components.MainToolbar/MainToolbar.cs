@@ -266,7 +266,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (pattern.Pattern == null && pattern.LineNumber > 0) {
 					popup.Destroy ();
 					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null && doc != null) {
+					if (doc != null && doc.Editor != null) {
 						doc.Select ();
 						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 						doc.Editor.CenterToCaret ();

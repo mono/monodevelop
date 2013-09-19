@@ -51,10 +51,11 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
+			content.Data.Options.IndentStyle = IndentStyle.Auto;
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
-			
+
 			Document doc = new Document (tww);
 
 			var text = input;
@@ -167,7 +168,37 @@ namespace MonoDevelop.CSharpBinding
 			Assert.AreEqual ("@\"\t\"", newText);
 		}
 
+		/// <summary>
+		/// Bug 14686 - Relative path strings containing backslashes have incorrect behavior when removing the @ symbol.
+		/// </summary>
+		[Test]
+		public void TestBug14686 ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\\\\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\\\"", newText);
+		}
 
+		[Test]
+		public void TestBug14686Case2 ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\\\"", newText);
+
+			ext = Setup ("$\"\\\"a", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			newText = content.Text;
+			Assert.AreEqual ("@\"\\\"a", newText);
+
+		}
 		[Test]
 		public void TestCorrectReindentNextLine ()
 		{

@@ -55,8 +55,7 @@ namespace MonoDevelop.VersionControl.Git
 					wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 				if (wob != null)
 					return VersionControlService.GetRepository (wob) as GitRepository;
-				else
-					return null;
+				return null;
 			}
 		}
 		

@@ -303,7 +303,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_client_get_wc_root (out wcroot_abspath, local_abspath, ctx, result_pool, scratch_pool);
 		}
-		
+
 		public override IntPtr strerror (int statcode, byte[] buf, int bufsize)
 		{
 			return svn_strerror (statcode, buf, bufsize);

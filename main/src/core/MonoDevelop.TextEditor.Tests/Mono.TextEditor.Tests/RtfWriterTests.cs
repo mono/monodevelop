@@ -94,6 +94,7 @@ namespace Mono.TextEditor.Tests
 }", generatedRtf);
 		}
 
+		[Ignore("Fixme")]
 		[Test]
 		public void TestXml ()
 		{
@@ -104,6 +105,7 @@ namespace Mono.TextEditor.Tests
 />");
 			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
+
 			string generatedRtf = RtfWriter.GenerateRtf (data);
 			Assert.AreEqual (
 				@"{\rtf1\ansi\deff0\adeflang1025

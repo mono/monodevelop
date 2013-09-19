@@ -31,12 +31,12 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class EditBranchDialog : Gtk.Dialog
+	public partial class EditBranchDialog : Dialog
 	{
-		ListStore comboStore;
-		string currentTracking;
-		string oldName;
-		GitRepository repo;
+		readonly ListStore comboStore;
+		readonly string currentTracking;
+		readonly string oldName;
+		readonly GitRepository repo;
 		
 		public EditBranchDialog (GitRepository repo, Branch branch, bool isNew)
 		{

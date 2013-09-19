@@ -56,21 +56,42 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class TypeSystemServiceExt
 	{
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetProject (this IProjectContent content)
 		{
 			return TypeSystemService.GetProject (content.Location);
 		}
-		
+
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
-			return TypeSystemService.GetProject (type.ParentAssembly.UnresolvedAssembly.Location);
+			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
+			if (string.IsNullOrEmpty (location))
+				return null;
+			return TypeSystemService.GetProject (location);
 		}
 		
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static Project GetSourceProject (this IType type)
 		{
 			return type.GetDefinition ().GetSourceProject ();
 		}
-		
+
+		internal static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
+		{
+			var location = type.ParentAssembly.UnresolvedAssembly.Location;
+			if (string.IsNullOrEmpty (location))
+				return null;
+			return TypeSystemService.GetProject (location);
+		}
+
+		internal static Project GetProjectWhereTypeIsDefined (this IType type)
+		{
+			return type.GetDefinition ().GetSourceProject ();
+		}
+
+
+		[Obsolete("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
 		public static IProjectContent GetProjectContent (this IType type)
 		{
 			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
@@ -1091,7 +1112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			class LazyProjectLoader : IProjectContent
 			{
 				readonly ProjectContentWrapper wrapper;
-				Task<IProjectContent> contextTask;
+				readonly Task<IProjectContent> contextTask;
 
 				public Task<IProjectContent> ContextTask {
 					get {
@@ -1109,15 +1130,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
-						var context = LoadProjectCache (this.wrapper.Project);
+						var p = this.wrapper.Project;
+						var context = LoadProjectCache (p);
+
+						var assemblyName = p.ParentSolution != null ? p.GetOutputFileName (p.ParentSolution.DefaultConfigurationSelector).FileNameWithoutExtension : p.Name;
+						if (string.IsNullOrEmpty (assemblyName))
+							assemblyName = p.Name;
+
 						if (context != null) {
-							return context.SetAssemblyName (this.wrapper.Project.Name) ?? context;
+							return context.SetAssemblyName (assemblyName) ?? context;
 						}
 
-						context = new MonoDevelopProjectContent (this.wrapper.Project);
+						context = new MonoDevelopProjectContent (p);
 						wrapper.InLoad = true;
-						context = context.SetLocation (this.wrapper.Project.FileName);
-						context = context.SetAssemblyName (this.wrapper.Project.Name);
+						context = context.SetLocation (p.FileName);
+						context = context.SetAssemblyName (assemblyName);
 						QueueParseJob (this.wrapper);
 						return context;
 					});

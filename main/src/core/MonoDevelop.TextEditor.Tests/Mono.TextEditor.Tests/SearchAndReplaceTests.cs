@@ -1,9 +1,10 @@
-// Commands.cs
+//
+// SearchAndReplaceTests.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
+using NUnit.Framework;
+using Gtk;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace Mono.TextEditor.Tests
 {
-	public enum Commands
+	[TestFixture]
+	public class SearchAndReplaceTests : TextEditorTestBase
 	{
-		Resolve
+		/// <summary>
+		/// Bug 14716 - Search and replace All doesn't
+		/// </summary>
+		[Test()]
+		public void TestBug14716 ()
+		{
+			var data = new TextEditorData ();
+			data.Document.Text = "using System;\nusing System.Linq;\nusing System.Collections.Generic;\n";
+			data.SearchEngine = new RegexSearchEngine ();
+			data.SearchEngine.SearchRequest.SearchPattern = "u.i.g";
+			data.SearchReplaceAll ("bar");
+			Assert.AreEqual ("bar System;\nbar System.Linq;\nbar System.Collections.Generic;\n", data.Document.Text );
+		}
 	}
 }

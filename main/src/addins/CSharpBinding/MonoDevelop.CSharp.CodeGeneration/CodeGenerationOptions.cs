@@ -37,7 +37,7 @@ using System.Threading;
 
 namespace MonoDevelop.CodeGeneration
 {
-	class CodeGenerationOptions
+	public class CodeGenerationOptions
 	{
 		public Document Document {
 			get;

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mono.Debugging.Evaluation;
-using DC=Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
+using Mono.Debugging.Evaluation;
+using DC = Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -14,7 +11,7 @@ namespace MonoDevelop.Debugger.Win32
 		CorFrame frame;
 		int frameIndex;
 		int evalTimestamp;
-		CorBacktrace backtrace;
+		readonly CorBacktrace backtrace;
 		CorThread thread;
 		int threadId;
 

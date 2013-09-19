@@ -98,8 +98,6 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Subversion\SubversionNodeExtension.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Subversion\Commands.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\SvnRevision.cs" />
   </ItemGroup>

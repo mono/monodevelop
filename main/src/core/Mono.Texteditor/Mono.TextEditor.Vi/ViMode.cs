@@ -191,7 +191,7 @@ namespace Mono.TextEditor.Vi
 
 		void CheckVisualMode ()
 		{
-			if (CurState == ViEditMode.State.Visual || CurState == ViEditMode.State.Visual) {
+			if (CurState == ViEditMode.State.Visual || CurState == ViEditMode.State.VisualLine) {
 				if (!Data.IsSomethingSelected)
 					CurState = ViEditMode.State.Normal;
 			} else {

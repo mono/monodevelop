@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.Commands
 				return true;
 			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
 				return true;
-			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
+			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_R))
 				return true;
 			
 			return false;
@@ -146,7 +146,7 @@ namespace MonoDevelop.Components.Commands
 				label += "Shift+";
 			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
 				label += "Meta+";
-			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
+			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_R))
 				label += "Super+";
 			
 			return label;

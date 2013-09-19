@@ -189,12 +189,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public static void Checkout (NGit.Repository repo, RevCommit commit, string working_directory)
-		{
-			DirCacheCheckout co = new DirCacheCheckout (repo, null, repo.ReadDirCache (), commit.Tree);
-			co.Checkout ();
-		}
-		
 		public static StashCollection GetStashes (NGit.Repository repo)
 		{
 			return new StashCollection (repo);
@@ -260,7 +254,7 @@ namespace MonoDevelop.VersionControl.Git
 			config.Save ();
 		}
 		
-		public static LocalGitRepository Init (string targetLocalPath, string url, IProgressMonitor monitor)
+		public static LocalGitRepository Init (string targetLocalPath, string url)
 		{
 			InitCommand ci = new InitCommand ();
 			ci.SetDirectory (targetLocalPath);
@@ -293,9 +287,9 @@ namespace MonoDevelop.VersionControl.Git
 			return repo;
 		}
 
-		public static MergeCommandResult MergeTrees (NGit.ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
+		public static MergeCommandResult MergeTrees (ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
-			RevCommit newHead = null;
+			RevCommit newHead;
 			RevWalk revWalk = new RevWalk(repo);
 			try
 			{
@@ -316,11 +310,11 @@ namespace MonoDevelop.VersionControl.Git
 				merger.SetBase(srcBase);
 				
 				bool noProblems;
-				IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
+				IDictionary<string, MergeResult<Sequence>> lowLevelResults = null;
 				IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
 				IList<string> modifiedFiles = null;
 				
-				ResolveMerger resolveMerger = (ResolveMerger)merger;
+				ResolveMerger resolveMerger = merger;
 				resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", sourceDisplayName });
 				noProblems = merger.Merge(headCommit, srcCommit);
 				lowLevelResults = resolveMerger.GetMergeResults();

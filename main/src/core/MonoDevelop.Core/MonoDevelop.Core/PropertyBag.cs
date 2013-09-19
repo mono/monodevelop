@@ -69,6 +69,7 @@ namespace MonoDevelop.Core
 					if (val is DataNode) {
 						val = Deserialize (name, (DataNode) val, typeof(T), ctx ?? context);
 						properties [name] = val;
+						OnChanged (name);
 					}
 					return (T) val;
 				}
@@ -106,6 +107,7 @@ namespace MonoDevelop.Core
 			if (properties == null)
 				properties = new Dictionary<string,object> ();
 			properties [name] = value;
+			OnChanged (name);
 		}
 		
 		public bool RemoveValue<T> ()
@@ -115,7 +117,12 @@ namespace MonoDevelop.Core
 		
 		public bool RemoveValue (string name)
 		{
-			return properties != null && properties.Remove (name);
+			if (properties != null && properties.Remove (name)) {
+				OnChanged (name);
+				return true;
+			}
+
+			return false;
 		}
 		
 		public bool HasValue<T> ()
@@ -126,6 +133,16 @@ namespace MonoDevelop.Core
 		public bool HasValue (string name)
 		{
 			return properties != null && properties.ContainsKey (name);
+		}
+
+		public event EventHandler<PropertyBagChangedEventArgs> Changed;
+
+		void OnChanged (string name)
+		{
+			var handler = Changed;
+
+			if (handler != null)
+				handler (this, new PropertyBagChangedEventArgs (name));
 		}
 		
 		public void Dispose ()
@@ -246,6 +263,16 @@ namespace MonoDevelop.Core
 					sb.Append (c);
 			}
 			return sb.ToString ();
+		}
+	}
+
+	public class PropertyBagChangedEventArgs : EventArgs
+	{
+		public string PropertyName { get; private set; }
+
+		public PropertyBagChangedEventArgs (string name)
+		{
+			PropertyName = name;
 		}
 	}
 }

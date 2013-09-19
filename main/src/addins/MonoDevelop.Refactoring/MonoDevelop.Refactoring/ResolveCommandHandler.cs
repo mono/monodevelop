@@ -158,7 +158,7 @@ namespace MonoDevelop.Refactoring
 				return "";
 			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.Length, offset));
 			var stub = new StringBuilder (text);
-			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, text, false);
+			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, false);
 			return stub.ToString ();
 		}
 

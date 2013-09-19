@@ -190,6 +190,7 @@ namespace Mono.TextEditor
 
 			HeightTree = new HeightTree (this);
 			HeightTree.Rebuild ();
+			IndentationTracker = new DefaultIndentationTracker (document);
 		}
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)

@@ -25,20 +25,19 @@
 //
 //
 
-using System;
 using System.Reflection;
+using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using Microsoft.Samples.Debugging.CorDebug;
 
 namespace MonoDevelop.Debugger.Win32
 {
 	public class FieldReference: ValueReference
 	{
-		CorType type;
-		FieldInfo field;
-		CorValRef thisobj;
-		CorValRef.ValueLoader loader;
+		readonly CorType type;
+		readonly FieldInfo field;
+		readonly CorValRef thisobj;
+		readonly CorValRef.ValueLoader loader;
 
 		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
@@ -70,8 +69,7 @@ namespace MonoDevelop.Debugger.Win32
 			get {
 				if (field.IsLiteral && field.IsStatic)
 					return field.GetValue (null);
-				else
-					return base.ObjectValue;
+				return base.ObjectValue;
 			}
 		}
 
@@ -86,7 +84,7 @@ namespace MonoDevelop.Debugger.Win32
 				else {
 					if (field.IsLiteral && field.IsStatic) {
 						object oval = field.GetValue (null);
-						CorObjectAdaptor ad = (CorObjectAdaptor)ctx.Adapter;
+						CorObjectAdaptor ad = ctx.Adapter;
 						// When getting enum members, convert the integer value to an enum value
 						if (ad.IsEnum (ctx, type))
 							return ad.CreateEnum (ctx, type, Context.Adapter.CreateValue (ctx, oval));

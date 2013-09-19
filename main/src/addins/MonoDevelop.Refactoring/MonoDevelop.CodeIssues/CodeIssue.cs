@@ -77,6 +77,14 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		/// <summary>
+		/// Gets or sets the code action providers for this issue.
+		/// </summary>
+		public IList<Type> ActionProvider {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
 		public CodeIssue (IssueMarker issueMarker, string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)

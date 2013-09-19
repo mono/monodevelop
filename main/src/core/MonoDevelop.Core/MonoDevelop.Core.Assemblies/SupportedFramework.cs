@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -81,6 +82,14 @@ namespace MonoDevelop.Core.Assemblies
 		public Version MaximumVersion {
 			get; internal set;
 		}
+
+		public string MonoSpecificVersion {
+			get; internal set;
+		}
+
+		public string MonoSpecificVersionDisplayName {
+			get; internal set;
+		}
 		
 		public TargetFramework TargetFramework {
 			get; private set;
@@ -127,6 +136,12 @@ namespace MonoDevelop.Core.Assemblies
 					case "DisplayName":
 						fx.DisplayName = reader.Value;
 						break;
+					case "MonoSpecificVersion":
+						fx.MonoSpecificVersion = reader.Value;
+						break;
+					case "MonoSpecificVersionDisplayName":
+						fx.MonoSpecificVersionDisplayName = reader.Value;
+						break;
 					}
 				}
 			}
@@ -135,6 +150,49 @@ namespace MonoDevelop.Core.Assemblies
 				throw new Exception ("Framework element did not specify an Identifier attribute");
 			
 			return fx;
+		}
+
+		public override int GetHashCode ()
+		{
+			return DisplayName != null ? DisplayName.GetHashCode () : 0;
+		}
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as SupportedFramework;
+			if (other == null)
+				return false;
+
+			if (!string.Equals (DisplayName, other.DisplayName))
+				return false;
+			if (!string.Equals (Identifier, other.Identifier))
+				return false;
+			if (!string.Equals (Profile, other.Profile))
+				return false;
+			if (!string.Equals (MonoSpecificVersion, other.MonoSpecificVersion))
+				return false;
+			if (!string.Equals (MonoSpecificVersionDisplayName, other.MonoSpecificVersionDisplayName))
+				return false;
+			if (!string.Equals (MinimumVersionDisplayName, other.MinimumVersionDisplayName))
+				return false;
+			if (!MinimumVersion.Equals (other.MinimumVersion))
+				return false;
+			if (!MaximumVersion.Equals (other.MaximumVersion))
+				return false;
+			return true;
+		}
+
+		public static IEqualityComparer<SupportedFramework> EqualityComparer = new _Comparer ();
+
+		class _Comparer : IEqualityComparer<SupportedFramework> {
+			public bool Equals (SupportedFramework x, SupportedFramework y)
+			{
+				return x.Equals (y);
+			}
+			public int GetHashCode (SupportedFramework obj)
+			{
+				return obj.GetHashCode ();
+			}
 		}
 	}
 }

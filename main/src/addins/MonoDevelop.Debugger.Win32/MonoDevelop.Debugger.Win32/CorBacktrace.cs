@@ -1,14 +1,10 @@
-﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
-using Mono.Debugging.Client;
-using Mono.Debugging.Backend;
+using System.Reflection;
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
+using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
@@ -16,8 +12,8 @@ namespace MonoDevelop.Debugger.Win32
 	class CorBacktrace: BaseBacktrace
 	{
 		CorThread thread;
-		int threadId;
-		CorDebuggerSession session;
+		readonly int threadId;
+		readonly CorDebuggerSession session;
 		List<CorFrame> frames;
 		int evalTimestamp;
 

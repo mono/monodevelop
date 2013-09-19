@@ -39,7 +39,7 @@ namespace MonoDevelop.Debugger
 {
 	public class ImmediatePad: IPadContent
 	{
-		static object locker = new object();
+		static readonly object mutex = new object();
 		DebuggerConsoleView view;
 		
 		public void Initialize (IPadWindow container)
@@ -230,7 +230,7 @@ namespace MonoDevelop.Debugger
 				if (!val.IsEvaluating) {
 					PrintChildValueAtMark (val, mark);
 
-					lock (locker) {
+					lock (mutex) {
 						// Maybe We don't need this lock because children evaluation is done synchronously
 						evaluatingList[val] = true;
 						if (evaluatingList.All (x => x.Value))

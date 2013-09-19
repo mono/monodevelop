@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Assemblies;
+using System.IO;
 using Mono.Debugging.Client;
 using MonoDevelop.AspNet;
 using MonoDevelop.Core;
-using System.IO;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Win32
 {

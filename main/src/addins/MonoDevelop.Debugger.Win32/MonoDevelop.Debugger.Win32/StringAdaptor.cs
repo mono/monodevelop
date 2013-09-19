@@ -24,8 +24,6 @@
 // THE SOFTWARE.
 // 
 
-using System;
-using Mono.Debugging.Client;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 
@@ -33,9 +31,9 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class StringAdaptor: IStringAdaptor
 	{
-		CorEvaluationContext ctx;
-		CorStringValue str;
-		CorValRef obj;
+		readonly CorEvaluationContext ctx;
+		readonly CorStringValue str;
+		readonly CorValRef obj;
 		
 		public StringAdaptor (EvaluationContext ctx, CorValRef obj, CorStringValue str)
 		{

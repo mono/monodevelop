@@ -41,6 +41,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug615196 ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.IndentationTracker = null;
 			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\nHello World\n";
 			data.Caret.Offset = 1; // 2nd.Line
@@ -61,6 +62,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug613770 ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.IndentationTracker = null;
 			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
@@ -75,6 +77,7 @@ namespace Mono.TextEditor.Tests
 		public void TestReturnKeyBehavior ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.IndentationTracker = null;
 			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line

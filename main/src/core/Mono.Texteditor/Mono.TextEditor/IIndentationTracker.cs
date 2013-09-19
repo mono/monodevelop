@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
 namespace Mono.TextEditor
 {
@@ -51,7 +50,7 @@ namespace Mono.TextEditor
 	
 	class DefaultIndentationTracker : IIndentationTracker
 	{
-		TextDocument doc;
+		readonly TextDocument doc;
 			
 		public DefaultIndentationTracker (TextDocument doc)
 		{
@@ -60,18 +59,20 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int offset)
 		{
-			DocumentLine line = doc.GetLineByOffset (offset);
-			if (line == null)
-				return "";
-			return line.GetIndentation (doc);
+			var loc = doc.OffsetToLocation (offset);
+			return GetIndentationString (loc.Line, loc.Column);
 		}
 		
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			DocumentLine line = doc.GetLine (lineNumber);
-			if (line == null)
-				return "";
-			return line.GetIndentation (doc);
+			DocumentLine line = doc.GetLine (lineNumber - 1);
+			while (line != null) {
+				var indent = line.GetIndentation (doc);
+				if (indent.Length > 0)
+					return indent;
+				line = line.PreviousLine;
+			}
+			return "";
 		}
 		
 		public int GetVirtualIndentationColumn (int offset)

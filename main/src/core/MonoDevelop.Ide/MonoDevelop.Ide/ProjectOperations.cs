@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide
 			} else {
 				fileName = entity.Region.FileName;
 			}
-			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetSourceProject ();
+			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetProjectWhereTypeIsDefined ();
 			var doc = IdeApp.Workbench.OpenDocument (fileName,
 				project,
 				entity.Region.BeginLine,
@@ -1610,7 +1610,7 @@ namespace MonoDevelop.Ide
 						var virtualPath = sourcePath.ToRelative (sourceProject.BaseDirectory);
 						// Grab all the child nodes of the folder we just dragged/dropped
 						filesToRemove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
-						// Add the folder itself so we can remove it from the soruce project if its a Move operation
+						// Add the folder itself so we can remove it from the source project if its a Move operation
 						var folder = sourceProject.Files.FirstOrDefault (f => f.ProjectVirtualPath == virtualPath);
 						if (folder != null)
 							filesToRemove.Add (folder);
