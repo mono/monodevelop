@@ -16,7 +16,7 @@
 		<_Category>Web</_Category>
 		<!--<LanguageName>CSS</LanguageName>-->
 		<_Description>Creates an empty CSS file.</_Description>
-		<DefaultFilename>Spreadsheet</DefaultFilename>
+		<DefaultFilename>Stylesheet</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>

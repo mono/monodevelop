@@ -160,7 +160,7 @@ namespace MonoDevelop.CSSParser
 		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
 		{
 			parserErrors.Add (new Error (ErrorType.Error, msg,line,(charPositionInLine)));
-			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
+//			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
 		}
 
 	}

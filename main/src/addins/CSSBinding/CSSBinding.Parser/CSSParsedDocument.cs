@@ -47,7 +47,7 @@ namespace MonoDevelop.CSSParser
 
 		public override IList<Error> Errors {
 			get {
-				Console.WriteLine ("Number of errors: " + errors.Count);
+//				Console.WriteLine ("Number of errors: " + errors.Count);
 				return errors;
 			}
 		}
@@ -62,6 +62,7 @@ namespace MonoDevelop.CSSParser
 		public CSSParsedDocument (string fileName, FoldingTokensVM segments, IList<Error> errors)
 		{ 
 			this.fileName = fileName;
+			this.errors = new List<Error> ();
 			this.errors.AddRange(errors);
 			this.Segments = segments;
 			AssignComments (segments.commentList);
