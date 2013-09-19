@@ -122,7 +122,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (field.IsFamilyOrAssembly)
 					flags |= ObjectValueFlags.InternalProtected;
 				else if (field.IsFamilyAndAssembly)
-					flags != ObjectValueFlags.Internal;
+					flags |= ObjectValueFlags.Internal;
 				else if (field.IsFamily)
 					flags |= ObjectValueFlags.Protected;
 				else if (field.IsPublic)
