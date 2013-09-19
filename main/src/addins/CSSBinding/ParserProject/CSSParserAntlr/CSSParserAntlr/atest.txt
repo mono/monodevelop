@@ -1,7 +1,0 @@
-<PropertyGroup>
-    <!-- Folder containing Antlr4BuildTasks.dll -->
-    <Antlr4BuildTaskPath>$(ProjectDir)..\Reference\Antlr4</Antlr4BuildTaskPath>
-    <!-- Path to the ANTLR Tool itself. -->
-    <Antlr4ToolPath>$(ProjectDir)..\Reference\Antlr4\antlr4-csharp-4.0.1-SNAPSHOT-complete.jar</Antlr4ToolPath>
-  </PropertyGroup>
-  <Import Project="$(ProjectDir)..\Reference\Antlr4\Antlr4.targets" />

@@ -37,6 +37,7 @@ namespace MonoDevelop.CSSBinding.Parse.Models
 
 		public CodeSegment(string text, Location start, Location end)
 		{
+		
 			this.StartLocation = start;
 			this.Text = text;
 			this.EndLocation = end;
