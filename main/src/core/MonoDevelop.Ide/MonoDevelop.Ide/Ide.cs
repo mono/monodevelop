@@ -387,7 +387,6 @@ namespace MonoDevelop.Ide
 		{
 			// finally run the workbench window ...
 			Gtk.Application.Run ();
-			Mono.TextEditor.GtkWorkarounds.Terminate ();
 		}
 		
 		

@@ -64,9 +64,6 @@ namespace Mono.TextEditor
 
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern ulong objc_msgSend_NSUInt64 (IntPtr klass, IntPtr selector);
-
-		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern void objc_msgSend_NSInt64_NSInt32 (IntPtr klass, IntPtr selector, int arg);
 		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect32 (out CGRect32 rect, IntPtr klass, IntPtr selector);
@@ -97,7 +94,7 @@ namespace Mono.TextEditor
 
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow, sel_terminate;
+			sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow;
 		static IntPtr sharedApp;
 		static IntPtr cls_NSEvent;
 		static IntPtr sel_modifierFlags;
@@ -162,7 +159,6 @@ namespace Mono.TextEditor
 			sel_modifierFlags = sel_registerName ("modifierFlags");
 			sel_setHasShadow = sel_registerName ("setHasShadow:");
 			sel_invalidateShadow = sel_registerName ("invalidateShadow");
-			sel_terminate = sel_registerName ("terminate:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
@@ -235,11 +231,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		static void MacTerminate ()
-		{
-			objc_msgSend_NSInt64_NSInt32 (sharedApp, sel_terminate, 0);
-		}
-
 		// Note: we can't reuse RectangleF because the layout is different...
 		[StructLayout (LayoutKind.Sequential)]
 		struct Rect {
@@ -310,13 +301,7 @@ namespace Mono.TextEditor
 
 			return new Gdk.Rectangle (x, y, width, height);
 		}
-
-		public static void Terminate ()
-		{
-			if (Platform.IsMac)
-				MacTerminate ();
-		}
-
+		
 		public static Gdk.Rectangle GetUsableMonitorGeometry (this Gdk.Screen screen, int monitor)
 		{
 			if (Platform.IsWindows)
