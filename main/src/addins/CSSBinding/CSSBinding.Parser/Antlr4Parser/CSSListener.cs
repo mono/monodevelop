@@ -35,6 +35,7 @@ namespace MonoDevelop.CSSParser
 	/// </summary>
 	public interface ICSSListener : IParseTreeListener
 	{
+
 		void EnterOperatorx(CSSParser.OperatorxContext context);
 		void ExitOperatorx(CSSParser.OperatorxContext context);
 
