@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -75,6 +76,18 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
+
+				var bt = Options.EnclosingType.DirectBaseTypes.FirstOrDefault (t => t.Kind != TypeKind.Interface);
+
+				if (bt != null) {
+					var ctors = bt.GetConstructors (m => !m.IsSynthetic).ToList ();
+					foreach (var ctor in ctors) {
+						if (ctor.Parameters.Count > 0 || ctors.Count > 1) {
+							yield return ctor;
+						}
+					} 
+				}
+
 				foreach (IField field in Options.EnclosingType.Fields) {
 					if (field.IsSynthetic)
 						continue;
@@ -99,15 +112,49 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
+				bool gotConstructorOverrides = false;
+				foreach (IMethod m in includedMembers.OfType<IMethod> ().Where (m => m.SymbolKind == SymbolKind.Constructor)) {
+					gotConstructorOverrides = true;
+					var init = new ConstructorInitializer {
+						ConstructorInitializerType = ConstructorInitializerType.Base
+					};
+
+					var overridenConstructor = new ConstructorDeclaration {
+						Name = Options.EnclosingType.Name,
+						Modifiers = Modifiers.Public,
+						Body = new BlockStatement (),
+					};
+
+					if (m.Parameters.Count > 0)
+						overridenConstructor.Initializer = init;
+
+					foreach (var par in m.Parameters) {
+						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (par.Type), par.Name));
+						init.Arguments.Add (new IdentifierExpression(par.Name)); 
+					}
+					foreach (var member in includedMembers.OfType<IMember> ()) {
+						if (member.SymbolKind == SymbolKind.Constructor)
+							continue;
+						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+
+						var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
+						var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
+						overridenConstructor.Body.Statements.Add (new ExpressionStatement (assign));
+					}
+
+					yield return overridenConstructor.ToString (Options.FormattingOptions);
+				}
+				if (gotConstructorOverrides)
+					yield break;
 				var constructorDeclaration = new ConstructorDeclaration {
 					Name = Options.EnclosingType.Name,
 					Modifiers = Modifiers.Public,
 					Body = new BlockStatement ()
 				};
-				
+
 				foreach (IMember member in includedMembers) {
 					constructorDeclaration.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
-					
+
 					var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
 					var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
 					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
