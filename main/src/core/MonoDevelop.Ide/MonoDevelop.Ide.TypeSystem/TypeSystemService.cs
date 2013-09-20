@@ -191,9 +191,9 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.3";
+		const string CurrentVersion = "1.1.4";
 
-		static List<TypeSystemParserNode> parsers;
+		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (projectFile != null)
 								QueueParseJob (wrapper, new [] { projectFile });
 						}
-						AssemblyContext ctx;
+						UnresolvedAssemblyProxy ctx;
 						if (cachedAssemblyContents.TryGetValue (file.FileName, out ctx))
 							CheckModifiedFile (ctx);
 					}
@@ -1351,7 +1351,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 					
-					AssemblyContext ctx;
+					UnresolvedAssemblyProxy ctx;
 					// Add mscorlib reference
 					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
 						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
@@ -1783,19 +1783,23 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 
 		
-		[Serializable]
-		class AssemblyContext : IUnresolvedAssembly
+		class UnresolvedAssemblyProxy : IUnresolvedAssembly
 		{
-			public string FileName;
-			public DateTime LastWriteTimeUtc;
-			
-			[NonSerialized]
+			public readonly string FileName;
+
 			internal LazyAssemblyLoader CtxLoader;
 			
 			public IUnresolvedAssembly Ctx {
 				get {
 					return CtxLoader;
 				}
+			}
+
+			public UnresolvedAssemblyProxy (string fileName)
+			{
+				if (fileName == null)
+					throw new ArgumentNullException ("fileName");
+				this.FileName = fileName;
 			}
 
 			#region IUnresolvedAssembly implementation
@@ -2035,9 +2039,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (assemblyPath != null && File.Exists (assemblyPath)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
 						if (deserializedAssembly != null) {
-						/*	var provider = deserializedAssembly as IDocumentationProviderContainer;
-							if (provider != null)
-								provider.DocumentationProvider = new CombinedDocumentationProvider (fileName);*/
 							return deserializedAssembly;
 						}
 					}
@@ -2055,8 +2056,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					return null;
 				}
 
-				if (cache != null)
+				if (cache != null) {
+					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, assembly);
+					if (File.Exists (assemblyPath))
+						File.SetLastWriteTimeUtc (assemblyPath, writeTime);
+				}
 				return assembly;
 			}
 		}
@@ -2101,11 +2106,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			#endregion
 		}
 		static object assemblyContextLock = new object ();
-		static AssemblyContext LoadAssemblyContext (FilePath fileName)
+		static UnresolvedAssemblyProxy LoadAssemblyContext (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
 
-			AssemblyContext loadedContext;
+			UnresolvedAssemblyProxy loadedContext;
 			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
 				CheckModifiedFile (loadedContext);
 				return loadedContext;
@@ -2118,32 +2123,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					return loadedContext;
 				}
 
-				string cache = GetCacheDirectory (fileName);
-				if (cache != null) {
-					var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
-					if (deserialized != null) {
-						deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
-						CheckModifiedFile (deserialized);
-						var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
-						newcachedAssemblyContents [fileName] = deserialized;
-						cachedAssemblyContents = newcachedAssemblyContents;
-						OnAssemblyLoaded (new AssemblyLoadedEventArgs (deserialized.CtxLoader));
-						return deserialized;
-					} else {
-						RemoveCache (cache);
-					}
-				}
-				cache = CreateCacheDirectory (fileName);
+				string cache = GetCacheDirectory (fileName, true);
 
 				try {
-					var result = new AssemblyContext () {
-						FileName = fileName,
-						LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName)
-					};
-					SerializeObject (Path.Combine (cache, "assembly.descriptor"), result);
-					
+					var result = new UnresolvedAssemblyProxy (fileName);
 					result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
-					var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
+					CheckModifiedFile (result);
+					var newcachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> (cachedAssemblyContents);
 					newcachedAssemblyContents [fileName] = result;
 					cachedAssemblyContents = newcachedAssemblyContents;
 					OnAssemblyLoaded (new AssemblyLoadedEventArgs (result.CtxLoader));
@@ -2346,7 +2332,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
+		static Dictionary<string, UnresolvedAssemblyProxy> cachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> ();
 		
 		public static void ForceUpdate (ProjectContentWrapper context)
 		{
@@ -2623,19 +2609,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void CheckModifiedFile (AssemblyContext context)
+		static void CheckModifiedFile (UnresolvedAssemblyProxy context)
 		{
 			try {
+				string cache = GetCacheDirectory (context.FileName, false);
+				if (cache == null)
+					return;
+				var assemblyDataDirectory = Path.Combine (cache, "assembly.data");
 				var writeTime = File.GetLastWriteTimeUtc (context.FileName);
-				if (writeTime != context.LastWriteTimeUtc) {
-					string cache = GetCacheDirectory (context.FileName);
-					context.LastWriteTimeUtc = writeTime;
+				var cacheTime = File.Exists (assemblyDataDirectory) ? File.GetCreationTimeUtc (assemblyDataDirectory) : writeTime;
+				if (writeTime != cacheTime) {
+					cache = GetCacheDirectory (context.FileName);
 					if (cache != null) {
 						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
-						SerializeObject (Path.Combine (cache, "assembly.descriptor"), context);
 						try {
 							// File is reloaded by the lazy loader
-							File.Delete (Path.Combine (cache, "assembly.data"));
+							File.Delete (assemblyDataDirectory);
 						} catch (Exception) {
 						}
 					}
@@ -2659,7 +2648,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				CheckModifiedFiles (readydb.Key, files, readydb.Value);
 			}
 			
-			var assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (cachedAssemblyContents);
+			var assemblyList = new Queue<KeyValuePair<string, UnresolvedAssemblyProxy>> (cachedAssemblyContents);
 
 			while (assemblyList.Count > 0) {
 				var readydb = assemblyList.Dequeue ();
