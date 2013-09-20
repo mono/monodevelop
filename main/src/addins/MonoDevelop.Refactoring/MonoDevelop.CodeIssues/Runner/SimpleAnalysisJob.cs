@@ -38,6 +38,8 @@ namespace MonoDevelop.CodeIssues
 	/// </summary>
 	public class SimpleAnalysisJob : IAnalysisJob
 	{
+		object _lock = new object ();
+
 		readonly IList<ProjectFile> files;
 
 		/// <summary>
@@ -99,7 +101,9 @@ namespace MonoDevelop.CodeIssues
 
 		public void NotifyCancelled ()
 		{
-			IsCancelled = true;
+			lock (_lock) {
+				IsCancelled = true;
+			}
 		}
 
 		event EventHandler<EventArgs> completed;
@@ -123,9 +127,12 @@ namespace MonoDevelop.CodeIssues
 
 		public void SetCompleted ()
 		{
-			IsCompleted = true;
-
-			if (!IsCancelled)
+			bool runEventHandler;
+			lock (_lock) {
+				IsCompleted = true;
+				runEventHandler = !IsCancelled && !IsCompleted;
+			}
+			if (runEventHandler)
 				OnCompleted (new EventArgs());
 		}
 

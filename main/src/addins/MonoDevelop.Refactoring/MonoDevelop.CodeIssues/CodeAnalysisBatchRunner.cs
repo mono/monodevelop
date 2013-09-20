@@ -49,11 +49,11 @@ namespace MonoDevelop.CodeIssues
 {
 	public class CodeAnalysisBatchRunner
 	{
-		readonly object _lock = new object();
+		private readonly object _lock = new object ();
 
-		int workerCount;
+		private int workerCount;
 
-		readonly AnalysisJobQueue jobQueue = new AnalysisJobQueue();
+		private readonly AnalysisJobQueue jobQueue = new AnalysisJobQueue ();
 
 		public IJobContext QueueJob (IAnalysisJob job)
 		{
@@ -62,35 +62,41 @@ namespace MonoDevelop.CodeIssues
 			return new JobContext (job, jobQueue, this);
 		}
 
-		void EnsureRunning ()
+		private void EnsureRunning ()
 		{
 			for (; Interlocked.Add (ref workerCount, 1) < Environment.ProcessorCount;) {
 				new Thread (() => {
 					try {
-						ProcessQueue();
-					} finally {
+						ProcessQueue ();
+					}
+					finally {
 						Interlocked.Add (ref workerCount, -1);
 					}
 				}).Start ();
 			}
 		}
 
-		void ProcessQueue()
+		private void ProcessQueue ()
 		{
 			while (true) {
 				try {
-					lock (_lock) {
-						using (var slice = jobQueue.Dequeue (1).FirstOrDefault ()) {
-							if (slice == null)
-								// TODO: Do something smarter if the queue is empty
-								return;
-							AnalyzeFile (slice, slice.GetJobs ().SelectMany (job => job.GetIssueProviders (slice.File)));
-						}
+					using (var slice = GetSlice ()) {
+						if (slice == null)
+							// TODO: Do something smarter if the queue is empty
+							return;
+						AnalyzeFile (slice, slice.GetJobs ().SelectMany (job => job.GetIssueProviders (slice.File)));
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Unhandled exception", e);
 					MessageService.ShowException (e);
 				}
+			}
+		}
+
+		private JobSlice GetSlice ()
+		{
+			lock (_lock) {
+				return jobQueue.Dequeue (1).FirstOrDefault ();
 			}
 		}
 

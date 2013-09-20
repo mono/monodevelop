@@ -30,7 +30,7 @@ using System;
 namespace MonoDevelop.CodeIssues
 {
 	/// <summary>
-	/// Represents an analysis job.
+	/// Represents an analysis job. Implementations must be thread safe.
 	/// </summary>
 	public interface IAnalysisJob
 	{

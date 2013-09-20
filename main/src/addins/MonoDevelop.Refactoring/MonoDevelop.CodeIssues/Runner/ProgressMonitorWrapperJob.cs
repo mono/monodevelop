@@ -34,17 +34,20 @@ namespace MonoDevelop.CodeIssues
 {
 	public class ProgressMonitorWrapperJob : IAnalysisJob
 	{
-		readonly object _lock = new object();
-
 		readonly IAnalysisJob wrappedJob;
 
 		IProgressMonitor monitor;
+
+		int reportingThinningFactor = 100;
+
+		int completedWork;
 
 		public ProgressMonitorWrapperJob (IAnalysisJob wrappedJob, string message)
 		{
 			this.wrappedJob = wrappedJob;
 			monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (message, null, false);
 			var work = wrappedJob.GetFiles ().Sum (f => wrappedJob.GetIssueProviders (f).Count ());
+			
 			monitor.BeginTask (message, work);
 		}
 
@@ -71,17 +74,13 @@ namespace MonoDevelop.CodeIssues
 
 		public void AddResult (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> issues)
 		{
-			lock (_lock) {
-				Step ();
-			}
+			Step ();
 			wrappedJob.AddResult (file, provider, issues);
 		}
 
 		public void AddError (ProjectFile file, BaseCodeIssueProvider provider)
 		{
-			lock (_lock) {
-				Step ();
-			}
+			Step ();
 			wrappedJob.AddError (file, provider);
 		}
 
@@ -96,16 +95,15 @@ namespace MonoDevelop.CodeIssues
 
 		public void SetCompleted ()
 		{
-			lock (_lock) {
-				StopReporting ();
-			}
+			StopReporting ();
 			wrappedJob.SetCompleted ();
 		}
 
 		void Step ()
 		{
-			if (monitor != null) {
-				monitor.Step (1);
+			completedWork++;
+			if (monitor != null && completedWork % reportingThinningFactor == 0) {
+				monitor.Step (reportingThinningFactor);
 			}
 		}
 
@@ -119,9 +117,7 @@ namespace MonoDevelop.CodeIssues
 
 		public void NotifyCancelled ()
 		{
-			lock (_lock) {
-				StopReporting ();
-			}
+			StopReporting ();
 		}
 
 		#endregion
