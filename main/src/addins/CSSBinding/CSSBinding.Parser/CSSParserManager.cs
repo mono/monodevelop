@@ -40,6 +40,7 @@ namespace MonoDevelop.CSSParser
 		}
 
 		public CompilerErrorCollection Errors {
+
 			get { return errors; }
 		}
 
