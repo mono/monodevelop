@@ -265,14 +265,7 @@ namespace MonoDevelop.Ide.Gui
 		public Pad GetPad<T> ()
 		{
 			foreach (Pad pad in Pads) {
-				object content;
-				try {
-					content = pad.Content;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating pad " + pad.Title + " content.", e);
-					continue;
-				}
-				if (typeof(T).IsInstanceOfType (content))
+				if (typeof(T).FullName == pad.InternalContent.ClassName)
 					return pad;
 			}
 			return null;
@@ -994,18 +987,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {
-					if (pi.Id == pad.Id && pad.Content is IMementoCapable) {
-						try {
-							string xml = pi.State.OuterXml;
-							IMementoCapable m = (IMementoCapable) pad.Content; 
-							XmlReader innerReader = new XmlTextReader (new StringReader (xml));
-							innerReader.MoveToContent ();
-							ICustomXmlSerializer cs = (ICustomXmlSerializer)m.Memento;
-							if (cs != null)
-								m.Memento = cs.ReadFrom (innerReader);
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error loading view memento.", ex);
-						}
+
+					if (pi.Id == pad.Id) {
+						pad.InternalContent.SetPreferences(pi);
 						break;
 					}
 				}
