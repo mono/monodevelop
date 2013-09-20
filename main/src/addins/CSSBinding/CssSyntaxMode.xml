@@ -24,7 +24,7 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "CSS" mimeTypes="text/css">
-	<Delimiters>&amp;&lt;&gt;~!@%^*()+=|\#/{}[]:;"' ,	?</Delimiters>
+	
 	
 	<Property name="BlockCommentStart">/*</Property>
 	<Property name="BlockCommentEnd">*/</Property>
@@ -42,8 +42,10 @@
 		<End>}</End>
 	</Span>
 	
-	<Rule name="Ruleset">
-		
+	<Rule name="Ruleset"> <!--Ruleset-->
+	
+		<Delimiters>&amp;&lt;&gt;~!@%^*()+=|\#/{}[]:;"' ,	?</Delimiters>
+	
 		<Span color = "String" rule="String" stopateol = "true" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
@@ -86,7 +88,7 @@
 			<Word>background-size</Word>
 			<Word>baseline-shift</Word>
 			<Word>binding</Word>
-			<Word>bleed</Word>
+			<Word>bleed</Word>	
 			<Word>bookmark-label</Word>
 			<Word>bookmark-level</Word>
 			<Word>bookmark-state</Word>
@@ -124,7 +126,7 @@
 			<Word>border-top-style</Word>
 			<Word>border-top-width</Word>
 			<Word>border-width</Word>
-			<Word>bottom</Word>
+			<Word>bottom</Word>	
 			<Word>box-decoration-break</Word>
 			<Word>box-shadow</Word>
 			<Word>box-sizing</Word>
