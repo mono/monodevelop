@@ -556,7 +556,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			timer.Trace ("Read project items");
 			
 			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
-				ProjectItem it = ReadItem (ser, buildItem);
+				ProjectItem it = ReadItem (ser, buildItem, msproject);
 
 				if (it == null) continue;
 
@@ -819,7 +819,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem)
+		ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem, MSBuildProject msbuildProject)
 		{
 			Project project = Item as Project;
 			DotNetProject dotNetProject = Item as DotNetProject;
@@ -860,6 +860,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							asm = "System.Xml";
 						else if (asm == "system")
 							asm = "System";
+						if (asm.Contains("$(")) {
+							foreach (var propertyGroup in msbuildProject.PropertyGroups) {
+								//TODO: Check propertyGroup.Condition 
+								foreach (var property in propertyGroup.Properties) {
+									//TODO: Check property.Condition 
+									asm = asm.Replace("$(" + property.Name + ")", property.GetValue());
+								}
+							}
+						}
 						pref = new ProjectReference (ReferenceType.Package, asm);
 						pref.LocalCopy = !buildItem.GetMetadataIsFalse ("Private");
 					}
