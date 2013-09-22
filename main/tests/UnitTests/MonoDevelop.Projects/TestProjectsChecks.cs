@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core.Serialization;
@@ -494,6 +495,14 @@ namespace Foo {
 			f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			pf = p.Files.GetFile (f);
 			Assert.AreEqual ("SomeBitmap.bmp", pf.ResourceId);
+		}
+
+		public static void TestProjectReferencesUsingProperties (string fileFormat)
+		{
+			var solFile = Util.GetSampleProject("fs31-tester", "fs31-tester.sln");
+			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem(Util.GetMonitor(), solFile);            
+			var proj = (DotNetProject)sol.Items[0];
+			Assert.IsTrue(proj.References.Any(r => r.Reference == "FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"));
 		}
 	}
 	
