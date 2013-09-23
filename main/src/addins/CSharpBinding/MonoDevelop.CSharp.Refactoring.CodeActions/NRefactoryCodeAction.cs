@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		/// of fix. This list includes the current action. 
 		/// </summary>
 		/// <value>The sibling actions.</value>
-		public IList<CodeAction> SiblingActions { get; set; }
+		public IList<MonoDevelop.CodeActions.CodeAction> SiblingActions { get; set; }
 		
 		public override bool SupportsBatchRunning {
 			get{
@@ -70,8 +70,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var context = new MDRefactoringContext (document, loc);
 			using (var script = context.StartScript ()) {
 				foreach (var action in SiblingActions) {
-					context.SetLocation (action.Start);
-					action.Run (script);
+					context.SetLocation (action.DocumentRegion.Begin);
+					action.Run (context, script);
 				}
 			}
 		}
