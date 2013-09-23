@@ -599,7 +599,10 @@ namespace SubversionAddinWindows
 
 		class ProgressData
 		{
-			public int Bytes;
+			// It's big enough. You don't see repos with more than 5Gb.
+			public long Remainder;
+			public long SavedProgress;
+			public long KBytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
 		}
@@ -619,29 +622,46 @@ namespace SubversionAddinWindows
 			updateMonitor = monitor;
 		}
 
+		static string BytesToSize (long kbytes)
+		{
+			if (kbytes < 1024)
+				return String.Format ("{0} KBytes", kbytes);
+			return String.Format ("{0:0.00} MBytes", kbytes / 1024.0);
+		}
+
 		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor)
 		{
 			if (monitor == null)
 				return;
 
-			int currentProgress = (int)e.Progress;
-			if (currentProgress == 0)
+			long currentProgress = e.Progress;
+			if (currentProgress <= data.KBytes) {
+				if (data.SavedProgress < data.KBytes) {
+					data.SavedProgress += data.KBytes;
+				}
 				return;
+			}
 
-			int totalProgress = (int)e.TotalProgress;
+			long totalProgress = e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				data.LogTimer.Close ();
 				return;
 			}
 
-			data.Bytes = currentProgress;
+			data.Remainder += currentProgress % 1024;
+			if (data.Remainder >= 1024) {
+				data.SavedProgress += data.Remainder / 1024;
+				data.Remainder = data.Remainder % 1024;
+			}
+
+			data.KBytes = data.SavedProgress + currentProgress / 1024;
 			if (data.LogTimer.Enabled)
 				return;
 
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine ("{0} bytes in {1} seconds", data.Bytes, data.Seconds);
+				monitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (data.KBytes), data.Seconds);
 			};
 			data.LogTimer.Start ();
 		}
