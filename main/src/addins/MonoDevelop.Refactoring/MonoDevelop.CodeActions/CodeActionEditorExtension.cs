@@ -372,6 +372,7 @@ namespace MonoDevelop.CodeActions
 				w.SetFixes (RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result, Document.Editor.Caret.Location);
 				w.PopupQuickFixMenu ();
 				w.Destroy ();
+
 				return;
 			}
 			if (currentSmartTag == null)
@@ -382,7 +383,7 @@ namespace MonoDevelop.CodeActions
 		internal List<CodeAction> GetCurrentFixes ()
 		{
 			if (currentSmartTag == null)
-				return null;
+				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
 			return currentSmartTag.fixes;
 		}
 	}

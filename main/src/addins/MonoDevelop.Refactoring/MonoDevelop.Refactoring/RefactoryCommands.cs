@@ -200,8 +200,13 @@ namespace MonoDevelop.Refactoring
 
 		class RefactoringDocumentInfo
 		{
-			public IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
+			public IEnumerable<CodeAction> validActions;
 			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+
+			public override string ToString ()
+			{
+				return string.Format ("[RefactoringDocumentInfo: #validActions={0}, lastDocument={1}]", validActions != null ? validActions.Count ().ToString () : "null", lastDocument);
+			}
 		}
 
 
