@@ -119,7 +119,7 @@ namespace MonoDevelop.Debugger
 
 				if (children.Length > 0 && string.Equals (children[0].Name, "[0..99]")) {
 					// Big Arrays Hack
-					children = children [0].GetAllChildren ();
+					children = children[0].GetAllChildren ();
 					hasMore = true;
 				}
 
