@@ -29,11 +29,39 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Linq;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class IssueSummary: IIssueTreeNode
-	{		
+	{
+		public static IssueSummary FromCodeIssue(ProjectFile file, BaseCodeIssueProvider provider, CodeIssue codeIssue)
+		{
+			var topLevelProvider = (provider as CodeIssueProvider) ?? provider.Parent;
+			if (topLevelProvider == null)
+				throw new ArgumentException ("must be a CodeIssueProvider or a BaseCodeIssueProvider with Parent != null", "provider");
+			var issueSummary = new IssueSummary {
+				IssueDescription = codeIssue.Description,
+				Region = codeIssue.Region,
+				ProviderTitle = topLevelProvider.Title,
+				ProviderDescription = topLevelProvider.Description,
+				ProviderCategory = topLevelProvider.Category,
+				Severity = topLevelProvider.GetSeverity (),
+				IssueMarker = codeIssue.IssueMarker,
+				File = file,
+				Project = file.Project,
+				InspectorIdString = codeIssue.InspectorIdString
+			};
+			issueSummary.Actions = codeIssue.Actions.Select (a => new ActionSummary {
+				Batchable = a.SupportsBatchRunning,
+				SiblingKey = a.SiblingKey,
+				Title = a.Title,
+				Region = a.DocumentRegion,
+				IssueSummary = issueSummary
+			}).ToList ();
+			return issueSummary;
+		}
+
 		#region IIssueTreeNode implementation
 		
 		string IIssueTreeNode.Text {

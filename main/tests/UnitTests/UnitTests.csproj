@@ -294,6 +294,8 @@
     <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -319,6 +321,8 @@
     <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
     <None Include="MonoDevelop.Projects\DomTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

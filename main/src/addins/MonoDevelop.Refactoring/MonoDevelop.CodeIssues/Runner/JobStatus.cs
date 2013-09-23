@@ -1,5 +1,5 @@
 //
-// IGroupingProvider.cs
+// JobStatus.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -24,44 +24,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
-	public interface IGroupingProvider
+	/// <summary>
+	/// Keeps track of the status of a possibly partially executed job.
+	/// </summary>
+	public class JobStatus
 	{
-		/// <summary>
-		/// Gets the issue group for the <see cref="IssueGroup"/> specified in <paramref name="issue"/>.
-		/// </summary>
-		/// <returns>The issue group.</returns>
-		/// <param name="parentGroup">The parent group.</param> 
-		/// <param name="issue">The <see cref="IssueSummary"/> to return a group for.</param>
-		IssueGroup GetIssueGroup(IssueGroup parentGroup, IssueSummary issue);
+		readonly object _lock = new object();
 
 		/// <summary>
-		/// Removes the set of cached groups.
+		/// The job.
 		/// </summary>
-		void Reset ();
-		
+		readonly IAnalysisJob job;
+
 		/// <summary>
-		/// The <see cref="IGroupingProvider"/> to be applied after the current instance. Never returns null.
+		/// The slices that the job has been split into.
 		/// </summary>
-		/// <value>The next.</value>
-		/// <exception cref="InvalidOperationException">
-		/// Thrown by both accessors if <see cref="SupportsNext"/> is false.
-		/// </exception>
-		IGroupingProvider Next { get; set; }
-		
+		readonly ISet<JobSlice> slices = new HashSet<JobSlice> ();
+
 		/// <summary>
-		/// Occurs when <see cref="Next"/> changes.
+		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.JobStatus"/> class.
 		/// </summary>
-		event EventHandler<GroupingProviderEventArgs> NextChanged;
-		
+		/// <param name="job">The job.</param>
+		public JobStatus (IAnalysisJob job)
+		{
+			if (job == null)
+				throw new ArgumentNullException ("job");
+			
+			this.job = job;
+		}
+
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IGroupingProvider"/>
-		/// supports the usage of <see cref="Next"/> .
+		/// Adds another slice. This method should not be called after <see cref="MarkAsComplete"/> has been called.
 		/// </summary>
-		/// <value>True if <see cref="Next"/> can be used.</value>
-		bool SupportsNext { get; }
+		/// <param name="slice">Slice.</param>
+		public void AddSlice (JobSlice slice)
+		{
+			lock (_lock) {
+				slices.Add (slice);
+			}
+		}
+
+		/// <summary>
+		/// Marks a slice of the job as complete and marks the job as completed if all slices have been completed.
+		/// </summary>
+		/// <param name="slice">The completed slice.</param>
+		public void MarkAsComplete(JobSlice slice)
+		{
+			lock (_lock) {
+				slices.Remove (slice);
+				if (slices.Count == 0) {
+					job.SetCompleted ();
+				}
+			}
+		}
 	}
 }
 

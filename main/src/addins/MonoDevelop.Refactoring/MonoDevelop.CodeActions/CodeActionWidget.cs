@@ -155,38 +155,40 @@ namespace MonoDevelop.CodeActions
 			}
 
 			bool first = true;
-			var alreadyInserted = new HashSet<BaseCodeIssueProvider> ();
-			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
-				var analysisFix = analysisFix_;
-				var ir = analysisFix.Result as InspectorResults;
-				if (ir == null)
-					continue;
+			var settingsMenuFixes = fixes
+				.OfType<AnalysisContextActionProvider.AnalysisCodeAction> ()
+				.Where (f => f.Result is InspectorResults)
+				.GroupBy (f => ((InspectorResults)f.Result).Inspector);
+			foreach (var analysisFixGroup_ in settingsMenuFixes) {
+				var analysisFixGroup = analysisFixGroup_;
+				var arbitraryFixInGroup = analysisFixGroup.First ();
+				var ir = (InspectorResults)arbitraryFixInGroup.Result;
 			
 				if (first) {
 					menu.Add (new Gtk.SeparatorMenuItem ());
 					first = false;
 				}
-				if (alreadyInserted.Contains (ir.Inspector))
-					continue;
-				alreadyInserted.Add (ir.Inspector);
 
 				var subMenu = new Gtk.Menu ();
-				if (analysisFix.SupportsBatchRunning) {
-					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Fix all in this file"));
-					batchRunMenuItem.Activated += delegate {
-						ConfirmUsage (analysisFix.IdString);
-						menu.Destroy ();
-					};
-					batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, loc).BatchRun;
-					subMenu.Add (batchRunMenuItem);
-					subMenu.Add (new Gtk.SeparatorMenuItem ());
+				foreach (var analysisFix_ in analysisFixGroup) {
+					var analysisFix = analysisFix_;
+					if (analysisFix.SupportsBatchRunning) {
+						var batchRunMenuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Apply in file: {0}"), analysisFix.Title));
+						batchRunMenuItem.Activated += delegate {
+							ConfirmUsage (analysisFix.IdString);
+							menu.Destroy ();
+						};
+						batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, loc).BatchRun;
+						subMenu.Add (batchRunMenuItem);
+						subMenu.Add (new Gtk.SeparatorMenuItem ());
+					}
 				}
 
 				var inspector = ir.Inspector;
 				if (inspector.CanSuppressWithAttribute) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
 					menuItem.Activated += delegate {
-						inspector.SuppressWithAttribute (document, analysisFix.DocumentRegion); 
+						inspector.SuppressWithAttribute (document, arbitraryFixInGroup.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -194,7 +196,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableWithPragma) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
 					menuItem.Activated += delegate {
-						inspector.DisableWithPragma (document, analysisFix.DocumentRegion); 
+						inspector.DisableWithPragma (document, arbitraryFixInGroup.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -202,7 +204,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableOnce) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
 					menuItem.Activated += delegate {
-						inspector.DisableOnce (document, analysisFix.DocumentRegion); 
+						inspector.DisableOnce (document, arbitraryFixInGroup.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -210,7 +212,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableAndRestore) {
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
 					menuItem.Activated += delegate {
-						inspector.DisableAndRestore (document, analysisFix.DocumentRegion); 
+						inspector.DisableAndRestore (document, arbitraryFixInGroup.DocumentRegion); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -218,7 +220,8 @@ namespace MonoDevelop.CodeActions
 				var subMenuItem = new Gtk.MenuItem (label);
 
 				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection"));
-				optionsMenuItem.Activated += analysisFix.ShowOptions;
+				optionsMenuItem.Activated += arbitraryFixInGroup.ShowOptions;
+
 				optionsMenuItem.Activated += delegate {
 					menu.Destroy ();
 				};

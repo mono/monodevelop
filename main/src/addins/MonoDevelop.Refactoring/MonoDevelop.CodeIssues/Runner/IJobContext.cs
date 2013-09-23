@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// IJobContext.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,60 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public interface IJobContext
 	{
-		static readonly Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
-		{
-			get {
-				return instance.Value;
-			}
-		}
-
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
-		{
-			return null;
-		}
-
-		public void Reset ()
-		{
-			// no-op
-		}
-
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
-			}
-			set {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext {
-			get {
-				return false;
-			}
-		}
-
-		#endregion
+		IAnalysisJob Job { get; }
+		void CancelJob ();
 	}
 }
 

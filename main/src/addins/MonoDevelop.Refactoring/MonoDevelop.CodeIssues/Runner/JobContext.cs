@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// JobContext.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -27,55 +27,39 @@ using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public class JobContext : IJobContext
 	{
-		static readonly Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		readonly IAnalysisJob job;
+
+		readonly AnalysisJobQueue queue;
+
+		readonly CodeAnalysisBatchRunner runner;
+
+		public JobContext(IAnalysisJob job, AnalysisJobQueue queue, CodeAnalysisBatchRunner runner)
 		{
+			if (job == null)
+				throw new ArgumentNullException ("job");
+			if (queue == null)
+				throw new ArgumentNullException ("queue");
+			if (runner == null)
+				throw new ArgumentNullException ("runner");
+			this.job = job;
+			this.queue = queue;
+			this.runner = runner;
+		}
+
+		#region IJobContext implementation
+		public void CancelJob ()
+		{
+			job.NotifyCancelled ();
+			queue.Remove (job);
+		}
+
+		public IAnalysisJob Job {
 			get {
-				return instance.Value;
+				return job;
 			}
 		}
-
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
-		{
-			return null;
-		}
-
-		public void Reset ()
-		{
-			// no-op
-		}
-
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
-			}
-			set {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext {
-			get {
-				return false;
-			}
-		}
-
 		#endregion
 	}
 }

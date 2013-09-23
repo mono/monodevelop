@@ -1,5 +1,5 @@
 //
-// IGroupingProvider.cs
+// CodeIssueEventArgs.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -24,44 +24,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.CodeIssues;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CodeIssues
 {
-	public interface IGroupingProvider
+	/// <summary>
+	/// Code issue event arguments.
+	/// </summary>
+	public class CodeIssueEventArgs : EventArgs
 	{
-		/// <summary>
-		/// Gets the issue group for the <see cref="IssueGroup"/> specified in <paramref name="issue"/>.
-		/// </summary>
-		/// <returns>The issue group.</returns>
-		/// <param name="parentGroup">The parent group.</param> 
-		/// <param name="issue">The <see cref="IssueSummary"/> to return a group for.</param>
-		IssueGroup GetIssueGroup(IssueGroup parentGroup, IssueSummary issue);
 
 		/// <summary>
-		/// Removes the set of cached groups.
+		/// Initializes a new instance of the <see cref="CodeIssueEventArgs"/> class.
 		/// </summary>
-		void Reset ();
-		
+		/// <param name="codeIssues">The code issues.</param>
+		public CodeIssueEventArgs (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> codeIssues)
+		{
+			File = file;
+			Provider = provider;
+			CodeIssues = codeIssues as IList<CodeIssue> ?? codeIssues.ToList ();
+		}
+
 		/// <summary>
-		/// The <see cref="IGroupingProvider"/> to be applied after the current instance. Never returns null.
+		/// Gets the analyzed file.
 		/// </summary>
-		/// <value>The next.</value>
-		/// <exception cref="InvalidOperationException">
-		/// Thrown by both accessors if <see cref="SupportsNext"/> is false.
-		/// </exception>
-		IGroupingProvider Next { get; set; }
-		
+		/// <value>The analyzed file.</value>
+		public ProjectFile File { get; private set; }
+
 		/// <summary>
-		/// Occurs when <see cref="Next"/> changes.
+		/// Gets the provider.
 		/// </summary>
-		event EventHandler<GroupingProviderEventArgs> NextChanged;
-		
+		/// <value>The code issue provider that provided the issues.</value>
+		public BaseCodeIssueProvider Provider { get; private set; }
+
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IGroupingProvider"/>
-		/// supports the usage of <see cref="Next"/> .
+		/// Gets the code issues.
 		/// </summary>
-		/// <value>True if <see cref="Next"/> can be used.</value>
-		bool SupportsNext { get; }
+		/// <value>The new code issues.</value>
+		public IList<CodeIssue> CodeIssues { get; private set; }
 	}
 }
 

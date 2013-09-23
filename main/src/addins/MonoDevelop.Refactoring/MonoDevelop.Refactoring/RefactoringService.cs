@@ -335,5 +335,21 @@ namespace MonoDevelop.Refactoring
 				return new DocumentLocation (location.Line, location.Column - 1);
 			return location;
 		}
+
+		static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+
+		/// <summary>
+		/// Queues a code analysis job.
+		/// </summary>
+		/// <param name="job">The job to queue.</param>
+		/// <param name="progressMessage">
+		/// The message used for a progress monitor, or null if no progress monitor should be used.
+		/// </param>
+		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
+		{
+			if (progressMessage != null)
+				job = new ProgressMonitorWrapperJob (job, progressMessage);
+			return runner.QueueJob (job);
+		}
 	}
 }
