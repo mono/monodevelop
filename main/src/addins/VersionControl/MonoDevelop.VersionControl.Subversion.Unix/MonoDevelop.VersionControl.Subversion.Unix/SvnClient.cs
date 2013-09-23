@@ -1234,9 +1234,22 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		class ProgressData
 		{
-			public int Bytes;
+			// It's big enough. You don't see repos with more than 5Gb.
+			public long Remainder;
+			public long SavedProgress;
+			public long KBytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
+		}
+
+		static string BytesToSize (long kbytes)
+		{
+			if (kbytes < 1024)
+				return String.Format ("{0} KBytes", kbytes);
+			// 16 * 1024
+			if (kbytes < 16384)
+				return String.Format ("{0:0.0} MBytes", kbytes / 1024.0);
+			return String.Format ("{0} MBytes", kbytes / 1024);
 		}
 
 		ProgressData progressData;
@@ -1245,24 +1258,34 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (updatemonitor == null)
 				return;
 
-			int currentProgress = (int)progress;
-			if (currentProgress == 0)
+			long currentProgress = progress;
+			if (currentProgress <= progressData.KBytes) {
+				if (progressData.SavedProgress < progressData.KBytes) {
+					progressData.SavedProgress += progressData.KBytes;
+				}
 				return;
+			}
 
-			int totalProgress = (int)total;
+			long totalProgress = total;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				progressData.LogTimer.Close ();
 				return;
 			}
 
-			progressData.Bytes = currentProgress;
+			progressData.Remainder += currentProgress % 1024;
+			if (progressData.Remainder >= 1024) {
+				progressData.SavedProgress += progressData.Remainder / 1024;
+				progressData.Remainder = progressData.Remainder % 1024;
+			}
+
+			progressData.KBytes = progressData.SavedProgress + currentProgress / 1024;
 			if (progressData.LogTimer.Enabled)
 				return;
 
 			progressData.LogTimer.Interval = 1000;
-			progressData.LogTimer.Elapsed += delegate (object sender, ElapsedEventArgs eea) {
+			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine ("{0} bytes in {1} seconds", progressData.Bytes, progressData.Seconds);
+				updatemonitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds);
 			};
 			progressData.LogTimer.Start ();
 		}
