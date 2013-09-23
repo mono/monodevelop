@@ -987,17 +987,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				return default (T);
 			}
 
-			readonly List<Action> loadActions = new List<Action> ();
+			List<Action<IProjectContent>> loadActions = new List<Action<IProjectContent>> ();
 
-			public void RunWhenLoaded (Action act)
+			public void RunWhenLoaded (Action<IProjectContent> act)
 			{
-				lock (loadActions) {
+				lock (updateContentLock) {
 					if (Content is LazyProjectLoader) {
-						loadActions.Add (act);
+						if (loadActions != null) {
+							loadActions.Clear ();
+							loadActions.Add (act);
+						}
 						return;
 					}
 				}
-				act ();
+				act (Content);
 			}
 
 			void ClearCachedCompilations ()
@@ -1025,11 +1028,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var lazyProjectLoader = Content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
-						lock (loadActions) {
-							foreach (var f in loadActions) {
-								f ();
-							}
-							loadActions.Clear ();
+						if (loadActions != null) {
+							var action = loadActions.FirstOrDefault ();
+							loadActions = null;
+							if (action != null)
+								action (Content);
 						}
 					}
 					Content = updateFunc (Content);
@@ -2593,7 +2596,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content)
 		{
-			content.RunWhenLoaded (delegate {
+			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
@@ -2603,7 +2606,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (file.BuildAction == null)
 								continue;
 							// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-							var oldFile = content.Content.GetFile (file.Name);
+							var oldFile = cnt.GetFile (file.Name);
 							oldFileNewFile.Add (Tuple.Create (file, oldFile));
 						}
 					}
@@ -2624,7 +2627,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					
 						// check if file needs to be removed from project content 
-						foreach (var file in content.Content.Files) {
+						foreach (var file in cnt.Files) {
 							if (project.GetProjectFile (file.FileName) == null) {
 								content.UpdateContent (c => c.RemoveFiles (file.FileName));
 								content.InformFileRemoved (new ParsedFileEventArgs (file));
