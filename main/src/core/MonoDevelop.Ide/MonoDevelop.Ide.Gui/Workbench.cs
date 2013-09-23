@@ -449,8 +449,7 @@ namespace MonoDevelop.Ide.Gui
 						//if found, select window and jump to line
 						if (vcFound != null) {
 							if (info.Project != null && doc.Project != info.Project) {
-								MessageService.ShowWarning ("File is already open in another project."); 
-								return null;
+								doc.SetProject (info.Project); 
 							}
 
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
