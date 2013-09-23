@@ -146,7 +146,7 @@ namespace MonoDevelop.Debugger
 			view.WriteOutput (Environment.NewLine);
 
 			if (val.IsError || val.IsUnknown) {
-				view.WriteOutput (string.Format ("\t{0}", val.Name, GetErrorText (val)));
+				view.WriteOutput (string.Format ("\t{0}", GetErrorText (val)));
 			} else if (!val.IsNotSupported) {
 				view.WriteOutput (string.Format ("\t{0}: {1}", val.Name, val.Value));
 			}
