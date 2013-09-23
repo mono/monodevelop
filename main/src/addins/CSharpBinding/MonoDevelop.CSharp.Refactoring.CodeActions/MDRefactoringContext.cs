@@ -165,7 +165,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		internal void SetLocation (TextLocation loc)
 		{
-			location = RefactoringService.GetCorrectResolveLocation (document, loc);
+			if (document != null)
+				location = RefactoringService.GetCorrectResolveLocation (document, loc);
+			else
+				location = loc;
 		}
 
 		readonly CSharpFormattingOptions formattingOptions;

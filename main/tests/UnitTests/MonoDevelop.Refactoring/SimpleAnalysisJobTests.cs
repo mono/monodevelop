@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// SimpleAnalysisJobTests.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -24,59 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using NUnit.Framework;
+using MonoDevelop.CodeIssues;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.Refactoring
 {
-	public class NullGroupingProvider: IGroupingProvider
+	[TestFixture]
+	public class SimpleAnalysisJobTests
 	{
-		static readonly Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		ProjectFile file1;
+
+		SimpleAnalysisJob job;
+
+		[SetUp]
+		public void SetUp()
 		{
-			get {
-				return instance.Value;
-			}
+			file1 = new ProjectFile ("file1");
+			job = new SimpleAnalysisJob (new [] { file1 });
 		}
 
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
+		[Test]
+		public void AddResultFiresEvent()
 		{
-			return null;
+			bool called = false;
+			job.CodeIssueAdded += delegate {
+				called = true;
+			};
+			job.AddResult (file1, null, new CodeIssue[] {});
+			Assert.IsTrue (called, "The event handler was not called");
 		}
-
-		public void Reset ()
-		{
-			// no-op
-		}
-
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
-			}
-			set {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext {
-			get {
-				return false;
-			}
-		}
-
-		#endregion
 	}
 }
 

@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// SolutionAnalysisJob.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,60 +23,50 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+using MonoDevelop.Projects;
+using System.Linq;
+using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public class SolutionAnalysisJob : SimpleAnalysisJob
 	{
-		static readonly Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		public SolutionAnalysisJob (Solution solution) : base(GetApplicableFiles(solution))
 		{
-			get {
-				return instance.Value;
-			}
 		}
 
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
+		static IList<ProjectFile> GetApplicableFiles (Solution solution)
 		{
-			return null;
+			var configurationSelector = IdeApp.Workspace.ActiveConfiguration;
+			var config = solution.GetConfiguration (configurationSelector);
+			return solution.GetAllProjects ()
+				.Where (config.BuildEnabledForItem)
+				.SelectMany (p => p.Files)
+				.Where (f => f.BuildAction == BuildAction.Compile)
+				.Distinct (new FilePathComparer())
+				.ToList ();
 		}
 
-		public void Reset ()
+		class FilePathComparer : IEqualityComparer<ProjectFile>
 		{
-			// no-op
-		}
+			#region IEqualityComparer implementation
 
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
+			public bool Equals (ProjectFile x, ProjectFile y)
+			{
+				return x == y ||
+					(x != null &&
+					 y != null &&
+					 x.Name == y.Name);
 			}
-			set {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
 
-		public bool SupportsNext {
-			get {
-				return false;
+			public int GetHashCode (ProjectFile obj)
+			{
+				return obj == null ? -1 : obj.Name.GetHashCode ();
 			}
-		}
 
-		#endregion
+			#endregion
+		}
 	}
 }
 

@@ -305,7 +305,7 @@ namespace MonoDevelop.CodeIssues
 			bool groupAdded = false;
 			group = null;
 			if (groupingProvider != null) {
-				group = groupingProvider.GetIssueGroup (issue);
+				group = groupingProvider.GetIssueGroup (this, issue);
 			}
 			if (group == null) {
 				children.Add (issue);
