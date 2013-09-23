@@ -825,6 +825,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				var solution = item as Solution;
 				if (solution != null) {
 					Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
+					var list = projectContents.Values.ToList ();
+					Task.Factory.StartNew (delegate {
+						foreach (var wrapper in list) {
+							CheckModifiedFiles (wrapper.Project, wrapper.Project.Files.ToArray (), wrapper);
+						}
+					});
+
 					solution.SolutionItemAdded += OnSolutionItemAdded;
 					solution.SolutionItemRemoved += OnSolutionItemRemoved;
 					OnSolutionLoaded (new SolutionEventArgs (solution));
@@ -924,7 +931,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					return _content;
 				}
-				set {
+				private set {
 					if (value == null)
 						throw new InvalidOperationException ("Project content can't be null");
 					_content = value;
@@ -1459,10 +1466,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
-					var files = project.Files.ToArray ();
-					Task.Factory.StartNew (delegate {
-						CheckModifiedFiles (project, files, wrapper);
-					});
+
 
 					if (dotNetProject != null) {
 						StartFrameworkLookup (dotNetProject);
@@ -1556,6 +1560,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					Unload (it);
 				ws.ItemAdded -= OnWorkspaceItemAdded;
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
+				projectContents.Clear ();
+				cachedAssemblyContents.Clear ();
 			} else {
 				var solution = item as Solution;
 				if (solution != null) {
@@ -1606,13 +1612,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			Unload (args.Item);
 		}
 
+		static void StartCheckFileTask (ProjectContentWrapper wrapper)
+		{
+			var files = wrapper.Project.Files.ToArray ();
+			Task.Factory.StartNew (delegate {
+				CheckModifiedFiles (wrapper.Project, files, wrapper);
+			});
+		}
+
 		static void OnSolutionItemAdded (object sender, SolutionItemChangeEventArgs args)
 		{
 			var project = args.SolutionItem as Project;
 			if (project != null) {
 				var wrapper = LoadProject (project);
-				if (wrapper != null)
+				if (wrapper != null) {
 					wrapper.ReconnectAssemblyReferences ();
+					StartCheckFileTask (wrapper);
+				}
 			}
 		}
 
@@ -1663,90 +1679,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
-		/*
-		class SimpleAssemblyResolver : IAssemblyResolver
-		{
-			string lookupPath;
-			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
-			DefaultAssemblyResolver defaultResolver = new DefaultAssemblyResolver ();
-			
-			public SimpleAssemblyResolver (string lookupPath)
-			{
-				this.lookupPath = lookupPath;
-			}
-
-			public AssemblyDefinition InternalResolve (string fullName)
-			{
-				AssemblyDefinition result;
-				if (cache.TryGetValue (fullName, out result))
-					return result;
-				
-				var name = AssemblyNameReference.Parse (fullName);
-				AssemblyDefinition bestFit = null;
-				// need to handle different file extension casings. Some dlls from windows tend to end with .Dll or .DLL rather than '.dll'
-				foreach (string file in Directory.GetFiles (lookupPath, name.Name + ".*")) {
-					string ext = Path.GetExtension (file);
-					if (string.IsNullOrEmpty (ext))
-						continue;
-					ext = ext.ToUpper ();
-					if (ext == ".DLL" || ext == ".EXE") {
-						result = ReadAssembly (file);
-						if (result.FullName != fullName) {
-							bestFit = result;
-							result = null;
-							continue;
-						}
-						break;
-					}
-				}
-				
-				if (result == null) {
-					var framework = MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework;
-					var assemblyName = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyFullName (fullName, framework);
-					var location = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyName, framework);
-					
-					if (!string.IsNullOrEmpty (location) && File.Exists (location)) {
-						result = ReadAssembly (location);
-					}
-				}
-				if (result == null)
-					result = bestFit;
-				if (result != null)
-					cache [fullName] = result;
-				return result;
-			}
-
-			#region IAssemblyResolver implementation
-			public AssemblyDefinition Resolve (AssemblyNameReference name)
-			{
-				return InternalResolve (name.FullName) ?? defaultResolver.Resolve (name);
-			}
-
-			public AssemblyDefinition Resolve (AssemblyNameReference name, ReaderParameters parameters)
-			{
-				return InternalResolve (name.FullName) ?? defaultResolver.Resolve (name, parameters);
-			}
-
-			public AssemblyDefinition Resolve (string fullName)
-			{
-				return InternalResolve (fullName) ?? defaultResolver.Resolve (fullName);
-			}
-
-			public AssemblyDefinition Resolve (string fullName, ReaderParameters parameters)
-			{
-				return InternalResolve (fullName) ?? defaultResolver.Resolve (fullName, parameters);
-			}
-			#endregion
-		}
-		
-		static AssemblyDefinition ReadAssembly (string fileName)
-		{
-			if (fileName == null)
-				throw new ArgumentNullException ("fileName");
-			ReaderParameters parameters = new ReaderParameters ();
-			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
-			return AssemblyDefinition.ReadAssembly (fileName, parameters);
-		}*/
 		static bool GetXml (string baseName, TargetRuntime runtime, out FilePath xmlFileName)
 		{
 			try {
