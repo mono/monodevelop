@@ -568,6 +568,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				                               false,
 				                               false,
 				                               ctx, localpool));
+			} catch (SubversionException e) {
+				// SVN_ERR_WC_NOT_WORKING_COPY and SVN_ERR_WC_NOT_FILE.
+				if (e.ErrorCode != 155007 && e.ErrorCode != 155008)
+					throw;
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
