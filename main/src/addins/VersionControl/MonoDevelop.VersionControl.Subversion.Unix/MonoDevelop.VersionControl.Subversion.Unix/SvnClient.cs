@@ -1234,27 +1234,22 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		class ProgressData
 		{
-			public long Bytes;
+			// It's big enough. You don't see repos with more than 5Gb.
+			public long Remainder;
+			public long SavedProgress;
+			public long KBytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
 		}
 
-		static string BytesToSize (long bytes)
+		static string BytesToSize (long kbytes)
 		{
-			if (bytes == 1)
-				return "1 byte";
-			if (bytes < 1024)
-				return String.Format ("{0} bytes", bytes);
+			if (kbytes < 1024)
+				return String.Format ("{0} KBytes", kbytes);
 			// 16 * 1024
-			if (bytes < 16384)
-				return String.Format ("{0:0.0} kByte", bytes / 1024.0);
-			// 1024 * 1024
-			if (bytes < 1048576)
-				return String.Format ("{0} kByte", bytes / 1024);
-			// 16 * 1024 * 1024
-			if (bytes < 16777216)
-				return String.Format ("{0:0.0} MByte", bytes / (1048576.0));
-			return String.Format ("{0} MByte", bytes / 1048576);
+			if (kbytes < 16384)
+				return String.Format ("{0:0.0} MBytes", kbytes / 1024.0);
+			return String.Format ("{0} MBytes", kbytes / 1024);
 		}
 
 		ProgressData progressData;
@@ -1264,8 +1259,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return;
 
 			long currentProgress = progress;
-			if (currentProgress == 0)
+			if (currentProgress <= progressData.KBytes) {
+				if (progressData.SavedProgress < progressData.KBytes) {
+					progressData.SavedProgress += progressData.KBytes;
+				}
 				return;
+			}
 
 			long totalProgress = total;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
@@ -1273,14 +1272,20 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return;
 			}
 
-			progressData.Bytes = currentProgress;
+			progressData.Remainder += currentProgress % 1024;
+			if (progressData.Remainder >= 1024) {
+				progressData.SavedProgress += progressData.Remainder / 1024;
+				progressData.Remainder = progressData.Remainder % 1024;
+			}
+
+			progressData.KBytes = progressData.SavedProgress + currentProgress / 1024;
 			if (progressData.LogTimer.Enabled)
 				return;
 
 			progressData.LogTimer.Interval = 1000;
 			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine ("{0} in {1} seconds.", BytesToSize (progressData.Bytes), progressData.Seconds);
+				updatemonitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds);
 			};
 			progressData.LogTimer.Start ();
 		}

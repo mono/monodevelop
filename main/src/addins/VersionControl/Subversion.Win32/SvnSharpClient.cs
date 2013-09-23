@@ -599,7 +599,10 @@ namespace SubversionAddinWindows
 
 		class ProgressData
 		{
-			public long Bytes;
+			// It's big enough. You don't see repos with more than 5Gb.
+			public long Remainder;
+			public long SavedProgress;
+			public long KBytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
 		}
@@ -619,22 +622,11 @@ namespace SubversionAddinWindows
 			updateMonitor = monitor;
 		}
 
-		static string BytesToSize (long bytes)
+		static string BytesToSize (long kbytes)
 		{
-			if (bytes == 1)
-				return "1 byte";
-			if (bytes < 1024)
-				return String.Format ("{0} bytes", bytes);
-			// 16 * 1024
-			if (bytes < 16384)
-				return String.Format ("{0:0.0} kByte", bytes / 1024.0);
-			// 1024 * 1024
-			if (bytes < 1048576)
-				return String.Format ("{0} kByte", bytes / 1024);
-			// 16 * 1024 * 1024
-			if (bytes < 16777216)
-				return String.Format ("{0:0.0} MByte", bytes / (1048576.0));
-			return String.Format ("{0} MByte", bytes / 1048576);
+			if (kbytes < 1024)
+				return String.Format ("{0} KBytes", kbytes);
+			return String.Format ("{0:0.00} MBytes", kbytes / 1024.0);
 		}
 
 		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor)
@@ -643,8 +635,12 @@ namespace SubversionAddinWindows
 				return;
 
 			long currentProgress = e.Progress;
-			if (currentProgress == 0)
+			if (currentProgress <= data.KBytes) {
+				if (data.SavedProgress < data.KBytes) {
+					data.SavedProgress += data.KBytes;
+				}
 				return;
+			}
 
 			long totalProgress = e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
@@ -652,14 +648,20 @@ namespace SubversionAddinWindows
 				return;
 			}
 
-			data.Bytes = currentProgress;
+			data.Remainder += currentProgress % 1024;
+			if (data.Remainder >= 1024) {
+				data.SavedProgress += data.Remainder / 1024;
+				data.Remainder = data.Remainder % 1024;
+			}
+
+			data.KBytes = data.SavedProgress + currentProgress / 1024;
 			if (data.LogTimer.Enabled)
 				return;
 
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine ("{0} in {1} seconds.", BytesToSize (data.Bytes), data.Seconds);
+				monitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (data.KBytes), data.Seconds);
 			};
 			data.LogTimer.Start ();
 		}
