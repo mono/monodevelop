@@ -595,7 +595,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
 		}
 	}
 	
