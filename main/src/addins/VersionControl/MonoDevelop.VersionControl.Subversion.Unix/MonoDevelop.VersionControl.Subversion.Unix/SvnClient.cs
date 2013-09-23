@@ -1234,9 +1234,27 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		class ProgressData
 		{
-			public int Bytes;
+			public long Bytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
+		}
+
+		static string BytesToSize (long bytes)
+		{
+			if (bytes == 1)
+				return "1 byte";
+			if (bytes < 1024)
+				return String.Format ("{0} bytes", bytes);
+			// 16 * 1024
+			if (bytes < 16384)
+				return String.Format ("{0:0.0} kByte", bytes / 1024.0);
+			// 1024 * 1024
+			if (bytes < 1048576)
+				return String.Format ("{0} kByte", bytes / 1024);
+			// 16 * 1024 * 1024
+			if (bytes < 16777216)
+				return String.Format ("{0:0.0} MByte", bytes / (1048576.0));
+			return String.Format ("{0} MByte", bytes / 1048576);
 		}
 
 		ProgressData progressData;
@@ -1245,11 +1263,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (updatemonitor == null)
 				return;
 
-			int currentProgress = (int)progress;
+			long currentProgress = progress;
 			if (currentProgress == 0)
 				return;
 
-			int totalProgress = (int)total;
+			long totalProgress = total;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				progressData.LogTimer.Close ();
 				return;
@@ -1260,9 +1278,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return;
 
 			progressData.LogTimer.Interval = 1000;
-			progressData.LogTimer.Elapsed += delegate (object sender, ElapsedEventArgs eea) {
+			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine ("{0} bytes in {1} seconds", progressData.Bytes, progressData.Seconds);
+				updatemonitor.Log.WriteLine ("{0} in {1} seconds.", BytesToSize (progressData.Bytes), progressData.Seconds);
 			};
 			progressData.LogTimer.Start ();
 		}

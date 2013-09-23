@@ -599,7 +599,7 @@ namespace SubversionAddinWindows
 
 		class ProgressData
 		{
-			public int Bytes;
+			public long Bytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
 		}
@@ -619,16 +619,34 @@ namespace SubversionAddinWindows
 			updateMonitor = monitor;
 		}
 
+		static string BytesToSize (long bytes)
+		{
+			if (bytes == 1)
+				return "1 byte";
+			if (bytes < 1024)
+				return String.Format ("{0} bytes", bytes);
+			// 16 * 1024
+			if (bytes < 16384)
+				return String.Format ("{0:0.0} kByte", bytes / 1024.0);
+			// 1024 * 1024
+			if (bytes < 1048576)
+				return String.Format ("{0} kByte", bytes / 1024);
+			// 16 * 1024 * 1024
+			if (bytes < 16777216)
+				return String.Format ("{0:0.0} MByte", bytes / (1048576.0));
+			return String.Format ("{0} MByte", bytes / 1048576);
+		}
+
 		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor)
 		{
 			if (monitor == null)
 				return;
 
-			int currentProgress = (int)e.Progress;
+			long currentProgress = e.Progress;
 			if (currentProgress == 0)
 				return;
 
-			int totalProgress = (int)e.TotalProgress;
+			long totalProgress = e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				data.LogTimer.Close ();
 				return;
@@ -641,7 +659,7 @@ namespace SubversionAddinWindows
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine ("{0} bytes in {1} seconds", data.Bytes, data.Seconds);
+				monitor.Log.WriteLine ("{0} in {1} seconds.", BytesToSize (data.Bytes), data.Seconds);
 			};
 			data.LogTimer.Start ();
 		}
