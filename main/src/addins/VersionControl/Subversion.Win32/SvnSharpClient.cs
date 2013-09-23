@@ -13,7 +13,7 @@ using System.Timers;
 
 namespace SubversionAddinWindows
 {
-	public class SvnSharpClient: SubversionVersionControl
+	public sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
 		static readonly bool installError;
@@ -75,7 +75,7 @@ namespace SubversionAddinWindows
 		}
 	}
 
-	public class SvnSharpBackend: SubversionBackend
+	public sealed class SvnSharpBackend: SubversionBackend
 	{
 		SvnClient client;
 		IProgressMonitor updateMonitor;

@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 		NormalUpdate = SaveLocalChanges | UpdateSubmodules,
 	}
 
-	public class GitRepository : UrlBasedRepository
+	public sealed class GitRepository : UrlBasedRepository
 	{
 		static readonly byte[] EmptyContent = new byte[0];
 

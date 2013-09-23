@@ -15,7 +15,7 @@ using System.Timers;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
-	public class SvnClient : SubversionVersionControl
+	public sealed class SvnClient : SubversionVersionControl
 	{
 		static LibApr apr;
 		static readonly Lazy<bool> isInstalled;
@@ -201,7 +201,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 	}
 
-	public class UnixSvnBackend : SubversionBackend
+	public sealed class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
 			get {

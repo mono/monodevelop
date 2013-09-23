@@ -11,7 +11,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
-	public class SubversionRepository: UrlBasedRepository
+	public sealed class SubversionRepository: UrlBasedRepository
 	{
 		public SubversionRepository ()
 		{
