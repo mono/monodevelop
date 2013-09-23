@@ -574,7 +574,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						PangoCairoHelper.ShowLayout (context, layout);
 					}
 
-					if (wi + xpos + iconWidth + 2 > listWidth) {
+					if (Math.Min (maxListWidth,  wi + xpos + iconWidth + 2) > listWidth) {
 						WidthRequest = listWidth = Math.Min (maxListWidth, wi + xpos + iconWidth + 2 + iconTextSpacing);
 						win.ResetSizes ();
 					} else {
@@ -586,7 +586,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							}
 						}
 					}
-
 
 					return true;
 				});
