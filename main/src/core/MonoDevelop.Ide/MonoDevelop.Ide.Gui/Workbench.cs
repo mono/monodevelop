@@ -96,12 +96,6 @@ namespace MonoDevelop.Ide.Gui
 					CheckFileStatus ();
 				};
 
-				TypeSystem.TypeSystemService.ProjectContentLoaded += delegate {
-					var doc = ActiveDocument;
-					if (doc != null)
-						doc.ReparseDocument ();
-				};
-
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
