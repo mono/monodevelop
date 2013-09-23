@@ -79,6 +79,7 @@ namespace SubversionAddinWindows
 	{
 		SvnClient client;
 		IProgressMonitor updateMonitor;
+		NotifData notifyData;
 		ProgressData progressData;
 
 		public override string GetTextBase (string sourcefile)
@@ -112,6 +113,18 @@ namespace SubversionAddinWindows
 			client.Authentication.SslServerTrustHandlers += new EventHandler<SvnSslServerTrustEventArgs> (AuthenticationSslServerTrustHandlers);
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
 			client.Authentication.UserNamePasswordHandlers += new EventHandler<SvnUserNamePasswordEventArgs> (AuthenticationUserNamePasswordHandlers);
+			client.Notify += delegate (object o, SvnNotifyEventArgs e) {
+				if (updateMonitor == null)
+					return;
+
+				Notify (e, notifyData, updateMonitor);
+			};
+			client.SvnError += delegate (object o, SvnErrorEventArgs a) {
+				if (updateMonitor == null)
+					return;
+
+				updateMonitor.ReportError (a.Exception.Message, a.Exception.RootCause);
+			};
 			client.Progress += delegate (object sender, SvnProgressEventArgs e) {
 				if (updateMonitor == null)
 					return;
@@ -609,15 +622,8 @@ namespace SubversionAddinWindows
 
 		void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
 		{
-			NotifData data = new NotifData ();
+			notifyData = new NotifData ();
 			progressData = new ProgressData ();
-
-			args.Notify += delegate (object o, SvnNotifyEventArgs e) {
-				Notify (e, data, monitor);
-			};
-			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
-				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
-			};
 
 			updateMonitor = monitor;
 		}
