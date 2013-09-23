@@ -340,14 +340,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 				browser.LoadUrl(homeUrl);
 		}
 		
+		readonly object queryLock = new object ();
 		/// <summary>Queries the web service to validate that the current url contains services</summary>
 		/// <param name="param">An object that contains the parameter being passed from the ThreadPool.</param>
 		void QueryService (object param)
 		{
 			string url = param as string;
 			// Set the service url
-			lock (this) {
-				if (serviceUrl == url) 
+			lock (queryLock) {
+				if (serviceUrl == url)
 					return;
 				serviceUrl = url; 
 			}
