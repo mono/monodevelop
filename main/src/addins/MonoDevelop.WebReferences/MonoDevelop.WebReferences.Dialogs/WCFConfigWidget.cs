@@ -53,6 +53,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		static readonly Type[] DefaultListTypes = {
 			typeof (Array),
+			typeof (System.Collections.ArrayList),
 			typeof (LinkedList<>),
 			typeof (List<>),
 			typeof (System.Collections.ObjectModel.Collection<>),
@@ -63,7 +64,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 		static readonly Type[] DefaultDictionaryTypes = {
 			typeof (Dictionary<, >),
 			typeof (SortedList<, >),
-			typeof (SortedDictionary<, >)
+			typeof (SortedDictionary<, >),
+			typeof (System.Collections.Hashtable),
+			typeof (System.Collections.SortedList),
+			typeof (System.Collections.Specialized.HybridDictionary),
+			typeof (System.Collections.Specialized.ListDictionary),
+			typeof (System.Collections.Specialized.OrderedDictionary)
 		};
 		
 		public bool Modified {
