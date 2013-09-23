@@ -412,10 +412,20 @@ namespace SubversionAddinWindows
 			args.Depth = descendDirs ? SvnDepth.Infinity : SvnDepth.Children;
 			args.RetrieveAllEntries = !changedItemsOnly;
 			args.RetrieveRemoteStatus = remoteStatus;
-			lock (client) 
-				client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
-					list.Add (CreateVersionInfo (repo, a));
-				});
+			lock (client) {
+				try {
+					client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
+						list.Add (CreateVersionInfo (repo, a));
+					});
+				} catch (SvnInvalidNodeKindException e) {
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY)
+						list.Add (VersionInfo.CreateUnversioned (e.File, true));
+					else if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_FILE)
+						list.Add (VersionInfo.CreateUnversioned (e.File, false));
+					else
+						throw;
+				}
+			}
 			return list;
 		}
 
