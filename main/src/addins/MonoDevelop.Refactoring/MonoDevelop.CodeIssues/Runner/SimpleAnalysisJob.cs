@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
+using System.Linq;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -49,6 +51,11 @@ namespace MonoDevelop.CodeIssues
 			this.files = files;
 		}
 
+		public bool Completed {
+			get;
+			private set;
+		}
+
 		#region IAnalysisJob implementation
 
 		public event EventHandler<CodeIssueEventArgs> CodeIssueAdded;
@@ -67,7 +74,13 @@ namespace MonoDevelop.CodeIssues
 
 		public IEnumerable<BaseCodeIssueProvider> GetIssueProviders (ProjectFile file)
 		{
-			return RefactoringService.GetInspectors (DesktopService.GetMimeTypeForUri (file.Name));
+			return RefactoringService.GetInspectors (DesktopService.GetMimeTypeForUri (file.Name))
+				.Where (provider => {
+					var severity = provider.GetSeverity ();
+					if (severity == Severity.None || !provider.GetIsEnabled ())
+						return false;
+					return true;
+				});
 		}
 
 		public void AddResult (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> issues)
@@ -75,9 +88,18 @@ namespace MonoDevelop.CodeIssues
 			OnCodeIssueAdded (new CodeIssueEventArgs(file, provider, issues));
 		}
 
+		public void AddError (ProjectFile file, BaseCodeIssueProvider provider)
+		{
+		}
+
 		public void NotifyCancelled ()
 		{
 			// empty for now
+		}
+
+		public void SetCompleted ()
+		{
+			Completed = true;
 		}
 
 		#endregion

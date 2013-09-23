@@ -143,7 +143,6 @@
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
     <Compile Include="MonoDevelop.CodeIssues\Runner\IAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\QueueItem.cs" />
     <Compile Include="MonoDevelop.CodeIssues\Runner\AnalysisJobQueue.cs" />
     <Compile Include="MonoDevelop.CodeIssues\Runner\CodeIssueEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\SolutionAnalysisJob.cs" />
@@ -151,6 +150,8 @@
     <Compile Include="MonoDevelop.CodeIssues\Runner\ProgressMonitorWrapperJob.cs" />
     <Compile Include="MonoDevelop.CodeIssues\Runner\JobContext.cs" />
     <Compile Include="MonoDevelop.CodeIssues\Runner\IJobContext.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\JobSlice.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

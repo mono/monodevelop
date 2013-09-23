@@ -97,6 +97,17 @@ namespace MonoDevelop.Refactoring
 			var one = queue.Dequeue (2);
 			Assert.AreEqual (1, one.Count(), "Wrong number of items dequeued when enough items are not available");
 		}
+
+		[Test]
+		public void SetsJobAsCompletedAfterAllSlicesHaveBeenDisposed ()
+		{
+			queue.Add (job);
+			queue.Dequeue (1).First ().Dispose ();
+			Assert.IsFalse (job.Completed, "should now be completed yet");
+			queue.Dequeue (1).First ().Dispose ();
+			Assert.IsTrue (job.Completed, "should be completed");
+
+		}
 	}
 }
 

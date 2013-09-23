@@ -59,6 +59,13 @@ namespace MonoDevelop.CodeIssues
 		void AddResult (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> issues);
 
 		/// <summary>
+		/// Notifies the job that there was an error running the specified provider on the specified file.
+		/// </summary>
+		/// <param name="file">The file.</param>
+		/// <param name="provider">The provider.</param>
+		void AddError (ProjectFile file, BaseCodeIssueProvider provider);
+
+		/// <summary>
 		/// Occurs when new code issues are added.
 		/// </summary>
 		event EventHandler<CodeIssueEventArgs> CodeIssueAdded;
@@ -71,6 +78,11 @@ namespace MonoDevelop.CodeIssues
 		/// Specifically, <see cref="AddResult"/> can be called after this method has been invoked.
 		/// </remarks>
 		void NotifyCancelled ();
+
+		/// <summary>
+		/// Notifies the job that all files have been processed.
+		/// </summary>
+		void SetCompleted ();
 	}
 }
 

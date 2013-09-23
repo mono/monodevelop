@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using MonoDevelop.Projects;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
@@ -36,7 +35,7 @@ namespace MonoDevelop.CodeIssues
 		{
 		}
 
-		static System.Collections.Generic.IList<ProjectFile> GetApplicableFiles (Solution solution)
+		static IList<ProjectFile> GetApplicableFiles (Solution solution)
 		{
 			return solution.GetAllProjects ()
 				.SelectMany (p => p.Files)

@@ -28,6 +28,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -39,13 +40,11 @@ namespace MonoDevelop.CodeIssues
 
 		IProgressMonitor monitor;
 
-		int work;
-
 		public ProgressMonitorWrapperJob (IAnalysisJob wrappedJob, string message)
 		{
 			this.wrappedJob = wrappedJob;
 			monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (message, null, false);
-			work = wrappedJob.GetFiles ().Sum (f => wrappedJob.GetIssueProviders (f).Count ());
+			var work = wrappedJob.GetFiles ().Sum (f => wrappedJob.GetIssueProviders (f).Count ());
 			monitor.BeginTask (message, work);
 		}
 
@@ -73,18 +72,38 @@ namespace MonoDevelop.CodeIssues
 		public void AddResult (ProjectFile file, BaseCodeIssueProvider provider, IEnumerable<CodeIssue> issues)
 		{
 			lock (_lock) {
-				if (monitor != null) {
-					monitor.Step (1);
-					work--;
-					if (work == 0)
-						StopReporting ();
-				}
-				wrappedJob.AddResult (file, provider, issues);
+				Step ();
+			}
+			wrappedJob.AddResult (file, provider, issues);
+		}
+
+		public void AddError (ProjectFile file, BaseCodeIssueProvider provider)
+		{
+			lock (_lock) {
+				Step ();
+			}
+			wrappedJob.AddError (file, provider);
+		}
+
+		public void SetCompleted ()
+		{
+			lock (_lock) {
+				StopReporting ();
+			}
+			wrappedJob.SetCompleted ();
+		}
+
+		void Step ()
+		{
+			if (monitor != null) {
+				monitor.Step (1);
 			}
 		}
 
 		void StopReporting ()
 		{
+			Debug.Assert (monitor != null);
+
 			monitor.Dispose ();
 			monitor = null;
 		}

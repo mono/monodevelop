@@ -103,7 +103,7 @@ namespace MonoDevelop.CodeIssues
 			view.HeadersVisible = false;
 			view.Columns.Add ("Name", textField);
 			view.SelectionMode = SelectionMode.Multiple;
-			
+
 			view.RowActivated += OnRowActivated;
 			view.RowExpanding += OnRowExpanding;
 			view.ButtonPressed += HandleButtonPressed;

@@ -37,14 +37,20 @@ namespace MonoDevelop.CodeIssues
 	/// can parse the file once and then make progress on all the jobs.
 	/// This class is not thread safe.
 	/// </summary>
-	public class QueueItem : IComparable<QueueItem>
+	public class JobSlice : IComparable<JobSlice>, IDisposable
 	{
+		bool disposed;
 		readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
 		/// <summary>
 		/// The jobs to run on the file specified in <see cref="FileName"/>.
 		/// </summary>
 		readonly IList<IAnalysisJob> jobs = new List<IAnalysisJob>();
+
+		/// <summary>
+		/// The status to report to when this slice is complete.
+		/// </summary>
+		readonly IList<JobStatus> statuses = new List<JobStatus>();
 
 		/// <summary>
 		/// The name of a file to be analyzed.
@@ -63,20 +69,30 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.QueueItem"/> class.
+		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.JobSlice"/> class.
 		/// </summary>
 		/// <param name="file">The file.</param>
-		public QueueItem (ProjectFile file)
+		public JobSlice (ProjectFile file)
 		{
 			File = file;
+		}
+
+		~JobSlice ()
+		{
+			Dispose (false);
 		}
 
 		/// <summary>
 		/// Adds a job to be run on this file.
 		/// </summary>
 		/// <param name="job">The job.</param>
-		public void AddJob (IAnalysisJob job)
+		/// <param name = "status">The status of the job.</param>
+		public void AddJob (IAnalysisJob job, JobStatus status)
 		{
+			if (disposed)
+				throw new ObjectDisposedException (GetType ().FullName);
+
+			statuses.Add (status);
 			jobs.Add (job);
 		}
 
@@ -86,6 +102,9 @@ namespace MonoDevelop.CodeIssues
 		/// <returns>The jobs.</returns>
 		public IEnumerable<IAnalysisJob> GetJobs ()
 		{
+			if (disposed)
+				throw new ObjectDisposedException (GetType ().FullName);
+
 			return new List<IAnalysisJob> (jobs);
 		}
 
@@ -96,16 +115,45 @@ namespace MonoDevelop.CodeIssues
 		/// <param name="job">The job to remove.</param>
 		public void RemoveJob(IAnalysisJob job)
 		{
+			if (disposed)
+				throw new ObjectDisposedException (GetType ().FullName);
+			
 			jobs.Remove (job);
 			if (!jobs.Any ())
 				tokenSource.Cancel ();
 		}
 
+		void MarkAsComplete ()
+		{
+			foreach (var status in statuses) {
+				status.MarkAsComplete (this);
+			}
+		}
+
 		#region IComparable implementation
 
-		public int CompareTo (QueueItem other)
+		public int CompareTo (JobSlice other)
 		{
 			return jobs.Count.CompareTo (other.jobs.Count);
+		}
+
+		#endregion
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			Dispose (true); 
+		}
+
+		protected virtual void Dispose (bool disposing)
+		{
+			if (disposed)
+				return;
+
+			MarkAsComplete ();
+
+			disposed = true;
 		}
 
 		#endregion

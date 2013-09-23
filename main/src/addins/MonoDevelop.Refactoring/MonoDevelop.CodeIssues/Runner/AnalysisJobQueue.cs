@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,7 +35,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// The list of items in the queue.
 		/// </summary>
-		readonly List<QueueItem> queueItems = new List<QueueItem>();
+		readonly List<JobSlice> slices = new List<JobSlice>();
 
 		/// <summary>
 		/// Indicates whether queueItems is sorted.
@@ -50,13 +49,15 @@ namespace MonoDevelop.CodeIssues
 		public void Add (IAnalysisJob job)
 		{
 			lock (_lock) {
+				var jobStatus = new JobStatus (job);
 				foreach (var file in job.GetFiles()) {
-					QueueItem queueItem = queueItems.FirstOrDefault (j => j.File == file);
-					if (queueItem == null) {
-						queueItem = new QueueItem (file);
-						queueItems.Add (queueItem);
+					JobSlice slice = slices.FirstOrDefault (j => j.File == file);
+					if (slice == null) {
+						slice = new JobSlice (file);
+						slices.Add (slice);
 					}
-					queueItem.AddJob (job);
+					jobStatus.AddSlice (slice);
+					slice.AddJob (job, jobStatus);
 				}
 				InvalidateSort ();
 			}
@@ -70,13 +71,13 @@ namespace MonoDevelop.CodeIssues
 		{
 			lock (_lock) {
 				foreach (var file in job.GetFiles()) {
-					QueueItem queueItem = queueItems.FirstOrDefault (j => j.File == file);
+					JobSlice queueItem = slices.FirstOrDefault (j => j.File == file);
 					if (queueItem == null) 
 						// The file might have been processed already, carry on
 						continue;
 					queueItem.RemoveJob (job);
 					if (!queueItem.GetJobs ().Any ())
-						queueItems.Remove (queueItem);
+						slices.Remove (queueItem);
 				}
 				InvalidateSort ();
 			}
@@ -86,19 +87,19 @@ namespace MonoDevelop.CodeIssues
 		/// Dequeues a number of elements less than or equal to <paramref name="maxNumber"/>.
 		/// </summary>
 		/// <param name="maxNumber">The index.</param>
-		public IEnumerable<QueueItem> Dequeue (int maxNumber)
+		public IEnumerable<JobSlice> Dequeue (int maxNumber)
 		{
 			lock (_lock) {
 				EnsureSorted ();
-				var taken = queueItems.Take (maxNumber).ToList ();
+				var taken = slices.Take (maxNumber).ToList ();
 				foreach (var item in taken)
-					queueItems.Remove (item);
+					slices.Remove (item);
 				return taken;
 			}
 		}
 
 		/// <summary>
-		/// Notifies the rest of the class that <see cref="queueItems"/> is no longer sorted.
+		/// Notifies the rest of the class that <see cref="slices"/> is no longer sorted.
 		/// </summary>
 		void InvalidateSort ()
 		{
@@ -106,12 +107,12 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		/// <summary>
-		/// Ensures that <see cref="queueItems"/> is sorted.
+		/// Ensures that <see cref="slices"/> is sorted.
 		/// </summary>
 		void EnsureSorted ()
 		{
 			if (!sorted) {
-				queueItems.Sort ();
+				slices.Sort ();
 				sorted = true;
 			}
 		}

@@ -55,7 +55,7 @@ namespace MonoDevelop.CodeIssues
 
 		readonly AnalysisJobQueue jobQueue = new AnalysisJobQueue();
 
-		readonly IList<QueueItem> currentlyRunningItems = new List<QueueItem>(Environment.ProcessorCount);
+		readonly IList<JobSlice> currentlyRunningItems = new List<JobSlice>(Environment.ProcessorCount);
 
 		public IJobContext QueueJob (IAnalysisJob job)
 		{
@@ -91,20 +91,13 @@ namespace MonoDevelop.CodeIssues
 		{
 			while (true) {
 				try {
-					QueueItem item;
 					lock (_lock) {
-						item = jobQueue.Dequeue (1).FirstOrDefault ();
-						if (item == null)
-							// TODO: Do something smarter if the queue is empty
-							return;
-						currentlyRunningItems.Add (item);
-					}
-
-					var codeIssueProviders = item.GetJobs ().SelectMany (job => job.GetIssueProviders (item.File));
-					AnalyzeFile (item, codeIssueProviders);
-
-					lock (_lock) {
-						currentlyRunningItems.Remove (item);
+						using (var slice = jobQueue.Dequeue (1).FirstOrDefault ()) {
+							if (slice == null)
+								// TODO: Do something smarter if the queue is empty
+								return;
+							AnalyzeFile (slice, slice.GetJobs ().SelectMany (job => job.GetIssueProviders (slice.File)));
+						}
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Unhandled exception", e);
@@ -113,7 +106,7 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void AnalyzeFile (QueueItem item, IEnumerable<BaseCodeIssueProvider> codeIssueProviders)
+		void AnalyzeFile (JobSlice item, IEnumerable<BaseCodeIssueProvider> codeIssueProviders)
 		{
 			var file = item.File;
 
@@ -142,15 +135,15 @@ namespace MonoDevelop.CodeIssues
 			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
 
 			foreach (var provider in codeIssueProviders) {
-				var severity = provider.GetSeverity ();
-				if (severity == Severity.None)
-					return;
+				if (item.CancellationToken.IsCancellationRequested)
+					break;
+				IList<IAnalysisJob> jobs;
+				lock (_lock)
+					jobs = item.GetJobs ().ToList ();
+				var jobsForProvider = jobs.Where (j => j.GetIssueProviders (file).Contains (provider)).ToList();
 				try {
 					var issues = provider.GetIssues (context, CancellationToken.None).ToList ();
-					IList<IAnalysisJob> jobs;
-					lock (_lock)
-						jobs = item.GetJobs ().ToList ();
-					foreach (var job in jobs.Where (j => j.GetIssueProviders (file).Contains (provider))) {
+					foreach (var job in jobsForProvider) {
 						// Call AddResult even if issues.Count == 0, to enable a job implementation to keep
 						// track of progress information.
 						job.AddResult (file, provider, issues);
@@ -158,6 +151,10 @@ namespace MonoDevelop.CodeIssues
 				} catch (OperationCanceledException) {
 					// The operation was cancelled, no-op as the user-visible parts are
 					// handled elsewhere
+				} catch (Exception e) {
+					foreach (var job in jobsForProvider) {
+						job.AddError (file, provider);
+					}
 				}
 			}
 		}
