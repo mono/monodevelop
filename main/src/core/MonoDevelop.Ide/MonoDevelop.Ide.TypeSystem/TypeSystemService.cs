@@ -507,21 +507,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string InternalGetCacheDirectory (FilePath filename)
 		{
 			CanonicalizePath (ref filename);
-			string result;
-			var nameNoExtension = Path.GetFileName (filename);
-			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+			var assemblyCacheRoot = GetAssemblyCacheRoot (filename);
 			try {
-				// First try to access what we think could be the correct file directly
-				if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (nameNoExtension), out result))
-					return result;
-				
-				if (Directory.Exists (derivedDataPath)) {
-					// next check any directory which contains the filename
-					foreach (var subDir in Directory.EnumerateDirectories (derivedDataPath, nameNoExtension + "*")) {
-						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result)) { 
-							return result;
-						}
-					}
+				if (!Directory.Exists (assemblyCacheRoot))
+					return null;
+				foreach (var dir in Directory.EnumerateDirectories (assemblyCacheRoot)) {
+					string result;
+					if (CheckCacheDirectoryIsCorrect (filename, dir, out result))
+						return result;
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
@@ -630,26 +623,48 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static string GetName (string baseName, int i)
+		static string GetAssemblyCacheRoot (string filename)
 		{
-			if (i == 0)
-				return baseName;
-			return baseName + "-" + i;
+			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+			string name = Path.GetFileName (filename);
+			return Path.Combine (derivedDataPath, name + "-" + GetStableHashCode(name).ToString ("x")); 	
+		}
+
+		/// <summary>
+		/// Retrieves a hash code for the specified string that is stable across
+		/// .NET upgrades.
+		/// 
+		/// Use this method instead of the normal <c>string.GetHashCode</c> if the hash code
+		/// is persisted to disk.
+		/// </summary>
+		static int GetStableHashCode(string text)
+		{
+			unchecked {
+				int h = 0;
+				foreach (char c in text) {
+					h = (h << 5) - h + c;
+				}
+				return h;
+			}
+		}
+
+		static IEnumerable<string> GetPossibleCacheDirNames (string baseName)
+		{
+			int i = 0;
+			while (i < 4096) {
+				yield return Path.Combine (baseName, i.ToString ());
+				i++;
+			}
+			throw new Exception ("Too many cache directories");
 		}
 
 		static string CreateCacheDirectory (FilePath fileName)
 		{
 			CanonicalizePath (ref fileName);
 			try {
-				string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-				string name = Path.GetFileName (fileName);
-				string baseName = Path.Combine (derivedDataPath, name);
-				int i = 0;
-				while (Directory.Exists (GetName (baseName, i)))
-					i++;
-				
-				string cacheDir = GetName (baseName, i);
-				
+				string cacheRoot = GetAssemblyCacheRoot (fileName);
+				string cacheDir = GetPossibleCacheDirNames (cacheRoot).First (d => !Directory.Exists (d));
+
 				Directory.CreateDirectory (cacheDir);
 
 				File.WriteAllText (
