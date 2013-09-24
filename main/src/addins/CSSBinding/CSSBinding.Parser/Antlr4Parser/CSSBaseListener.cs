@@ -27,16 +27,13 @@ using System;
 
 namespace MonoDevelop.CSSParser
 {
+
 	using IErrorNode = Antlr4.Runtime.Tree.IErrorNode;
 	using ITerminalNode = Antlr4.Runtime.Tree.ITerminalNode;
 	using IToken = Antlr4.Runtime.IToken;
 	using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
-	/// <summary>
-	/// CSS base listener
-	/// </summary>
-	public partial class CSSBaseListener : ICSSListener
-	{
+	public partial class CSSBaseListener : ICSSListener {
 		public virtual void EnterOperatorx(CSSParser.OperatorxContext context) { }
 		public virtual void ExitOperatorx(CSSParser.OperatorxContext context) { }
 
@@ -103,9 +100,6 @@ namespace MonoDevelop.CSSParser
 		public virtual void EnterCssClass(CSSParser.CssClassContext context) { }
 		public virtual void ExitCssClass(CSSParser.CssClassContext context) { }
 
-		public virtual void EnterComment(CSSParser.CommentContext context) { }
-		public virtual void ExitComment(CSSParser.CommentContext context) { }
-
 		public virtual void EnterPrio(CSSParser.PrioContext context) { }
 		public virtual void ExitPrio(CSSParser.PrioContext context) { }
 
@@ -124,3 +118,4 @@ namespace MonoDevelop.CSSParser
 		public virtual void VisitErrorNode(IErrorNode node) { }
 	}
 } // namespace CSSParserAntlr
+

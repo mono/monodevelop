@@ -30,11 +30,11 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 
 namespace MonoDevelop.CSSParser
 {
-	/// <summary>
-	/// CSS base visitor.
-	/// </summary>
-	public partial class CSSBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, ICSSVisitor<Result>
-	{
+	using Antlr4.Runtime.Tree;
+	using IToken = Antlr4.Runtime.IToken;
+	using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
+
+	public partial class CSSBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, ICSSVisitor<Result> {
 		public virtual Result VisitOperatorx(CSSParser.OperatorxContext context) { return VisitChildren(context); }
 
 		public virtual Result VisitSelector(CSSParser.SelectorContext context) { return VisitChildren(context); }
@@ -79,8 +79,6 @@ namespace MonoDevelop.CSSParser
 
 		public virtual Result VisitCssClass(CSSParser.CssClassContext context) { return VisitChildren(context); }
 
-		public virtual Result VisitComment(CSSParser.CommentContext context) { return VisitChildren(context); }
-
 		public virtual Result VisitPrio(CSSParser.PrioContext context) { return VisitChildren(context); }
 
 		public virtual Result VisitMedia(CSSParser.MediaContext context) { return VisitChildren(context); }
@@ -90,3 +88,4 @@ namespace MonoDevelop.CSSParser
 		public virtual Result VisitRuleSet(CSSParser.RuleSetContext context) { return VisitChildren(context); }
 	}
 } // namespace CSSParserAntlr
+

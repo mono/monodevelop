@@ -31,6 +31,8 @@
     <Reference Include="Antlr4.Runtime.v4.0">
       <HintPath>Reference\Antlr4\Antlr4.Runtime.v4.0.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="CSSBinding.Parser\CSSParserManager.cs" />
     <Compile Include="CSSBinding.Parser\Models\FoldingTokensVM.cs" />
     <Compile Include="CSSServices.cs" />
+    <Compile Include="CSSBinding.Parser\ErrorHandlerHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,6 +75,7 @@
     <None Include="Templates\EmptyCSSFile.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="CSSBinding.Parser\TokenNameMapper.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

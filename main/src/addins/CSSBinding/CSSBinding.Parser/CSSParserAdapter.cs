@@ -36,6 +36,7 @@ using Antlr4.Runtime.Tree;
 using DFA = Antlr4.Runtime.Dfa.DFA;
 using MonoDevelop.CSSBinding.Parse.Interfaces;
 using MonoDevelop.CSSBinding.Parse.Models;
+using CSSBinding.Parser;
 
 
 namespace MonoDevelop.CSSParser
@@ -196,8 +197,8 @@ namespace MonoDevelop.CSSParser
 
 		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
 		{
-			parserErrors.Add (new Error (ErrorType.Error, msg,line,(charPositionInLine)));
-//			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
+			parserErrors.Add (new Error (ErrorType.Error, ErrorHandlerHelper.MakeErrorMessageFriendly(msg),line,(charPositionInLine)));
+			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
 		}
 
 	}

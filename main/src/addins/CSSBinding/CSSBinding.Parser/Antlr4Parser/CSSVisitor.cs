@@ -29,12 +29,10 @@ using IToken = Antlr4.Runtime.IToken;
 
 namespace MonoDevelop.CSSParser
 {
+	using Antlr4.Runtime.Tree;
+	using IToken = Antlr4.Runtime.IToken;
 
-	/// <summary>
-	/// Iiterface CSSvisitor.
-	/// </summary>
-	public interface ICSSVisitor<Result> : IParseTreeVisitor<Result>
-	{
+	public interface ICSSVisitor<Result> : IParseTreeVisitor<Result> {
 		Result VisitOperatorx(CSSParser.OperatorxContext context);
 
 		Result VisitSelector(CSSParser.SelectorContext context);
@@ -79,8 +77,6 @@ namespace MonoDevelop.CSSParser
 
 		Result VisitCssClass(CSSParser.CssClassContext context);
 
-		Result VisitComment(CSSParser.CommentContext context);
-
 		Result VisitPrio(CSSParser.PrioContext context);
 
 		Result VisitMedia(CSSParser.MediaContext context);
@@ -90,3 +86,4 @@ namespace MonoDevelop.CSSParser
 		Result VisitRuleSet(CSSParser.RuleSetContext context);
 	}
 } // namespace CSSParserAntlr
+

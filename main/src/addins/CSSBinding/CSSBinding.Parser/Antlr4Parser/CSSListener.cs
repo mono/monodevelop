@@ -30,12 +30,10 @@ using IToken = Antlr4.Runtime.IToken;
 namespace MonoDevelop.CSSParser
 {
 
-	/// <summary>
-	/// ICSS listener.
-	/// </summary>
-	public interface ICSSListener : IParseTreeListener
-	{
+	using Antlr4.Runtime.Tree;
+	using IToken = Antlr4.Runtime.IToken;
 
+	public interface ICSSListener : IParseTreeListener {
 		void EnterOperatorx(CSSParser.OperatorxContext context);
 		void ExitOperatorx(CSSParser.OperatorxContext context);
 
@@ -102,9 +100,6 @@ namespace MonoDevelop.CSSParser
 		void EnterCssClass(CSSParser.CssClassContext context);
 		void ExitCssClass(CSSParser.CssClassContext context);
 
-		void EnterComment(CSSParser.CommentContext context);
-		void ExitComment(CSSParser.CommentContext context);
-
 		void EnterPrio(CSSParser.PrioContext context);
 		void ExitPrio(CSSParser.PrioContext context);
 
@@ -118,3 +113,4 @@ namespace MonoDevelop.CSSParser
 		void ExitRuleSet(CSSParser.RuleSetContext context);
 	}
 } // namespace CSSParserAntlr
+
