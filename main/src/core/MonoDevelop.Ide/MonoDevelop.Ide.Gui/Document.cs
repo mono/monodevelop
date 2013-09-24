@@ -821,11 +821,15 @@ namespace MonoDevelop.Ide.Gui
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || IsProjectContextInUpdate) {
+					parseTimeout = 0;
 					return false;
+				}
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
+					if (IsProjectContextInUpdate)
+						return;
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {

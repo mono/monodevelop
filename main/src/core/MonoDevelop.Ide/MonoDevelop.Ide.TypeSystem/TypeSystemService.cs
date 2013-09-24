@@ -938,7 +938,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				get {
 					if (!referencesConnected) {
 						referencesConnected = true;
+						InLoad = true;
 						ReconnectAssemblyReferences ();
+						InLoad = false;
 					}
 					return _content;
 				}
