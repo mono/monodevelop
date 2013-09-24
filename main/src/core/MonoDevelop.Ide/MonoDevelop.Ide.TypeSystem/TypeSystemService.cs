@@ -2177,7 +2177,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, result);
 					if (File.Exists (assemblyPath))
-						File.SetLastWriteTimeUtc (assemblyPath, writeTime);
+						File.SetCreationTimeUtc (assemblyPath, writeTime);
 				}
 				return result;
 			}
