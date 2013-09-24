@@ -44,20 +44,13 @@ namespace MonoDevelop.CSharp
 {
 	class UnitTestTextEditorExtension : TextEditorExtension
 	{
-		TestPad testPad;
-
 		public override void Initialize ()
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentParsed; 
 			if (IdeApp.Workbench == null)
 				return;
-			var pad = IdeApp.Workbench.GetPad<TestPad> ();
-			if (pad == null)
-				return;
-			testPad = (TestPad)pad.Content;
-			if (testPad != null)
-				testPad.TestSessionCompleted += HandleTestSessionCompleted;
+			NUnitService.Instance.TestSessionCompleted += HandleTestSessionCompleted;
 		}
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
@@ -69,10 +62,7 @@ namespace MonoDevelop.CSharp
 
 		public override void Dispose ()
 		{
-			if (testPad != null) {
-				testPad.TestSessionCompleted -= HandleTestSessionCompleted;
-			}
-
+			NUnitService.Instance.TestSessionCompleted -= HandleTestSessionCompleted;
 			RemoveHandler ();
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
@@ -397,7 +387,7 @@ namespace MonoDevelop.CSharp
 							}
 						}
 					}
-
+					// NUnitService.Instance.RunTest (test, ctx);
 					var pad = IdeApp.Workbench.GetPad<TestPad> ();
 					var content = (TestPad)pad.Content;
 					content.RunTest (test, ctx);
