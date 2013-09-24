@@ -63,7 +63,7 @@ namespace MonoDevelop.WebReferences.WCF
 			return null;
 		}
 		
-		MetadataSet ResolveWithWSMex (string url)
+		static MetadataSet ResolveWithWSMex (string url)
 		{
 			MetadataSet metadata = null;
 			try {

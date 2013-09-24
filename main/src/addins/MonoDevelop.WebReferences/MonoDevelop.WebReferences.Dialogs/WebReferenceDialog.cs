@@ -95,7 +95,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 		}
 		
-		string MakeValidId (string name)
+		static string MakeValidId (string name)
 		{
 			bool isWordStart = true;
 			for (int n=0; n<name.Length; n++) {

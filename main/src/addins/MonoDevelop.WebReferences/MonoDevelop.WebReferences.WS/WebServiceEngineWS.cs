@@ -94,7 +94,7 @@ namespace MonoDevelop.WebReferences.WS
 		}
 		
 		
-		void ImportReferenceUrlItems (DotNetProject project)
+		static void ImportReferenceUrlItems (DotNetProject project)
 		{
 			FilePath refsDir = project.BaseDirectory.Combine ("Web References");
 			
@@ -115,7 +115,7 @@ namespace MonoDevelop.WebReferences.WS
 			}
 		}
 		
-		string GetUrl (FilePath mapPath)
+		static string GetUrl (FilePath mapPath)
 		{
 			DiscoveryProtocol protocol = new DiscoveryProtocol ();
 			protocol.ReadAllUseBasePath (mapPath);

@@ -113,9 +113,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			if (type != null)
 				return type;
 			type = typeof (LinkedList<>).Assembly.GetType (name);
-			if (type != null)
-				return type;
-			return null;
+			return type;
 		}
 		
 		internal static string GetTypeName (Type type)
