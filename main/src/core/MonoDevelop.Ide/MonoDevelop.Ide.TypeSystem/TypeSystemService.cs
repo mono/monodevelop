@@ -517,15 +517,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 				if (Directory.Exists (derivedDataPath)) {
 					// next check any directory which contains the filename
-					foreach (var subDir in Directory.EnumerateDirectories (derivedDataPath).Where (s=> s.Contains (nameNoExtension))) {
-						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result)) {
+					foreach (var subDir in Directory.EnumerateDirectories (derivedDataPath, nameNoExtension + "*")) {
+						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result)) { 
 							return result;
 						}
 					}
-/*					// Finally check every remaining directory
-					foreach (var subDir in subDirs.Where (s=> !s.Contains (nameNoExtension)))
-						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
-							return result;*/
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
