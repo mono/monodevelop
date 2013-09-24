@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
 		public static void OpenFiles (IEnumerable<FileOpenInformation> files)
 		{
-			if (files.Count() == 0)
+			if (!files.Any ())
 				return;
 			
 			if (!IsInitialized) {
