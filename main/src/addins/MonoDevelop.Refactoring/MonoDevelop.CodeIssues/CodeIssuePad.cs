@@ -205,6 +205,7 @@ namespace MonoDevelop.CodeIssues
 
 		void EndPeriodicUpdate ()
 		{
+			Debug.Assert (runPeriodicUpdate);
 			runPeriodicUpdate = false;
 		}
 
@@ -249,6 +250,7 @@ namespace MonoDevelop.CodeIssues
 				CurrentJobContext.CancelJob ();
 				CurrentJobContext = null;
 			}
+			EndPeriodicUpdate ();
 		}
 
 		void SetNode (TreeNavigator navigator, IIssueTreeNode node)
