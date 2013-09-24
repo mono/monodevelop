@@ -67,7 +67,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override void BatchRun (Document document, TextLocation loc)
 		{
 			base.BatchRun (document, loc);
-			var context = new MDRefactoringContext (document, loc);
+			var context = MDRefactoringContext.Create (document, loc);
+			if (context == null)
+				return;
 			using (var script = context.StartScript ()) {
 				foreach (var action in SiblingActions) {
 					context.SetLocation (action.DocumentRegion.Begin);

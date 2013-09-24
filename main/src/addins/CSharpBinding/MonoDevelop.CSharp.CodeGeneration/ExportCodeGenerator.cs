@@ -109,7 +109,9 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				var ctx = new MDRefactoringContext (Options.Document, Options.Document.Editor.Caret.Location);
+				var ctx = MDRefactoringContext.Create (Options.Document, Options.Document.Editor.Caret.Location);
+				if (ctx == null)
+					yield break;
 				var builder = ctx.CreateTypeSystemAstBuilder ();
 
 				foreach (IMember member in includedMembers) {
