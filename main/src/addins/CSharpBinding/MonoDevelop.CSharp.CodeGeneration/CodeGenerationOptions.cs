@@ -135,7 +135,9 @@ namespace MonoDevelop.CodeGeneration
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
+			var compilation = Document.Compilation;
+			fullType = compilation.Import (fullType);
+			var csResolver = parsedFile.GetResolver (compilation, Document.Editor.Caret.Location);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);
