@@ -26,7 +26,6 @@
 //
 
 
-using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
@@ -35,7 +34,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
@@ -68,9 +66,9 @@ namespace MonoDevelop.Debugger
 		StopEvaluation
 	}
 
-	internal class DebugHandler: CommandHandler
+	class DebugHandler: CommandHandler
 	{
-		IBuildTarget GetRunTarget ()
+		static IBuildTarget GetRunTarget ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem != null ? 
 				IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem : 
@@ -131,7 +129,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ExecuteSolution (IBuildTarget target)
+		static void ExecuteSolution (IBuildTarget target)
 		{
 			if (IdeApp.ProjectOperations.CanDebug (target))
 				IdeApp.ProjectOperations.Debug (target);
@@ -139,7 +137,7 @@ namespace MonoDevelop.Debugger
 				IdeApp.ProjectOperations.Execute (target);
 		}
 
-		void ExecuteDocument (Document doc)
+		static void ExecuteDocument (Document doc)
 		{
 			if (doc.CanDebug ())
 				doc.Debug ();
@@ -206,10 +204,11 @@ namespace MonoDevelop.Debugger
 
 			if (res == AlertButton.Cancel)
 				return CheckResult.Cancel;
-			else if (res == bRun)
+
+			if (res == bRun)
 				return CheckResult.Run;
-			else
-				return CheckResult.BuildBeforeRun;
+
+			return CheckResult.BuildBeforeRun;
 		}
 			
 		internal enum CheckResult
@@ -221,7 +220,7 @@ namespace MonoDevelop.Debugger
 			
 	}
 	
-	internal class DebugEntryHandler: CommandHandler
+	class DebugEntryHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -249,7 +248,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class DebugApplicationHandler: CommandHandler
+	class DebugApplicationHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -271,7 +270,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class AttachToProcessHandler: CommandHandler
+	class AttachToProcessHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -292,7 +291,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class DetachFromProcessHandler: CommandHandler
+	class DetachFromProcessHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -308,7 +307,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class StepOverHandler : CommandHandler
+	class StepOverHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -322,7 +321,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	internal class StepIntoHandler : CommandHandler
+	class StepIntoHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -336,7 +335,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class StepOutHandler : CommandHandler
+	class StepOutHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -350,7 +349,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class PauseDebugHandler : CommandHandler
+	class PauseDebugHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -364,7 +363,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ContinueDebugHandler : CommandHandler
+	class ContinueDebugHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -378,7 +377,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ClearAllBreakpointsHandler: CommandHandler
+	class ClearAllBreakpointsHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -399,7 +398,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ToggleBreakpointHandler: CommandHandler
+	class ToggleBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -426,7 +425,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class AddTracepointHandler: CommandHandler
+	class AddTracepointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -445,7 +444,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class EnableDisableBreakpointHandler: CommandHandler
+	class EnableDisableBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -474,7 +473,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class DisableAllBreakpointsHandler: CommandHandler
+	class DisableAllBreakpointsHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -505,7 +504,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ShowDisassemblyHandler: CommandHandler
+	class ShowDisassemblyHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -518,7 +517,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class RemoveBreakpointHandler: CommandHandler
+	class RemoveBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -552,7 +551,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class NewBreakpointHandler: CommandHandler
+	class NewBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -579,7 +578,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class NewFunctionBreakpointHandler: CommandHandler
+	class NewFunctionBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -599,7 +598,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ShowBreakpointPropertiesHandler: CommandHandler
+	class ShowBreakpointPropertiesHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -633,7 +632,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	internal class ExpressionEvaluatorCommand: CommandHandler
+	class ExpressionEvaluatorCommand: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -647,7 +646,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	internal class SelectExceptionsCommand: CommandHandler
+	class SelectExceptionsCommand: CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -660,7 +659,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class ShowCurrentExecutionLineCommand : CommandHandler
+	class ShowCurrentExecutionLineCommand : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -674,7 +673,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class StopEvaluationHandler : CommandHandler
+	class StopEvaluationHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
