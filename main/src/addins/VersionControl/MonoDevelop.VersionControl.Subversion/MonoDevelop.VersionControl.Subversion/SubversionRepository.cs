@@ -262,7 +262,7 @@ namespace MonoDevelop.VersionControl.Subversion
 						FileUpdateEventArgs args = new FileUpdateEventArgs ();
 						foreach (var d in dirChain) {
 							Svn.Add (d, false, monitor);
-							args.Add (new FileUpdateEventInfo (this, dirChain [0], true));
+							args.Add (new FileUpdateEventInfo (this, d, true));
 						}
 						VersionControlService.NotifyFileStatusChanged (args);
 					}
