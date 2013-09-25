@@ -44,13 +44,13 @@ namespace CSSBinding.Parser
 				{
 					string s1 = token.Element ("ID").Value.ToString ();
 					string s2 = token.Element ("Descript").Value.ToString ();
-					Console.WriteLine("kkk :"+ s1 + " " + s2);
+//					Console.WriteLine("kkk :"+ s1 + " " + s2);
 					errorMessage = errorMessage.Replace (token.Element ("ID").Value.ToString (), token.Element ("Descript").Value.ToString ());
 				}
 				return errorMessage;
 			} catch (Exception e) {
 				Console.WriteLine (e.Message);
-				return "Error String";
+				return "?";
 			}
 
 

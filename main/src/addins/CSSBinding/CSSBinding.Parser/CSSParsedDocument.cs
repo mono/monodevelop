@@ -80,7 +80,7 @@ namespace MonoDevelop.CSSParser
 			foreach (var item in segments) {
 				CodeSegment ts = item as CodeSegment;
 
-				Console.WriteLine ("Comments: Text: "+ ts.Text+ " start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
+//				Console.WriteLine ("Comments: Text: "+ ts.Text+ " start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
 
 				comments.Add (new Comment (ts.Text) {
 //					ClosingTag = "*/",

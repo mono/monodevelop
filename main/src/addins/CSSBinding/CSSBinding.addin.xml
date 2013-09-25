@@ -57,9 +57,8 @@
 		<Parser class="MonoDevelop.CSSParser.CSSParserAdapter" mimeType = "text/css" />
 	</Extension>
 	
-	<!--<Extension path = "/MonoDevelop/Ide/CustomTools">
-		<Tool name="CSSFileGenerator" type="CSSBinding.CSSFileGenerator"/>
-		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
-	</Extension>-->
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions = ".cs" class = "CSSBinding.Completion.CSSCompletionExtension" />
+	</Extension>
 
 </Addin>

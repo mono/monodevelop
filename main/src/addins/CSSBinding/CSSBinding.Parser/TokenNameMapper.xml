@@ -119,4 +119,9 @@
     <ID>STRING</ID>
     <Descript>'string'</Descript>
   </Token>
+<!--  <Token>
+    <ID>'/<EOF/>'</ID>
+    <Descript>'end of file'</Descript>
+  </Token>-->
+  
 </Root>
