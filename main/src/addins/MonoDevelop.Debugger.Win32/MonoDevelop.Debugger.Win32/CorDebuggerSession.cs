@@ -730,55 +730,59 @@ namespace MonoDevelop.Debugger.Win32
 
 		void Step (bool into)
 		{
-			if (stepper != null) {
-				stepper.IsActive ();
-				CorFrame frame = activeThread.ActiveFrame;
-				ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
-				if (reader == null) {
-					RawContinue (into);
-					return;
-				}
-				ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
-				if (met == null) {
-					RawContinue (into);
-					return;
-				}
-
-				uint offset;
-				CorDebugMappingResult mappingResult;
-				frame.GetIP (out offset, out mappingResult);
-
-				// Find the current line
-				SequencePoint currentSeq = null;
-				foreach (SequencePoint sp in met.GetSequencePoints ()) {
-					if (sp.Offset > offset)
-						break;
-					currentSeq = sp;
-				}
-
-				if (currentSeq == null) {
-					RawContinue (into);
-					return;
-				}
-
-				// Exclude all ranges belonging to the current line
-				List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
-				SequencePoint lastSeq = null;
-				foreach (SequencePoint sp in met.GetSequencePoints ()) {
-					if (lastSeq != null && lastSeq.Line == currentSeq.Line) {
-						COR_DEBUG_STEP_RANGE r = new COR_DEBUG_STEP_RANGE ();
-						r.startOffset = (uint) lastSeq.Offset;
-						r.endOffset = (uint) sp.Offset;
-						ranges.Add (r);
+			try {
+				if (stepper != null) {
+					stepper.IsActive ();
+					CorFrame frame = activeThread.ActiveFrame;
+					ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
+					if (reader == null) {
+						RawContinue (into);
+						return;
 					}
-					lastSeq = sp;
+					ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
+					if (met == null) {
+						RawContinue (into);
+						return;
+					}
+
+					uint offset;
+					CorDebugMappingResult mappingResult;
+					frame.GetIP (out offset, out mappingResult);
+
+					// Find the current line
+					SequencePoint currentSeq = null;
+					foreach (SequencePoint sp in met.GetSequencePoints ()) {
+						if (sp.Offset > offset)
+							break;
+						currentSeq = sp;
+					}
+
+					if (currentSeq == null) {
+						RawContinue (into);
+						return;
+					}
+
+					// Exclude all ranges belonging to the current line
+					List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
+					SequencePoint lastSeq = null;
+					foreach (SequencePoint sp in met.GetSequencePoints ()) {
+						if (lastSeq != null && lastSeq.Line == currentSeq.Line) {
+							COR_DEBUG_STEP_RANGE r = new COR_DEBUG_STEP_RANGE ();
+							r.startOffset = (uint) lastSeq.Offset;
+							r.endOffset = (uint) sp.Offset;
+							ranges.Add (r);
+						}
+						lastSeq = sp;
+					}
+
+					stepper.StepRange (into, ranges.ToArray ());
+
+					ClearEvalStatus ();
+					process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+					process.Continue (false);
 				}
-
-				stepper.StepRange (into, ranges.ToArray ());
-
-				ClearEvalStatus ();
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-				process.Continue (false);
+			} catch (Exception e) {
+				OnDebuggerOutput (true, e.ToString ());
 			}
 		}
 
