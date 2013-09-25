@@ -35,6 +35,8 @@ using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -239,6 +241,43 @@ namespace MonoDevelop.Ide.CustomTools
 					ns = dnp.GetDefaultNamespace (outputFile);
 			}
 			return ns;
+		}
+
+		public static bool WaitForRunningTools (IProgressMonitor monitor)
+		{
+			IAsyncOperation[] operations;
+			lock (runningTasks) {
+				operations = runningTasks.Values.ToArray ();
+			}
+
+			if (operations.Length == 0)
+				return true;
+
+			monitor.BeginTask ("Waiting for custom tools...", operations.Length);
+
+			var evt = new AutoResetEvent (false);
+
+			monitor.CancelRequested += delegate {
+				evt.Set ();
+			};
+
+			OperationHandler checkOp = delegate {
+				monitor.Step (1);
+				if (operations.All (op => op.IsCompleted))
+					evt.Set ();
+			};
+
+			foreach (var o in operations)
+				o.Completed += checkOp;
+
+			evt.WaitOne ();
+			bool success = operations.All (op => op.Success);
+
+			if (!success)
+				monitor.ReportError ("Error in custom tool", null);
+
+			monitor.EndTask ();
+			return success;
 		}
 	}
 }
