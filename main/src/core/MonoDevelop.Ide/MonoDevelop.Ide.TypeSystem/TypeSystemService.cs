@@ -1113,9 +1113,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				set {
 					loadOperationDepth = value;
-					OnLoad (EventArgs.Empty);
 					if (loadOperationDepth < 0)
 						throw new InvalidOperationException ();
+					OnLoad (EventArgs.Empty);
 				}
 			}
 
@@ -1245,9 +1245,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				public LazyProjectLoader (ProjectContentWrapper wrapper)
 				{
 					this.wrapper = wrapper;
-					this.wrapper.LoadOperationDepth++;
 					contextTask = Task.Factory.StartNew (delegate {
 						try {
+							this.wrapper.LoadOperationDepth++;
 							var p = this.wrapper.Project;
 							var context = LoadProjectCache (p);
 
@@ -2498,6 +2498,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
 				try {
+					Context.LoadOperationDepth++;
 					foreach (var file in (FileList ?? Context.Project.Files)) {
 						var fileName = file.FilePath;
 						if (filesSkippedInParseThread.Any (f => f == fileName))
@@ -2572,7 +2573,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				Context = context,
 				FileList = fileList
 			};
-			context.LoadOperationDepth++;
 			lock (parseQueueLock) {
 				RemoveParseJob (context);
 				parseQueueIndex [context] = job;
@@ -2612,7 +2612,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				ParsingJob job;
 				if (parseQueueIndex.TryGetValue (project, out job)) {
 					parseQueueIndex.Remove (project);
-					project.LoadOperationDepth--;
 				}
 			}
 		}
