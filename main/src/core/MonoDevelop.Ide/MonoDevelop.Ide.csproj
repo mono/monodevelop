@@ -449,8 +449,14 @@
     <EmbeddedResource Include="icons\file-xml-16.png">
       <LogicalName>file-xml-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16@2x.png">
+      <LogicalName>file-xml-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32.png">
       <LogicalName>file-xml-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32@2x.png">
+      <LogicalName>file-xml-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
