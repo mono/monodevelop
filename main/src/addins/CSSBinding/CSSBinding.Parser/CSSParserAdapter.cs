@@ -73,7 +73,7 @@ namespace MonoDevelop.CSSParser
 			var x = parser.styleSheet();
 			var bodySetContext = x.bodylist().bodyset();
 
-			foldingList.cssSelectionList= AccumilateCSSElements (fileName, bodySetContext);
+			foldingList.cssSelectionList= AccumilateCSSElements (fileName, bodySetContext); // Accumilates CSSElements for folding
 
 			var errors = new List<Error> ();
 
@@ -138,8 +138,9 @@ namespace MonoDevelop.CSSParser
 			foreach (var item in commentTokens) {
 				var relativeEndCoordinates = GetFolStringAndRelEndCoord(item.Text);
 				foldingSegments.Add(new CodeSegment (relativeEndCoordinates.GetValue(0).ToString(), 
-				                                     new Location (fileName, item.Line, item.Column), 
-				                                     new Location (fileName, item.Line + Int32.Parse( relativeEndCoordinates.GetValue(1).ToString())-1, Int32.Parse( relativeEndCoordinates.GetValue(2).ToString())-1),CodeSegmentType.Comment));
+					                                     new Location (fileName, item.Line, item.Column), 
+					                                     new Location (fileName, item.Line + Int32.Parse( relativeEndCoordinates.GetValue(1).ToString())-1, 
+					              						 Int32.Parse( relativeEndCoordinates.GetValue(2).ToString())-1),CodeSegmentType.Comment));
 			}
 
 			return foldingSegments;
@@ -154,12 +155,17 @@ namespace MonoDevelop.CSSParser
 		private List<ISegment> AccumilateCSSElements (string fileName, IList<CSSParser.BodysetContext> bodySetContext)
 		{
 			List<ISegment> foldingSegments = new List<ISegment> ();
-			foreach (var item in bodySetContext)
-			{
-				string foldingString = GetSelectionFoldingText(item.GetText());
-				foldingSegments.Add(new CodeSegment(foldingString,new Location(fileName,item.Start.Line ,item.Start.Column), new Location(fileName,item.Stop.Line,item.Stop.Column),CodeSegmentType.CSSElement));
 
+			foreach (var item in bodySetContext){
+
+				string foldingString = GetSelectionFoldingText(item.GetText());
+				foldingSegments.Add(new CodeSegment(foldingString,
+					                                    new Location(fileName,item.Start.Line ,item.Start.Column), 
+					                                    new Location(fileName,item.Stop.Line,item.Stop.Column),
+					                                    CodeSegmentType.CSSElement));
+			
 			}
+
 			return foldingSegments;
 		}
 	}
@@ -198,7 +204,6 @@ namespace MonoDevelop.CSSParser
 		public void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
 		{
 			parserErrors.Add (new Error (ErrorType.Error, ErrorHandlerHelper.MakeErrorMessageFriendly(msg),line,(charPositionInLine)));
-//			Console.WriteLine ("line: "+ line + " position :" + charPositionInLine + " message:  " + msg);
 		}
 
 	}

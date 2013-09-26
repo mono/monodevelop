@@ -31,25 +31,30 @@ using System.Text;
 
 namespace CSSBinding.Parser
 {
+	/// <summary>
+	/// Error handler helper.
+	/// </summary>
 	public class ErrorHandlerHelper
 	{
 		public static string MakeErrorMessageFriendly(string rawErrorMessage)
 		{	
 			try {
+
 				string errorMessage = rawErrorMessage;
 				XDocument doc = XDocument.Load(@"..\..\src\addins\CSSBinding\CSSBinding.Parser\TokenNameMapper.xml");
 				IEnumerable<XElement> tokens = doc.Root.Elements();
-				// Read the entire XML
-				foreach (var token in tokens)
-				{
+
+
+				foreach (var token in tokens){
 					string s1 = token.Element ("ID").Value.ToString ();
 					string s2 = token.Element ("Descript").Value.ToString ();
-//					Console.WriteLine("kkk :"+ s1 + " " + s2);
+
 					errorMessage = errorMessage.Replace (token.Element ("ID").Value.ToString (), token.Element ("Descript").Value.ToString ());
 				}
+
 				return errorMessage;
+
 			} catch (Exception e) {
-				Console.WriteLine (e.Message);
 				return "?";
 			}
 

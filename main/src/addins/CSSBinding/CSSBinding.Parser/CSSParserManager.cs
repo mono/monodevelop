@@ -41,7 +41,9 @@ namespace MonoDevelop.CSSParser
 
 		public CompilerErrorCollection Errors {
 
-			get { return errors; }
+			get { 
+				return errors; 
+			}
 		}
 
 
@@ -49,6 +51,7 @@ namespace MonoDevelop.CSSParser
 		{
 			CompilerError err = new CompilerError ();
 			err.ErrorText = message;
+
 			if (location.FileName != null) {
 				err.Line = location.Line;
 				err.Column = location.Column;

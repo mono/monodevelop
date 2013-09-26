@@ -48,14 +48,12 @@ namespace MonoDevelop.CSSParser
 
 		public override IList<Error> Errors {
 			get {
-//				Console.WriteLine ("Number of css errors: " + errors.Count);
 				return errors;
 			}
 		}
 
 		public override string FileName {
-			get 
-			{
+			get {
 				return fileName;
 			}
 		}
@@ -80,17 +78,11 @@ namespace MonoDevelop.CSSParser
 			foreach (var item in segments) {
 				CodeSegment ts = item as CodeSegment;
 
-//				Console.WriteLine ("Comments: Text: "+ ts.Text+ " start line num:" + item.TagStartLocation.Line + " start comumn:" + item.TagStartLocation.Column + " end lime: ");
-
 				comments.Add (new Comment (ts.Text) {
-//					ClosingTag = "*/",
-//					OpenTag = "/*",
-//					CommentType = CommentType.,
+
 					Region = new DomRegion (ts.StartLocation.Line, (ts.StartLocation.Column +1), ts.EndLocation.Line, (ts.EndLocation.Column +2))
 				});
 
-					
-//				Console.WriteLine ("Thkajsdknadadnakndkn asdada");
 			}
 
 			return comments;
@@ -99,30 +91,22 @@ namespace MonoDevelop.CSSParser
 
 		public override IEnumerable<FoldingRegion> Foldings 
 		{
-			get 
-			{
+			get {
+
 				foreach (var region in Comments.ToFolds ()) 
 					yield return region;
-				foreach (var segment in Segments.cssSelectionList) 
-				{
+				foreach (var segment in Segments.cssSelectionList) {
 					CodeSegment ts = segment as CodeSegment;
-//					Console.WriteLine ("Text: "+ ts.Text+ "start line num:" + segment.TagStartLocation.Line + " start comumn:" + segment.TagStartLocation.Column + " end lime: " + segment.EndLocation.Line + " end column: " + segment.EndLocation.Column);
-					DomRegion region = new DomRegion (segment.StartLocation.Line, (segment.StartLocation.Column +1),
-					                                  segment.EndLocation.Line, (segment.EndLocation.Column +2));
+					DomRegion region = new DomRegion (segment.StartLocation.Line, 
+					                                  	(segment.StartLocation.Column +1),
+					                                  	segment.EndLocation.Line, 
+					                                  	(segment.EndLocation.Column +2));
 
 					yield return new FoldingRegion (ts.Text + "{...}", region, FoldType.Member, false);
 
 				}
-
-
 			}
-
 		}
-
-
 	}
-
-
-
 }
 
