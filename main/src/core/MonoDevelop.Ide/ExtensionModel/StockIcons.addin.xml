@@ -189,8 +189,8 @@
 	<StockIcon stockid = "md-toolbar-stepOut-button" resource = "toolbar-stepOutButton.png" size="Menu" />
 	<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-16.png" size="Menu"/>
 	<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-24.png" />
-	<StockIcon stockid = "md-text-file-icon" resource = "text-file-16.png" size = "Menu" />
-	<StockIcon stockid = "md-text-file-icon" resource = "text-file-32.png" size = "Dnd" />
+	<StockIcon stockid = "md-text-file-icon" resource = "file-text-16.png" size = "Menu" />
+	<StockIcon stockid = "md-text-file-icon" resource = "file-text-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:project-web-overlay-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-html-file-icon" icon = "md-text-file-icon|res:web-overlay-16.png" size = "Menu" />
 	<StockIcon stockid = "md-class-file" resource = "file-class-32.png" size = "Dnd" />

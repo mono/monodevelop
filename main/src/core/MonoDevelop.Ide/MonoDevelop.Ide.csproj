@@ -891,11 +891,17 @@
     <EmbeddedResource Include="icons\split-window-16.png">
       <LogicalName>split-window-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-file-32.png">
-      <LogicalName>text-file-32.png</LogicalName>
+    <EmbeddedResource Include="icons\file-text-32.png">
+      <LogicalName>file-text-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-file-16.png">
-      <LogicalName>text-file-16.png</LogicalName>
+    <EmbeddedResource Include="icons\file-text-32@2x.png">
+      <LogicalName>file-text-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16.png">
+      <LogicalName>file-text-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16@2x.png">
+      <LogicalName>file-text-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tip-of-the-day-16.png">
       <LogicalName>tip-of-the-day-16.png</LogicalName>
