@@ -879,11 +879,17 @@
     <EmbeddedResource Include="icons\replace-in-files-16.png">
       <LogicalName>replace-in-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-file-16.png">
-      <LogicalName>resource-file-16.png</LogicalName>
+    <EmbeddedResource Include="icons\file-resource-16.png">
+      <LogicalName>file-resource-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-file-32.png">
-      <LogicalName>resource-file-32.png</LogicalName>
+    <EmbeddedResource Include="icons\file-resource-16@2x.png">
+      <LogicalName>file-resource-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32.png">
+      <LogicalName>file-resource-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32@2x.png">
+      <LogicalName>file-resource-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\save-all-16.png">
       <LogicalName>save-all-16.png</LogicalName>
