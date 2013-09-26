@@ -891,8 +891,11 @@
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\empty-file-32.png">
-      <LogicalName>empty-file-32.png</LogicalName>
+    <EmbeddedResource Include="icons\file-generic-32.png">
+      <LogicalName>generic-generic-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32@2x.png">
+      <LogicalName>file-generic-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-prev.png">
       <LogicalName>tabbar-prev.png</LogicalName>
