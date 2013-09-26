@@ -434,6 +434,9 @@
     <EmbeddedResource Include="icons\file-interface-32.png">
       <LogicalName>file-interface-32.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32@2x.png">
+      <LogicalName>file-interface-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-struct-32.png">
       <LogicalName>file-struct-32.png</LogicalName>
     </EmbeddedResource>
