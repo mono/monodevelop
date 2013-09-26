@@ -673,7 +673,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (vadj == null)
 				return;
-			int viewableCats = InCategoryMode ? categories.Count: 0;
+			int viewableCats = InCategoryMode ? categories.Count + 1 : 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 
