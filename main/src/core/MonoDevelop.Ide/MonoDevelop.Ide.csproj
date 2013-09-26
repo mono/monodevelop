@@ -584,9 +584,6 @@
     <EmbeddedResource Include="icons\file-template-16@2x.png">
       <LogicalName>file-template-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\template-surroundwith-16.png">
-      <LogicalName>template-surroundwith-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-behavior-16.png">
       <LogicalName>text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
