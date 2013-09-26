@@ -295,9 +295,9 @@ namespace MonoDevelop.Ide
 
 			if (isCecilProjectContent && doc != null) {
 				doc.RunWhenLoaded (delegate {
-					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IUrlHandler> ();
+					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
 					if (handler != null)
-						handler.Open (entity.GetIdString ());
+						handler.Open (entity);
 				});
 			}
 		}
