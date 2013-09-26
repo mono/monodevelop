@@ -440,6 +440,9 @@
     <EmbeddedResource Include="icons\file-struct-32.png">
       <LogicalName>file-struct-32.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32@2x.png">
+      <LogicalName>file-struct-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-16.png">
       <LogicalName>file-xml-16.png</LogicalName>
     </EmbeddedResource>
