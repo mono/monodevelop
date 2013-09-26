@@ -578,8 +578,11 @@
     <EmbeddedResource Include="icons\system-software-update_22.png">
       <LogicalName>system-software-update_22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\template-16.png">
-      <LogicalName>template-16.png</LogicalName>
+    <EmbeddedResource Include="icons\file-template-16.png">
+      <LogicalName>file-template-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-template-16@2x.png">
+      <LogicalName>file-template-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\template-surroundwith-16.png">
       <LogicalName>template-surroundwith-16.png</LogicalName>
