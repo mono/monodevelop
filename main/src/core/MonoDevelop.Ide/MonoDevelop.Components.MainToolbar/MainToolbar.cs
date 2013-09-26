@@ -179,10 +179,7 @@ namespace MonoDevelop.Components.MainToolbar
 			configurationCombo.AddAttribute (ctx, "text", 0);
 
 			configurationCombosBox = new HBox (false, 8);
-
-			var configurationComboVBox = new VBox ();
-			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
-			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
+			configurationCombosBox.PackStart (configurationCombo, false, true, 0);
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
@@ -191,9 +188,7 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
 
-			var runtimeComboVBox = new VBox ();
-			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
-			configurationCombosBox.PackStart (runtimeComboVBox, false, false, 0);
+			configurationCombosBox.PackStart (runtimeCombo, false, true, 0);
 			AddWidget (configurationCombosBox);
 
 			buttonBarBox = new Alignment (0.5f, 0.5f, 0, 0);
@@ -266,7 +261,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (pattern.Pattern == null && pattern.LineNumber > 0) {
 					popup.Destroy ();
 					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null && doc != null) {
+					if (doc != null && doc.Editor != null) {
 						doc.Select ();
 						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 						doc.Editor.CenterToCaret ();

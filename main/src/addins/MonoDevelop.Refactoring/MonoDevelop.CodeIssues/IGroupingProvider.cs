@@ -33,8 +33,9 @@ namespace MonoDevelop.CodeIssues
 		/// Gets the issue group for the <see cref="IssueGroup"/> specified in <paramref name="issue"/>.
 		/// </summary>
 		/// <returns>The issue group.</returns>
+		/// <param name="parentGroup">The parent group.</param> 
 		/// <param name="issue">The <see cref="IssueSummary"/> to return a group for.</param>
-		IssueGroup GetIssueGroup(IssueSummary issue);
+		IssueGroup GetIssueGroup(IssueGroup parentGroup, IssueSummary issue);
 
 		/// <summary>
 		/// Removes the set of cached groups.

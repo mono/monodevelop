@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Gtk.HBox pageFrame;
 		Gtk.Button buttonCancel;
 		Gtk.Button buttonOk;
+		OptionsDialogHeader imageHeader;
+		Gtk.Alignment textHeader;
 
 		protected TreeStore store;
 		Dictionary<OptionsDialogSection, SectionPage> pages = new Dictionary<OptionsDialogSection, SectionPage> ();
@@ -119,8 +121,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			labelTitle = new Label ();
 			labelTitle.Xalign = 0;
-			headerBox.PackStart (labelTitle, true, true, 0);
-			headerBox.BorderWidth = 12;
+			textHeader = new Alignment (0, 0, 1, 1);
+			textHeader.Add (labelTitle);
+			textHeader.BorderWidth = 12;
+			headerBox.PackStart (textHeader, true, true, 0);
+
+			imageHeader = new OptionsDialogHeader ();
+			imageHeader.Hide ();
+			headerBox.PackStart (imageHeader.ToGtkWidget ());
 
 			var fboxHeader = new HeaderBox ();
 			fboxHeader.SetMargins (0, 1, 0, 0);
@@ -485,8 +493,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (page.Widget == null)
 				CreatePageWidget (page);
-			
-			labelTitle.Markup = "<span weight=\"bold\" size=\"large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
+
+			if (section.HeaderImage == null) {
+				labelTitle.Markup = "<span weight=\"bold\" size=\"large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
+				textHeader.Show ();
+				imageHeader.Hide ();
+			} else {
+				imageHeader.SetImage (section.HeaderImage, section.HeaderFillerImageResource);
+				imageHeader.Show ();
+				textHeader.Hide ();
+			}
 			
 			//HACK: mimetype panels can't provide stock ID for mimetype images. Give this some awareness of mimetypes.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
@@ -713,6 +729,39 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			public List<PanelInstance> Panels;
 			public Gtk.Widget Widget;
 			public Gtk.TreeIter Iter;
+		}
+	}
+
+	class OptionsDialogHeader: Xwt.Canvas
+	{
+		Xwt.Drawing.Image image, filler;
+
+		public void SetImage (Xwt.Drawing.Image image, Xwt.Drawing.Image filler)
+		{
+			this.image = image;
+			this.filler = filler;
+			QueueDraw ();
+		}
+
+		protected override void OnDraw (Xwt.Drawing.Context ctx, Xwt.Rectangle dirtyRect)
+		{
+			base.OnDraw (ctx, dirtyRect);
+			if (image != null) {
+				ctx.DrawImage (image, 0, 0);
+				if (filler != null) {
+					int fillCount = (int)Math.Ceiling ((Bounds.Width - image.Width) / filler.Width);
+					double x = image.Width;
+					while ((fillCount--) > 0) {
+						ctx.DrawImage (filler, x, 0);
+						x += filler.Width;
+					}
+				}
+			}
+		}
+
+		protected override Xwt.Size OnGetPreferredSize (Xwt.SizeConstraint widthConstraint, Xwt.SizeConstraint heightConstraint)
+		{
+			return new Xwt.Size (0, image != null ? image.Height : 0);
 		}
 	}
 }

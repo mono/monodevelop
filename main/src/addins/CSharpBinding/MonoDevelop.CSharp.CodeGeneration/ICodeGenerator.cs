@@ -31,7 +31,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.CodeGeneration
 {
-	interface ICodeGenerator
+	public interface ICodeGenerator
 	{
 		string Icon {
 			get;
@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeGeneration
 		IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView);
 	}
 	
-	interface IGenerateAction 
+	public interface IGenerateAction 
 	{
 		void GenerateCode ();
 	}

@@ -289,9 +289,12 @@ namespace Mono.TextEditor
 
 		public double LineNumberToY (int lineNumber)
 		{
+			int curLine = System.Math.Min (tree.Root.totalCount, lineNumber);
+			if (curLine < 0)
+				return 0;
 			lock (tree) {
-				var node = GetSingleLineNode (lineNumber);
-				int ln = lineNumber - 1;
+				var node = GetSingleLineNode (curLine);
+				int ln = curLine - 1;
 				while (ln > 0 && node != null && node.foldLevel > 0) {
 					node = GetSingleLineNode (ln--);
 				}
@@ -431,7 +434,7 @@ namespace Mono.TextEditor
 				if (node.count == 1)
 					return node;
 			}
-			Debug.Assert (lineNumber == node.GetLineNumber ());
+			Debug.Assert (lineNumber == node.GetLineNumber (), lineNumber + " should match node line number " + node.GetLineNumber () + " (max: " + tree.Root.totalCount + ")");
 			
 			InsertAfter (node, new HeightNode () {
 				count = node.count - 1,

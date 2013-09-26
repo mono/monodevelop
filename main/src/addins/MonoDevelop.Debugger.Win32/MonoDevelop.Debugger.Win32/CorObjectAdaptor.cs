@@ -340,21 +340,21 @@ namespace MonoDevelop.Debugger.Win32
 					argValues[n] = Box (ctx, argValues[n]);
 			}
 
-			if (method != null) {
-				CorValRef v = new CorValRef (delegate {
-					CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
-					CorValue[] args = new CorValue[argValues.Length];
-					for (int n = 0; n < args.Length; n++)
-						args[n] = argValues[n].Val;
-					return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
-				});
-				if (v.Val == null)
-					return null;
-				else
-					return v;
+			try {
+				if (method != null) {
+					CorValRef v = new CorValRef (delegate {
+						CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
+						CorValue[] args = new CorValue[argValues.Length];
+						for (int n = 0; n < args.Length; n++)
+							args[n] = argValues[n].Val;
+						return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+					});
+					return v.Val == null ? null : v;
+				}
+			} catch (Exception e) {
+				gctx.WriteDebuggerError (e);
 			}
-			else
-				throw new EvaluatorException ("Invalid method name or incompatible arguments.");
+			return null;
 		}
 
 
@@ -574,18 +574,22 @@ namespace MonoDevelop.Debugger.Win32
             CorGenericValue genVal = obj as CorGenericValue;
             if (genVal != null) {
                 Type t = Type.GetType(tname);
-				if (t != null && t.IsPrimitive && t != typeof (string)) {
-					object pval = genVal.GetValue ();
-					try {
-						pval = System.Convert.ChangeType (pval, t);
+				try {
+					if (t != null && t.IsPrimitive && t != typeof (string)) {
+						object pval = genVal.GetValue ();
+						try {
+							pval = System.Convert.ChangeType (pval, t);
+						}
+						catch {
+							// pval = DynamicCast (pval, t);
+							return null;
+						}
+						return CreateValue (ctx, pval);
 					}
-					catch {
-						return null;
+					else if (IsEnum (ctx, (CorType)type)) {
+						return CreateEnum (ctx, (CorType)type, val);
 					}
-					return CreateValue (ctx, pval);
-				}
-				else if (IsEnum (ctx, (CorType)type)) {
-					return CreateEnum (ctx, (CorType)type, val);
+				} catch {
 				}
             }
             return null;
@@ -965,11 +969,16 @@ namespace MonoDevelop.Debugger.Win32
 			if (mi == null || mi.IsStatic)
 				return null;
 
-			CorValRef vref = new CorValRef (delegate {
-				return ctx.Frame.GetArgument (0);
-			});
+			try {
+				CorValRef vref = new CorValRef (delegate {
+					return ctx.Frame.GetArgument (0);
+				});
 
-			return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
+				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
+			} catch (Exception e) {
+				gctx.WriteDebuggerError (e);
+				return null;
+			}
 		}
 
 		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext gctx)
@@ -1012,27 +1021,36 @@ namespace MonoDevelop.Debugger.Win32
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			uint offset;
 			CorDebugMappingResult mr;
-			wctx.Frame.GetIP (out offset, out mr);
-			return GetLocals (wctx, null, (int) offset, false);
+			try {
+				wctx.Frame.GetIP (out offset, out mr);
+				return GetLocals (wctx, null, (int) offset, false);
+			} catch (Exception e) {
+				ctx.WriteDebuggerError (e);
+				return null;
+			}
 		}
 		
 		public override ValueReference GetCurrentException (EvaluationContext ctx)
 		{
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			CorValue exception = wctx.Thread.CurrentException;
-			
-			if (exception != null)
-			{
-				CorHandleValue exceptionHandle = wctx.Session.GetHandle (exception);
-				
-				CorValRef vref = new CorValRef (delegate {
-					return exceptionHandle;
-				});
-				
-				return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
-			}
-			else
+
+			try {
+				if (exception != null)
+				{
+					CorHandleValue exceptionHandle = wctx.Session.GetHandle (exception);
+					
+					CorValRef vref = new CorValRef (delegate {
+						return exceptionHandle;
+					});
+					
+					return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
+				}
 				return base.GetCurrentException(ctx);
+			} catch (Exception e) {
+				ctx.WriteDebuggerError (e);
+				return null;
+			}
 		}
 
 		IEnumerable<ValueReference> GetLocals (CorEvaluationContext ctx, ISymbolScope scope, int offset, bool showHidden)

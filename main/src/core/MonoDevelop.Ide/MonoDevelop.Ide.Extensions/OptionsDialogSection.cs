@@ -28,6 +28,7 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Extensions
 {
@@ -36,9 +37,15 @@ namespace MonoDevelop.Ide.Extensions
 	[ExtensionNode ("Section")]
 	public class OptionsDialogSection: OptionsPanelNode, ICloneable
 	{
-		[NodeAttribute ()]
+		[NodeAttribute]
 		string icon;
 		
+		[NodeAttribute]
+		string headerImageResource;
+
+		[NodeAttribute]
+		string headerFillerImageResource;
+
 		public OptionsDialogSection ()
 		{
 		}
@@ -54,6 +61,19 @@ namespace MonoDevelop.Ide.Extensions
 			set {
 				icon = value;
 			}
+		}
+
+		public Xwt.Drawing.Image HeaderImage { get; set; }
+
+		public Xwt.Drawing.Image HeaderFillerImageResource { get; set; }
+
+		protected override void Read (NodeElement elem)
+		{
+			base.Read (elem);
+			if (headerImageResource != null)
+				HeaderImage = Addin.GetImageResource (headerImageResource);
+			if (headerFillerImageResource != null)
+				HeaderFillerImageResource = Addin.GetImageResource (headerFillerImageResource);
 		}
 		
 		public object Clone ()

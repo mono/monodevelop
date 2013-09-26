@@ -142,6 +142,16 @@
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\IAnalysisJob.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\AnalysisJobQueue.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\CodeIssueEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\SolutionAnalysisJob.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\SimpleAnalysisJob.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\ProgressMonitorWrapperJob.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\JobContext.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\IJobContext.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\JobSlice.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -149,6 +159,7 @@
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.CodeIssues\" />
     <Folder Include="MonoDevelop.CodeActions\" />
+    <Folder Include="MonoDevelop.CodeIssues\Runner\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

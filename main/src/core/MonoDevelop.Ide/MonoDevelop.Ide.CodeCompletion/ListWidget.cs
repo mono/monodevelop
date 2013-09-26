@@ -41,7 +41,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class ListWidget : Gtk.DrawingArea
 	{
-		int listWidth = 300;
+		int listWidth = minSize;
+		const int minSize = 300;
+		const int maxListWidth = 600;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
@@ -221,6 +223,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			oldCompletionString = completionString = null;
 			selection = 0;
 			AutoSelect = false;
+			listWidth = minSize;
 		}
 		
 		public int SelectionFilterIndex {
@@ -545,8 +548,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 						xpos += iconTextSpacing;
 					}
 					context.SetSourceColor (textColor);
-					context.MoveTo (xpos + iconWidth + 2, typos);
+					var textXPos = xpos + iconWidth + 2;
+					context.MoveTo (textXPos, typos);
+					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
+					layout.Ellipsize = EllipsizeMode.End;
 					PangoCairoHelper.ShowLayout (context, layout);
+					layout.Width = -1;
+					layout.Ellipsize = EllipsizeMode.None;
 
 					layout.SetMarkup ("");
 					if (layout.Attributes != null) {
@@ -565,8 +573,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 						PangoCairoHelper.ShowLayout (context, layout);
 					}
 
-					if (wi + xpos + iconWidth + 2 > listWidth) {
-						WidthRequest = listWidth = wi + xpos + iconWidth + 2 + iconTextSpacing;
+					if (Math.Min (maxListWidth,  wi + xpos + iconWidth + 2) > listWidth) {
+						WidthRequest = listWidth = Math.Min (maxListWidth, wi + xpos + iconWidth + 2 + iconTextSpacing);
 						win.ResetSizes ();
 					} else {
 						//workaround for the vscrollbar display - the calculated width needs to be the width ofthe render region.
@@ -577,7 +585,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							}
 						}
 					}
-
 
 					return true;
 				});
@@ -665,7 +672,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (vadj == null)
 				return;
-			int viewableCats = InCategoryMode ? categories.Count: 0;
+			int viewableCats = InCategoryMode ? categories.Count + 1 : 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 
@@ -719,6 +726,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
+			requisition.Width = listWidth;
 			if (rowHeight > 0)
 				requisition.Height += requisition.Height % rowHeight;
 		}
@@ -732,7 +740,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
 			int newHeight = rowHeight * CompletionTextEditorExtension.CompletionListRows;
-			if (Allocation.Height != listWidth || Allocation.Width != newHeight)
+			if (Allocation.Width != listWidth || Allocation.Height != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();
 		}

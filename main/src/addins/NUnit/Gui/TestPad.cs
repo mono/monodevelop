@@ -519,13 +519,9 @@ namespace MonoDevelop.NUnit
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;
 
-			var handler = TestSessionCompleted;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
 		}
 
-		public event EventHandler TestSessionCompleted;
-		
+
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{
 			base.OnSelectionChanged (sender, args);

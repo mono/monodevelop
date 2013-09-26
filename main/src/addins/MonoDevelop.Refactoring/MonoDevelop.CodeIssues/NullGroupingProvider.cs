@@ -39,7 +39,7 @@ namespace MonoDevelop.CodeIssues
 
 		#region IGroupingProvider implementation
 
-		public IssueGroup GetIssueGroup (IssueSummary issue)
+		public IssueGroup GetIssueGroup (IssueGroup parent, IssueSummary issue)
 		{
 			return null;
 		}

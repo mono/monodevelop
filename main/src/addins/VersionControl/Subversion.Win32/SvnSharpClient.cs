@@ -13,7 +13,7 @@ using System.Timers;
 
 namespace SubversionAddinWindows
 {
-	public class SvnSharpClient: SubversionVersionControl
+	public sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
 		static readonly bool installError;
@@ -75,10 +75,11 @@ namespace SubversionAddinWindows
 		}
 	}
 
-	public class SvnSharpBackend: SubversionBackend
+	public sealed class SvnSharpBackend: SubversionBackend
 	{
 		SvnClient client;
 		IProgressMonitor updateMonitor;
+		NotifData notifyData;
 		ProgressData progressData;
 
 		public override string GetTextBase (string sourcefile)
@@ -112,6 +113,18 @@ namespace SubversionAddinWindows
 			client.Authentication.SslServerTrustHandlers += new EventHandler<SvnSslServerTrustEventArgs> (AuthenticationSslServerTrustHandlers);
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
 			client.Authentication.UserNamePasswordHandlers += new EventHandler<SvnUserNamePasswordEventArgs> (AuthenticationUserNamePasswordHandlers);
+			client.Notify += delegate (object o, SvnNotifyEventArgs e) {
+				if (updateMonitor == null)
+					return;
+
+				Notify (e, notifyData, updateMonitor);
+			};
+			client.SvnError += delegate (object o, SvnErrorEventArgs a) {
+				if (updateMonitor == null)
+					return;
+
+				updateMonitor.ReportError (a.Exception.Message, a.Exception.RootCause);
+			};
 			client.Progress += delegate (object sender, SvnProgressEventArgs e) {
 				if (updateMonitor == null)
 					return;
@@ -399,10 +412,20 @@ namespace SubversionAddinWindows
 			args.Depth = descendDirs ? SvnDepth.Infinity : SvnDepth.Children;
 			args.RetrieveAllEntries = !changedItemsOnly;
 			args.RetrieveRemoteStatus = remoteStatus;
-			lock (client) 
-				client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
-					list.Add (CreateVersionInfo (repo, a));
-				});
+			lock (client) {
+				try {
+					client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
+						list.Add (CreateVersionInfo (repo, a));
+					});
+				} catch (SvnInvalidNodeKindException e) {
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY)
+						list.Add (VersionInfo.CreateUnversioned (e.File, true));
+					else if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_WC_NOT_FILE)
+						list.Add (VersionInfo.CreateUnversioned (e.File, false));
+					else
+						throw;
+				}
+			}
 			return list;
 		}
 
@@ -599,24 +622,27 @@ namespace SubversionAddinWindows
 
 		class ProgressData
 		{
-			public int Bytes;
+			// It's big enough. You don't see repos with more than 5Gb.
+			public long Remainder;
+			public long SavedProgress;
+			public long KBytes;
 			public Timer LogTimer = new Timer ();
 			public int Seconds;
 		}
 
 		void BindMonitor (SvnClientArgs args, IProgressMonitor monitor)
 		{
-			NotifData data = new NotifData ();
+			notifyData = new NotifData ();
 			progressData = new ProgressData ();
 
-			args.Notify += delegate (object o, SvnNotifyEventArgs e) {
-				Notify (e, data, monitor);
-			};
-			args.SvnError += delegate (object o, SvnErrorEventArgs a) {
-				monitor.ReportError (a.Exception.Message, a.Exception.RootCause);
-			};
-
 			updateMonitor = monitor;
+		}
+
+		static string BytesToSize (long kbytes)
+		{
+			if (kbytes < 1024)
+				return String.Format ("{0} KBytes", kbytes);
+			return String.Format ("{0:0.00} MBytes", kbytes / 1024.0);
 		}
 
 		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, IProgressMonitor monitor)
@@ -624,24 +650,34 @@ namespace SubversionAddinWindows
 			if (monitor == null)
 				return;
 
-			int currentProgress = (int)e.Progress;
-			if (currentProgress == 0)
+			long currentProgress = e.Progress;
+			if (currentProgress <= data.KBytes) {
+				if (data.SavedProgress < data.KBytes) {
+					data.SavedProgress += data.KBytes;
+				}
 				return;
+			}
 
-			int totalProgress = (int)e.TotalProgress;
+			long totalProgress = e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
 				data.LogTimer.Close ();
 				return;
 			}
 
-			data.Bytes = currentProgress;
+			data.Remainder += currentProgress % 1024;
+			if (data.Remainder >= 1024) {
+				data.SavedProgress += data.Remainder / 1024;
+				data.Remainder = data.Remainder % 1024;
+			}
+
+			data.KBytes = data.SavedProgress + currentProgress / 1024;
 			if (data.LogTimer.Enabled)
 				return;
 
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine ("{0} bytes in {1} seconds", data.Bytes, data.Seconds);
+				monitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (data.KBytes), data.Seconds);
 			};
 			data.LogTimer.Start ();
 		}

@@ -78,6 +78,7 @@ namespace MonoDevelop.CodeActions
 				Action = action;
 				Title = action.Label;
 				Result = result;
+				IdString = action.IdString;
 			}
 	
 			public override void Run (IRefactoringContext context, object script)

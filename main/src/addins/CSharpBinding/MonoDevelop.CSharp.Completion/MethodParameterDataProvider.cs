@@ -105,6 +105,14 @@ namespace MonoDevelop.CSharp.Completion
 				var cnt = left.Parameters.Count (p => !p.IsOptional) - right.Parameters.Count (p => !p.IsOptional);
 				if (cnt == 0)
 					cnt = left.Parameters.Count (p => p.IsOptional) - right.Parameters.Count (p => p.IsOptional);
+				if (cnt == 0) {
+					for (int i = 0; i < left.Parameters.Count; i++) {
+						if (left.Parameters [i].Type.Name == "NSDictionary" && right.Parameters [i].Type.Name != "NSDictionary")
+							return 1;
+						if (right.Parameters [i].Type.Name == "NSDictionary" && left.Parameters [i].Type.Name != "NSDictionary")
+							return -1;
+					}
+				}
 				return cnt;
 			}
 			return lstate.CompareTo (rstate);

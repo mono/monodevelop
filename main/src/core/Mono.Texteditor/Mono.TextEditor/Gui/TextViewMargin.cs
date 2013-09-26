@@ -2148,9 +2148,10 @@ namespace Mono.TextEditor
 					previewWindow = null;
 					return false;
 				}
-					
+				if (textEditor == null || textEditor.GdkWindow == null)
+					return false;
 				int ox = 0, oy = 0;
-				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
+				textEditor.GdkWindow.GetOrigin (out ox, out oy);
 				ox += textEditor.Allocation.X;
 				oy += textEditor.Allocation.Y;
 

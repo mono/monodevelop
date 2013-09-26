@@ -928,7 +928,10 @@ namespace MonoDevelop.VersionControl.Views
 			TreeIter oldStatusIter = TreeIter.Zero;
 			
 			// Locate the file in the status object list
-			for (oldStatusIndex=0; oldStatusIndex<statuses.Count; oldStatusIndex++) {
+			if (statuses == null)
+				return false;
+
+			for (oldStatusIndex = 0; oldStatusIndex < statuses.Count; oldStatusIndex++) {
 				if (statuses [oldStatusIndex].LocalPath == args.FilePath) {
 					found = true;
 					break;

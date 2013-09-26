@@ -619,8 +619,6 @@ namespace MonoDevelop.SourceEditor
 
 		public void Save (string fileName, Encoding encoding)
 		{
-			if (!widget.EnsureCorrectEolMarker (fileName))
-				return;
 			if (widget.HasMessageBar)
 				return;
 			
@@ -856,8 +854,10 @@ namespace MonoDevelop.SourceEditor
 			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
 			widget.TextEditor.TextArea.SizeAllocated += HandleTextEditorVAdjustmentChanged;
-			if (didLoadCleanly)
+			if (didLoadCleanly) {
 				Document.InformLoadComplete ();
+				widget.EnsureCorrectEolMarker (fileName);
+			}
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)

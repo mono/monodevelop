@@ -63,6 +63,24 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
+		// Tests false positives of repository detection.
+		public void IgnoreScatteredDotDir ()
+		{
+			var working = FileService.CreateTempDirectory ();
+
+			var path = Path.Combine (working, "test");
+			var staleGit = Path.Combine (working, ".git");
+			var staleSvn = Path.Combine (working, ".svn");
+			Directory.CreateDirectory (path);
+			Directory.CreateDirectory (staleGit);
+			Directory.CreateDirectory (staleSvn);
+
+			Assert.IsNull (VersionControlService.GetRepositoryReference ((path).TrimEnd (Path.DirectorySeparatorChar), null));
+
+			DeleteDirectory (working);
+		}
+
+		[Test]
 		// Tests VersionControlService.GetRepositoryReference.
 		public void RightRepositoryDetection ()
 		{

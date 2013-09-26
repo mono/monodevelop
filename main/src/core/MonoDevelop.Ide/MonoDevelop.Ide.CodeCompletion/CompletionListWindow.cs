@@ -608,6 +608,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			StartOffset = 0;
 			previousWidth = previousHeight = -1;
+			yPosition = WindowPositonY.None;
 			base.ResetState ();
 		}
 		

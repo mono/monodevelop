@@ -42,7 +42,7 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	class MDRefactoringContext : RefactoringContext, IRefactoringContext
+	public class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
 		public TextEditorData TextEditor {
 			get;
@@ -165,7 +165,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		internal void SetLocation (TextLocation loc)
 		{
-			location = RefactoringService.GetCorrectResolveLocation (document, loc);
+			if (document != null)
+				location = RefactoringService.GetCorrectResolveLocation (document, loc);
+			else
+				location = loc;
 		}
 
 		readonly CSharpFormattingOptions formattingOptions;
@@ -180,7 +183,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return StartScript ();
 		}
 
-		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)
+		internal static MDRefactoringContext Create (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) 
+		{
+			var shared = document.GetSharedResolver ();
+			if (shared == null)
+				return null;
+			var sharedResolver = shared.Result;
+			if (sharedResolver == null)
+				return null;
+			return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
+		}
+
+		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");

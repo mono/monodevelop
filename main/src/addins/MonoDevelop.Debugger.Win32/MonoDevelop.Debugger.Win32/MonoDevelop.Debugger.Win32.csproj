@@ -76,7 +76,6 @@
     <Compile Include="MtaRawValueString.cs" />
     <Compile Include="MtaThread.cs" />
     <Compile Include="StringAdaptor.cs" />
-    <Compile Include="CorBacktrace.cs" />
     <Compile Include="CorMethodCall.cs" />
     <Compile Include="CorValRef.cs" />
     <Compile Include="FieldReference.cs" />
@@ -88,6 +87,7 @@
     <Compile Include="CorDebuggerEngine.cs" />
     <Compile Include="CorDebuggerSession.cs" />
     <Compile Include="CorEvaluationContext.cs" />
+    <Compile Include="CorDebuggerBacktrace.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.Win32.addin.xml" />

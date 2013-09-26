@@ -445,7 +445,7 @@ namespace MonoDevelop.AssemblyBrowser
 			result.Append (')');
 		}
 		
-		static string GetIdString (IUnresolvedEntity member)
+		internal static string GetIdString (IUnresolvedEntity member)
 		{
 			StringBuilder sb;
 			

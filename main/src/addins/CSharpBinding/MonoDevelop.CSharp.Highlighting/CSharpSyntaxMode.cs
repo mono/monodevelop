@@ -129,7 +129,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
 		{
 			var workspace = IdeApp.Workspace;
-			if (workspace == null)
+			if (workspace == null || project == null)
 				yield break;
 			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration != null) {

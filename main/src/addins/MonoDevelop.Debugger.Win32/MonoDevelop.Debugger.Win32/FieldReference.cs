@@ -34,10 +34,10 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class FieldReference: ValueReference
 	{
-		CorType type;
-		FieldInfo field;
-		CorValRef thisobj;
-		CorValRef.ValueLoader loader;
+		readonly CorType type;
+		readonly FieldInfo field;
+		readonly CorValRef thisobj;
+		readonly CorValRef.ValueLoader loader;
 
 		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
@@ -69,8 +69,7 @@ namespace MonoDevelop.Debugger.Win32
 			get {
 				if (field.IsLiteral && field.IsStatic)
 					return field.GetValue (null);
-				else
-					return base.ObjectValue;
+				return base.ObjectValue;
 			}
 		}
 
@@ -116,7 +115,13 @@ namespace MonoDevelop.Debugger.Win32
 		public override ObjectValueFlags Flags {
 			get {
 				ObjectValueFlags flags = ObjectValueFlags.Field;
-				if (field.IsFamilyOrAssembly || field.IsFamilyAndAssembly)
+
+				if (field.IsStatic)
+					flags |= ObjectValueFlags.Global;
+
+				if (field.IsFamilyOrAssembly)
+					flags |= ObjectValueFlags.InternalProtected;
+				else if (field.IsFamilyAndAssembly)
 					flags |= ObjectValueFlags.Internal;
 				else if (field.IsFamily)
 					flags |= ObjectValueFlags.Protected;

@@ -200,8 +200,13 @@ namespace MonoDevelop.Refactoring
 
 		class RefactoringDocumentInfo
 		{
-			public IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
+			public IEnumerable<CodeAction> validActions;
 			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+
+			public override string ToString ()
+			{
+				return string.Format ("[RefactoringDocumentInfo: #validActions={0}, lastDocument={1}]", validActions != null ? validActions.Count ().ToString () : "null", lastDocument);
+			}
 		}
 
 
@@ -284,7 +289,7 @@ namespace MonoDevelop.Refactoring
 				lastLocation = loc;
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
-			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null) {
+			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
 				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
 				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionWidget.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionWidget.GetUsage (i.IdString)))) {
