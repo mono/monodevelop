@@ -77,7 +77,7 @@ namespace MonoDevelop.MacInterop
 		
 		public static void AECreateDescUtf8 (string value, out AEDesc result)
 		{
-			var type = (OSType)(int)CarbonEventParameterType.UnicodeText;
+			var type = (OSType)(int)CarbonEventParameterType.UTF8Text;
 			var bytes = System.Text.Encoding.UTF8.GetBytes (value);
 			CheckReturn (AECreateDesc (type, bytes, bytes.Length, out result));
 		}

@@ -309,6 +309,7 @@ namespace MonoDevelop.MacInterop
 		WindowRef = 2003398244, // 'wind'
 		Char = 1413830740, // 'TEXT'
 		UInt32 = 1835100014, // 'magn'
+		UTF8Text = 1970562616, // 'utf8'
 		UnicodeText = 1970567284, // 'utxt'
 		AEList = 1818850164, // 'list'
 		WildCard = 707406378, // '****'
