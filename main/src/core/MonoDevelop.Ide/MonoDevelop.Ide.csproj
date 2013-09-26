@@ -425,6 +425,9 @@
     <EmbeddedResource Include="icons\file-class-32.png">
       <LogicalName>file-class-32.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32@2x.png">
+      <LogicalName>file-class-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-enum-32.png">
       <LogicalName>file-enum-32.png</LogicalName>
     </EmbeddedResource>
