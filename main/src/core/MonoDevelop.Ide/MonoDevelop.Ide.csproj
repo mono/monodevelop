@@ -259,11 +259,11 @@
     <EmbeddedResource Include="icons\system-file-manager.png">
       <LogicalName>system-file-manager.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pindown.png">
-      <LogicalName>pindown.png</LogicalName>
+    <EmbeddedResource Include="icons\pin-red-down.png">
+      <LogicalName>pin-red-down.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pinup.png">
-      <LogicalName>pinup.png</LogicalName>
+    <EmbeddedResource Include="icons\pin-red-up.png">
+      <LogicalName>pin-red-up.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeEmacs.xml">
       <LogicalName>KeyBindingSchemeEmacs.xml</LogicalName>
@@ -553,14 +553,11 @@
     <EmbeddedResource Include="icons\gnome-fs-regular.png">
       <LogicalName>gnome-fs-regular.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-active.png">
-      <LogicalName>hicolor_status_16x16_pin-active.png</LogicalName>
+    <EmbeddedResource Include="icons\pin-green-down-16.png">
+      <LogicalName>pin-green-down-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-down.png">
-      <LogicalName>hicolor_status_16x16_pin-down.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\hicolor_status_16x16_pin-up.png">
-      <LogicalName>hicolor_status_16x16_pin-up.png</LogicalName>
+    <EmbeddedResource Include="icons\pin-gray-up-16.png">
+      <LogicalName>pin-gray-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\keyword-16.png">
       <LogicalName>keyword-16.png</LogicalName>
