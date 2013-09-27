@@ -963,17 +963,17 @@
     <EmbeddedResource Include="icons\statusBuild-01.png">
       <LogicalName>statusBuild-01.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSearch-04.png">
-      <LogicalName>statusSearch-04.png</LogicalName>
+    <EmbeddedResource Include="icons\status-searching-1-16.png">
+      <LogicalName>status-searching-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSearch-03.png">
-      <LogicalName>statusSearch-03.png</LogicalName>
+    <EmbeddedResource Include="icons\status-searching-2-16.png">
+      <LogicalName>status-searching-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSearch-02.png">
-      <LogicalName>statusSearch-02.png</LogicalName>
+    <EmbeddedResource Include="icons\status-searching-3-16.png">
+      <LogicalName>status-searching-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSearch-01.png">
-      <LogicalName>statusSearch-01.png</LogicalName>
+    <EmbeddedResource Include="icons\status-searching-4-16.png">
+      <LogicalName>status-searching-4-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\statusPush-06.png">
       <LogicalName>statusPush-06.png</LogicalName>
