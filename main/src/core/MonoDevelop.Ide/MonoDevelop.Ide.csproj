@@ -1011,23 +1011,23 @@
     <EmbeddedResource Include="icons\status-pulling-6-16.png">
       <LogicalName>status-pulling-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-06.png">
-      <LogicalName>statusOpen-06.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-1-16.png">
+      <LogicalName>status-opening-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-05.png">
-      <LogicalName>statusOpen-05.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-2-16.png">
+      <LogicalName>status-opening-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-04.png">
-      <LogicalName>statusOpen-04.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-3-16.png">
+      <LogicalName>status-opening-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-03.png">
-      <LogicalName>statusOpen-03.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-4-16.png">
+      <LogicalName>status-opening-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-01.png">
-      <LogicalName>statusOpen-01.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-5-16.png">
+      <LogicalName>status-opening-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusOpen-02.png">
-      <LogicalName>statusOpen-02.png</LogicalName>
+    <EmbeddedResource Include="icons\status-opening-6-16.png">
+      <LogicalName>status-opening-6-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16.png">
       <LogicalName>error-16.png</LogicalName>
