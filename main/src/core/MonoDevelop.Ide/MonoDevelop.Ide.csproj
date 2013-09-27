@@ -245,8 +245,8 @@
     <EmbeddedResource Include="icons\project-reference-overlay-16@2x.png">
       <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\parsing.png">
-      <LogicalName>parsing.png</LogicalName>
+    <EmbeddedResource Include="icons\parser-16.png">
+      <LogicalName>parser-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\GenericProject.xpt.xml">
       <LogicalName>GenericProject.xpt.xml</LogicalName>
@@ -254,8 +254,8 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-file-manager.png">
-      <LogicalName>system-file-manager.png</LogicalName>
+    <EmbeddedResource Include="icons\system-file-manager-16.png">
+      <LogicalName>system-file-manager-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-red-down.png">
       <LogicalName>pin-red-down.png</LogicalName>
@@ -389,8 +389,8 @@
     <EmbeddedResource Include="icons\code-template-24.png">
       <LogicalName>code-template-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\comment.png">
-      <LogicalName>comment.png</LogicalName>
+    <EmbeddedResource Include="icons\comment-16.png">
+      <LogicalName>comment-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\compiler-options-16.png">
       <LogicalName>compiler-options-16.png</LogicalName>
@@ -410,11 +410,11 @@
     <EmbeddedResource Include="icons\edit-find-next-24.png">
       <LogicalName>edit-find-next-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-select-all.png">
-      <LogicalName>edit-select-all.png</LogicalName>
+    <EmbeddedResource Include="icons\edit-select-all-16.png">
+      <LogicalName>edit-select-all-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\edit-select-all_22.png">
-      <LogicalName>edit-select-all_22.png</LogicalName>
+    <EmbeddedResource Include="icons\edit-select-all-22.png">
+      <LogicalName>edit-select-all-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-class-16.png">
       <LogicalName>element-class-16.png</LogicalName>
@@ -550,6 +550,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gnome-fs-regular.png">
       <LogicalName>gnome-fs-regular.png</LogicalName>
+    <EmbeddedResource Include="icons\pin-green-up-16.png">
+      <LogicalName>pin-green-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-green-down-16.png">
       <LogicalName>pin-green-down-16.png</LogicalName>
@@ -695,8 +697,8 @@
     <EmbeddedResource Include="icons\text-editor-behavior-24.png">
       <LogicalName>text-editor-behavior-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\uncomment.png">
-      <LogicalName>uncomment.png</LogicalName>
+    <EmbeddedResource Include="icons\uncomment-16.png">
+      <LogicalName>uncomment-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\letters-16.png">
       <LogicalName>letters-16.png</LogicalName>
@@ -710,8 +712,8 @@
     <EmbeddedResource Include="icons\monkey-16.png">
       <LogicalName>monkey-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\user-package.png">
-      <LogicalName>user-package.png</LogicalName>
+    <EmbeddedResource Include="icons\user-package-22.png">
+      <LogicalName>user-package-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\view-message-log-16.png">
       <LogicalName>view-message-log-16.png</LogicalName>
@@ -725,8 +727,8 @@
     <EmbeddedResource Include="icons\visibility-protected-16.png">
       <LogicalName>visibility-protected-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\visual-studio.png">
-      <LogicalName>visual-studio.png</LogicalName>
+    <EmbeddedResource Include="icons\visual-studio-16.png">
+      <LogicalName>visual-studio-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visual-style-16.png">
       <LogicalName>visual-style-16.png</LogicalName>
@@ -830,8 +832,8 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml">
       <LogicalName>ClassPadContextMenu.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\balloon.png">
-      <LogicalName>balloon.png</LogicalName>
+    <EmbeddedResource Include="icons\feedback-16.png">
+      <LogicalName>feedback-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\software-update-available-16.png">
       <LogicalName>software-update-available-16.png</LogicalName>
@@ -926,11 +928,11 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationErrorIcon.png">
       <LogicalName>notificationErrorIcon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-down.png">
-      <LogicalName>disclose-arrow-down.png</LogicalName>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16.png">
+      <LogicalName>disclose-arrow-down-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\disclose-arrow-up.png">
-      <LogicalName>disclose-arrow-up.png</LogicalName>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16.png">
+      <LogicalName>disclose-arrow-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\magnify-16.png">
       <LogicalName>magnify-16.png</LogicalName>
@@ -1044,11 +1046,11 @@
     <EmbeddedResource Include="icons\tabbar-next.png">
       <LogicalName>tabbar-next.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-prev-normal.png">
-      <LogicalName>breadcrumb-prev-normal.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-prev-normal-16.png">
+      <LogicalName>breadcrumb-prev-normal-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-normal.png">
-      <LogicalName>breadcrumb-next-normal.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-next-normal-16.png">
+      <LogicalName>breadcrumb-next-normal-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-popdown.png">
       <LogicalName>tabbar-popdown.png</LogicalName>
@@ -1143,8 +1145,8 @@
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\command.png">
-      <LogicalName>command.png</LogicalName>
+    <EmbeddedResource Include="icons\command-16.png">
+      <LogicalName>command-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoBuild-Disabled.png">
       <LogicalName>icoBuild-Disabled.png</LogicalName>
@@ -1161,8 +1163,8 @@
     <EmbeddedResource Include="icons\stop-16.png">
       <LogicalName>stop-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\broom-16.png">
-      <LogicalName>broom-16.png</LogicalName>
+    <EmbeddedResource Include="icons\clear-16.png">
+      <LogicalName>clear-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-steady-16.png">
       <LogicalName>status-steady-16.png</LogicalName>
@@ -1206,8 +1208,8 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\open_solution.png">
       <LogicalName>open_solution.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale_16x16.png">
-      <LogicalName>locale_16x16.png</LogicalName>
+    <EmbeddedResource Include="icons\locale-16.png">
+      <LogicalName>locale-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visibility-internal-and-protected-16.png">
       <LogicalName>visibility-internal-and-protected-16.png</LogicalName>
@@ -1224,8 +1226,8 @@
     <EmbeddedResource Include="icons\sdk-locations-16.png">
       <LogicalName>sdk-locations-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\errors-pad.png">
-      <LogicalName>errors-pad.png</LogicalName>
+    <EmbeddedResource Include="icons\errors-pad-16.png">
+      <LogicalName>errors-pad-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>
@@ -1251,11 +1253,11 @@
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-error-icon.png">
-      <LogicalName>bubble-error-icon.png</LogicalName>
+    <EmbeddedResource Include="icons\bubble-error-16.png">
+      <LogicalName>bubble-error-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-warning-icon.png">
-      <LogicalName>bubble-warning-icon.png</LogicalName>
+    <EmbeddedResource Include="icons\bubble-warning-16.png">
+      <LogicalName>bubble-warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issuestatus-error-16.png">
       <LogicalName>issuestatus-error-16.png</LogicalName>
