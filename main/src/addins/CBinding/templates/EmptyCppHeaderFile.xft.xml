@@ -7,7 +7,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty C++ Header File</_Name>
-		<Icon>res:text-x-chdr.32x32.png</Icon>
+		<Icon>md-file-header</Icon>
 		<_Category>General</_Category>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates an empty C++ header file.</_Description>

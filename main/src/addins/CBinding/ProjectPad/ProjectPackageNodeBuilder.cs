@@ -65,7 +65,7 @@ namespace CBinding.ProjectPad
 			nodeInfo.Label = ((Package)dataObject).Name;
 			
 			if (((Package)dataObject).IsProject)
-				nodeInfo.Icon = Xwt.Drawing.Image.FromResource ("Icons.16x16.ProjectReference");
+				nodeInfo.Icon = Context.GetIcon ("md-reference-project");
 			else
 				nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 		}

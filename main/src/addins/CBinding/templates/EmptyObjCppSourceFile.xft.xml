@@ -7,7 +7,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>Empty Objective C++ Source File</_Name>
-		<Icon>res:text-x-csrc.32x32.png</Icon>
+		<Icon>md-file-source</Icon>
 		<_Category>General</_Category>
 		<LanguageName>Objective C++</LanguageName>
 		<_Description>Creates an empty Objective C++ source file.</_Description>

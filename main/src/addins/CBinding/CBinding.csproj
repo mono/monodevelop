@@ -148,69 +148,6 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.PrivateUnion">
-      <LogicalName>Icons.16x16.PrivateUnion</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ProtectedUnion">
-      <LogicalName>Icons.16x16.ProtectedUnion</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Union">
-      <LogicalName>Icons.16x16.Union</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\update">
-      <LogicalName>update</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ProjectReference">
-      <LogicalName>Icons.16x16.ProjectReference</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-chdr.16x16.png">
-      <LogicalName>text-x-chdr.16x16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-chdr.22x22.png">
-      <LogicalName>text-x-chdr.22x22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-chdr.32x32.png">
-      <LogicalName>text-x-chdr.32x32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-chdr.48x48.png">
-      <LogicalName>text-x-chdr.48x48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++hdr.16x16.png">
-      <LogicalName>text-x-c++hdr.16x16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++hdr.22x22.png">
-      <LogicalName>text-x-c++hdr.22x22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++hdr.32x32.png">
-      <LogicalName>text-x-c++hdr.32x32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++hdr.48x48.png">
-      <LogicalName>text-x-c++hdr.48x48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-csrc.16x16.png">
-      <LogicalName>text-x-csrc.16x16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-csrc.22x22.png">
-      <LogicalName>text-x-csrc.22x22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-csrc.32x32.png">
-      <LogicalName>text-x-csrc.32x32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-csrc.48x48.png">
-      <LogicalName>text-x-csrc.48x48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++src.16x16.png">
-      <LogicalName>text-x-c++src.16x16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++src.22x22.png">
-      <LogicalName>text-x-c++src.22x22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++src.32x32.png">
-      <LogicalName>text-x-c++src.32x32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-x-c++src.48x48.png">
-      <LogicalName>text-x-c++src.48x48.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\EmptyCHeaderFile.xft.xml">
       <LogicalName>EmptyCHeaderFile.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -238,12 +175,6 @@
     <EmbeddedResource Include="templates\ConsoleCppProject.xpt.xml">
       <LogicalName>ConsoleCppProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\c-icon-32.png">
-      <LogicalName>c-icon-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\cpp-icon-32.png">
-      <LogicalName>cpp-icon-32.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
@@ -255,6 +186,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="templates\EmptyObjCppSourceFile.xft.xml">
       <LogicalName>EmptyObjCppSourceFile.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\union-private-16.png">
+      <LogicalName>union-private-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\union-protected-16.png">
+      <LogicalName>union-protected-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\union-16.png">
+      <LogicalName>union-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\update.png">
+      <LogicalName>update.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

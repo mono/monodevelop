@@ -19,12 +19,12 @@
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union" size="Menu"/>
-		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion" size="Menu"/>
-		<StockIcon stockid = "md-private-union" resource = "Icons.16x16.PrivateUnion" size="Menu"/>
-		<StockIcon stockid = "md-c-file" resource = "text-x-csrc.16x16.png" size="Menu" />
-		<StockIcon stockid = "md-h-file" resource = "text-x-chdr.16x16.png" size="Menu" />
-		<StockIcon stockid = "md-cpp-file" resource = "text-x-c++src.16x16.png" size="Menu" />
+		<StockIcon stockid = "md-union" resource = "union-16.png" size="Menu"/>
+		<StockIcon stockid = "md-protected-union" resource = "union-protected-16.png" size="Menu"/>
+		<StockIcon stockid = "md-private-union" resource = "union-private-16.png" size="Menu"/>
+		<StockIcon stockid = "md-c-file" icon = "md-file-source" size="Menu" />
+		<StockIcon stockid = "md-h-file" icon = "md-file-header" size="Menu" />
+		<StockIcon stockid = "md-cpp-file" icon = "md-file-source" size="Menu" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
