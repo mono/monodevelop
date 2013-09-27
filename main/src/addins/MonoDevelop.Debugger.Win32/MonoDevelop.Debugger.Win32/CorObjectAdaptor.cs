@@ -42,6 +42,7 @@ using SR = System.Reflection;
 using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
 using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
+using Microsoft.Samples.Debugging.Extensions;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorType type = (CorType) gtype;
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			Type t;
-			if (CorMetadataImport.CoreTypes.TryGetValue (type.Type, out t))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
 				return t.FullName;
 			try {
 				if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
@@ -517,7 +518,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (tname == ctypeName)
 				return true;
 
-			if (CorMetadataImport.CoreTypes.ContainsKey (ctype.Type))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (ctype.Type))
 				return false;
 
 			switch (ctype.Type) {
@@ -623,7 +624,7 @@ namespace MonoDevelop.Debugger.Win32
 				});
 			}
 
-			foreach (KeyValuePair<CorElementType, Type> tt in CorMetadataImport.CoreTypes) {
+			foreach (KeyValuePair<CorElementType, Type> tt in MetadataHelperFunctionsExtensions.CoreTypes) {
 				if (tt.Value == value.GetType ()) {
 					CorValue val = ctx.Eval.CreateValue (tt.Key, null);
 					CorGenericValue gv = val.CastToGenericValue ();
@@ -736,7 +737,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (obj.ExactType.Type == CorElementType.ELEMENT_TYPE_STRING)
 					return obj.CastToStringValue ();
 
-				if (CorMetadataImport.CoreTypes.ContainsKey (obj.Type)) {
+				if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (obj.Type)) {
 					CorGenericValue genVal = obj.CastToGenericValue ();
 					if (genVal != null)
 						return genVal;

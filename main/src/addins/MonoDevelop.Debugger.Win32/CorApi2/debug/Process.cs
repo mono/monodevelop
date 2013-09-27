@@ -276,45 +276,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             else
                 base.Continue(outOfBand);
         }
-
-		// [Xamarin] Output redirection.
-		internal void TrackStdOutput (Microsoft.Win32.SafeHandles.SafeFileHandle outputPipe, Microsoft.Win32.SafeHandles.SafeFileHandle errorPipe)
-		{
-			Thread outputReader = new Thread (delegate ()
-			{
-				ReadOutput (outputPipe, false);
-			});
-			outputReader.Name = "Debugger output reader";
-			outputReader.IsBackground = true;
-			outputReader.Start ();
-
-			Thread errorReader = new Thread (delegate ()
-			{
-				ReadOutput (errorPipe, true);
-			});
-			errorReader.Name = "Debugger error reader";
-			errorReader.IsBackground = true;
-			errorReader.Start ();
-		}
-
-		// [Xamarin] Output redirection.
-		void ReadOutput (Microsoft.Win32.SafeHandles.SafeFileHandle pipe, bool isStdError)
-		{
-			byte[] buffer = new byte[256];
-			int nBytesRead;
-
-			try {
-				while (true) {
-					if (!NativeMethods.ReadFile (pipe, buffer, buffer.Length, out nBytesRead, IntPtr.Zero) || nBytesRead == 0)
-						break; // pipe done - normal exit path.
-					string s = System.Text.Encoding.Default.GetString (buffer, 0, nBytesRead);
-					if (OnStdOutput != null)
-						OnStdOutput (this, new CorTargetOutputEventArgs (s, isStdError));
-				}
-			}
-			catch {
-			}
-		}
         
         // when process is first created wait till callbacks are enabled.
         private ManualResetEvent m_callbackAttachedEvent = new ManualResetEvent(false);
@@ -788,9 +749,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 m_callbacksArray[i] = (CorExceptionInCallbackEventHandler)m_callbacksArray[i] - value; 
             }
         }
-
-		// [Xamarin] Output redirection.
-		public event CorTargetOutputEventHandler OnStdOutput;
 
     } /* class Process */
 } /* namespace */

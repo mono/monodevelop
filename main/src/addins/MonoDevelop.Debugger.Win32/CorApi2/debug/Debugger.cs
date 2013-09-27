@@ -5,11 +5,8 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-#if !MDBG_FAKE_COM
 using System.Runtime.InteropServices;
-#endif
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Text;
@@ -18,6 +15,8 @@ using System.Globalization;
 
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Samples.Debugging.Extensions;
+using System.Collections.Generic;
 using Microsoft.Win32.SafeHandles;
 
 
@@ -31,8 +30,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public sealed  class CorDebugger : MarshalByRefObject
     {
         private const int MaxVersionStringLength = 256; // == MAX_PATH
-		// [Xamarin] Output redirection.
-		public const int CREATE_REDIRECT_STD = 0x40000000;
         
         public static string GetDebuggerVersionFromFile(string pathToExe)
         {
@@ -153,7 +150,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return CreateProcess (applicationName, commandLine, ".");
         }
 
-		// [Xamarin] ASP.NET Debugging.
         /**
          * Launch a process under the control of the debugger.
          *
@@ -164,16 +160,17 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                          String commandLine,
                                          String currentDirectory
                                          )
-        {
+		{
+			// [Xamarin] ASP.NET Debugging.
 			return CreateProcess (applicationName, commandLine, currentDirectory, null, 0);
         }
 
-		// [Xamarin] ASP.NET Debugging.
 		/**
 		 * Launch a process under the control of the debugger.
 		 *
 		 * Parameters are the same as the Win32 CreateProcess call.
 		 */
+		// [Xamarin] ASP.NET Debugging.
 		public CorProcess CreateProcess (
 										 String applicationName,
 										 String commandLine,
@@ -184,7 +181,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			return CreateProcess (applicationName, commandLine, currentDirectory, environment, 0);
 		}
 
-		// [Xamarin] ASP.NET Debugging and output redirection.
         /**
          * Launch a process under the control of the debugger.
          *
@@ -204,26 +200,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
             si.cb = Marshal.SizeOf(si);
 
             // initialize safe handles 
+			// [Xamarin] ASP.NET Debugging and output redirection.
 			SafeFileHandle outReadPipe = null, errorReadPipe = null;
-			if ((flags & CREATE_REDIRECT_STD) != 0) {
-				CreateHandles (si, out outReadPipe, out errorReadPipe);
-				flags &= ~CREATE_REDIRECT_STD;
-			}
-			else {
-				si.hStdInput = new SafeFileHandle (IntPtr.Zero, false);
-				si.hStdOutput = new SafeFileHandle (IntPtr.Zero, false);
-				si.hStdError = new SafeFileHandle (IntPtr.Zero, false);
-			}
-
-			IntPtr env = IntPtr.Zero;
-			if (environment != null) {
-				string senv = null;
-				foreach (KeyValuePair<string, string> var in environment) {
-					senv += var.Key + "=" + var.Value + "\0";
-				}
-				senv += "\0";
-				env = Marshal.StringToHGlobalAnsi (senv);
-			}
+			DebuggerExtensions.SetupOutputRedirection (si, ref flags, outReadPipe, errorReadPipe);
+			IntPtr env = DebuggerExtensions.SetupEnvironment (environment);
 
             CorProcess ret;
 
@@ -250,63 +230,11 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 NativeMethods.CloseHandle (pi.hThread);
             }
 
-			if (env != IntPtr.Zero)
-				Marshal.FreeHGlobal (env);
+			DebuggerExtensions.TearDownEnvironment (env);
+			DebuggerExtensions.TearDownOutputRedirection (outReadPipe, errorReadPipe, si, ret);
 
-			if (outReadPipe != null) {
-
-				// Close pipe handles (do not continue to modify the parent).
-				// You need to make sure that no handles to the write end of the
-				// output pipe are maintained in this process or else the pipe will
-				// not close when the child process exits and the ReadFile will hang.
-
-				si.hStdInput.Close ();
-				si.hStdOutput.Close ();
-				si.hStdError.Close ();
-
-				ret.TrackStdOutput (outReadPipe, errorReadPipe);
-			}
-
-			return ret;
+            return ret;
         }
-
-		// [Xamarin] Output redirection.
-		void CreateHandles (STARTUPINFO si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
-		{
-			si.dwFlags |= 0x00000100; /*STARTF_USESTDHANDLES*/
-			SECURITY_ATTRIBUTES sa = new SECURITY_ATTRIBUTES ();
-			sa.bInheritHandle = true;
-			IntPtr curProc = NativeMethods.GetCurrentProcess ();
-
-			SafeFileHandle outWritePipe, outReadPipeTmp;
-			if (!NativeMethods.CreatePipe (out outReadPipeTmp, out outWritePipe, sa, 0))
-				throw new Exception ("Pipe creation failed");
-
-			// Create the child error pipe.
-			SafeFileHandle errorWritePipe, errorReadPipeTmp;
-			if (!NativeMethods.CreatePipe (out errorReadPipeTmp, out errorWritePipe, sa, 0))
-				throw new Exception ("Pipe creation failed");
-
-			// Create new output read and error read handles. Set
-			// the Properties to FALSE. Otherwise, the child inherits the
-			// properties and, as a result, non-closeable handles to the pipes
-			// are created.
-			if (!NativeMethods.DuplicateHandle (curProc, outReadPipeTmp, curProc, out outReadPipe, 0, false, NativeMethods.DUPLICATE_SAME_ACCESS))
-				throw new Exception ("Pipe creation failed");
-			if (!NativeMethods.DuplicateHandle (curProc, errorReadPipeTmp, curProc, out errorReadPipe, 0, false, NativeMethods.DUPLICATE_SAME_ACCESS))
-				throw new Exception ("Pipe creation failed");
-
-			NativeMethods.CloseHandle (curProc);
-
-			// Close inheritable copies of the handles you do not want to be
-			// inherited.
-			outReadPipeTmp.Close ();
-			errorReadPipeTmp.Close ();
-
-			si.hStdInput = NativeMethods.GetStdHandle (NativeMethods.STD_INPUT_HANDLE);
-			si.hStdOutput = outWritePipe;
-			si.hStdError = errorWritePipe;
-		}
 
         /**
          * Launch a process under the control of the debugger.
@@ -416,7 +344,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         //
         ////////////////////////////////////////////////////////////////////////////////
 
-		// [Xamarin] .NET 4 API Version.
         // called by constructors during initialization
         private void InitFromVersion(string debuggerVersion)
         {
@@ -427,6 +354,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
             
             ICorDebug rawDebuggingAPI;
+			// [Xamarin] .NET 4 API Version.
 #if MDBG_FAKE_COM
 			// TODO: Ideally, there wouldn't be any difference in the corapi code for MDBG_FAKE_COM.
 			// This would require puting this initialization logic into the wrapper and interop assembly, which doesn't seem right.
@@ -610,60 +538,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                                    ref Guid riid, // must be "ref NativeMethods.IIDICorDebug"
                                                    [MarshalAs(UnmanagedType.Interface)]out ICorDebug debuggingInterface
                                                    );
-
-		// [Xamarin] Output redirection.
-		[
-		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
-		]
-		public static extern bool CreatePipe (out SafeFileHandle hReadPipe, out SafeFileHandle hWritePipe, SECURITY_ATTRIBUTES lpPipeAttributes, int nSize);
-
-		// [Xamarin] Output redirection.
-		[
-		 DllImport (Kernel32LibraryName)
-		]
-		public static extern bool DuplicateHandle (
-			IntPtr hSourceProcessHandle,
-			SafeFileHandle hSourceHandle,
-			IntPtr hTargetProcessHandle,
-			out SafeFileHandle lpTargetHandle,
-			uint dwDesiredAccess,
-			bool bInheritHandle,
-			uint dwOptions
-		);
-
-		// [Xamarin] Output redirection.
-		public static uint DUPLICATE_CLOSE_SOURCE = 0x00000001;
-		public static uint DUPLICATE_SAME_ACCESS = 0x00000002;
-
-		// [Xamarin] Output redirection.
-		[
-		 DllImport (Kernel32LibraryName)
-		]
-		public static extern SafeFileHandle GetStdHandle (uint nStdHandle);
-
-		// [Xamarin] Output redirection.
-		public const uint STD_INPUT_HANDLE = unchecked ((uint)-10);
-		public const uint STD_OUTPUT_HANDLE = unchecked ((uint)-11);
-		public const uint STD_ERROR_HANDLE = unchecked ((uint)-12);
-
-		// [Xamarin] Output redirection.
-		[
-		 DllImport (Kernel32LibraryName)
-		]
-		public static extern bool ReadFile (
-			SafeFileHandle hFile,
-			byte[] lpBuffer,
-			int nNumberOfBytesToRead,
-			out int lpNumberOfBytesRead,
-			IntPtr lpOverlapped
-		);
-
-		// [Xamarin] Output redirection.
-		[
-		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
-		]
-		public static extern IntPtr GetCurrentProcess ();
-	}
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     //
@@ -1968,22 +1843,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         Last = ManagedCallbackType.OnExceptionInCallback,
     }
-
-	// [Xamarin] Output redirection.
-	public class CorTargetOutputEventArgs: EventArgs
-	{
-		public CorTargetOutputEventArgs (string text, bool isStdError)
-		{
-			Text = text;
-		}
-
-		public string Text { get; set; }
-
-		public bool IsStdError { get; set; }
-	}
-
-	// [Xamarin] Output redirection.
-	public delegate void CorTargetOutputEventHandler (Object sender, CorTargetOutputEventArgs e);
 
     // Helper class to convert from COM-classic callback interface into managed args.
     // Derived classes can overide the HandleEvent method to define the handling.

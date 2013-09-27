@@ -4,46 +4,23 @@
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
 using System;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 using Microsoft.Samples.Debugging.CorDebug; 
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Samples.Debugging.Extensions;
+using System.Collections.Generic;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
     {
-		// [Xamarin] Expression evaluator.
-		public static Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
-
-		// [Xamarin] Expression evaluator.
-		static CorMetadataImport ()
-		{
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_BOOLEAN, typeof (bool));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_CHAR, typeof (char));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I1, typeof (sbyte));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U1, typeof (byte));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I2, typeof (short));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U2, typeof (ushort));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I4, typeof (int));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U4, typeof (uint));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I8, typeof (long));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U8, typeof (ulong));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R4, typeof (float));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_R8, typeof (double));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_STRING, typeof (string));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_I, typeof (IntPtr));
-			CoreTypes.Add (CorElementType.ELEMENT_TYPE_U, typeof (UIntPtr));
-		}
-
         public CorMetadataImport(CorModule managedModule)
         {
             m_importer = managedModule.GetMetaDataInterface <IMetadataImport>();
@@ -326,8 +303,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 			// [Xamarin] Expression evaluator.
 			CorCallingConvention callingConv;
-			MetadataHelperFunctions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
-			m_name = szMethodName.ToString ();
+			MetadataHelperFunctionsExtensions.ReadMethodSignature (importer, ref ppvSigBlob, out callingConv, out m_retType, out m_argTypes);
+            m_name = szMethodName.ToString();
             m_methodAttributes = (MethodAttributes)pdwAttr;
         }
 
@@ -437,10 +414,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                           m_methodToken, out paramToken,1,out count);
                     if(count!=1)
                         break;
-					MetadataParameterInfo mp = new MetadataParameterInfo (m_importer, paramToken,
-													 this, DeclaringType, m_argTypes [nArg++]);
-					if (mp.Name != string.Empty)
-						al.Add(mp);
+					var mp = new MetadataParameterInfo (m_importer, paramToken, this, m_argTypes [nArg++]);
+					if (mp.Name != String.Empty)
+						al.Add (mp);
+					//al.Add(new MetadataParameterInfo(m_importer,paramToken,
+					//                                 this,DeclaringType));
                 }
             }
             finally 
@@ -471,7 +449,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		// [Xamarin] Expression evaluator.
 		private List<Type> m_argTypes;
 		private Type m_retType;
-	}
+    }
 
     public enum MetadataTokenType
     {
@@ -593,133 +571,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     static class MetadataHelperFunctions
     {
         private static uint TokenFromRid(uint rid, uint tktype) {return (rid) | (tktype);}
-
-		// [Xamarin] Expression evaluator.
-		public static void ReadMethodSignature (IMetadataImport importer, ref IntPtr pData, out CorCallingConvention cconv, out Type retType, out List<Type> argTypes)
-		{
-			cconv = MetadataHelperFunctions.CorSigUncompressCallingConv (ref pData);
-			uint numArgs = 0;
-			// FIXME: Use number of <T>s.
-			uint types = 0;
-			if ((cconv & CorCallingConvention.Generic) == CorCallingConvention.Generic)
-				types = MetadataHelperFunctions.CorSigUncompressData (ref pData);
-
-			if (cconv != CorCallingConvention.Field)
-				numArgs = MetadataHelperFunctions.CorSigUncompressData (ref pData);
-
-			retType = MetadataHelperFunctions.ReadType (importer, ref pData);
-			argTypes = new List<Type> ();
-			for (int n = 0; n < numArgs; n++)
-				argTypes.Add (MetadataHelperFunctions.ReadType (importer, ref pData));
-		}
-
-		// [Xamarin] Expression evaluator.
-		class GenericType
-		{
-			// Used as marker for generic method args
-		}
-
-		// [Xamarin] Expression evaluator.
-		static Type ReadType (IMetadataImport importer, ref IntPtr pData)
-		{
-			CorElementType et;
-			unsafe {
-				byte* pBytes = (byte*)pData;
-				et = (CorElementType) (*pBytes);
-				pData = (IntPtr) (pBytes + 1);
-			}
-
-			switch (et)
-			{
-				case CorElementType.ELEMENT_TYPE_VOID: return typeof (void);
-				case CorElementType.ELEMENT_TYPE_BOOLEAN: return typeof (bool);
-				case CorElementType.ELEMENT_TYPE_CHAR: return typeof (char);
-				case CorElementType.ELEMENT_TYPE_I1: return typeof (sbyte);
-				case CorElementType.ELEMENT_TYPE_U1: return typeof (byte);
-				case CorElementType.ELEMENT_TYPE_I2: return typeof (short);
-				case CorElementType.ELEMENT_TYPE_U2: return typeof (ushort);
-				case CorElementType.ELEMENT_TYPE_I4: return typeof (int);
-				case CorElementType.ELEMENT_TYPE_U4: return typeof (uint);
-				case CorElementType.ELEMENT_TYPE_I8: return typeof (long);
-				case CorElementType.ELEMENT_TYPE_U8: return typeof (ulong);
-				case CorElementType.ELEMENT_TYPE_R4: return typeof (float);
-				case CorElementType.ELEMENT_TYPE_R8: return typeof (double);
-				case CorElementType.ELEMENT_TYPE_STRING: return typeof (string);
-				case CorElementType.ELEMENT_TYPE_I: return typeof (IntPtr);
-				case CorElementType.ELEMENT_TYPE_U: return typeof (UIntPtr);
-				case CorElementType.ELEMENT_TYPE_OBJECT: return typeof (object);
-
-				case CorElementType.ELEMENT_TYPE_VAR:
-				case CorElementType.ELEMENT_TYPE_MVAR:
-					// Generic args in methods not supported. Return a dummy type.
-					CorSigUncompressData (ref pData);
-					return typeof(GenericType);
-
-				case CorElementType.ELEMENT_TYPE_GENERICINST: {
-					Type t = ReadType (importer, ref pData);
-					List<Type> typeArgs = new List<Type> ();
-					uint num = CorSigUncompressData (ref pData);
-					for (int n=0; n<num; n++) {
-						typeArgs.Add (ReadType (importer, ref pData));
-					}
-					return MetadataType.MakeGeneric (t, typeArgs);
-				}
-
-				case CorElementType.ELEMENT_TYPE_PTR: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakePointer (t);
-					}
-
-				case CorElementType.ELEMENT_TYPE_BYREF: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakeByRef(t);
-					}
-
-				case CorElementType.ELEMENT_TYPE_END:
-				case CorElementType.ELEMENT_TYPE_VALUETYPE:
-				case CorElementType.ELEMENT_TYPE_CLASS: {
-						uint token = CorSigUncompressToken (ref pData);
-						return new MetadataType (importer, (int) token);
-					}
-
-				case CorElementType.ELEMENT_TYPE_ARRAY: {
-						Type t = ReadType (importer, ref pData);
-						int rank = (int)CorSigUncompressData (ref pData);
-						if (rank == 0)
-							return MetadataType.MakeArray (t, null, null);
-
-						uint numSizes = CorSigUncompressData (ref pData);
-						var sizes = new List<int> (rank);
-						for (int n = 0; n < numSizes && n < rank; n++)
-							sizes.Add ((int)CorSigUncompressData (ref pData));
-
-						uint numLoBounds = CorSigUncompressData (ref pData);
-						var loBounds = new List<int> (rank);
-						for (int n = 0; n < numLoBounds && n < rank; n++)
-							loBounds.Add ((int)CorSigUncompressData (ref pData));
-
-						return MetadataType.MakeArray (t, sizes, loBounds);
-					}
-
-				case CorElementType.ELEMENT_TYPE_SZARRAY: {
-						Type t = ReadType (importer, ref pData);
-						return MetadataType.MakeArray (t, null, null);
-					}
-
-				case CorElementType.ELEMENT_TYPE_FNPTR: {
-						CorCallingConvention cconv;
-						Type retType;
-						List<Type> argTypes;
-						ReadMethodSignature (importer, ref pData, out cconv, out retType, out argTypes);
-						return MetadataType.MakeDelegate (retType, argTypes);
-					}
-
-				case CorElementType.ELEMENT_TYPE_CMOD_REQD:
-				case CorElementType.ELEMENT_TYPE_CMOD_OPT:
-						return ReadType (importer, ref pData);
-			}
-			throw new NotSupportedException ("Unknown sig element type: " + et);
-		}
 
         // The below have been translated manually from the inline C++ helpers in cor.h
         
@@ -980,97 +831,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
             return genargs;
         }
+    }
 
-		// [Xamarin] Expression evaluator.
-		static object[] emptyAttributes = new object[0];
-
-		static internal object[] GetDebugAttributes (IMetadataImport importer, int token)
-		{
-			ArrayList attributes = new ArrayList ();
-			object attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerTypeProxyAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerDisplayAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-			attr = MetadataHelperFunctions.GetCustomAttribute (importer, token, typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute));
-			if (attr != null)
-				attributes.Add (attr);
-
-			if (attributes.Count == 0)
-				return emptyAttributes;
-			else
-				return attributes.ToArray ();
-		}
-
-		// [Xamarin] Expression evaluator.
-		static internal object GetCustomAttribute (IMetadataImport importer, int token, Type type)
-		{
-			uint sigSize = 0;
-			IntPtr ppvSig = IntPtr.Zero;
-			int hr = importer.GetCustomAttributeByName (token, type.FullName, out ppvSig, out sigSize);
-			if (hr != 0)
-				return null;
-
-			byte[] data = new byte[sigSize];
-			Marshal.Copy (ppvSig, data, 0, (int)sigSize);
-			BinaryReader br = new BinaryReader (new MemoryStream (data));
-
-			// Prolog
-			if (br.ReadUInt16 () != 1)
-				throw new InvalidOperationException ("Incorrect attribute prolog");
-
-			ConstructorInfo ctor = type.GetConstructors ()[0];
-			ParameterInfo[] pars = ctor.GetParameters ();
-
-			object[] args = new object[pars.Length];
-
-			// Fixed args
-			for (int n=0; n<pars.Length; n++)
-				args [n] = ReadValue (br, pars[n].ParameterType);
-
-			object ob = Activator.CreateInstance (type, args);
-			
-			// Named args
-			uint nargs = br.ReadUInt16 ();
-			for (; nargs > 0; nargs--) {
-				byte fieldOrProp = br.ReadByte ();
-				byte atype = br.ReadByte ();
-
-				// Boxed primitive
-				if (atype == 0x51)
-					atype = br.ReadByte ();
-				CorElementType et = (CorElementType) atype;
-				string pname = br.ReadString ();
-				object val = ReadValue (br, CorMetadataImport.CoreTypes[et]);
-
-				if (fieldOrProp == 0x53) {
-					FieldInfo fi = type.GetField (pname);
-					fi.SetValue (ob, val);
-				}
-				else {
-					PropertyInfo pi = type.GetProperty (pname);
-					pi.SetValue (ob, val, null);
-				}
-			}
-			return ob;
-		}
-
-		// [Xamarin] Expression evaluator.
-		static object ReadValue (BinaryReader br, Type type)
-		{
-			if (type.IsEnum) {
-				object ob = ReadValue (br, Enum.GetUnderlyingType (type));
-				return Enum.ToObject (type, Convert.ToInt64 (ob));
-			}
-			if (type == typeof (string) || type == typeof(Type))
-				return br.ReadString ();
-			if (type == typeof (int))
-				return br.ReadInt32 ();
-			throw new InvalidOperationException ("Can't parse value of type: " + type);
-		}
-	}
 } // namspace Microsoft.Debugger.MetadataWrapper
