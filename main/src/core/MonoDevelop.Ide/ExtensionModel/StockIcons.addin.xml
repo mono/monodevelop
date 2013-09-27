@@ -208,13 +208,13 @@
 	<StockIcon stockid = "md-package" resource = "package-x-generic-48.png" size = "Dialog" />
 	<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
 	<StockIcon stockid = "md-select-all" resource = "edit-select-all.png" size = "Menu" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update_22.png" size = "Button" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update.png" size = "Dialog" />
 	<StockIcon stockid = "md-user-package" resource = "user-package.png" />
 	<StockIcon stockid = "md-visual-studio" resource = "visual-studio.png" size="Menu" />
 	<StockIcon stockid = "md-comment" resource = "comment.png" size="Menu" />
 	<StockIcon stockid = "md-uncomment" resource = "uncomment.png" size="Menu" />
+	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" />
+	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" size = "Button" />
+	<StockIcon stockid = "md-software-update" resource = "system-software-update-48.png" size = "Dialog" />
 	<StockIcon stockid = "md-addin" resource = "plugin-16.png" />
 	<StockIcon stockid = "md-addin" resource = "plugin-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-addin" resource = "plugin-22.png" size = "Button"/>
