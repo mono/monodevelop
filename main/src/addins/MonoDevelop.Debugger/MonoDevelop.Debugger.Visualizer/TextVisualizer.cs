@@ -38,10 +38,10 @@ namespace MonoDevelop.Debugger.Visualizer
 	public class TextVisualizer: ValueVisualizer
 	{
 		const int CHUNK_SIZE = 1024;
-		
+
+		RawValueString rawString;
+		RawValueArray rawArray;
 		TextView textView;
-		RawValueString raw;
-		ObjectValue value;
 		uint idle_id;
 		int length;
 		int offset;
@@ -67,11 +67,29 @@ namespace MonoDevelop.Debugger.Visualizer
 		{
 			return true;
 		}
+
+		bool GetNextCharArrayChunk ()
+		{
+			int amount = Math.Min (length - offset, CHUNK_SIZE);
+			var chunk = rawArray.GetValues (offset, amount) as char[];
+			var iter = textView.Buffer.EndIter;
+
+			textView.Buffer.Insert (ref iter, new string (chunk));
+			offset += amount;
+
+			if (offset < length)
+				return true;
+
+			idle_id = 0;
+
+			// Remove this idle callback
+			return false;
+		}
 		
 		bool GetNextStringChunk ()
 		{
 			int amount = Math.Min (length - offset, CHUNK_SIZE);
-			string chunk = raw.Substring (offset, amount);
+			string chunk = rawString.Substring (offset, amount);
 			TextIter iter = textView.Buffer.EndIter;
 			
 			textView.Buffer.Insert (ref iter, chunk);
@@ -86,14 +104,14 @@ namespace MonoDevelop.Debugger.Visualizer
 			return false;
 		}
 
-		void PopulateTextView ()
+		void PopulateTextView (ObjectValue value)
 		{
-			if (value.TypeName == "string") {
-				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-				ops.ChunkRawStrings = true;
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.ChunkRawStrings = true;
 
-				raw = value.GetRawValue (ops) as RawValueString;
-				length = raw.Length;
+			if (value.TypeName == "string") {
+				rawString = value.GetRawValue (ops) as RawValueString;
+				length = rawString.Length;
 				offset = 0;
 
 				if (length > 0) {
@@ -105,21 +123,20 @@ namespace MonoDevelop.Debugger.Visualizer
 						}
 					};
 				}
-			} else {
-				var array = value.GetRawValue () as RawValueArray;
-				var iter = textView.Buffer.EndIter;
-				string text;
+			} else if (value.TypeName == "char[]") {
+				rawArray = value.GetRawValue () as RawValueArray;
+				length = rawArray.Length;
+				offset = 0;
 
-				switch (value.TypeName) {
-				case "char[]":
-					text = new string (array.ToArray () as char[]);
-					break;
-				default:
-					text = string.Empty;
-					break;
+				if (length > 0) {
+					idle_id = GLib.Idle.Add (GetNextCharArrayChunk);
+					textView.Destroyed += delegate {
+						if (idle_id != 0) {
+							GLib.Source.Remove (idle_id);
+							idle_id = 0;
+						}
+					};
 				}
-
-				textView.Buffer.Insert (ref iter, text);
 			}
 		}
 
@@ -148,9 +165,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			box.PackStart (check, false, false, 0);
 			box.ShowAll ();
 
-			value = val;
-
-			PopulateTextView ();
+			PopulateTextView (val);
 			
 			return box;
 		}
