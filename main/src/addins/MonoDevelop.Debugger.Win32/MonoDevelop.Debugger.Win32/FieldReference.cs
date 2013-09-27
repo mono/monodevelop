@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger.Win32
 	{
 		readonly CorType type;
 		readonly FieldInfo field;
-		readonly CorValRef thisobj;
+		CorValRef thisobj;
 		readonly CorValRef.ValueLoader loader;
 
 		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
