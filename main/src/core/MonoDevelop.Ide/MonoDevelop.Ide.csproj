@@ -500,11 +500,14 @@
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic.png">
-      <LogicalName>package-x-generic.png</LogicalName>
+    <EmbeddedResource Include="icons\package-x-generic-22.png">
+      <LogicalName>package-x-generic-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic_22.png">
-      <LogicalName>package-x-generic_22.png</LogicalName>
+    <EmbeddedResource Include="icons\package-x-generic-32.png">
+      <LogicalName>package-x-generic-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-x-generic-48.png">
+      <LogicalName>package-x-generic-48.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-task-list-16.png">
       <LogicalName>pad-task-list-16.png</LogicalName>
@@ -715,9 +718,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Commands\CommandsExtensionModel.addin.xml">
       <LogicalName>CommandsExtensionModel.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic_32.png">
-      <LogicalName>package-x-generic_32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\text-quickfix-16.png">
       <LogicalName>text-quickfix-16.png</LogicalName>
