@@ -993,23 +993,23 @@
     <EmbeddedResource Include="icons\status-pushing-6-16.png">
       <LogicalName>status-pushing-6-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-06.png">
-      <LogicalName>statusPull-06.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-1-16.png">
+      <LogicalName>status-pulling-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-05.png">
-      <LogicalName>statusPull-05.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-2-16.png">
+      <LogicalName>status-pulling-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-04.png">
-      <LogicalName>statusPull-04.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-3-16.png">
+      <LogicalName>status-pulling-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-03.png">
-      <LogicalName>statusPull-03.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-4-16.png">
+      <LogicalName>status-pulling-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-02.png">
-      <LogicalName>statusPull-02.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-5-16.png">
+      <LogicalName>status-pulling-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPull-01.png">
-      <LogicalName>statusPull-01.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pulling-6-16.png">
+      <LogicalName>status-pulling-6-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\statusOpen-06.png">
       <LogicalName>statusOpen-06.png</LogicalName>
