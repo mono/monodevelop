@@ -279,13 +279,13 @@
 	<StockIcon stockid = "md-breadcrumb-prev" resource = "breadcrumb-prev-normal.png" size="Menu" />
 	<StockIcon stockid = "md-status-build" animation = "res:statusBuild-01.png;res:statusBuild-02.png;res:statusBuild-03.png;res:statusBuild-04.png;res:statusBuild-05.png" size="Menu" />
 	<StockIcon stockid = "md-status-download" animation = "res:statusPull-01.png;res:statusPull-02.png;res:statusPull-03.png;res:statusPull-04.png;res:statusPull-05.png;res:statusPull-06.png" size="Menu" />
-	<StockIcon stockid = "md-status-upload" animation = "res:statusPush-01.png;res:statusPush-02.png;res:statusPush-03.png;res:statusPush-04.png;res:statusPush-05.png;res:statusPush-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-open" animation = "res:statusOpen-01.png;res:statusOpen-02.png;res:statusOpen-03.png;res:statusOpen-04.png;res:statusOpen-05.png;res:statusOpen-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-connecting" animation = "res:statusConnecting-01.png;res:statusConnecting-02.png;res:statusConnecting-03.png;res:statusConnecting-04.png;res:statusConnecting-05.png;res:statusConnecting-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-steady" icon = "res:statusSteady.png" size="Menu" />
 	<StockIcon stockid = "md-status-success" icon = "res:statusSuccess.png" size="Menu" />
 	<StockIcon stockid = "md-status-warning" icon = "res:statusWarning.png" size="Menu" />
 	<StockIcon stockid = "md-status-error" icon = "res:statusError.png" size="Menu" />
+	<StockIcon stockid = "md-status-upload" animation = "res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-search" animation = "res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
 	<StockIcon stockid = "md-error" resource = "error-16.png" size="Menu" />
 	<StockIcon stockid = "md-error" icon = "gtk-dialog-error" size="Dialog" />

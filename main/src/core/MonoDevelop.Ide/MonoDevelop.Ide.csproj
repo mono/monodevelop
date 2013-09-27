@@ -975,23 +975,23 @@
     <EmbeddedResource Include="icons\status-searching-4-16.png">
       <LogicalName>status-searching-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-06.png">
-      <LogicalName>statusPush-06.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-1-16.png">
+      <LogicalName>status-pushing-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-05.png">
-      <LogicalName>statusPush-05.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-2-16.png">
+      <LogicalName>status-pushing-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-04.png">
-      <LogicalName>statusPush-04.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-3-16.png">
+      <LogicalName>status-pushing-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-03.png">
-      <LogicalName>statusPush-03.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-4-16.png">
+      <LogicalName>status-pushing-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-02.png">
-      <LogicalName>statusPush-02.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-5-16.png">
+      <LogicalName>status-pushing-5-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusPush-01.png">
-      <LogicalName>statusPush-01.png</LogicalName>
+    <EmbeddedResource Include="icons\status-pushing-6-16.png">
+      <LogicalName>status-pushing-6-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\statusPull-06.png">
       <LogicalName>statusPull-06.png</LogicalName>
