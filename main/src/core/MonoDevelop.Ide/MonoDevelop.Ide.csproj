@@ -948,20 +948,20 @@
     <EmbeddedResource Include="icons\tabbar-popdown.png">
       <LogicalName>tabbar-popdown.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusBuild-05.png">
-      <LogicalName>statusBuild-05.png</LogicalName>
+    <EmbeddedResource Include="icons\status-building-1-16.png">
+      <LogicalName>status-building-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusBuild-04.png">
-      <LogicalName>statusBuild-04.png</LogicalName>
+    <EmbeddedResource Include="icons\status-building-2-16.png">
+      <LogicalName>status-building-2-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusBuild-03.png">
-      <LogicalName>statusBuild-03.png</LogicalName>
+    <EmbeddedResource Include="icons\status-building-3-16.png">
+      <LogicalName>status-building-3-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusBuild-02.png">
-      <LogicalName>statusBuild-02.png</LogicalName>
+    <EmbeddedResource Include="icons\status-building-4-16.png">
+      <LogicalName>status-building-4-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusBuild-01.png">
-      <LogicalName>statusBuild-01.png</LogicalName>
+    <EmbeddedResource Include="icons\status-building-5-16.png">
+      <LogicalName>status-building-5-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-searching-1-16.png">
       <LogicalName>status-searching-1-16.png</LogicalName>
