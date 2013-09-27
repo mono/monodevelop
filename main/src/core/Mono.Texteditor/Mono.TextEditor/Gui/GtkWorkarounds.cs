@@ -559,20 +559,24 @@ namespace Mono.TextEditor
 			unchecked {
 				id = (((ulong)(uint)evt.State) | (((ulong)evt.HardwareKeycode) << 32) | (((ulong)evt.Group) << 48));
 			}
-			
+
+			bool remapKey = Platform.IsWindows && evt.HardwareKeycode == 0;
 			MappedKeys mapped;
-			if (!mappedKeys.TryGetValue (id, out mapped))
+			if (remapKey || !mappedKeys.TryGetValue (id, out mapped))
 				mappedKeys[id] = mapped = MapKeys (evt);
 			
 			shortcuts = mapped.Shortcuts;
 			state = mapped.State;
 			key = mapped.Key;
+
+			if (remapKey) {
+				key = (Gdk.Key)evt.KeyValue;
+			}
 		}
 		
 		static MappedKeys MapKeys (Gdk.EventKey evt)
 		{
 			MappedKeys mapped;
-			ushort keycode = evt.HardwareKeycode;
 			Gdk.ModifierType modifier = evt.State;
 			byte grp = evt.Group;
 			
@@ -584,7 +588,7 @@ namespace Mono.TextEditor
 			uint keyval;
 			int effectiveGroup, level;
 			Gdk.ModifierType consumedModifiers;
-			TranslateKeyboardState (keycode, modifier, grp, out keyval, out effectiveGroup,
+			TranslateKeyboardState (evt, modifier, grp, out keyval, out effectiveGroup,
 				out level, out consumedModifiers);
 			mapped.Key = (Gdk.Key)keyval;
 			mapped.State = FixMacModifiers (evt.State & ~consumedModifiers, grp);
@@ -599,7 +603,7 @@ namespace Mono.TextEditor
 			modifier &= ~Gdk.ModifierType.LockMask;
 			
 			//fully decomposed
-			TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.None, 0,
+			TranslateKeyboardState (evt, Gdk.ModifierType.None, 0,
 				out keyval, out effectiveGroup, out level, out consumedModifiers);
 			accelList.Add (new KeyboardShortcut ((Gdk.Key)keyval, FixMacModifiers (modifier, grp) & accelMods));
 			
@@ -607,6 +611,10 @@ namespace Mono.TextEditor
 			if ((modifier & Gdk.ModifierType.ShiftMask) != 0) {
 				keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.ShiftMask, 0,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
+
+				if (Platform.IsWindows && evt.HardwareKeycode == 0) {
+					keyval = (ushort)evt.KeyValue;
+				}
 				
 				// Prevent consumption of non-Shift modifiers (that we didn't even provide!)
 				consumedModifiers &= Gdk.ModifierType.ShiftMask;
@@ -617,7 +625,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 composed
 			if (grp == 1) {
-				TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
+				TranslateKeyboardState (evt, modifier & ~Gdk.ModifierType.ShiftMask, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				
 				// Prevent consumption of Shift modifier (that we didn't even provide!)
@@ -629,7 +637,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 and shift composed
 			if (grp == 1 && (modifier & Gdk.ModifierType.ShiftMask) != 0) {
-				TranslateKeyboardState (evt.HardwareKeycode, modifier, 1,
+				TranslateKeyboardState (evt, modifier, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
 				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
@@ -644,9 +652,11 @@ namespace Mono.TextEditor
 		
 		// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
 		// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
-		static void TranslateKeyboardState (uint hardware_keycode, Gdk.ModifierType state, int group, out uint keyval,
+		static void TranslateKeyboardState (Gdk.EventKey evt, Gdk.ModifierType state, int group, out uint keyval,
 			out int effective_group, out int level, out Gdk.ModifierType consumed_modifiers)
 		{
+			uint hardware_keycode = evt.HardwareKeycode;
+
 			if (Platform.IsWindows) {
 				const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
 				if ((state & ctrlAlt) == ctrlAlt) {
@@ -662,6 +672,10 @@ namespace Mono.TextEditor
 			
 			keymap.TranslateKeyboardState (hardware_keycode, state, group, out keyval, out effective_group,
 				out level, out consumed_modifiers);
+
+			if (Platform.IsWindows && hardware_keycode == 0) {
+				keyval = evt.KeyValue;
+			}
 		}
 		
 		static Gdk.ModifierType FixMacModifiers (Gdk.ModifierType mod, byte grp)
