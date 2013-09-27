@@ -174,26 +174,17 @@
     <EmbeddedResource Include="templates\Library.xpt.xml">
       <LogicalName>Library.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\C#.FileIcon">
-      <LogicalName>C#.FileIcon</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="CSharpBinding.addin.xml">
       <LogicalName>CSharpBinding.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\csharp-icon-32.png">
-      <LogicalName>csharp-icon-32.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\csharp-project-16.png">
-      <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
       <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
@@ -347,5 +338,6 @@
     <Folder Include="MonoDevelop.CSharp.Tooltips\" />
     <Folder Include="MonoDevelop.CSharp.UnitTests\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\" />
+    <Folder Include="icons\" />
   </ItemGroup>
 </Project>

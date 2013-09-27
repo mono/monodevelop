@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
                 <_Name>Empty File</_Name>
-                <Icon>md-text-file-icon</Icon>
+                <Icon>md-file-source</Icon>
                 <_Category>General</_Category>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net file.</_Description>

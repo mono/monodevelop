@@ -109,14 +109,8 @@
     <EmbeddedResource Include="templates\VBGtkSharp2Project.xpt.xml">
       <LogicalName>VBGtkSharp2Project.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\VB.FileIcon">
-      <LogicalName>VB.FileIcon</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="VBNetBinding.addin.xml">
       <LogicalName>VBNetBinding.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\vb-icon-32.png">
-      <LogicalName>vb-icon-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
@@ -129,4 +123,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="icons\" />
+  </ItemGroup>
 </Project>
