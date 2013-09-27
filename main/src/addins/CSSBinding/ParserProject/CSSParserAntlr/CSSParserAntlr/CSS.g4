@@ -1,3 +1,22 @@
+// A complete lexer and grammar for CSS 2.1 as defined by the
+// W3 specification.
+//
+// This grammar is free to use providing you retain everyhting in this header comment
+// section.
+//
+// Author      : Jim Idle, Temporal Wave LLC.
+// Contact     : jimi@temporal-wave.com
+// Website     : http://www.temporal-wave.com
+// License     : ANTLR Free BSD License
+//
+// Please visit our Web site at http://www.temporal-wave.com and try our commercial
+// parsers for SQL, C#, VB.Net and more.
+//
+// This grammar is free to use providing you retain everything in this header comment
+// section.
+//
+// This is the upgraded version of CSS Grammar from version 3 to 4
+//
 grammar CSS;
 
 options {
