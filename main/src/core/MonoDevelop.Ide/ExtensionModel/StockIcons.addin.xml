@@ -277,16 +277,16 @@
 	<StockIcon stockid = "md-link-overlay" resource = "chain-overlay-16.png" size="Menu" />
 	<StockIcon stockid = "md-breadcrumb-next" resource = "breadcrumb-next-normal.png" size="Menu" />
 	<StockIcon stockid = "md-breadcrumb-prev" resource = "breadcrumb-prev-normal.png" size="Menu" />
-	<StockIcon stockid = "md-status-steady" icon = "res:statusSteady.png" size="Menu" />
-	<StockIcon stockid = "md-status-success" icon = "res:statusSuccess.png" size="Menu" />
-	<StockIcon stockid = "md-status-warning" icon = "res:statusWarning.png" size="Menu" />
-	<StockIcon stockid = "md-status-error" icon = "res:statusError.png" size="Menu" />
 	<StockIcon stockid = "md-status-build" animation = "res:status-building-1-16.png;res:status-building-2-16.png;res:status-building-3-16.png;res:status-building-4-16.png;res:status-building-5-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-download" animation = "res:status-pulling-1-16.png;res:status-pulling-2-16.png;res:status-pulling-3-16.png;res:status-pulling-4-16.png;res:status-pulling-5-16.png;res:status-pulling-6-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-upload" animation = "res:status-pushing-1-16.png;res:status-pushing-2-16.png;res:status-pushing-3-16.png;res:status-pushing-4-16.png;res:status-pushing-5-16.png;res:status-pushing-6-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-open" animation = "res:status-opening-1-16.png;res:status-opening-2-16.png;res:status-opening-3-16.png;res:status-opening-4-16.png;res:status-opening-5-16.png;res:status-opening-6-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-search" animation = "res:status-searching-1-16.png;res:status-searching-2-16.png;res:status-searching-3-16.png;res:status-searching-4-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-connecting" animation = "res:status-connecting-1-16.png;res:status-connecting-2-16.png;res:status-connecting-3-16.png;res:status-connecting-4-16.png;res:status-connecting-5-16.png;res:status-connecting-6-16.png" size="Menu" />
+	<StockIcon stockid = "md-status-steady" icon = "res:status-steady-16.png" size="Menu" />
+	<StockIcon stockid = "md-status-success" icon = "res:status-success-16.png" size="Menu" />
+	<StockIcon stockid = "md-status-warning" icon = "res:status-warning-16.png" size="Menu" />
+	<StockIcon stockid = "md-status-error" icon = "res:status-error-16.png" size="Menu" />
 	<StockIcon stockid = "md-error" resource = "error-16.png" size="Menu" />
 	<StockIcon stockid = "md-error" icon = "gtk-dialog-error" size="Dialog" />
 	<StockIcon stockid = "md-warning" resource = "warning-16.png" size="Menu" />

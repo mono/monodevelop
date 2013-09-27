@@ -1059,17 +1059,17 @@
     <EmbeddedResource Include="icons\broom-16.png">
       <LogicalName>broom-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSteady.png">
-      <LogicalName>statusSteady.png</LogicalName>
+    <EmbeddedResource Include="icons\status-steady-16.png">
+      <LogicalName>status-steady-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusSuccess.png">
-      <LogicalName>statusSuccess.png</LogicalName>
+    <EmbeddedResource Include="icons\status-success-16.png">
+      <LogicalName>status-success-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusWarning.png">
-      <LogicalName>statusWarning.png</LogicalName>
+    <EmbeddedResource Include="icons\status-warning-16.png">
+      <LogicalName>status-warning-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\statusError.png">
-      <LogicalName>statusError.png</LogicalName>
+    <EmbeddedResource Include="icons\status-error-16.png">
+      <LogicalName>status-error-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
       <LogicalName>link-chat.png</LogicalName>
