@@ -548,8 +548,6 @@
     <EmbeddedResource Include="icons\formatting-24.png">
       <LogicalName>formatting-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\gnome-fs-regular.png">
-      <LogicalName>gnome-fs-regular.png</LogicalName>
     <EmbeddedResource Include="icons\pin-green-up-16.png">
       <LogicalName>pin-green-up-16.png</LogicalName>
     </EmbeddedResource>
