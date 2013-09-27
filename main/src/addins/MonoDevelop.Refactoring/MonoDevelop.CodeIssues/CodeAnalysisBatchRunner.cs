@@ -124,7 +124,11 @@ namespace MonoDevelop.CodeIssues
 			CSharpAstResolver resolver;
 			using (var timer = ExtensionMethods.ResolveCounter.BeginTiming ()) {
 				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
-				resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+				try {
+					resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while applying navigator", e);
+				}
 			}
 			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
 
