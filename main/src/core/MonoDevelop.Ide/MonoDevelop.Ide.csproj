@@ -206,7 +206,7 @@
     <EmbeddedResource Include="icons\folder-open-16.png">
       <LogicalName>folder-open-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-open-162x.png">
+    <EmbeddedResource Include="icons\folder-open-16@2x.png">
       <LogicalName>folder-open-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\reference-folder-open-16.png">
