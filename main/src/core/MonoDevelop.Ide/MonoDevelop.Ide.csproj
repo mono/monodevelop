@@ -416,8 +416,8 @@
     <EmbeddedResource Include="icons\empty-category-22.png">
       <LogicalName>empty-category-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ExecutionMarker.png">
-      <LogicalName>ExecutionMarker.png</LogicalName>
+    <EmbeddedResource Include="icons\execution-marker-16.png">
+      <LogicalName>execution-marker-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-addin-16.png">
       <LogicalName>file-addin-16.png</LogicalName>
