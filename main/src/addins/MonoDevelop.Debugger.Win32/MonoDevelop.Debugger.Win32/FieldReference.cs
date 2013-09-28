@@ -36,7 +36,7 @@ namespace MonoDevelop.Debugger.Win32
 	{
 		readonly CorType type;
 		readonly FieldInfo field;
-		CorValRef thisobj;
+		readonly CorValRef thisobj;
 		readonly CorValRef.ValueLoader loader;
 
 		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
@@ -45,8 +45,8 @@ namespace MonoDevelop.Debugger.Win32
 			this.thisobj = thisobj;
 			this.type = type;
 			this.field = field;
-			if (!field.IsStatic)
-				this.thisobj = thisobj;
+			if (field.IsStatic)
+				this.thisobj = null;
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;
