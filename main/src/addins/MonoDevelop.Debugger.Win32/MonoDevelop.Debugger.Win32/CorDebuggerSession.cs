@@ -934,7 +934,7 @@ namespace MonoDevelop.Debugger.Win32
 			mc.OnGetDescription = delegate {
 				MethodInfo met = function.GetMethodInfo (ctx.Session);
 				if (met != null)
-					return met.Name;
+					return met.DeclaringType.FullName + "." + met.Name;
 				else
 					return "<Unknown>";
 			};

@@ -78,13 +78,21 @@ namespace MonoDevelop.Debugger.Win32
 
 		internal static StackFrame CreateFrame (CorDebuggerSession session, CorFrame frame)
 		{
+			// TODO: Fix remaining.
 			uint address = 0;
+			//string typeFQN;
+			//string typeFullName;
+			string addressSpace = "";
 			string file = "";
 			int line = 0;
+			int column = 0;
 			string method = "";
 			string lang = "";
 			string module = "";
 			string type = "";
+			bool hasDebugInfo = false;
+			bool hidden = false;
+			bool external = true;
 
 			if (frame.FrameType == CorFrameType.ILFrame) {
 				if (frame.Function != null) {
@@ -93,27 +101,30 @@ namespace MonoDevelop.Debugger.Win32
 					MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
 					method = mi.DeclaringType.FullName + "." + mi.Name;
 					type = mi.DeclaringType.FullName;
+					addressSpace = mi.Name;
 					ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
 					if (reader != null) {
 						ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
 						if (met != null) {
-							uint offset;
 							CorDebugMappingResult mappingResult;
-							frame.GetIP (out offset, out mappingResult);
+							frame.GetIP (out address, out mappingResult);
 							SequencePoint prevSp = null;
 							foreach (SequencePoint sp in met.GetSequencePoints ()) {
-								if (sp.Offset > offset)
+								if (sp.Offset > address)
 									break;
 								prevSp = sp;
 							}
 							if (prevSp != null) {
 								line = prevSp.Line;
+								column = prevSp.Offset;
 								file = prevSp.Document.URL;
+								address = (uint)prevSp.Offset;
 							}
 						}
 					}
 				}
 				lang = "Managed";
+				hasDebugInfo = true;
 			}
 			else if (frame.FrameType == CorFrameType.NativeFrame) {
 				frame.GetNativeIP (out address);
@@ -129,10 +140,16 @@ namespace MonoDevelop.Debugger.Win32
 					case CorDebugInternalFrameType.STUBFRAME_FUNC_EVAL: method = "[Function Evaluation]"; break;
 				}
 			}
+
+			// Implement custom attributes in CorMetadata.cs
+			//			if (frame.Function.GetMethodInfo (session).GetCustomAttributes (System.Diagnostics.DebuggerHiddenAttribute, true) != null)
+			//	hidden = true;
+
 			if (method == null)
 				method = "<Unknown>";
-			var loc = new SourceLocation (method, file, line);
-			return new StackFrame ((long) address, loc, lang);
+
+			var loc = new SourceLocation (method, file, line, column);
+			return new StackFrame ((long) address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
 		}
 
 		#endregion

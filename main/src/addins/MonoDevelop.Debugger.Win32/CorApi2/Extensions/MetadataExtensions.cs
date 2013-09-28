@@ -267,6 +267,9 @@ namespace Microsoft.Samples.Debugging.Extensions
 			attr = GetCustomAttribute (importer, token, typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute));
 			if (attr != null)
 				attributes.Add (attr);
+			attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerHiddenAttribute));
+			if (attr != null)
+				attributes.Add (attr);
 
 			return attributes.Count == 0 ? emptyAttributes : attributes.ToArray ();
 		}
