@@ -191,7 +191,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\*" />
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Helpers.dll" />
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Mvc.dll" />
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Razor.dll" />
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.WebPages.dll" />
+    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.WebPages.Razor.dll" />
   </ItemGroup>
   <Target Name="AfterBuild">
       <Copy SourceFiles="@(Mvc4Files)" DestinationFolder="$(OutputPath)\packages\AspNetMvc4" />
