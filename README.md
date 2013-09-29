@@ -65,12 +65,14 @@ On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DL
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
 Linux/Mac:
+
 	cd monodevelop
 	./configure.sh 
 	make 
 	make install
 
 Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
+
 	cd monodevelop
 	configure.bat
 	.\install-debug-xamarin-studio.bat
@@ -102,9 +104,9 @@ To check things are working try a few different things somewhat at random:
 
 There are a couple of known issues, see https://github.com/fsharp/fsharpbinding/issues.
 
-On Windows, the configuration creates the file MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj. 
-Be aware that this is not the original file, which is MonoDevelop.FSharp.fsproj.orig.  The windows file is 
-created automatically by the configuration script (configure.bat)
+On Windows, the configuration creates the file `MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj`. 
+Be aware that this is not the original file, which is `MonoDevelop.FSharp.fsproj.orig`. The windows file is 
+created automatically by the configuration script (`configure.bat`)
 
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. 
 
@@ -118,12 +120,12 @@ or this command for Xamarin Studio:
 ```
 to enable some logging you can use
 
-  export FSHARPBINDING_LOGGING=*
+	export FSHARPBINDING_LOGGING=*
 
 On Windows you can generally use Visual Studio to help develop the binding. 
 You can start Xamarin Studio or MonoDevelop under the debugger using the normal technique:
 
-  devenv /debugexe "c:\Program Files (x86)\Xamarin Studio\bin\XamarinStudio.exe"
+	devenv /debugexe "c:\Program Files (x86)\Xamarin Studio\bin\XamarinStudio.exe"
 
 
 ## Notes for People Preparing Releases
