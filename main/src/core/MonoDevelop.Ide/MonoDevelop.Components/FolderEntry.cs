@@ -44,13 +44,14 @@ namespace MonoDevelop.Components {
 		public FolderEntry (string name) : base (name)
 		{
 		}
-		
-		protected override string ShowBrowseDialog (string name, string start_in)
+
+		protected override string ShowBrowseDialog (string name, string startIn)
 		{
 			SelectFolderDialog fd = new SelectFolderDialog (name);
-			if (start_in != null)
-				fd.InitialFileName = start_in;
 			fd.SetFilters (filterSet);
+			if (startIn != null)
+				fd.CurrentFolder = startIn;
+
 			fd.TransientFor = GetTransientFor ();
 			
 			if (fd.Run ())
