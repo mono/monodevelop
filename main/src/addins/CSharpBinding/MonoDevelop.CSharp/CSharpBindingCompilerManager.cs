@@ -300,7 +300,7 @@ namespace MonoDevelop.CSharp
 						break;
 					case "EmbeddedResource":
 						string fname = finfo.Name;
-						if (string.Compare (Path.GetExtension (fname), ".resx", true) == 0)
+						if (string.Compare (Path.GetExtension (fname), ".resx", StringComparison.OrdinalIgnoreCase) == 0)
 							fname = Path.ChangeExtension (fname, ".resources");
 						sb.Append ('"');sb.Append ("/res:");
 						sb.Append (fname);sb.Append (',');sb.Append (finfo.ResourceId);
@@ -310,8 +310,8 @@ namespace MonoDevelop.CSharp
 						continue;
 				}
 			}
-			if (compilerParameters.GenerateXmlDocumentation) 
-				AppendQuoted (sb, "/doc:", Path.ChangeExtension (outputName, ".xml"));
+			if (!compilerParameters.DocumentationFile.IsNullOrEmpty) 
+				AppendQuoted (sb, "/doc:", compilerParameters.DocumentationFile);
 			
 			if (!string.IsNullOrEmpty (compilerParameters.AdditionalArguments)) 
 				sb.AppendLine (compilerParameters.AdditionalArguments);
