@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide
 			
 			if (FeedbackService.Enabled) {
 				CustomFrame fr = new CustomFrame (0, 0, 1, 0);
-				Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("balloon.png");
+				Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("feedback-16.png");
 				HBox b = new HBox (false, 3);
 				b.PackStart (new Gtk.Image (px));
 				b.PackStart (new Gtk.Label ("Feedback"));

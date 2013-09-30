@@ -91,8 +91,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			discloseDown = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-down.png");
-			discloseUp = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-up.png");
+			discloseDown = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-down-16.png");
+			discloseUp = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-up-16.png");
 		}
 
 		protected override void OnDestroyed ()
