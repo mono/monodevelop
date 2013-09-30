@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -66,9 +67,9 @@ namespace MonoDevelop.CSharp.Project
 		
 		[ItemProperty ("DefineConstants", DefaultValue = "")]
 		string definesymbols = String.Empty;
-		
-		[ItemProperty ("GenerateDocumentation", DefaultValue = false)]
-		bool generateXmlDocumentation = false;
+
+		[ProjectPathItemProperty ("DocumentationFile")]
+		FilePath documentationFile;
 		
 		[ItemProperty ("additionalargs", DefaultValue = "")]
 		string additionalArgs = string.Empty;
@@ -104,6 +105,9 @@ namespace MonoDevelop.CSharp.Project
 	
 		[ItemProperty ("CodePage", DefaultValue = null)]
 		internal string codePage;
+
+		[ItemProperty ("GenerateDocumentation", DefaultValue = null)]
+		bool? generateXmlDocumentation = null;
 		
 		#endregion
 		
@@ -131,6 +135,14 @@ namespace MonoDevelop.CSharp.Project
 					cparams.CodePage = int.Parse (codePage);
 					codePage = null;
 				}
+			}
+
+			if (generateXmlDocumentation.HasValue && ParentConfiguration != null) {
+				if (generateXmlDocumentation.Value)
+					documentationFile = ParentConfiguration.CompiledOutputName.ChangeExtension (".xml");
+				else
+					documentationFile = null;
+				generateXmlDocumentation = null;
 			}
 		}
 	
@@ -227,12 +239,12 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 		
-		public bool GenerateXmlDocumentation {
+		public FilePath DocumentationFile {
 			get {
-				return generateXmlDocumentation;
+				return documentationFile;
 			}
 			set {
-				generateXmlDocumentation = value;
+				documentationFile = value;
 			}
 		}
 		

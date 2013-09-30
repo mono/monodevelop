@@ -17,6 +17,11 @@ namespace MonoDevelop.Debugger.Win32
 			get { return MtaThread.Run (() => source.Dimensions); }
 		}
 
+		public Array GetValues (int[] index, int count)
+		{
+			return MtaThread.Run (() => source.GetValues (index, count));
+		}
+
 		public object GetValue (int[] index)
 		{
 			return MtaThread.Run (() => source.GetValue (index));

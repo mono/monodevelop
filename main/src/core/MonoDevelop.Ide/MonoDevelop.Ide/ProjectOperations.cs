@@ -1140,6 +1140,9 @@ namespace MonoDevelop.Ide
 				tt.Trace ("Pre-build operations");
 				result = DoBeforeCompileAction ();
 
+				//wait for any custom tools that were triggered by the save, since the build may depend on them
+				MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
+
 				if (result.ErrorCount == 0) {
 					tt.Trace ("Building item");
 					SolutionItem it = entry as SolutionItem;

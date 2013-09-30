@@ -805,18 +805,21 @@ namespace MonoDevelop.SourceEditor
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
 
-		public void Load (string fileName, Encoding loadEncoding)
+		void IEncodedTextContent.Load (string fileName, Encoding loadEncoding)
+		{
+			Load (fileName, loadEncoding);
+		}
+
+		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			// Handle the "reload" case.
 			if (ContentName == fileName)
 				AutoSave.RemoveAutoSaveFile (fileName);
-
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			
 			// Look for a mime type for which there is a syntax mode
 			UpdateMimeType (fileName);
 			string text = null;
@@ -825,27 +828,30 @@ namespace MonoDevelop.SourceEditor
 				widget.ShowAutoSaveWarning (fileName);
 				this.encoding = loadEncoding;
 				didLoadCleanly = false;
-			} else {
-
+			}
+			else {
 				inLoad = true;
 				if (loadEncoding == null) {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
-				} else {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
+					text = TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
 				}
-				Document.Text = text;
-				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+				else {
+					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
+				}
+				if (reload) {
+					Document.Replace (0, Document.TextLength, text);
+					Document.DiffTracker.Reset ();
+				} else {
+					Document.Text = text;
+					Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+				}
 				inLoad = false;
 				didLoadCleanly = true;
 			}
-			
 			// TODO: Would be much easier if the view would be created after the containers.
 			CreateDocumentParsedHandler ();
-
 			ContentName = fileName;
-			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);			
+			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
 			RunFirstTimeFoldUpdate (text);
-
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
@@ -904,7 +910,7 @@ namespace MonoDevelop.SourceEditor
 		Encoding encoding = null;
 		bool hadBom = false;
 
-		public void Load (string fileName, string content, Encoding encoding)
+		internal void ReplaceContent (string fileName, string content, Encoding encoding)
 		{
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -914,7 +920,8 @@ namespace MonoDevelop.SourceEditor
 			UpdateMimeType (fileName);
 			
 			inLoad = true;
-			Document.Text = content;
+			Document.Replace (0, Document.TextLength, content);
+			Document.DiffTracker.Reset ();
 			inLoad = false;
 			this.encoding = encoding;
 			ContentName = fileName;

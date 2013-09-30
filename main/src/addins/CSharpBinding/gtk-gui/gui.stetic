@@ -7,13 +7,14 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/NUnit/MonoDevelop.NUnit.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="389 412">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="428 412">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -108,31 +109,6 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.CheckButton" id="generateXmlOutputCheckButton">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">Generate _xml documentation</property>
-                        <property name="Active">True</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="TopAttach">2</property>
-                        <property name="BottomAttach">3</property>
-                        <property name="RightAttach">2</property>
-                        <property name="AutoSize">True</property>
-                        <property name="XOptions">Fill</property>
-                        <property name="YOptions">Fill</property>
-                        <property name="XExpand">False</property>
-                        <property name="XFill">True</property>
-                        <property name="XShrink">False</property>
-                        <property name="YExpand">False</property>
-                        <property name="YFill">True</property>
-                        <property name="YShrink">False</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="Gtk.HBox" id="hbox1">
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
@@ -163,8 +139,9 @@ Itanium</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
                         <property name="YOptions">Fill</property>
-                        <property name="XExpand">True</property>
+                        <property name="XExpand">False</property>
                         <property name="XFill">True</property>
                         <property name="XShrink">False</property>
                         <property name="YExpand">False</property>
@@ -202,6 +179,52 @@ None</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
                         <property name="AutoSize">True</property>
+                        <property name="XOptions">Fill</property>
+                        <property name="YOptions">Fill</property>
+                        <property name="XExpand">False</property>
+                        <property name="XFill">True</property>
+                        <property name="XShrink">False</property>
+                        <property name="YExpand">False</property>
+                        <property name="YFill">True</property>
+                        <property name="YShrink">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.HBox" id="hbox4">
+                        <property name="MemberName" />
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.CheckButton" id="generateXmlOutputCheckButton">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Label" translatable="yes">Generate _xml documentation:</property>
+                            <property name="DrawIndicator">True</property>
+                            <property name="HasLabel">True</property>
+                            <property name="UseUnderline">True</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">False</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="MonoDevelop.Components.FileEntry" id="xmlDocsEntry">
+                            <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="TopAttach">2</property>
+                        <property name="BottomAttach">3</property>
+                        <property name="RightAttach">2</property>
+                        <property name="AutoSize">False</property>
                         <property name="YOptions">Fill</property>
                         <property name="XExpand">True</property>
                         <property name="XFill">True</property>
@@ -285,7 +308,7 @@ None</property>
                         <property name="BottomAttach">5</property>
                         <property name="LeftAttach">1</property>
                         <property name="RightAttach">2</property>
-                        <property name="AutoSize">True</property>
+                        <property name="AutoSize">False</property>
                         <property name="YOptions">Fill</property>
                         <property name="XExpand">True</property>
                         <property name="XFill">True</property>
@@ -650,6 +673,7 @@ None</property>
                     <child>
                       <widget class="MonoDevelop.Components.FileEntry" id="iconEntry">
                         <property name="MemberName" />
+                        <property name="DisplayAsRelativePath">False</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">2</property>

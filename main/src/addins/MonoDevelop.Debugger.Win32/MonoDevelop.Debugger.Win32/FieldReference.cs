@@ -45,8 +45,8 @@ namespace MonoDevelop.Debugger.Win32
 			this.thisobj = thisobj;
 			this.type = type;
 			this.field = field;
-			if (!field.IsStatic)
-				this.thisobj = thisobj;
+			if (field.IsStatic)
+				this.thisobj = null;
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;
