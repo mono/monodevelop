@@ -2254,9 +2254,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			Pango.Layout layout;
 			Pango.FontDescription scaledFont, customFont;
 
-			static Gdk.Pixbuf popupIcon;
-			static Gdk.Pixbuf popupIconDown;
-			static Gdk.Pixbuf popupIconHover;
+			static Xwt.Drawing.Image popupIcon;
+			static Xwt.Drawing.Image popupIconDown;
+			static Xwt.Drawing.Image popupIconHover;
 			bool bound;
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
@@ -2281,9 +2281,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			static CustomCellRendererText ()
 			{
-				popupIcon = Gdk.Pixbuf.LoadFromResource ("tree-popup-button.png");
-				popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
-				popupIconHover = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-hover.png");
+				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button.png");
+				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down.png");
+				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover.png");
 			}
 
 			[GLib.Property ("text-markup")]
@@ -2351,9 +2351,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 					if ((flags & Gtk.CellRendererState.Selected) != 0) {
 						var icon = Pushed ? popupIconDown : popupIcon;
-						var dy = (cell_area.Height - icon.Height) / 2;
+						var dy = (cell_area.Height - (int)icon.Height) / 2;
 						var y = cell_area.Y + dy;
-						var x = cell_area.X + cell_area.Width - icon.Width - dy;
+						var x = cell_area.X + cell_area.Width - (int)icon.Width - dy;
 
 						var sw = (Gtk.ScrolledWindow)widget.Parent;
 						int ox, oy, ow, oh;
@@ -2379,9 +2379,9 @@ namespace MonoDevelop.Ide.Gui.Components
 								x = cell_area.X + 20;
 						}
 
-						buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, popupIcon.Width, popupIcon.Height);
+						buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, (int)popupIcon.Width, (int)popupIcon.Height);
 
-						buttonAllocation = new Gdk.Rectangle (x, y, popupIcon.Width, popupIcon.Height);
+						buttonAllocation = new Gdk.Rectangle (x, y, (int)popupIcon.Width, (int)popupIcon.Height);
 						buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
 						buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
 
@@ -2390,8 +2390,7 @@ namespace MonoDevelop.Ide.Gui.Components
 							icon = popupIconHover;
 
 						using (var ctx = Gdk.CairoHelper.Create (window)) {
-							Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
-							ctx.Paint ();
+							ctx.DrawImage (widget, icon, x, y);
 						}
 					}
 				}

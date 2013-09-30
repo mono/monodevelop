@@ -27,15 +27,17 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageBarButton: EventBox
 	{
-		Gtk.Image image;
+		Xwt.ImageView image;
+		Widget imageWidget;
 		Gtk.Label label;
 
-		Gdk.Pixbuf imageNormal, imageHover;
+		Xwt.Drawing.Image imageNormal, imageHover;
 		bool mouseOver;
 		string actionLink;
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
@@ -58,17 +60,18 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.Text = GettextCatalog.GetString (title);
 			this.actionLink = href;
 			if (!string.IsNullOrEmpty (iconResource)) {
-				imageHover = Gdk.Pixbuf.LoadFromResource (iconResource);
-				imageNormal = ImageService.MakeTransparent (imageHover, 0.7);
+				imageHover = Xwt.Drawing.Image.FromResource (iconResource);
+				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
 			HBox box = new HBox ();
 			box.Spacing = Styles.WelcomeScreen.Links.IconTextSpacing;
-			image = new Image ();
+			image = new Xwt.ImageView ();
 			label = new Label ();
-			box.PackStart (image, false, false, 0);
+			imageWidget = image.ToGtkWidget ();
+			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)
-				image.NoShowAll = true;
+				imageWidget.NoShowAll = true;
 			box.PackStart (label, false, false, 0);
 			box.ShowAll ();
 			Add (box);
@@ -78,16 +81,16 @@ namespace MonoDevelop.Ide.WelcomePage
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
 		}
 
-		protected void SetImage (Gdk.Pixbuf normal, Gdk.Pixbuf hover)
+		protected void SetImage (Xwt.Drawing.Image normal, Xwt.Drawing.Image hover)
 		{
 			imageHover = hover;
 			imageNormal = normal;
 
 			if (imageNormal == null) {
-				image.NoShowAll = true;
+				imageWidget.NoShowAll = true;
 				image.Hide ();
 			} else {
-				image.NoShowAll = false;
+				imageWidget.NoShowAll = false;
 				ShowAll ();
 			}
 
@@ -127,7 +130,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected void Update ()
 		{
 			if (imageNormal != null)
-				image.Pixbuf = mouseOver ? imageHover : imageNormal;
+				image.Image = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
 			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, Bold, color, Text);
 		}

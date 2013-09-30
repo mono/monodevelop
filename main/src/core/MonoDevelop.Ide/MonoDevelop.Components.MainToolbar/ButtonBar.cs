@@ -42,10 +42,10 @@ namespace MonoDevelop.Components.MainToolbar
 		List<ButtonBarButton> buttons = new List<ButtonBarButton> ();
 		ButtonBarButton[] visibleButtons;
 
-		Gdk.Pixbuf[] btnNormalOriginal;
-		Gdk.Pixbuf[] btnPressedOriginal;
-		Gdk.Pixbuf[] btnNormal;
-		Gdk.Pixbuf[] btnPressed;
+		Xwt.Drawing.Image[] btnNormalOriginal;
+		Xwt.Drawing.Image[] btnPressedOriginal;
+		Xwt.Drawing.Image[] btnNormal;
+		Xwt.Drawing.Image[] btnPressed;
 
 		ButtonBarButton pushedButton;
 		object lastCommandTarget;
@@ -57,19 +57,19 @@ namespace MonoDevelop.Components.MainToolbar
 			VisibleWindow = false;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 
-			btnNormalOriginal = new Gdk.Pixbuf[] {
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-LeftCap-Normal.png"),
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-MidCap-Normal.png"),
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-RightCap-Normal.png")
+			btnNormalOriginal = new Xwt.Drawing.Image[] {
+				Xwt.Drawing.Image.FromResource ("btDebugBase-LeftCap-Normal.png"),
+				Xwt.Drawing.Image.FromResource ("btDebugBase-MidCap-Normal.png"),
+				Xwt.Drawing.Image.FromResource ("btDebugBase-RightCap-Normal.png")
 			};
 
-			btnPressedOriginal = new Gdk.Pixbuf[] {
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-LeftCap-Pressed.png"),
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-MidCap-Pressed.png"),
-				Gdk.Pixbuf.LoadFromResource ("btDebugBase-RightCap-Pressed.png")
+			btnPressedOriginal = new Xwt.Drawing.Image[] {
+				Xwt.Drawing.Image.FromResource ("btDebugBase-LeftCap-Pressed.png"),
+				Xwt.Drawing.Image.FromResource ("btDebugBase-MidCap-Pressed.png"),
+				Xwt.Drawing.Image.FromResource ("btDebugBase-RightCap-Pressed.png")
 			};
-			btnNormal = new Pixbuf[btnNormalOriginal.Length];
-			btnPressed = new Pixbuf[btnNormalOriginal.Length];
+			btnNormal = new Xwt.Drawing.Image[btnNormalOriginal.Length];
+			btnPressed = new Xwt.Drawing.Image[btnNormalOriginal.Length];
 			HasTooltip = true;
 		}
 
@@ -176,8 +176,8 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = VisibleButtons.Sum (b => b.Visible ? (!b.IsSeparator ? btnNormalOriginal[0].Width : SeparatorSpacing) : 0);
-			requisition.Height = btnNormalOriginal[0].Height;
+			requisition.Width = VisibleButtons.Sum (b => b.Visible ? (!b.IsSeparator ? (int)btnNormalOriginal[0].Width : SeparatorSpacing) : 0);
+			requisition.Height = (int)btnNormalOriginal[0].Height;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -195,39 +195,49 @@ namespace MonoDevelop.Components.MainToolbar
 							x += SeparatorSpacing;
 						continue;
 					}
-					Gdk.Pixbuf[] images = State == StateType.Selected && pushedButton == button ? btnPressed : btnNormal;
-					Gdk.Pixbuf img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
-					Gdk.CairoHelper.SetSourcePixbuf (context, img, x, y);
-					context.Paint ();
+					Xwt.Drawing.Image[] images = State == StateType.Selected && pushedButton == button ? btnPressed : btnNormal;
+					Xwt.Drawing.Image img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
+					context.DrawImage (this, img, x, y);
 
-					button.Allocation = new Gdk.Rectangle ((int)x, (int)y, img.Width, img.Height);
+					button.Allocation = new Gdk.Rectangle ((int)x, (int)y, (int)img.Width, (int)img.Height);
 
-					var icon = ImageService.GetPixbuf (button.Image, IconSize.Menu);
-					var iconCopy = icon;
+					var icon = ImageService.GetIcon (button.Image, IconSize.Menu);
 					if (!Sensitive || !button.Enabled)
-						iconCopy = ImageService.MakeTransparent (icon, 0.4);
-					Gdk.CairoHelper.SetSourcePixbuf (context, iconCopy, x + (img.Width - icon.Width) / 2, y + (img.Height - icon.Height) / 2);
-					context.Paint ();
-					if (iconCopy != icon)
-						iconCopy.Dispose ();
+						icon = icon.WithAlpha (0.4);
+					context.DrawImage (this, icon, x + (img.Width - icon.Width) / 2, y + (img.Height - icon.Height) / 2);
 					x += img.Width;
 				}
 			}
 			return base.OnExposeEvent (evnt);
 		}
 
-		Gdk.Pixbuf ExpandImageVertically (Gdk.Pixbuf img, int newHeight)
+		Xwt.Drawing.Image ExpandImageVertically (Xwt.Drawing.Image img, int newHeight)
 		{
 			if (newHeight <= img.Height)
-				return img.Copy ();
-			var res = new Gdk.Pixbuf (img.Colorspace, img.HasAlpha, img.BitsPerSample, img.Width, newHeight);
-			var h1 = img.Height / 2;
-			var h2 = img.Height - h1;
-			res.Fill (0xff000000);
-			img.Composite (res, 0, h1, res.Width, newHeight - img.Height, 0, 0, 1, (double)newHeight / (double)img.Height, InterpType.Bilinear, 255);
-			img.Composite (res, 0, 0, img.Width, h1, 0, 0, 1, 1, InterpType.Bilinear, 255);
-			img.Composite (res, 0, newHeight - h2, img.Width, h2, 0, newHeight - img.Height, 1, 1, InterpType.Bilinear, 255);
-			return res;
+				return img;
+
+			Xwt.Drawing.ImageBuilder ib = new Xwt.Drawing.ImageBuilder (img.Width, newHeight);
+			int h1 = (int)img.Height / 2;
+			int h2 = (int)img.Height - h1;
+
+			var ctx = ib.Context;
+			ctx.Save ();
+			ctx.Rectangle (0, 0, img.Width, h1);
+			ctx.Clip ();
+			ctx.DrawImage (img, 0, 0);
+			ctx.Restore ();
+
+			ctx.Save ();
+			ctx.Rectangle (0, newHeight - h2, img.Width, h2);
+			ctx.Clip ();
+			ctx.DrawImage (img, 0, newHeight - img.Height);
+			ctx.Restore ();
+
+			ctx.Rectangle (0, h1, img.Width, newHeight - h1 - h2);
+			ctx.Clip ();
+			ctx.DrawImage (img, 0, 0, img.Width, newHeight);
+
+			return ib.ToVectorImage ();
 		}
 
 		public sealed class ClickEventArgs : EventArgs

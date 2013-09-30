@@ -48,10 +48,10 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageWidget : Gtk.EventBox
 	{
-		public Gdk.Pixbuf LogoImage { get; set; }
+		public Xwt.Drawing.Image LogoImage { get; set; }
 		public int LogoHeight { get; set; }
-		public Gdk.Pixbuf TopBorderImage { get; set; }
-		public Gdk.Pixbuf BackgroundImage { get; set; }
+		public Xwt.Drawing.Image TopBorderImage { get; set; }
+		public Xwt.Drawing.Image BackgroundImage { get; set; }
 		public string BackgroundColor { get; set; }
 
 		protected double OverdrawOpacity {
@@ -169,18 +169,17 @@ namespace MonoDevelop.Ide.WelcomePage
 					context.Paint ();
 					context.Operator = Cairo.Operator.Over;
 					DrawBackground (context, evnt.Area);
-				}
 
-				if (Owner.LogoImage != null) {
-					var gc = Style.BackgroundGC (State);
-					var lRect = new Rectangle (Allocation.X, Allocation.Y, Owner.LogoImage.Width, Owner.LogoImage.Height);
-					if (evnt.Region.RectIn (lRect) != OverlapType.Out)
-						evnt.Window.DrawPixbuf (gc, Owner.LogoImage, 0, 0, lRect.X, lRect.Y, lRect.Width, lRect.Height, RgbDither.None, 0, 0);
+					if (Owner.LogoImage != null) {
+						var lRect = new Rectangle (Allocation.X, Allocation.Y, (int)Owner.LogoImage.Width, (int)Owner.LogoImage.Height);
+						if (evnt.Region.RectIn (lRect) != OverlapType.Out)
+							context.DrawImage (this, Owner.LogoImage, Allocation.X, Allocation.Y);
 					
-					var bgRect = new Rectangle (Allocation.X + Owner.LogoImage.Width, Allocation.Y, Allocation.Width - Owner.LogoImage.Width, Owner.TopBorderImage.Height);
-					if (evnt.Region.RectIn (bgRect) != OverlapType.Out)
-						for (int x = bgRect.X; x < bgRect.Right; x += Owner.TopBorderImage.Width)
-							evnt.Window.DrawPixbuf (gc, Owner.TopBorderImage, 0, 0, x, bgRect.Y, Owner.TopBorderImage.Width, bgRect.Height, RgbDither.None, 0, 0);
+						var bgRect = new Rectangle (Allocation.X + (int)Owner.LogoImage.Width, Allocation.Y, Allocation.Width - (int)Owner.LogoImage.Width, (int)Owner.TopBorderImage.Height);
+						if (evnt.Region.RectIn (bgRect) != OverlapType.Out)
+							for (int x = bgRect.X; x < bgRect.Right; x += (int)Owner.TopBorderImage.Width)
+								context.DrawImage (this, Owner.TopBorderImage.WithSize (Owner.TopBorderImage.Width, bgRect.Height), x, Allocation.Y);
+					}
 				}
 				
 				foreach (Widget widget in Children)

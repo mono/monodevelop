@@ -46,8 +46,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		static readonly Gdk.Point IconPosition = new Gdk.Point (WidgetSize.Width - 220 - Padding, WidgetSize.Height / 2);
 		static readonly double PreviewSize = 350;
 
-		Gdk.Pixbuf starburst;
-		Gdk.Pixbuf brandedIcon;
+		Xwt.Drawing.Image starburst;
+		Xwt.Drawing.Image brandedIcon;
 
 		MouseTracker tracker;
 
@@ -81,12 +81,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			VisibleWindow = false;
 			SetSizeRequest (WidgetSize.Width, WidgetSize.Height);
-			starburst = Gdk.Pixbuf.LoadFromResource ("starburst.png");
+			starburst = Xwt.Drawing.Image.FromResource ("starburst.png");
 
 			string iconFile = BrandingService.GetString ("ApplicationIcon");
 			if (iconFile != null) {
 				iconFile = BrandingService.GetFile (iconFile);
-				brandedIcon = new Gdk.Pixbuf (iconFile);
+				brandedIcon = Xwt.Drawing.Image.FromFile (iconFile);
 			}
 
 			TitleOffset = TextOffset = IconOffset = new Gdk.Point ();
@@ -146,8 +146,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			context.Save ();
 			context.Translate (IconPosition.X, IconPosition.Y);
 			context.Scale (0.75, 0.75);
-			Gdk.CairoHelper.SetSourcePixbuf (context, starburst, -starburst.Width / 2, -starburst.Height / 2);
-			context.FillPreserve ();
+			context.DrawImage (this, starburst, -starburst.Width / 2, -starburst.Height / 2);
 			context.Restore ();
 
 			context.LineWidth = 1;
@@ -159,7 +158,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		void RenderPreview (Cairo.Context context, Gdk.Point position, double opacity)
 		{
 			if (brandedIcon != null) {
-				if (previewSurface == null) {
+				/*				if (previewSurface == null) {
 					previewSurface = new SurfaceWrapper (context, brandedIcon);
 				}
 				double scale = PreviewSize / previewSurface.Width;
@@ -169,6 +168,14 @@ namespace MonoDevelop.Ide.WelcomePage
 				context.Scale (scale * IconScale, scale * IconScale);
 				context.SetSourceSurface (previewSurface.Surface, -previewSurface.Width / 2, -previewSurface.Height / 2);
 				context.PaintWithAlpha (opacity);
+				context.Restore ();
+				*/
+
+				double scale = PreviewSize / brandedIcon.Width;
+				context.Save ();
+				context.Translate (position.X, position.Y);
+				context.Scale (scale * IconScale, scale * IconScale);
+				context.DrawImage (this, brandedIcon.WithAlpha (opacity), -brandedIcon.Width / 2, -brandedIcon.Height / 2);
 				context.Restore ();
 			}
 		}

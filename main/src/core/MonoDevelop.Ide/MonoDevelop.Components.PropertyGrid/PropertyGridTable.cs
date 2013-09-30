@@ -43,8 +43,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		Gtk.Widget currentEditor;
 		TableRow currentEditorRow;
 		bool draggingDivider;
-		Gdk.Pixbuf discloseDown;
-		Gdk.Pixbuf discloseUp;
+		Xwt.Drawing.Image discloseDown;
+		Xwt.Drawing.Image discloseUp;
 		bool heightMeasured;
 
 		const int CategoryTopBottomPadding = 6;
@@ -91,8 +91,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			discloseDown = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-down-16.png");
-			discloseUp = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-up-16.png");
+			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-16.png");
+			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-16.png");
 		}
 
 		protected override void OnDestroyed ()
@@ -393,8 +393,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 
 					var img = r.Expanded ? discloseUp : discloseDown;
-					CairoHelper.SetSourcePixbuf (ctx, img, Allocation.Width - img.Width - CategoryTopBottomPadding, y + (rh - img.Height) / 2);
-					ctx.Paint ();
+					ctx.DrawImage (this, img, Allocation.Width - img.Width - CategoryTopBottomPadding, y + (rh - img.Height) / 2);
 
 					y += rh;
 					lastCategory = r;

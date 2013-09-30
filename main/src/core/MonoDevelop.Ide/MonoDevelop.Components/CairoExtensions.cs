@@ -434,16 +434,16 @@ namespace MonoDevelop.Components
 			CAIRO_EXTEND_PAD
 		}
 
-		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
+		public static void RenderTiled (this Cairo.Context self, Xwt.Drawing.Image source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
 		{
-			Gdk.CairoHelper.SetSourcePixbuf (self, source, area.X, area.Y);
-			//NOTE: Mono.Cairo.Context.Pattern returns an object than cannot be safely disposed, so P/Invoke directly
-			var pattern = cairo_get_source (self.Handle);
-			cairo_pattern_set_extend (pattern, CairoExtend.CAIRO_EXTEND_REPEAT);
-			self.Rectangle (clip.ToCairoRect ());
-			self.Clip ();
-			self.PaintWithAlpha (opacity);
-			self.ResetClip ();
+			var ctx = Xwt.Toolkit.CurrentEngine.WrapContext (self);
+			ctx.Save ();
+			ctx.Rectangle (clip.X, clip.Y, clip.Width, clip.Height);
+			ctx.Clip ();
+			ctx.Pattern = new Xwt.Drawing.ImagePattern (source);
+			ctx.Rectangle (area.X, area.Y, area.Width, area.Height);
+			ctx.Fill ();
+			ctx.Restore ();
 		}
 
         public static void DisposeContext (Cairo.Context cr)

@@ -408,6 +408,9 @@ namespace MonoDevelop.Ide.Gui
 
 	class TabStrip: EventBox, Xwt.Motion.IAnimatable
 	{
+		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev.png");
+		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next.png");
+
 		List<Gtk.Widget> children = new List<Widget> ();
 		DockNotebook notebook;
 		DockNotebookTab highlightedTab;
@@ -479,15 +482,15 @@ namespace MonoDevelop.Ide.Gui
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonPressMask;
 
-			var arr = new Gtk.Image (Gdk.Pixbuf.LoadFromResource ("tabbar-prev.png"));
+			var arr = new Xwt.ImageView (tabbarPrevImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			PreviousButton = new Button (arr);
+			PreviousButton = new Button (arr.ToGtkWidget ());
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 
-			arr = new Gtk.Image (Gdk.Pixbuf.LoadFromResource ("tabbar-next.png"));
+			arr = new Xwt.ImageView (tabbarNextImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			NextButton = new Button (arr);
+			NextButton = new Button (arr.ToGtkWidget ());
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 

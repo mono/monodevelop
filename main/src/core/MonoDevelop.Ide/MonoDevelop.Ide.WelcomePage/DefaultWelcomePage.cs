@@ -33,8 +33,8 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		protected override void BuildContent (Container parent)
 		{
-			LogoImage = Gdk.Pixbuf.LoadFromResource ("WelcomePage_Logo.png");
-			TopBorderImage = Gdk.Pixbuf.LoadFromResource ("WelcomePage_TopBorderRepeat.png");
+			LogoImage = Xwt.Drawing.Image.FromResource ("WelcomePage_Logo.png");
+			TopBorderImage = Xwt.Drawing.Image.FromResource ("WelcomePage_TopBorderRepeat.png");
 
 			var mainAlignment = new Gtk.Alignment (0.5f, 0.5f, 0f, 1f);
 

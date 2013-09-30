@@ -92,9 +92,9 @@ namespace MonoDevelop.Ide
 			
 			if (FeedbackService.Enabled) {
 				CustomFrame fr = new CustomFrame (0, 0, 1, 0);
-				Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("feedback-16.png");
+				var px = Xwt.Drawing.Image.FromResource ("feedback-16.png");
 				HBox b = new HBox (false, 3);
-				b.PackStart (new Gtk.Image (px));
+				b.PackStart (new Xwt.ImageView (px).ToGtkWidget ());
 				b.PackStart (new Gtk.Label ("Feedback"));
 				Gtk.Alignment al = new Gtk.Alignment (0f, 0f, 1f, 1f);
 				al.RightPadding = 5;

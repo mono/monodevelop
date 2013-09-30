@@ -16,12 +16,12 @@ namespace MonoDevelop.Components
 		private Label title;
 		private Gtk.Image icon;
 		private EventBox titleBox;
-		private static Gdk.Pixbuf closeImage;
+		private static Xwt.Drawing.Image closeImage;
 		
 		static TabLabel ()
 		{
 			try {
-				closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
+				closeImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.png");
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
 			}
@@ -52,8 +52,7 @@ namespace MonoDevelop.Components
 			Gtk.Rc.ParseString ("widget \"*.MonoDevelop.TabLabel.CloseButton\" style  \"MonoDevelop.TabLabel.CloseButton\"\n");
 			Button button = new Button ();
 			button.CanDefault = false;
-			Gtk.Image closeIcon = new Gtk.Image (closeImage);
-			closeIcon.SetPadding (0, 0);
+			var closeIcon = new Xwt.ImageView (closeImage).ToGtkWidget ();
 			button.Image = closeIcon;
 			button.Relief = ReliefStyle.None;
 			button.BorderWidth = 0;
