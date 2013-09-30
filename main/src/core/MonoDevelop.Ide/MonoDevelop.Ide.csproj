@@ -1119,8 +1119,8 @@
     <EmbeddedResource Include="icons\issuestatus-updating-16.png">
       <LogicalName>issuestatus-updating-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-warning-14.png">
-      <LogicalName>issuestatus-warning-14.png</LogicalName>
+    <EmbeddedResource Include="icons\issuestatus-warning-16.png">
+      <LogicalName>issuestatus-warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\component-folder-closed-16%402x.png">
       <LogicalName>component-folder-closed-16@2x.png</LogicalName>
