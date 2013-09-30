@@ -38,6 +38,7 @@ namespace MonoDevelop.Debugger.Win32
 		readonly FieldInfo field;
 		readonly CorValRef thisobj;
 		readonly CorValRef.ValueLoader loader;
+		readonly ObjectValueFlags flags;
 
 		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
 			: base (ctx)
@@ -47,6 +48,8 @@ namespace MonoDevelop.Debugger.Win32
 			this.field = field;
 			if (field.IsStatic)
 				this.thisobj = null;
+
+			flags = GetFlags (field);
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;
@@ -114,27 +117,32 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Field;
-
-				if (field.IsStatic)
-					flags |= ObjectValueFlags.Global;
-
-				if (field.IsFamilyOrAssembly)
-					flags |= ObjectValueFlags.InternalProtected;
-				else if (field.IsFamilyAndAssembly)
-					flags |= ObjectValueFlags.Internal;
-				else if (field.IsFamily)
-					flags |= ObjectValueFlags.Protected;
-				else if (field.IsPublic)
-					flags |= ObjectValueFlags.Public;
-				else
-					flags |= ObjectValueFlags.Private;
-
-				if (field.IsLiteral)
-					flags |= ObjectValueFlags.ReadOnly;
-
 				return flags;
 			}
+		}
+
+		internal static ObjectValueFlags GetFlags (FieldInfo field)
+		{
+			ObjectValueFlags flags = ObjectValueFlags.Field;
+
+			if (field.IsStatic)
+				flags |= ObjectValueFlags.Global;
+
+			if (field.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
+			else if (field.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (field.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (field.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else
+				flags |= ObjectValueFlags.Private;
+
+			if (field.IsLiteral)
+				flags |= ObjectValueFlags.ReadOnly;
+
+			return flags;
 		}
 	}
 }
