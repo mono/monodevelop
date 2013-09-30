@@ -140,7 +140,7 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			public void LogError (string message, Exception ex)
 			{
-				MonoDevelop.Core.LoggingService.LogError (message, ex);
+				LoggingService.LogError (message, ex);
 			}
 			
 			public void LogAndShowException (string message, Exception ex)
@@ -151,7 +151,7 @@ namespace MonoDevelop.Debugger.Soft
 
 			public void LogMessage (string messageFormat, params object[] args)
 			{
-				MonoDevelop.Core.LoggingService.LogInfo (messageFormat, args);
+				LoggingService.LogInfo (messageFormat, args);
 			}
 		}
 	}
