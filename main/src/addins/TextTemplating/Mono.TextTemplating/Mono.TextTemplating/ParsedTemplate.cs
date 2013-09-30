@@ -36,10 +36,12 @@ namespace Mono.TextTemplating
 	
 	public class ParsedTemplate
 	{
+
 		List<ISegment> segments = new List<ISegment> ();
 		List<ISegment> importedHelperSegments = new List<ISegment> ();
 		CompilerErrorCollection errors = new CompilerErrorCollection ();
 		string rootFileName;
+
 		
 		public ParsedTemplate (string rootFileName)
 		{

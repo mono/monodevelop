@@ -54,6 +54,7 @@ namespace MonoDevelop.TextTemplating.Parser
 
 		public override IList<Error> Errors {
 			get {
+				Console.WriteLine ("Number of errors: " + errors.Count);
 				return errors;
 			}
 		}
@@ -104,7 +105,8 @@ namespace MonoDevelop.TextTemplating.Parser
 						Directive dir = (Directive)seg;
 						name = "<#@" + dir.Name + "...#>";
 					}
-					
+
+					Console.WriteLine ("sl: " +seg.TagStartLocation.Line + " sc: "+ seg.TagStartLocation.Column + "el: " +seg.EndLocation.Line + "ec: " +seg.EndLocation.Column);
 					DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 				                                      seg.EndLocation.Line, seg.EndLocation.Column);
 					
