@@ -373,20 +373,30 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
 
-        public override bool IsDefined (Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override bool IsDefined (Type attributeType, bool inherit)
+		{
+			return GetCustomAttributes (attributeType, inherit).Length > 0;
+		}
 
-        public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override object[] GetCustomAttributes (Type attributeType, bool inherit)
+		{
+			ArrayList list = new ArrayList ();
+			foreach (object ob in GetCustomAttributes (inherit)) {
+				if (attributeType.IsInstanceOfType (ob))
+					list.Add (ob);
+			}
+			return list.ToArray ();
+		}
 
-        public override object[] GetCustomAttributes(bool inherit)
-        {
-            throw new NotImplementedException();
-        }
+		// [Xamarin] Expression evaluator.
+		public override object[] GetCustomAttributes(bool inherit)
+		{
+			if (m_customAttributes == null)
+				m_customAttributes = MetadataHelperFunctionsExtensions.GetDebugAttributes (m_importer, m_methodToken);
+			return m_customAttributes;
+		}
 
         public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
         {
@@ -449,6 +459,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		// [Xamarin] Expression evaluator.
 		private List<Type> m_argTypes;
 		private Type m_retType;
+		private object[] m_customAttributes;
     }
 
     public enum MetadataTokenType

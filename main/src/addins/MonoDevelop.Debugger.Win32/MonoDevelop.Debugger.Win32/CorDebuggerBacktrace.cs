@@ -122,6 +122,8 @@ namespace MonoDevelop.Debugger.Win32
 							}
 						}
 					}
+					// FIXME: Still steps into.
+					//hidden = mi.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
 				}
 				lang = "Managed";
 				hasDebugInfo = true;
@@ -140,10 +142,6 @@ namespace MonoDevelop.Debugger.Win32
 					case CorDebugInternalFrameType.STUBFRAME_FUNC_EVAL: method = "[Function Evaluation]"; break;
 				}
 			}
-
-			// Implement custom attributes in CorMetadata.cs
-			//			if (frame.Function.GetMethodInfo (session).GetCustomAttributes (System.Diagnostics.DebuggerHiddenAttribute, true) != null)
-			//	hidden = true;
 
 			if (method == null)
 				method = "<Unknown>";
