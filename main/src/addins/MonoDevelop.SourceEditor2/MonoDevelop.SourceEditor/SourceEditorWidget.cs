@@ -1017,7 +1017,8 @@ namespace MonoDevelop.SourceEditor
 						string content = AutoSave.LoadAutoSave (fileName);
 						AutoSave.RemoveAutoSaveFile (fileName);
 						TextEditor.GrabFocus ();
-						view.Load (fileName, content, null);
+						view.Load (fileName);
+						view.ReplaceContent (fileName, content, null);
 						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {
@@ -1062,7 +1063,7 @@ namespace MonoDevelop.SourceEditor
 
 				view.StoreSettings ();
 				reloadSettings = true;
-				view.Load (view.ContentName);
+				view.Load (view.ContentName, view.SourceEncoding, true);
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");

@@ -117,6 +117,12 @@ namespace Mono.TextEditor
 				trackDocument.Splitter.LineRemoved += HandleLineRemoved;
 			}
 		}
+
+		public void Reset ()
+		{
+			lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
+			lineStates.InsertRange(0, trackDocument.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
+		}
 	}
 }
 
