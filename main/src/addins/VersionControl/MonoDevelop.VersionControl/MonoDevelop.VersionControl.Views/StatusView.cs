@@ -174,12 +174,12 @@ namespace MonoDevelop.VersionControl.Views
 			colCommit.AddAttribute (crc, "visible", ColShowComment);
 			
 			CellRendererText crt = new CellRendererText();
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			TreeViewColumn colStatus = new TreeViewColumn ();
 			colStatus.Title = GettextCatalog.GetString ("Status");
 			colStatus.PackStart (crp, false);
 			colStatus.PackStart (crt, true);
-			colStatus.AddAttribute (crp, "pixbuf", ColIcon);
+			colStatus.AddAttribute (crp, "image", ColIcon);
 			colStatus.AddAttribute (crp, "visible", ColShowStatus);
 			colStatus.AddAttribute (crt, "text", ColStatus);
 			colStatus.AddAttribute (crt, "foreground", ColStatusColor);
@@ -187,21 +187,21 @@ namespace MonoDevelop.VersionControl.Views
 			TreeViewColumn colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
-			crp = new CellRendererPixbuf ();
+			crp = new CellRendererImage ();
 			diffRenderer = new CellRendererDiff ();
 			colFile.PackStart (crp, false);
 			colFile.PackStart (diffRenderer, true);
-			colFile.AddAttribute (crp, "pixbuf", ColIconFile);
+			colFile.AddAttribute (crp, "image", ColIconFile);
 			colFile.AddAttribute (crp, "visible", ColShowStatus);
 			colFile.SetCellDataFunc (diffRenderer, new TreeCellDataFunc (SetDiffCellData));
 			
 			crt = new CellRendererText();
-			crp = new CellRendererPixbuf ();
+			crp = new CellRendererImage ();
 			colRemote = new TreeViewColumn ();
 			colRemote.Title = GettextCatalog.GetString ("Remote Status");
 			colRemote.PackStart (crp, false);
 			colRemote.PackStart (crt, true);
-			colRemote.AddAttribute (crp, "pixbuf", ColRemoteIcon);
+			colRemote.AddAttribute (crp, "image", ColRemoteIcon);
 			colRemote.AddAttribute (crt, "text", ColRemoteStatus);
 			colRemote.AddAttribute (crt, "foreground", ColStatusColor);
 			
@@ -212,7 +212,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string[]), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool), typeof(bool));
+			filestore = new TreeStore (typeof (Xwt.Drawing.Image), typeof (string), typeof (string[]), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Xwt.Drawing.Image), typeof(bool), typeof (Xwt.Drawing.Image), typeof(string), typeof(bool), typeof(bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -555,10 +555,10 @@ namespace MonoDevelop.VersionControl.Views
 		
 		TreeIter AppendFileInfo (VersionInfo n)
 		{
-			Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus(n.Status);
+			Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus(n.Status);
 			string lstatus = VersionControlService.GetStatusLabel (n.Status);
 			
-			Gdk.Pixbuf rstatusicon = VersionControlService.LoadIconForStatus(n.RemoteStatus);
+			Xwt.Drawing.Image rstatusicon = VersionControlService.LoadIconForStatus(n.RemoteStatus);
 			string rstatus = VersionControlService.GetStatusLabel (n.RemoteStatus);
 
 			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
@@ -570,14 +570,12 @@ namespace MonoDevelop.VersionControl.Views
 			bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
 			bool commit = changeSet.ContainsFile (n.LocalPath);
 			
-			Gdk.Pixbuf fileIcon;
+			Xwt.Drawing.Image fileIcon;
 			if (n.IsDirectory)
-				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
+				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu).ToPixbuf ();
+				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
 
-			
-			
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
 				filestore.AppendValues (it, statusicon, "", new string[0], "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);

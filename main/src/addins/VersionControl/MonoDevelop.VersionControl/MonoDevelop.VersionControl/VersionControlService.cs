@@ -32,11 +32,11 @@ namespace MonoDevelop.VersionControl
 		static Xwt.Drawing.Image overlay_unlocked;
 //		static Gdk.Pixbuf overlay_normal;
 
-		static Gdk.Pixbuf icon_modified;
-		static Gdk.Pixbuf icon_removed;
-		static Gdk.Pixbuf icon_conflicted;
-		static Gdk.Pixbuf icon_added;
-		internal static Gdk.Pixbuf icon_controled;
+		static Xwt.Drawing.Image icon_modified;
+		static Xwt.Drawing.Image icon_removed;
+		static Xwt.Drawing.Image icon_conflicted;
+		static Xwt.Drawing.Image icon_added;
+		internal static Xwt.Drawing.Image icon_controled;
 		
 		static Hashtable comments;
 		static object commentsLock = new object ();
@@ -66,11 +66,11 @@ namespace MonoDevelop.VersionControl
 					overlay_locked = Xwt.Drawing.Image.FromResource("overlay_locked.png");
 		//			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
-					icon_modified = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
-					icon_removed = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-					icon_conflicted = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
-					icon_added = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
-					icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
+					icon_modified = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
+					icon_removed = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					icon_conflicted = ImageService.GetIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+					icon_added = ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					icon_controled = Xwt.Drawing.Image.FromResource("overlay_controled.png");
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading icons.", e);
 				}
@@ -140,7 +140,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 		
-		public static Gdk.Pixbuf LoadIconForStatus (VersionStatus status)
+		public static Xwt.Drawing.Image LoadIconForStatus (VersionStatus status)
 		{
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:

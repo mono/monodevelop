@@ -8,6 +8,7 @@ using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -23,19 +24,19 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			Build ();
 
-			store = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof(bool), typeof(object));
+			store = new ListStore(typeof (Xwt.Drawing.Image), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
 			this.changeSet = changeSet;
 			oldMessage = changeSet.GlobalComment;
 
 			CellRendererText crt = new CellRendererText ();
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			TreeViewColumn colStatus = new TreeViewColumn ();
 			colStatus.Title = GettextCatalog.GetString ("Status");
 			colStatus.PackStart (crp, false);
 			colStatus.PackStart (crt, true);
 			colStatus.Spacing = 2;
-			colStatus.AddAttribute (crp, "pixbuf", 0);
+			colStatus.AddAttribute (crp, "image", 0);
 			colStatus.AddAttribute (crt, "text", 1);
 			CellRendererToggle cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
@@ -73,7 +74,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			HandleAllowCommitChanged (null, null);
 
 			foreach (ChangeSetItem info in changeSet.Items) {
-				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus (info.Status);
+				Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
 				string lstatus = VersionControlService.GetStatusLabel (info.Status);
 				string localpath;
 
