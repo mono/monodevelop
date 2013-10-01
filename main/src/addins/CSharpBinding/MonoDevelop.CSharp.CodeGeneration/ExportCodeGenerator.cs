@@ -32,6 +32,7 @@ using System;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -78,29 +79,27 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 
+
 			protected override IEnumerable<object> GetValidMembers ()
 			{
 				var type = Options.EnclosingType;
 				if (type == null || Options.EnclosingMember != null)
 					yield break;
 				foreach (var t in type.DirectBaseTypes) {
-					foreach (var attrs in t.GetDefinition ().GetAttributes ()) {
-						if (attrs.AttributeType.Name != "ProtocolAttribute" || attrs.AttributeType.Namespace != "MonoTouch.Foundation")
-							continue;
-						foreach (var na in attrs.NamedArguments) {
-							if (na.Key.Name != "Name")
-								continue;
-							string name = na.Value.ConstantValue as string;
-							if (name == null)
-								break;
-							var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
-							if (protocolType == null)
-								break;
-							foreach (var member in protocolType.GetMembers ()) {
-								if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
-									yield return member;
-							}
-						}
+					string name;
+					if (!CSharpCodeGenerationService.HasProtocolAttribute (t, out name))
+						continue;
+					var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
+					if (protocolType == null)
+						break;
+					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+							yield return member;
+					}
+					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
+							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+							yield return member;
 					}
 				}
 			}
@@ -116,26 +115,54 @@ namespace MonoDevelop.CodeGeneration
 
 				foreach (IMember member in includedMembers) {
 					var method = builder.ConvertEntity (member) as MethodDeclaration;
-					method.Body = new BlockStatement () {
-						new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-					};
-					var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
-					if (astType is SimpleType) {
-						astType = new SimpleType ("Export");
-					} else {
-						astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
-					}
+					if (method != null) {
+						method.Body = new BlockStatement () {
+							new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+						};
+						method.Modifiers &= ~Modifiers.Virtual;
+						method.Modifiers &= ~Modifiers.Abstract;
 
-					var attr = new ICSharpCode.NRefactory.CSharp.Attribute {
-						Type = astType,
-					};
-					method.Modifiers &= ~Modifiers.Virtual;
-					var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("MonoTouch.Foundation", "ExportAttribute"))); 
-					attr.Arguments.Add (new PrimitiveExpression (exportAttribute.PositionalArguments.First ().ConstantValue)); 
-					method.Attributes.Add (new AttributeSection {
-						Attributes = { attr }
-					}); 
-					yield return method.ToString ();
+						method.Attributes.Add (new AttributeSection {
+							Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, member) }
+						}); 
+						yield return method.ToString ();
+						continue;
+					}
+					var property = builder.ConvertEntity (member) as PropertyDeclaration;
+					if (property != null) {
+						var p = (IProperty)member;
+
+						var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
+						if (astType is SimpleType) {
+							astType = new SimpleType ("Export");
+						} else {
+							astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
+						}
+
+						property.Modifiers &= ~Modifiers.Virtual;
+						property.Modifiers &= ~Modifiers.Abstract;
+
+						if (p.CanGet) {
+							property.Getter.Body = new BlockStatement () {
+								new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+							};
+
+							property.Getter.Attributes.Add (new AttributeSection {
+								Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, p.Getter) }
+							}); 
+						}
+						if (p.CanSet) {
+							property.Setter.Body = new BlockStatement () {
+								new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+							};
+
+							property.Setter.Attributes.Add (new AttributeSection {
+								Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, p.Setter)  }
+							}); 
+						}
+						yield return property.ToString ();
+						continue;
+					}
 				}
 			}
 		}
