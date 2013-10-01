@@ -875,7 +875,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (properties.TryGetValue (name, out val))
 				return val;
 			else
-				return "";
+				return Environment.GetEnvironmentVariable (name);
 		}
 
 		public void SetPropertyValue (string name, string value)
@@ -952,8 +952,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				string prop = str.Substring (i, j - i);
-				string val;
-				if (!properties.TryGetValue (prop, out val)) {
+				string val = GetPropertyValue (prop);
+				if (val == null) {
 					allResolved = false;
 					return "";
 				}
@@ -973,7 +973,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string EvaluateString (string value)
 		{
 			if (value.StartsWith ("$(") && value.EndsWith (")"))
-				return GetPropertyValue (value.Substring (2, value.Length - 3));
+				return GetPropertyValue (value.Substring (2, value.Length - 3)) ?? value;
 			else
 				return value;
 		}
