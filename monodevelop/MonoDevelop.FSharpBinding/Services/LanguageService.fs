@@ -376,7 +376,7 @@ module Parsing =
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
 type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo) =
-    let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
+    let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
     let preCrack (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
@@ -415,7 +415,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         Debug.WriteLine(sprintf "Result: Crack symbol text at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
                               line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
 
-        let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
+        let token = Parser.tagOfToken(Parser.token.IDENT("")) 
         match identIsland with
         | [] | [ "" ] -> None
         | _ -> Some (line,col,lineStr,identIsland,currentIdent,token)
@@ -442,7 +442,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     /// Get declarations at the current location in the specified document
     /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
-    member x.GetDeclarations(doc:Document) = 
+    member x.GetDeclarations(doc:Document, context: CodeCompletion.CodeCompletionContext) = 
         let lineStr = doc.Editor.GetLineText(doc.Editor.Caret.Line)
     
         // Get the long identifier before the current location
@@ -454,16 +454,18 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | Some (residue, longName) ->
     
         Debug.WriteLine(sprintf "Result: GetDeclarations: column: %d, ident: %A\n    Line: %s" (doc.Editor.Caret.Line - 1) (longName, residue) lineStr)
-        let res = info.GetDeclarations( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), 0, ServiceSettings.blockingTimeout) // 0 is tokenTag, which is ignored in this case
-
-        Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" res.Items.Length)
-        res
+        //Review: last parameter is a function has changes since last type check, we always return false here.
+        let getDeclarations = info.GetDeclarations(Some(untyped), (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), fun _ -> false)
+                                              
+        let declarations = Async.RunSynchronously(getDeclarations, ServiceSettings.blockingTimeout)
+        Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
+        declarations
 
   /// Get the tool-tip to be displayed at the specified offset (relatively
   /// from the beginning of the current document)
     member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
         match crackSymbolText(offset, doc) with 
-        | None -> DataTipText.Empty 
+        | None -> DataTipText []
         | Some(line,col,lineStr,identIsland,currentIdent,token) ->
           let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
           match res with
@@ -480,7 +482,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         match crackSymbolText(offset, doc) with 
-        | None -> FindDeclResult.NotFound 
+        | None -> DeclNotFound FindDeclFailureReason.Unknown
         | Some(line,col,lineStr,identIsland,currentIdent,token) ->
             let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
             Debug.WriteLine( "Result: Got something, returning"  )
@@ -490,9 +492,9 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         match crackSymbolTextAtGetMethodsTrigger(offset, doc) with 
         | None -> None
         | Some(line,col,lineStr,identIsland,currentIdent,token) ->
-            let res = info.GetMethods((line, col), lineStr, Some identIsland, token)
+            let res = info.GetMethods((line, col), lineStr, Some identIsland)
             Debug.WriteLine( "Result: Got something, returning"  )
-            Some res 
+            Some (res.Name, res.Methods) 
             
     member x.Untyped with get() = untyped 
 
@@ -562,12 +564,12 @@ type internal LanguageService private () =
   // and its time to re-typecheck the current file.
   let checker = 
     let dispatch file = 
-      DispatchService.GuiDispatch(fun () ->
+      DispatchService.GuiDispatch(fun () -> 
         try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" file)
-                     let doc = IdeApp.Workbench.ActiveDocument
-                     if doc <> null && doc.FileName.FullPath.ToString() = file then 
+            let doc = IdeApp.Workbench.ActiveDocument
+            if doc <> null && doc.FileName.FullPath.ToString() = file then 
                 Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
-                         doc.ReparseDocument()
+                doc.ReparseDocument()
         with exn  -> () )
                                             
     InteractiveChecker.Create(NotifyFileTypeCheckStateIsDirty dispatch)
@@ -657,14 +659,14 @@ type internal LanguageService private () =
             do! Async.Sleep 3000
             return! loop None} )
 
-  /// Constructs options for the interactive checker for the given file in the project under the given configuration.
+   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
     let ext = Path.GetExtension(fileName)
     let opts = 
       if (proj = null || ext = ".fsx" || ext = ".fsscript") then
       
         // We are in a stand-alone file or we are in a project, but currently editing a script file
-        try
+        try 
           let fileName = CompilerArguments.fixFileName(fileName)
           Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
@@ -676,11 +678,11 @@ type internal LanguageService private () =
             Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
             let dirs = ScriptOptions.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, TargetFrameworkMoniker.NET_4_0 )
             {opts with ProjectOptions = [| yield! opts.ProjectOptions; 
-                 match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
-                 | Some fn -> yield sprintf "-r:%s" fn
-                 | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
-                 match ScriptOptions.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
-                 | Some fn -> yield sprintf "-r:%s" fn
+                                           match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
+                                           | Some fn -> yield sprintf "-r:%s" fn
+                                           | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
+                                           match ScriptOptions.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
+                                           | Some fn -> yield sprintf "-r:%s" fn
                                            | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
           
