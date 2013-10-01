@@ -29,6 +29,12 @@
     <OptimizeCode>false</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
+    <!-- <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="&quot;/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/XamarinStudio.exe&quot;" workingdir="/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin" />
+      </CustomCommands>
+    </CustomCommands> -->
+
   </PropertyGroup>
   <Target Name="Clean">
     <RemoveDir Directories="..\bin\" />
@@ -188,6 +194,9 @@
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\lib\fsharp\FSharp.Core.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.Compiler.Editor">
+      <HintPath>packages\FSharp.Compiler.Editor.1.0.7\lib\net40\FSharp.Compiler.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
