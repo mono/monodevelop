@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			memberStartOffset = sb.Length;
-			var text = data.Editor.GetTextBetween (seg.Offset, endOffset);
+			var text = data.Editor.GetTextBetween (Math.Max (0, seg.Offset), endOffset);
 			sb.Append (text);
 
 			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
