@@ -54,8 +54,7 @@ module FSharpEnvironment =
   //   - the .NET DLL version number for all VS2008 DLLs
   //   - the VS2008 registry key, written by the VS2008 installer
   //     HKEY_LOCAL_MACHINE\Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber
-  // Also
-  //   - for Beta2, the language revision number indicated on the F# language spec
+  // Also for Beta2, the language revision number indicated on the F# language spec
   //
   // It is NOT the version number listed on FSharp.Core.dll
   let FSharpTeamVersionNumber = "2.0.0.0"
