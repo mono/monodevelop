@@ -364,5 +364,23 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (value, conf.OutputAssembly);
 		}
+
+		[Test]
+		public void EvaluateProperties ()
+		{
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			Assert.AreEqual ("Program1_test1.cs", p.Files[0].FilePath.FileName, "Basic replacement");
+			Assert.AreEqual ("Program2_test1_test2.cs", p.Files[1].FilePath.FileName, "Property referencing same property");
+			Assert.AreEqual ("Program3_$(DebugType).cs", p.Files[2].FilePath.FileName, "Property inside group with non-evaluable condition");
+			Assert.AreEqual ("Program4_yes_value.cs", p.Files[3].FilePath.FileName, "Evaluation of group condition");
+			Assert.AreEqual ("Program5_yes_value.cs", p.Files[4].FilePath.FileName, "Evaluation of property condition");
+			Assert.AreEqual ("Program6_$(FFF).cs", p.Files[5].FilePath.FileName, "Evaluation of property with non-evaluable condition");
+			Assert.AreEqual ("Program7_test1.cs", p.Files[6].FilePath.FileName, "Item conditions are ignored");
+			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are ignored");
+			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
+			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
+		}
 	}
 }
