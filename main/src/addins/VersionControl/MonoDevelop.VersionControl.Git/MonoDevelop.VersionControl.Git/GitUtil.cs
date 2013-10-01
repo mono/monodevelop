@@ -37,6 +37,7 @@ using NGit.Merge;
 using NGit.Transport;
 using NGit.Diff;
 using NGit.Internal;
+using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -371,6 +372,20 @@ namespace MonoDevelop.VersionControl.Git
 			// Maybe check if it has a HEAD file? But this check should be enough.
 			var newPath = path.Combine (".git");
 			return Directory.Exists (newPath) && Directory.Exists (newPath.Combine ("objects")) && Directory.Exists (newPath.Combine ("refs"));
+		}
+
+		public static bool IsValidBranchName (string name)
+		{
+			// List from: https://github.com/git/git/blob/master/refs.c#L21
+			if (name.StartsWith (".", StringComparison.Ordinal) ||
+				name.EndsWith ("/", StringComparison.Ordinal) ||
+				name.EndsWith (".lock", StringComparison.Ordinal))
+				return false;
+
+			if (name.Contains (" ") || name.Contains ("~") || name.Contains ("..") || name.Contains ("^") ||
+				name.Contains (":") || name.Contains ("\\") || name.Contains ("?") || name.Contains ("["))
+				return false;
+			return true;
 		}
 	}
 }

@@ -1418,6 +1418,28 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		public void AddTag (string name, Revision rev, string message)
+		{
+			var addTag = new NGit.Api.Git (RootRepository).Tag ();
+			var gitRev = (GitRevision)rev;
+
+			addTag.SetName (name).SetMessage (message).SetObjectId (gitRev.Commit);
+			addTag.SetObjectId (gitRev.Commit).SetTagger (new PersonIdent (RootRepository));
+			addTag.Call ();
+		}
+
+		public void RemoveTag (string name)
+		{
+			var deleteTag = new NGit.Api.Git (RootRepository).TagDelete ();
+			deleteTag.SetTags (name).Call ();
+		}
+
+		public void PushAllTags ()
+		{
+			var pushTags = new NGit.Api.Git (RootRepository).Push ();
+			pushTags.SetPushTags ().Call ();
+		}
+
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
 			var list = new NGit.Api.Git (RootRepository).BranchList ().SetListMode (ListBranchCommand.ListMode.REMOTE);
