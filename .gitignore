@@ -30,6 +30,8 @@ emacs/tmp
 
 .DS_Store
 
+monodevelop/Makefile
+
 /monodevelop/configure-app.exe
 /monodevelop/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 /monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
