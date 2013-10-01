@@ -7,7 +7,8 @@ FSC = mono $(MONOBIN)/fsc.exe
 FILES_FCB = \
 	FSharp.CompilerBinding/Common.fs \
 	FSharp.CompilerBinding/CompilerLocationUtils.fs \
-	FSharp.CompilerBinding/FSharpCompiler.fs
+	FSharp.CompilerBinding/Digraph.fs \
+	FSharp.CompilerBinding/OrderAssemblyReferences.fs
 
 FILES_FAC = \
 	FSharp.AutoComplete/Debug.fs \
@@ -27,6 +28,8 @@ REFERENCES = \
 	-r:Microsoft.Build.Framework.dll \
 	-r:Microsoft.Build.Tasks.v4.0.dll \
 	-r:Microsoft.Build.Utilities.v4.0.dll \
+	-r:../gac//Mono.Cecil/0.9.5.0__0738eb9f132ed756/Mono.Cecil.dll \
+	-r:monodevelop/MonoDevelop.FSharpBinding/packages/FSharp.Compiler.Editor.1.0.7/lib/net40/FSharp.Compiler.Editor.dll \
 	-r:lib/ndesk-options/NDesk.Options.dll \
 	-r:lib/newtonsoft.json/Newtonsoft.Json.dll \
 	-r:$(MONOBIN)/FSharp.Core.dll 
