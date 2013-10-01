@@ -10,6 +10,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.CodeCompletion
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 open ICSharpCode.NRefactory.Editor
@@ -21,8 +22,10 @@ type internal FSharpMemberCompletionData(mi:Declaration) =
     inherit CompletionData(CompletionText = (if mi.Name |> String.forall PrettyNaming.IsIdentifierPartCharacter then mi.Name else "``" + mi.Name + "``"), 
                            DisplayText = mi.Name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-    override x.Description = TipFormatter.formatTip false mi.DescriptionText    
-    override x.Icon = new MonoDevelop.Core.IconId(ServiceUtils.getIcon mi.Glyph)
+    let description = lazy TipFormatter.formatTip false mi.DescriptionText
+    let icon = lazy MonoDevelop.Core.IconId(ServiceUtils.getIcon mi.Glyph)
+    override x.Description with get() = description.Value   
+    override x.Icon with get() = icon.Value
 
     // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (smartWrap: bool) = 
@@ -55,15 +58,15 @@ type internal FSharpErrorCompletionData(exn:exn) =
     override x.Icon =  new MonoDevelop.Core.IconId("md-event")
 
 /// Provide information to the 'method overloads' windows that comes up when you type '('
-type ParameterDataProvider(nameStart: int, meths: MethodOverloads) = 
+type ParameterDataProvider(nameStart: int, name, meths : Method array) = 
     inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
-    override x.Count = meths.Methods.Length
+    override x.Count = meths.Length
         /// Returns the markup to use to represent the specified method overload
         /// in the parameter information window.
     override x.CreateTooltipInformation (overload:int, currentParameter:int, smartWrap:bool) = 
         // Get the lower part of the text for the display of an overload
         let description = 
-            let meth = meths.Methods.[overload]
+            let meth = meths.[overload]
             let text = TipFormatter.formatTip false meth.Description 
             let allLines = text.Split([| '\n';'\r' |], StringSplitOptions.RemoveEmptyEntries)
             let body = if allLines.Length <= 1 then None else Some <| String.Join("\n", allLines.[1..])
@@ -84,13 +87,13 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
         
         // Returns the text to use to represent the specified parameter
         let paramDescription = 
-            let meth = meths.Methods.[overload]
+            let meth = meths.[overload]
             if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
             let param = meth.Parameters.[currentParameter]
             param.Name 
 
         let heading = 
-            let meth = meths.Methods.[overload]
+            let meth = meths.[overload]
             let text = TipFormatter.formatTip false meth.Description 
             let lines = text.Split [| '\n';'\r' |]
 
@@ -100,7 +103,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
             // @todo This will not be perfect when the text contains generic types with more than one type parameter
             // since they will have extra commas. 
 
-            let text = if lines.Length = 0 then meths.Name else  lines.[0]
+            let text = if lines.Length = 0 then name else  lines.[0]
             let textL = text.Split '('
             if textL.Length <> 2 then text else
             let text0 = textL.[0]
@@ -120,7 +123,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
 
     /// Returns the number of parameters of the specified method
     override x.GetParameterCount(overload:int) = 
-        let meth = meths.Methods.[overload]
+        let meth = meths.[overload]
         meth.Parameters.Length
         
     // @todo should return 'true' for param-list methods
@@ -128,7 +131,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
         false
 
     override x.GetParameterName (overload:int, paramIndex:int) =
-        let meth = meths.Methods.[overload]
+        let meth = meths.[overload]
         let prm = meth.Parameters.[paramIndex]
         prm.Name
 
@@ -162,11 +165,11 @@ type FSharpTextEditorCompletion() =
       let config = IdeApp.Workspace.ActiveConfiguration
       if config = null then null else
       // Try to get typed result - with the specified timeout
-      let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
+      let tyRes = LanguageService.Service.GetTypedParseResult(FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
       let methsOpt = tyRes.GetMethods(startOffset, doc.Editor.Document)
       match methsOpt with 
       | None -> null 
-      | Some meths -> new ParameterDataProvider (startOffset, meths) :> _ 
+      | Some(name, meths) -> new ParameterDataProvider (startOffset, name, meths) :> _ 
     with _ -> null
         
   override x.KeyPress (key, keyChar, modifier) =
@@ -186,29 +189,27 @@ type FSharpTextEditorCompletion() =
   override x.CodeCompletionCommand(context:CodeCompletionContext) : ICompletionDataList =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
-      
       // Try to get typed information from LanguageService (with the specified timeout)
       let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config, timeout = ServiceSettings.blockingTimeout)
       
       // Get declarations and generate list for MonoDevelop
-      let decls = tyRes.GetDeclarations(x.Document) 
+      let decls = tyRes.GetDeclarations(x.Document, context) 
       if decls.Items.Length > 0 then
-        let result = new CompletionDataList()
+        let result = CompletionDataList()
         for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi))
         result :> ICompletionDataList
       else null
     with 
     | :? System.TimeoutException -> 
-        let result = new CompletionDataList()
-        result.Add(new FSharpTryAgainMemberCompletionData())
+        let result = CompletionDataList()
+        result.Add(FSharpTryAgainMemberCompletionData())
         result :> ICompletionDataList
-    | e -> let result = new CompletionDataList()
-           result.Add(new FSharpErrorCompletionData(e))
+    | e -> let result = CompletionDataList()
+           result.Add(FSharpErrorCompletionData(e))
            result :> ICompletionDataList
 
-  // @todo find out what this is used for
-  override x.GetParameterCompletionCommandOffset(cpos:byref<int>) =
-      false
+  // T find out what this is used for
+  override x.GetParameterCompletionCommandOffset(cpos:byref<int>) = false
     
   // Returns the index of the parameter where the cursor is currently positioned.
   // -1 means the cursor is outside the method parameter list
