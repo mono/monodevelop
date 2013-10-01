@@ -1173,7 +1173,7 @@ namespace MonoDevelop.CSharp.Completion
 					get {
 						Initialize ();
 						if (generateUsing)
-							return string.Format (GettextCatalog.GetString ("Add namespace import '{0}'"), type.Namespace);
+							return type.Namespace;
 						return null;
 					}
 				}
