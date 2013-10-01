@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			try {
 				timer.Trace ("Create item instance");
 				ProjectExtensionUtil.BeginLoadOperation ();
-				Item = CreateSolutionItem (monitor, p, fileName, language, projectTypeGuids, itemType, itemClass);
+				Item = CreateSolutionItem (monitor, p, fileName, language, itemType, itemClass);
 	
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
@@ -354,13 +354,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal bool RequireMSBuildEngine { get; set; }
 		
 		// All of the last 4 parameters are optional, but at least one must be provided.
-		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language, string typeGuids,
+		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language,
 			string itemType, Type itemClass)
 		{
 			SolutionItem item = null;
 			
-			if (!string.IsNullOrEmpty (typeGuids)) {
-				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
+			if (subtypeGuids.Any ()) {
+				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (subtypeGuids);
 				if (st != null) {
 					UseMSBuildEngineByDefault = st.UseXBuild;
 					RequireMSBuildEngine = st.RequireXBuild;
@@ -389,7 +389,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					item = st.CreateInstance (language);
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
-					throw new UnknownSolutionItemTypeException (typeGuids);
+					throw new UnknownSolutionItemTypeException (string.Join (";", subtypeGuids));
 			}
 
 			if (item == null && itemClass != null)
