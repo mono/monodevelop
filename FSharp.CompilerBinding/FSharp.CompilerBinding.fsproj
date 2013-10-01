@@ -44,9 +44,8 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
   <ItemGroup>
     <Compile Include="Common.fs" />
-    <Compile Include="CompilerLocationUtils.fs" />
-    <Compile Include="FSharpCompiler.fs" />
     <Compile Include="Digraph.fs" />
     <Compile Include="OrderAssemblyReferences.fs" />
+    <Compile Include="CompilerLocationUtils.fs" />
   </ItemGroup>
 </Project>
