@@ -48,7 +48,7 @@ type internal RequestOptions(opts, file, src, mode) =
 /// Message type that is used by 'IntelliSenseAgent'
 type internal IntelliSenseAgentMessage =
   | TriggerParseRequest of RequestOptions * bool
-  | GetTypeCheckInfo of RequestOptions * int option * AsyncReplyChannel<TypeCheckInfo option>
+  | GetTypeCheckInfo of RequestOptions * int option * AsyncReplyChannel<TypeCheckResults option>
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
@@ -64,7 +64,7 @@ type Candidate =
 type internal IntelliSenseAgent() =
 
   /// Create an F# IntelliSense service
-  let checker = InteractiveChecker.Create(ignore)
+  let checker = InteractiveChecker.Create(NotifyFileTypeCheckStateIsDirty ignore)
 
   /// Creates an empty "Identifier" token (we need it when getting ToolTip)
   let identToken = FsParser.tagOfToken(FsParser.token.IDENT(""))
@@ -75,10 +75,10 @@ type internal IntelliSenseAgent() =
     let info =
       checker.TypeCheckSource
         ( untypedInfo, opts.FileName, identToken, opts.Source,
-          opts.Options, IsResultObsolete(fun () -> false) )
+          opts.Options, IsResultObsolete(fun () -> false), null)
     match info with
-    | TypeCheckSucceeded(res) when res.TypeCheckInfo.IsSome ->
-        return res.TypeCheckInfo.Value, res.Errors
+    | TypeCheckSucceeded(res) when res.HasFullTypeCheckInfo ->
+        return res, res.Errors
     | _ ->
         do! Async.Sleep(200)
         return! waitForTypeCheck(opts, untypedInfo) }
@@ -95,7 +95,7 @@ type internal IntelliSenseAgent() =
           let res =
             checker.TypeCheckSource
               ( untypedInfo, opts.FileName, 0, opts.Source,
-                opts.Options, IsResultObsolete(fun () -> false))
+                opts.Options, IsResultObsolete(fun () -> false), null)
           let errors =
             match res with
             | TypeCheckSucceeded(res) -> res.Errors
@@ -155,7 +155,13 @@ type internal IntelliSenseAgent() =
         let files = ProjectParser.getFiles proj
         let args = ProjectParser.getOptions proj
 
-        CheckOptions.Create(projFile, files, args, false, false, ProjectParser.getLoadTime proj)
+        { ProjectFileName = projFile
+          ProjectFileNames = files
+          ProjectOptions = args
+          IsIncompleteTypeCheckEnvironment = false
+          UseScriptResolutionRules = false
+          LoadTime = ProjectParser.getLoadTime proj
+          UnresolvedReferences = None }
 
     // Print contents of check option for debugging purposes
     Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
@@ -180,13 +186,13 @@ type internal IntelliSenseAgent() =
     agent.Post(TriggerParseRequest(opts, full))
 
   /// Fetch latest type check information, possibly with a background check if needed
-  member x.GetTypeCheckInfo(opts : RequestOptions, time) : Option<TypeCheckInfo> =
+  member x.GetTypeCheckInfo(opts : RequestOptions, time) : Option<TypeCheckResults> =
     // First check if cached results are available
     let checkres = checker.TryGetRecentTypeCheckResultsForFile(opts.FileName, opts.Options)
     match checkres with
-    | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
+    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo ->
       Debug.print "Worker: Quick parse completed - success"
-      typed.TypeCheckInfo
+      Some typed
     | _ ->
       // Otherwise try to get type information & run the request
       agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
@@ -195,7 +201,7 @@ type internal IntelliSenseAgent() =
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
     let info = x.GetTypeCheckInfo(opts, time)
     let decls =
-      Option.bind (fun (info: TypeCheckInfo) ->
+      Option.bind (fun (info: TypeCheckResults) ->
         // Get the long identifier before the current location
         // 'residue' is the part after the last dot and 'longName' is before
         // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
@@ -205,7 +211,8 @@ type internal IntelliSenseAgent() =
 
         // Get items & generate output
         try
-          Some (info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000))
+          Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
+                |> Async.RunSynchronously)
         with :? System.TimeoutException as e ->
                    printfn "ERROR: GetDeclarations timed out\n<<EOF>>"
                    None) info
@@ -293,9 +300,9 @@ type internal IntelliSenseAgent() =
         // TODO: Need this first because of VS debug info coming out
         Console.WriteLine("DATA: finddecl")
         match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
-        | DeclFound (line,col,file) ->
+        | DeclFound ((line,col),file) ->
             printfn "%s:%d:%d\n<<EOF>>" file line col
-        | DeclNotFound -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
+        | DeclNotFound _ -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
     | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 // --------------------------------------------------------------------------------------

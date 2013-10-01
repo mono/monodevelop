@@ -7,6 +7,7 @@ namespace FSharp.InteractiveAutocomplete
 
 open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open System.Globalization
 
 // --------------------------------------------------------------------------------------
 // Simple implementation of LazyList
@@ -140,6 +141,21 @@ module Parser =
 /// of the current cursor location etc.)
 module Parsing =
   open Parser
+
+  module PrettyNaming = 
+    let IsIdentifierPartCharacter (c:char) = 
+      let cat = System.Char.GetUnicodeCategory(c)
+      cat = UnicodeCategory.UppercaseLetter ||
+      cat = UnicodeCategory.LowercaseLetter ||
+      cat = UnicodeCategory.TitlecaseLetter ||
+      cat = UnicodeCategory.ModifierLetter ||
+      cat = UnicodeCategory.OtherLetter ||
+      cat = UnicodeCategory.LetterNumber || 
+      cat = UnicodeCategory.DecimalDigitNumber ||
+      cat = UnicodeCategory.ConnectorPunctuation ||
+      cat = UnicodeCategory.NonSpacingMark ||
+      cat = UnicodeCategory.SpacingCombiningMark || c = '\''
+
 
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
   let parseIdent =

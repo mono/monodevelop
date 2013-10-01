@@ -3,6 +3,10 @@
 // --------------------------------------------------------------------------------------
 namespace FSharp.InteractiveAutocomplete
 
+// Disable warnings for obsolete MSBuild.
+// Mono doesn't support the latest API.
+#nowarn "0044"
+
 open System
 open Microsoft.Build.BuildEngine
 open Microsoft.Build.Framework
