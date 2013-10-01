@@ -771,6 +771,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public void SetMetadata (string name, string value, bool isXml = false)
 		{
+			// Don't overwrite the metadata value if the new value is the same as the old
+			// This will keep the old metadata string, which can contain property references
+			if (GetMetadata (name, isXml) == value)
+				return;
+
 			XmlElement elem = Element [name, MSBuildProject.Schema];
 			if (elem == null) {
 				elem = AddChildElement (name);
