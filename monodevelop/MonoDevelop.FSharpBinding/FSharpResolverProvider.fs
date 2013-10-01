@@ -104,27 +104,22 @@ type FSharpResolverProvider() =
             Debug.WriteLine (sprintf "Resolver: No data found")
             null
         | _ -> 
-            Debug.WriteLine (sprintf "Resolver: Got data")
-
-                       Debug.WriteLine("getting declaration location...")
-                       // Get the declaration location from the language service
-
-                       let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
+            Debug.WriteLine(sprintf "Resolver: Got data")
+            Debug.WriteLine("getting declaration location...")
+           
+            // Get the declaration location from the language service
+            let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
             let reg = match loc with
                       | DeclFound((line, col), file) -> 
                            Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
                            DomRegion(file,line+1,col+1)
                       | DeclNotFound(notfound) -> 
-                        match notfound with 
-                        | FindDeclFailureReason.Unknown -> 
-                            Debug.WriteLine("Cant find declaration location: Unknown")
-                        | FindDeclFailureReason.NoSourceCode -> 
-                            Debug.WriteLine("Cant find declaration location: No Source Code")
-                        | FindDeclFailureReason.ProvidedType(t) -> 
-                            Debug.WriteLine("Cant find declaration location: ProvidedType")
-                        | FindDeclFailureReason.ProvidedMember(m) -> 
-                            Debug.WriteLine("Cant find declaration location: ProvidedMEmber")
-                              DomRegion.Empty
+                           match notfound with 
+                           | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
+                           | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
+                           | FindDeclFailureReason.ProvidedType(t)   -> Debug.WriteLine("DeclNotFound: ProvidedType")
+                           | FindDeclFailureReason.ProvidedMember(m) -> Debug.WriteLine("DeclNotFound: ProvidedMember")
+                           DomRegion.Empty
             region <- reg
             // This is the NRefactory symbol for the item - the Region is used for goto-definition
             let ivar = 
