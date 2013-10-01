@@ -34,12 +34,14 @@ using System.Text;
 
 using MonoDevelop.Projects.Utility;
 using MonoDevelop.Projects.Text;
+using Microsoft.Build.BuildEngine;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProject
 	{
 		public XmlDocument doc;
+		string file;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
 		
@@ -59,6 +61,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return manager;
 			}
 		}
+
+		public string FileName {
+			get { return file; }
+		}
 		
 		public MSBuildProject ()
 		{
@@ -66,9 +72,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doc.PreserveWhitespace = false;
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
 		}
-		
+
 		public void Load (string file)
 		{
+			this.file = file;
 			using (FileStream fs = File.OpenRead (file)) {
 				byte[] buf = new byte [1024];
 				int nread, i;
@@ -118,6 +125,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string xml = File.ReadAllText (file);
 			
 			doc.LoadXml (xml);
+			Evaluate ();
 		}
 		
 		class ProjectWriter : StringWriter
@@ -158,6 +166,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				content += newLine;
 
 			return content;
+		}
+
+		public void Evaluate ()
+		{
+			MSBuildEvaluationContext context = new MSBuildEvaluationContext (this);
+			foreach (var pg in PropertyGroups)
+				pg.Evaluate (context);
+			foreach (var pg in ItemGroups)
+				pg.Evaluate (context);
 		}
 
 		public string DefaultTargets {
@@ -395,7 +412,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildObject
 	{
 		XmlElement elem;
-		
+		XmlElement evaluatedElem;
+
 		public MSBuildObject (XmlElement elem)
 		{
 			this.elem = elem;
@@ -403,6 +421,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public XmlElement Element {
 			get { return elem; }
+		}
+
+		public XmlElement EvaluatedElement {
+			get { return evaluatedElem ?? elem; }
+			protected set { evaluatedElem = value; }
+		}
+
+		public bool IsEvaluated {
+			get { return evaluatedElem != null; }
 		}
 		
 		protected XmlElement AddChildElement (string name)
@@ -423,6 +450,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					Element.SetAttribute ("Condition", value);
 			}
 		}
+
+		internal virtual void Evaluate (MSBuildEvaluationContext context)
+		{
+		}
 	}
 	
 	public class MSBuildProperty: MSBuildObject
@@ -435,10 +466,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return Element.Name; }
 		}
 
+		internal bool Overwritten { get; set; }
+
 		[Obsolete]
 		public string Value {
 			get {
-				return Element.InnerText; 
+				return EvaluatedElement.InnerText; 
 			}
 			set {
 				Element.InnerText = value;
@@ -448,8 +481,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string GetValue (bool isXml = false)
 		{
 			if (isXml)
-				return Element.InnerXml;
-			return Element.InnerText;
+				return EvaluatedElement.InnerXml;
+			return EvaluatedElement.InnerText;
 		}
 
 		public void SetValue (string value, bool isXml = false)
@@ -458,6 +491,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Element.InnerXml = value;
 			else
 				Element.InnerText = value;
+		}
+
+		internal override void Evaluate (MSBuildEvaluationContext context)
+		{
+			EvaluatedElement = null;
+
+			if (!string.IsNullOrEmpty (Condition)) {
+				string cond;
+				if (!context.Evaluate (Condition, out cond)) {
+					// The value could not be evaluated, so if there is an existing value, it is not valid anymore
+					context.ClearPropertyValue (Name);
+					return;
+				}
+				if (!ConditionParser.ParseAndEvaluate (cond, context))
+					return;
+			}
+
+			XmlElement elem;
+
+			if (context.Evaluate (Element, out elem)) {
+				EvaluatedElement = elem;
+				context.SetPropertyValue (Name, GetValue ());
+			} else {
+				// The value could not be evaluated, so if there is an existing value, it is not valid anymore
+				context.ClearPropertyValue (Name);
+			}
 		}
 	}
 	
@@ -564,11 +623,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildPropertyGroup: MSBuildObject, MSBuildPropertySet
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string,MSBuildProperty> ();
+		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
 		MSBuildProject parent;
 		
 		public MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
 		{
 			this.parent = parent;
+
+			foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
+				MSBuildProperty prevSameName;
+				if (properties.TryGetValue (pelem.Name, out prevSameName))
+					prevSameName.Overwritten = true;
+
+				var prop = new MSBuildProperty (pelem);
+				propertyList.Add (prop);
+				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+			}
 		}
 		
 		public MSBuildProject Parent {
@@ -580,33 +650,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildProperty GetProperty (string name)
 		{
 			MSBuildProperty prop;
-			if (properties.TryGetValue (name, out prop))
-				return prop;
-			XmlElement propElem = Element [name, MSBuildProject.Schema];
-			if (propElem != null) {
-				prop = new MSBuildProperty (propElem);
-				properties [name] = prop;
-				return prop;
-			}
-			else
-				return null;
+			properties.TryGetValue (name, out prop);
+			return prop;
 		}
 		
 		public IEnumerable<MSBuildProperty> Properties {
 			get {
-				foreach (XmlNode node in Element.ChildNodes) {
-					XmlElement pelem = node as XmlElement;
-					if (pelem == null)
-						continue;
-					MSBuildProperty prop;
-					if (properties.TryGetValue (pelem.Name, out prop))
-						yield return prop;
-					else {
-						prop = new MSBuildProperty (pelem);
-						properties [pelem.Name] = prop;
-						yield return prop;
-					}
-				}
+				return propertyList.Where (p => !p.Overwritten);
 			}
 		}
 		
@@ -617,6 +667,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlElement pelem = AddChildElement (name);
 				prop = new MSBuildProperty (pelem);
 				properties [name] = prop;
+				propertyList.Add (prop);
 				prop.SetValue (value, isXml);
 			} else if (!preserveExistingCase || !string.Equals (value, prop.GetValue (isXml), StringComparison.OrdinalIgnoreCase)) {
 				prop.SetValue (value, isXml);
@@ -638,6 +689,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildProperty prop = GetProperty (name);
 			if (prop != null) {
 				properties.Remove (name);
+				propertyList.Remove (prop);
 				Element.RemoveChild (prop.Element);
 				return true;
 			}
@@ -654,6 +706,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (XmlNode node in toDelete)
 				Element.RemoveChild (node);
 			properties.Clear ();
+			propertyList.Clear ();
 		}
 
 		public void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propsToExclude)
@@ -665,6 +718,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (thisProp != null && prop.GetValue (true).Equals (thisProp.GetValue (true), StringComparison.OrdinalIgnoreCase))
 					RemoveProperty (prop.Name);
 			}
+		}
+
+		internal override void Evaluate (MSBuildEvaluationContext context)
+		{
+			if (!string.IsNullOrEmpty (Condition)) {
+				string cond;
+				if (!context.Evaluate (Condition, out cond)) {
+					// The condition could not be evaluated. Clear all properties that this group defines
+					// since we don't know if they will have a value or not
+					foreach (var prop in Properties)
+						context.ClearPropertyValue (prop.Name);
+					return;
+				}
+				if (!ConditionParser.ParseAndEvaluate (cond, context))
+					return;
+			}
+
+			foreach (var prop in propertyList)
+				prop.Evaluate (context);
 		}
 
 		public override string ToString()
@@ -684,7 +756,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		public string Include {
-			get { return Element.GetAttribute ("Include"); }
+			get { return EvaluatedElement.GetAttribute ("Include"); }
 			set { Element.SetAttribute ("Include", value); }
 		}
 		
@@ -694,7 +766,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public bool HasMetadata (string name)
 		{
-			return Element [name, MSBuildProject.Schema] != null;
+			return EvaluatedElement [name, MSBuildProject.Schema] != null;
 		}
 		
 		public void SetMetadata (string name, string value, bool isXml = false)
@@ -722,7 +794,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public string GetMetadata (string name, bool isXml = false)
 		{
-			XmlElement elem = Element [name, MSBuildProject.Schema];
+			XmlElement elem = EvaluatedElement [name, MSBuildProject.Schema];
 			if (elem != null)
 				return isXml ? elem.InnerXml : elem.InnerText;
 			else
@@ -740,6 +812,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node is XmlElement)
 					SetMetadata (node.LocalName, node.InnerXml, true);
 			}
+		}
+
+		internal override void Evaluate (MSBuildEvaluationContext context)
+		{
+			XmlElement elem;
+			if (context.Evaluate (Element, out elem))
+				EvaluatedElement = elem;
+			else
+				EvaluatedElement = null;
 		}
 	}
 	
@@ -769,5 +850,140 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 		}
+
+		internal override void Evaluate (MSBuildEvaluationContext context)
+		{
+			foreach (var item in Items)
+				item.Evaluate (context);
+		}
+	}
+
+	internal class MSBuildEvaluationContext: IExpressionContext
+	{
+		Dictionary<string,string> properties = new Dictionary<string, string> ();
+		bool allResolved;
+		MSBuildProject project;
+
+		public MSBuildEvaluationContext (MSBuildProject project)
+		{
+			this.project = project;
+		}
+
+		public string GetPropertyValue (string name)
+		{
+			string val;
+			if (properties.TryGetValue (name, out val))
+				return val;
+			else
+				return "";
+		}
+
+		public void SetPropertyValue (string name, string value)
+		{
+			properties [name] = value;
+		}
+
+		public void ClearPropertyValue (string name)
+		{
+			properties.Remove (name);
+		}
+
+		public bool Evaluate (XmlElement source, out XmlElement result)
+		{
+			allResolved = true;
+			result = (XmlElement) EvaluateNode (source);
+			return allResolved;
+		}
+
+		XmlNode EvaluateNode (XmlNode source)
+		{
+			var elemSource = source as XmlElement;
+			if (elemSource != null) {
+				var elem = source.OwnerDocument.CreateElement (elemSource.Prefix, elemSource.LocalName, elemSource.NamespaceURI);
+				foreach (XmlAttribute attr in elemSource.Attributes)
+					elem.Attributes.Append ((XmlAttribute)EvaluateNode (attr));
+				foreach (XmlNode child in elemSource.ChildNodes)
+					elem.AppendChild (EvaluateNode (child));
+				return elem;
+			}
+
+			var attSource = source as XmlAttribute;
+			if (attSource != null) {
+				bool oldResolved = allResolved;
+				var att = source.OwnerDocument.CreateAttribute (attSource.Prefix, attSource.LocalName, attSource.NamespaceURI);
+				att.Value = Evaluate (attSource.Value);
+
+				// Condition attributes don't change the resolution status. Conditions are handled in the property and item objects
+				if (attSource.Name == "Condition")
+					allResolved = oldResolved;
+
+				return att;
+			}
+			var textSource = source as XmlText;
+			if (textSource != null) {
+				return source.OwnerDocument.CreateTextNode (Evaluate (textSource.InnerText));
+			}
+			return source.Clone ();
+		}
+
+		public bool Evaluate (string str, out string result)
+		{
+			allResolved = true;
+			result = Evaluate (str);
+			return allResolved;
+		}
+
+		string Evaluate (string str)
+		{
+			int i = str.IndexOf ("$(");
+			if (i == -1)
+				return str;
+
+			int last = 0;
+
+			StringBuilder sb = new StringBuilder ();
+			do {
+				sb.Append (str, last, i - last);
+				i += 2;
+				int j = str.IndexOf (")", i);
+				if (j == -1) {
+					allResolved = false;
+					return "";
+				}
+
+				string prop = str.Substring (i, j - i);
+				string val;
+				if (!properties.TryGetValue (prop, out val)) {
+					allResolved = false;
+					return "";
+				}
+
+				sb.Append (val);
+				last = j + 1;
+				i = str.IndexOf ("$(", last);
+			}
+			while (i != -1);
+
+			sb.Append (str, last, str.Length - last);
+			return sb.ToString ();
+		}
+
+		#region IExpressionContext implementation
+
+		public string EvaluateString (string value)
+		{
+			if (value.StartsWith ("$(") && value.EndsWith (")"))
+				return GetPropertyValue (value.Substring (2, value.Length - 3));
+			else
+				return value;
+		}
+
+		public string FullFileName {
+			get {
+				return project.FileName;
+			}
+		}
+
+		#endregion
 	}
 }
