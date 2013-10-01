@@ -368,6 +368,10 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void EvaluateProperties ()
 		{
+			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
+			Environment.SetEnvironmentVariable ("HHH", "EnvTest");
+			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
+
 			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
 			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
@@ -381,6 +385,11 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are ignored");
 			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
 			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
+			Assert.AreEqual ("Program11_EnvTest.cs", p.Files[10].FilePath.FileName, "Environment variable");
+
+			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
+			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
+			Assert.IsTrue (asms.Contains (testRef));
 		}
 	}
 }

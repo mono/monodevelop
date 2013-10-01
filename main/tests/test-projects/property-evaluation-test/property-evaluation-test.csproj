@@ -49,6 +49,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="TestReference">
+      <HintPath>$(SOME_PLACE)\MonoDevelop.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program1_$(AAA).cs" />
@@ -63,6 +66,7 @@
     <Compile Include="Program8_$(AAA).cs" />
     <Compile Include="Program9_$(GGG).cs" />
     <Compile Include="Program10_$(AAA" />
+    <Compile Include="Program11_$(HHH).cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
