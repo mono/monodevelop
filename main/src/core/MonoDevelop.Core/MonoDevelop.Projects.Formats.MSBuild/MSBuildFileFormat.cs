@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void WriteFile (FilePath file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
-				slnFileFormat.WriteFile (file, obj, this, true, monitor);
+				slnFileFormat.WriteFile (file, obj, this, false, monitor);
 			} else {
 				SolutionEntityItem item = (SolutionEntityItem) obj;
 				if (!(item.ItemHandler is MSBuildProjectHandler))
