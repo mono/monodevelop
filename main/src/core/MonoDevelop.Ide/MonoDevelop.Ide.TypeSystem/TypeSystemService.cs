@@ -2373,14 +2373,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (frameworkLookup) {
 				FrameworkTask result;
-				if (!frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result))
+				var frameworkName = netProject.TargetFramework.Name;
+				if (!frameworkLookup.TryGetValue (frameworkName, out result))
 					return false;
 				if (result.RetryCount > 5) {
-					LoggingService.LogError ("Can't create framework lookup for:" + netProject.TargetFramework.Name);
+					LoggingService.LogError ("Can't create framework lookup for:" + frameworkName);
 					return false;
 				}
 				result.RetryCount++;
-				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", netProject.TargetFramework.Name, result.RetryCount);
+				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", frameworkName, result.RetryCount);
+				result.Task = null;
 				StartFrameworkLookup (netProject);
 				return true;
 			}

@@ -373,21 +373,22 @@ namespace MonoDevelop.Refactoring
 						scope = scope.Parent;
 					}
 				}
-
 				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
 				if (resolveResult is UnknownIdentifierResolveResult) {
-					var uiResult = resolveResult as UnknownIdentifierResolveResult;
-					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
-					foreach (var typeDefinition in allTypes) {
-						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc && 
-							lookup.IsAccessible (typeDefinition, false)) {
-							if (typeDefinition.DeclaringTypeDefinition != null) {
-								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-								foundIdentifier = true;
-								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
-							} else {
-								foundIdentifier = true;
-								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+					if (node is AstType) {
+						var uiResult = resolveResult as UnknownIdentifierResolveResult;
+						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+						foreach (var typeDefinition in allTypes) {
+							if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
+							    lookup.IsAccessible (typeDefinition, false)) {
+								if (typeDefinition.DeclaringTypeDefinition != null) {
+									var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+									foundIdentifier = true;
+									yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
+								} else {
+									foundIdentifier = true;
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								}
 							}
 						}
 					}
@@ -434,8 +435,9 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 			}
+
 			// Try to search framework types
-			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult && node is AstType) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				if (uiResult != null) {
 					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
