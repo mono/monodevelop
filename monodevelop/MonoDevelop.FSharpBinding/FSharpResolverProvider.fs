@@ -83,18 +83,18 @@ type FSharpResolverProvider() =
       try 
         Debug.WriteLine (sprintf "Resolver: In GetLanguageItem")
         if doc.Editor = null || doc.Editor.Document = null then null else
-
         let docText = doc.Editor.Text
-
         if docText = null || offset >= docText.Length || offset < 0 then null else
-
         let config = IdeApp.Workspace.ActiveConfiguration
-
         if config = null then null else
 
         Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
-        let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
+        let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), 
+                                                                docText, 
+                                                                doc.Project, 
+                                                                config, 
+                                                                timeout = ServiceSettings.blockingTimeout)
             
         Debug.WriteLine (sprintf "Resolver: Getting tool tip")
         // Get tool-tip from the language service
@@ -105,20 +105,32 @@ type FSharpResolverProvider() =
             null
         | _ -> 
             Debug.WriteLine (sprintf "Resolver: Got data")
+
+                       Debug.WriteLine("getting declaration location...")
+                       // Get the declaration location from the language service
+
+                       let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
+            let reg = match loc with
+                      | DeclFound((line, col), file) -> 
+                           Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
+                           DomRegion(file,line+1,col+1)
+                      | DeclNotFound(notfound) -> 
+                        match notfound with 
+                        | FindDeclFailureReason.Unknown -> 
+                            Debug.WriteLine("Cant find declaration location: Unknown")
+                        | FindDeclFailureReason.NoSourceCode -> 
+                            Debug.WriteLine("Cant find declaration location: No Source Code")
+                        | FindDeclFailureReason.ProvidedType(t) -> 
+                            Debug.WriteLine("Cant find declaration location: ProvidedType")
+                        | FindDeclFailureReason.ProvidedMember(m) -> 
+                            Debug.WriteLine("Cant find declaration location: ProvidedMEmber")
+                              DomRegion.Empty
+            region <- reg
             // This is the NRefactory symbol for the item - the Region is used for goto-definition
             let ivar = 
                 { new IVariable with 
                     member x.Name = "item--item"
-                    member x.Region = 
-                       Debug.WriteLine("getting declaration location...")
-                       // Get the declaration location from the language service
-                       let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
-                       match loc with 
-                       | DeclFound(line,col,file) -> 
-                           Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
-                           DomRegion(file,line+1,col+1)
-                       | _ -> Debug.WriteLine("Cant find declaration location, using DomRegion.Empty")
-                              DomRegion.Empty
+                    member x.Region = reg
                     member x.Type = (SpecialType.UnknownType :> _)
                     member x.IsConst = false
                     member x.ConstantValue = Unchecked.defaultof<_>
@@ -137,9 +149,12 @@ type FSharpResolverProvider() =
       result
 
     /// Returns string with tool-tip from 'FSharpLocalResolveResult'
-    /// (which we generated in the previous method - so we simply run formatter)
-    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
-      do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
+    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) = 
+      //I dont think this is used any longer, prior to MD4.0 it was called.
+      do Debug.WriteLine (sprintf "Resolver: in CreateTooltip")
       match result with
-      //| :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
+      | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
+
+
+
