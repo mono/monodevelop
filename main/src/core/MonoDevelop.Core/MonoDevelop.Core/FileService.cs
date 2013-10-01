@@ -77,7 +77,7 @@ namespace MonoDevelop.Core
 				return;
 			}
 			
-			FileSystemExtension[] extensions = (FileSystemExtension[]) AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof(FileSystemExtension));
+			var extensions = AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof(FileSystemExtension)).Cast<FileSystemExtension> ().ToArray ();
 			for (int n=0; n<extensions.Length - 1; n++) {
 				extensions [n].Next = extensions [n + 1];
 			}
