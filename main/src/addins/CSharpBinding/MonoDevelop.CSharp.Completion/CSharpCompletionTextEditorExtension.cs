@@ -209,7 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 				unstableTypeSystemSegmentTree = newTree;
 			}
 			newTree.InstallListener (document.Editor.Document);
-			
+
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
 			this.UnresolvedFileCompilation = Document.Compilation;
@@ -304,7 +304,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			return rctx;
 		}
-		
+		CompletionEngineCache cache = new CompletionEngineCache ();
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
 			var data = TextEditorData;
@@ -332,6 +332,7 @@ namespace MonoDevelop.CSharp.Completion
 			completionDataFactory.Engine = engine;
 			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
 			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
+			engine.CompletionEngineCache = cache;
 			if (FilterCompletionListByEditorBrowsable) {
 				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
 			} else {
