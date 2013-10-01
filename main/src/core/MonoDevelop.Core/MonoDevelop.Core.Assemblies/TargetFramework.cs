@@ -307,6 +307,8 @@ namespace MonoDevelop.Core.Assemblies
 						fx.clrVersion = ClrVersion.Net_4_0;
 						break;
 					case "4.5":
+					case "4.5.1":
+					case "4.6":
 						fx.clrVersion = ClrVersion.Net_4_5;
 						break;
 					default:

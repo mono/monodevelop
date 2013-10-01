@@ -149,7 +149,13 @@ namespace MonoDevelop.Projects
 		{
 			TestProjectsChecks.TestLoadSaveResources ("MSBuild05");
 		}
-		
+
+		[Test]
+		public void TestProjectReferencesUsingProperties()
+		{
+			TestProjectsChecks.TestProjectReferencesUsingProperties("MSBuild05");
+		}
+
 		[Test]
 		public void TestConfigurationMerging ()
 		{

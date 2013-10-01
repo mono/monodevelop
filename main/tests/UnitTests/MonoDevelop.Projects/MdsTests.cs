@@ -208,5 +208,11 @@ namespace MonoDevelop.Projects
 		{
 			TestProjectsChecks.TestLoadSaveResources ("MD1");
 		}
+
+		[Test]
+		public void TestProjectReferencesUsingProperties()
+		{
+			TestProjectsChecks.TestProjectReferencesUsingProperties("MD1");
+		}
 	}
 }
