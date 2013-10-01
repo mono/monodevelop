@@ -27,31 +27,27 @@ open ICSharpCode.NRefactory.Editor
 
 open FSharp.CompilerBinding
 open MonoDevelop.FSharp
-
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-module FsParser = Microsoft.FSharp.Compiler.Parser
-
+open Microsoft.FSharp.Compiler.Ast  
+open Microsoft.FSharp.Compiler.Range
 // --------------------------------------------------------------------------------------
 
 /// Contains settings of the F# language service
 module ServiceSettings = 
 
-  /// When making blocking calls from the GUI, we specify this
-  /// value as the timeout, so that the GUI is not blocked forever
+  /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
   let blockingTimeout = 500
   
-  /// How often should we trigger the 'OnIdle' event and run
-  /// background compilation of the current project?
+  /// How often should we trigger the 'OnIdle' event and run background compilation of the current project?
   let idleTimeout = 3000
 
-  /// When errors are reported, we don't show them immediately (because appearing
-  /// bubbles while typing are annoying). We show them when the user doesn't
-  /// type anything new into the editor for the time specified here
+  /// When errors are reported, we don't show them immediately (because appearing bubbles while typing are annoying). 
+  /// We show them when the user doesn't type anything new into the editor for the time specified here
   let errorTimeout = 1000
 
-  // What version of the FSharp language are we supporting? 
-  // This will evenually be made a project/script parameter.
+  // What version of the FSharp language are we supporting?  This will evenually be made a project/script parameter.
   let fsVersion = FSharpCompilerVersion.FSharp_3_0
 
 
@@ -61,7 +57,7 @@ module internal TipFormatter =
 
   /// A standard memoization function
   let memoize f = 
-      let d = new System.Collections.Generic.Dictionary<_,_>(HashIdentity.Structural)
+      let d = new Collections.Generic.Dictionary<_,_>(HashIdentity.Structural)
       fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
 
   /// Memoize the objects that manage access to XML files.
@@ -87,7 +83,7 @@ module internal TipFormatter =
       | None -> None
       | Some docReader ->
           let doc = docReader.GetDocumentation key
-          if System.String.IsNullOrEmpty doc then None else Some doc
+          if String.IsNullOrEmpty doc then None else Some doc
 
   let (|MemberName|_|) (name:string) = 
       let dotRight = name.LastIndexOf '.'
@@ -102,13 +98,13 @@ module internal TipFormatter =
          let name,count,args = 
              if not (key.Contains "(") then key, 0, [| |] else
           
-             let pieces = key.Split( [|'('; ')' |], System.StringSplitOptions.RemoveEmptyEntries)
+             let pieces = key.Split( [|'('; ')' |], StringSplitOptions.RemoveEmptyEntries)
              if pieces.Length < 2 then key, 0, [| |] else
              let nameAndCount = pieces.[0]
              let argsText = pieces.[1].Replace(")","")
              let args = argsText.Split(',')
              if nameAndCount.Contains "`" then 
-                 let ps = nameAndCount.Split( [| '`' |],System.StringSplitOptions.RemoveEmptyEntries) 
+                 let ps = nameAndCount.Split( [| '`' |],StringSplitOptions.RemoveEmptyEntries) 
                  ps.[0], (try int ps.[1] with _ -> 0) , args
              else
                  nameAndCount, 0, args
@@ -199,6 +195,7 @@ module internal TipFormatter =
         | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
     | _ -> String.Empty
 
+
   /// Format some of the data returned by the F# compiler
   ///
   /// If 'canAddHeader' is true (meaning that this is the only tip displayed) then we add first line 
@@ -232,6 +229,7 @@ module internal TipFormatter =
     | DataTipElementCompositionError(err) -> 
         sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
       
+    
   /// Format some of the data returned by the F# compiler
   let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
     match tip with
@@ -244,13 +242,34 @@ module internal TipFormatter =
           if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
           buildFormatElement false item sb) 
 
+
+  let wrap (words: String) lineWidth =
+      let sb = StringBuilder()
+      let words = words.Split(' ')
+      let currentWidth = ref 0
+      for word in words do
+          let (stuff, pos) =
+              if !currentWidth > 0 then
+                  if !currentWidth + word.Length < lineWidth then
+                      (" ", (!currentWidth + 1))
+                  else ("\n", 0)
+              else ("", 0)
+          sb.Append(stuff + word) |> ignore
+          currentWidth := (pos + word.Length)
+      sb.ToString()
+
+
   /// Format tool-tip that we get from the language service as string        
   let formatTip canAddHeader tip = 
     let sb = new StringBuilder()
     buildFormatTip canAddHeader tip sb
     let text = sb.ToString()
-    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,90)
-    textSquashed.Trim('\n', '\r')
+    //TODO: Use the current projects policy to get line length
+    // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
+    // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
+    
+    let wrapped = wrap text 120
+    wrapped.Trim('\n', '\r')
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
@@ -262,7 +281,7 @@ module internal TipFormatter =
         | None -> None
         | Some docReader ->
             let doc = docReader.GetDocumentation(key)
-            if System.String.IsNullOrEmpty(doc) then  None else
+            if String.IsNullOrEmpty(doc) then  None else
             let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
             Some ( (*GLib.Markup.EscapeText( *) parameterTip )
     | _ -> None
@@ -356,7 +375,7 @@ module Parsing =
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
-type internal TypedParseResult(info:TypeCheckInfo) =
+type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo) =
     let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
 
     let preCrack (offset, doc:Mono.TextEditor.TextDocument) = 
@@ -474,6 +493,8 @@ type internal TypedParseResult(info:TypeCheckInfo) =
             let res = info.GetMethods((line, col), lineStr, Some identIsland, token)
             Debug.WriteLine( "Result: Got something, returning"  )
             Some res 
+            
+    member x.Untyped with get() = untyped 
 
 // --------------------------------------------------------------------------------------
 
@@ -528,7 +549,7 @@ type internal LanguageService private () =
 
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
-  let fakeDateTimeRepresentingTimeLoaded proj = System.DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
+  let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
   
 
   // -----------------------------------------------------------------------------------
@@ -540,15 +561,16 @@ type internal LanguageService private () =
   // when the background typechecker has "caught up" after some other file has been changed, 
   // and its time to re-typecheck the current file.
   let checker = 
-   InteractiveChecker.Create(fun file -> 
+    let dispatch file = 
       DispatchService.GuiDispatch(fun () ->
-                    try 
-                     Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of file %s because compiler reports it needs it" file)
+        try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" file)
                      let doc = IdeApp.Workbench.ActiveDocument
                      if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                         Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
+                Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
                          doc.ReparseDocument()
-                    with _ -> ()))
+        with exn  -> () )
+                                            
+    InteractiveChecker.Create(NotifyFileTypeCheckStateIsDirty dispatch)
 
   // Mailbox of this 'LanguageService'
   let mbox = MailboxProcessor.Start(fun mbox ->
@@ -567,15 +589,16 @@ type internal LanguageService private () =
             Debug.WriteLine("Worker: Request parse received")
             // Run the untyped parsing of the file and report result...
             Debug.WriteLine("Worker: Untyped parse...")
-            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString())); reraise ()
+            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) 
+                              with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString()))
+                                        reraise ()
               
             // Now run the type-checking
             let fileName = CompilerArguments.fixFileName(fileName)
             Debug.WriteLine("Worker: Typecheck source...")
-            let res = 
-                try
-                    checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) ) 
-                with e -> Debug.WriteLine(sprintf "Worker: Error in TypeCheckSource: %s" (e.ToString())); reraise ()
+            let updatedTyped = try checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false), null )
+                               with e -> Debug.WriteLine(sprintf "Worker: Error in TypeCheckSource: %s" (e.ToString()))
+                                         reraise ()
               
             // If this is 'full' request, then start background compilations too
             if info.StartFullCompile then
@@ -584,22 +607,21 @@ type internal LanguageService private () =
             Debug.WriteLine(sprintf "Worker: Parse completed")
 
             let file = info.File
-            let updatedTyped = res
 
             // Construct new typed parse result if the task succeeded
             let newTypedInfo =
               match updatedTyped with
               | TypeCheckSucceeded(results) ->
                   // Handle errors on the GUI thread
-                  Debug.WriteLine(sprintf "LanguageService: Update typed info - is some? %A" results.TypeCheckInfo.IsSome)
+                  Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" results.HasFullTypeCheckInfo)
                   match info.AfterCompleteTypeCheckCallback with 
                   | None -> ()
                   | Some cb -> 
-                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (IO.Path.GetFileName(file.FullPath.ToString())))
+                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (Path.GetFileName(file.FullPath.ToString())))
                       DispatchService.GuiDispatch(fun () -> cb(file, makeErrors results.Errors))
 
-                  match results.TypeCheckInfo with
-                  | Some(info) -> Some(TypedParseResult(info))
+                  match results.HasFullTypeCheckInfo with
+                  | true -> Some(TypedParseResult(results, untypedInfo))
                   | _ -> typedInfo
               | _ -> 
                   Debug.WriteLine("LanguageService: Update typed info - failed")
@@ -632,7 +654,7 @@ type internal LanguageService private () =
         
     // Start looping with no initial information        
     async { // Delay a bit, on app startup let the projects load first
-            do! Async.Sleep 4000
+            do! Async.Sleep 3000
             return! loop None} )
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
@@ -647,23 +669,20 @@ type internal LanguageService private () =
           Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
           
-          // The InteractiveChecker resolution doesn't sometimes
-          // include FSharp.Core and other essential assemblies, so we need to include them by hand
+          // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
             let dirs = ScriptOptions.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, TargetFrameworkMoniker.NET_4_0 )
-            opts.WithOptions 
-              [| yield! opts.ProjectOptions; 
+            {opts with ProjectOptions = [| yield! opts.ProjectOptions; 
                  match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
                  | Some fn -> yield sprintf "-r:%s" fn
                  | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
                  match ScriptOptions.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
                  | Some fn -> yield sprintf "-r:%s" fn
-                 | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]
-        with e ->
-          failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
+                                           | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
+        with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
           
       // We are in a project - construct options using current properties
       else
@@ -681,7 +700,13 @@ type internal LanguageService private () =
         let args = CompilerArguments.generateCompilerOptions (fsconfig, reqLangVersion, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
         let root = Path.GetDirectoryName(proj.FileName.FullPath.ToString())
         let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
-        CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
+        {ProjectFileName = projFile
+         ProjectFileNames = files
+         ProjectOptions = args
+         IsIncompleteTypeCheckEnvironment = false
+         UseScriptResolutionRules = false   
+         LoadTime = fakeDateTimeRepresentingTimeLoaded proj
+         UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
     Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
@@ -697,17 +722,23 @@ type internal LanguageService private () =
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
     mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
+  member x.GetUntypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config) = 
+        let fileName = file.FullPath.ToString()
+        let opts = x.GetCheckerOptions(fileName, src, proj, config)
+        Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
+        let req = ParseRequest(file, src, opts, false, None)
+        checker.UntypedParse(fileName, src, opts)
+
   member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
     let req = ParseRequest(file, src, opts, false, None)
-
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
-    | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
+    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo ->
         Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
-        TypedParseResult(typed.TypeCheckInfo.Value)
+        TypedParseResult(typed, untyped)
     | _ ->
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
         mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
