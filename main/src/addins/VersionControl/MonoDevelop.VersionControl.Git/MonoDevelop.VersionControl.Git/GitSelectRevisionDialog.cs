@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Core;
 using System.Text;
-using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -53,7 +52,9 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Title = GettextCatalog.GetString ("Select a revision");
 
-			Xwt.VBox vbox = new Xwt.VBox ();
+			var vbox = new Xwt.VBox ();
+			vbox.MinHeight = 400;
+			vbox.MinWidth = 600;
 
 			vbox.PackStart(new Xwt.Label (GettextCatalog.GetString ("Tag Name")));
 
@@ -128,7 +129,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		static string ParseDate (DateTime date)
 		{
-			StringBuilder sb = new StringBuilder (date.ToShortDateString ());
+			var sb = new StringBuilder (date.ToShortDateString ());
 			sb.AppendFormat (" {0}", date.ToString ("HH:MM"));
 
 			return sb.ToString ();

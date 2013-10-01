@@ -45,10 +45,10 @@ namespace MonoDevelop.VersionControl.Git
 			
 			comboStore = new ListStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string));
 			comboSources.Model = comboStore;
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			comboSources.PackStart (crp, false);
 			comboSources.AddAttribute (crp, "pixbuf", 1);
-			CellRendererText crt = new CellRendererText ();
+			var crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
 			
@@ -57,8 +57,7 @@ namespace MonoDevelop.VersionControl.Git
 					oldName = branch.Name;
 				currentTracking = branch.Tracking;
 				entryName.Text = branch.Name;
-				if (currentTracking != null)
-					checkTrack.Active = true;
+				checkTrack.Active = currentTracking != null;
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
