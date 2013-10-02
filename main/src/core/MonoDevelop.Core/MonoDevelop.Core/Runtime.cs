@@ -198,7 +198,7 @@ namespace MonoDevelop.Core
 		static void OnLoadError (object s, AddinErrorEventArgs args)
 		{
 			string msg = "Add-in error (" + args.AddinId + "): " + args.Message;
-			LogReporting.LogReportingService.ReportUnhandledException (args.Exception, false, true);
+			//LogReporting.LogReportingService.ReportUnhandledException (args.Exception, false, true);
 			LoggingService.LogError (msg, args.Exception);
 		}
 		
