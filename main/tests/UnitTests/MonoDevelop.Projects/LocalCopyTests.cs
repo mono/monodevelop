@@ -181,7 +181,16 @@ namespace MonoDevelop.Projects
 			BuildResult cr = sol.Build (Util.GetMonitor (), configuration);
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
-			Assert.AreEqual (0, cr.WarningCount);
+
+			// Warning check disabled due to bug #15121
+			// Assert.AreEqual (0, cr.WarningCount); 
+		}
+
+		[Test]
+		[Ignore ("Check for build warnings disabled due to a bug in xbuild (BXC 15121)")]
+		public void CheckLocalCopyBuildWarnings ()
+		{
+			// See commented assert in AssertCleanBuild
 		}
 	}
 }

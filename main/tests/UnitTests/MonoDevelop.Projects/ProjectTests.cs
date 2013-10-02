@@ -78,7 +78,9 @@ namespace MonoDevelop.Projects
 
 			sol.Clean (Util.GetMonitor (), "Debug");
 			Assert.IsFalse (File.Exists (spath), "Satellite assembly not removed");
-			Assert.IsFalse (Directory.Exists (Path.GetDirectoryName (spath)), "Satellite assembly directory not removed");
+
+			// msbuild doesn't delete this directory
+			// Assert.IsFalse (Directory.Exists (Path.GetDirectoryName (spath)), "Satellite assembly directory not removed");
 		}
 		
 		public static void CheckResourcesSolution (Solution sol)
