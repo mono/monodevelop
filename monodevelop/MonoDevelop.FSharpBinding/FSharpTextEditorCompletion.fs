@@ -16,8 +16,8 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open ICSharpCode.NRefactory.Editor
 open ICSharpCode.NRefactory.Completion
 
-/// Item that is returned in a list of completions Contains title and can generate description (tool-tip shown on 
-/// the right) of the item. Description should be generated lazily because this is quite slow (in the F# services)
+/// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
+/// Description is generated lazily because it is quite slow and there can be numerous.
 type internal FSharpMemberCompletionData(mi:Declaration) =
     inherit CompletionData(CompletionText = (if mi.Name |> String.forall PrettyNaming.IsIdentifierPartCharacter then mi.Name else "``" + mi.Name + "``"), 
                            DisplayText = mi.Name, 
@@ -32,16 +32,18 @@ type internal FSharpMemberCompletionData(mi:Declaration) =
       let description = TipFormatter.formatTip false mi.DescriptionText
       let lines = description.Split('\n','\r')
       let lines = if lines.Length >= 1 then  lines else [| "" |]
+
       // Include the indented format of the item in the 'signature'
       let signatureLines = 
           [| yield lines.[0]
              yield! lines.[1..] |> Seq.takeWhile (fun s -> s.StartsWith(" ")) |]
+
       // Skip the indented format of the item for the 'summary'
       let summaryLines = [|  yield! lines.[1..] |> Seq.skipWhile (fun s -> s.StartsWith(" ")) |]
       let summaryLines =  summaryLines |> Array.filter (String.IsNullOrEmpty >> not) 
-      let tooltipInfo = new TooltipInformation ()
-      tooltipInfo.SummaryMarkup <- summaryLines |> String.concat "\n"
-      tooltipInfo.SignatureMarkup <- signatureLines |> String.concat "\n"
+
+      let tooltipInfo = TooltipInformation(SummaryMarkup   = String.concat "\n" summaryLines,
+                                           SignatureMarkup = String.concat "\n" signatureLines)
       tooltipInfo
 
 /// Completion data representing a delayed fetch of completion data
@@ -68,7 +70,7 @@ type ParameterDataProvider(nameStart: int, name, meths : Method array) =
         let description = 
             let meth = meths.[overload]
             let text = TipFormatter.formatTip false meth.Description 
-            let allLines = text.Split([| '\n';'\r' |], StringSplitOptions.RemoveEmptyEntries)
+            let allLines = text.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)
             let body = if allLines.Length <= 1 then None else Some <| String.Join("\n", allLines.[1..])
             let param = 
                 meth.Parameters |> Array.mapi (fun i param -> 
