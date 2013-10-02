@@ -225,7 +225,26 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 // token, depending on the nature and location of the base type.
                 //
                 // See ECMA Partition II for more details.
-                throw new NotImplementedException();
+				if (m_typeToken == 0)
+					throw new NotImplementedException ();
+
+				var token = new MetadataToken(m_typeToken);
+				int size;
+				TypeAttributes pdwTypeDefFlags;
+				int ptkExtends;
+
+				m_importer.GetTypeDefProps (token,
+				                            null,
+				                            0,
+				                            out size,
+				                            out pdwTypeDefFlags,
+				                            out ptkExtends
+				                            );
+
+				if (ptkExtends == 0)
+					return null;
+
+				return new MetadataType (m_importer, ptkExtends);
             }
         }
 
@@ -464,6 +483,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
         
+		// TODO: Implement
         public override Type[] GetInterfaces()
         {
             throw new NotImplementedException();

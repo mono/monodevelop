@@ -1936,7 +1936,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             HandleEvent(ManagedCallbackType.OnProcessExit,
                                new CorProcessEventArgs(process == null ? null : CorProcess.GetCorProcess(process),
-                                                        ManagedCallbackType.OnProcessExit));
+                                                       ManagedCallbackType.OnProcessExit) { Continue = false });
         }
 
         void ICorDebugManagedCallback.CreateThread(
