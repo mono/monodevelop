@@ -508,7 +508,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     m_importer.EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
                     if(size==0)
                         break;
-                    al.Add(new MetadataFieldInfo(m_importer,fieldToken,this));
 					// [Xamarin] Expression evaluator.
 					var field = new MetadataFieldInfo (m_importer, fieldToken, this);
 					if (MetadataExtensions.TypeFlagsMatch (field.IsPublic, field.IsStatic, bindingAttr))

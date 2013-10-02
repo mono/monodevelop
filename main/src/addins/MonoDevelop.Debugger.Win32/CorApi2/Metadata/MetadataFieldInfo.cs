@@ -77,8 +77,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 Debug.Assert(callingConv == CorCallingConvention.Field);
 
                 CorElementType elementType = MetadataHelperFunctions.CorSigUncompressElementType(ref ppvSigTemp);
-				// TODO: Check this:
-				if (elementType == CorElementType.ELEMENT_TYPE_END || elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
+                if (elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
                 //if (elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
                 {
                         uint token = MetadataHelperFunctions.CorSigUncompressToken(ref ppvSigTemp);
