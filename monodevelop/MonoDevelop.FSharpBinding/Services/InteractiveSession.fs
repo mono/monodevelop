@@ -9,30 +9,6 @@ open MonoDevelop.Core
 open FSharp.CompilerBinding.Reflection
 open FSharp.CompilerBinding
 
-type InteractiveServer private (assembly:Assembly) =
-
-  static let initialise() =
-     let fscloc = FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharp_3_0) 
-     let sharedPath = 
-         match fscloc with
-         | Some(s) -> s
-         | _ -> failwith "Cant find default compiler location"
-     
-     let assembly = Assembly.LoadFrom(Path.Combine(sharedPath, "FSharp.Compiler.Server.Shared.dll"))
-     InteractiveServer(assembly)
-     
-  static let currentWrapper = lazy initialise()
-  let interactiveServerType = lazy assembly.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
-  member x.InteractiveServerType = interactiveServerType.Value
-  static member Current = currentWrapper.Force()
-  
-  
-  type FSharpInteractiveServer(wrapped:obj) =
-    static member StartClient(channel:string) = 
-      FSharpInteractiveServer(InteractiveServer.Current.InteractiveServerType?StartClient(channel))
-    member x.Interrupt() : unit = 
-        wrapped?Interrupt()
-
 type InteractiveSession() =
   let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
   // Turn off the console and add the remoting connection 
