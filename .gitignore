@@ -9,6 +9,7 @@ MonoDevelop.FSharpBinding/_ReSharper.MonoDevelop.FSharp/*
 MonoDevelop.FSharpBinding/[Oo]bj/
 MonoDevelop.FSharpBinding/[Bb]in/
 monodevelop/pack/*
+monodevelop/packages/*
 repository/*
 *.suo
 *.pidb
@@ -32,6 +33,6 @@ emacs/tmp
 
 monodevelop/Makefile
 
-/monodevelop/configure-app.exe
 /monodevelop/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 /monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
+/monodevelop/MonoDevelop.FSharpBinding/packages
