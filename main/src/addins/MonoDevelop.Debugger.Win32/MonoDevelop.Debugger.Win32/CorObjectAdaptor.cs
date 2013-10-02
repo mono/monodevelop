@@ -44,6 +44,7 @@ using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.Cor
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -1321,14 +1322,13 @@ namespace MonoDevelop.Debugger.Win32
 			if (t == null)
 				return null;
 
-			// FIXME: find out how to implement CompilerGenerated.
-			//bool isCompilerGenerated = false;
 			string proxyType = null;
 			string nameDisplayString = null;
 			string typeDisplayString = null;
 			string valueDisplayString = null;
 			Dictionary<string, DebuggerBrowsableState> memberData = null;
 			bool hasTypeData = false;
+			bool isCompilerGenerated = false;
 
 			try {
 				foreach (object att in t.GetCustomAttributes (false)) {
@@ -1346,6 +1346,11 @@ namespace MonoDevelop.Debugger.Win32
 						valueDisplayString = datt.Value;
 						continue;
 					}
+					CompilerGeneratedAttribute cgatt = att as CompilerGeneratedAttribute;
+					if (cgatt != null) {
+						isCompilerGenerated = true;
+						continue;
+					}
 				}
 
 				ArrayList mems = new ArrayList ();
@@ -1355,7 +1360,7 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (MemberInfo m in mems) {
 					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
 					if (atts.Length == 0) {
-						atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+						atts = m.GetCustomAttributes (typeof (CompilerGeneratedAttribute), false);
 						if (atts.Length > 0)
 							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
 					}
@@ -1370,7 +1375,7 @@ namespace MonoDevelop.Debugger.Win32
 				ctx.WriteDebuggerError (ex);
 			}
 			if (hasTypeData)
-				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);
+				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, isCompilerGenerated, memberData);
 			else
 				return null;
 		}
@@ -1394,40 +1399,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsTypeLoaded (EvaluationContext ctx, object type)
 		{
-			CorType ret;
 			var t = type as Type;
-
 			return IsTypeLoaded (ctx, t.FullName);
 		}
-
-		public override bool ForceLoadType (EvaluationContext ctx, object type)
-		{
-			// FIXME: Search for a proper way to do this.
-/*			CorEvaluationContext gctx = (CorEvaluationContext) ctx;
-			Type tm = (Type) type;
-			CorType ret;
-
-			if (typeCache.TryGetValue (tm.FullName, out ret))
-				return true;
-
-			if (!tm.Attributes.HasFlag (TypeAttributes.BeforeFieldInit))
-				return false;
-
-			ret = GetType (ctx, tm.FullName) as CorType;
-
-			MethodInfo cctor = OverloadResolve (gctx, GetTypeName (ctx, ret), ".cctor", null, new List<MethodInfo>(), false);
-			if (cctor == null)
-				return true;
-
-			try {
-				RuntimeInvoke (ctx, ret, null, ".cctor", null, null);
-			} catch {
-				return false;
-			}
-
-			return true;*/
-		}
-
 		// TODO: Implement GetHoistedLocalVariables
 	}
 }
