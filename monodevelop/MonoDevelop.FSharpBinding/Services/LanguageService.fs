@@ -123,6 +123,11 @@ module internal TipFormatter =
          | _ -> None
      else None
 
+  let (|TypeKey|_|) (key:string) =
+     if key.StartsWith "T:" then
+        Some key
+     else None
+
   let trySelectOverload (nodes: XmlNodeList, argsFromKey:string[]) =
 
       //printfn "AAA argsFromKey = %A" argsFromKey
@@ -160,14 +165,20 @@ module internal TipFormatter =
   let findMonoDocProviderForEntity (file, key) = 
       Debug.WriteLine (sprintf "key= %A, File= %A" key file) 
       let typeMemberFormatter name = "/Type/Members/Member[@MemberName='" + name + "']" 
-      match key with  
+      match key with
+      | TypeKey(typ) -> 
+          Debug.WriteLine (sprintf "Type Key = %s" typ )
+          match tryGetDoc (typ) with
+          | Some docXml -> if docXml = null then None else 
+                           Debug.WriteLine (sprintf "TypeKey xml= <<<%s>>>" docXml.OuterXml )
+                           Some docXml.OuterXml
+          | None -> None
       | SimpleKey (parentId, name) -> 
           Debug.WriteLine (sprintf "SimpleKey parentId= %s, name= %s" parentId name )
           match tryGetDoc ("T:" + parentId) with
           | Some doc -> let docXml = doc.SelectSingleNode (typeMemberFormatter name)
-                        Debug.WriteLine (sprintf "SimpleKey xml (simple)= null" )
                         if docXml = null then None else 
-                        Debug.WriteLine (sprintf "Simple xml (simple)= <<<%s>>>" docXml.OuterXml )
+                        Debug.WriteLine (sprintf "SimpleKey xml= <<<%s>>>" docXml.OuterXml )
                         Some docXml.OuterXml
           | None -> None
       | MethodKey(parentId, name, count, args) -> 
@@ -242,10 +253,8 @@ module internal TipFormatter =
           if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
           buildFormatElement false item sb) 
 
-
-  let wrap (words: String) lineWidth =
-      let sb = StringBuilder()
-      let words = words.Split(' ')
+  let splitLine (sb:StringBuilder) (line:string) lineWidth=
+      let words = line.Split(' ')
       let currentWidth = ref 0
       for word in words do
           let (stuff, pos) =
@@ -256,6 +265,13 @@ module internal TipFormatter =
               else ("", 0)
           sb.Append(stuff + word) |> ignore
           currentWidth := (pos + word.Length)
+
+  let wrap (text: String) lineWidth =
+      let sb = StringBuilder()
+      let lines = text.Split [|'\r';'\n'|]
+      for line in lines  do
+        if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
+        else splitLine sb line lineWidth
       sb.ToString()
 
 
