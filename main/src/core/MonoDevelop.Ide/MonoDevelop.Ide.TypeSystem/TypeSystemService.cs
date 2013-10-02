@@ -2117,7 +2117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly string cache;
 			IUnresolvedAssembly assembly;
 
-			object asmLocker = new object ();
+			readonly object asmLocker = new object ();
 			internal void EnsureAssemblyLoaded ()
 			{
 				lock (asmLocker) {
@@ -2176,8 +2176,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (cache != null) {
 					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, result);
-					if (File.Exists (assemblyPath))
-						File.SetCreationTimeUtc (assemblyPath, writeTime);
+					if (File.Exists (assemblyPath)) {
+						try {
+							File.SetCreationTimeUtc (assemblyPath, writeTime);
+						} catch (Exception e) {
+							LoggingService.LogError ("Can't set creation time for: " + assemblyPath, e);
+						}
+					}
 				}
 				return result;
 			}
