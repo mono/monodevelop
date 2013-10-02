@@ -375,20 +375,18 @@ namespace MonoDevelop.Refactoring
 				}
 				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
 				if (resolveResult is UnknownIdentifierResolveResult) {
-					if (node is AstType) {
-						var uiResult = resolveResult as UnknownIdentifierResolveResult;
-						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
-						foreach (var typeDefinition in allTypes) {
-							if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
-							    lookup.IsAccessible (typeDefinition, false)) {
-								if (typeDefinition.DeclaringTypeDefinition != null) {
-									var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-									foundIdentifier = true;
-									yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
-								} else {
-									foundIdentifier = true;
-									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
-								}
+					var uiResult = resolveResult as UnknownIdentifierResolveResult;
+					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+					foreach (var typeDefinition in allTypes) {
+						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
+						    lookup.IsAccessible (typeDefinition, false)) {
+							if (typeDefinition.DeclaringTypeDefinition != null) {
+								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+								foundIdentifier = true;
+								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
+							} else {
+								foundIdentifier = true;
+								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 							}
 						}
 					}
