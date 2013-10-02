@@ -486,7 +486,26 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		// TODO: Implement
         public override Type[] GetInterfaces()
         {
-            throw new NotImplementedException();
+			var al = new ArrayList();
+			var hEnum = new IntPtr();
+
+			int impl;
+			try 
+			{
+				while(true)
+				{
+					uint size;
+					m_importer.EnumInterfaceImpls (ref hEnum,(int)m_typeToken,out impl,1,out size);
+					if(size==0)
+						break;
+					al.Add (new MetadataType (m_importer, impl));
+				}
+			}
+			finally 
+			{
+				m_importer.CloseEnum(hEnum);
+			}
+			return (Type[]) al.ToArray(typeof(Type));
         }
 
         public override FieldInfo GetField(String name, BindingFlags bindingAttr)
@@ -496,8 +515,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public override FieldInfo[] GetFields(BindingFlags bindingAttr)
         {
-            ArrayList al = new ArrayList();
-            IntPtr hEnum = new IntPtr();
+            var al = new ArrayList();
+            var hEnum = new IntPtr();
 
             int fieldToken;
             try 

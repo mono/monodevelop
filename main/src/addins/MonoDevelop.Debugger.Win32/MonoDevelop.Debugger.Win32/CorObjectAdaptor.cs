@@ -156,19 +156,27 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		Dictionary<string, CorType> typeCache = new Dictionary<string, CorType> ();
 		public override object GetType (EvaluationContext gctx, string name, object[] gtypeArgs)
 		{
+			CorType fastRet;
+			if (typeCache.TryGetValue (name, out fastRet))
+				return fastRet;
+
 			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
 
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
 				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
 				if (mi != null) {
-					foreach (Type t in mi.DefinedTypes)
+					foreach (Type t in mi.DefinedTypes) {
 						if (t.FullName == name) {
 							CorClass cls = mod.GetClassFromToken (t.MetadataToken);
-							return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+							fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+							typeCache [name] = fastRet;
+							return fastRet;
 						}
+					}
 				}
 			}
 			return null;
@@ -925,8 +933,17 @@ namespace MonoDevelop.Debugger.Win32
 			while (t != null) {
 				Type type = t.GetTypeInfo (cctx.Session);
 
-				foreach (FieldInfo field in type.GetFields (bindingFlags))
+				foreach (FieldInfo field in type.GetFields (bindingFlags)) {
+					if (field.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+						continue;
+					if (!field.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+						continue;
+					if (field.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!field.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
 					yield return new FieldReference (ctx, val, t, field);
+				}
 
 				foreach (PropertyInfo prop in type.GetProperties (bindingFlags)) {
 					MethodInfo mi = null;
@@ -936,6 +953,15 @@ namespace MonoDevelop.Debugger.Win32
 						// Ignore
 					}
 					if (mi == null || mi.GetParameters ().Length != 0 || mi.IsAbstract)
+						continue;
+
+					if (mi.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+						continue;
+					if (!mi.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+						continue;
+					if (mi.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!mi.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 
 					// If a property is overriden, return the override instead of the base property
@@ -955,6 +981,68 @@ namespace MonoDevelop.Debugger.Win32
 					break;
 				t = t.Base;
 			}
+		}
+
+		static T FindByName<T> (IEnumerable<T> elems, Func<T,string> getName, string name, bool caseSensitive)
+		{
+			T best = default(T);
+			foreach (T t in elems) {
+				string n = getName (t);
+				if (n == name) 
+					return t;
+				if (!caseSensitive && n.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = t;
+			}
+			return best;
+		}
+
+		static bool IsStatic (PropertyInfo prop)
+		{
+			MethodInfo met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
+			return met.IsStatic;
+		}
+
+		static bool IsAnonymousType (Type type)
+		{
+			return type.Name.StartsWith ("<>__AnonType", StringComparison.Ordinal);
+		}
+
+		static bool IsCompilerGenerated (FieldInfo field)
+		{
+			return field.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
+		}
+
+		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
+		{
+			var cctx = ctx as CorEvaluationContext;
+			var type = t as CorType;
+
+			while (type != null) {
+				var tt = type.GetTypeInfo (cctx.Session);
+				FieldInfo field = FindByName (tt.GetFields (), f => f.Name, name, ctx.CaseSensitive);
+				if (field != null && (field.IsStatic || co != null))
+					return new FieldReference (ctx, co as CorValRef, type, field);
+
+				PropertyInfo prop = FindByName (tt.GetProperties (), p => p.Name, name, ctx.CaseSensitive);
+				if (prop != null && (IsStatic (prop) || co != null)) {
+					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
+					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
+					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (tt) ? "" : "k__BackingField");
+					if ((field = FindByName (tt.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
+						return new FieldReference (ctx, co as CorValRef, type, field); // FIXME: Support other types
+
+					// Backing field not available, so do things the old fashioned way.
+					MethodInfo getter = prop.GetGetMethod (true);
+					if (getter == null)
+						return null;
+
+					return new PropertyReference (ctx, prop, co as CorValRef, type);
+				}
+
+				type = type.Base;
+			}
+
+			return null;
 		}
 
 		static bool IsIEnumerable (Type type)
@@ -1299,6 +1387,47 @@ namespace MonoDevelop.Debugger.Win32
 			return base.IsExternalType (ctx, type);
 		}
 
-		// TODO: Implement IsTypeLoaded, ForceTypeLoad
+		public override bool IsTypeLoaded (EvaluationContext ctx, string typeName)
+		{
+			return ctx.Adapter.GetType (ctx, typeName) != null;
+		}
+
+		public override bool IsTypeLoaded (EvaluationContext ctx, object type)
+		{
+			CorType ret;
+			var t = type as Type;
+
+			return IsTypeLoaded (ctx, t.FullName);
+		}
+
+		public override bool ForceLoadType (EvaluationContext ctx, object type)
+		{
+			// FIXME: Search for a proper way to do this.
+/*			CorEvaluationContext gctx = (CorEvaluationContext) ctx;
+			Type tm = (Type) type;
+			CorType ret;
+
+			if (typeCache.TryGetValue (tm.FullName, out ret))
+				return true;
+
+			if (!tm.Attributes.HasFlag (TypeAttributes.BeforeFieldInit))
+				return false;
+
+			ret = GetType (ctx, tm.FullName) as CorType;
+
+			MethodInfo cctor = OverloadResolve (gctx, GetTypeName (ctx, ret), ".cctor", null, new List<MethodInfo>(), false);
+			if (cctor == null)
+				return true;
+
+			try {
+				RuntimeInvoke (ctx, ret, null, ".cctor", null, null);
+			} catch {
+				return false;
+			}
+
+			return true;*/
+		}
+
+		// TODO: Implement GetHoistedLocalVariables
 	}
 }
