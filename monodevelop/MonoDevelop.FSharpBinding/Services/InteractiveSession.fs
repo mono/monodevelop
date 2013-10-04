@@ -19,7 +19,8 @@ type InteractiveSession() =
   let path = 
     match PropertyService.Get<_>("FSharpBinding.FsiPath", "") with
     | s when s <> "" -> s
-    | _ -> match CompilerArguments.getDefaultInteractive() with
+    | _ ->
+      match CompilerArguments.getDefaultInteractive() with
       | Some(s) -> s
       | None -> ""
 
