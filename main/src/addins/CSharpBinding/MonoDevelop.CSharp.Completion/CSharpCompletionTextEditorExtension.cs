@@ -284,6 +284,8 @@ namespace MonoDevelop.CSharp.Completion
 		CSharpTypeResolveContext CreateTypeResolveContext ()
 		{
 			var compilation = UnresolvedFileCompilation;
+			if (compilation == null)
+				return null;
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
 			var loc = TextEditorData.Caret.Location;
 			rctx = rctx.WithUsingScope (CSharpUnresolvedFile.GetUsingScope (loc).Resolve (compilation));
@@ -320,7 +322,8 @@ namespace MonoDevelop.CSharp.Completion
 			var list = new CSharpCompletionDataList ();
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
 			var ctx = CreateTypeResolveContext ();
-
+			if (ctx == null)
+				return null;
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			var engine = new CSharpCompletionEngine (
 				data.Document,
@@ -392,12 +395,15 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		public override int GuessBestMethodOverload (IParameterDataProvider provider, int currentOverload)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return -1;
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
+				ctx
 				);
 			List<string> list;
 			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
@@ -550,13 +556,17 @@ namespace MonoDevelop.CSharp.Completion
 //				return null;
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return null;
+
 			try {
 				var engine = new CSharpParameterCompletionEngine (
 					TextEditorData.Document,
 					CreateContextProvider (),
 					this,
 					Document.GetProjectContext (),
-					CreateTypeResolveContext ()
+					ctx
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
@@ -592,12 +602,18 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null) {
+				cpos = -1;
+				return false;
+			}
+
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
+				ctx
 			);
 			engine.SetOffset (document.Editor.Caret.Offset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
@@ -605,13 +621,17 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return -1;
+
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
-				);
+				ctx
+			);
 			List<string> list;
 			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
 		}
