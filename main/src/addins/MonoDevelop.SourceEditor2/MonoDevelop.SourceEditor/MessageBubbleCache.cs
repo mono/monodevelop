@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 
 			// Layout constants
 			const int verticalTextBorder = 10;
-			const int verticalTextSpace  = 6;
+			const int verticalTextSpace  = 7;
 
 			const int textBorder = 12;
 			const int iconTextSpacing = 8;
@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 
 							g.Translate (
 								textBorder,
-								y + verticalTextSpace / 2
+								y + verticalTextSpace / 2 + 1 + Math.Max (0, (h - icon.Height) / 2)
 							);
 							Gdk.CairoHelper.SetSourcePixbuf (g, icon, 0, 0);
 							g.Paint ();
