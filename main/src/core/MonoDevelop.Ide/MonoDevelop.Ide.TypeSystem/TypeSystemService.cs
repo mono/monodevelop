@@ -1280,11 +1280,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					var cacheFile = Path.Combine (cacheDir, "completion.cache");
 					if (!File.Exists (cacheFile))
 						return null;
-					var cache = DeserializeObject<IProjectContent> (cacheFile);
-					var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
-					if (monoDevelopProjectContent != null)
-						monoDevelopProjectContent.Project = project;
-					return cache;
+					try {
+						var cache = DeserializeObject<IProjectContent> (cacheFile);
+						var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
+						if (monoDevelopProjectContent != null)
+							monoDevelopProjectContent.Project = project;
+						return cache;
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Error while reading completion cache, regenerating", e); 
+						Directory.Delete (cacheDir, true);
+						return null;
+					}
 				}
 
 				#region IAssemblyReference implementation
