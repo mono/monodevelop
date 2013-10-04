@@ -1096,25 +1096,25 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 
-			class ImportSymbolCompletionData : CompletionData
+			class ImportSymbolCompletionData : CompletionData, IEntityCompletionData
 			{
-				IType type;
-//				ParsedDocument unit;
-				MonoDevelop.Ide.Gui.Document doc;
-				bool useFullName;
-//				bool addConstructors;
-
+				readonly IType type;
+				readonly bool useFullName;
+				readonly CSharpCompletionTextEditorExtension ext;
 				public IType Type {
 					get { return this.type; }
 				}
 
-				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type, bool addConstructors)
+				public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, bool useFullName, IType type, bool addConstructors)
 				{
-					this.doc = doc;
+					this.ext = ext;
 					this.useFullName = useFullName;
 					this.type = type;
-//					this.unit = doc.ParsedDocument;
-//					this.addConstructors = addConstructors;
+				}
+
+				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+				{
+					return MemberCompletionData.CreateTooltipInformation (ext, null, type.GetDefinition (), smartWrap);
 				}
 
 				bool initialized = false;
@@ -1135,6 +1135,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
+					var doc = ext.document;
 					using (var undo = doc.Editor.OpenUndoGroup ()) {
 						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 						if (text != GetCurrentWord (window)) {
@@ -1219,12 +1220,46 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					return result;
 				}
+
+				List<CompletionData> overloads;
+
+				public override IEnumerable<ICompletionData> OverloadedData {
+					get {
+						yield return this;
+						if (overloads == null)
+							yield break;
+						foreach (var overload in overloads)
+							yield return overload;
+					}
+				}
+
+				public override bool HasOverloads {
+					get { return overloads != null && overloads.Count > 0; }
+				}
+
+				public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+				{
+					AddOverload ((ImportSymbolCompletionData)data);
+				}
+
+				void AddOverload (ImportSymbolCompletionData overload)
+				{
+					if (overloads == null)
+						overloads = new List<CompletionData> ();
+					overloads.Add (overload);
+				}
+
+				IEntity IEntityCompletionData.Entity {
+					get {
+						return type.GetDefinition ();
+					}
+				}
 			}
 
 
 			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addConstructors)
 			{
-				return new ImportSymbolCompletionData (ext.Document, useFullName, type, addConstructors);
+				return new ImportSymbolCompletionData (ext, useFullName, type, addConstructors);
 			}
 
 		}
