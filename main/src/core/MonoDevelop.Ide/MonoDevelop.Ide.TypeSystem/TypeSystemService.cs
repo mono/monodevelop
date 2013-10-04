@@ -1651,6 +1651,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				content.UpdateContent (c => c.RemoveFiles (fargs.OldName));
 				content.InformFileRemoved (new ParsedFileEventArgs (file));
 
+				var tags = content.GetExtensionObject <ProjectCommentTags> ();
+				if (tags != null)
+					tags.RemoveFile (project, fargs.OldName);
+
 				QueueParseJob (content, new [] { fargs.ProjectFile });
 			}
 		}
@@ -2716,12 +2720,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							modifiedFiles.Add (file);
 						}
-					
+						var tags = content.GetExtensionObject <ProjectCommentTags> ();
+
 						// check if file needs to be removed from project content 
 						foreach (var file in cnt.Files) {
 							if (project.GetProjectFile (file.FileName) == null) {
 								content.UpdateContent (c => c.RemoveFiles (file.FileName));
 								content.InformFileRemoved (new ParsedFileEventArgs (file));
+								if (tags != null)
+									tags.RemoveFile (project, file.FileName);
 							}
 						}
 					
