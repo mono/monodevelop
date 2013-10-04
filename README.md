@@ -69,8 +69,6 @@ Normally you should get the binding from the repository. If you want to build an
 
 First get nuget.exe and install the required nuget packages:
 
-    mozroots --import --sync
-	(cd monodevelop/MonoDevelop.FSharpBinding && mono ../../lib/nuget/nuget.exe install)
 
 Now make:
 
