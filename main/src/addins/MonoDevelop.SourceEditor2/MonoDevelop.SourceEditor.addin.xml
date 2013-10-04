@@ -219,6 +219,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/Fonts">
 		<Font name ="MessageBubbles" _displayName="Message bubbles" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande 10"/>
+		<Font name ="MessageBubbleCounter" _displayName="Message bubbles error count" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande Bold 10"/>
 		<Font name ="MessageBubbleTooltip" _displayName="Message bubbles tooltip" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande Bold 10"/>
 		<Font name ="LanguageTooltips" _displayName="Editor tooltips" default ="_DEFAULT_SANS"/>
 	</Extension>

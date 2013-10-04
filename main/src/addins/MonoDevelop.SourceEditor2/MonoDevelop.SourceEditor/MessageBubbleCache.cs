@@ -47,6 +47,7 @@ namespace MonoDevelop.SourceEditor
 
 		internal Pango.FontDescription fontDescription;
 		internal Pango.FontDescription tooltipFontDescription;
+		internal Pango.FontDescription errorCountFontDescription;
 
 		public MessageBubbleTextMarker CurrentSelectedTextMarker;
 
@@ -64,6 +65,7 @@ namespace MonoDevelop.SourceEditor
 			editor.HAdjustment.ValueChanged += HandleValueChanged;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
 			tooltipFontDescription = FontService.GetFontDescription ("MessageBubbleTooltip");
+			errorCountFontDescription = FontService.GetFontDescription ("MessageBubbleCounter");
 		}
 
 		void HandleValueChanged (object sender, EventArgs e)

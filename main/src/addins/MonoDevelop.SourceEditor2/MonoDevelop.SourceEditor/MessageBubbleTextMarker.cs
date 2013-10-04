@@ -283,7 +283,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (errorCountLayout == null && errors.Count > 1) {
 				errorCountLayout = new Pango.Layout (editor.PangoContext);
-				errorCountLayout.FontDescription = FontService.GetFontDescription ("MessageBubbles");
+				errorCountLayout.FontDescription = cache.errorCountFontDescription;
 				errorCountLayout.SetText (errors.Count.ToString ());
 			}
 		}
