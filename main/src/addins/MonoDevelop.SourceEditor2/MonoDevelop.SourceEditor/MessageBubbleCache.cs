@@ -30,6 +30,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Fonts;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
+using Cairo;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -140,7 +142,7 @@ namespace MonoDevelop.SourceEditor
 
 			protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 			{
-				cache.DestroyPopoverWindow ();
+				cache.CancelLeaveDestroyTimeout ();
 				return base.OnEnterNotifyEvent (evnt);
 			}
 
@@ -235,9 +237,25 @@ namespace MonoDevelop.SourceEditor
 			editor.QueueDraw ();
 		}
 
+		uint leaveDestroyTimeout;
+
+		void CancelLeaveDestroyTimeout ()
+		{
+			if (leaveDestroyTimeout != 0) {
+				GLib.Source.Remove (leaveDestroyTimeout);
+				leaveDestroyTimeout = 0;
+			}
+		}
+
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
-			DestroyPopoverWindow ();
+			CancelLeaveDestroyTimeout ();
+			leaveDestroyTimeout = GLib.Timeout.Add (100, delegate {
+				DestroyPopoverWindow ();
+				leaveDestroyTimeout = 0;
+				return false;
+			}); 
+
 			CancelHoverTimeout ();
 			if (CurrentSelectedTextMarker == null)
 				return;
@@ -263,6 +281,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void Dispose ()
 		{
+			CancelLeaveDestroyTimeout ();
 			CancelHoverTimeout ();
 			DestroyPopoverWindow ();
 			editor.VAdjustment.ValueChanged -= HandleValueChanged;
@@ -331,4 +350,3 @@ namespace MonoDevelop.SourceEditor
 		public event EventHandler Changed;
 	}
 }
-
