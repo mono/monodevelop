@@ -36,6 +36,7 @@ namespace CSSBinding.Completion
 	{
 		public CSSCompletionExtension ()
 		{
+
 		}
 
 		internal Mono.TextEditor.TextEditorData TextEditorData {
