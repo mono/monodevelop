@@ -193,7 +193,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = editor.LocationToOffset (currentResult.Region.Begin);
 						int end = editor.LocationToOffset (currentResult.Region.End);
-
+						if (start >= end)
+							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
 							var marker = new GrayOutMarker (currentResult, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
