@@ -447,8 +447,8 @@ namespace MonoDevelop.SourceEditor
 				errorCountLayout.GetPixelSize (out ew, out eh);
 
 				g.Translate (
-					errorCounterX + (errorCounterWidth - ew) / 2,
-					errorCounterY + (errorCounterHeight - eh) / 2
+					errorCounterX + (2 + errorCounterWidth - ew) / 2,
+					errorCounterY + (-1 + errorCounterHeight - eh) / 2
 				);
 				g.SetSourceColor (CounterColor.SecondColor);
 				g.ShowLayout (errorCountLayout);
