@@ -2,5 +2,5 @@
 echo "Configuring..."
 fsharpi configure.fsx
 echo "Getting nuget packages..."
-mozroots --import --sync
-(cd MonoDevelop.FSharpBinding && mono ../../lib/nuget/nuget.exe install)
+mozroots --import --sync --quiet
+(cd MonoDevelop.FSharpBinding && mono ../../lib/nuget/nuget.exe install -OutputDirectory packages)

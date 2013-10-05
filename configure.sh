@@ -35,3 +35,6 @@ echo "Assuming Mono root directory." $MONODIR
 
 sed -e "s,INSERT_MONO_BIN,$MONODIR,g" Makefile.orig > Makefile
 
+echo "Getting nuget packages..."
+mozroots --import --sync --quiet
+(cd monodevelop/MonoDevelop.FSharpBinding && mono ../../lib/nuget/nuget.exe install -OutputDirectory packages)
