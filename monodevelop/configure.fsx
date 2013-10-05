@@ -1,6 +1,6 @@
 
 // Configuration script to create
-//     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj (unix)
+//     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.mac-linux.fsproj (unix)
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj (windows)
 //     MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 
@@ -12,7 +12,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.17"
+let FSharpVersion = "3.2.19"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -101,7 +101,7 @@ else
 
 Console.WriteLine ("Detected version: {0}", mdVersion)
 
-let tag = if isWindows then "windows" else "local"
+let tag = if isWindows then "windows" else "mac-linux"
 
 let fsprojFile = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp." + tag + ".fsproj"
 let xmlFile = "MonoDevelop.FSharpBinding/FSharpBinding.addin.xml"

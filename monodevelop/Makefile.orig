@@ -18,7 +18,7 @@ MDROOT=../dependencies/monodevelop.$(MDVERSION4)
 MDTAG=monodevelop-$(MDVERSION4)
 else
 MDROOT=INSERT_MDROOT
-MDTAG=local
+MDTAG=mac-linux
 endif
 
 
