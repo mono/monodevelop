@@ -96,7 +96,17 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsClass (EvaluationContext ctx, object type)
 		{
-			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_CLASS && ((CorType)type).Class != null;
+			var t = (CorType) type;
+			var cctx = (CorEvaluationContext)ctx;
+			Type tt;
+			// Primitive check
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (t.Type, out tt))
+				return false;
+
+			if (IsIEnumerable (t, cctx.Session))
+				return false;
+
+			return (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class != null) || IsValueType (t);
 		}
 
 		public override bool IsGenericType (EvaluationContext ctx, object type)
@@ -314,10 +324,10 @@ namespace MonoDevelop.Debugger.Win32
 			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, arr) as CorArrayValue;
 			
 			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
-			realArr.SetElement (new int[] { 0 }, val);
+			realArr.SetElement (new [] { 0 }, val);
 			
 			CorType at = (CorType) GetType (ctx, "System.Array");
-			object[] argTypes = new object[] { GetType (ctx, "System.Int32") };
+			object[] argTypes = { GetType (ctx, "System.Int32") };
 			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
 		}
 
@@ -628,8 +638,8 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			object systemEnumType = GetType (ctx, "System.Enum");
 			object enumType = CreateTypeObject (ctx, type);
-			object[] argTypes = new object[] { GetValueType (ctx, enumType), GetValueType (ctx, val) };
-			object[] args = new object[] { enumType, val };
+			object[] argTypes = { GetValueType (ctx, enumType), GetValueType (ctx, val) };
+			object[] args = { enumType, val };
 			return RuntimeInvoke (ctx, systemEnumType, null, "ToObject", argTypes, args);
 		}
 
@@ -703,9 +713,8 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue val = CorObjectAdaptor.GetRealObject (ctx, arr);
 			
 			if (val is CorArrayValue)
-				return new ArrayAdaptor (ctx, (CorValRef) arr, (CorArrayValue) val);
-			else
-				return null;
+				return new ArrayAdaptor (ctx, (CorValRef)arr, (CorArrayValue)val);
+			return null;
 		}
 		
 		public override IStringAdaptor CreateStringAdaptor (EvaluationContext ctx, object str)
@@ -713,9 +722,8 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue val = CorObjectAdaptor.GetRealObject (ctx, str);
 			
 			if (val is CorStringValue)
-				return new StringAdaptor (ctx, (CorValRef) str, (CorStringValue) val);
-			else
-				return null;
+				return new StringAdaptor (ctx, (CorValRef)str, (CorStringValue)val);
+			return null;
 		}
 
 		public static CorValue GetRealObject (EvaluationContext cctx, object objr)
@@ -910,7 +918,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (gval != null && (bindingFlags & BindingFlags.Instance) != 0)
 				realType = GetValueType (ctx, gval) as CorType;
 
-			if (t.Class == null)
+			if (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class == null)
 				yield break;
 
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
@@ -1030,7 +1038,7 @@ namespace MonoDevelop.Debugger.Win32
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
 					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (tt) ? "" : "k__BackingField");
 					if ((field = FindByName (tt.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
-						return new FieldReference (ctx, co as CorValRef, type, field); // FIXME: Support other types
+						return new FieldReference (ctx, co as CorValRef, type, field, prop.Name, ObjectValueFlags.Property);
 
 					// Backing field not available, so do things the old fashioned way.
 					MethodInfo getter = prop.GetGetMethod (true);
@@ -1048,9 +1056,6 @@ namespace MonoDevelop.Debugger.Win32
 
 		static bool IsIEnumerable (Type type)
 		{
-			if (!type.IsInterface)
-				return false;
-
 			if (type.Namespace == "System.Collections" && type.Name == "IEnumerable")
 				return true;
 
@@ -1113,6 +1118,7 @@ namespace MonoDevelop.Debugger.Win32
 					type = type.Base;
 			}
 
+			type = vr.Type as CorType;
 			t = type.GetTypeInfo (cctx.Session);
 			foreach (var iface in t.GetInterfaces ()) {
 				if (!isEnumerable && IsIEnumerable (iface)) {
@@ -1315,9 +1321,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)
 		{
-			CorType type = (CorType) gtype;
+			var type = (CorType) gtype;
 
-			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
+			var wctx = (CorEvaluationContext) ctx;
 			Type t = type.GetTypeInfo (wctx.Session);
 			if (t == null)
 				return null;

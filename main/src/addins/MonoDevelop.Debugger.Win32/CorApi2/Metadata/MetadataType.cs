@@ -447,7 +447,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
 						if (mi == null)
 							continue;
-						if (FlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
+						if (MetadataExtensions.TypeFlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
 							al.Add (prop);
 					}
 					catch {
@@ -510,7 +510,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public override FieldInfo GetField(String name, BindingFlags bindingAttr)
         {
-            throw new NotImplementedException();
+			foreach (var field in GetFields (bindingAttr)) {
+				if (field.Name == name)
+					return field;
+			}
+			return null;
         }
 
         public override FieldInfo[] GetFields(BindingFlags bindingAttr)
