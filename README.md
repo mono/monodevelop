@@ -38,7 +38,7 @@ Requires MonoDevelop or Xamarin Studio 4.0.12 and later versions
 ### Installation
 
 First check install MonoDevelop/Xamarin Studio. Check if F# support is already installed using the AddIn manager.
-   MonoDevelop/Xxamarin Studio 
+   MonoDevelop/Xamarin Studio
         --> Add-in manager 
         --> Language Bindings 
 		--> Check for F# binding
@@ -47,7 +47,7 @@ If so, just use it, no installation is required.
 
 If not, install the F# Language Binding via the AddIn manager.
 
-   MonoDevelop/Xxamarin Studio 
+   MonoDevelop/Xamarin Studio
         --> Add-in manager 
         --> Gallery
         --> Language Bindings 
@@ -89,7 +89,7 @@ Now make:
 
 Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
 
-Users of Windows XP wishing to use this project are advised to read the instruction in this [fork](https://github.com/satyagraha/fsharpbinding/tree/windows-xp)
+Users of Windows XP wishing to use this project are advised to read the instructions in this [fork](https://github.com/satyagraha/fsharpbinding/tree/windows-xp)
 
 ### Notes for Developers
 
