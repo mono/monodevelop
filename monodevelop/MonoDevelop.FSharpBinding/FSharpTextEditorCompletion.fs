@@ -32,8 +32,7 @@ type internal FSharpMemberCompletionData(name, dtt, glyph) =
     override x.HasOverloads with get() = match dtt with DataTipText xs -> xs.Length > 1
 
     override x.OverloadedData with get() = match dtt with 
-                                           | DataTipText xs -> xs |> List.map (fun x -> FSharpMemberCompletionData(name, DataTipText[x], glyph)) 
-                                                                  |> List.toSeq 
+                                           | DataTipText xs -> xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, DataTipText[x], glyph)) 
                                                                   |> Seq.cast
     override x.AddOverload (data: ICompletionData) =
         ()//ot currently called
