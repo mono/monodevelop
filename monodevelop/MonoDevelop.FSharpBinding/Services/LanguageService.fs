@@ -253,39 +253,48 @@ module internal TipFormatter =
           if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
           buildFormatElement false item sb) 
 
-  let splitLine (sb:StringBuilder) (line:string) lineWidth=
+  let splitLine (sb:StringBuilder) (line:string) lineWidth =
+      let emit (s:string) = sb.Append(s) |> ignore
+      let indent = line |> Seq.takeWhile (fun c -> c = ' ') |> Seq.length
       let words = line.Split(' ')
-      let currentWidth = ref 0
+      let mutable i = 0
+      let mutable first = true
       for word in words do
-          let (stuff, pos) =
-              if !currentWidth > 0 then
-                  if !currentWidth + word.Length < lineWidth then
-                      (" ", (!currentWidth + 1))
-                  else ("\n", 0)
-              else ("", 0)
-          sb.Append(stuff + word) |> ignore
-          currentWidth := (pos + word.Length)
+          if first || i + word.Length < lineWidth then 
+              emit word 
+              emit " "
+              i <- i + word.Length + 1
+              first <- false
+          else 
+              sb.AppendLine() |> ignore
+              for i in 1 .. indent do emit " "
+              emit word 
+              emit " "
+              i <- indent + word.Length + 1
+              first <- true
+      sb.AppendLine() |> ignore
 
   let wrap (text: String) lineWidth =
       let sb = StringBuilder()
       let lines = text.Split [|'\r';'\n'|]
       for line in lines  do
-        if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
-        else splitLine sb line lineWidth
+          if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
+          else splitLine sb line lineWidth
       sb.ToString()
 
 
   /// Format tool-tip that we get from the language service as string        
   let formatTip canAddHeader tip = 
-    let sb = new StringBuilder()
-    buildFormatTip canAddHeader tip sb
-    let text = sb.ToString()
-    //TODO: Use the current projects policy to get line length
-    // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
-    // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
-    
-    let wrapped = wrap text 120
-    wrapped.Trim('\n', '\r')
+      let sb = new StringBuilder()
+      buildFormatTip canAddHeader tip sb
+      let text = sb.ToString()
+
+      //TODO: Use the current projects policy to get line length
+      // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
+      // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
+
+      let wrapped = wrap text 120
+      wrapped.Trim('\n', '\r')
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
@@ -372,7 +381,7 @@ module Parsing =
     return [] }
 
   let parseBackTriggerThenLongIdent = parser {
-    let! _ = char '('
+    let! _ = (char '(' <|> char '<')
     let! _  = many whitespace
     return! parseBackLongIdent
     }
@@ -469,12 +478,15 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | None -> DeclarationSet.Empty
         | Some (residue, longName) ->
     
-        Debug.WriteLine(sprintf "Result: GetDeclarations: column: %d, ident: %A\n    Line: %s" (doc.Editor.Caret.Line - 1) (longName, residue) lineStr)
+        //Console.WriteLine(sprintf "Result: GetDeclarations: line: %d, column: %d, ident: %A\n    Line: '%s'" (doc.Editor.Caret.Line - 1) (doc.Editor.Caret.Column - 1) (longName, residue) lineStr)
+
         //Review: last parameter is a function has changes since last type check, we always return false here.
+        //let longName = if longName = [""] then [] else longName
         let getDeclarations = info.GetDeclarations(Some(untyped), (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), fun _ -> false)
                                               
         let declarations = Async.RunSynchronously(getDeclarations, ServiceSettings.blockingTimeout)
-        Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
+
+        //Console.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
         declarations
 
   /// Get the tool-tip to be displayed at the specified offset (relatively
@@ -747,17 +759,18 @@ type internal LanguageService private () =
         let req = ParseRequest(file, src, opts, false, None)
         checker.UntypedParse(fileName, src, opts)
 
-  member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, timeout)  : TypedParseResult = 
+  member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
-    Debug.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
+    //Console.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
     let req = ParseRequest(file, src, opts, false, None)
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
-    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo ->
-        Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
+    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
+        //Console.WriteLine(sprintf "Worker: Quick parse completed - success")
         TypedParseResult(typed, untyped)
     | _ ->
+        //Console.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
         mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
     

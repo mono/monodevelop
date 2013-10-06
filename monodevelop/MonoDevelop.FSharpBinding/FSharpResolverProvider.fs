@@ -90,11 +90,14 @@ type FSharpResolverProvider() =
 
         Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
-        let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), 
-                                                                docText, 
-                                                                doc.Project, 
-                                                                config, 
-                                                                timeout = ServiceSettings.blockingTimeout)
+        let tyRes = 
+            LanguageService.Service.GetTypedParseResult
+                 (new FilePath(doc.Editor.FileName), 
+                  docText, 
+                  doc.Project, 
+                  config, 
+                  allowRecentTypeCheckResults=true,
+                  timeout = ServiceSettings.blockingTimeout)
             
         Debug.WriteLine (sprintf "Resolver: Getting tool tip")
         // Get tool-tip from the language service
