@@ -18,21 +18,32 @@ type FSharpParser() =
   do Debug.WriteLine("Parsing: Creating FSharpParser")
         
   /// Holds the previous errors reported by a file. 
-  let prevErrors = System.Collections.Generic.Dictionary<string,Error list>()
+  let activeResults = System.Collections.Generic.Dictionary<string,Error list>()
 
   /// Holds the previous content used to generate the previous errors. An entry is only present if we have 
   /// scheduled a new ReparseDocument() to update the errors.
-  let prevContent = System.Collections.Generic.Dictionary<string,string>()
+  let activeRequests = System.Collections.Generic.Dictionary<string,string>()
 
   override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
+    if fileName = null || not (CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName))) then null else
+
     let fileContent = content.ReadToEnd()
-    Debug.WriteLine("Parsing: Update in FSharpParser.Parse")
+
+    Debug.WriteLine("[Thread {0}] Parsing: Update in FSharpParser.Parse to file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+
+    let doc = new FSharpParsedDocument(fileName)
+    doc.Flags <- doc.Flags ||| ParsedDocumentFlags.NonSerializable
+
+    // Check if this is a reparse.
+    match activeRequests.TryGetValue(fileName) with 
+    | true, content when content = fileContent ->
+        activeRequests.Remove(fileName) |> ignore
+
+    | _ ->
   
-    // Trigger a parse/typecheck in the background. After the parse/typecheck is completed, request another parse to report the errors.
-    //
-    // Skip this if this call is a result of updating errors and the content still matches.
-    if fileName <> null && not (prevContent.ContainsKey(fileName) && prevContent.[fileName] = fileContent ) 
-                        && CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName)) then 
+      Debug.WriteLine("[Thread {0}]: TriggerParse file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+      // Trigger a parse/typecheck in the background. After the parse/typecheck is completed, request another parse to report the errors.
+      //
       // Trigger parsing in the language service 
       let filePathOpt = 
           // TriggerParse will work only for full paths
@@ -42,44 +53,34 @@ type FSharpParser() =
              let doc = IdeApp.Workbench.ActiveDocument 
              if doc <> null then 
                  let file = doc.FileName
-                 if file.FullPath.ToString() <> "" then Some file else None
+                 if file.FullPath.ToString() = "" then None else Some file
              else None
+
       match filePathOpt with 
       | None -> ()
       | Some filePath -> 
         let config = IdeApp.Workspace.ActiveConfiguration
         if config <> null then 
-          LanguageService.Service.TriggerParse(filePath, fileContent, proj, config, afterCompleteTypeCheckCallback=(fun (fileName,errors) ->
+          // Keep a record that we have an inflight check of this going on
+          activeRequests.[fileName] <- fileContent
+          LanguageService.Service.TriggerParse(filePath, fileContent, proj, config, afterCompleteTypeCheckCallback=(fun (_,errors) ->
 
-                    let file = fileName.FullPath.ToString()
-                    if file <> null then
-                      prevErrors.[file] <- errors
-                      prevContent.[file] <- fileContent
-                      // Scheule another parse to actually update the errors 
-                      try 
-                         let doc = IdeApp.Workbench.ActiveDocument
-                         if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                             Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
-                             doc.ReparseDocument()
-                      with _ -> ()))
+                    Debug.WriteLine("[Thread {0}]: Callback after parsing, file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
 
-    // Create parsed document with the results from the last type-checking      
-    // (we could wait, but that can take a long time)
-    let doc = new FSharpParsedDocument(fileName)
-    doc.Flags <- doc.Flags ||| ParsedDocumentFlags.NonSerializable
-    let errors = 
-      match fileName with
-      | null -> []
-      | _ ->
-        match prevErrors.TryGetValue(fileName) with 
-        | true,err -> 
-            prevContent.Remove(fileName) |> ignore
-            err
-        | _ -> [ ] 
+                    // Keep the result until we reparse
+                    activeResults.[fileName] <- errors
 
-    for er in errors do 
-        Debug.WriteLine(sprintf "Parsing: Adding error, message '%s', region '%A'" er.Message (er.Region.BeginLine,er.Region.BeginColumn,er.Region.EndLine,er.Region.EndColumn))
-        doc.Errors.Add(er)    
+                    // Schedule a reparse to actually update the errors, checking first if this is still the active document
+                    try 
+                       let doc = IdeApp.Workbench.ActiveDocument
+                       if doc <> null && doc.FileName.FullPath.ToString() = fileName then 
+                           Debug.WriteLine("[Thread {0}]: Parsing: Requesting re-parse of file {1}, hash {2}",System.Threading.Thread.CurrentThread.ManagedThreadId,fileName, hash fileContent)
+                           doc.ReparseDocument()
+                    with _ -> ()))
+
+    if activeResults.ContainsKey(fileName) then
+        for er in activeResults.[fileName] do 
+            doc.Errors.Add(er)    
 
     doc.LastWriteTimeUtc <- (try File.GetLastWriteTimeUtc (fileName) with _ -> DateTime.UtcNow) 
     doc :> ParsedDocument

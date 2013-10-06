@@ -89,7 +89,7 @@ module CompilerArguments =
   
   /// Is the specified extension supported F# file?
   let supportedExtension ext = 
-    [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> Seq.exists (fun sup ->
+    [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> List.exists (fun sup ->
         String.Compare(ext, sup, true) = 0)
 
   /// Is the specified extension used by F# script files?

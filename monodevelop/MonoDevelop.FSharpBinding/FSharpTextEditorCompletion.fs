@@ -5,6 +5,7 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Diagnostics
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
@@ -29,6 +30,9 @@ type internal FSharpMemberCompletionData(mi:Declaration) =
 
     // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (smartWrap: bool) = 
+      
+      Debug.WriteLine("computing tooltip for {0}", mi.Name)
+      
       let description = description.Value
       let lines = description.Split('\n','\r')
 
@@ -172,17 +176,17 @@ type FSharpTextEditorCompletion() =
 
   override x.Initialize() = base.Initialize()
 
-  /// Provide parameter and method overload information when you type '(', ',' or ')'
+  /// Provide parameter and method overload information when you type '(', '<' or ','
   override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
     try
-     if (completionChar <> '(' && completionChar <> '<' && completionChar <> ',' && completionChar <> ')' ) then null else
-      //Console.WriteLine("Getting Parameter Info on completion character {0}", completionChar)
+     if (completionChar <> '(' && completionChar <> '<' && completionChar <> ',' ) then null else
+      Debug.WriteLine("Getting Parameter Info on completion character {0}", completionChar)
       let doc = x.Document
       let docText = doc.Editor.Text
       let offset = context.TriggerOffset
 
-      // Parse backwards, skipping (...) and { ... } and [ ... ].
-      // This is an approximation to help determine the parameter index. 
+      // Parse backwards, skipping (...) and { ... } and [ ... ] to determine the parameter index. 
+      // This is an approximation.
       let startOffset =
           let rec loop depth i = 
               if (i <= 0) then i else
@@ -193,7 +197,7 @@ type FSharpTextEditorCompletion() =
               else loop depth (i-1) 
           loop 0 offset 
 
-      //Console.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
+      Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
       if docText = null || offset >= docText.Length || offset < 0 then null else
       let config = IdeApp.Workspace.ActiveConfiguration
       if config = null then null else
@@ -203,10 +207,10 @@ type FSharpTextEditorCompletion() =
       let methsOpt = tyRes.GetMethods(startOffset, doc.Editor.Document)
       match methsOpt with 
       | None -> 
-          //Console.WriteLine("Getting Parameter Info: no methods")
+          Debug.WriteLine("Getting Parameter Info: no methods")
           null 
       | Some(name, meths) -> 
-          //Console.WriteLine("Getting Parameter Info: methods!")
+          Debug.WriteLine("Getting Parameter Info: methods!")
           new ParameterDataProvider (startOffset, name, meths) :> _ 
     with _ -> null
         
@@ -250,8 +254,10 @@ type FSharpTextEditorCompletion() =
               let docText = doc.Editor.Text
               if docText = null then true else
               let offset = context.TriggerOffset
-              offset > 0 && Char.IsLetter (docText.[offset-1])
+              offset > 1 && Char.IsLetter (docText.[offset-2])
           | _ -> true
+
+      Debug.WriteLine("allowRecentTypeCheckResults = {0}", allowRecentTypeCheckResults)
 
       x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults)
 
@@ -262,6 +268,7 @@ type FSharpTextEditorCompletion() =
   member x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults) =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
+
       // Try to get typed information from LanguageService (with the specified timeout)
       let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
       
@@ -272,6 +279,7 @@ type FSharpTextEditorCompletion() =
         for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi))
         result :> ICompletionDataList
       else null
+
     with 
     | :? System.TimeoutException -> 
         let result = CompletionDataList()
