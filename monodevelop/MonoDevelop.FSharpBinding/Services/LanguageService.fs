@@ -299,7 +299,8 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
     match comment with
-    | XmlCommentText(s) -> None
+    | XmlCommentText(s) -> 
+        Some(Tooltips.getParameterTip Styles.simpleMarkup s paramName)
     // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
     | XmlCommentSignature(file,key) -> 
         match findXmlDocProviderForAssembly file with 
@@ -308,7 +309,7 @@ module internal TipFormatter =
             let doc = docReader.GetDocumentation(key)
             if String.IsNullOrEmpty(doc) then  None else
             let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
-            Some ( (*GLib.Markup.EscapeText( *) parameterTip )
+            Some ( parameterTip )
     | _ -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
