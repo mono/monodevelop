@@ -18,14 +18,26 @@ open ICSharpCode.NRefactory.Completion
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(mi:Declaration) =
-    inherit CompletionData(CompletionText = (if mi.Name |> String.forall PrettyNaming.IsIdentifierPartCharacter then mi.Name else "``" + mi.Name + "``"), 
-                           DisplayText = mi.Name, 
+type internal FSharpMemberCompletionData(name, dtt, glyph) =
+    inherit CompletionData(CompletionText = (if name |> String.forall PrettyNaming.IsIdentifierPartCharacter then name else "``" + name + "``"), 
+                           DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-    let description = lazy (TipFormatter.formatTip false mi.DescriptionText)
-    let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon mi.Glyph))
-    override x.Description = mi.Name //description.Value   // this is not used
+
+    let description = lazy (TipFormatter.formatTip false dtt)
+    let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
+
+    override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
+
+    override x.HasOverloads with get() = match dtt with DataTipText xs -> xs.Length > 1
+
+    override x.OverloadedData with get() = match dtt with 
+                                           | DataTipText xs -> xs |> List.map (fun x -> FSharpMemberCompletionData(name, DataTipText[x], glyph)) 
+                                                                  |> List.toSeq 
+                                                                  |> Seq.cast
+    override x.AddOverload (data: ICompletionData) =
+        ()//ot currently called
+
 
     // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (smartWrap: bool) = 
@@ -269,7 +281,7 @@ type FSharpTextEditorCompletion() =
       let decls = tyRes.GetDeclarations(x.Document, context) 
       if decls.Items.Length > 0 then
         let result = CompletionDataList()
-        for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi))
+        for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi.Name, mi.DescriptionText, mi.Glyph))
         result :> ICompletionDataList
       else null
     with 
