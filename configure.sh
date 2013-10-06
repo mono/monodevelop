@@ -25,8 +25,11 @@ RESULT=""
 osx_pkg_config=/Library/Frameworks/Mono.framework/Versions/Current/bin/pkg-config
 if test -e $osx_pkg_config; then
     PKG_CONFIG=$osx_pkg_config
-elif test "x$PKG_CONFIG" = "xno"; then
+elif test "x$PKG_CONFIG" = "x"; then
     PKG_CONFIG=`which pkg-config`
+else
+    echo "Failed to find pkg-config, exiting."
+    exit 1
 fi
 
 MONODIR=`$PKG_CONFIG --variable=libdir mono`/mono/4.0
@@ -37,4 +40,4 @@ sed -e "s,INSERT_MONO_BIN,$MONODIR,g" Makefile.orig > Makefile
 
 echo "Getting nuget packages..."
 mozroots --import --sync --quiet
-(cd monodevelop/MonoDevelop.FSharpBinding && mono ../../lib/nuget/nuget.exe install -OutputDirectory packages)
+(cd monodevelop/MonoDevelop.FSharpBinding && mono ../../lib/nuget/NuGet.exe install -OutputDirectory packages)
