@@ -113,41 +113,71 @@
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="overlay_added.png">
-      <LogicalName>overlay_added.png</LogicalName>
+    <EmbeddedResource Include="added-overlay-16.png">
+      <LogicalName>added-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_modified.png">
-      <LogicalName>overlay_modified.png</LogicalName>
+    <EmbeddedResource Include="added-overlay-16@2x.png">
+      <LogicalName>added-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_conflicted.png">
-      <LogicalName>overlay_conflicted.png</LogicalName>
+    <EmbeddedResource Include="modified-overlay-16.png">
+      <LogicalName>modified-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_normal.png">
-      <LogicalName>overlay_normal.png</LogicalName>
+    <EmbeddedResource Include="modified-overlay-16@2x.png">
+      <LogicalName>modified-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_locked.png">
-      <LogicalName>overlay_locked.png</LogicalName>
+    <EmbeddedResource Include="conflict-overlay-16.png">
+      <LogicalName>conflict-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="conflict-overlay-16@2x.png">
+      <LogicalName>conflict-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="normal-overlay-16.png">
+      <LogicalName>normal-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="normal-overlay-16@2x.png">
+      <LogicalName>normal-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="locked-overlay-16.png">
+      <LogicalName>locked-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="locked-overlay-16@2x.png">
+      <LogicalName>locked-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_removed.png">
-      <LogicalName>overlay_removed.png</LogicalName>
+    <EmbeddedResource Include="removed-overlay-16.png">
+      <LogicalName>removed-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="removed-overlay-16@2x.png">
+      <LogicalName>removed-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="repository.png">
       <LogicalName>repository.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_controled.png">
-      <LogicalName>overlay_controled.png</LogicalName>
+    <EmbeddedResource Include="versioned-overlay-16.png">
+      <LogicalName>versioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_unversioned.png">
-      <LogicalName>overlay_unversioned.png</LogicalName>
+    <EmbeddedResource Include="versioned-overlay-16@2x.png">
+      <LogicalName>versioned-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_lock_required.png">
-      <LogicalName>overlay_lock_required.png</LogicalName>
+    <EmbeddedResource Include="unversioned-overlay-16.png">
+      <LogicalName>unversioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_unlocked.png">
-      <LogicalName>overlay_unlocked.png</LogicalName>
+    <EmbeddedResource Include="unversioned-overlay-16@2x.png">
+      <LogicalName>unversioned-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="lock-required-overlay-16.png">
+      <LogicalName>lock-required-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="lock-required-overlay-16@2x.png">
+      <LogicalName>lock-required-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="unlocked-overlay-16.png">
+      <LogicalName>unlocked-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="unlocked-overlay-16@2x.png">
+      <LogicalName>unlocked-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
