@@ -33,22 +33,24 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.CodeGeneration
 {
-	class ExportCodeGenerator : ICodeGenerator
+	abstract class BaseExportCodeGenerator : ICodeGenerator
 	{
+		public abstract bool IsValidMember (IMember member);
 
 		#region ICodeGenerator implementation
 
 		bool ICodeGenerator.IsValid (CodeGenerationOptions options)
 		{
-			return new ExportMethods (options).IsValid ();
+			return new ExportMethods (this, options).IsValid ();
 		}
 
 		IGenerateAction ICodeGenerator.InitalizeSelection (CodeGenerationOptions options, TreeView treeView)
 		{
-			var exportMethods = new ExportMethods (options);
+			var exportMethods = new ExportMethods (this, options);
 			exportMethods.Initialize (treeView);
 			return exportMethods;
 		}
@@ -59,24 +61,81 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 
-		string ICodeGenerator.Text {
-			get {
-				return GettextCatalog.GetString ("Implement protocol methods");
-			}
+		public abstract string Text {
+			get;
 		}
 
-		string ICodeGenerator.GenerateDescription {
-			get {
-				return GettextCatalog.GetString ("Select methods to implement");
-			}
+		public abstract string GenerateDescription {
+			get;
 		}
 
 		#endregion
 
+		public static bool HasProtocolAttribute (IType type, out string name)
+		{
+			foreach (var attrs in type.GetDefinition ().GetAttributes ()) {
+				if (attrs.AttributeType.Name == "ProtocolAttribute" && attrs.AttributeType.Namespace == "MonoTouch.Foundation") {
+					foreach (var na in attrs.NamedArguments) {
+						if (na.Key.Name != "Name")
+							continue;
+						name = na.Value.ConstantValue as string;
+						if (name != null)
+							return true;
+					}
+				}
+			}
+			name = null;
+			return false;
+		}
+
+		public static ICSharpCode.NRefactory.CSharp.Attribute GenerateExportAttribute (RefactoringContext ctx, IMember member)
+		{
+			if (member == null)
+				return null;
+			var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
+			if (astType is SimpleType) {
+				astType = new SimpleType ("Export");
+			} else {
+				astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
+			}
+
+			var attr = new ICSharpCode.NRefactory.CSharp.Attribute {
+				Type = astType,
+			};
+			var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("MonoTouch.Foundation", "ExportAttribute"))); 
+			if (exportAttribute == null || exportAttribute.PositionalArguments.Count == 0)
+				return null;
+			attr.Arguments.Add (new PrimitiveExpression (exportAttribute.PositionalArguments.First ().ConstantValue)); 
+			return attr;
+
+		}
+
+		IMember GetProtocolMember (RefactoringContext ctx, IType protocolType, IMember member)
+		{
+			foreach (var m in protocolType.GetMembers (m => m.SymbolKind == member.SymbolKind && m.Name == member.Name)) {
+				if (!SignatureComparer.Ordinal.Equals (m, member))
+					return null;
+				var prop = m as IProperty;
+				if (prop != null) {
+					if (prop.CanGet && GenerateExportAttribute (ctx, prop.Getter) != null ||
+						prop.CanSet && GenerateExportAttribute (ctx, prop.Setter) != null)
+						return m;
+				} else {
+					if (GenerateExportAttribute (ctx, m) != null)
+						return m;
+				}
+			}
+			return null;
+		}
+
+
 		class ExportMethods : AbstractGenerateAction
 		{
-			public ExportMethods (CodeGenerationOptions options) : base (options)
+			readonly BaseExportCodeGenerator cg;
+
+			public ExportMethods (BaseExportCodeGenerator cg, CodeGenerationOptions options) : base (options)
 			{
+				this.cg = cg;
 			}
 
 
@@ -87,16 +146,24 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				foreach (var t in type.DirectBaseTypes) {
 					string name;
-					if (!CSharpCodeGenerationService.HasProtocolAttribute (t, out name))
+					if (!HasProtocolAttribute (t, out name))
 						continue;
 					var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
 					if (protocolType == null)
 						break;
 					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (member.ImplementedInterfaceMembers.Any ())
+							continue;
+						if (!cg.IsValidMember (member))
+							continue;
 						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
 							yield return member;
 					}
 					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (member.ImplementedInterfaceMembers.Any ())
+							continue;
+						if (!cg.IsValidMember (member))
+							continue;
 						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
 							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
 							yield return member;
@@ -123,7 +190,7 @@ namespace MonoDevelop.CodeGeneration
 						method.Modifiers &= ~Modifiers.Abstract;
 
 						method.Attributes.Add (new AttributeSection {
-							Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, member) }
+							Attributes = { GenerateExportAttribute (ctx, member) }
 						}); 
 						yield return method.ToString ();
 						continue;
@@ -148,7 +215,7 @@ namespace MonoDevelop.CodeGeneration
 							};
 
 							property.Getter.Attributes.Add (new AttributeSection {
-								Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, p.Getter) }
+								Attributes = { GenerateExportAttribute (ctx, p.Getter) }
 							}); 
 						}
 						if (p.CanSet) {
@@ -157,7 +224,7 @@ namespace MonoDevelop.CodeGeneration
 							};
 
 							property.Setter.Attributes.Add (new AttributeSection {
-								Attributes = { CSharpCodeGenerationService.GenerateExportAttribute (ctx, p.Setter)  }
+								Attributes = { GenerateExportAttribute (ctx, p.Setter)  }
 							}); 
 						}
 						yield return property.ToString ();
@@ -167,5 +234,46 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 	}
+
+	class OptionalProtocolMemberGenerator : BaseExportCodeGenerator
+	{
+		public override string Text {
+			get {
+				return GettextCatalog.GetString ("Implement protocol members");
+			}
+		}
+
+		public override string GenerateDescription {
+			get {
+				return GettextCatalog.GetString ("Select protocol members to implement");
+			}
+		}
+
+		public override bool IsValidMember (IMember member)
+		{
+			return !member.IsAbstract;
+		}
+	}
+
+	class RequiredProtocolMemberGenerator : BaseExportCodeGenerator
+	{
+		public override string Text {
+			get {
+				return GettextCatalog.GetString ("Implement required protocol members");
+			}
+		}
+
+		public override string GenerateDescription {
+			get {
+				return GettextCatalog.GetString ("Select protocol members to implement");
+			}
+		}
+
+		public override bool IsValidMember (IMember member)
+		{
+			return member.IsAbstract;
+		}
+	}
+
 }
 
