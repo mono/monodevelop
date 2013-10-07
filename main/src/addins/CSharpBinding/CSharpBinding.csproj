@@ -324,7 +324,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MissingRequiredProtocolMemberIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
