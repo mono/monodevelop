@@ -362,7 +362,7 @@ module Parsing =
       return ident::rest }
     return [] } 
     
-  /// Parse long identifier with residue (backwards) (e.g. "Console.Wri")
+  /// Parse long identifier with residue (backwards) (e.g. "Debug.Wri")
   /// and returns it as a tuple (reverses the results after parsing)
   let parseBackIdentWithResidue = parser {
     let! residue = many fsharpIdentCharacter 
@@ -473,13 +473,13 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
     
         // Get the long identifier before the current location
         // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+        // e.g.  System.Debug.Wri  --> "Wri", [ "System"; "Debug"; ]
         let lookBack = Parsing.createBackStringReader lineStr (doc.Editor.Caret.Column - 2)
         match Parsing.tryGetFirst Parsing.parseBackIdentWithResidue lookBack with 
         | None -> DeclarationSet.Empty
         | Some (residue, longName) ->
     
-        //Console.WriteLine(sprintf "Result: GetDeclarations: line: %d, column: %d, ident: %A\n    Line: '%s'" (doc.Editor.Caret.Line - 1) (doc.Editor.Caret.Column - 1) (longName, residue) lineStr)
+        Debug.WriteLine(sprintf "Result: GetDeclarations: line: %d, column: %d, ident: %A\n    Line: '%s'" (doc.Editor.Caret.Line - 1) (doc.Editor.Caret.Column - 1) (longName, residue) lineStr)
 
         //Review: last parameter is a function has changes since last type check, we always return false here.
         //let longName = if longName = [""] then [] else longName
@@ -487,7 +487,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
                                               
         let declarations = Async.RunSynchronously(getDeclarations, ServiceSettings.blockingTimeout)
 
-        //Console.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
+        Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
         declarations
 
   /// Get the tool-tip to be displayed at the specified offset (relatively
@@ -597,7 +597,7 @@ type internal LanguageService private () =
         try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" file)
             let doc = IdeApp.Workbench.ActiveDocument
             if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
+                Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" file)
                 doc.ReparseDocument()
         with exn  -> () )
                                             
@@ -763,15 +763,15 @@ type internal LanguageService private () =
   member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
-    //Console.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
+    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
     let req = ParseRequest(file, src, opts, false, None)
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
     | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
-        //Console.WriteLine(sprintf "Worker: Quick parse completed - success")
+        Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
         TypedParseResult(typed, untyped)
     | _ ->
-        //Console.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
+        Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
         mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
     

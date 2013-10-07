@@ -15,7 +15,6 @@ repository/*
 *.pidb
 *.userprefs
 *.user
-/Makefile
 *.dll
 *.pdb
 *.cache

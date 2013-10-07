@@ -44,7 +44,7 @@ Microsoft.FSharp.Collections.Array.append  // type through this line
 //------------------------------------------------------
 // check that type providers give parameter info
 
-#r "FSharp.Data.dll"
+#r "/Users/tomaspetricek/Projects/GitHub/fsharp/FSharp.Data/bin/FSharp.Data.dll"
 
 type X = FSharp.Data.CsvProvider  // press '<' here
 
@@ -52,7 +52,7 @@ type X = FSharp.Data.CsvProvider  // press '<' here
 // check parameter info
 
 Console.WriteLine  // press '(' here, parameter/method/overloads info should appear
-
+b
 List.map           // press '(' here, parameter/method info should appear
 
 Console.WriteLine(Console.WriteLine(),  // press ',' here 
