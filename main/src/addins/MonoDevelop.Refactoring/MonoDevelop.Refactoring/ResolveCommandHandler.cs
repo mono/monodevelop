@@ -346,7 +346,7 @@ namespace MonoDevelop.Refactoring
 					}
 				} catch (Exception e) {
 					if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-						LoggingService.LogError ("Error while looking up framework extension methods.", e);
+						LoggingService.LogError (string.Format ("Error while looking up extension method {0}", umResult.MemberName), e);
 				}
 			}
 			bool foundIdentifier = false;
@@ -449,7 +449,7 @@ namespace MonoDevelop.Refactoring
 						}
 					} catch (Exception e) {
 						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-							LoggingService.LogError ("Error while looking up framework types.", e);
+							LoggingService.LogError (string.Format ("Error while looking up identifier {0}", uiResult.Identifier), e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
@@ -470,7 +470,7 @@ namespace MonoDevelop.Refactoring
 						}
 					} catch (Exception e) {
 						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-							LoggingService.LogError ("Error while looking up framework types.", e);
+							LoggingService.LogError (string.Format ("Error while looking up member resolve result {0}", node), e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
