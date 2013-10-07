@@ -125,7 +125,8 @@ namespace MonoDevelop.NUnit.External
 			if (testSuiteName.Length > 0)
 				name = name.Substring (testSuiteName.Length + 1);
 			string[] parts = name.Split ('.');
-			for (int n = 0; n < parts.Length; n++) {
+			int len = isTest ? parts.Length - 1 : parts.Length;
+			for (int n = 0; n < len; n++) {
 				if (n >= suiteStack.Count) {
 					StartSuite (parts[n]);
 				} else if (parts [n] != suiteStack [n].Item1) {
