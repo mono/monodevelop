@@ -64,16 +64,16 @@ namespace MonoDevelop.Components.MainToolbar
 			VisibleWindow = false;
 			SetSizeRequest (height, height);
 
-			btnNormal = Xwt.Drawing.Image.FromResource (GetType (), "btExecuteBase-Normal.png");
-//			btnInactive = new LazyImage ("btExecuteBase-Disabled.png");
-			//btnPressed = new LazyImage ("btExecuteBase-Pressed.png");
-//			btnHover = new LazyImage ("btExecuteBase-Hover.png");
+			btnNormal = Xwt.Drawing.Image.FromResource (GetType (), "btn-execute-normal-32.png");
+//			btnInactive = new LazyImage ("btn-execute-disabled-32.png");
+//			btnPressed = new LazyImage ("btn-execute-pressed-32.png");
+//			btnHover = new LazyImage ("btn-execute-hover-32.png");
 
-			iconRunNormal = Xwt.Drawing.Image.FromResource (GetType (), "icoExecute-Normal.png");
-			iconRunDisabled = Xwt.Drawing.Image.FromResource (GetType (), "icoExecute-Disabled.png");
+			iconRunNormal = Xwt.Drawing.Image.FromResource (GetType (), "ico-execute-normal-32.png");
+			iconRunDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-execute-disabled-32.png");
 
-			iconStopNormal = Xwt.Drawing.Image.FromResource (GetType (), "icoStop-Normal.png");
-			iconStopDisabled = Xwt.Drawing.Image.FromResource (GetType (), "icoStop-Disabled.png");
+			iconStopNormal = Xwt.Drawing.Image.FromResource (GetType (), "ico-stop-normal-32.png");
+			iconStopDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-stop-disabled-32.png");
 
 			iconBuildNormal = Xwt.Drawing.Image.FromResource (GetType (), "icoBuild-Normal.png");
 			iconBuildDisabled = Xwt.Drawing.Image.FromResource (GetType (), "icoBuild-Disabled.png");

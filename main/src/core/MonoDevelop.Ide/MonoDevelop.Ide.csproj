@@ -758,29 +758,53 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-RightCap-Pressed.png">
       <LogicalName>btDebugBase-RightCap-Pressed.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Disabled.png">
-      <LogicalName>btExecuteBase-Disabled.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-disabled-32.png">
+      <LogicalName>btn-execute-disabled-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Hover.png">
-      <LogicalName>btExecuteBase-Hover.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-disabled-32@2x.png">
+      <LogicalName>btn-execute-disabled-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Normal.png">
-      <LogicalName>btExecuteBase-Normal.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-hover-32.png">
+      <LogicalName>btn-execute-hover-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Pressed.png">
-      <LogicalName>btExecuteBase-Pressed.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-hover-32@2x.png">
+      <LogicalName>btn-execute-hover-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoExecute-Disabled.png">
-      <LogicalName>icoExecute-Disabled.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-normal-32.png">
+      <LogicalName>btn-execute-normal-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoExecute-Normal.png">
-      <LogicalName>icoExecute-Normal.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-normal-32@2x.png">
+      <LogicalName>btn-execute-normal-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoStop-Disabled.png">
-      <LogicalName>icoStop-Disabled.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-pressed-32.png">
+      <LogicalName>btn-execute-pressed-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoStop-Normal.png">
-      <LogicalName>icoStop-Normal.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-pressed-32@2x.png">
+      <LogicalName>btn-execute-pressed-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-disabled-32.png">
+      <LogicalName>ico-execute-disabled-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-disabled-32@2x.png">
+      <LogicalName>ico-execute-disabled-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-normal-32.png">
+      <LogicalName>ico-execute-normal-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-normal-32@2x.png">
+      <LogicalName>ico-execute-normal-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-disabled-32.png">
+      <LogicalName>ico-stop-disabled-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-disabled-32@2x.png">
+      <LogicalName>ico-stop-disabled-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-normal-32.png">
+      <LogicalName>ico-stop-normal-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-normal-32@2x.png">
+      <LogicalName>ico-stop-normal-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationBuildingIcon.png">
       <LogicalName>notificationBuildingIcon.png</LogicalName>
