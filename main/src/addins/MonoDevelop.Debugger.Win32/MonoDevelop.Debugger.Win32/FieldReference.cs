@@ -94,9 +94,9 @@ namespace MonoDevelop.Debugger.Win32
 						val = cval.GetFieldValue (type.Class, field.MetadataToken);
 						return new CorValRef (val, loader);
 					}
-					else if (val is CorReferenceValue) {
+					if (val is CorReferenceValue) {
 						CorReferenceValue rval = (CorReferenceValue)val;
-						return new CorValRef (val, loader);
+						return new CorValRef (rval, loader);
 					}
 				}
 

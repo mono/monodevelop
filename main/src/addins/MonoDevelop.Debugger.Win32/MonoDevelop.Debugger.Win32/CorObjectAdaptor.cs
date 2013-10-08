@@ -1183,12 +1183,122 @@ namespace MonoDevelop.Debugger.Win32
 			return base.TargetObjectToObject (ctx, objr);
 		}
 
-		protected override ValueReference OnGetThisReference (EvaluationContext gctx)
+		static bool InGeneratedClosureOrIteratorType (CorEvaluationContext ctx)
 		{
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			if (ctx.Frame.FrameType != CorFrameType.ILFrame || ctx.Frame.Function == null)
+			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			if (mi == null || mi.IsStatic)
+				return false;
+
+			Type tm = mi.DeclaringType;
+			return IsGeneratedType (tm);
+		}
+
+		internal static bool IsGeneratedType (string name)
+		{
+			//
+			// This should cover all C# generated special containers
+			// - anonymous methods
+			// - lambdas
+			// - iterators
+			// - async methods
+			//
+			// which allow stepping into
+			//
+
+			return name[0] == '<' &&
+				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
+				(name.IndexOf (">c__", StringComparison.Ordinal) > 0 ||
+				// csc is of form <${NAME}>d__${NUMBER}
+				name.IndexOf (">d__", StringComparison.Ordinal) > 0);
+		}
+
+		internal static bool IsGeneratedType (Type tm)
+		{
+			return IsGeneratedType (tm.Name);
+		}
+
+		ValueReference GetHoistedThisReference (CorEvaluationContext cx)
+		{
+			try {
+				CorValRef vref = new CorValRef (delegate {
+					return cx.Frame.GetArgument (0);
+				});
+				var type = (CorType) GetValueType (cx, vref);
+				return GetHoistedThisReference (cx, type, vref);
+			} catch (Exception) {
+			}
+			return null;
+		}
+
+		ValueReference GetHoistedThisReference (CorEvaluationContext cx, CorType type, object val)
+		{
+			Type t = type.GetTypeInfo (cx.Session);
+			var vref = (CorValRef)val;
+			foreach (FieldInfo field in t.GetFields ()) {
+				if (IsHoistedThisReference (field))
+					return new FieldReference (cx, vref, type, field, "this", ObjectValueFlags.Literal);
+
+				if (IsClosureReferenceField (field)) {
+					var fieldRef = new FieldReference (cx, vref, type, field);
+					var fieldType = (CorType)GetValueType (cx, fieldRef.Value);
+					var thisRef = GetHoistedThisReference (cx, fieldType, fieldRef.Value);
+					if (thisRef != null)
+						return thisRef;
+				}
+			}
+
+			return null;
+		}
+
+		static bool IsHoistedThisReference (FieldInfo field)
+		{
+			// mcs is "<>f__this" or "$this" (if in an async compiler generated type)
+			// csc is "<>4__this"
+			return field.Name == "$this" ||
+				(field.Name.StartsWith ("<>", StringComparison.Ordinal) &&
+				field.Name.EndsWith ("__this", StringComparison.Ordinal));
+		}
+
+		static bool IsClosureReferenceField (FieldInfo field)
+		{
+			// mcs is "<>f__ref"
+			// csc is "CS$<>"
+			return field.Name.StartsWith ("CS$<>", StringComparison.Ordinal) ||
+				field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal);
+		}
+
+		static bool IsClosureReferenceLocal (ISymbolVariable local)
+		{
+			if (local.Name == null)
+				return false;
+
+			// mcs is "$locvar" or starts with '<'
+			// csc is "CS$<>"
+			return local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar", StringComparison.Ordinal) ||
+				local.Name.StartsWith ("CS$<>", StringComparison.Ordinal);
+		}
+
+		static bool IsGeneratedTemporaryLocal (ISymbolVariable local)
+		{
+			// csc uses CS$ prefix for temporary variables and <>t__ prefix for async task-related state variables
+			return local.Name != null && (local.Name.StartsWith ("CS$", StringComparison.Ordinal) || local.Name.StartsWith ("<>t__", StringComparison.Ordinal));
+		}
+
+		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
+		{
+			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
+			if (cctx.Frame.FrameType != CorFrameType.ILFrame || cctx.Frame.Function == null)
 				return null;
 
+			if (InGeneratedClosureOrIteratorType (cctx))
+				return GetHoistedThisReference (cctx);
+
+			return GetThisReference (cctx);
+
+		}
+
+		ValueReference GetThisReference (CorEvaluationContext ctx)
+		{
 			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return null;
@@ -1200,7 +1310,7 @@ namespace MonoDevelop.Debugger.Win32
 
 				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
 			} catch (Exception e) {
-				gctx.WriteDebuggerError (e);
+				ctx.WriteDebuggerError (e);
 				return null;
 			}
 		}
@@ -1242,14 +1352,76 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
-			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
+			CorEvaluationContext cctx = (CorEvaluationContext)ctx;
+			if (InGeneratedClosureOrIteratorType (cctx)) {
+				ValueReference vthis = GetThisReference (cctx);
+				return GetHoistedLocalVariables (cctx, vthis).Union (GetLocalVariables (cctx));
+			}
+
+			return GetLocalVariables (cctx);
+		}
+
+		IEnumerable<ValueReference> GetHoistedLocalVariables (CorEvaluationContext cx, ValueReference vthis)
+		{
+			if (vthis == null)
+				return new ValueReference [0];
+
+			object val = vthis.Value;
+			if (IsNull (cx, val))
+				return new ValueReference [0];
+
+			CorType tm = (CorType) vthis.Type;
+			Type t = tm.GetTypeInfo (cx.Session);
+			bool isIterator = IsGeneratedType (t);
+
+			var list = new List<ValueReference> ();
+			foreach (FieldInfo field in t.GetFields ()) {
+				if (IsHoistedThisReference (field))
+					continue;
+				if (IsClosureReferenceField (field)) {
+					list.AddRange (GetHoistedLocalVariables (cx, new FieldReference (cx, (CorValRef)val, tm, field)));
+					continue;
+				}
+				if (field.Name[0] == '<') {
+					if (isIterator) {
+						var name = GetHoistedIteratorLocalName (field);
+						if (!string.IsNullOrEmpty (name)) {
+							list.Add (new FieldReference (cx, (CorValRef)val, tm, field, name, ObjectValueFlags.Variable));
+						}
+					}
+				} else if (!field.Name.Contains ("$")) {
+					list.Add (new FieldReference (cx, (CorValRef)val, tm, field, field.Name, ObjectValueFlags.Variable));
+				}
+			}
+			return list;
+		}
+
+		static string GetHoistedIteratorLocalName (FieldInfo field)
+		{
+			//mcs captured args, of form <$>name
+			if (field.Name.StartsWith ("<$>", StringComparison.Ordinal)) {
+				return field.Name.Substring (3);
+			}
+
+			// csc, mcs locals of form <name>__0
+			if (field.Name[0] == '<') {
+				int i = field.Name.IndexOf ('>');
+				if (i > 1) {
+					return field.Name.Substring (1, i - 1);
+				}
+			}
+			return null;
+		}
+
+		IEnumerable<ValueReference> GetLocalVariables (CorEvaluationContext cx)
+		{
 			uint offset;
 			CorDebugMappingResult mr;
 			try {
-				wctx.Frame.GetIP (out offset, out mr);
-				return GetLocals (wctx, null, (int) offset, false);
+				cx.Frame.GetIP (out offset, out mr);
+				return GetLocals (cx, null, (int) offset, false);
 			} catch (Exception e) {
-				ctx.WriteDebuggerError (e);
+				cx.WriteDebuggerError (e);
 				return null;
 			}
 		}
@@ -1302,9 +1474,18 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolVariable var in scope.GetLocals ()) {
 				if (var.Name == "$site")
 					continue;
-				if (var.Name.IndexOfAny(new char[] {'$','<','>'}) == -1 || showHidden) {
+				if (IsClosureReferenceLocal (var) && IsGeneratedType (var.Name)) {
 					int addr = var.AddressField1;
-					CorValRef vref = new CorValRef (delegate {
+					var vref = new CorValRef (delegate {
+						return ctx.Frame.GetLocalVariable (addr);
+					});
+
+					foreach (var gv in GetHoistedLocalVariables (ctx, new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable))) {
+						yield return gv;
+					}
+				} else if (!IsGeneratedTemporaryLocal (var) || showHidden) {
+					int addr = var.AddressField1;
+					var vref = new CorValRef (delegate {
 						return ctx.Frame.GetLocalVariable (addr);
 					});
 					yield return new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable);
