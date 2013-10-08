@@ -64,6 +64,8 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var member in GetProtocolMembers (curType)) {
 				if (alreadyInserted.Contains (member))
 					continue;
+				if (BaseExportCodeGenerator.IsImplemented (curType, member))
+					continue;
 				alreadyInserted.Add (member);
 				var data = new ProtocolCompletionData (this, declarationBegin, member);
 				col.Add (data);
