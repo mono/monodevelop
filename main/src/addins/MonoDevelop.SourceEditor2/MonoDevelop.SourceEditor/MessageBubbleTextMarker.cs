@@ -374,7 +374,6 @@ namespace MonoDevelop.SourceEditor
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
 			var drawLayout = layouts[0].Layout;
-			int ex = 0 , ey = 0;
 			bool customLayout = true; //sx + width > editor.Allocation.Width;
 			bool hideText = false;
 			bubbleIsReduced = customLayout;
@@ -440,7 +439,7 @@ namespace MonoDevelop.SourceEditor
 				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
 					lg.AddColorStop (0, CounterColor.Color);
 					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
-					g.Pattern = lg;
+					g.SetSource (lg);
 					g.Fill ();
 				}
 
