@@ -110,7 +110,7 @@ namespace MonoDevelop.CodeGeneration
 
 		}
 
-		IMember GetProtocolMember (RefactoringContext ctx, IType protocolType, IMember member)
+		IMember GetProtocolMember (MDRefactoringContext ctx, IType protocolType, IMember member)
 		{
 			foreach (var m in protocolType.GetMembers (m => m.SymbolKind == member.SymbolKind && m.Name == member.Name)) {
 				if (!SignatureComparer.Ordinal.Equals (m, member))
@@ -171,6 +171,8 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 
+
+
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
 				var generator = Options.CreateCodeGenerator ();
@@ -181,57 +183,61 @@ namespace MonoDevelop.CodeGeneration
 				var builder = ctx.CreateTypeSystemAstBuilder ();
 
 				foreach (IMember member in includedMembers) {
-					var method = builder.ConvertEntity (member) as MethodDeclaration;
-					if (method != null) {
-						method.Body = new BlockStatement () {
-							new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-						};
-						method.Modifiers &= ~Modifiers.Virtual;
-						method.Modifiers &= ~Modifiers.Abstract;
-
-						method.Attributes.Add (new AttributeSection {
-							Attributes = { GenerateExportAttribute (ctx, member) }
-						}); 
-						yield return method.ToString ();
-						continue;
-					}
-					var property = builder.ConvertEntity (member) as PropertyDeclaration;
-					if (property != null) {
-						var p = (IProperty)member;
-
-						var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
-						if (astType is SimpleType) {
-							astType = new SimpleType ("Export");
-						} else {
-							astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
-						}
-
-						property.Modifiers &= ~Modifiers.Virtual;
-						property.Modifiers &= ~Modifiers.Abstract;
-
-						if (p.CanGet) {
-							property.Getter.Body = new BlockStatement () {
-								new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-							};
-
-							property.Getter.Attributes.Add (new AttributeSection {
-								Attributes = { GenerateExportAttribute (ctx, p.Getter) }
-							}); 
-						}
-						if (p.CanSet) {
-							property.Setter.Body = new BlockStatement () {
-								new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-							};
-
-							property.Setter.Attributes.Add (new AttributeSection {
-								Attributes = { GenerateExportAttribute (ctx, p.Setter)  }
-							}); 
-						}
-						yield return property.ToString ();
-						continue;
-					}
+					yield return GenerateMemberCode (ctx, builder, member);
 				}
 			}
+		}
+	
+		internal static string GenerateMemberCode (MDRefactoringContext ctx, TypeSystemAstBuilder builder, IMember member)
+		{
+			var method = builder.ConvertEntity (member) as MethodDeclaration;
+			if (method != null) {
+				method.Body = new BlockStatement () {
+					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+				};
+				method.Modifiers &= ~Modifiers.Virtual;
+				method.Modifiers &= ~Modifiers.Abstract;
+				method.Attributes.Add (new AttributeSection {
+					Attributes =  {
+						GenerateExportAttribute (ctx, member)
+					}
+				});
+				return method.ToString ();
+			}
+			var property = builder.ConvertEntity (member) as PropertyDeclaration;
+			if (property == null)
+				return null;
+			var p = (IProperty)member;
+			var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
+			if (astType is SimpleType) {
+				astType = new SimpleType ("Export");
+			}
+			else {
+				astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
+			}
+			property.Modifiers &= ~Modifiers.Virtual;
+			property.Modifiers &= ~Modifiers.Abstract;
+			if (p.CanGet) {
+				property.Getter.Body = new BlockStatement () {
+					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+				};
+				property.Getter.Attributes.Add (new AttributeSection {
+					Attributes =  {
+						GenerateExportAttribute (ctx, p.Getter)
+					}
+				});
+			}
+			if (p.CanSet) {
+				property.Setter.Body = new BlockStatement () {
+					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+				};
+				property.Setter.Attributes.Add (new AttributeSection {
+					Attributes =  {
+						GenerateExportAttribute (ctx, p.Setter)
+					}
+				});
+			}
+			return property.ToString ();
 		}
 	}
 

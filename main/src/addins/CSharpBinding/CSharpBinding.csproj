@@ -129,6 +129,10 @@
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
       <Name>ICSharpCode.NRefactory.Xml</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Tests\ICSharpCode.NRefactory.Tests.csproj">
+      <Project>{63D3B27A-D966-4902-90B3-30290E1692F1}</Project>
+      <Name>ICSharpCode.NRefactory.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -324,6 +328,8 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
