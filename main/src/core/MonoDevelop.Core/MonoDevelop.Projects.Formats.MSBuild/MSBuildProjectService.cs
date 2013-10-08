@@ -84,6 +84,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
+
+			Runtime.ShuttingDown += delegate {
+				CleanProjectBuilders ();
+			};
 		}
 
 		static void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
