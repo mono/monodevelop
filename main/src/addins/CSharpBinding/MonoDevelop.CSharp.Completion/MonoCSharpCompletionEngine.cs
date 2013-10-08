@@ -29,16 +29,33 @@ using System.Collections.Generic;
 using MonoDevelop.CodeGeneration;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	class MonoCSharpCompletionEngine : CSharpCompletionEngine
 	{
-		CSharpCompletionTextEditorExtension ext;
+		readonly CSharpCompletionTextEditorExtension ext;
+		readonly MDRefactoringContext mdRefactoringCtx;
+
+		public CSharpCompletionTextEditorExtension Ext {
+			get {
+				return ext;
+			}
+		}
+
+		public MDRefactoringContext MDRefactoringCtx {
+			get {
+				return mdRefactoringCtx;
+			}
+		}
 
 		public MonoCSharpCompletionEngine (CSharpCompletionTextEditorExtension ext, ICSharpCode.NRefactory.Editor.IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, ICSharpCode.NRefactory.TypeSystem.IProjectContent content, ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpTypeResolveContext ctx) : base (document, completionContextProvider, factory, content, ctx)
 		{
 			this.ext = ext;
+			this.mdRefactoringCtx = MDRefactoringContext.Create (ext.Document, ext.Document.Editor.Caret.Location);
+
 		}
 
 		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
@@ -48,7 +65,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (alreadyInserted.Contains (member))
 					continue;
 				alreadyInserted.Add (member);
-				var data = new ProtocolCompletionData (ext, declarationBegin, this.currentType, member);
+				var data = new ProtocolCompletionData (this, declarationBegin, member);
 				col.Add (data);
 			}
 		}

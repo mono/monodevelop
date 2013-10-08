@@ -202,7 +202,7 @@ namespace MonoDevelop.CodeGeneration
 						GenerateExportAttribute (ctx, member)
 					}
 				});
-				return method.ToString ();
+				return method.ToString (ctx.FormattingOptions);
 			}
 			var property = builder.ConvertEntity (member) as PropertyDeclaration;
 			if (property == null)
@@ -237,7 +237,7 @@ namespace MonoDevelop.CodeGeneration
 					}
 				});
 			}
-			return property.ToString ();
+			return property.ToString (ctx.FormattingOptions);
 		}
 	}
 

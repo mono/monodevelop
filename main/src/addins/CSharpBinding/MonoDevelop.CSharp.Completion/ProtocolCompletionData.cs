@@ -27,31 +27,27 @@ using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
-using System.Linq;
 using MonoDevelop.CodeGeneration;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class ProtocolCompletionData : CompletionData
+	class ProtocolCompletionData : CompletionData
 	{
-		CSharpCompletionTextEditorExtension ext;
-		IMember member;
-		static Ambience ambience = new CSharpAmbience ();
-		int    declarationBegin;
-		IUnresolvedTypeDefinition  type;
+		readonly MonoCSharpCompletionEngine engine;
+		readonly IMember member;
+		readonly static Ambience ambience = new CSharpAmbience ();
+		readonly int    declarationBegin;
 
 		public bool GenerateBody { get; set; }
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			return MemberCompletionData.CreateTooltipInformation (ext, null, member, smartWrap);
+			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
 		}
 
-		public ProtocolCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
+		public ProtocolCompletionData (MonoCSharpCompletionEngine engine, int declarationBegin, IMember member) : base (null)
 		{
-			this.ext = ext;
-			this.type   = type;
+			this.engine = engine;
 			this.member = member;
 
 			this.declarationBegin = declarationBegin;
@@ -63,38 +59,29 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
+			var ext = engine.Ext;
 			var editor = ext.TextEditorData;
 			var generator = CodeGenerator.CreateGenerator (ext.Document);
-			bool isExplicit = false;
-			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-				foreach (var m in type.Members) {
-					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
-						isExplicit = true;
-						break;
-					}
-				}
-			}
-			var resolvedType = type.Resolve (ext.Project).GetDefinition ();
 			if (ext.Project != null)
 				generator.PolicyParent = ext.Project.Policies;
-			var ctx = MDRefactoringContext.Create (ext.Document, ext.Document.Editor.Caret.Location);
-			if (ctx == null)
-				return;
-			var builder = ctx.CreateTypeSystemAstBuilder ();
+			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
 
-			string sb = BaseExportCodeGenerator.GenerateMemberCode (ctx, builder, member);
+			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
 			sb = sb.TrimEnd ();
 
-			//	var lastRegion = result.BodyRegions.LastOrDefault ();
-			//targetCaretPosition = declarationBegin + sb.Length;
+			string indent = editor.GetIndentationString (editor.Caret.Location); 
+			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
+
+			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
+			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
 
 			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
-			/*			if (selectionEndPosition > 0) {
+			if (selectionEndPosition > 0) {
+				targetCaretPosition += declarationBegin;
+				selectionEndPosition += declarationBegin;
 				editor.Caret.Offset = selectionEndPosition;
 				editor.SetSelection (targetCaretPosition, selectionEndPosition);
-			} else {
-				editor.Caret.Offset = targetCaretPosition;
-			}*/
+			}
 		}
 	}
 }
