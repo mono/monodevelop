@@ -58,6 +58,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
+
+		internal static bool ShutDown { get; private set; }
 		
 		public static DataContext DataContext {
 			get {
@@ -86,6 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 
 			Runtime.ShuttingDown += delegate {
+				ShutDown = true;
 				CleanProjectBuilders ();
 			};
 		}
