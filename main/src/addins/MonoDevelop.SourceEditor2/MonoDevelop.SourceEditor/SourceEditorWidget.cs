@@ -46,6 +46,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -918,12 +919,74 @@ namespace MonoDevelop.SourceEditor
 			view.LoadSettings ();
 		}
 
+		static string GetEolString (string detectedEol)
+		{
+			switch (detectedEol) {
+			case "\n":
+				return "Unix";
+			case "\r\n":
+				return "Windows";
+			case "\r":
+				return "Mac";
+			}
+			return "Unknown";
+		}
+
+
 		void ShowIncorretEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
-			
-			if (messageBar == null) {
-				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+
+			Console.WriteLine ("SHOW EOL MARKER !!!!!");
+
+			var window = new OverlayMessageWindow ();
+
+			var hbox = new HBox ();
+			hbox.Spacing = 8;
+
+			hbox.PackStart (ImageService.GetImage ("gtk-dialog-warning", IconSize.Menu));
+			hbox.PackStart (new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString(DetectedEolMarker), GetEolString(textEditor.Options.DefaultEolMarker))), true, true, 0);
+			var okButton = new Button (Gtk.Stock.Ok);
+			hbox.PackEnd (okButton); 
+
+
+			var combo = new ComboBox(new [] {
+				string.Format ("Convert this file to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
+				string.Format ("Keep {0} line endings", GetEolString(DetectedEolMarker)),
+				string.Format ("Convert all files to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
+				string.Format ("Keep {0} line endings in all files", GetEolString(DetectedEolMarker))
+			});
+			combo.Active = 0;
+			hbox.PackEnd (combo);
+			var container = new HBox ();
+			container.PackStart (hbox, true, true, 8); 
+			window.Child = container; 
+			window.ShowOverlay (this.TextEditor);
+
+			okButton.Clicked += delegate {
+				switch (combo.Active) {
+				case 0:
+					ConvertLineEndings ();
+					view.WorkbenchWindow.ShowNotification = false;
+					view.Save (fileName, view.SourceEncoding);
+					break;
+				case 1:
+					UseIncorrectMarkers = true;
+					view.WorkbenchWindow.ShowNotification = false;
+					break;
+				case 2:
+					FileRegistry.ConvertLineEndingsInAllFiles ();
+					break;
+				case 3:
+					FileRegistry.IgnoreLineEndingsInAllFiles ();
+					break;
+				}
+				window.Destroy ();
+			};
+
+			/*
+			 if (messageBar == null) {
+				messageBar = new InfoBar (MessageType.Warning);
 				string detectedEol = DetectedEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
 				string defaultEol = textEditor.Options.DefaultEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
 				messageBar.SetMessageLabel (GettextCatalog.GetString (
@@ -973,13 +1036,7 @@ namespace MonoDevelop.SourceEditor
 			vbox.ReorderChild (messageBar, 0);
 			messageBar.ShowAll ();
 
-			messageBar.QueueDraw ();
-//			view.WorkbenchWindow.ShowNotification = true;
-//			
-//			// Ensure that one file with incorret EOL markers is shown.
-//			var currentView = IdeApp.Workbench.ActiveDocument.PrimaryView.GetContent<SourceEditorView> ();
-//			if (currentView == null || !currentView.IsDirty || !currentView.SourceEditorWidget.HasIncorrectEolMarker || currentView.SourceEditorWidget.UseIncorrectMarkers)
-//				view.WorkbenchWindow.SelectWindow ();
+			messageBar.QueueDraw ();*/
 		}
 		#endregion
 		public void ShowAutoSaveWarning (string fileName)

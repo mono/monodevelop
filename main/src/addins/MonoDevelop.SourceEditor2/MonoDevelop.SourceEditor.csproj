@@ -27,9 +27,9 @@
     </CustomCommands>
     <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
     <ConsolePause>False</ConsolePause>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,8 +43,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -185,6 +185,7 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

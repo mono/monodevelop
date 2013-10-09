@@ -103,10 +103,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Dispose ()
 		{
-			if (engine != null) {
-				if (builder != null)
-					engine.UnloadProject (builder);
-				MSBuildProjectService.ReleaseProjectBuilder (engine);
+			if (!MSBuildProjectService.ShutDown && engine != null) {
+				try {
+					if (builder != null)
+						engine.UnloadProject (builder);
+					MSBuildProjectService.ReleaseProjectBuilder (engine);
+				} catch {
+					// Ignore
+				}
 				GC.SuppressFinalize (this);
 				engine = null;
 				builder = null;

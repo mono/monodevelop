@@ -173,6 +173,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		readonly CSharpFormattingOptions formattingOptions;
 
+		public CSharpFormattingOptions FormattingOptions {
+			get {
+				return formattingOptions;
+			}
+		}
+
 		public Script StartScript ()
 		{
 			return new MDRefactoringScript (this, formattingOptions);

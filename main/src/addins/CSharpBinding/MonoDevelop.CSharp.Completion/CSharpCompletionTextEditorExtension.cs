@@ -325,7 +325,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (ctx == null)
 				return null;
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
-			var engine = new CSharpCompletionEngine (
+			var engine = new MonoCSharpCompletionEngine (
+				this,
 				data.Document,
 				CreateContextProvider (),
 				completionDataFactory,
