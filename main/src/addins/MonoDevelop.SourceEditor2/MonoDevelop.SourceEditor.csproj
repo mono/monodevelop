@@ -186,6 +186,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

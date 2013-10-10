@@ -33,6 +33,10 @@ namespace MonoDevelop.SourceEditor
 {
 	public class OverlayMessageWindow : Gtk.EventBox
 	{
+		const int border = 8;
+
+		public Func<int> SizeFunc;
+
 		ExtensibleTextEditor textEditor;
 
 		public OverlayMessageWindow ()
@@ -59,14 +63,36 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			if (wRequest > 0) {
+				requisition.Width = wRequest;
+			}
+		}
+
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
 			Resize (allocation);
 		}
-
+		int wRequest = -1;
 		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
+			if (SizeFunc != null) {
+				var req = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
+				if (req != wRequest) {
+					wRequest = req;
+					QueueResize ();
+				}
+			} else {
+				if (Allocation.Width > textEditor.Allocation.Width - border * 2) {
+					if (textEditor.Allocation.Width - border * 2 > 0) {
+						QueueResize ();
+					}
+				}
+			}
 			Resize (Allocation);
 		}
 
@@ -78,7 +104,11 @@ namespace MonoDevelop.SourceEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var cr = CairoHelper.Create (evnt.Window)) {
+				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				cr.SetSourceColor (textEditor.ColorStyle.PlainText.Background);
+				cr.Fill ();
+				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
 				cr.SetSourceColor (textEditor.ColorStyle.TooltipText.Background);
 				cr.FillPreserve ();
 
