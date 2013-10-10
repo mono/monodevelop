@@ -438,7 +438,7 @@ namespace RazorEditorParserFixed
                 catch (Exception ex)
                 {
                     MonoDevelop.Core.LoggingService.LogError ("Internal error in Razor parser", ex);
-                    MonoDevelop.Core.LogReporting.LogReportingService.ReportUnhandledException (ex, false);
+                    MonoDevelop.Core.LoggingService.ReportUnhandledException (ex, false);
                 }
                 finally
                 {
