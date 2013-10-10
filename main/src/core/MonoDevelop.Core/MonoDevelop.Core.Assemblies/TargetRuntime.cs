@@ -388,7 +388,6 @@ namespace MonoDevelop.Core.Assemblies
 				try {
 					RunInitialization ();
 				} catch (Exception ex) {
-					//LogReporting.LogReportingService.ReportUnhandledException (ex, false);
 					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
 				} finally {
 					lock (initEventLock) {

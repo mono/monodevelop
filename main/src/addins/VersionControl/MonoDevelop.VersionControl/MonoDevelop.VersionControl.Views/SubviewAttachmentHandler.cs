@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Views
 				// If a user is hitting this, it will show a dialog box every time they
 				// switch to a document or open a document, so suppress the crash dialog
 				// This bug *should* be fixed already, but it's hard to tell.
-				LoggingService.ReportUnhandledException (ex, false, true);
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		

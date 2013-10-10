@@ -150,17 +150,17 @@ namespace MonoDevelop.Core
 			RestoreOutputRedirection ();
 		}
 
-		public static void ReportUnhandledException (Exception ex, bool willShutDown)
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
 			ReportUnhandledException (ex, willShutDown, false, null);
 		}
 
-		public static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
 		{
 			ReportUnhandledException (ex, willShutDown, silently);
 		}
 
-		public static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
 		{
 			var tags = new List<string> { tag };
 
@@ -540,17 +540,30 @@ namespace MonoDevelop.Core
 
 		public static void LogInternalError (Exception ex)
 		{
+			if (ex != null) {
+				Log (LogLevel.Error, System.Environment.NewLine + ex.ToString ());
+			}
+
+			ReportUnhandledException (ex, false, false, "internal");
+		}
+
+		public static void LogInternalError (string message, Exception ex)
+		{
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+
 			ReportUnhandledException (ex, false, false, "internal");
 		}
 
 		public static void LogCriticalError (string message, Exception ex)
 		{
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+
 			ReportUnhandledException (ex, true, false, "critical");
 		}
 
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Fatal, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 
 			ReportUnhandledException (ex, true, false, "fatal");
 		}
