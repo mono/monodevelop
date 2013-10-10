@@ -544,14 +544,14 @@ namespace MonoDevelop.Core
 				Log (LogLevel.Error, System.Environment.NewLine + ex.ToString ());
 			}
 
-			ReportUnhandledException (ex, false, false, "internal");
+			ReportUnhandledException (ex, false, true, "internal");
 		}
 
 		public static void LogInternalError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 
-			ReportUnhandledException (ex, false, false, "internal");
+			ReportUnhandledException (ex, false, true, "internal");
 		}
 
 		public static void LogCriticalError (string message, Exception ex)
