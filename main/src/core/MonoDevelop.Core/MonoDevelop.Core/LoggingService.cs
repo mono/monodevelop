@@ -100,7 +100,7 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
-			string raygunKey = Environment.GetEnvironmentVariable ("MONODEVELOP_RAYGUN_KEY");
+			string raygunKey = BrandingService.GetString ("RaygunApiKey");
 			if (raygunKey != null) {
 				raygunClient = new RaygunClient (raygunKey);
 			}
