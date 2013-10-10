@@ -82,6 +82,9 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
+    <Reference Include="Mindscape.Raygun4Net">
+      <HintPath>..\..\..\external\Mindscape.Raygun4Net\Mindscape.Raygun4Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Web\Utility.cs" />
@@ -427,7 +430,6 @@
     <Compile Include="MonoDevelop.Core\UnixSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\UnixFileSystemExtension.cs" />
-    <Compile Include="MonoDevelop.Core.LogReporting\LogReportingService.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashMonitor.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\ICrashMonitor.cs" />

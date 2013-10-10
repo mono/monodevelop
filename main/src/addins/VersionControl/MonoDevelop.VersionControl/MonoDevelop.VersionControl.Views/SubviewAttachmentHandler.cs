@@ -29,7 +29,7 @@ using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using MonoDevelop.VersionControl;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.LogReporting;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Views
@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Views
 				// If a user is hitting this, it will show a dialog box every time they
 				// switch to a document or open a document, so suppress the crash dialog
 				// This bug *should* be fixed already, but it's hard to tell.
-				LogReportingService.ReportUnhandledException (ex, false, true);
+				LoggingService.ReportUnhandledException (ex, false, true);
 			}
 		}
 		
