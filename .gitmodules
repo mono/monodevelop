@@ -37,3 +37,6 @@
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
 	url = git://github.com/mono/guiunit.git
+[submodule "main/external/raygun4net"]
+	path = main/external/raygun4net
+	url = git://github.com/mono/raygun4net.git

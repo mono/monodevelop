@@ -29,20 +29,42 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Web;
 using System.Linq;
+using System.Diagnostics;
+using System.Threading;
+using System.IO.Compression;
+using Mindscape.Raygun4Net;
+using Mindscape.Raygun4Net.Messages;
 
 using MonoDevelop.Core.Logging;
 
 namespace MonoDevelop.Core
 {
-	
 	public static class LoggingService
 	{
+		const string ServiceVersion = "1";
+		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
+		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
+
+		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
+
+		static RaygunClient raygunClient;
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
 		static TextWriter defaultError;
 		static TextWriter defaultOut;
+		static bool reporting;
+		static int CrashId;
+		static int Processing;
+
+		// Return value is the new value for 'ReportCrashes'
+		// First parameter is the current value of 'ReportCrashes
+		// Second parameter is the exception
+		// Thirdparameter shows if the exception is fatal or not
+		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
 
 		static LoggingService ()
 		{
@@ -78,11 +100,26 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
+			string raygunKey = Environment.GetEnvironmentVariable ("MONODEVELOP_RAYGUN_KEY");
+			if (raygunKey != null) {
+				raygunClient = new RaygunClient (raygunKey);
+			}
+
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			System.Diagnostics.Debug.Listeners.Clear ();
 
 			//add a new listener that just logs failed asserts
 			System.Diagnostics.Debug.Listeners.Add (new AssertLoggingTraceListener ());
+		}
+
+		public static bool? ReportCrashes {
+			get { return PropertyService.Get<bool?> (ReportCrashesKey); }
+			set { PropertyService.Set (ReportCrashesKey, value); }
+		}
+
+		public static bool? ReportUsage {
+			get { return PropertyService.Get<bool?> (ReportUsageKey); }
+			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 
 		static string GenericLogFile {
@@ -111,6 +148,148 @@ namespace MonoDevelop.Core
 		public static void Shutdown ()
 		{
 			RestoreOutputRedirection ();
+		}
+
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown)
+		{
+			ReportUnhandledException (ex, willShutDown, false, null);
+		}
+
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
+		{
+			ReportUnhandledException (ex, willShutDown, silently);
+		}
+
+		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
+		{
+			var tags = new List<string> { tag };
+
+			if (reporting)
+				return;
+
+			reporting = true;
+			try {
+				var oldReportCrashes = ReportCrashes;
+
+				if (UnhandledErrorOccured != null && !silently)
+					ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
+
+				// If crash reporting has been explicitly disabled, disregard this crash
+				if (ReportCrashes.HasValue && !ReportCrashes.Value)
+					return;
+
+				byte[] data;
+				using (var stream = new MemoryStream ()) {
+					using (var writer = System.Xml.XmlWriter.Create (stream)) {
+						writer.WriteStartElement ("CrashLog");
+						writer.WriteAttributeString ("version", ServiceVersion);
+
+						writer.WriteElementString ("SystemInformation", SystemInformation.GetTextDescription ());
+						writer.WriteElementString ("Exception", ex.ToString ());
+
+						writer.WriteEndElement ();
+					}
+					data = stream.ToArray ();
+				}
+
+				if (raygunClient != null) {
+					raygunClient.Send (ex, tags);
+				}
+
+				// Log to disk only if uploading fails.
+				var filename = string.Format ("{0}.{1}.{2}.crashlog", DateTime.UtcNow.ToString ("yyyy-MM-dd__HH-mm-ss"), SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+				ThreadPool.QueueUserWorkItem (delegate {
+					if (!TryUploadReport (filename, data)) {
+						if (!Directory.Exists (CrashLogDirectory))
+							Directory.CreateDirectory (CrashLogDirectory);
+
+						File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
+					}
+				});
+
+				//ensure we don't lose the setting
+				if (ReportCrashes != oldReportCrashes) {
+					PropertyService.SaveProperties ();
+				}
+
+			} finally {
+				reporting = false;
+			}
+		}
+
+		public static void ProcessCache ()
+		{
+			int origValue = -1;
+			try {
+				// Ensure only 1 thread at a time attempts to upload cached reports
+				origValue = Interlocked.CompareExchange (ref Processing, 1, 0);
+				if (origValue != 0)
+					return;
+
+				// Uploading is not enabled, so bail out
+				if (!ReportCrashes.GetValueOrDefault ())
+					return;
+
+				// Definitely no crash reports if this doesn't exist
+				if (!Directory.Exists (CrashLogDirectory))
+					return;
+
+				foreach (var file in Directory.GetFiles (CrashLogDirectory)) {
+					if (TryUploadReport (file, File.ReadAllBytes (file)))
+						File.Delete (file);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception processing cached crashes", ex);
+			} finally {
+				if (origValue == 0)
+					Interlocked.CompareExchange (ref Processing, 0, 1);
+			}
+		}
+
+		static bool TryUploadReport (string filename, byte[] data)
+		{
+			try {
+				// Empty files won't be accepted by the server as it thinks 'ContentLength' has not been set as it's
+				// zero. We don't need empty files anyway.
+				if (data.Length == 0)
+					return true;
+
+				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
+				if (string.IsNullOrEmpty (server))
+					server = "monodevlog.xamarin.com:35162";
+
+				var request = (HttpWebRequest) WebRequest.Create (string.Format ("http://{0}/logagentreport/", server));
+				request.Headers.Add ("LogAgentVersion", ServiceVersion);
+				request.Headers.Add ("LogAgent_Filename", Path.GetFileName (filename));
+				request.Headers.Add ("Content-Encoding", "gzip");
+				request.Method = "POST";
+
+				// Compress the data and then use the compressed length in ContentLength
+				var compressed = new MemoryStream ();
+				using (var zipper = new GZipStream (compressed, CompressionMode.Compress))
+					zipper.Write (data, 0, data.Length);
+				data = compressed.ToArray ();
+
+				request.ContentLength = data.Length;
+				using (var requestStream = request.GetRequestStream ())
+					requestStream.Write (data, 0, data.Length);
+
+				LoggingService.LogDebug ("CrashReport sent to server, awaiting response...");
+
+				// Ensure the server has correctly processed everything.
+				using (var response = (HttpWebResponse) request.GetResponse ()) {
+					if (response.StatusCode != HttpStatusCode.OK) {
+						LoggingService.LogError ("Server responded with status code {1} and error: {0}", response.StatusDescription, response.StatusCode);
+						return false;
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to upload report to the server", ex);
+				return false;
+			}
+
+			LoggingService.LogDebug ("Successfully uploaded crash report");
+			return true;
 		}
 
 		static void PurgeOldLogs ()
@@ -220,7 +399,7 @@ namespace MonoDevelop.Core
 				return remoteLogger;
 			}
 		}
-		
+
 #region the core service
 		
 		public static bool IsLevelEnabled (LogLevel level)
@@ -295,7 +474,7 @@ namespace MonoDevelop.Core
 		{
 			Log (LogLevel.Fatal, message);
 		}
-		
+
 #endregion
 		
 #region convenience methods (string messageFormat, params object[] args)
@@ -314,12 +493,17 @@ namespace MonoDevelop.Core
 		{
 			Log (LogLevel.Warn, string.Format (messageFormat, args));
 		}
-		
-		public static void LogError (string messageFormat, params object[] args)
+
+		public static void LogUserError (string messageFormat, params object[] args)
 		{
 			Log (LogLevel.Error, string.Format (messageFormat, args));
 		}
 		
+		public static void LogError (string messageFormat, params object[] args)
+		{
+			LogUserError (messageFormat, args);
+		}
+
 		public static void LogFatalError (string messageFormat, params object[] args)
 		{
 			Log (LogLevel.Fatal, string.Format (messageFormat, args));
@@ -346,12 +530,42 @@ namespace MonoDevelop.Core
 		
 		public static void LogError (string message, Exception ex)
 		{
+			LogUserError (message, ex);
+		}
+
+		public static void LogUserError (string message, Exception ex)
+		{
 			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 		}
-		
+
+		public static void LogInternalError (Exception ex)
+		{
+			if (ex != null) {
+				Log (LogLevel.Error, System.Environment.NewLine + ex.ToString ());
+			}
+
+			ReportUnhandledException (ex, false, false, "internal");
+		}
+
+		public static void LogInternalError (string message, Exception ex)
+		{
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+
+			ReportUnhandledException (ex, false, false, "internal");
+		}
+
+		public static void LogCriticalError (string message, Exception ex)
+		{
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+
+			ReportUnhandledException (ex, true, false, "critical");
+		}
+
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Fatal, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+
+			ReportUnhandledException (ex, true, false, "fatal");
 		}
 
 #endregion

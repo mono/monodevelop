@@ -427,7 +427,6 @@
     <Compile Include="MonoDevelop.Core\UnixSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
     <Compile Include="MonoDevelop.Core.FileSystem\UnixFileSystemExtension.cs" />
-    <Compile Include="MonoDevelop.Core.LogReporting\LogReportingService.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashMonitor.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\ICrashMonitor.cs" />
@@ -555,6 +554,10 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\raygun4net\Mindscape.Raygun4Net\Mindscape.Raygun4Net.csproj">
+      <Project>{495E53B3-F3AF-4C4F-BAAF-865EFAA2F4A9}</Project>
+      <Name>Mindscape.Raygun4Net</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -915,7 +915,7 @@ namespace MonoDevelop.SourceEditor
 					newText.Append (correctEol);
 			}
 			view.StoreSettings ();
-			TextEditor.Text = newText.ToString ();
+			view.ReplaceContent (Document.FileName, newText.ToString (), null);
 			view.LoadSettings ();
 		}
 
@@ -923,7 +923,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			switch (detectedEol) {
 			case "\n":
-				return "Unix";
+				return "UNIX";
 			case "\r\n":
 				return "Windows";
 			case "\r":
@@ -936,33 +936,50 @@ namespace MonoDevelop.SourceEditor
 		void ShowIncorretEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
-
-			Console.WriteLine ("SHOW EOL MARKER !!!!!");
-
 			var window = new OverlayMessageWindow ();
 
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
 
-			hbox.PackStart (ImageService.GetImage ("gtk-dialog-warning", IconSize.Menu));
-			hbox.PackStart (new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString(DetectedEolMarker), GetEolString(textEditor.Options.DefaultEolMarker))), true, true, 0);
-			var okButton = new Button (Gtk.Stock.Ok);
-			hbox.PackEnd (okButton); 
+			var image = new HoverCloseButton ();
+			hbox.PackStart (image, false, false, 0);
+			var label = new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
+			int w, h;
+			label.Layout.GetPixelSize (out w, out h);
+			label.Ellipsize = Pango.EllipsizeMode.End;
 
+			hbox.PackStart (label, true, true, 0);
+			var okButton = new Button (Gtk.Stock.Ok);
+			okButton.WidthRequest = 60;
+			hbox.PackEnd (okButton, false, false, 0); 
 
 			var combo = new ComboBox(new [] {
-				string.Format ("Convert this file to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
-				string.Format ("Keep {0} line endings", GetEolString(DetectedEolMarker)),
+				string.Format ("Convert to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
 				string.Format ("Convert all files to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
+				string.Format ("Keep {0} line endings", GetEolString(DetectedEolMarker)),
 				string.Format ("Keep {0} line endings in all files", GetEolString(DetectedEolMarker))
 			});
 			combo.Active = 0;
-			hbox.PackEnd (combo);
+			hbox.PackEnd (combo, false, false, 0);
 			var container = new HBox ();
-			container.PackStart (hbox, true, true, 8); 
+			const int containerPadding = 8;
+			container.PackStart (hbox, true, true, containerPadding); 
 			window.Child = container; 
 			window.ShowOverlay (this.TextEditor);
 
+			window.SizeFunc = () => {
+				return okButton.SizeRequest ().Width +
+					combo.SizeRequest ().Width +
+					image.SizeRequest ().Width +
+					w +
+					hbox.Spacing * 4 + 
+					containerPadding * 2;
+			};
+			image.Clicked += delegate {
+				UseIncorrectMarkers = true;
+				view.WorkbenchWindow.ShowNotification = false;
+				window.Destroy ();
+			};
 			okButton.Clicked += delegate {
 				switch (combo.Active) {
 				case 0:
@@ -971,11 +988,11 @@ namespace MonoDevelop.SourceEditor
 					view.Save (fileName, view.SourceEncoding);
 					break;
 				case 1:
-					UseIncorrectMarkers = true;
-					view.WorkbenchWindow.ShowNotification = false;
+					FileRegistry.ConvertLineEndingsInAllFiles ();
 					break;
 				case 2:
-					FileRegistry.ConvertLineEndingsInAllFiles ();
+					UseIncorrectMarkers = true;
+					view.WorkbenchWindow.ShowNotification = false;
 					break;
 				case 3:
 					FileRegistry.IgnoreLineEndingsInAllFiles ();
@@ -983,60 +1000,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				window.Destroy ();
 			};
-
-			/*
-			 if (messageBar == null) {
-				messageBar = new InfoBar (MessageType.Warning);
-				string detectedEol = DetectedEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
-				string defaultEol = textEditor.Options.DefaultEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
-				messageBar.SetMessageLabel (GettextCatalog.GetString (
-					"<b>The file \"{0}\" has line endings (" + detectedEol + ") which differ from the policy settings(" + defaultEol + ").</b>\n" +
-					"Do you want to convert the line endings?",
-					EllipsizeMiddle (Document.FileName, 50)));
-				
-				Button b1 = new Button (GettextCatalog.GetString ("_Convert"));
-				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += delegate(object sender, EventArgs e) {
-					ConvertLineEndings ();
-					view.WorkbenchWindow.ShowNotification = false;
-					RemoveMessageBar ();
-					view.Save (fileName, view.SourceEncoding);
-				};
-				messageBar.ActionArea.Add (b1);
-				
-				Button b2 = new Button (GettextCatalog.GetString ("_Keep line endings"));
-				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
-				b2.Clicked += delegate(object sender, EventArgs e) {
-					UseIncorrectMarkers = true;
-					view.WorkbenchWindow.ShowNotification = false;
-					RemoveMessageBar ();
-					view.Save (fileName, view.SourceEncoding);
-				};
-				messageBar.ActionArea.Add (b2);
-
-				if (multiple) {
-					var b3 = new Button (GettextCatalog.GetString ("_Convert all files"));
-					b3.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
-					b3.Clicked += delegate {
-						FileRegistry.ConvertLineEndingsInAllFiles ();
-					};
-					messageBar.ActionArea.Add (b3);
-	
-					var b4 = new Button (GettextCatalog.GetString ("_Keep in all files"));
-					b4.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
-					b4.Clicked += delegate {
-						FileRegistry.IgnoreLineEndingsInAllFiles ();
-					};
-					messageBar.ActionArea.Add (b4);
-				}
-
-			}
-			
-			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
-			vbox.ReorderChild (messageBar, 0);
-			messageBar.ShowAll ();
-
-			messageBar.QueueDraw ();*/
 		}
 		#endregion
 		public void ShowAutoSaveWarning (string fileName)

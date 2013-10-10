@@ -60,13 +60,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			global::Stetic.BinContainer.Attach (this);
 			
-			var value = LogReportingService.ReportCrashes;
+			var value = LoggingService.ReportCrashes;
 			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit error diagnostic information"));
 			if (value.HasValue)
 				chkCrash.Active = value.Value;
 			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
 			
-			value = LogReportingService.ReportUsage;
+			value = LoggingService.ReportUsage;
 			chkUsage = new CheckButton (GettextCatalog.GetString ("Automatically submit usage information"));
 			if (value.HasValue)
 				chkUsage.Active = value.Value;
@@ -83,9 +83,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store ()
 		{
 			if (reportCrash.HasValue)
-				LogReportingService.ReportCrashes = reportCrash.Value;
+				LoggingService.ReportCrashes = reportCrash.Value;
 			if (reportUsage.HasValue)
-				LogReportingService.ReportUsage = reportUsage.Value;
+				LoggingService.ReportUsage = reportUsage.Value;
 		}
 	}
 }
