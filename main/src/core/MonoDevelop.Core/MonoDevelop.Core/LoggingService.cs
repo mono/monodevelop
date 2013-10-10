@@ -558,7 +558,7 @@ namespace MonoDevelop.Core
 		{
 			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
 
-			ReportUnhandledException (ex, true, false, "critical");
+			ReportUnhandledException (ex, false, false, "critical");
 		}
 
 		public static void LogFatalError (string message, Exception ex)
