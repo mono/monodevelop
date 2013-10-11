@@ -953,6 +953,9 @@ namespace MonoDevelop.SourceEditor
 			var image = new HoverCloseButton ();
 			hbox.PackStart (image, false, false, 0);
 			var label = new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
+			var color = (Mono.TextEditor.HslColor)textEditor.ColorStyle.NotificationText.Foreground;
+			label.ModifyFg (StateType.Normal, color);
+
 			int w, h;
 			label.Layout.GetPixelSize (out w, out h);
 			label.Ellipsize = Pango.EllipsizeMode.End;

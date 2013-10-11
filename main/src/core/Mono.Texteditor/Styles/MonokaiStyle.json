@@ -45,6 +45,7 @@
 		{ "name": "Tooltip Pager Triangle", "color":"#C8C8C2" },
 		{ "name": "Tooltip Pager Text", "color":"#C8C8C2" },
 
+		{ "name": "Notification Border", "color":"#989892" },
 
 		{ "name": "Completion Matching Substring", "color":"#BA3373" },
 		{ "name": "Completion Border", "color":"#C9C9C9" },
@@ -141,7 +142,8 @@
 		{ "name": "Html Tag Delimiter", "fore":"monokai-white" },
 		{ "name": "Razor Code", "fore":"monokai-white", "back":"#373832" },
 
-		{ "name": "Tooltip Text", "fore":"black", "back":"#272725" },
+		{ "name": "Tooltip Text", "fore":"monokai-white", "back":"#272725" },
+		{ "name": "Notification Text", "fore":"monokai-white", "back":"#272725" },
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
 		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },

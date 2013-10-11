@@ -106,13 +106,13 @@ namespace MonoDevelop.SourceEditor
 			using (var cr = CairoHelper.Create (evnt.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.SetSourceColor (textEditor.ColorStyle.PlainText.Background);
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
 				cr.Fill ();
 				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
-				cr.SetSourceColor (textEditor.ColorStyle.TooltipText.Background);
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
 				cr.FillPreserve ();
 
-				cr.SetSourceColor (textEditor.ColorStyle.TooltipBorder.Color);
+				cr.SetSourceColor (textEditor.ColorStyle.NotificationBorder.Color);
 				cr.Stroke();
 			}
 
