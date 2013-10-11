@@ -19,26 +19,31 @@ open ICSharpCode.NRefactory.Completion
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(name, datatip:DataTipText Lazy, glyph) =
+type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<DataTipText>, glyph) =
     inherit CompletionData(CompletionText = (if name |> String.forall PrettyNaming.IsIdentifierPartCharacter then name else "``" + name + "``"), 
                            DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
 
-    let description = lazy (TipFormatter.formatTip false datatip.Value)
+    let description = lazy (TipFormatter.formatTip false datatipLazy.Value)
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
+
+    new (name, datatip:DataTipText, glyph) =  new FSharpMemberCompletionData(name, lazy datatip, glyph)
+    new (mi:Declaration) =  new FSharpMemberCompletionData(mi.Name, lazy mi.DescriptionText, mi.Glyph)
 
     override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
 
-    override x.HasOverloads = match datatip.Value with DataTipText xs -> xs.Length > 1
+    /// Check if the datatip has multiple overloads
+    override x.HasOverloads = match datatipLazy.Value with DataTipText xs -> xs.Length > 1
 
+    /// Split apart the elements into separate overloads
     override x.OverloadedData =
-        match datatip.Value with 
-        | DataTipText xs -> xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, lazy DataTipText[x], glyph)) 
-                               |> Seq.cast
+        match datatipLazy.Value with 
+        | DataTipText xs -> 
+            xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, DataTipText[x], glyph)) 
+               |> Seq.cast
 
     override x.AddOverload (data: ICompletionData) = ()//not currently called
-
 
     // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (smartWrap: bool) = 
@@ -288,7 +293,7 @@ type FSharpTextEditorCompletion() =
       let decls = tyRes.GetDeclarations(x.Document, context) 
       if decls.Items.Length > 0 then
         let result = CompletionDataList()
-        for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi.Name, lazy mi.DescriptionText, mi.Glyph))
+        for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi))
         result :> ICompletionDataList
       else null
 
