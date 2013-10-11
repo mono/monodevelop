@@ -46,7 +46,6 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
-using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -883,6 +882,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		internal void UpdateEolMarkerMessage (bool multiple)
+		{
+			ShowIncorretEolMarkers (Document.FileName, multiple);
+		}
+
 		internal bool EnsureCorrectEolMarker (string fileName)
 		{
 			if (UseIncorrectMarkers)
@@ -891,7 +895,11 @@ namespace MonoDevelop.SourceEditor
 			if (HasIncorrectEolMarker) {
 				switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
 				case LineEndingConversion.Ask:
-					ShowIncorretEolMarkers (fileName, FileRegistry.HasMultipleIncorretEolMarkers);
+					var hasMultipleIncorretEolMarkers = FileRegistry.HasMultipleIncorretEolMarkers;
+					ShowIncorretEolMarkers (fileName, hasMultipleIncorretEolMarkers);
+					if (hasMultipleIncorretEolMarkers) {
+						FileRegistry.UpdateEolMessages ();
+					}
 					return false;
 				case LineEndingConversion.ConvertAlways:
 					ConvertLineEndings ();
@@ -932,11 +940,12 @@ namespace MonoDevelop.SourceEditor
 			return "Unknown";
 		}
 
+		OverlayMessageWindow messageOverlayWindow;
 
 		void ShowIncorretEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
-			var window = new OverlayMessageWindow ();
+			messageOverlayWindow = new OverlayMessageWindow ();
 
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
@@ -953,21 +962,23 @@ namespace MonoDevelop.SourceEditor
 			okButton.WidthRequest = 60;
 			hbox.PackEnd (okButton, false, false, 0); 
 
-			var combo = new ComboBox(new [] {
-				string.Format ("Convert to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
-				string.Format ("Convert all files to {0} line endings", GetEolString(textEditor.Options.DefaultEolMarker)),
-				string.Format ("Keep {0} line endings", GetEolString(DetectedEolMarker)),
-				string.Format ("Keep {0} line endings in all files", GetEolString(DetectedEolMarker))
-			});
+			var list = new List<string> ();
+			list.Add (string.Format ("Convert to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
+			if (multiple)
+				list.Add (string.Format ("Convert all files to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
+			list.Add (string.Format ("Keep {0} line endings", GetEolString (DetectedEolMarker)));
+			if (multiple)
+				list.Add (string.Format ("Keep {0} line endings in all files", GetEolString (DetectedEolMarker)));
+			var combo = new ComboBox (list.ToArray ());
 			combo.Active = 0;
 			hbox.PackEnd (combo, false, false, 0);
 			var container = new HBox ();
 			const int containerPadding = 8;
 			container.PackStart (hbox, true, true, containerPadding); 
-			window.Child = container; 
-			window.ShowOverlay (this.TextEditor);
+			messageOverlayWindow.Child = container; 
+			messageOverlayWindow.ShowOverlay (this.TextEditor);
 
-			window.SizeFunc = () => {
+			messageOverlayWindow.SizeFunc = () => {
 				return okButton.SizeRequest ().Width +
 					combo.SizeRequest ().Width +
 					image.SizeRequest ().Width +
@@ -978,27 +989,41 @@ namespace MonoDevelop.SourceEditor
 			image.Clicked += delegate {
 				UseIncorrectMarkers = true;
 				view.WorkbenchWindow.ShowNotification = false;
-				window.Destroy ();
+				RemoveMessageBar ();
 			};
 			okButton.Clicked += delegate {
-				switch (combo.Active) {
-				case 0:
-					ConvertLineEndings ();
-					view.WorkbenchWindow.ShowNotification = false;
-					view.Save (fileName, view.SourceEncoding);
-					break;
-				case 1:
-					FileRegistry.ConvertLineEndingsInAllFiles ();
-					break;
-				case 2:
-					UseIncorrectMarkers = true;
-					view.WorkbenchWindow.ShowNotification = false;
-					break;
-				case 3:
-					FileRegistry.IgnoreLineEndingsInAllFiles ();
-					break;
+				if (multiple) {
+					switch (combo.Active) {
+					case 0:
+						ConvertLineEndings ();
+						view.WorkbenchWindow.ShowNotification = false;
+						view.Save (fileName, view.SourceEncoding);
+						break;
+					case 1:
+						FileRegistry.ConvertLineEndingsInAllFiles ();
+						break;
+					case 2:
+						UseIncorrectMarkers = true;
+						view.WorkbenchWindow.ShowNotification = false;
+						break;
+					case 3:
+						FileRegistry.IgnoreLineEndingsInAllFiles ();
+						break;
+					}
+				} else {
+					switch (combo.Active) {
+					case 0:
+						ConvertLineEndings ();
+						view.WorkbenchWindow.ShowNotification = false;
+						view.Save (fileName, view.SourceEncoding);
+						break;
+					case 1:
+						UseIncorrectMarkers = true;
+						view.WorkbenchWindow.ShowNotification = false;
+						break;
+					}
 				}
-				window.Destroy ();
+				RemoveMessageBar ();
 			};
 		}
 		#endregion
@@ -1073,6 +1098,10 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (!TextEditor.Visible)
 				TextEditor.Visible = true;
+			if (messageOverlayWindow != null) {
+				messageOverlayWindow.Destroy ();
+				messageOverlayWindow = null;
+			}
 		}
 
 		public void Reload ()

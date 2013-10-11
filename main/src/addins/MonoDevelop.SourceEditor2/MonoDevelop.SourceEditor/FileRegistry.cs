@@ -69,6 +69,7 @@ namespace MonoDevelop.SourceEditor
 		public static void Remove (SourceEditorView sourceEditorView)
 		{
 			openFiles.Remove (sourceEditorView);
+			UpdateEolMessages ();
 		}
 
 		static bool SkipView (SourceEditorView view)
@@ -212,6 +213,16 @@ namespace MonoDevelop.SourceEditor
 				view.SourceEditorWidget.RemoveMessageBar ();
 				view.WorkbenchWindow.ShowNotification = false;
 				view.Save ();
+			}
+		}
+
+		public static void UpdateEolMessages ()
+		{
+			var multiple = HasMultipleIncorretEolMarkers;
+			foreach (var view in openFiles) {
+				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
+					continue;
+				view.SourceEditorWidget.UpdateEolMarkerMessage(multiple);
 			}
 		}
 		#endregion
