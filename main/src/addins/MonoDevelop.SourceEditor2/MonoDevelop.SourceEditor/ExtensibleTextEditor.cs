@@ -398,8 +398,15 @@ namespace MonoDevelop.SourceEditor
 				skipChars.Remove (skipChar);
 			}
 			if (Extension != null) {
-				if (ExtensionKeyPress (key, ch, state)) 
-					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+				if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
+					using (var undo = Document.OpenUndoGroup ()) {
+						if (ExtensionKeyPress (key, ch, state))
+							result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					}
+				} else {
+					if (ExtensionKeyPress (key, ch, state))
+						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+				}
 				if (returnBetweenBraces)
 					HitReturn ();
 			} else {
