@@ -755,7 +755,7 @@ namespace Mono.TextEditor
 				undoStack.Push (keyUndo);
 				keyUndo = new KeyboardStackUndo ();
 			}
-			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset) {
+			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset || !char.IsLetterOrDigit (top.Args.InsertedText.GetCharAt (0))) {
 				keyUndo.IsClosed = true;
 				undoStack.Push (keyUndo);
 				keyUndo = new KeyboardStackUndo ();
