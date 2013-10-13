@@ -7,6 +7,7 @@ open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Projects
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 open System.Collections.Generic
 open System.Linq
@@ -23,13 +24,14 @@ type FSharpProjectNodeCommandHandler() =
     //reload project causing the node tree up refresh with new ordering
     use monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor(true)
     monitor.BeginTask("Reloading Project", 1)
-    let folder = currentNode.DataItem :?> ProjectFile
-    folder.Project.ParentFolder.ReloadItem(monitor, folder.Project) |> ignore
+    let file = currentNode.DataItem :?> ProjectFile
+    file.Project.ParentFolder.ReloadItem(monitor, file.Project) |> ignore
     monitor.Step (1)
     monitor.EndTask()
-  
+
   let moveNodes (currentNode: ITreeNavigator) (movingNode:ProjectFile) position =
         let moveToNode = currentNode.DataItem :?> ProjectFile
+
         let projectFile = movingNode.Project.FileName.ToString()
 
         ///partially apply the default namespace of msbuild to xs
@@ -46,9 +48,11 @@ type FSharpProjectNodeCommandHandler() =
         let findByIncludeFile name seq = 
             seq |> where (fun elem -> (elem |> attributeValue "Include") = Path.GetFileName(name) )
                 |> firstOrNone
+        
+        let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
 
-        let movingElement = compileNodes |> findByIncludeFile movingNode.Name
-        let moveToElement = compileNodes |> findByIncludeFile moveToNode.Name
+        let movingElement = compileNodes |> findByIncludeFile (getFullName movingNode)
+        let moveToElement = compileNodes |> findByIncludeFile (getFullName moveToNode)
 
         let addFunction (moveTo:XElement) (position:DropPosition) =
             match position with
@@ -92,12 +96,9 @@ type FSharpProjectNodeCommandHandler() =
 type FSharpProjectFileNodeExtension() =
   inherit NodeBuilderExtension()
 
-  member x.Refresh() =
-     x.Context.GetTreeBuilder().UpdateAll()
-
   override x.CanBuildNode(dataType:Type) =
-    // Extend any file belonging to a F# project
-    typedefof<ProjectFile>.IsAssignableFrom (dataType)
+    // Extend any file or folder belonging to a F# project
+    typedefof<ProjectFile>.IsAssignableFrom (dataType) || typedefof<ProjectFolder>.IsAssignableFrom (dataType)
 
   override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
     match (otherNode.DataItem, thisNode.DataItem) with
@@ -105,6 +106,34 @@ type FSharpProjectFileNodeExtension() =
       if (file1.Project = file2.Project) && (file1.Project :? DotNetProject) && ((file1.Project :?> DotNetProject).LanguageName = "F#") then
             file1.Project.Files.IndexOf(file1).CompareTo(file2.Project.Files.IndexOf(file2))
       else NodeBuilder.DefaultSort
+    | (:? ProjectFolder as folder1), (:? ProjectFolder as folder2) ->
+         use file = IO.File.Open(folder1.Project.FileName.ToString(), FileMode.Open)
+         let xdoc = XElement.Load(file)
+         file.Close()
+
+         //get the folders
+         let folders = xdoc |> descendants (xs "http://schemas.microsoft.com/developer/msbuild/2003" "Folder") |> Seq.toArray
+         let includes = folders |> Array.map (attributeValue "Include")
+
+         //This can probably be replaced with something like whats in ProjectFile.VirtualProjectPath
+         let getRealName (pf:ProjectFolder) =
+             let rec loop (pf:ProjectFolder) current =
+                 match pf.Parent with
+                 | :? ProjectFolder as ppf ->
+                    loop ppf (pf :: current)
+                 | _ -> pf :: current
+             let bits = loop pf []
+             let path = bits |> Seq.map (fun pf -> pf.Name) |> String.concat "\\"
+             path + "\\"
+
+         let folder1RealName = getRealName folder1
+         let folder2RealName = getRealName folder2
+         let folder1Index = includes |> Array.tryFindIndex ((=) folder1RealName)
+         let folder2Index = includes |> Array.tryFindIndex ((=) folder2RealName)
+         match folder1Index, folder2Index with
+         | Some(i1), Some(i2) -> 
+            i2.CompareTo(i1)
+         | _ -> NodeBuilder.DefaultSort
     | _ -> NodeBuilder.DefaultSort
 
   override x.CommandHandlerType = typeof<FSharpProjectNodeCommandHandler>
