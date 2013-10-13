@@ -1092,8 +1092,11 @@
     <EmbeddedResource Include="icons\visibility-protected-or-internal-16.png">
       <LogicalName>visibility-protected-or-internal-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\chain-overlay-16.png">
-      <LogicalName>chain-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\link-overlay-16.png">
+      <LogicalName>link-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16@2x.png">
+      <LogicalName>link-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-item-group-16.png">
       <LogicalName>project-item-group-16.png</LogicalName>
