@@ -1023,11 +1023,17 @@
     <EmbeddedResource Include="icons\command-16.png">
       <LogicalName>command-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoBuild-Disabled.png">
-      <LogicalName>icoBuild-Disabled.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-disabled-32.png">
+      <LogicalName>ico-build-disabled-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoBuild-Normal.png">
-      <LogicalName>icoBuild-Normal.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-disabled-32@2x.png">
+      <LogicalName>ico-build-disabled-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-normal-32.png">
+      <LogicalName>ico-build-normal-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-normal-32@2x.png">
+      <LogicalName>ico-build-normal-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
       <LogicalName>tree-popup-button-hover.png</LogicalName>

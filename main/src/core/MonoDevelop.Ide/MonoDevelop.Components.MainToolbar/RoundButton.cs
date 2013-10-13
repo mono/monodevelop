@@ -75,8 +75,8 @@ namespace MonoDevelop.Components.MainToolbar
 			iconStopNormal = Xwt.Drawing.Image.FromResource (GetType (), "ico-stop-normal-32.png");
 			iconStopDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-stop-disabled-32.png");
 
-			iconBuildNormal = Xwt.Drawing.Image.FromResource (GetType (), "icoBuild-Normal.png");
-			iconBuildDisabled = Xwt.Drawing.Image.FromResource (GetType (), "icoBuild-Disabled.png");
+			iconBuildNormal = Xwt.Drawing.Image.FromResource (GetType (), "ico-build-normal-32.png");
+			iconBuildDisabled = Xwt.Drawing.Image.FromResource (GetType (), "ico-build-disabled-32.png");
 		}
 
 		StateType hoverState = StateType.Normal;
