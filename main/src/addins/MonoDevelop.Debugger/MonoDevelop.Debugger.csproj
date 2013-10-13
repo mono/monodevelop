@@ -184,20 +184,35 @@
     <EmbeddedResource Include="icons\debug-overlay-24.png">
       <LogicalName>debug-overlay-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\icoDebug-Pause.png">
-      <LogicalName>icoDebug-Pause.png</LogicalName>
+    <EmbeddedResource Include="icons\ico-debug-pause.png">
+      <LogicalName>ico-debug-pause.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\icoDebug-StepIn.png">
-      <LogicalName>icoDebug-StepIn.png</LogicalName>
+    <EmbeddedResource Include="icons\ico-debug-pause@2x.png">
+      <LogicalName>ico-debug-pause@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\icoDebug-StepOut.png">
-      <LogicalName>icoDebug-StepOut.png</LogicalName>
+    <EmbeddedResource Include="icons\ico-debug-step-in.png">
+      <LogicalName>ico-debug-step-in.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\icoDebug-StepOver.png">
-      <LogicalName>icoDebug-StepOver.png</LogicalName>
+    <EmbeddedResource Include="icons\ico-debug-step-in@2x.png">
+      <LogicalName>ico-debug-step-in@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\icoDebug-Continue.png">
-      <LogicalName>icoDebug-Continue.png</LogicalName>
+    <EmbeddedResource Include="icons\ico-debug-step-out.png">
+      <LogicalName>ico-debug-step-out.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ico-debug-step-out@2x.png">
+      <LogicalName>ico-debug-step-out@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ico-debug-step-over.png">
+      <LogicalName>ico-debug-step-over.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ico-debug-step-over@2x.png">
+      <LogicalName>ico-debug-step-over@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ico-debug-continue.png">
+      <LogicalName>ico-debug-continue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ico-debug-continue@2x.png">
+      <LogicalName>ico-debug-continue@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bug-16.png">
       <LogicalName>bug-16.png</LogicalName>
