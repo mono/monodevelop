@@ -58,15 +58,15 @@ namespace MonoDevelop.Components.MainToolbar
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 
 			btnNormalOriginal = new Xwt.Drawing.Image[] {
-				Xwt.Drawing.Image.FromResource ("btDebugBase-LeftCap-Normal.png"),
-				Xwt.Drawing.Image.FromResource ("btDebugBase-MidCap-Normal.png"),
-				Xwt.Drawing.Image.FromResource ("btDebugBase-RightCap-Normal.png")
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-left-cap-normal.png"),
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-middle-cap-normal.png"),
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-right-cap-normal.png")
 			};
 
 			btnPressedOriginal = new Xwt.Drawing.Image[] {
-				Xwt.Drawing.Image.FromResource ("btDebugBase-LeftCap-Pressed.png"),
-				Xwt.Drawing.Image.FromResource ("btDebugBase-MidCap-Pressed.png"),
-				Xwt.Drawing.Image.FromResource ("btDebugBase-RightCap-Pressed.png")
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-left-cap-pressed.png"),
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-middle-cap-pressed.png"),
+				Xwt.Drawing.Image.FromResource ("btn-debug-base-right-cap-pressed.png")
 			};
 			btnNormal = new Xwt.Drawing.Image[btnNormalOriginal.Length];
 			btnPressed = new Xwt.Drawing.Image[btnNormalOriginal.Length];
