@@ -1111,6 +1111,7 @@ namespace MonoDevelop.CSharp.Completion
 					this.ext = ext;
 					this.useFullName = useFullName;
 					this.type = type;
+					this.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.IsImportCompletion;
 				}
 
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
@@ -1194,10 +1195,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				public override string Description {
 					get {
-						Initialize ();
-						if (generateUsing)
-							return type.Namespace;
-						return null;
+						return type.Namespace;
 					}
 				}
 
@@ -1208,19 +1206,6 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				#endregion
 
-				public override int CompareTo (object obj)
-				{
-					var result = base.CompareTo (obj);
-					if (result == 0) {
-						var isd = obj as ImportSymbolCompletionData;
-						if (isd != null) {
-							result = StringComparer.OrdinalIgnoreCase.Compare (Description, isd.Description);
-						} else {
-							return 1;
-						}
-					}
-					return result;
-				}
 
 				List<CompletionData> overloads;
 

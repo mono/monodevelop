@@ -126,9 +126,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public static int Compare (ICompletionData a, ICompletionData b)
 		{
-			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-				? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
-					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
+			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete)) ? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText) : (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
+			if (result == 0) {
+				var aIsImport = (a.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
+				var bIsImport = (b.DisplayFlags & DisplayFlags.IsImportCompletion) != 0;
+				if (!aIsImport && bIsImport)
+					return -1;
+				if (aIsImport && !bIsImport)
+					return 1;
+				if (aIsImport && bIsImport)
+					return StringComparer.Ordinal.Compare (a.Description, b.Description);
+			}
 			return result;
 		}
 
