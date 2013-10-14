@@ -229,7 +229,7 @@
     <EmbeddedResource Include="icons\exception-icon.png">
       <LogicalName>exception-icon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-icon%402x.png">
+    <EmbeddedResource Include="icons\exception-icon@2x.png">
       <LogicalName>exception-icon@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
