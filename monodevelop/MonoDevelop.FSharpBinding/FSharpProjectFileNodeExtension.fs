@@ -30,55 +30,52 @@ type FSharpProjectNodeCommandHandler() =
     monitor.EndTask()
 
   let moveNodes (currentNode: ITreeNavigator) (movingNode:ProjectFile) position =
-        let moveToNode = currentNode.DataItem :?> ProjectFile
+    let moveToNode = currentNode.DataItem :?> ProjectFile
+    let projectFile = movingNode.Project.FileName.ToString()
 
-        let projectFile = movingNode.Project.FileName.ToString()
+    ///partially apply the default namespace of msbuild to xs
+    let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
 
-        ///partially apply the default namespace of msbuild to xs
-        let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
+    //open project file
+    use file = IO.File.Open(projectFile, FileMode.Open)
+    let xdoc = XElement.Load(file)
+    file.Close()
 
-        //open project file
-        use file = IO.File.Open(projectFile, FileMode.Open)
-        let xdoc = XElement.Load(file)
-        file.Close()
+    //get all the compile nodes from the project file
+    let compileNodes = xdoc |> descendants (xd "Compile")
 
-        //get all the compile nodes from the project file
-        let compileNodes = xdoc |> descendants (xd "Compile")
+    let findByIncludeFile name seq = 
+        seq |> where (fun elem -> (elem |> attributeValue "Include") = Path.GetFileName(name) )
+            |> firstOrNone
+    
+    let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
 
-        let findByIncludeFile name seq = 
-            seq |> where (fun elem -> (elem |> attributeValue "Include") = Path.GetFileName(name) )
-                |> firstOrNone
-        
-        let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
+    let movingElement = compileNodes |> findByIncludeFile (getFullName movingNode)
+    let moveToElement = compileNodes |> findByIncludeFile (getFullName moveToNode)
 
-        let movingElement = compileNodes |> findByIncludeFile (getFullName movingNode)
-        let moveToElement = compileNodes |> findByIncludeFile (getFullName moveToNode)
+    let addFunction (moveTo:XElement) (position:DropPosition) =
+        match position with
+        | DropPosition.Before -> moveTo.AddBeforeSelf : obj -> unit
+        | DropPosition.After -> moveTo.AddAfterSelf : obj -> unit
+        | _ -> ignore
 
-        let addFunction (moveTo:XElement) (position:DropPosition) =
-            match position with
-            | DropPosition.Before -> moveTo.AddBeforeSelf : obj -> unit
-            | DropPosition.After -> moveTo.AddAfterSelf : obj -> unit
-            | _ -> ignore
-
-        match (movingElement, moveToElement, position) with
-        | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
-            moving.Remove()
-            //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
-            moving.Descendants( xd "DependentUpon") |> Seq.iter (fun node -> node.Remove())
-            //get the add function using the position
-            let add = addFunction moveTo position
-            add(moving)
-            xdoc.Save(projectFile)
-            reloadProject currentNode
-
-        | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
+    match (movingElement, moveToElement, position) with
+    | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
+        moving.Remove()
+        //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
+        moving.Descendants( xd "DependentUpon") |> Seq.iter (fun node -> node.Remove())
+        //get the add function using the position
+        let add = addFunction moveTo position
+        add(moving)
+        xdoc.Save(projectFile)
+        reloadProject currentNode
+    | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
 
   override x.OnNodeDrop(dataObject, dragOperation, position) =
     match dataObject, dragOperation with
     | :? ProjectFile as movingNode, DragOperation.Move ->
         //Move as long as this is a drag op and the moving node is a project file
         moveNodes x.CurrentNode movingNode position
-
     | _ -> //otherwise use the base behaviour
            base.OnNodeDrop(dataObject, dragOperation, position) 
         
@@ -89,7 +86,8 @@ type FSharpProjectNodeCommandHandler() =
   override x.CanDropNode(dataObject, dragOperation, position) =
       //currently we are going to only support dropping project files from the same parent project
       match (dataObject, x.CurrentNode.DataItem) with
-      | (:? ProjectFile as drag), (:? ProjectFile as drop) -> drag.Project = drop.Project
+      | (:? ProjectFile as drag), (:? ProjectFile as drop) -> 
+         drag.Project = drop.Project && drop.ProjectVirtualPath.ParentDirectory = drag.ProjectVirtualPath.ParentDirectory
       | _ -> false
 
 
@@ -107,32 +105,14 @@ type FSharpProjectFileNodeExtension() =
             file1.Project.Files.IndexOf(file1).CompareTo(file2.Project.Files.IndexOf(file2))
       else NodeBuilder.DefaultSort
     | (:? ProjectFolder as folder1), (:? ProjectFolder as folder2) ->
-         use file = IO.File.Open(folder1.Project.FileName.ToString(), FileMode.Open)
-         let xdoc = XElement.Load(file)
-         file.Close()
+         let folders =
+            folder1.Project.Files |> Seq.filter (fun (file:ProjectFile) -> file.Subtype = Subtype.Directory) 
 
-         //get the folders
-         let folders = xdoc |> descendants (xs "http://schemas.microsoft.com/developer/msbuild/2003" "Folder") |> Seq.toArray
-         let includes = folders |> Array.map (attributeValue "Include")
+         let folder1Index = folders |> Seq.tryFindIndex(fun pf -> pf.FilePath = folder1.Path)
+         let folder2Index = folders |> Seq.tryFindIndex(fun pf -> pf.FilePath = folder2.Path)
 
-         //This can probably be replaced with something like whats in ProjectFile.VirtualProjectPath
-         let getRealName (pf:ProjectFolder) =
-             let rec loop (pf:ProjectFolder) current =
-                 match pf.Parent with
-                 | :? ProjectFolder as ppf ->
-                    loop ppf (pf :: current)
-                 | _ -> pf :: current
-             let bits = loop pf []
-             let path = bits |> Seq.map (fun pf -> pf.Name) |> String.concat "\\"
-             path + "\\"
-
-         let folder1RealName = getRealName folder1
-         let folder2RealName = getRealName folder2
-         let folder1Index = includes |> Array.tryFindIndex ((=) folder1RealName)
-         let folder2Index = includes |> Array.tryFindIndex ((=) folder2RealName)
          match folder1Index, folder2Index with
-         | Some(i1), Some(i2) -> 
-            i2.CompareTo(i1)
+         | Some(i1), Some(i2) -> i2.CompareTo(i1)
          | _ -> NodeBuilder.DefaultSort
     | _ -> NodeBuilder.DefaultSort
 
