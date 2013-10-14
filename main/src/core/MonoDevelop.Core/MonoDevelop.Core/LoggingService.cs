@@ -193,7 +193,9 @@ namespace MonoDevelop.Core
 				}
 
 				if (raygunClient != null) {
-					raygunClient.Send (ex, tags);
+					ThreadPool.QueueUserWorkItem (delegate {
+						raygunClient.Send (ex, tags);
+					});
 				}
 
 				// Log to disk only if uploading fails.
