@@ -125,6 +125,15 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
+
+		public bool HasLineEndingMismatchOnTextSet {
+			get {
+				return splitter.LineEndingMismatch;
+			}
+			set {
+				splitter.LineEndingMismatch = value;
+			}
+		}
 		
 		protected TextDocument (IBuffer buffer,ILineSplitter splitter)
 		{

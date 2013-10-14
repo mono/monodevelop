@@ -861,6 +861,8 @@ namespace MonoDevelop.SourceEditor
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
 			get {
+				if (Document.HasLineEndingMismatchOnTextSet)
+					return true;
 				string eol = DetectedEolMarker;
 				if (eol == null)
 					return false;
@@ -869,6 +871,8 @@ namespace MonoDevelop.SourceEditor
 		}
 		string DetectedEolMarker {
 			get {
+				if (Document.HasLineEndingMismatchOnTextSet)
+					return "?";
 				if (textEditor.IsDisposed) {
 					LoggingService.LogWarning ("SourceEditorWidget.cs: HasIncorrectEolMarker was called on disposed source editor widget." + Environment.NewLine + Environment.StackTrace);
 					return null;
@@ -924,6 +928,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			view.StoreSettings ();
 			view.ReplaceContent (Document.FileName, newText.ToString (), null);
+			Document.HasLineEndingMismatchOnTextSet = false;
 			view.LoadSettings ();
 		}
 
@@ -936,6 +941,8 @@ namespace MonoDevelop.SourceEditor
 				return "Windows";
 			case "\r":
 				return "Mac";
+			case "?":
+				return "mixed";
 			}
 			return "Unknown";
 		}
