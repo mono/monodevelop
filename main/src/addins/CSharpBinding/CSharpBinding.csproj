@@ -22,8 +22,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\BackendBindings\MonoDevelop.CSharpBinding.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,8 +37,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\BackendBindings\MonoDevelop.CSharpBinding.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -315,6 +315,8 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

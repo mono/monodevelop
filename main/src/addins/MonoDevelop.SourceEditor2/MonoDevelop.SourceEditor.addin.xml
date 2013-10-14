@@ -1,6 +1,6 @@
 <ExtensionModel>
 	
-	<!-- Extension points -->
+	<!-- Extension points --> 
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor.</Description>;
@@ -218,8 +218,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Fonts">
-		<Font name ="MessageBubbles" _displayName="Message bubbles" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande 10"/>
-		<Font name ="MessageBubbleTooltip" _displayName="Message bubbles tooltip" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande Bold 10"/>
+		<Font name ="MessageBubbles" _displayName="Message bubbles" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande 11"/>
+		<Font name ="MessageBubbleCounter" _displayName="Message bubbles error count" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande Bold 11"/>
+		<Font name ="MessageBubbleTooltip" _displayName="Message bubbles tooltip" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande Bold 11"/>
 		<Font name ="LanguageTooltips" _displayName="Editor tooltips" default ="_DEFAULT_SANS"/>
 	</Extension>
 

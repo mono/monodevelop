@@ -209,7 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 				unstableTypeSystemSegmentTree = newTree;
 			}
 			newTree.InstallListener (document.Editor.Document);
-			
+
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
 			this.UnresolvedFileCompilation = Document.Compilation;
@@ -284,6 +284,8 @@ namespace MonoDevelop.CSharp.Completion
 		CSharpTypeResolveContext CreateTypeResolveContext ()
 		{
 			var compilation = UnresolvedFileCompilation;
+			if (compilation == null)
+				return null;
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
 			var loc = TextEditorData.Caret.Location;
 			rctx = rctx.WithUsingScope (CSharpUnresolvedFile.GetUsingScope (loc).Resolve (compilation));
@@ -304,7 +306,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			return rctx;
 		}
-		
+		CompletionEngineCache cache = new CompletionEngineCache ();
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
 			var data = TextEditorData;
@@ -320,9 +322,11 @@ namespace MonoDevelop.CSharp.Completion
 			var list = new CSharpCompletionDataList ();
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
 			var ctx = CreateTypeResolveContext ();
-
+			if (ctx == null)
+				return null;
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
-			var engine = new CSharpCompletionEngine (
+			var engine = new MonoCSharpCompletionEngine (
+				this,
 				data.Document,
 				CreateContextProvider (),
 				completionDataFactory,
@@ -332,6 +336,7 @@ namespace MonoDevelop.CSharp.Completion
 			completionDataFactory.Engine = engine;
 			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
 			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
+			engine.CompletionEngineCache = cache;
 			if (FilterCompletionListByEditorBrowsable) {
 				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
 			} else {
@@ -391,12 +396,15 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		public override int GuessBestMethodOverload (IParameterDataProvider provider, int currentOverload)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return -1;
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
+				ctx
 				);
 			List<string> list;
 			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
@@ -549,13 +557,17 @@ namespace MonoDevelop.CSharp.Completion
 //				return null;
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return null;
+
 			try {
 				var engine = new CSharpParameterCompletionEngine (
 					TextEditorData.Document,
 					CreateContextProvider (),
 					this,
 					Document.GetProjectContext (),
-					CreateTypeResolveContext ()
+					ctx
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
@@ -591,12 +603,18 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null) {
+				cpos = -1;
+				return false;
+			}
+
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
+				ctx
 			);
 			engine.SetOffset (document.Editor.Caret.Offset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
@@ -604,13 +622,17 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
+			var ctx = CreateTypeResolveContext ();
+			if (ctx == null)
+				return -1;
+
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CreateTypeResolveContext ()
-				);
+				ctx
+			);
 			List<string> list;
 			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
 		}
@@ -1075,25 +1097,25 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 
-			class ImportSymbolCompletionData : CompletionData
+			class ImportSymbolCompletionData : CompletionData, IEntityCompletionData
 			{
-				IType type;
-//				ParsedDocument unit;
-				MonoDevelop.Ide.Gui.Document doc;
-				bool useFullName;
-//				bool addConstructors;
-
+				readonly IType type;
+				readonly bool useFullName;
+				readonly CSharpCompletionTextEditorExtension ext;
 				public IType Type {
 					get { return this.type; }
 				}
 
-				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type, bool addConstructors)
+				public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, bool useFullName, IType type, bool addConstructors)
 				{
-					this.doc = doc;
+					this.ext = ext;
 					this.useFullName = useFullName;
 					this.type = type;
-//					this.unit = doc.ParsedDocument;
-//					this.addConstructors = addConstructors;
+				}
+
+				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+				{
+					return MemberCompletionData.CreateTooltipInformation (ext, null, type.GetDefinition (), smartWrap);
 				}
 
 				bool initialized = false;
@@ -1114,6 +1136,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
+					var doc = ext.document;
 					using (var undo = doc.Editor.OpenUndoGroup ()) {
 						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 						if (text != GetCurrentWord (window)) {
@@ -1173,7 +1196,7 @@ namespace MonoDevelop.CSharp.Completion
 					get {
 						Initialize ();
 						if (generateUsing)
-							return string.Format (GettextCatalog.GetString ("Add namespace import '{0}'"), type.Namespace);
+							return type.Namespace;
 						return null;
 					}
 				}
@@ -1198,12 +1221,46 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					return result;
 				}
+
+				List<CompletionData> overloads;
+
+				public override IEnumerable<ICompletionData> OverloadedData {
+					get {
+						yield return this;
+						if (overloads == null)
+							yield break;
+						foreach (var overload in overloads)
+							yield return overload;
+					}
+				}
+
+				public override bool HasOverloads {
+					get { return overloads != null && overloads.Count > 0; }
+				}
+
+				public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+				{
+					AddOverload ((ImportSymbolCompletionData)data);
+				}
+
+				void AddOverload (ImportSymbolCompletionData overload)
+				{
+					if (overloads == null)
+						overloads = new List<CompletionData> ();
+					overloads.Add (overload);
+				}
+
+				IEntity IEntityCompletionData.Entity {
+					get {
+						return type.GetDefinition ();
+					}
+				}
 			}
 
 
 			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addConstructors)
 			{
-				return new ImportSymbolCompletionData (ext.Document, useFullName, type, addConstructors);
+				return new ImportSymbolCompletionData (ext, useFullName, type, addConstructors);
 			}
 
 		}

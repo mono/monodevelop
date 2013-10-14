@@ -8,6 +8,14 @@ namespace Mono.TextEditor
 	{
 		int Count { get; }
 
+		/// <summary>
+		/// True if during initialization a line ending mismatch was encountered.
+		/// </summary>
+		bool LineEndingMismatch {
+			get;
+			set;
+		}
+
 		IEnumerable<DocumentLine> Lines { get; }
 
 		void Clear ();

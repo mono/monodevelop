@@ -1280,11 +1280,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					var cacheFile = Path.Combine (cacheDir, "completion.cache");
 					if (!File.Exists (cacheFile))
 						return null;
-					var cache = DeserializeObject<IProjectContent> (cacheFile);
-					var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
-					if (monoDevelopProjectContent != null)
-						monoDevelopProjectContent.Project = project;
-					return cache;
+					try {
+						var cache = DeserializeObject<IProjectContent> (cacheFile);
+						var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
+						if (monoDevelopProjectContent != null)
+							monoDevelopProjectContent.Project = project;
+						return cache;
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Error while reading completion cache, regenerating", e); 
+						Directory.Delete (cacheDir, true);
+						return null;
+					}
 				}
 
 				#region IAssemblyReference implementation
@@ -1644,6 +1650,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				content.UpdateContent (c => c.RemoveFiles (fargs.OldName));
 				content.InformFileRemoved (new ParsedFileEventArgs (file));
+
+				var tags = content.GetExtensionObject <ProjectCommentTags> ();
+				if (tags != null)
+					tags.RemoveFile (project, fargs.OldName);
 
 				QueueParseJob (content, new [] { fargs.ProjectFile });
 			}
@@ -2117,7 +2127,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly string cache;
 			IUnresolvedAssembly assembly;
 
-			object asmLocker = new object ();
+			readonly object asmLocker = new object ();
 			internal void EnsureAssemblyLoaded ()
 			{
 				lock (asmLocker) {
@@ -2176,8 +2186,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (cache != null) {
 					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, result);
-					if (File.Exists (assemblyPath))
-						File.SetCreationTimeUtc (assemblyPath, writeTime);
+					if (File.Exists (assemblyPath)) {
+						try {
+							File.SetCreationTimeUtc (assemblyPath, writeTime);
+						} catch (Exception e) {
+							LoggingService.LogError ("Can't set creation time for: " + assemblyPath, e);
+						}
+					}
 				}
 				return result;
 			}
@@ -2373,14 +2388,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (frameworkLookup) {
 				FrameworkTask result;
-				if (!frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result))
+				var frameworkName = netProject.TargetFramework.Name;
+				if (!frameworkLookup.TryGetValue (frameworkName, out result))
 					return false;
 				if (result.RetryCount > 5) {
-					LoggingService.LogError ("Can't create framework lookup for:" + netProject.TargetFramework.Name);
+					LoggingService.LogError ("Can't create framework lookup for:" + frameworkName);
 					return false;
 				}
 				result.RetryCount++;
-				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", netProject.TargetFramework.Name, result.RetryCount);
+				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", frameworkName, result.RetryCount);
+				result.Task = null;
 				StartFrameworkLookup (netProject);
 				return true;
 			}
@@ -2703,12 +2720,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							modifiedFiles.Add (file);
 						}
-					
+						var tags = content.GetExtensionObject <ProjectCommentTags> ();
+
 						// check if file needs to be removed from project content 
 						foreach (var file in cnt.Files) {
 							if (project.GetProjectFile (file.FileName) == null) {
 								content.UpdateContent (c => c.RemoveFiles (file.FileName));
 								content.InformFileRemoved (new ParsedFileEventArgs (file));
+								if (tags != null)
+									tags.RemoveFile (project, file.FileName);
 							}
 						}
 					

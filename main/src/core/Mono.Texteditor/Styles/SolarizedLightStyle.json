@@ -46,6 +46,8 @@
 		{ "name": "Tooltip Pager Triangle", "color":"base00" },
 		{ "name": "Tooltip Pager Text", "color":"base00" },
 
+		{ "name": "Notification Border", "color":"base1" },
+
 		{ "name": "Completion Matching Substring", "color":"#BA3373" },
 		{ "name": "Completion Border", "color":"#C9C9C9" },
 		{ "name": "Completion Border(Inactive)", "color":"#bebebe" },
@@ -142,6 +144,7 @@
 		{ "name": "Razor Code", "fore":"black", "back":"base2" },
 
 		{ "name": "Tooltip Text", "fore":"black", "back":"#feffe9" },
+		{ "name": "Notification Text", "fore":"black", "back":"#feffe9" },
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
 		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },

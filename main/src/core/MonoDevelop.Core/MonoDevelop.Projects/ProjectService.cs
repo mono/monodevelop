@@ -46,6 +46,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 using MonoDevelop.Core.StringParsing;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.Projects
 					einfo.ItemTypeCondition.ObjType = target.GetType ();
 					einfo.ProjectLanguageCondition.TargetProject = target;
 				}
-				ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+				ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
 				chain = CreateExtensionChain (extensions);
 			}
 			else {
@@ -128,7 +129,7 @@ namespace MonoDevelop.Projects
 					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
 					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
 					defaultExtensionChain = CreateExtensionChain (extensions);
 				}
 				chain = defaultExtensionChain;

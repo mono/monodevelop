@@ -312,7 +312,7 @@ namespace Mono.TextEditor
 									if (delimiter.IsInvalid)
 										break;
 
-									int delimiterEndOffset = delimiter.Offset + delimiter.Length;
+									int delimiterEndOffset = delimiter.EndOffset;
 									lines.Add (text.Substring (offset, delimiter.Offset - offset));
 									offset = delimiterEndOffset;
 								}

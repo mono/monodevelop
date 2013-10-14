@@ -358,5 +358,18 @@ namespace MonoDevelop.CSharpBinding
 
 			CheckOutput (data, "\tfirst\n\t$third");
 		}
+
+
+		/// <summary>
+		/// Bug 15335 - In a multiline comment, pressing Enter jumps way ahead
+		/// </summary>
+		[Test]
+		public void TestBug15335 ()
+		{
+			var data = Create ("namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo$\n\t\t}\n\t}\n}\n");
+			MiscActions.InsertNewLine (data);
+
+			CheckOutput (data, "namespace aFoo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
+		}
 	}
 }

@@ -83,6 +83,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Tooltip Pager Text")]
 		public AmbientColor TooltipPagerText { get; private set; }
 
+		[ColorDescription("Notification Border")]
+		public AmbientColor NotificationBorder { get; private set; }
+
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
 
@@ -280,6 +283,9 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Tooltip Text")] // not defined in vs.net
 		public ChunkStyle TooltipText { get; private set; }
+
+		[ColorDescription("Notification Text")] // not defined in vs.net
+		public ChunkStyle NotificationText { get; private set; }
 
 		[ColorDescription("Completion Text")] //not defined in vs.net
 		public ChunkStyle CompletionText { get; private set; }

@@ -769,7 +769,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				string currentParseFile = FileName;
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				string currentParseText = editor.Text;

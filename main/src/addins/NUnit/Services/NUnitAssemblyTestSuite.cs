@@ -477,7 +477,7 @@ namespace MonoDevelop.NUnit
 				else if (!string.IsNullOrEmpty (suiteName))
 					cmd.Arguments += " -run=" + suiteName;
 				if (automaticUpdates) {
-					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor);
+					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
 				var p = testContext.ExecutionContext.Execute (cmd, cons);
@@ -489,16 +489,16 @@ namespace MonoDevelop.NUnit
 				
 				if (new FileInfo (outFile).Length == 0)
 					throw new Exception ("Command failed");
-				
+
+				if (automaticUpdates) {
+					if (testName != null)
+						return localMonitor.SingleTestResult;
+					return test.GetLastResult ();
+				}
+
 				XDocument doc = XDocument.Load (outFile);
 
 				if (doc.Root != null) {
-					if (automaticUpdates) {
-						DispatchService.GuiDispatch (delegate {
-							testContext.ResultsPad.InitializeTestRun (test);
-						});
-					}
-
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
 						cons.SetDone ();
@@ -511,7 +511,10 @@ namespace MonoDevelop.NUnit
 						}
 
 						bool macunitStyle = doc.Root.Element ("environment") != null && doc.Root.Element ("environment").Attribute ("macunit-version") != null;
-						return ReportXmlResult (localMonitor, root, "", macunitStyle);
+						var result = ReportXmlResult (localMonitor, root, "", macunitStyle);
+						if (testName != null)
+							result = localMonitor.SingleTestResult;
+						return result;
 					}
 				}
 				throw new Exception ("Test results could not be parsed.");

@@ -128,14 +128,26 @@ namespace MonoDevelop.Projects
 				if (config == null && configTarget != null)
 					config = configTarget.DefaultConfigurationId;
 				
-				ConfigurationSelector configuration;
-				if (item is SolutionEntityItem)
-					configuration = new ItemConfigurationSelector (config);
-				else
-					configuration = new SolutionConfigurationSelector (config);
-				
 				monitor = new ConsoleProgressMonitor ();
-				BuildResult res = item.RunTarget (monitor, command, configuration);
+				BuildResult res = null;
+				if (item is SolutionEntityItem && ((SolutionEntityItem)item).ParentSolution == null) {
+					ConfigurationSelector configuration = new ItemConfigurationSelector (config);
+					res = item.RunTarget (monitor, command, configuration);
+				} else {
+					ConfigurationSelector configuration = new SolutionConfigurationSelector (config);
+					SolutionEntityItem solutionEntityItem = item as SolutionEntityItem;
+					if (solutionEntityItem != null) {
+						if (command == ProjectService.BuildTarget)
+							res = solutionEntityItem.Build (monitor, configuration, true);
+						else if (command == ProjectService.CleanTarget)
+							solutionEntityItem.Clean (monitor, configuration);
+						else
+							res = item.RunTarget (monitor, command, configuration);
+					} else {
+						res = item.RunTarget (monitor, command, configuration);
+					}
+				}
+				
 
 				if (targetRuntime != null)
 				{

@@ -40,11 +40,7 @@ namespace MonoDevelop.VersionControl
 
 		void CreateUri ()
 		{
-			try {
-				uri = new Uri (url);
-			} catch {
-				uri = null;
-			}
+			uri = url != null ? new Uri (url) : null;
 		}
 		
 		public override void CopyConfigurationFrom (Repository other)

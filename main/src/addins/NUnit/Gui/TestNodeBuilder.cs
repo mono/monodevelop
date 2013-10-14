@@ -92,6 +92,8 @@ namespace MonoDevelop.NUnit
 				UnitTestResult res = test.GetLastResult ();
 				if (res == null)
 					nodeInfo.Icon = CircleImage.None;
+				else if (res.Status == ResultStatus.Ignored)
+					nodeInfo.Icon = CircleImage.NotRun;
 				else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
 					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldSuccessAndFailure : CircleImage.SuccessAndFailure;
 				else if (res.IsInconclusive)
@@ -100,7 +102,7 @@ namespace MonoDevelop.NUnit
 					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldFailure : CircleImage.Failure;
 				else if (res.IsSuccess)
 					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldSuccess : CircleImage.Success;
-				else if (res.IsNotRun)
+				else if (res.IsNotRun || res.Ignored > 0)
 					nodeInfo.Icon = CircleImage.NotRun;
 				else
 					nodeInfo.Icon = CircleImage.None;
