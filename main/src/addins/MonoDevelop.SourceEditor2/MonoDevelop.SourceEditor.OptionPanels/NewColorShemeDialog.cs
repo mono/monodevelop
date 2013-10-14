@@ -76,7 +76,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			string fileName = System.IO.Path.Combine (path, baseName + "Style.json");
 			try {
 				style.Save (fileName);
-				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (fileName, style);
+				style.FileName = fileName;
+				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (style);
 			} catch (Exception ex) {
 				MonoDevelop.Ide.MessageService.ShowException (ex);
 			}

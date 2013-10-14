@@ -42,6 +42,7 @@ namespace Mono.TextEditor.Highlighting
 		public string Description { get; set; }
 		public string Originator { get; set; }
 		public string BaseScheme { get; set; }
+		public string FileName { get; set; }
 
 		#region Ambient Colors
 		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
