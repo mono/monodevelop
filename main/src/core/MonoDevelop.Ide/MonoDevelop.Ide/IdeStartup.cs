@@ -501,8 +501,12 @@ namespace MonoDevelop.Ide
 		
 		void HandleException (Exception ex, bool willShutdown)
 		{
-			// Log the crash to the MonoDevelop.log file first:
-			LoggingService.LogCriticalError (string.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown), ex);
+			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
+
+			if (willShutdown)
+				LoggingService.LogFatalError (msg, ex);
+			else
+				LoggingService.LogCriticalError (msg, ex);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
