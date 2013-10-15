@@ -205,7 +205,6 @@ namespace Mono.TextEditor.Highlighting
 			protected Stack<Rule> ruleStack;
 			protected readonly TextDocument doc;
 
-			internal Func<bool> IsAtWordStart = () => true;
 			int maxEnd;
 
 			public Rule CurRule {
@@ -367,8 +366,11 @@ namespace Mono.TextEditor.Highlighting
 					bool mismatch = false;
 					if ((span.BeginFlags & SpanBeginFlags.FirstNonWs) == SpanBeginFlags.FirstNonWs)
 						mismatch = CurText.Take (i).Any (ch => !char.IsWhiteSpace (ch));
-					if ((span.BeginFlags & SpanBeginFlags.NewWord) == SpanBeginFlags.NewWord)
-						mismatch = !IsAtWordStart ();
+					if ((span.BeginFlags & SpanBeginFlags.NewWord) == SpanBeginFlags.NewWord) {
+						if (i - 1 > 0 && i - 1 < CurText.Length) {
+							mismatch = !char.IsWhiteSpace (CurText[i - 1]);
+						}
+					}
 					if (mismatch)
 						continue;
 					FoundSpanBegin (span, i, match.Length);
@@ -463,7 +465,6 @@ namespace Mono.TextEditor.Highlighting
 				spanParser.FoundSpanEnd = FoundSpanEnd;
 				spanParser.FoundSpanExit = FoundSpanExit;
 				spanParser.ParseChar += ParseChar;
-				spanParser.IsAtWordStart = () => wordbuilder.Length == 0;
 				if (line == null)
 					throw new ArgumentNullException ("line");
 			}

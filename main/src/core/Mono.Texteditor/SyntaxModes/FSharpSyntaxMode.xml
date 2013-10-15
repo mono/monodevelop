@@ -63,21 +63,16 @@
 		<End>"""</End>
 	</Span>
 	
-	<Span color="String" rule="String" stopateol="true">
+	<Span color="String" rule="String" stopateol="true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
 	<Span rule="Let" stopateol = "false">
-		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
+		<Begin color="Keyword(Iteration)" flags="NewWord">let </Begin>
 		<End>=</End>
 	</Span>
 
-	<Span color = "String" rule="String" stopateol = "true">
-		<Begin>&apos;</Begin>
-		<End>&apos;</End>
-	</Span>
-  
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
 		<Begin>[]</Begin>
@@ -94,6 +89,10 @@
        <Group color="String"/>
        <Group color="String"/>
 	</Match>
+
+	<Match color="String">'(\w|\\['ntbrafv])'</Match>
+       
+
 
 	<Match color="Number">CSharpNumber</Match>
 
