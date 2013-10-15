@@ -152,7 +152,7 @@
     <EmbeddedResource Include="Gui\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\project-nunit-overlay-32@2x.png">
+    <EmbeddedResource Include="Gui\project-nunit-overlay-32%402x.png">
       <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml">

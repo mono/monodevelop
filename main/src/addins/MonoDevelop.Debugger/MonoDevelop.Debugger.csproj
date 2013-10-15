@@ -187,31 +187,31 @@
     <EmbeddedResource Include="icons\ico-debug-pause.png">
       <LogicalName>ico-debug-pause.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ico-debug-pause@2x.png">
+    <EmbeddedResource Include="icons\ico-debug-pause%402x.png">
       <LogicalName>ico-debug-pause@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ico-debug-step-in.png">
       <LogicalName>ico-debug-step-in.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ico-debug-step-in@2x.png">
+    <EmbeddedResource Include="icons\ico-debug-step-in%402x.png">
       <LogicalName>ico-debug-step-in@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ico-debug-step-out.png">
       <LogicalName>ico-debug-step-out.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ico-debug-step-out@2x.png">
+    <EmbeddedResource Include="icons\ico-debug-step-out%402x.png">
       <LogicalName>ico-debug-step-out@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ico-debug-step-over.png">
       <LogicalName>ico-debug-step-over.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ico-debug-step-over@2x.png">
+    <EmbeddedResource Include="icons\ico-debug-step-over%402x.png">
       <LogicalName>ico-debug-step-over@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ico-debug-continue.png">
       <LogicalName>ico-debug-continue.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\ico-debug-continue@2x.png">
+    <EmbeddedResource Include="icons\ico-debug-continue%402x.png">
       <LogicalName>ico-debug-continue@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bug-16.png">
@@ -229,7 +229,7 @@
     <EmbeddedResource Include="icons\exception-icon.png">
       <LogicalName>exception-icon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-icon@2x.png">
+    <EmbeddedResource Include="icons\exception-icon%402x.png">
       <LogicalName>exception-icon@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
