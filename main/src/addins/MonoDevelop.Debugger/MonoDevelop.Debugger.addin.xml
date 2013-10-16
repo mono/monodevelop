@@ -104,10 +104,6 @@
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"
 				_label = "New Breakpoint..."
 				icon = "md-breakpoint-new" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint"
-				defaultHandler = "MonoDevelop.Debugger.NewFunctionBreakpointHandler"
-				_label = "New Function Breakpoint..."
-				icon = "md-breakpoint-new" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.RemoveBreakpointHandler"
 				_label = "Remove Breakpoint" />
@@ -193,7 +189,6 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOut" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine" />
 		<SeparatorItem id = "MonoDevelop.Debugger.BreakpointsSection" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint" />

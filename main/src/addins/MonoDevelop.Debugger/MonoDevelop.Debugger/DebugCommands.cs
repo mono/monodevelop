@@ -562,8 +562,8 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
-			if (DebuggingService.ShowBreakpointProperties (bp, true)) {
+			BreakEvent bp = null;
+			if (DebuggingService.ShowBreakpointProperties (ref bp)) {
 				var breakpoints = DebuggingService.Breakpoints;
 
 				lock (breakpoints)
@@ -574,34 +574,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			if (IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-			        !DebuggingService.Breakpoints.IsReadOnly) {
-				info.Enabled = true;
-			} else {
-				info.Enabled = false;
-			}
-		}
-	}
-	
-	class NewFunctionBreakpointHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			FunctionBreakpoint bp = new FunctionBreakpoint ("", "C#");
-			if (DebuggingService.ShowBreakpointProperties (bp, true)) {
-				var breakpoints = DebuggingService.Breakpoints;
-
-				lock (breakpoints)
-					breakpoints.Add (bp);
-			}
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 
@@ -659,8 +632,10 @@ namespace MonoDevelop.Debugger
 					IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 			}
 
-			if (brs.Count > 0)
-				DebuggingService.ShowBreakpointProperties (brs[0], false);
+			if (brs.Count > 0) {
+				BreakEvent be = brs [0];
+				DebuggingService.ShowBreakpointProperties (ref be);
+			}
 		}
 		
 		protected override void Update (CommandInfo info)

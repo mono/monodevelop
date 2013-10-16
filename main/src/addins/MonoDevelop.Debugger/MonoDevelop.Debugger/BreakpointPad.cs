@@ -204,8 +204,8 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 
 			if (selected.Length == 1 && store.GetIter (out iter, selected[0])) {
-				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				if (DebuggingService.ShowBreakpointProperties (bp, false))
+				BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
+				if (DebuggingService.ShowBreakpointProperties (ref bp))
 					UpdateDisplay ();
 			}
 		}
