@@ -336,7 +336,8 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
+			if (!(item is IMethod && ((IMethod)item).SymbolKind == SymbolKind.Operator) && (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace)) {
+
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
 				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
