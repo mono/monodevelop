@@ -304,10 +304,11 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-
-			Gdk.Size idealSize = GetIdealSize ();
-			requisition.Width = idealSize.Width;
-			requisition.Height = idealSize.Height;
+			if (!inResize) {
+				Gdk.Size idealSize = GetIdealSize ();
+				requisition.Width = idealSize.Width;
+				requisition.Height = idealSize.Height;
+			}
 		}
 
 		ItemIdentifier GetItemAt (double px, double py)
