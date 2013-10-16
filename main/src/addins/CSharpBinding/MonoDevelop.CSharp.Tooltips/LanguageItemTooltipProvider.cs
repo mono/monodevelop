@@ -45,6 +45,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
+using Mono.Cecil.Cil;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -301,13 +302,26 @@ namespace MonoDevelop.SourceEditor
 					doc.GetFormattingPolicy (),
 					member, 
 					false);
-				}else if (result is NamespaceResolveResult) {
+				} else if (result is NamespaceResolveResult) {
 					var tooltipInfo = new TooltipInformation ();
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 					sig.BreakLineAfterReturnType = false;
 					try {
 						tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
+					} catch (Exception e) {
+						LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
+						return new TooltipInformation ();
+					}
+					return tooltipInfo;
+				} else if (result is OperatorResolveResult) {
+					var or = result as OperatorResolveResult;
+					var tooltipInfo = new TooltipInformation ();
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					try {
+						tooltipInfo.SignatureMarkup = sig.GetMarkup (or.UserDefinedOperatorMethod);
 					} catch (Exception e) {
 						LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
 						return new TooltipInformation ();

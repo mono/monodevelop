@@ -103,6 +103,8 @@ namespace MonoDevelop.Refactoring
 				return resolveResult.Type;
 			if (resolveResult is NamespaceResolveResult)
 				return ((NamespaceResolveResult)resolveResult).Namespace;
+			if (resolveResult is OperatorResolveResult)
+				return ((OperatorResolveResult)resolveResult).UserDefinedOperatorMethod;
 			return null;
 		}
 
