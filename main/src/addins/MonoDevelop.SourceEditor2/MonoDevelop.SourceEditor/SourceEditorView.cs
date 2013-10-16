@@ -645,12 +645,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
-				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-					using (var undo = TextEditor.OpenUndoGroup ()) {
-						formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
-						wasEdited = false;
+				try {
+					var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
+					if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
+						using (var undo = TextEditor.OpenUndoGroup ()) {
+							formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
+							wasEdited = false;
+						}
 					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while formatting on save", e);
 				}
 			}
 
