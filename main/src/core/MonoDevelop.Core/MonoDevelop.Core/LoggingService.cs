@@ -50,7 +50,7 @@ namespace MonoDevelop.Core
 
 		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
 
-		static RaygunClient raygunClient;
+		static RaygunClient raygunClient = null;
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
@@ -100,10 +100,12 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
+#if !DEBUG
 			string raygunKey = BrandingService.GetString ("RaygunApiKey");
 			if (raygunKey != null) {
 				raygunClient = new RaygunClient (raygunKey);
 			}
+#endif
 
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			System.Diagnostics.Debug.Listeners.Clear ();
