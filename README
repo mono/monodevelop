@@ -77,7 +77,14 @@ Dependencies
 	Gtk# >= 2.12.8
 	monodoc >= 1.0
 	mono-addins >= 0.6
-	
+
+Special Environment Variables
+-----------------------------
+
+BUILD_REVISION
+        If this environment variable exists we assume we are compiling inside wrench
+
+
 References
 ----------
 
