@@ -30,13 +30,13 @@ type OutputMode =
 
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
-type internal RequestOptions(opts, file, src, mode) =
+type internal RequestOptions(opts, file, src, help) =
   member x.Options : CheckOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
-  member x.OutputMode : OutputMode = mode
+  member x.HelpText : bool = help
   member x.WithSource(source) =
-    RequestOptions(opts, file, source, mode)
+    RequestOptions(opts, file, source, help)
 
   override x.ToString() =
     sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
@@ -164,14 +164,13 @@ type internal IntelliSenseAgent() =
           UnresolvedReferences = None }
 
     // Print contents of check option for debugging purposes
-    Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-                         opts.ProjectFileName
-                         opts.ProjectFileNames
-                         opts.ProjectOptions
-                         opts.IsIncompleteTypeCheckEnvironment
-                         opts.UseScriptResolutionRules
+    // Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+    //                      opts.ProjectFileName
+    //                      opts.ProjectFileNames
+    //                      opts.ProjectOptions
+    //                      opts.IsIncompleteTypeCheckEnvironment
+    //                      opts.UseScriptResolutionRules
     opts
-
 
   /// Get errors from the last parse request
   member x.GetErrors() =
@@ -220,16 +219,15 @@ type internal IntelliSenseAgent() =
     match decls with
     | Some decls ->
       printfn "DATA: completion"
-      match opts.OutputMode with
-      | Json ->
+      for d in decls.Items do Console.WriteLine(d.Name)
+      printfn "<<EOF>>"
+      if opts.HelpText then
+        printfn "DATA: helptext"
         let cs =
           [ for d in decls.Items do
-            yield { Name = d.Name
-                    Help = TipFormatter.formatTip d.DescriptionText } ]
+              yield TipFormatter.formatTip d.DescriptionText ]
         Console.WriteLine(JsonConvert.SerializeObject(cs))
-      | Text ->
-        for d in decls.Items do Console.WriteLine(d.Name)
-      printfn "<<EOF>>"
+        printfn "<<EOF>>"
     | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 
@@ -334,9 +332,9 @@ module internal CommandInput =
       - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project
-    outputmode {json,text}
-      - switches the output format. 'json' offers richer data
-        for some commands. default is 'text'"
+    helptext {on,off}
+      - toggles whether type signatures are sent after each
+        completion request. default is 'off'"
 
   let outputText = @"
     Output format
@@ -376,7 +374,7 @@ module internal CommandInput =
     | Parse of string * bool
     | Error of string
     | Project of string
-    | OutputMode of OutputMode
+    | HelpText of bool
     | Help
     | Quit
 
@@ -397,14 +395,14 @@ module internal CommandInput =
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
 
-  /// Parse 'outputmode' command
-  let outputmode = parser {
-    let! _ = string "outputmode "
-    let! mode = (parser { let! _ = string "json"
-                          return Json }) <|>
-                (parser { let! _ = string "text"
-                          return Text })
-    return OutputMode mode }
+  /// Parse helptext' command
+  let helptext = parser {
+    let! _ = string "helptext "
+    let! mode = (parser { let! _ = string "on"
+                          return true }) <|>
+                (parser { let! _ = string "off"
+                          return false })
+    return HelpText mode }
 
   /// Parse 'project' command
   let project = parser {
@@ -460,7 +458,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> outputmode <|> quit <|> error
+      let cmds = errors <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -472,14 +470,14 @@ type internal State =
   {
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
-    OutputMode : OutputMode
+    HelpText : bool
   }
 
 /// Contains main loop of the application
 module internal Main =
   open CommandInput
 
-  let initialState = { Files = Map.empty; Project = None; OutputMode = Text }
+  let initialState = { Files = Map.empty; Project = None; HelpText = false }
 
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
@@ -498,10 +496,10 @@ module internal Main =
       if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
 
-    Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
-                (Option.isSome state.Project)
-                (Map.fold (fun ks k _ -> k::ks) [] state.Files)
-                state.OutputMode
+    // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
+    //             (Option.isSome state.Project)
+    //             (Map.fold (fun ks k _ -> k::ks) [] state.Files)
+    //             state.OutputMode
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
@@ -512,8 +510,8 @@ module internal Main =
         Console.WriteLine("<<EOF>>")
         main state
 
-    | OutputMode m ->
-        main { state with OutputMode = m }
+    | HelpText b ->
+        main { state with HelpText = b }
 
     | Parse(file,full) ->
         // Trigger parse request for a particular file
@@ -524,7 +522,7 @@ module internal Main =
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
                                     text,
-                                    state.OutputMode)
+                                    state.HelpText)
           agent.TriggerParseRequest(opts, full)
           Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
@@ -554,7 +552,7 @@ module internal Main =
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
                                     text,
-                                    state.OutputMode)
+                                    state.HelpText)
           let decls = agent.GetDeclarations(opts)
           printfn "DATA: declarations"
           for tld in decls do
@@ -573,7 +571,7 @@ module internal Main =
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
                                     text,
-                                    state.OutputMode)
+                                    state.HelpText)
 
           match cmd with
           | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)

@@ -213,7 +213,7 @@ display in a help buffer instead.")
           (with-current-buffer (process-buffer proc)
             (delete-region (point-min) (point-max)))
           (add-to-list 'ac-modes 'fsharp-mode)
-          (log-psendstr proc "outputmode json\n")
+          (log-psendstr proc "helptext on\n")
           proc)
       (fsharp-ac-message-safely "Failed to launch: '%s'"
                                 (s-join " " fsharp-ac-complete-command))
@@ -238,9 +238,9 @@ display in a help buffer instead.")
     ))
 
 (defun fsharp-ac-document (item)
-  (pos-tip-fill-string
-   (cdr (get-text-property 0 'fsharp-ac-doc item))
-   popup-tip-max-width))
+  (let* ((prop (assoc item fsharp-ac-current-helptext))
+         (help (if prop (cdr prop) "Loading documentation...")))
+    (pos-tip-fill-string help popup-tip-max-width)))
 
 (defun fsharp-ac-candidate ()
   (interactive)
@@ -510,6 +510,7 @@ around to the start of the buffer."
       ;(message "[filter] length(msg) = %d" (length msg))
       (cond
        ((s-starts-with? "DATA: completion" msg) (fsharp-ac-handle-completion msg))
+       ((s-starts-with? "DATA: helptext" msg)    (fsharp-ac-handle-doctext msg))
        ((s-starts-with? "DATA: finddecl" msg)   (fsharp-ac-visit-definition msg))
        ((s-starts-with? "DATA: tooltip" msg)    (fsharp-ac-handle-tooltip msg))
        ((s-starts-with? "DATA: errors" msg)     (fsharp-ac-handle-errors msg))
@@ -523,13 +524,8 @@ around to the start of the buffer."
 
 (defun fsharp-ac-handle-completion (str)
   (setq str
-        (s-replace "DATA: completion" "" str))
-  (let* ((json-array-type 'list)
-         (cs (json-read-from-string str))
-         (names (-map (lambda (e) (propertize (cdr (assq 'Name e))
-                                         'fsharp-ac-doc
-                                         (assq 'Help e))) cs)))
-
+        (s-lines (s-replace "DATA: completion\n" "" str)))
+    
     (case fsharp-ac-status
       (preempted
        (setq fsharp-ac-status 'idle)
@@ -537,11 +533,21 @@ around to the start of the buffer."
        (ac-update))
 
       (otherwise
-       (setq fsharp-ac-current-candidate names
+       (setq fsharp-ac-current-candidate str
              fsharp-ac-status 'acknowledged)
        (fsharp-ac--ac-start :force-init t)
        (ac-update)
-       (setq fsharp-ac-status 'idle)))))
+       (setq fsharp-ac-status 'idle))))
+
+(defun fsharp-ac-handle-doctext (str)
+  (setq str
+        (s-replace "DATA: helptext" "" str))
+  (let* ((json-array-type 'list)
+         (help (json-read-from-string str)))
+    (when (eq (length fsharp-ac-current-candidate)
+              (length help))
+      (setq fsharp-ac-current-helptext
+            (-zip fsharp-ac-current-candidate help)))))
 
 (defun fsharp-ac-visit-definition (str)
   (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" str)
