@@ -127,6 +127,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask | Gdk.EventMask.PointerMotionMask;
 			ItemActivated += (sender, e) => OpenFile ();
+			/*
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				if (inResize)
 					return;
@@ -139,7 +140,7 @@ namespace MonoDevelop.Components.MainToolbar
 						Visible = true;
 					inResize = false;
 				}
-			};
+			};*/
 		}
 		bool inResize = false;
 
