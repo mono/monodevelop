@@ -884,6 +884,11 @@ namespace Mono.TextEditor.Vi
 						// Fold open
 							action = FoldActions.OpenFold;
 							break;
+						case 'z':
+						case '.':
+							editor.CenterToCaret ();
+							Reset ("");
+							break;
 						default:
 							Reset ("Unknown command");
 							break;
