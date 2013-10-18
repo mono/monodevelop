@@ -18,8 +18,8 @@
   (should-not (fsharp-mode/find-sln-or-fsproj "/bin/")))
 
 (check "should find sln at base of repo given a subdir"
-  (should-match "Binding.sln$" (fsharp-mode/find-sln-or-fsproj test-dir)))
+  (should-match "AutoComplete.sln$" (fsharp-mode/find-sln-or-fsproj test-dir)))
 
 (check "should find sln at base of repo given a file in subdir"
-  (should-match "Binding.sln$" (fsharp-mode/find-sln-or-fsproj
+  (should-match "AutoComplete.sln$" (fsharp-mode/find-sln-or-fsproj
                                 (concat test-dir "file.fs"))))
