@@ -23,6 +23,7 @@ type FSharpParser() =
   /// Holds the previous content used to generate the previous errors. An entry is only present if we have 
   /// scheduled a new ReparseDocument() to update the errors.
   let activeRequests = System.Collections.Generic.Dictionary<string,string>()
+  let mutable typedParsedResult = Unchecked.defaultof<_>
 
   override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
     if fileName = null || not (CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName))) then null else
@@ -69,7 +70,7 @@ type FSharpParser() =
 
                     // Keep the result until we reparse
                     activeResults.[fileName] <- errors
-
+                    typedParsedResult <- LanguageService.Service.GetTypedParseResult(filePath, fileContent, proj, config, true, 400)
                     // Schedule a reparse to actually update the errors, checking first if this is still the active document
                     try 
                        let doc = IdeApp.Workbench.ActiveDocument
@@ -80,7 +81,10 @@ type FSharpParser() =
 
     if activeResults.ContainsKey(fileName) then
         for er in activeResults.[fileName] do 
-            doc.Errors.Add(er)    
+            doc.Errors.Add(er)  
 
+    if storeAst then
+        doc.Ast <- typedParsedResult
+    
     doc.LastWriteTimeUtc <- (try File.GetLastWriteTimeUtc (fileName) with _ -> DateTime.UtcNow) 
     doc :> ParsedDocument
