@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Gui
 
 	public abstract class AbstractXwtViewContent :AbstractViewContent
 	{
-		public sealed override Gtk.Widget Control {
+		public override Gtk.Widget Control {
 			get {
 				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (Widget);
 			}
