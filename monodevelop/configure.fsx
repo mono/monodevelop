@@ -55,8 +55,28 @@ let Run (file, args) =
     currentProcess.Start () |> ignore
     currentProcess.StandardOutput
 
+
+let paths = if isWindows then WindowsPaths else UnixPaths
+
 Console.WriteLine "MonoDevelop F# add-in configuration script"
 Console.WriteLine "------------------------------------------"
+
+let args = fsi.CommandLineArgs.[1..]
+if Array.exists ((=) "--help") args then
+  Console.WriteLine "Options:\n"
+  Console.WriteLine "--prefix=PATH\n"
+  Console.WriteLine "  MonoDevelop library directory. Currently searched:\n"
+  for p in paths do Console.WriteLine("  {0}", p)
+  exit 0
+
+let searchPaths =
+  let getPrefix (s: string) =
+    let xs = s.Split('=')
+    if xs.Length = 2 && xs.[0] = "--prefix" then Some xs.[1]
+    else None
+  match Array.tryPick getPrefix args with
+  | None -> paths
+  | Some p -> p :: paths
 
 let mutable mdDir = null
 let mutable mdVersion = "4.1.6"
@@ -70,7 +90,6 @@ if (File.Exists (GetPath ["../../../monodevelop.pc.in"])) then
         mdVersion <- Grep (GetPath [mdDir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
 else
     // Using installed MonoDevelop
-    let searchPaths = if isWindows then WindowsPaths else UnixPaths
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
     if (mdDir <> null) then
         let mdExe = 
