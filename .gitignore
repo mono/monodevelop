@@ -1,13 +1,6 @@
 # F#
 [Bb]in/
 [Oo]bj/
-MonoDevelop.FSharpBinding/Gui/[Oo]bj/Debug/*
-MonoDevelop.FSharpBinding/Gui/[Bb]in/Debug/*
-MonoDevelop.FSharpBinding/Gui/[Oo]bj/*
-MonoDevelop.FSharpBinding/Gui/[Bb]in/*
-MonoDevelop.FSharpBinding/_ReSharper.MonoDevelop.FSharp/*
-MonoDevelop.FSharpBinding/[Oo]bj/
-MonoDevelop.FSharpBinding/[Bb]in/
 monodevelop/pack/*
 monodevelop/packages/*
 repository/*
