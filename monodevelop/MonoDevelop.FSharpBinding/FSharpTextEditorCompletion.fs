@@ -364,64 +364,62 @@ type FSharpPathExtension() =
         //ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
     
     member private x.PathUpdated(e: Mono.TextEditor.DocumentLocationEventArgs) =
-        let parsedDocument = x.Document.ParsedDocument
-        let ast = parsedDocument.Ast :?> TypedParseResult
-        if ast = null then () else
-        let loc = x.Document.Editor.Caret.Location
-        let caretOffset = x.Document.Editor.Caret.Offset
+        match x.Document.ParsedDocument.Ast with
+        | :? TypedParseResult as ast ->
+            let loc = x.Document.Editor.Caret.Location
+            let caretOffset = x.Document.Editor.Caret.Offset
 
-        let posGt (p1Column, p1Line) (p2Column, p2Line) = 
-            (p1Line > p2Line || (p1Line = p2Line && p1Column > p2Column))
+            let posGt (p1Column, p1Line) (p2Column, p2Line) = 
+                (p1Line > p2Line || (p1Line = p2Line && p1Column > p2Column))
 
-        let posEq (p1Column, p1Line) (p2Column, p2Line) = 
-            (p1Line = p2Line &&  p1Column = p2Column)
+            let posEq (p1Column, p1Line) (p2Column, p2Line) = 
+                (p1Line = p2Line &&  p1Column = p2Column)
 
-        let posGeq p1 p2 =
-            posEq p1 p2 || posGt p1 p2
+            let posGeq p1 p2 =
+                posEq p1 p2 || posGt p1 p2
 
-        let rangeContainsPos ((start, end') :Range) p =
-            posGeq p start && posGeq end' p
+            let inside (docloc:Mono.TextEditor.DocumentLocation) ((start, finish) :Range) =
+                let cursor = (docloc.Column, docloc.Line)
+                posGeq cursor start && posGeq finish cursor
 
-        let inside (docloc:Mono.TextEditor.DocumentLocation) (range :Range) =
-            rangeContainsPos range (docloc.Column, docloc.Line)
+            let toplevel = ast.Untyped.GetNavigationItems().Declarations
 
-        let toplevel = ast.Untyped.GetNavigationItems().Declarations
+            //just for debug
+            let allthings = [| for tl in  toplevel do 
+                                  yield (tl.Declaration.Name, tl.Nested |> Array.map (fun n -> n.Name)) |]
 
-        //just for debug
-        let allthings = [| for tl in  toplevel do 
-                              yield (tl.Declaration.Name, tl.Nested |> Array.map (fun n -> n.Name)) |]
+            let topLevelInsideCursor =
+                toplevel |> Array.filter (fun tl -> inside loc tl.Declaration.Range)
+                         |> Array.sortBy(fun xs -> xs.Declaration.Range)
 
-        let topLevelInsideCursor =
-            toplevel |> Array.filter (fun tl -> inside loc tl.Declaration.Range)
-                     |> Array.sortBy(fun xs -> xs.Declaration.Range)
+            let newPath = ResizeArray<_>()
+            for top in topLevelInsideCursor do
+                let name = top.Declaration.Name
+                if name.Contains(".") then
+                    let nameparts = name.[.. name.LastIndexOf(".")]
+                    newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = (ast, nameparts)))
+                else newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = ast))
+            
+            if topLevelInsideCursor.Length > 0 then
+                let lastToplevel = topLevelInsideCursor.Last()//TODO please check
+                //only first child found is returned, could there be multiple children found?
+                let child = lastToplevel.Nested |> Array.tryFind (fun tl -> inside loc tl.Range)
+                let multichild = lastToplevel.Nested |> Array.filter (fun tl -> inside loc tl.Range)
+                Debug.Assert( multichild.Length > 1, "More than one child found please investigate!")
+                match child with
+                | Some(c) -> newPath.Add(PathEntry (ImageService.GetPixbuf(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
+                | None -> ()
 
-        let newPath = ResizeArray<_>()
-        for top in topLevelInsideCursor do
-            let name = top.Declaration.Name
-            if name.Contains(".") then
-                let nameparts = name.[.. name.LastIndexOf(".")]
-                newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = (ast, nameparts)))
-            else newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = ast))
-        
-        if topLevelInsideCursor.Length > 0 then
-            let lastToplevel = topLevelInsideCursor.Last()//TODO please check
-            //only first child found is returned, could there be multiple children found?
-            let child = lastToplevel.Nested |> Array.tryFind (fun tl -> inside loc tl.Range)
-            let multichild = lastToplevel.Nested |> Array.filter (fun tl -> inside loc tl.Range)
-            Debug.Assert( multichild.Length > 1, "More than one child found please investigate!")
-            match child with
-            | Some(c) -> newPath.Add(PathEntry (ImageService.GetPixbuf(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
-            | None -> ()
+            let previousPath = currentPath
 
-        let previousPath = currentPath
+            //TODO if current and previous differ raise the event, otherwise do nothing
 
-        //TODO if current and previous differ raise the event, otherwise do nothing
+            if newPath.Count = 0 then currentPath <- [|PathEntry("No selection", Tag = ast)|]
+            else currentPath <- newPath.ToArray()
 
-        if newPath.Count = 0 then currentPath <- [|PathEntry("No selection", Tag = ast)|]
-        else currentPath <- newPath.ToArray()
-
-        //invoke pathchanged
-        pathChanged.Trigger(x, DocumentPathChangedEventArgs(previousPath))
+            //invoke pathchanged
+            pathChanged.Trigger(x, DocumentPathChangedEventArgs(previousPath))
+        | _ -> ()
 
     interface IPathedDocument with
         member x.CurrentPath = currentPath
