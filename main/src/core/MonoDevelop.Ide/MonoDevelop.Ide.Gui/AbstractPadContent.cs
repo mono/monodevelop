@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
+using Xwt;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -89,4 +90,18 @@ namespace MonoDevelop.Ide.Gui
 
 		#endregion
 	}
+
+	public abstract class AbstractXwtPadContent : AbstractPadContent
+	{
+		public sealed override Gtk.Widget Control {
+			get {
+				return (Gtk.Widget)Toolkit.CurrentEngine.GetNativeWidget (Widget);
+			}
+		}
+
+		public abstract Xwt.Widget Widget {
+			get;
+		}
+	}
+
 }
