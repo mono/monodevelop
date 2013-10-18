@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects
 	{
 		string[] buildActions;
 
-		public Project ()
+		protected Project ()
 		{
 			FileService.FileChanged += OnFileChanged;
 			files = new ProjectFileCollection ();
