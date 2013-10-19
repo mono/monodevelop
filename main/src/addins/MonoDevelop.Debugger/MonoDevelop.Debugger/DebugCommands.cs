@@ -59,9 +59,7 @@ namespace MonoDevelop.Debugger
 		RemoveBreakpoint,
 		ShowBreakpointProperties,
 		ExpressionEvaluator,
-		SelectExceptions,
 		ShowCurrentExecutionLine,
-		AddTracepoint,
 		AddWatch,
 		StopEvaluation,
 		RunToCursor,
@@ -432,25 +430,6 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class AddTracepointHandler: CommandHandler
-	{
-		protected override void Run ()
-		{
-			DebuggingService.ShowAddTracepointDialog (
-			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Tracepoints);
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-					!DebuggingService.Breakpoints.IsReadOnly;
-		}
-	}
-	
 	class EnableDisableBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
@@ -666,19 +645,6 @@ namespace MonoDevelop.Debugger
 		{
 			info.Visible = DebuggingService.IsDebuggingSupported;
 			info.Enabled = DebuggingService.CurrentFrame != null;
-		}
-	}
-
-	class SelectExceptionsCommand: CommandHandler
-	{
-		protected override void Run ()
-		{
-			DebuggingService.ShowExceptionsFilters ();
-		}
-
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
 		}
 	}
 	

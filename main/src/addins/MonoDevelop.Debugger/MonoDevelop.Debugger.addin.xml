@@ -141,9 +141,6 @@
 				_label = "Expression Evaluator"
 				shortcut = "Shift|F9"
 				defaultHandler = "MonoDevelop.Debugger.ExpressionEvaluatorCommand" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions"
-				_label = "Exceptions..."
-				defaultHandler = "MonoDevelop.Debugger.SelectExceptionsCommand" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine"
 				_label = "Show Current Execution Line"
 				shortcut = "Alt|*"
@@ -195,7 +192,6 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions" />
 		<SeparatorItem id = "MonoDevelop.Debugger.ToolsSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 	</Extension>

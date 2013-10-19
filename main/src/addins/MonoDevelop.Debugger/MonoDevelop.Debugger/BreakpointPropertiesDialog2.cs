@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger
 		Xwt.HBox hboxLocation = new Xwt.HBox ();
 		Xwt.HBox hboxLineColumn = new Xwt.HBox ();
 		Xwt.HBox hboxException = new Xwt.HBox ();
+		Xwt.HBox hboxCondition = new Xwt.HBox ();
 
 		// Stop-type radios.
 		readonly Xwt.RadioButton stopOnFunction = new Xwt.RadioButton (GettextCatalog.GetString ("When a function is entered"));
@@ -97,7 +98,6 @@ namespace MonoDevelop.Debugger
 
 		void Initialize ()
 		{
-			// TODO: Make dialog for exceptions.
 			Title = GettextCatalog.GetString (be == null ? "New Breakpoint" : "Breakpoint Properties");
 			var buttonLabel = GettextCatalog.GetString (be == null ? "Add breakpoint" : "Modify breakpoint");
 
@@ -133,6 +133,10 @@ namespace MonoDevelop.Debugger
 			entryConditionalExpression.Changed += OnUpdateControls;
 			ignoreHitType.SelectionChanged += OnUpdateControls;
 			checkPrintExpression.Toggled += OnUpdateControls;
+
+			entryFunctionName.Changed += OnUpdateText;
+			entryLocationFile.Changed += OnUpdateText;
+			entryExceptionType.Changed += OnUpdateText;
 
 			buttonOk.Clicked += OnSave;
 		}
@@ -201,14 +205,14 @@ namespace MonoDevelop.Debugger
 					entryPrintExpression.Text = be.TraceExpression;
 				}
 			} else {
+				ignoreHitType.SelectedItem = HitCountMode.None;
+				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
+
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					entryLocationFile.Text = IdeApp.Workbench.ActiveDocument.FileName;
 					entryLocationLine.Text = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line.ToString ();
 					entryLocationColumn.Text = IdeApp.Workbench.ActiveDocument.Editor.Caret.Column.ToString ();
 				}
-
-				ignoreHitType.SelectedItem = HitCountMode.None;
-				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
 			}
 
 			var fb = be as FunctionBreakpoint;
@@ -302,6 +306,7 @@ namespace MonoDevelop.Debugger
 			hboxLocation.Sensitive = stopOnLocation.Active;
 			hboxException.Sensitive = stopOnException.Active;
 			checkIncludeSubclass.Sensitive = stopOnException.Active;
+			hboxCondition.Sensitive = !stopOnException.Active;
 
 			// Check conditional
 			if (!String.IsNullOrEmpty (entryConditionalExpression.Text))
@@ -320,6 +325,13 @@ namespace MonoDevelop.Debugger
 			checkResumeExecution.Sensitive = checkPrintExpression.Active;
 
 			// And display warning icons
+			buttonOk.Sensitive = CheckValidity ();
+		}
+
+		void OnUpdateText (object sender, EventArgs e)
+		{
+
+
 			buttonOk.Sensitive = CheckValidity ();
 		}
 
@@ -501,7 +513,7 @@ namespace MonoDevelop.Debugger
 
 			vbox.PackStart (vboxRadio);
 
-			var hboxCondition = new Xwt.HBox ();
+			hboxCondition = new Xwt.HBox ();
 			hboxCondition.PackStart (new Xwt.Label (GettextCatalog.GetString ("Condition:")));
 			hboxCondition.PackStart (entryConditionalExpression, true);
 			hboxCondition.PackEnd (warningCondition);

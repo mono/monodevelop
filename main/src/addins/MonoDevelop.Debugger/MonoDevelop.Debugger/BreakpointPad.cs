@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger
 		BreakpointStore breakpoints;
 		
 		PadTreeView tree;
-		Gtk.TreeStore store;
+		TreeStore store;
 		Widget control;
 		ScrolledWindow sw;
 		CommandEntrySet menuSet;
@@ -225,7 +225,7 @@ namespace MonoDevelop.Debugger
 					if (!store.GetIter (out iter, path))
 						continue;
 
-					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					if (!bp.Enabled) {
 						enable = true;
 						break;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Debugger
 					if (!store.GetIter (out iter, path))
 						continue;
 
-					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					bp.Enabled = enable;
 
 					store.SetValue (iter, (int) Columns.Icon, enable ? "md-breakpoint" : "md-breakpoint-disabled");
@@ -256,9 +256,12 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 
 			if (selected.Length == 1 && store.GetIter (out iter, selected[0])) {
-				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				if (!string.IsNullOrEmpty (bp.FileName))
-					IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);
+				var be = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
+				var bp = be as Breakpoint;
+				if (bp != null) {
+					if (!string.IsNullOrEmpty (bp.FileName))
+						IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);
+				}
 			}
 		}
 
@@ -280,7 +283,7 @@ namespace MonoDevelop.Debugger
 					if (!store.GetIter (out iter, path))
 						continue;
 
-					var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					var bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					lock (breakpoints)
 						breakpoints.Remove (bp);
 					deleted = true;
@@ -359,7 +362,7 @@ namespace MonoDevelop.Debugger
 				TreeIter iter;
 
 				if (store.GetIterFromString (out iter, args.Path)) {
-					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					bp.Enabled = !bp.Enabled;
 
 					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
@@ -380,27 +383,32 @@ namespace MonoDevelop.Debugger
 			store.Clear ();
 			if (breakpoints != null) {	
 				lock (breakpoints) {
-					foreach (Breakpoint bp in breakpoints.GetBreakpoints ()) {
-						string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
-						string traceExp = bp.HitAction == HitAction.PrintExpression ? bp.TraceExpression : "";
-						string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";
+					foreach (BreakEvent be in breakpoints.GetBreakevents ()) {
+						string hitCount = be.HitCountMode != HitCountMode.None ? be.CurrentHitCount.ToString () : "";
+						string traceExp = be.HitAction == HitAction.PrintExpression ? be.TraceExpression : "";
+						string traceVal = be.HitAction == HitAction.PrintExpression ? be.LastTraceValue : "";
 						string name;
 
-						if (bp is FunctionBreakpoint) {
-							FunctionBreakpoint fb = (FunctionBreakpoint) bp;
-
+						var fb = be as FunctionBreakpoint;
+						var bp = be as Breakpoint;
+						var cp = be as Catchpoint;
+						if (fb != null) {
 							if (fb.ParamTypes != null)
 								name = fb.FunctionName + "(" + string.Join (", ", fb.ParamTypes) + ")";
 							else
 								name = fb.FunctionName;
+						} else if (bp != null) {
+							name = String.Format ("{0}:{1},{2}", bp.FileName, bp.Line, bp.Column);
+						} else if (cp != null) {
+							name = cp.ExceptionName;
 						} else {
-							name = string.Format ("{0}:{1},{2}", ((Breakpoint) bp).FileName, bp.Line, bp.Column);
+							name = "";
 						}
 
-						if (bp.Enabled)
-							store.AppendValues ("md-breakpoint", true, name, bp, bp.ConditionExpression, traceExp, hitCount, traceVal);
+						if (be.Enabled)
+							store.AppendValues ("md-breakpoint", true, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
 						else
-							store.AppendValues ("md-breakpoint-disabled", false, name, bp, bp.ConditionExpression, traceExp, hitCount, traceVal);
+							store.AppendValues ("md-breakpoint-disabled", false, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
 					}
 				}
 			}
@@ -416,7 +424,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			do {
-				Breakpoint bp = (Breakpoint) store.GetValue (it, (int) Columns.Breakpoint);
+				var bp = (BreakEvent) store.GetValue (it, (int) Columns.Breakpoint);
 				if (bp == args.Breakpoint) {
 					string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
 					string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";

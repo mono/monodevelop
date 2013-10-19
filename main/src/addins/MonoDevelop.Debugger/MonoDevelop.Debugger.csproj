@@ -116,8 +116,6 @@
     <Compile Include="MonoDevelop.Debugger\DebugCommands.cs" />
     <Compile Include="MonoDevelop.Debugger\Extensions.cs" />
     <Compile Include="MonoDevelop.Debugger\AttachToProcessDialog.cs" />
-    <Compile Include="MonoDevelop.Debugger\ExceptionsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
@@ -130,8 +128,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Debugger\AddTracePointDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.AddTracePointDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />

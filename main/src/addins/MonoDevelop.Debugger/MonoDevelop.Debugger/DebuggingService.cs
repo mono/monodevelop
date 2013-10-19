@@ -196,25 +196,7 @@ namespace MonoDevelop.Debugger
 				return response == Xwt.Command.Ok;
 			}
 		}
-		
-		public static void ShowAddTracepointDialog (string file, int line)
-		{
-			var dlg = new AddTracePointDialog ();
 
-			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
-					var bp = new Breakpoint (file, line);
-					bp.HitAction = HitAction.PrintExpression;
-					bp.TraceExpression = dlg.Text;
-					bp.ConditionExpression = dlg.Condition;
-					lock (breakpoints)
-						breakpoints.Add (bp);
-				}
-			} finally {
-				dlg.Destroy ();
-			}
-		}
-		
 		public static void AddWatch (string expression)
 		{
 			var pad = IdeApp.Workbench.GetPad<WatchPad> ();
@@ -303,11 +285,6 @@ namespace MonoDevelop.Debugger
 			get {
 				return exceptionDialog;
 			}
-		}
-
-		public static void ShowExceptionsFilters ()
-		{
-			MessageService.ShowCustomDialog (new ExceptionsDialog ());
 		}
 		
 		static void SetupSession ()
