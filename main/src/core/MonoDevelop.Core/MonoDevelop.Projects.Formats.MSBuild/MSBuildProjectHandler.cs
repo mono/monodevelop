@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
-			if (UseMSBuildEngineForItem (Item)) {
+			if (UseMSBuildEngineForItem (Item, configuration)) {
 				// Get the references list from the msbuild project
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
@@ -217,7 +217,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			if (UseMSBuildEngineForItem (Item)) {
+			if (UseMSBuildEngineForItem (Item, configuration)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					
@@ -342,9 +342,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
-		internal bool UseMSBuildEngineForItem (SolutionItem item)
+		internal bool UseMSBuildEngineForItem (SolutionItem item, ConfigurationSelector sel, bool checkReferences = true)
 		{
-			return item.UseMSBuildEngine ?? UseMSBuildEngineByDefault;
+			// if the item mandates MSBuild, always use it
+			if (RequireMSBuildEngine)
+				return true;
+			// if the user has set the option, use the setting
+			if (item.UseMSBuildEngine.HasValue)
+				return item.UseMSBuildEngine.Value;
+
+			// If the item type defaults to using MSBuild, only use MSBuild if its direct references also use MSBuild.
+			// This prevents a not-uncommon common error referencing non-MSBuild projects from MSBuild projects
+			// NOTE: This adds about 11ms to the load/build/etc times of the MonoDevelop solution. Doing it recursively
+			// adds well over a second.
+			return UseMSBuildEngineByDefault && (
+				!checkReferences ||
+				item.GetReferencedItems (sel).All (i => {
+					var h = i.ItemHandler as MSBuildProjectHandler;
+					return h != null && h.UseMSBuildEngineForItem (i, sel, false);
+				})
+			);
 		}
 
 		/// <summary>Whether to use the MSBuild engine by default.</summary>
