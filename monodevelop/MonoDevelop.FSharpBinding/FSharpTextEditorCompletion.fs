@@ -361,8 +361,7 @@ type FSharpPathExtension() =
         x.Document.DocumentParsed.AddHandler(fun o e -> x.PathUpdated null)
 
     member private x.PathUpdated(documentLocation) =
-        let loc = if documentLocation = null then x.Document.Editor.Caret.Location 
-                  else documentLocation.Location
+        let loc = x.Document.Editor.Caret.Location
         
         if x.Document.ParsedDocument = null then () else
         match x.Document.ParsedDocument.Ast with
