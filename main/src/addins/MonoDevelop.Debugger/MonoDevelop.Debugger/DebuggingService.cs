@@ -137,7 +137,7 @@ namespace MonoDevelop.Debugger
 			if (liveUpdate) {
 				var bp = new Breakpoint (watch.File, watch.Line);
 				bp.TraceExpression = "{" + watch.Expression + "}";
-				bp.HitAction = HitAction.PrintExpression;
+				bp.HitAction |= HitAction.PrintExpression;
 				lock (breakpoints)
 					breakpoints.Add (bp);
 				pinnedWatches.Bind (watch, bp);

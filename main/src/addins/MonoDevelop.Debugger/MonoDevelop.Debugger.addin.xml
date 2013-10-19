@@ -116,10 +116,6 @@
 				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler"
 				shortcut = "F9"
 				macShortcut = "Meta|\" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint"
-				_label = "Add Tracepoint"
-				defaultHandler = "MonoDevelop.Debugger.AddTracepointHandler"
-				shortcut = "Control|Shift|F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint"
 				_label = "Enable/Disable Breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.EnableDisableBreakpointHandler"
@@ -188,7 +184,6 @@
 		<SeparatorItem id = "MonoDevelop.Debugger.BreakpointsSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
