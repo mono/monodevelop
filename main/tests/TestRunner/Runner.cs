@@ -38,7 +38,7 @@ namespace MonoDevelop.Tests.TestRunner
 	{
 		public int Run (string[] arguments)
 		{
-			var args = new List<string> (arguments);
+			var args = new List<string> (arguments.Select (argument => Path.GetFullPath (argument)));
 			bool useGuiUnit = false;
 			foreach (var ar in args) {
 				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
