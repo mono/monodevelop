@@ -1,9 +1,10 @@
-// BreakpointPropertiesDialog.cs
+//
+// BreakpointsPropertiesDialog.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Therzok <teromario@yahoo.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Therzok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,128 +23,379 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.Collections.Generic;
-
-using MonoDevelop.Core;
 using Mono.Debugging.Client;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Debugger
 {
-	public partial class BreakpointPropertiesDialog : Gtk.Dialog
+	enum ConditionalHitWhen
 	{
+		ConditionIsTrue,
+		ExpressionChanges
+	}
+
+	sealed class BreakpointPropertiesDialog2 : Xwt.Dialog
+	{
+		// For button sensitivity.
+		Xwt.DialogButton buttonOk;
+
+		// Groupings for sensitivity
+		Xwt.HBox hboxFunction = new Xwt.HBox ();
+		Xwt.HBox hboxLocation = new Xwt.HBox ();
+		Xwt.HBox hboxLineColumn = new Xwt.HBox ();
+		Xwt.HBox hboxException = new Xwt.HBox ();
+		Xwt.HBox hboxCondition = new Xwt.HBox ();
+
+		// Stop-type radios.
+		readonly Xwt.RadioButton stopOnFunction = new Xwt.RadioButton (GettextCatalog.GetString ("When a function is entered"));
+		readonly Xwt.RadioButton stopOnLocation = new Xwt.RadioButton (GettextCatalog.GetString ("When a location is reached"));
+		readonly Xwt.RadioButton stopOnException = new Xwt.RadioButton (GettextCatalog.GetString ("When an exception is thrown"));
+
+		// Text entries
+		readonly Xwt.TextEntry entryFunctionName = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryLocationFile = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryLocationLine = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryLocationColumn = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryExceptionType = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryConditionalExpression = new Xwt.TextEntry ();
+		readonly Xwt.TextEntry entryPrintExpression = new Xwt.TextEntry ();
+
+		// Warning icon
+		readonly Xwt.ImageView warningFunction = new Xwt.ImageView (Xwt.StockIcons.Warning);
+		readonly Xwt.ImageView warningLocation = new Xwt.ImageView (Xwt.StockIcons.Warning);
+		readonly Xwt.ImageView warningException = new Xwt.ImageView (Xwt.StockIcons.Warning);
+		readonly Xwt.ImageView warningCondition = new Xwt.ImageView (Xwt.StockIcons.Warning);
+
+		// Combobox + Pager
+		readonly Xwt.SpinButton ignoreHitCount = new Xwt.SpinButton ();
+		readonly Xwt.ComboBox ignoreHitType = new Xwt.ComboBox ();
+		readonly Xwt.ComboBox conditionalHitType = new Xwt.ComboBox ();
+
+		// Optional checkboxes.
+		readonly Xwt.CheckBox checkIncludeSubclass = new Xwt.CheckBox (GettextCatalog.GetString ("Include subclasses"));
+		readonly Xwt.CheckBox checkPrintExpression = new Xwt.CheckBox (GettextCatalog.GetString ("Print an expression to the debugger output"));
+		readonly Xwt.CheckBox checkResumeExecution = new Xwt.CheckBox (GettextCatalog.GetString ("Resume execution automatically"));
+
+		BreakEvent be;
 		string[] parsedParamTypes;
 		string parsedFunction;
-		Breakpoint bp;
-		bool isNew;
-		
-		public BreakpointPropertiesDialog (Breakpoint bp, bool isNew)
+		readonly HashSet<string> classes = new HashSet<string> ();
+
+		public BreakpointPropertiesDialog2 (BreakEvent be)
 		{
-			this.Build ();
-			
-			this.isNew = isNew;
-			this.bp = bp;
-			
-			spinColumn.Adjustment.Upper = int.MaxValue;
-			spinColumn.Adjustment.Lower = 1;
-			spinLine.Adjustment.Upper = int.MaxValue;
-			spinLine.Adjustment.Lower = 1;
-			
-			if (bp is FunctionBreakpoint) {
-				FunctionBreakpoint fb = (FunctionBreakpoint) bp;
-				
-				labelFileFunction.LabelProp = GettextCatalog.GetString ("Function:");
-				
-				if (fb.ParamTypes != null) {
-					// FIXME: support non-C# syntax based on fb.Language
-					entryFileFunction.Text = fb.FunctionName + " (" + string.Join (", ", fb.ParamTypes) + ")";
-				} else
-					entryFileFunction.Text = fb.FunctionName;
-				
-				if (!isNew) {
-					// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
-					entryFileFunction.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-					entryFileFunction.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-					entryFileFunction.IsEditable = false;
-				}
-				
-				// Function breakpoints only support breaking on the first line
-				hboxLineColumn.Destroy ();
-				labelLine.Destroy ();
-				tableLocation.NRows--;
-			} else {
-				labelFileFunction.LabelProp = GettextCatalog.GetString ("File:");
-				entryFileFunction.Text = ((Breakpoint) bp).FileName;
-				
-				// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
-				entryFileFunction.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-				entryFileFunction.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-				entryFileFunction.IsEditable = false;
-				
-				spinColumn.Value = bp.Column;
-				spinLine.Value = bp.Line;
-				
-				if (!isNew) {
-					spinColumn.IsEditable = false;
-					spinColumn.Sensitive = false;
-					spinLine.IsEditable = false;
-					spinLine.Sensitive = false;
-				}
-			}
-			
-			if (string.IsNullOrEmpty (bp.ConditionExpression)) {
-				radioBreakAlways.Active = true;
-			} else {
-				entryCondition.Text = bp.ConditionExpression;
-				if (bp.BreakIfConditionChanges)
-					radioBreakWhenChanges.Active = true;
-				else
-					radioBreakWhenTrue.Active = true;
+			this.be = be;
+
+			LoadExceptionList ();
+			Initialize ();
+			SetInitialData ();
+			SetLayout ();
+		}
+
+		void Initialize ()
+		{
+			Title = GettextCatalog.GetString (be == null ? "New Breakpoint" : "Breakpoint Properties");
+			var buttonLabel = GettextCatalog.GetString (be == null ? "Add breakpoint" : "Modify breakpoint");
+
+			var stopGroup = new Xwt.RadioButtonGroup ();
+			stopOnFunction.Group = stopGroup;
+			stopOnLocation.Group = stopGroup;
+			stopOnException.Group = stopGroup;
+
+			ignoreHitType.Items.Add (HitCountMode.None, GettextCatalog.GetString ("always"));
+			ignoreHitType.Items.Add (HitCountMode.LessThan, GettextCatalog.GetString ("when hit count is less than"));
+			ignoreHitType.Items.Add (HitCountMode.LessThanOrEqualTo, GettextCatalog.GetString ("when hit count is less than or equal to"));
+			ignoreHitType.Items.Add (HitCountMode.EqualTo, GettextCatalog.GetString ("when hit count is equal to"));
+			ignoreHitType.Items.Add (HitCountMode.GreaterThan, GettextCatalog.GetString ("when hit count is greater than"));
+			ignoreHitType.Items.Add (HitCountMode.GreaterThanOrEqualTo, GettextCatalog.GetString ("when hit count is greater than or equal to"));
+			ignoreHitType.Items.Add (HitCountMode.MultipleOf, GettextCatalog.GetString ("when hit count is a multiple of"));
+
+			ignoreHitCount.IncrementValue = 1;
+
+			conditionalHitType.Items.Add (ConditionalHitWhen.ConditionIsTrue, GettextCatalog.GetString ("is true"));
+			conditionalHitType.Items.Add (ConditionalHitWhen.ExpressionChanges, GettextCatalog.GetString ("expression changes"));
+
+			buttonOk = new Xwt.DialogButton (buttonLabel, Xwt.Command.Ok) {
+				Sensitive = false
+			};
+
+			// Register events.
+			stopGroup.ActiveRadioButtonChanged += OnUpdateControls;
+			entryFunctionName.Changed += OnUpdateControls;
+			entryLocationFile.Changed += OnUpdateControls;
+			entryLocationLine.Changed += OnUpdateControls;
+			entryLocationColumn.Changed += OnUpdateControls;
+
+			entryConditionalExpression.Changed += OnUpdateControls;
+			ignoreHitType.SelectionChanged += OnUpdateControls;
+			checkPrintExpression.Toggled += OnUpdateControls;
+
+			entryFunctionName.Changed += OnUpdateText;
+			entryLocationFile.Changed += OnUpdateText;
+			entryExceptionType.Changed += OnUpdateText;
+			entryPrintExpression.Changed += OnUpdateText;
+
+			// TODO: Fix completion.
+			//entryExceptionType.KeyReleased += OnEditKeyRelease;
+			//entryExceptionType.KeyPressed += PopupCompletion;
+
+			buttonOk.Clicked += OnSave;
+		}
+
+		void SetInitialFunctionBreakpointData (FunctionBreakpoint fb)
+		{
+			stopOnFunction.Active = true;
+			if (fb.ParamTypes != null) {
+				// FIXME: support non-C# syntax based on fb.Language
+				entryFunctionName.Text = fb.FunctionName + " (" + String.Join (", ", fb.ParamTypes) + ")";
+			} else
+				entryFunctionName.Text = fb.FunctionName;
+		}
+
+		void SetInitialBreakpointData (Breakpoint bp)
+		{
+			stopOnLocation.Active = true;
+			entryLocationFile.Text = bp.FileName;
+			entryLocationLine.Text = bp.Line.ToString ();
+			entryLocationColumn.Text = bp.Column.ToString ();
+
+			if (!String.IsNullOrEmpty (bp.ConditionExpression)) {
+				entryConditionalExpression.Text = bp.ConditionExpression;
+				conditionalHitType.SelectedItem = bp.BreakIfConditionChanges ? ConditionalHitWhen.ExpressionChanges : ConditionalHitWhen.ConditionIsTrue;
 			}
 
-			comboHitCountMode.Changed += OnHitCountModeChanged;
-			comboHitCountMode.Active = (int) bp.HitCountMode;
-			spinHitCount.Value = bp.HitCount;
-			
-			if (bp.HitAction == HitAction.Break) {
-				radioActionBreak.Active = true;
-			} else {
-				radioActionTrace.Active = true;
-				entryTraceExpression.Text = bp.TraceExpression;
-			}
-			
 			Project project = null;
-			if (!string.IsNullOrEmpty (bp.FileName))
+			if (!String.IsNullOrEmpty (bp.FileName))
 				project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
-			
+
 			if (project != null) {
 				// Check the startup project of the solution too, since the current project may be a library
 				SolutionEntityItem startup = project.ParentSolution.StartupItem;
-				vboxConditionOptions.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.ConditionalBreakpoints) ||
-					DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.ConditionalBreakpoints);
-				vboxAction.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints) ||
-					DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.Tracepoints);
-			}
-			
-			UpdateControls ();
-		}
-		
-		void UpdateControls ()
-		{
-			boxTraceExpression.Sensitive = radioActionTrace.Active;
-			hboxConditionExpression.Sensitive = !radioBreakAlways.Active;
+				entryConditionalExpression.Sensitive = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.ConditionalBreakpoints) ||
+				                                       DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.ConditionalBreakpoints);
 
-			if (comboHitCountMode.Active == 0)
-				spinHitCount.Hide ();
-			else
-				spinHitCount.Show ();
+				bool canTrace = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints) ||
+				                DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.Tracepoints);
+
+				checkPrintExpression.Sensitive = canTrace;
+				entryPrintExpression.Sensitive = canTrace;
+			}
 		}
-		
+
+		void SetInitialCatchpointData (Catchpoint cp)
+		{
+			entryExceptionType.Text = cp.ExceptionName;
+		}
+
+		void SetInitialData ()
+		{
+			// FIXME: Add support for not doing base add
+			checkIncludeSubclass.Active = true;
+			checkIncludeSubclass.Sensitive = false;
+
+			if (be != null) {
+				stopOnException.Sensitive = false;
+				stopOnFunction.Sensitive = false;
+				stopOnLocation.Sensitive = false;
+				entryLocationFile.ReadOnly = true;
+				entryLocationLine.ReadOnly = true;
+				entryLocationColumn.ReadOnly = true;
+				entryExceptionType.ReadOnly = true;
+
+				ignoreHitType.SelectedItem = be.HitCountMode;
+				ignoreHitCount.Value = be.HitCount;
+
+				if ((be.HitAction & HitAction.PrintExpression) != HitAction.None) {
+					checkPrintExpression.Active = true;
+					entryPrintExpression.Text = be.TraceExpression;
+				}
+				checkResumeExecution.Active |= (be.HitAction & HitAction.Break) == HitAction.None;
+			} else {
+				ignoreHitType.SelectedItem = HitCountMode.None;
+				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
+
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					entryLocationFile.Text = IdeApp.Workbench.ActiveDocument.FileName;
+					entryLocationLine.Text = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line.ToString ();
+					entryLocationColumn.Text = IdeApp.Workbench.ActiveDocument.Editor.Caret.Column.ToString ();
+				}
+			}
+
+			var fb = be as FunctionBreakpoint;
+			if (fb != null)
+				SetInitialFunctionBreakpointData (fb);
+
+			var bp = be as Breakpoint;
+			if (bp != null)
+				SetInitialBreakpointData (bp);
+
+			var cp = be as Catchpoint;
+			if (cp != null)
+				SetInitialCatchpointData (cp);
+		}
+
+		void SaveFunctionBreakpoint (FunctionBreakpoint fb)
+		{
+			fb.FunctionName = parsedFunction;
+			fb.ParamTypes = parsedParamTypes;
+		}
+
+		void SaveBreakpoint (Breakpoint bp, bool isNew)
+		{
+			if (isNew) {
+				bp.SetColumn (Int32.Parse (entryLocationColumn.Text));
+				bp.SetLine (Int32.Parse (entryLocationLine.Text));
+			}
+
+			if (!String.IsNullOrEmpty (entryConditionalExpression.Text)) {
+				bp.ConditionExpression = entryConditionalExpression.Text;
+				bp.BreakIfConditionChanges = conditionalHitType.SelectedItem.Equals (ConditionalHitWhen.ExpressionChanges);
+			} else
+				bp.ConditionExpression = null;
+		}
+
+		void OnSave (object sender, EventArgs e)
+		{
+			bool isNew = false;
+			if (be == null) {
+				isNew = true;
+
+				if (stopOnFunction.Active)
+					be = new FunctionBreakpoint ("", "C#");
+				else if (stopOnLocation.Active)
+					be = new Breakpoint (entryLocationFile.Text, Int32.Parse (entryLocationLine.Text), Int32.Parse (entryLocationColumn.Text));
+				else if (stopOnException.Active)
+					be = new Catchpoint (entryExceptionType.Text);
+				else
+					return;
+			}
+
+			var fb = be as FunctionBreakpoint;
+			if (fb != null)
+				SaveFunctionBreakpoint (fb);
+
+			var bp = be as Breakpoint;
+			if (bp != null)
+				SaveBreakpoint (bp, isNew);
+
+			be.HitCountMode = (HitCountMode)ignoreHitType.SelectedItem;
+			be.HitCount = be.HitCountMode != HitCountMode.None ? (int)ignoreHitCount.Value : 0;
+
+			be.HitAction = HitAction.None;
+			if (checkPrintExpression.Active) {
+				be.HitAction |= HitAction.PrintExpression;
+				be.TraceExpression = entryPrintExpression.Text;
+			}
+			if (!checkResumeExecution.Active)
+				be.HitAction |= HitAction.Break;
+
+			be.CommitChanges ();
+		}
+
+		void OnUpdateControls (object sender, EventArgs e)
+		{
+			// Check which radio is selected.
+			hboxFunction.Sensitive = stopOnFunction.Active;
+			hboxLineColumn.Sensitive = stopOnLocation.Active;
+			hboxLocation.Sensitive = stopOnLocation.Active;
+			hboxException.Sensitive = stopOnException.Active;
+			// FIXME: Add support for not doing base add
+			//checkIncludeSubclass.Sensitive = stopOnException.Active;
+			hboxCondition.Sensitive = !stopOnException.Active;
+
+			// Check conditional
+			if (!String.IsNullOrEmpty (entryConditionalExpression.Text))
+				conditionalHitType.Show ();
+			else
+				conditionalHitType.Hide ();
+
+			// Check ignoring hit counts.
+			if (ignoreHitType.SelectedItem.Equals (HitCountMode.None))
+				ignoreHitCount.Hide ();
+			else
+				ignoreHitCount.Show ();
+
+			// Check printing an expression.
+			entryPrintExpression.Sensitive = checkPrintExpression.Active;
+			checkResumeExecution.Sensitive = checkPrintExpression.Active;
+			checkResumeExecution.Active &= checkPrintExpression.Active;
+
+			// And display warning icons
+			buttonOk.Sensitive = CheckValidity ();
+		}
+
+		void OnUpdateText (object sender, EventArgs e)
+		{
+			buttonOk.Sensitive = CheckValidity ();
+		}
+
+		bool CheckValidity ()
+		{
+			if (be is FunctionBreakpoint) {
+				string text = entryFunctionName.Text.Trim ();
+
+				if (stopOnFunction.Active) {
+					if (text.Length == 0) {
+						warningFunction.Show ();
+						warningFunction.TooltipText = GettextCatalog.GetString ("Function name not specified");
+						return false;
+					}
+
+					if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
+						warningFunction.Show ();
+						warningFunction.TooltipText = GettextCatalog.GetString ("Invalid function syntax");
+						return false;
+					}
+				}
+			} else if (be is Breakpoint) {
+				if (!System.IO.File.Exists (entryLocationFile.Text)) {
+					warningLocation.Show ();
+					warningLocation.TooltipText = GettextCatalog.GetString ("File does not exist");
+					return false;
+				}
+
+				int val;
+				if (!Int32.TryParse (entryLocationLine.Text, out val)) {
+					warningLocation.Show ();
+					warningLocation.TooltipText = GettextCatalog.GetString ("Line is not a number");
+					return false;
+				}
+
+				if (!Int32.TryParse (entryLocationColumn.Text, out val)) {
+					warningLocation.Show ();
+					warningLocation.TooltipText = GettextCatalog.GetString ("Column is not a number");
+					return false;
+				}
+
+				if (stopOnLocation.Active) {
+					if (checkPrintExpression.Active && entryPrintExpression.Text.Length == 0) {
+						warningCondition.Show ();
+						warningCondition.TooltipText = GettextCatalog.GetString ("Trace expression not specified");
+						return false;
+					}
+				}
+			} else if (be is Catchpoint) {
+				if (!classes.Contains (entryExceptionType.Text)) {
+					warningException.Show ();
+					warningException.TooltipText = GettextCatalog.GetString ("Exception not identified");
+					return false;
+				}
+			}
+
+			warningFunction.Hide ();
+			warningLocation.Hide ();
+			warningException.Hide ();
+			warningCondition.Hide ();
+
+			return true;
+		}
+
 		static bool TryParseFunction (string signature, out string function, out string[] paramTypes)
 		{
 			int paramListStart = signature.IndexOf ('(');
@@ -160,9 +412,9 @@ namespace MonoDevelop.Debugger
 				function = null;
 				return false;
 			}
-			
+
 			function = signature.Substring (0, paramListStart).Trim ();
-			
+
 			paramListStart++;
 
 			if (!FunctionBreakpoint.TryParseParameters (signature, paramListStart, paramListEnd, out paramTypes)) {
@@ -170,96 +422,127 @@ namespace MonoDevelop.Debugger
 				function = null;
 				return false;
 			}
-			
+
 			return true;
 		}
-		
-		public bool Check ()
+
+		void LoadExceptionList ()
 		{
-			if (bp is FunctionBreakpoint) {
-				string text = entryFileFunction.Text.Trim ();
-
-				if (text.Length == 0) {
-					MessageService.ShowError (GettextCatalog.GetString ("Function name not specified"));
-					return false;
-				}
-
-				if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
-					MessageService.ShowError (GettextCatalog.GetString ("Invalid function syntax"));
-					return false;
-				}
-			}
-			
-			if (!radioBreakAlways.Active && entryCondition.Text.Length == 0) {
-				MessageService.ShowError (GettextCatalog.GetString ("Condition expression not specified"));
-				return false;
-			}
-			
-			if (radioActionTrace.Active && entryTraceExpression.Text.Length == 0) {
-				MessageService.ShowError (GettextCatalog.GetString ("Trace expression not specified"));
-				return false;
-			}
-			
-			return true;
-		}
-		
-		public void Save ()
-		{
-			if (isNew) {
-				if (bp is FunctionBreakpoint) {
-					FunctionBreakpoint fb = (FunctionBreakpoint) bp;
-					
-					fb.FunctionName = parsedFunction;
-					fb.ParamTypes = parsedParamTypes;
-				} else {
-					bp.SetColumn ((int) spinColumn.Value);
-					bp.SetLine ((int) spinLine.Value);
-				}
-			}
-			
-			if (!radioBreakAlways.Active) {
-				bp.ConditionExpression = entryCondition.Text;
-				bp.BreakIfConditionChanges = radioBreakWhenChanges.Active;
-			} else
-				bp.ConditionExpression = null;
-
-			bp.HitCountMode = (HitCountMode) comboHitCountMode.Active;
-			if (bp.HitCountMode != HitCountMode.None)
-				bp.HitCount = (int) spinHitCount.Value;
-			else
-				bp.HitCount = 0;
-			
-			if (radioActionBreak.Active) {
-				bp.HitAction = HitAction.Break;
+			classes.Add ("System.Exception");
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
 			} else {
-				bp.HitAction = HitAction.PrintExpression;
-				bp.TraceExpression = entryTraceExpression.Text;
-			}
-
-			bp.CommitChanges ();
-		}
-
-		protected virtual void OnButtonOkClicked (object sender, EventArgs e)
-		{
-			if (Check ()) {
-				Save ();
-				Respond (Gtk.ResponseType.Ok);
+				// no need to unload this assembly context, it's not cached.
+				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
+				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
+				if (unresolvedAssembly != null && mscorlib != null) {
+					var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
+					foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+						classes.Add (t.ReflectionName);
+				}
 			}
 		}
 
-		protected virtual void OnRadioBreakAlwaysToggled (object sender, EventArgs e)
+		public BreakEvent GetBreakEvent ()
 		{
-			UpdateControls ();
+			return be;
 		}
 
-		protected virtual void OnRadioActionBreakToggled (object sender,EventArgs e)
+		void SetLayout ()
 		{
-			UpdateControls ();
-		}
+			var vbox = new Xwt.VBox ();
+			vbox.MinHeight = 400;
+			vbox.MinWidth = 450;
 
-		void OnHitCountModeChanged (object sender, EventArgs e)
-		{
-			UpdateControls ();
+			vbox.PackStart (new Xwt.Label (GettextCatalog.GetString ("Pause program execution in the debugger")));
+
+			// Radio group
+			var vboxRadio = new Xwt.VBox {
+				MarginLeft = 12
+			};
+
+			// Function group
+			vboxRadio.PackStart (stopOnFunction);
+
+			hboxFunction = new Xwt.HBox {
+				MarginLeft = 12
+			};
+			hboxFunction.PackStart (new Xwt.Label (GettextCatalog.GetString ("Function:")));
+			hboxFunction.PackStart (entryFunctionName, true);
+			hboxFunction.PackEnd (warningFunction);
+
+			vboxRadio.PackStart (hboxFunction);
+
+			// Location group
+			vboxRadio.PackStart (stopOnLocation);
+
+			var vboxLocation = new Xwt.VBox {
+				MarginLeft = 12
+			};
+			hboxLocation = new Xwt.HBox ();
+			hboxLocation.PackStart (new Xwt.Label (GettextCatalog.GetString ("Location:")));
+			hboxLocation.PackStart (entryLocationFile, true);
+			hboxLocation.PackEnd (warningLocation);
+			vboxLocation.PackStart (hboxLocation);
+
+			hboxLineColumn = new Xwt.HBox ();
+			hboxLineColumn.PackStart (new Xwt.Label (GettextCatalog.GetString ("Line:")));
+			hboxLineColumn.PackStart (entryLocationLine);
+			hboxLineColumn.PackStart (new Xwt.Label (GettextCatalog.GetString ("Column:")));
+			hboxLineColumn.PackStart (entryLocationColumn);
+			vboxLocation.PackStart (hboxLineColumn);
+
+			vboxRadio.PackStart (vboxLocation);
+
+			// Exception group
+			vboxRadio.PackStart (stopOnException);
+
+			var vboxException = new Xwt.VBox {
+				MarginLeft = 12
+			};
+			hboxException = new Xwt.HBox ();
+			hboxException.PackStart (new Xwt.Label (GettextCatalog.GetString ("Type:")));
+			hboxException.PackStart (entryExceptionType, true);
+			hboxException.PackEnd (warningException);
+
+			vboxException.PackStart (hboxException);
+			vboxException.PackStart (checkIncludeSubclass);
+			vboxRadio.PackStart (vboxException);
+
+			vbox.PackStart (vboxRadio);
+
+			hboxCondition = new Xwt.HBox ();
+			hboxCondition.PackStart (new Xwt.Label (GettextCatalog.GetString ("Condition:")));
+			hboxCondition.PackStart (entryConditionalExpression, true);
+			hboxCondition.PackEnd (warningCondition);
+			hboxCondition.PackEnd (conditionalHitType);
+
+			vbox.PackStart (hboxCondition);
+
+			var hboxHitCount = new Xwt.HBox ();
+			hboxHitCount.PackStart (new Xwt.Label (GettextCatalog.GetString ("When hit break")));
+			hboxHitCount.PackStart (ignoreHitType);
+			hboxHitCount.PackStart (ignoreHitCount);
+
+			vbox.PackStart (hboxHitCount);
+
+			vbox.PackStart (checkPrintExpression);
+			var vboxExpression = new Xwt.VBox {
+				MarginLeft = 12
+			};
+			vboxExpression.PackStart (entryPrintExpression);
+			vboxExpression.PackStart (checkResumeExecution);
+
+			vbox.PackStart (vboxExpression);
+
+			Buttons.Add (new Xwt.DialogButton (Xwt.Command.Cancel));
+			Buttons.Add (buttonOk);
+
+			Content = vbox;
+
+			OnUpdateControls (null, null);
 		}
 	}
 }
