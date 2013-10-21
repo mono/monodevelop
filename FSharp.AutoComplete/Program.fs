@@ -30,13 +30,12 @@ type OutputMode =
 
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
-type internal RequestOptions(opts, file, src, help) =
+type internal RequestOptions(opts, file, src) =
   member x.Options : CheckOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
-  member x.HelpText : bool = help
   member x.WithSource(source) =
-    RequestOptions(opts, file, source, help)
+    RequestOptions(opts, file, source)
 
   override x.ToString() =
     sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
@@ -197,42 +196,25 @@ type internal IntelliSenseAgent() =
       agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
   /// Invokes dot-completion request and writes information to the standard output
-  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet> =
     let info = x.GetTypeCheckInfo(opts, time)
-    let decls =
-      Option.bind (fun (info: TypeCheckResults) ->
-        // Get the long identifier before the current location
-        // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-        let residue, longName =
-          lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+    Option.bind (fun (info: TypeCheckResults) ->
+      // Get the long identifier before the current location
+      // 'residue' is the part after the last dot and 'longName' is before
+      // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+      let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+      let residue, longName =
+        lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
-        // Get items & generate output
-        try
-          Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
-                |> Async.RunSynchronously)
-        with :? System.TimeoutException as e ->
-                   printfn "ERROR: GetDeclarations timed out\n<<EOF>>"
-                   None) info
-                   
-    match decls with
-    | Some decls ->
-      printfn "DATA: completion"
-      for d in decls.Items do Console.WriteLine(d.Name)
-      printfn "<<EOF>>"
-      if opts.HelpText then
-        printfn "DATA: helptext"
-        let cs =
-          [ for d in decls.Items do
-              yield TipFormatter.formatTip d.DescriptionText ]
-        Console.WriteLine(JsonConvert.SerializeObject(cs))
-        printfn "<<EOF>>"
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
-
+      // Get items & generate output
+      try
+        Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
+              |> Async.RunSynchronously)
+      with :? System.TimeoutException as e ->
+                 None) info
 
   /// Gets ToolTip for the specified location (and prints it to the output)
-  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) =
+  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
     match x.GetTypeCheckInfo(opts, time) with
     | Some(info) ->
       // Parsing - find the identifier around the current location
@@ -250,23 +232,13 @@ type internal IntelliSenseAgent() =
         | [] -> []
 
       match identIsland with
-      | [ "" ] ->
-        // There is no identifier at the current location
-        printfn "INFO: No identifier found at this location\n<<EOF>>"
+      | [ "" ] -> None
       | _ ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
-        match tip with
-        | DataTipText(elems)
-          when elems |> List.forall (function
-            DataTipElementNone -> true | _ -> false) ->
-              printfn "INFO: No tooltip information\n<<EOF>>"
-        | _ ->
-          Console.WriteLine("DATA: tooltip")
-          Console.WriteLine(TipFormatter.formatTip tip)
-          Console.WriteLine("<<EOF>>")
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+        Some (info.GetDataTipText(pos, lineStr, identIsland, identToken))
+        
+    | None -> None
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
@@ -496,6 +468,13 @@ module internal Main =
       if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
 
+    let getoptions file =
+      let text = String.concat "\n" state.Files.[file]
+      RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                     file,
+                     text)
+
+
     // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
     //             (Option.isSome state.Project)
     //             (Map.fold (fun ks k _ -> k::ks) [] state.Files)
@@ -519,11 +498,7 @@ module internal Main =
         let text = String.concat "\n" lines
         let file = Path.GetFullPath file
         if File.Exists file then
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text,
-                                    state.HelpText)
-          agent.TriggerParseRequest(opts, full)
+          agent.TriggerParseRequest(getoptions file, full)
           Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
         else
@@ -548,12 +523,7 @@ module internal Main =
     | Declarations file ->
         let file = Path.GetFullPath file
         if parsed file then
-          let text = String.concat "\n" state.Files.[file]
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text,
-                                    state.HelpText)
-          let decls = agent.GetDeclarations(opts)
+          let decls = agent.GetDeclarations(getoptions file)
           printfn "DATA: declarations"
           for tld in decls do
             let (s1, e1), (s2, e2) = tld.Declaration.Range
@@ -567,15 +537,41 @@ module internal Main =
     | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
         let file = Path.GetFullPath file
         if parsed file && posok file line col then
-          let text = String.concat "\n" state.Files.[file]
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text,
-                                    state.HelpText)
+          let opts = getoptions file
 
           match cmd with
-          | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
-          | ToolTip -> agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
+          | Completion ->
+              let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+
+              match decls with
+              | Some decls ->
+                printfn "DATA: completion"
+                for d in decls.Items do Console.WriteLine(d.Name)
+                printfn "<<EOF>>"
+                if state.HelpText then
+                  printfn "DATA: helptext"
+                  let cs =
+                    [ for d in decls.Items do
+                        yield TipFormatter.formatTip d.DescriptionText ]
+                  Console.WriteLine(JsonConvert.SerializeObject(cs))
+                  printfn "<<EOF>>"
+              | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+
+          | ToolTip ->
+              let tipopt = agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
+
+              match tipopt with
+              | None -> printfn "INFO: Could not fetch tooltip\n<<EOF>>"
+              | Some tip ->
+              match tip with
+              | DataTipText(elems) when elems |> List.forall (function
+                DataTipElementNone -> true | _ -> false) ->
+                printfn "INFO: No tooltip information\n<<EOF>>"
+              | _ ->
+                  Console.WriteLine("DATA: tooltip")
+                  Console.WriteLine(TipFormatter.formatTip tip)
+                  Console.WriteLine("<<EOF>>")
+          
           | FindDeclaration -> agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout)
         main state
 

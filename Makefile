@@ -17,6 +17,7 @@ bin/FSharp.CompilerBinding.dll: $(FSHARP_COMPILER_EDITOR)
 	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj)
 
 clean:
-	-rm -fr bin
+	-rm -fr FSharp.AutoComplete/bin
+	-rm -fr FSharp.CompilerBinding/bin
 
 autocomplete: bin/fsautocomplete.exe
