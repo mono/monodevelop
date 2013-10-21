@@ -166,7 +166,7 @@ the following to your `init.el` may be a good start:
 (add-hook 'fsharp-mode-hook
  (lambda ()
    (define-key fsharp-mode-map (kbd "M-RET") 'fsharp-eval-region)
-   (define-key fsharp-mode-map (kbd "C-SPC") 'completion-at-point)))
+   (define-key fsharp-mode-map (kbd "C-SPC") 'fsharp-ac/complete-at-point)))
 ```
 
 ## Contributing

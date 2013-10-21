@@ -1,7 +1,7 @@
 # Makefile for compiling and installing F# AutoComplete engine
 
 TARGETS = bin/FSharp.CompilerBinding.dll bin/fsautocomplete.exe
-FSHARP_COMPILER_EDITOR = monodevelop/MonoDevelop.FSharpBinding/packages/FSharp.Compiler.Editor.1.0.7/lib/net40/FSharp.Compiler.Editor.dll
+FSHARP_COMPILER_EDITOR = monodevelop/MonoDevelop.FSharpBinding/packages/FSharp.Compiler.Editor.1.0.8/lib/net40/FSharp.Compiler.Editor.dll
 
 
 all: $(TARGETS)
