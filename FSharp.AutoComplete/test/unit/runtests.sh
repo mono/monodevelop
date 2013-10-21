@@ -27,7 +27,7 @@ then
     popd
 fi
 
-xbuild ProjectLoadingFsUnit/ProjectParserTests.fsproj
+xbuild ProjectLoading/ProjectParserTests.fsproj
 mono ../../../lib/NUnit.Runners.2.6.1/tools/nunit-console-x86.exe \
-     ProjectLoadingFsUnit/bin/Debug/ProjectParserTests.dll
+     ProjectLoading/bin/Debug/ProjectParserTests.dll
 
