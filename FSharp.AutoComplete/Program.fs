@@ -498,7 +498,10 @@ module internal Main =
         let text = String.concat "\n" lines
         let file = Path.GetFullPath file
         if File.Exists file then
-          agent.TriggerParseRequest(getoptions file, full)
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.TriggerParseRequest(opts, full)
           Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
         else
