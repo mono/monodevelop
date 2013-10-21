@@ -301,13 +301,13 @@ namespace MonoDevelop.Debugger
 		void OnUpdateControls (object sender, EventArgs e)
 		{
 			// Check which radio is selected.
-			hboxFunction.Sensitive = stopOnFunction.Active;
-			hboxLineColumn.Sensitive = stopOnLocation.Active;
-			hboxLocation.Sensitive = stopOnLocation.Active;
-			hboxException.Sensitive = stopOnException.Active;
+			hboxFunction.Sensitive = stopOnFunction.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			hboxLineColumn.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
 			// FIXME: Add support for not doing base add
 			//checkIncludeSubclass.Sensitive = stopOnException.Active;
-			hboxCondition.Sensitive = !stopOnException.Active;
+			hboxCondition.Sensitive = !stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
 
 			// Check conditional
 			if (!String.IsNullOrEmpty (entryConditionalExpression.Text))
@@ -322,7 +322,7 @@ namespace MonoDevelop.Debugger
 				ignoreHitCount.Show ();
 
 			// Check printing an expression.
-			entryPrintExpression.Sensitive = checkPrintExpression.Active;
+			entryPrintExpression.Sensitive = checkPrintExpression.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Tracepoints);
 			checkResumeExecution.Sensitive = checkPrintExpression.Active;
 			checkResumeExecution.Active &= checkPrintExpression.Active;
 
