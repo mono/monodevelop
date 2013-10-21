@@ -119,6 +119,7 @@ namespace MonoDevelop.Components.MainToolbar
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
+			categories.Add (new SearchInSolutionSearchCategory ());
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 
