@@ -26,4 +26,14 @@
 		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertbefore="ViewSeparator3" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Pad id = "MonoDevelop.AssemblyBrowser.AssemblyBrowserPad"
+			icon = "md-class" 
+			_label = "Assemblies"
+			class = "MonoDevelop.AssemblyBrowser.AssemblyBrowserPad"
+			defaultPlacement = "Left"
+			defaultStatus="AutoHide"
+			defaultLayout="*"/>
+	</Extension>
+
 </ExtensionModel>

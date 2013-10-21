@@ -1260,7 +1260,7 @@ namespace MonoDevelop.Ide.Gui
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}
 				if (newContent == null) {
-					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
+					//	monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return;
 				}
 				

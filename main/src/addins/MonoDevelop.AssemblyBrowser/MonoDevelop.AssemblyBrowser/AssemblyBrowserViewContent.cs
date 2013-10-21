@@ -38,19 +38,10 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : AbstractViewContent, IOpenNamedElementHandler, INavigable
+	class AssemblyBrowserViewContent : AbstractViewContent, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
-		AssemblyBrowserWidget widget;
-		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
-		{
-			base.OnWorkbenchWindowChanged (e);
-			if (WorkbenchWindow != null) {
-				var toolbar = WorkbenchWindow.GetToolbar (this);
-				widget.SetToolbar (toolbar);
-			}
-		}
+		AssemblyBrowserViewContentWidget widget;
 
 		public override Gtk.Widget Control {
 			get {
@@ -58,7 +49,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		internal AssemblyBrowserWidget Widget {
+		internal AssemblyBrowserViewContentWidget Widget {
 			get {
 				return widget;
 			}
@@ -67,14 +58,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyBrowserViewContent()
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			widget = new AssemblyBrowserWidget ();
+			widget = new AssemblyBrowserViewContentWidget ();
 			IsDisposed = false;
 		}
 		
 		public override void Load (string fileName)
 		{
-			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			widget.AddReferenceByFileName (fileName);
 		}
 		
 		public override bool IsFile {
@@ -105,24 +94,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#endregion
 
-		#region IUrlHandler implementation 
-		
-		public void Open (INamedElement element)
-		{
-			var member = element as IUnresolvedEntity;
-			if (member == null) {
-				var entity = element as IMember;
-				if (entity != null)
-					member = entity.UnresolvedMember;
-			}
-			if (member == null)
-				return;
-			var url = AssemblyBrowserWidget.GetIdString (member); 
-			widget.Open (url);
-		}
-		
-		#endregion 
-
+		/*
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
 		public void FindReferences ()
 		{
@@ -161,7 +133,7 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 				}
 			}
-		}
+		}*/
 	}
 
 	class AssemblyBrowserNavigationPoint : NavigationPoint
@@ -177,7 +149,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
 			var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
-			assemblyBrowserView.FillWidget ();
+			//			assemblyBrowserView.FillWidget ();
 
 			return Ide.IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 		}

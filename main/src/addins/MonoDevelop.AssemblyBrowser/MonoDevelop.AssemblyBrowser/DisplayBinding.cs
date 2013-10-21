@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -73,7 +74,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			return GetViewContent ();
+			var abp = IdeApp.Workbench.GetPad<AssemblyBrowserPad> ();
+			abp.BringToFront ();
+			var pad = abp.Content as AssemblyBrowserPad;
+			pad.AssemblyBrowserWidget.AddReferenceByAssemblyName (fileName); 
+			return null;
+			// return GetViewContent ();
 		}
 	}
 }
