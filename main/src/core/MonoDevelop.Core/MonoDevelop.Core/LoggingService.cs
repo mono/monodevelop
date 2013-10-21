@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -194,9 +195,12 @@ namespace MonoDevelop.Core
 					data = stream.ToArray ();
 				}
 
+				var customData = new Hashtable ();
+				customData["SystemInformation"] = SystemInformation.GetTextDescription ();
+
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
-						raygunClient.Send (ex, tags, BuildInfo.Version);
+						raygunClient.Send (ex, tags, customData, BuildInfo.Version);
 					});
 				}
 
