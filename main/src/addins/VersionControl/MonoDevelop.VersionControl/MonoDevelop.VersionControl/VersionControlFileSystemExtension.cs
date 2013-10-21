@@ -10,7 +10,7 @@ using System;
 
 namespace MonoDevelop.VersionControl
 {
-	internal class VersionControlFileSystemExtension: FileSystemExtension
+	class VersionControlFileSystemExtension: FileSystemExtension
 	{
 		public override bool CanHandlePath (FilePath path, bool isDirectory)
 		{

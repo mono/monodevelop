@@ -34,7 +34,7 @@ using NGit.Treewalk.Filter;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	class FilteredStatus : NGit.Api.StatusCommand
+	sealed class FilteredStatus : NGit.Api.StatusCommand
 	{
 		WorkingTreeIterator iter;
 		IndexDiff diff;
@@ -76,7 +76,7 @@ namespace MonoDevelop.VersionControl.Git
 			return new NGit.Api.Status (diff);
 		}
 
-		public virtual ICollection<string> GetIgnoredNotInIndex ()
+		public ICollection<string> GetIgnoredNotInIndex ()
 		{
 			return diff.GetIgnoredNotInIndex ();
 		}

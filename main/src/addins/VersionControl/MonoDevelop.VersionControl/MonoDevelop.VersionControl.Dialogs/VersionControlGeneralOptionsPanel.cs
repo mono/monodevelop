@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlGeneralOptionsPanel : OptionsPanel
+	public sealed class VersionControlGeneralOptionsPanel : OptionsPanel
 	{
 		Xwt.CheckBox disableVersionControl;
 

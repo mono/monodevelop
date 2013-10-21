@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlPolicyPanel: PolicyOptionsPanel<VersionControlPolicy>
+	public sealed class VersionControlPolicyPanel: PolicyOptionsPanel<VersionControlPolicy>
 	{
 		CommitMessageStylePanelWidget widget;
 		CommitMessageFormat format;

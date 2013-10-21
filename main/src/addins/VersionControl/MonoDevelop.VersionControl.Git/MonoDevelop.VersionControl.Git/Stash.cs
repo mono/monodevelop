@@ -38,7 +38,7 @@ using NGit.Api;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class Stash
+	public sealed class Stash
 	{
 		internal string CommitId { get; private set; }
 		internal string FullLine { get; private set; }

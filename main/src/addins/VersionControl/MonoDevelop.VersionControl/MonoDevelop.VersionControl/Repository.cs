@@ -29,12 +29,12 @@ namespace MonoDevelop.VersionControl
 		
 		public event EventHandler NameChanged;
 		
-		public Repository ()
+		protected Repository ()
 		{
 			infoCache = new VersionInfoCache (this);
 		}
 		
-		public Repository (VersionControlSystem vcs): this ()
+		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
 		}

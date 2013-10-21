@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultMergeViewHandler : IMergeViewHandler
+	sealed class DefaultMergeViewHandler : IMergeViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{

@@ -3,7 +3,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	internal class UpdateCommand
+	static class UpdateCommand
 	{
 		public static bool Update (VersionControlItemList items, bool test)
 		{
@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		private class UpdateWorker : Task {
+		class UpdateWorker : Task {
 			VersionControlItemList items;
 						
 			public UpdateWorker (VersionControlItemList items) {

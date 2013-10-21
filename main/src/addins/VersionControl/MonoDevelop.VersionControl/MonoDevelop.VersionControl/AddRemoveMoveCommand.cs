@@ -4,7 +4,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl 
 {
-	internal class AddCommand
+	sealed class AddCommand
 	{
 		public static bool Add (VersionControlItemList items, bool test)
 		{
@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		private class AddWorker : Task {
+		class AddWorker : Task {
 			VersionControlItemList items;
 						
 			public AddWorker (VersionControlItemList items) 
@@ -92,7 +92,7 @@ namespace MonoDevelop.VersionControl
 //		
 //	}
 	
-	internal class RemoveCommand
+	sealed class RemoveCommand
 	{
 		public static bool Remove (VersionControlItemList items, bool test)
 		{
@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		private class RemoveWorker : Task {
+		class RemoveWorker : Task {
 			VersionControlItemList items;
 						
 			public RemoveWorker (VersionControlItemList items) {

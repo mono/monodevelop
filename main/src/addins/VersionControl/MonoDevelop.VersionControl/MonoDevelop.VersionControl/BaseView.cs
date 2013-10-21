@@ -4,11 +4,11 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl
 {
-	public abstract class BaseView : AbstractBaseViewContent, IViewContent
+	abstract class BaseView : AbstractBaseViewContent, IViewContent
 	{
 		string name;
 		
-		public BaseView (string name)
+		protected BaseView (string name)
 		{
 			this.name = name;
 		}

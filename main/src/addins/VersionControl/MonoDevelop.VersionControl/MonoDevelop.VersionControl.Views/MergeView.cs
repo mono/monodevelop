@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class MergeView : BaseView, IMergeView
+	sealed class MergeView : BaseView, IMergeView
 	{
 		VersionControlDocumentInfo info;
 		MergeWidget widget;

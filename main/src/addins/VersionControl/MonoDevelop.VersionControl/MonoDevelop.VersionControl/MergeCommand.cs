@@ -32,7 +32,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	public class MergeCommand
+	static class MergeCommand
 	{
 		internal static readonly string MergeViewHandlers = "/MonoDevelop/VersionControl/MergeViewHandler";
 		
@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 				&& item.VersionInfo.IsVersioned
 				&& AddinManager.GetExtensionObjects<IMergeViewHandler> (MergeViewHandlers).Any (h => h.CanHandle (item, null));
 		}
-		
+
 		public static bool Show (VersionControlItemList items, bool test)
 		{
 			if (test)

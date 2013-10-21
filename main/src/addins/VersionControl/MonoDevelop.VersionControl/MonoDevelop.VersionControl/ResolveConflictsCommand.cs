@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl
 {
-	public class ResolveConflictsCommand
+	static class ResolveConflictsCommand
 	{
 		public static bool ResolveConflicts (VersionControlItemList list, bool test)
 		{
