@@ -70,10 +70,10 @@ namespace MonoDevelop.SourceEditor
 		ScrolledWindow sw;
 //		PinWindow pinWindow;
 //		TreeIter currentPinIter;
-
+		
 		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch): base (Gtk.WindowType.Toplevel)
 		{
-			this.TypeHint = WindowTypeHint.Tooltip;
+			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
