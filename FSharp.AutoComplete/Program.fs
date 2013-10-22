@@ -213,10 +213,7 @@ type internal IntelliSenseAgent() =
       with :? System.TimeoutException as e ->
                  None) info
 
-  /// Gets ToolTip for the specified location (and prints it to the output)
-  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
+  member private x.FindLongIdents(lineStr, column) =
       // Parsing - find the identifier around the current location
       // (we look for full identifier in the backward direction, but only
       // for a short identifier forward - this means that when you hover
@@ -233,47 +230,32 @@ type internal IntelliSenseAgent() =
 
       match identIsland with
       | [ "" ] -> None
-      | _ ->
+      | _ -> Some identIsland
+
+  /// Gets ToolTip for the specified location (and prints it to the output)
+  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
+
+    Option.bind (fun identIsland ->
+      Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        Some (info.GetDataTipText(pos, lineStr, identIsland, identToken))
-        
-    | None -> None
+        info.GetDataTipText(pos, lineStr, identIsland, identToken)
+        )  (x.GetTypeCheckInfo(opts, time))
+      ) (x.FindLongIdents(lineStr, column))
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
   member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
-      // Parsing - find the identifier around the current location
-      // (we look for full identifier in the backward direction, but only
-      // for a short identifier forward - this means that when you hover
-      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-      let lookBack = Parsing.createBackStringReader lineStr column
-      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
 
-      let identIsland =
-        match List.rev backIdent with
-        | last::prev -> (last + nextIdent)::prev |> List.rev
-        | [] -> []
-
-      match identIsland with
-      | [ "" ] ->
-        // There is no identifier at the current location
-        printfn "ERROR: No identifier found at this location\n<<EOF>>"
-      | _ ->
+    Option.bind (fun identIsland ->
+      Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        // Get items & generate output
-        // TODO: Need this first because of VS debug info coming out
-        Console.WriteLine("DATA: finddecl")
-        match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
-        | DeclFound ((line,col),file) ->
-            printfn "%s:%d:%d\n<<EOF>>" file line col
-        | DeclNotFound _ -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+        info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true)
+        )  (x.GetTypeCheckInfo(opts, time))
+      ) (x.FindLongIdents(lineStr, column))
+
+
 
 // --------------------------------------------------------------------------------------
 // Utilities for parsing & processing command line input
@@ -569,13 +551,21 @@ module internal Main =
               match tip with
               | DataTipText(elems) when elems |> List.forall (function
                 DataTipElementNone -> true | _ -> false) ->
-                printfn "INFO: No tooltip information\n<<EOF>>"
+                printfn "ERROR: No tooltip information\n<<EOF>>"
               | _ ->
                   Console.WriteLine("DATA: tooltip")
                   Console.WriteLine(TipFormatter.formatTip tip)
                   Console.WriteLine("<<EOF>>")
           
-          | FindDeclaration -> agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout)
+          | FindDeclaration ->
+
+            match agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout) with
+            | None
+            | Some (DeclNotFound _) -> printfn "ERROR: Could not get find declaration\n<<EOF>>"
+            | Some (DeclFound ((line,col),file)) ->
+              
+              printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
+            
         main state
 
     | Help ->
