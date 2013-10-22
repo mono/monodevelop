@@ -195,10 +195,6 @@ namespace MonoDevelop.Debugger
 
 		void SetInitialData ()
 		{
-			// FIXME: Add support for not doing base add
-			checkIncludeSubclass.Active = true;
-			checkIncludeSubclass.Sensitive = false;
-
 			if (be != null) {
 				stopOnException.Sensitive = false;
 				stopOnFunction.Sensitive = false;
@@ -271,7 +267,7 @@ namespace MonoDevelop.Debugger
 				else if (stopOnLocation.Active)
 					be = new Breakpoint (entryLocationFile.Text, Int32.Parse (entryLocationLine.Text), Int32.Parse (entryLocationColumn.Text));
 				else if (stopOnException.Active)
-					be = new Catchpoint (entryExceptionType.Text);
+					be = new Catchpoint (entryExceptionType.Text, checkIncludeSubclass.Active);
 				else
 					return;
 			}
@@ -305,8 +301,7 @@ namespace MonoDevelop.Debugger
 			hboxLineColumn.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
-			// FIXME: Add support for not doing base add
-			//checkIncludeSubclass.Sensitive = stopOnException.Active;
+			checkIncludeSubclass.Sensitive = stopOnException.Active;
 			hboxCondition.Sensitive = !stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
 
 			// Check conditional
