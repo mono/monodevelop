@@ -77,7 +77,9 @@ namespace Mono.TextEditor.Vi
 			if (textArea.Allocation != allocation)
 				textArea.SizeAllocate (allocation);
 			SetSizeRequest (allocation.Width, (int)editor.LineHeight);
-			editor.MoveTopLevelWidget (this, 0, allocation.Height);
+			var pos = ((TextEditor.EditorContainerChild)editor [this]);
+			if (pos.X != 0 && pos.Y != allocation.Height) 
+				editor.MoveTopLevelWidget (this, 0, allocation.Height);
 		}
 
 		public bool ShowCaret {
