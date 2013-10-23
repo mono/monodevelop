@@ -27,7 +27,6 @@ type OutputMode =
   | Json
   | Text
 
-
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
 type internal RequestOptions(opts, file, src) =
@@ -240,7 +239,7 @@ type internal IntelliSenseAgent() =
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         info.GetDataTipText(pos, lineStr, identIsland, identToken)
-        )  (x.GetTypeCheckInfo(opts, time))
+        ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 
   /// Finds the point of declaration of the symbol at pos
@@ -252,7 +251,7 @@ type internal IntelliSenseAgent() =
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true)
-        )  (x.GetTypeCheckInfo(opts, time))
+        ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 
 
@@ -329,6 +328,7 @@ module internal CommandInput =
     | Error of string
     | Project of string
     | HelpText of bool
+    | OutputMode of OutputMode
     | Help
     | Quit
 
@@ -357,6 +357,15 @@ module internal CommandInput =
                 (parser { let! _ = string "off"
                           return false })
     return HelpText mode }
+
+  /// Parse 'outputmode' command
+  let outputmode = parser {
+    let! _ = string "outputmode "
+    let! mode = (parser { let! _ = string "json"
+                          return Json }) <|>
+                (parser { let! _ = string "text"
+                          return Text })
+    return OutputMode mode }
 
   /// Parse 'project' command
   let project = parser {
@@ -412,7 +421,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = errors <|> helptext <|> outputmode <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -425,13 +434,14 @@ type internal State =
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
     HelpText : bool
+    OutputMode : OutputMode
   }
 
 /// Contains main loop of the application
 module internal Main =
   open CommandInput
 
-  let initialState = { Files = Map.empty; Project = None; HelpText = false }
+  let initialState = { Files = Map.empty; Project = None; HelpText = false; OutputMode = Text }
 
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
@@ -471,8 +481,9 @@ module internal Main =
         Console.WriteLine("<<EOF>>")
         main state
 
-    | HelpText b ->
-        main { state with HelpText = b }
+    | HelpText b -> main { state with HelpText = b }
+
+    | OutputMode m -> main { state with OutputMode = m }
 
     | Parse(file,full) ->
         // Trigger parse request for a particular file
@@ -530,15 +541,25 @@ module internal Main =
 
               match decls with
               | Some decls ->
-                printfn "DATA: completion"
-                for d in decls.Items do Console.WriteLine(d.Name)
-                printfn "<<EOF>>"
-                if state.HelpText then
-                  printfn "DATA: helptext"
-                  let cs =
-                    [ for d in decls.Items do
-                        yield TipFormatter.formatTip d.DescriptionText ]
-                  Console.WriteLine(JsonConvert.SerializeObject(cs))
+                  match state.OutputMode with
+                  | Text ->
+                      printfn "DATA: completion"
+                      for d in decls.Items do Console.WriteLine(d.Name)
+                      printfn "<<EOF>>"
+
+                  | Json ->
+                      
+                      let cs =
+                        [ for d in decls.Items do
+                            yield TipFormatter.formatTip d.DescriptionText ]
+                      let payload = JsonConvert.SerializeObject(cs)
+
+                      Map.add "kind" "data"
+                      |> Map.add "data" "completion"
+                      |> Map.add "payload" payload
+
+                      printfn "DATA: helptext"
+
                   printfn "<<EOF>>"
               | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
