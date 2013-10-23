@@ -5,7 +5,7 @@ namespace FSharp.InteractiveAutocomplete
 
 open System
 open System.IO
-open System.Collections.Generic
+//open System.Collections.Generic
 
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -52,11 +52,29 @@ type internal IntelliSenseAgentMessage =
 
 /// Used to marshal completion candidates
 /// before serializing to JSON
-type Candidate =
+// type Candidate =
+//   {
+//     Name: string
+//     Help: string
+//   }
+
+type ResponseMsg<'T> =
   {
-    Name: string
-    Help: string
+    Kind: string
+    Data: 'T
   }
+
+type CompletionPayload =
+  {
+    Completions: List<String>
+    HelpText: Map<String,String>
+  }
+
+type HelpTextPayload =
+  {
+    HelpText: Map<String,String>
+  }
+
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
@@ -285,10 +303,8 @@ module internal CommandInput =
       - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project
-    helptext {on,off}
-      - toggles whether type signatures are sent after each
-        completion request. default is 'off'"
-
+    "
+    
   let outputText = @"
     Output format
     =============
@@ -327,7 +343,6 @@ module internal CommandInput =
     | Parse of string * bool
     | Error of string
     | Project of string
-    | HelpText of bool
     | OutputMode of OutputMode
     | Help
     | Quit
@@ -348,15 +363,6 @@ module internal CommandInput =
 
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
-
-  /// Parse helptext' command
-  let helptext = parser {
-    let! _ = string "helptext "
-    let! mode = (parser { let! _ = string "on"
-                          return true }) <|>
-                (parser { let! _ = string "off"
-                          return false })
-    return HelpText mode }
 
   /// Parse 'outputmode' command
   let outputmode = parser {
@@ -421,7 +427,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> helptext <|> outputmode <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = errors <|> outputmode <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -433,7 +439,6 @@ type internal State =
   {
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
-    HelpText : bool
     OutputMode : OutputMode
   }
 
@@ -441,7 +446,7 @@ type internal State =
 module internal Main =
   open CommandInput
 
-  let initialState = { Files = Map.empty; Project = None; HelpText = false; OutputMode = Text }
+  let initialState = { Files = Map.empty; Project = None; OutputMode = Text }
 
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
@@ -480,8 +485,6 @@ module internal Main =
                     (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
         Console.WriteLine("<<EOF>>")
         main state
-
-    | HelpText b -> main { state with HelpText = b }
 
     | OutputMode m -> main { state with OutputMode = m }
 
@@ -548,19 +551,37 @@ module internal Main =
                       printfn "<<EOF>>"
 
                   | Json ->
+
+                      let ds = List.sortBy (fun (d: Declaration) -> d.Name)
+                                 [ for d in decls.Items do yield d ]
+                      let helptext =
+                        match ds with
+                        | [] -> Map.empty
+                        | d::_ -> let tip = TipFormatter.formatTip d.DescriptionText
+                                  Map.add d.Name tip Map.empty
+                      {
+                        Kind = "completion"
+                        Data =
+                          {
+                            Completions = [ for d in ds do yield d.Name ]
+                            HelpText = helptext
+                          }
+                      }
+                      |> JsonConvert.SerializeObject
+                      |> Console.WriteLine
+
+                      {
+                        Kind = "helptext"
+                        Data =
+                          {
+                            HelpText = [ for d in decls.Items do
+                                           yield d.Name, TipFormatter.formatTip d.DescriptionText ]
+                                       |> Map.ofList
+                          }
+                      }
+                      |> JsonConvert.SerializeObject
+                      |> Console.WriteLine
                       
-                      let cs =
-                        [ for d in decls.Items do
-                            yield TipFormatter.formatTip d.DescriptionText ]
-                      let payload = JsonConvert.SerializeObject(cs)
-
-                      Map.add "kind" "data"
-                      |> Map.add "data" "completion"
-                      |> Map.add "payload" payload
-
-                      printfn "DATA: helptext"
-
-                  printfn "<<EOF>>"
               | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
           | ToolTip ->
