@@ -78,7 +78,7 @@ namespace Mono.TextEditor.Vi
 				textArea.SizeAllocate (allocation);
 			SetSizeRequest (allocation.Width, (int)editor.LineHeight);
 			var pos = ((TextEditor.EditorContainerChild)editor [this]);
-			if (pos.X != 0 && pos.Y != allocation.Height) 
+			if (pos.X != 0 || pos.Y != allocation.Height) 
 				editor.MoveTopLevelWidget (this, 0, allocation.Height);
 		}
 
