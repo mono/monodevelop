@@ -686,7 +686,9 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 
 		public override bool IsModalDialogRunning ()
 		{
-			return GtkQuartz.GetToplevels ().Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal));
+			var toplevels = GtkQuartz.GetToplevels ();
+
+			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) && !t.Key.DebugDescription.StartsWith("<NSStatusBarWindow"));
 		}
 	}
 }
