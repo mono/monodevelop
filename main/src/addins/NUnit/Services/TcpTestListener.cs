@@ -38,10 +38,14 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit.External
 {
-	class TcpTestListener
+	class TcpTestListener : IDisposable
 	{
 		string testSuiteName;
 		string rootTestName;
+
+		public bool HasReceivedConnection {
+			get; private set;
+		}
 
 		List<Tuple<string,UnitTestResult>> suiteStack = new List<Tuple<string, UnitTestResult>> ();
 		IRemoteEventListener listener;
@@ -118,6 +122,11 @@ namespace MonoDevelop.NUnit.External
 					TcpListener.Stop ();
 				}
 			});
+		}
+
+		public void Dispose ()
+		{
+			TcpListener.Stop ();
 		}
 
 		void UpdateTestSuiteStatus (string name, bool isTest)
