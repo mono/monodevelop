@@ -313,9 +313,6 @@ namespace MonoDevelop.CSharp
 			if (!compilerParameters.DocumentationFile.IsNullOrEmpty) 
 				AppendQuoted (sb, "/doc:", compilerParameters.DocumentationFile);
 			
-			if (!string.IsNullOrEmpty (compilerParameters.AdditionalArguments)) 
-				sb.AppendLine (compilerParameters.AdditionalArguments);
-			
 			if (!string.IsNullOrEmpty (compilerParameters.NoWarnings)) 
 				AppendQuoted (sb, "/nowarn:", compilerParameters.NoWarnings);
 
