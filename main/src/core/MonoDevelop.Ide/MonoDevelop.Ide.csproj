@@ -951,83 +951,164 @@
     <EmbeddedResource Include="icons\status-building-1-14.png">
       <LogicalName>status-building-1-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-building-1-14%402x.png">
+      <LogicalName>status-building-1-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-building-2-14.png">
       <LogicalName>status-building-2-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-building-2-14%402x.png">
+      <LogicalName>status-building-2-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-building-3-14.png">
       <LogicalName>status-building-3-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-building-3-14%402x.png">
+      <LogicalName>status-building-3-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-building-4-14.png">
       <LogicalName>status-building-4-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-building-4-14%402x.png">
+      <LogicalName>status-building-4-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-building-5-14.png">
       <LogicalName>status-building-5-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-building-5-14%402x.png">
+      <LogicalName>status-building-5-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-searching-1-14.png">
       <LogicalName>status-searching-1-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-searching-1-14%402x.png">
+      <LogicalName>status-searching-1-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-searching-2-14.png">
       <LogicalName>status-searching-2-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-searching-2-14%402x.png">
+      <LogicalName>status-searching-2-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-searching-3-14.png">
       <LogicalName>status-searching-3-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-searching-3-14%402x.png">
+      <LogicalName>status-searching-3-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-searching-4-14.png">
       <LogicalName>status-searching-4-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-searching-4-14%402x.png">
+      <LogicalName>status-searching-4-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-1-14.png">
       <LogicalName>status-pushing-1-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-1-14%402x.png">
+      <LogicalName>status-pushing-1-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-2-14.png">
       <LogicalName>status-pushing-2-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-2-14%402x.png">
+      <LogicalName>status-pushing-2-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-3-14.png">
       <LogicalName>status-pushing-3-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-3-14%402x.png">
+      <LogicalName>status-pushing-3-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-4-14.png">
       <LogicalName>status-pushing-4-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-4-14%402x.png">
+      <LogicalName>status-pushing-4-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-5-14.png">
       <LogicalName>status-pushing-5-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-5-14%402x.png">
+      <LogicalName>status-pushing-5-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pushing-6-14.png">
       <LogicalName>status-pushing-6-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pushing-6-14%402x.png">
+      <LogicalName>status-pushing-6-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-1-14.png">
       <LogicalName>status-pulling-1-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-1-14%402x.png">
+      <LogicalName>status-pulling-1-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-2-14.png">
       <LogicalName>status-pulling-2-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-2-14%402x.png">
+      <LogicalName>status-pulling-2-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-3-14.png">
       <LogicalName>status-pulling-3-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-3-14%402x.png">
+      <LogicalName>status-pulling-3-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-4-14.png">
       <LogicalName>status-pulling-4-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-4-14%402x.png">
+      <LogicalName>status-pulling-4-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-5-14.png">
       <LogicalName>status-pulling-5-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-5-14%402x.png">
+      <LogicalName>status-pulling-5-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-pulling-6-14.png">
       <LogicalName>status-pulling-6-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-pulling-6-14%402x.png">
+      <LogicalName>status-pulling-6-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-1-14.png">
       <LogicalName>status-opening-1-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-1-14%402x.png">
+      <LogicalName>status-opening-1-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-2-14.png">
       <LogicalName>status-opening-2-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-2-14%402x.png">
+      <LogicalName>status-opening-2-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-3-14.png">
       <LogicalName>status-opening-3-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-3-14%402x.png">
+      <LogicalName>status-opening-3-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-4-14.png">
       <LogicalName>status-opening-4-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-4-14%402x.png">
+      <LogicalName>status-opening-4-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-5-14.png">
       <LogicalName>status-opening-5-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-5-14%402x.png">
+      <LogicalName>status-opening-5-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-opening-6-14.png">
       <LogicalName>status-opening-6-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-opening-6-14%402x.png">
+      <LogicalName>status-opening-6-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16.png">
       <LogicalName>error-16.png</LogicalName>
@@ -1070,6 +1151,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-success-14.png">
       <LogicalName>status-success-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-success-14%402x.png">
+      <LogicalName>status-success-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-warning-14.png">
       <LogicalName>status-warning-14.png</LogicalName>
@@ -1137,20 +1221,38 @@
     <EmbeddedResource Include="icons\status-connecting-1-14.png">
       <LogicalName>status-connecting-1-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-1-14%402x.png">
+      <LogicalName>status-connecting-1-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-2-14.png">
       <LogicalName>status-connecting-2-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-2-14%402x.png">
+      <LogicalName>status-connecting-2-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-3-14.png">
       <LogicalName>status-connecting-3-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-3-14%402x.png">
+      <LogicalName>status-connecting-3-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-4-14.png">
       <LogicalName>status-connecting-4-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-4-14%402x.png">
+      <LogicalName>status-connecting-4-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-5-14.png">
       <LogicalName>status-connecting-5-14.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-5-14%402x.png">
+      <LogicalName>status-connecting-5-14@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\status-connecting-6-14.png">
       <LogicalName>status-connecting-6-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-connecting-6-14%402x.png">
+      <LogicalName>status-connecting-6-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
