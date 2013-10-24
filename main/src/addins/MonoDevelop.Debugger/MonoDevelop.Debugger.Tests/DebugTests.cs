@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using NUnit.Framework;
 using UnitTests;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
@@ -38,10 +37,10 @@ namespace MonoDevelop.Debugger.Tests
 {
 	public abstract class DebugTests: TestBase
 	{
-		string eid;
+		readonly string eid;
 		DebuggerEngine engine;
 		
-		public DebugTests (string engineId)
+		protected DebugTests (string engineId)
 		{
 			eid = engineId;
 		}
@@ -60,23 +59,23 @@ namespace MonoDevelop.Debugger.Tests
 		
 		protected DebuggerSession Start (string test)
 		{
-			DotNetExecutionCommand cmd = new DotNetExecutionCommand ();
+			var cmd = new DotNetExecutionCommand ();
 			cmd.Command = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "MonoDevelop.Debugger.Tests.TestApp.exe");
 			cmd.Arguments = test;
 			
 			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
 			DebuggerSession session = engine.CreateSession ();
-			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
+			var ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
 			FilePath path = Util.TestsRootDir;
 			path = path.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;
 			TextFile file = TextFile.ReadFile (path);
-			int i = file.Text.IndexOf ("void " + test);
+			int i = file.Text.IndexOf ("void " + test, StringComparison.Ordinal);
 			if (i == -1)
 				throw new Exception ("Test not found: " + test);
-			i = file.Text.IndexOf ("/*break*/", i);
+			i = file.Text.IndexOf ("/*break*/", i, StringComparison.Ordinal);
 			if (i == -1)
 				throw new Exception ("Break marker not found: " + test);
 			int line, col;
@@ -84,11 +83,9 @@ namespace MonoDevelop.Debugger.Tests
 			Breakpoint bp = session.Breakpoints.Add (path, line);
 			bp.Enabled = true;
 			
-			ManualResetEvent done = new ManualResetEvent (false);
+			var done = new ManualResetEvent (false);
 			
-			session.OutputWriter = delegate (bool isStderr, string text) {
-				Console.WriteLine ("PROC:" + text);
-			};
+			session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
 			
 			session.TargetHitBreakpoint += delegate {
 				done.Set ();
