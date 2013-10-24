@@ -465,6 +465,7 @@ namespace MonoDevelop.NUnit
 			LocalConsole cons = new LocalConsole ();
 
 			try {
+				MonoDevelop.NUnit.External.TcpTestListener tcpListener = null;
 				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 				if (!string.IsNullOrEmpty (cmd.Arguments))
@@ -477,20 +478,28 @@ namespace MonoDevelop.NUnit
 				else if (!string.IsNullOrEmpty (suiteName))
 					cmd.Arguments += " -run=" + suiteName;
 				if (automaticUpdates) {
-					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
+					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
-				var p = testContext.ExecutionContext.Execute (cmd, cons);
 
-				testContext.Monitor.CancelRequested += p.Cancel;
-				if (testContext.Monitor.IsCancelRequested)
-					p.Cancel ();
-				p.WaitForCompleted ();
-				
-				if (new FileInfo (outFile).Length == 0)
-					throw new Exception ("Command failed");
+				// Note that we always dispose the tcp listener as we don't want it listening
+				// forever if the test runner does not try to connect to it
+				using (tcpListener) {
+					var p = testContext.ExecutionContext.Execute (cmd, cons);
 
-				if (automaticUpdates) {
+					testContext.Monitor.CancelRequested += p.Cancel;
+					if (testContext.Monitor.IsCancelRequested)
+						p.Cancel ();
+					p.WaitForCompleted ();
+					
+					if (new FileInfo (outFile).Length == 0)
+						throw new Exception ("Command failed");
+				}
+
+				// mdtool.exe does not necessarily guarantee we get automatic updates. It just guarantees
+				// that if guiunit is being used then it will give us updates. If you have a regular test
+				// assembly compiled against nunit.framework.dll 
+				if (automaticUpdates && tcpListener.HasReceivedConnection) {
 					if (testName != null)
 						return localMonitor.SingleTestResult;
 					return test.GetLastResult ();
