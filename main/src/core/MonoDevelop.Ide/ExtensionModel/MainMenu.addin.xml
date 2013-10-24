@@ -24,10 +24,12 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
-		<SeparatorItem id = "SaveSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
+		<Condition id="Platform" value="!windows">
+			<SeparatorItem id = "SaveSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
+		</Condition>
 		<SeparatorItem id = "RecentSeparator" />
 		<ItemSet id = "RecentFiles" _label = "Recent _Files">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
