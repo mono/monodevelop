@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 using System.Linq;
 using Mono.Addins.Description;
+using System.Diagnostics;
 
 namespace MonoDevelop.Tests.TestRunner
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.Tests.TestRunner
 			var args = new List<string> (arguments);
 			bool useGuiUnit = false;
 			foreach (var ar in args) {
-				if ((ar.EndsWith (".dll", StringComparison.Ordinal) || ar.EndsWith (".exe", StringComparison.Ordinal)) && File.Exists (ar)) {
+				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
 					try {
 						var path = Path.GetFullPath (ar);
 						var asm = Assembly.LoadFrom (path);
