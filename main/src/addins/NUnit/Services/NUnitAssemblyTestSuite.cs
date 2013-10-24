@@ -473,10 +473,8 @@ namespace MonoDevelop.NUnit
 				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
 
 				bool automaticUpdates = cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests"));
-				if (!string.IsNullOrEmpty (testName))
-					cmd.Arguments += " -run=" + suiteName + "." + testName;
-				else if (!string.IsNullOrEmpty (suiteName))
-					cmd.Arguments += " -run=" + suiteName;
+				if (!string.IsNullOrEmpty(pathName))
+					cmd.Arguments += " -run=" + pathName;
 				if (automaticUpdates) {
 					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
