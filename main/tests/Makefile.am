@@ -19,6 +19,9 @@ TEST_ASSEMBLIES_MAC = \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Subversion.Tests.dll \
 	$(TEST_DIR)/MacPlatform.Tests.dll
 
+TEST_ASSEMBLIES_WINDOWS = \
+	$(TEST_DIR)/VersionControl.Subversion.Win32.Tests.dll
+
 TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/MonoDevelop.VersionControl.Git.Tests.dll \
 	$(TEST_DIR)/UnitTests.dll \
@@ -34,6 +37,10 @@ TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
 if ENABLE_MACPLATFORM
 ALL_CSPROJ += $(TEST_PROJECTS_MAC)
 TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_MAC)
+endif
+
+if ENABLE_WINDOWSPLATFORM
+TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
 test:
