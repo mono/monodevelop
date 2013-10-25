@@ -75,7 +75,6 @@ type HelpTextPayload =
     HelpText: Map<String,String>
   }
 
-
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
 
@@ -471,6 +470,14 @@ module internal Main =
                      file,
                      text)
 
+    let printMsg ty s =
+      match state.OutputMode with
+      | Text ->
+        printfn "%s: %s\n<<EOF>>" ty s
+      | Json ->
+        { Kind = ty; Data = s }
+        |> JsonConvert.SerializeObject
+        |> Console.WriteLine
 
     // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
     //             (Option.isSome state.Project)
@@ -479,11 +486,17 @@ module internal Main =
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
-        printfn "DATA: errors"
-        for e in errs do
-          printfn "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
-                    (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
-        Console.WriteLine("<<EOF>>")
+        let errstrings =
+          [ for e in errs do
+              yield sprintf "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
+                         (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message ]
+        match state.OutputMode with
+        | Text ->
+          printfn "DATA: errors\n%s\n<<EOF>>" (String.concat "\n" errstrings)
+        | Json ->
+          { Kind = "errors"; Data = errs }
+          |> JsonConvert.SerializeObject |> Console.WriteLine
+
         main state
 
     | OutputMode m -> main { state with OutputMode = m }
@@ -498,39 +511,48 @@ module internal Main =
                                     file,
                                     text)
           agent.TriggerParseRequest(opts, full)
-          Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
+          printMsg "INFO" "Background parsing started"
           main { state with Files = Map.add file lines state.Files }
         else
-          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
+          printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state
 
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
           match ProjectParser.load file with
-          | Some p -> Console.WriteLine("DATA: project")
-                      for f in ProjectParser.getFiles p do
-                        Console.WriteLine(IO.Path.Combine(ProjectParser.getDirectory p, f))
-                      Console.WriteLine("<<EOF>>")
-                      main { state with Project = Some p }
-          | None   -> printfn "ERROR: Project file '%s' is invalid\n<<EOF>>" file
+          | Some p -> 
+              let files =
+                [ for f in ProjectParser.getFiles p do
+                    yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
+              match state.OutputMode with
+              | Text ->
+                  printfn "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files)
+              | Json ->
+                  { Kind = "project"; Data = files }
+                  |> JsonConvert.SerializeObject |> Console.WriteLine
+              main { state with Project = Some p }
+          | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
                       main state
         else
-          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
+          printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state
 
     | Declarations file ->
         let file = Path.GetFullPath file
         if parsed file then
           let decls = agent.GetDeclarations(getoptions file)
-          printfn "DATA: declarations"
-          for tld in decls do
-            let (s1, e1), (s2, e2) = tld.Declaration.Range
-            printfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
-            for d in tld.Nested do
-              let (s1, e1), (s2, e2) = d.Range
-              printfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
-          printfn "<<EOF>>"
+          let declstrings =
+            [ for tld in decls do
+                let (s1, e1), (s2, e2) = tld.Declaration.Range
+                yield sprintf "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+                for d in tld.Nested do
+                  let (s1, e1), (s2, e2) = d.Range
+                  yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
+          match state.OutputMode with
+          | Text -> printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
+          | Json -> { Kind = "declarations"; Data = decls }
+                    |> JsonConvert.SerializeObject |> Console.WriteLine
         main state
 
     | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
@@ -572,38 +594,41 @@ module internal Main =
 
                       {
                         Kind = "helptext"
-                        Data =
-                          {
-                            HelpText = [ for d in decls.Items do
-                                           yield d.Name, TipFormatter.formatTip d.DescriptionText ]
-                                       |> Map.ofList
-                          }
+                        Data = [ for d in decls.Items do
+                                   yield d.Name, TipFormatter.formatTip d.DescriptionText ]
+                               |> Map.ofList
                       }
                       |> JsonConvert.SerializeObject
                       |> Console.WriteLine
                       
-              | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+              | None -> 
+                  printMsg "ERROR" "Could not get type information"
 
           | ToolTip ->
               let tipopt = agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
 
               match tipopt with
-              | None -> printfn "INFO: Could not fetch tooltip\n<<EOF>>"
+              | None -> printMsg "INFO" "No tooltip information"
               | Some tip ->
               match tip with
               | DataTipText(elems) when elems |> List.forall (function
                 DataTipElementNone -> true | _ -> false) ->
-                printfn "ERROR: No tooltip information\n<<EOF>>"
+                printMsg "INFO" "No tooltip information"
               | _ ->
-                  Console.WriteLine("DATA: tooltip")
-                  Console.WriteLine(TipFormatter.formatTip tip)
-                  Console.WriteLine("<<EOF>>")
+                  match state.OutputMode with
+                  | Text ->
+                    Console.WriteLine("DATA: tooltip")
+                    Console.WriteLine(TipFormatter.formatTip tip)
+                    Console.WriteLine("<<EOF>>")
+                  | Json -> { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
+                            |> JsonConvert.SerializeObject
+                            |> Console.WriteLine
           
           | FindDeclaration ->
 
             match agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout) with
             | None
-            | Some (DeclNotFound _) -> printfn "ERROR: Could not get find declaration\n<<EOF>>"
+            | Some (DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
             | Some (DeclFound ((line,col),file)) ->
               
               printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
