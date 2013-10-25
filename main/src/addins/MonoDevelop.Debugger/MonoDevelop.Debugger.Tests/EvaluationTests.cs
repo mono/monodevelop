@@ -42,6 +42,9 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			base.Setup ();
 			ds = Start ("TestEvaluation");
+			if (ds == null)
+				Assert.Ignore ("Engine not found: {0}", EngineId);
+
 			frame = ds.ActiveThread.Backtrace.GetFrame (0);
 		}
 		

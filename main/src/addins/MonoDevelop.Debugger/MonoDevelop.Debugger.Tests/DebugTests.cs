@@ -32,24 +32,25 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Debugger.Tests
 {
 	public abstract class DebugTests: TestBase
 	{
-		readonly string eid;
+		readonly protected string EngineId;
 		DebuggerEngine engine;
 		
 		protected DebugTests (string engineId)
 		{
-			eid = engineId;
+			EngineId = engineId;
 		}
 		
 		public override void Setup ()
 		{
 			base.Setup ();
 			foreach (DebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
-				if (e.Id == eid) {
+				if (e.Id == EngineId) {
 					engine = e;
 					break;
 				}
@@ -59,10 +60,27 @@ namespace MonoDevelop.Debugger.Tests
 		
 		protected DebuggerSession Start (string test)
 		{
+			TargetRuntime runtime;
+			switch (EngineId) {
+			case "MonoDevelop.Debugger.Win32":
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
+				break;
+			case "Mono.Debugger.Soft":
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("Mono");
+				break;
+			default:
+				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+				break;
+			}
+
+			if (runtime == null)
+				return null;
+
 			var cmd = new DotNetExecutionCommand ();
 			cmd.Command = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "MonoDevelop.Debugger.Tests.TestApp.exe");
 			cmd.Arguments = test;
-			
+			cmd.TargetRuntime = runtime;
+
 			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
 			DebuggerSession session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
