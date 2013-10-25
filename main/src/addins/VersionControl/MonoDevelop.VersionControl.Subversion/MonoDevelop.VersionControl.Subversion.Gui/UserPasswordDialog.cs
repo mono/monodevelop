@@ -5,7 +5,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion.Gui
 {
-	public partial class UserPasswordDialog : Gtk.Dialog
+	partial class UserPasswordDialog : Gtk.Dialog
 	{
 		public UserPasswordDialog (string user, string realm, bool mayRemember, bool showPassword)
 		{

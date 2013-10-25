@@ -5,7 +5,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion.Gui
 {
-	public partial class ClientCertificatePasswordDialog : Gtk.Dialog
+	partial class ClientCertificatePasswordDialog : Gtk.Dialog
 	{
 		public ClientCertificatePasswordDialog (string realm, bool maySave)
 		{
