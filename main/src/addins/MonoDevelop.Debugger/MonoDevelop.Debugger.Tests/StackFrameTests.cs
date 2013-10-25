@@ -51,8 +51,10 @@ namespace MonoDevelop.Debugger.Tests
 		public override void TearDown ()
 		{
 			base.TearDown ();
-			ds.Exit ();
-			ds.Dispose ();
+			if (ds != null) {
+				ds.Exit ();
+				ds.Dispose ();
+			}
 		}
 		
 		public StackFrame Frame {
