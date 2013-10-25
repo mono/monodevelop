@@ -7,7 +7,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
-	class CommitCommand
+	static class CommitCommand
 	{
 		public static bool Commit (Repository vc, ChangeSet changeSet, bool test)
 		{
@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class CommitWorker : Task
+		class CommitWorker : Task
 		{
 			Repository vc;
 			ChangeSet changeSet;

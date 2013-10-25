@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlItemList: List<VersionControlItem>
+	public sealed class VersionControlItemList: List<VersionControlItem>
 	{
 		public VersionControlItemList[] SplitByRepository ()
 		{

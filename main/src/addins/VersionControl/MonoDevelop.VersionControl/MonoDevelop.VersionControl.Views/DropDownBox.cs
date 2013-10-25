@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Views
 	//FIXME: re-merge this with MonoDevelop.Components.DropDownBox
 	[Category ("Widgets")]
 	[ToolboxItem (true)]
-	public class DropDownBox : Gtk.Button
+	public sealed class DropDownBox : Gtk.Button
 	{
 		Pango.Layout layout;
 		const int pixbufSpacing = 2;

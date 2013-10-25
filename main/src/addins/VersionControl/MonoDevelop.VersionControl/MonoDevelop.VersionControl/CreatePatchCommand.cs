@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl
 	/// <summary>
 	/// Class for creating patches from VersionControlItems
 	/// </summary>
-	public class CreatePatchCommand
+	static class CreatePatchCommand
 	{
 		/// <summary>
 		/// Creates a patch from a VersionControlItemList
@@ -56,7 +56,8 @@ namespace MonoDevelop.VersionControl
 		public static bool CreatePatch (VersionControlItemList items, bool test)
 		{
 			bool can = CanCreatePatch (items);
-			if (test || !can){ return can; }
+			if (test || !can)
+				return can;
 			
 			FilePath basePath = items.FindMostSpecificParent ();
 			if (FilePath.Null == basePath)

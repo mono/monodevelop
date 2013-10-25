@@ -1713,7 +1713,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	public class GitRevision: Revision
+	public sealed class GitRevision: Revision
 	{
 		readonly string rev;
 		
@@ -1753,13 +1753,13 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 
-	public class Branch
+	public sealed class Branch
 	{
 		public string Name { get; internal set; }
 		public string Tracking { get; internal set; }
 	}
 
-	public class RemoteSource
+	public sealed class RemoteSource
 	{
 		internal RemoteConfig RepoRemote;
 		internal StoredConfig cfg;
@@ -1800,7 +1800,7 @@ namespace MonoDevelop.VersionControl.Git
 		public string PushUrl { get; internal set; }
 	}
 	
-	class GitMonitor: ProgressMonitor, IDisposable
+	sealed class GitMonitor: ProgressMonitor, IDisposable
 	{
 		readonly IProgressMonitor monitor;
 		int currentWork;
@@ -1872,7 +1872,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	class LocalGitRepository: FileRepository
+	sealed class LocalGitRepository: FileRepository
 	{
 		WeakReference dirCacheRef;
 		DateTime dirCacheTimestamp;

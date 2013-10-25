@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultBlameViewHandler : IBlameViewHandler
+	sealed class DefaultBlameViewHandler : IBlameViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{

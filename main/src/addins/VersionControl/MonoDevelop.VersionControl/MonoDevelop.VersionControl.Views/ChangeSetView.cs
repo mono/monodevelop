@@ -10,7 +10,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.VersionControl.Views
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public class ChangeSetView: ScrolledWindow
+	public sealed class ChangeSetView: ScrolledWindow
 	{
 		bool disposed;
 		

@@ -32,7 +32,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
-	internal class RevertRevisionsCommands
+	static class RevertRevisionsCommands
 	{
 		public static bool RevertRevision (Repository vc, string path, Revision revision, bool test)
 		{
@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class RevertWorker : Task {
+		class RevertWorker : Task {
 			Repository vc;
 			string path;
 			Revision revision;
@@ -130,6 +130,5 @@ namespace MonoDevelop.VersionControl
 				});
 			}
 		}
-		
 	}
 }

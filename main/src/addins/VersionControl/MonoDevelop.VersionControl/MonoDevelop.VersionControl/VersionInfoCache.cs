@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
-	class VersionInfoCache
+	sealed class VersionInfoCache
 	{
 		Dictionary<FilePath,VersionInfo> fileStatus = new Dictionary<FilePath, VersionInfo> ();
 		Dictionary<FilePath,DirectoryStatus> directoryStatus = new Dictionary<FilePath, DirectoryStatus> ();
@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class DirectoryStatus
+	sealed class DirectoryStatus
 	{
 		public VersionInfo[] FileInfo { get; set; }
 		public bool HasRemoteStatus { get; set; }

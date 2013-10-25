@@ -33,7 +33,7 @@ namespace MonoDevelop.VersionControl
 {
 	[PolicyType ("Version control commit message style")]
 	[DataItem ("VersionControlPolicy")]
-	public class VersionControlPolicy: IEquatable<VersionControlPolicy>
+	public sealed class VersionControlPolicy: IEquatable<VersionControlPolicy>
 	{
 		public VersionControlPolicy()
 		{

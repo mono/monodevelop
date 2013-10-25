@@ -29,7 +29,7 @@ using System.Text;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	class GitSelectRevisionDialog : Xwt.Dialog
+	sealed class GitSelectRevisionDialog : Xwt.Dialog
 	{
 		readonly Xwt.TextEntry tagNameEntry;
 		readonly Xwt.TextEntry tagMessageEntry;

@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class GitNodeBuilderExtension: NodeBuilderExtension
+	public sealed class GitNodeBuilderExtension: NodeBuilderExtension
 	{
 		readonly Dictionary<FilePath,IWorkspaceObject> repos = new Dictionary<FilePath, IWorkspaceObject> ();
 		
