@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public abstract class GitVersionControl : VersionControlSystem
+	abstract class GitVersionControl : VersionControlSystem
 	{
 		readonly Dictionary<FilePath,GitRepository> repositories = new Dictionary<FilePath,GitRepository> ();
 		
