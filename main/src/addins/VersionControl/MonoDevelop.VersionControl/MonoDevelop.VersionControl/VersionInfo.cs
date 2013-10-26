@@ -3,7 +3,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public sealed class VersionInfo
+	public class VersionInfo
 	{
 		FilePath localPath;
 		string repositoryPath;

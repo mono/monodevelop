@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl
 {
-	sealed class DefaultDiffViewHandler : IDiffViewHandler
+	public class DefaultDiffViewHandler : IDiffViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{

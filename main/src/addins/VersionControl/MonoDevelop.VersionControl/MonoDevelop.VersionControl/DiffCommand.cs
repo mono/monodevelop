@@ -32,7 +32,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	static class DiffCommand
+	public class DiffCommand
 	{
 		internal static readonly string DiffViewHandlers = "/MonoDevelop/VersionControl/DiffViewHandler";
 		

@@ -41,7 +41,7 @@ using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	static class GitUtil
+	internal static class GitUtil
 	{
 		public static string ToGitPath (this NGit.Repository repo, FilePath filePath)
 		{

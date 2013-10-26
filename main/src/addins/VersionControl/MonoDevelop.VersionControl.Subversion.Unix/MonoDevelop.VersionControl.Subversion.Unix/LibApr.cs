@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 	}
 
-	public sealed class LibApr0: LibApr
+	public class LibApr0: LibApr
 	{
 		private const string aprlib = "libapr-0.so.0";
 		
@@ -97,7 +97,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 	
 	}
 
-	public sealed class LibApr1: LibApr
+	public class LibApr1: LibApr
 	{
 		private const string aprlib = "libapr-1.so.0";
 		

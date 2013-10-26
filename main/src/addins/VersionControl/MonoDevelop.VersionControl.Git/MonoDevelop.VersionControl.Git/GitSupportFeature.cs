@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public sealed class GitSupportFeature: ISolutionItemFeature
+	public class GitSupportFeature: ISolutionItemFeature
 	{
 		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionItem entry)
 		{

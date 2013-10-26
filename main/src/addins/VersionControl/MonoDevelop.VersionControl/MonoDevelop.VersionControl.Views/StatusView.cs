@@ -19,7 +19,7 @@ using System.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	sealed class StatusView : BaseView 
+	internal class StatusView : BaseView 
 	{
 		string filepath;
 		Repository vc;

@@ -32,7 +32,7 @@ using NGit.Transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public sealed class GitCredentials: CredentialsProvider
+	public class GitCredentials: CredentialsProvider
 	{
 		bool HasReset {
 			get; set;

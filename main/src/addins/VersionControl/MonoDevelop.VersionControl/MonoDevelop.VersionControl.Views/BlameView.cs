@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	sealed class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
+	internal class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;

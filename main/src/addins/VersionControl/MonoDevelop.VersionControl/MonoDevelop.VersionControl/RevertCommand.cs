@@ -7,8 +7,9 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
-	static class RevertCommand
+	internal class RevertCommand
 	{
+
 		public static bool Revert (VersionControlItemList items, bool test)
 		{
 			if (RevertInternal (items, test)) {
@@ -19,7 +20,7 @@ namespace MonoDevelop.VersionControl
 			return false;
 		}
 		
-		static bool RevertInternal (VersionControlItemList items, bool test)
+		private static bool RevertInternal (VersionControlItemList items, bool test)
 		{
 			try {
 				if (test)
@@ -42,22 +43,22 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		class RevertWorker : Task {
+		private class RevertWorker : Task {
 			VersionControlItemList items;
-
+						
 			public RevertWorker (VersionControlItemList items) {
 				this.items = items;
 			}
-
+			
 			protected override string GetDescription() {
 				return GettextCatalog.GetString ("Reverting ...");
 			}
-
+			
 			protected override void Run ()
 			{
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Revert (list.Paths, true, Monitor);
-
+				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items) {
@@ -73,5 +74,6 @@ namespace MonoDevelop.VersionControl
 				});
 			}
 		}
+		
 	}
 }

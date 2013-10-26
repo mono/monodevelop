@@ -32,7 +32,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	static class BlameCommand
+	public class BlameCommand
 	{
 		internal static readonly string BlameViewHandlers = "/MonoDevelop/VersionControl/BlameViewHandler";
 		

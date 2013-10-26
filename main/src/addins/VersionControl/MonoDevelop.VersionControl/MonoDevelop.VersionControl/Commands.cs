@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}	
 
-	sealed class UpdateCommandHandler: SolutionVersionControlCommandHandler
+	class UpdateCommandHandler: SolutionVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class StatusCommandHandler: SolutionVersionControlCommandHandler
+	class StatusCommandHandler: SolutionVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -145,7 +145,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	sealed class AddCommandHandler: FileVersionControlCommandHandler
+	class AddCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -159,7 +159,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class RemoveCommandHandler: FileVersionControlCommandHandler
+	class RemoveCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -173,7 +173,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class RevertCommandHandler: FileVersionControlCommandHandler
+	class RevertCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -187,7 +187,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class LockCommandHandler: FileVersionControlCommandHandler
+	class LockCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -201,7 +201,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class UnlockCommandHandler: FileVersionControlCommandHandler
+	class UnlockCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -215,7 +215,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	sealed class IgnoreCommandHandler : FileVersionControlCommandHandler
+	class IgnoreCommandHandler : FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -229,7 +229,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	sealed class UnignoreCommandHandler : FileVersionControlCommandHandler
+	class UnignoreCommandHandler : FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	sealed class CurrentFileDiffHandler : FileVersionControlCommandHandler
+	class CurrentFileDiffHandler : FileVersionControlCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -252,7 +252,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class CurrentFileBlameHandler : FileVersionControlCommandHandler
+	class CurrentFileBlameHandler : FileVersionControlCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -261,7 +261,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	sealed class CurrentFileLogHandler : FileVersionControlCommandHandler
+	class CurrentFileLogHandler : FileVersionControlCommandHandler
 	{
 		protected override void Run ()
 		{

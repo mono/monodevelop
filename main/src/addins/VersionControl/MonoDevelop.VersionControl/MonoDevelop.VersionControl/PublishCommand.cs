@@ -8,7 +8,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl 
 {
-	static class PublishCommand
+	internal class PublishCommand 
 	{
 		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
 		{
@@ -67,38 +67,38 @@ namespace MonoDevelop.VersionControl
 				return true;
 			return false;
 		}
+	}
+	
+	internal class PublishWorker : Task {
+		Repository vc;
+		FilePath path;
+		string moduleName;
+		FilePath[] files;
+		string message;
 
-		class PublishWorker : Task {
-			Repository vc;
-			FilePath path;
-			string moduleName;
-			FilePath[] files;
-			string message;
+		public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath[] files, string message) 
+		{
+			this.vc = vc;
+			this.path = localPath;
+			this.moduleName = moduleName;
+			this.files = files;
+			this.message = message;
+			OperationType = VersionControlOperationType.Push;
+		}
 
-			public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath[] files, string message) 
-			{
-				this.vc = vc;
-				this.path = localPath;
-				this.moduleName = moduleName;
-				this.files = files;
-				this.message = message;
-				OperationType = VersionControlOperationType.Push;
-			}
-
-			protected override string GetDescription ()
-			{
-				return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
-			}
-
-			protected override void Run ()
-			{
-				vc.Publish (moduleName, path, files, message, Monitor);
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
-
-				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
-				});
-			}
+		protected override string GetDescription ()
+		{
+			return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
+		}
+		
+		protected override void Run ()
+		{
+			vc.Publish (moduleName, path, files, message, Monitor);
+			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
+			
+			Gtk.Application.Invoke (delegate {
+				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
+			});
 		}
 	}
 }

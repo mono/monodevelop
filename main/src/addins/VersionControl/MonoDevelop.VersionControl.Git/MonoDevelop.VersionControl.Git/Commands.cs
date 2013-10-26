@@ -65,7 +65,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class PushCommandHandler: GitCommandHandler
+	class PushCommandHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class SwitchToBranchHandler: GitCommandHandler
+	class SwitchToBranchHandler: GitCommandHandler
 	{
 		protected override void Run (object dataItem)
 		{
@@ -102,7 +102,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class ManageBranchesHandler: GitCommandHandler
+	class ManageBranchesHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class MergeBranchHandler: GitCommandHandler
+	class MergeBranchHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class RebaseBranchHandler: GitCommandHandler
+	class RebaseBranchHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -126,7 +126,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class StashHandler: GitCommandHandler
+	class StashHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -153,7 +153,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class StashPopHandler: GitCommandHandler
+	class StashPopHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -187,7 +187,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	sealed class ManageStashesHandler: GitCommandHandler
+	class ManageStashesHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{

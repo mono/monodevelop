@@ -29,7 +29,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public sealed class GitCommitDialogExtension: CommitDialogExtension
+	public class GitCommitDialogExtension: CommitDialogExtension
 	{
 		GitCommitDialogExtensionWidget widget;
 		

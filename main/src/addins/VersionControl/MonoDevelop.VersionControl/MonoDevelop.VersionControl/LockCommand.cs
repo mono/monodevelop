@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	static class LockCommand
+	public class LockCommand
 	{
 		public static bool Lock (VersionControlItemList items, bool test)
 		{
@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		class LockWorker : Task 
+		private class LockWorker : Task 
 		{
 			VersionControlItemList items;
 						

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
-	public sealed class UnknownRepository: Repository, IExtendedDataItem
+	public class UnknownRepository: Repository, IExtendedDataItem
 	{
 		Hashtable properties;
 		

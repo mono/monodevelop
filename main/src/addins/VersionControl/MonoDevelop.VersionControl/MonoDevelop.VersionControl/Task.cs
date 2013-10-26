@@ -6,7 +6,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	abstract class Task 
+	internal abstract class Task 
 	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;

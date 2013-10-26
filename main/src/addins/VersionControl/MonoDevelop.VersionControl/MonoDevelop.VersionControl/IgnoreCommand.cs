@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
-	static class IgnoreCommand
+	class IgnoreCommand
 	{
 		public static bool Ignore (VersionControlItemList items, bool test)
 		{
@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		class IgnoreWorker : Task
+		private class IgnoreWorker : Task
 		{
 			VersionControlItemList items;
 
@@ -93,7 +93,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	static class UnignoreCommand
+	class UnignoreCommand
 	{
 		public static bool Unignore (VersionControlItemList items, bool test)
 		{
@@ -125,7 +125,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		class UnignoreWorker : Task
+		private class UnignoreWorker : Task
 		{
 			VersionControlItemList items;
 

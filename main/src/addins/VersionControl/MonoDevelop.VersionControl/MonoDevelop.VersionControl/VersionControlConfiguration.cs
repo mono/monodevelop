@@ -4,7 +4,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VersionControl
 {
-	sealed class VersionControlConfiguration
+	class VersionControlConfiguration
 	{
 		[ItemProperty ("Repositories")]
 		List<Repository> repositories = new List<Repository> ();

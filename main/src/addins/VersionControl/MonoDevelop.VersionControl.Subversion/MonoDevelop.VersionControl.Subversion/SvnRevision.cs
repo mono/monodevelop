@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
-	public sealed class SvnRevision : Revision
+	public class SvnRevision : Revision
 	{
 		public readonly int Rev;
 		public readonly int Kind;

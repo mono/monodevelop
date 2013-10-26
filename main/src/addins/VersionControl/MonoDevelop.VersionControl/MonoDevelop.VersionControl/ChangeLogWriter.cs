@@ -36,10 +36,10 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	sealed class ChangeLogWriter
+	class ChangeLogWriter
 	{
-		Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
-		string changelog_path;
+		private Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
+		private string changelog_path;
 		AuthorInformation uinfo;
 	
 		public ChangeLogWriter (string path, AuthorInformation uinfo)
@@ -69,7 +69,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		string GetRelativeEntryPath (string path)
+		private string GetRelativeEntryPath (string path)
 		{
 			if (!path.StartsWith (changelog_path, System.StringComparison.Ordinal)) {
 				return null;
@@ -85,13 +85,13 @@ namespace MonoDevelop.VersionControl
 
 			CommitMessageStyle message_style = MessageFormat.Style;
 			
-			var formatter = new TextFormatter ();
+			TextFormatter formatter = new TextFormatter ();
 			formatter.MaxColumns = MessageFormat.MaxColumns;
 			formatter.TabWidth = MessageFormat.TabWidth;
 			formatter.TabsAsSpaces = MessageFormat.TabsAsSpaces;
 			
 			if (message_style.Header.Length > 0) {
-				string [,] tags = { {"AuthorName", uinfo.Name}, {"AuthorEmail", uinfo.Email} };
+				string [,] tags = new string[,] { {"AuthorName", uinfo.Name}, {"AuthorEmail", uinfo.Email} };
 				formatter.Append (StringParserService.Parse (message_style.Header, tags));
 			}
 			

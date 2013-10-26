@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 {
 	
 	
-	static class UnlockCommand
+	public class UnlockCommand
 	{
 		public static bool Unlock (VersionControlItemList items, bool test)
 		{
@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		class UnlockWorker : Task 
+		private class UnlockWorker : Task 
 		{
 			VersionControlItemList items;
 						

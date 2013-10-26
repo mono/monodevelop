@@ -32,7 +32,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	static class LogCommand
+	public class LogCommand
 	{
 		internal static readonly string LogViewHandlers = "/MonoDevelop/VersionControl/LogViewHandler";
 		

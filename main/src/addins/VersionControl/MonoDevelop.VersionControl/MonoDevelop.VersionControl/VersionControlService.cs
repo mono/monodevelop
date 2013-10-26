@@ -19,7 +19,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.VersionControl
 {
-	public static class VersionControlService
+	public class VersionControlService
 	{
 		static Gdk.Pixbuf overlay_modified;
 		static Gdk.Pixbuf overlay_removed;

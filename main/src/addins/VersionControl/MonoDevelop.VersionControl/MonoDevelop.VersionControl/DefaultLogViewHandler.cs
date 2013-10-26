@@ -29,7 +29,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	sealed class DefaultLogViewHandler : ILogViewHandler
+	public class DefaultLogViewHandler : ILogViewHandler
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{

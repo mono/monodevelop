@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public sealed class MergeWidget : EditorCompareWidgetBase
+	public class MergeWidget : EditorCompareWidgetBase
 	{
 		protected override TextEditor MainEditor {
 			get {

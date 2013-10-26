@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.VersionControl.Views
 {
 	[ToolboxItem (true)]
-	public sealed class ComparisonWidget : EditorCompareWidgetBase
+	public class ComparisonWidget : EditorCompareWidgetBase
 	{
 		internal DropDownBox originalComboBox, diffComboBox;
 		

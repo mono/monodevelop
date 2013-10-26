@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	sealed class LogView : BaseView, ILogView
+	public class LogView : BaseView, ILogView
 	{
 		LogWidget widget;
 		VersionInfo vinfo;

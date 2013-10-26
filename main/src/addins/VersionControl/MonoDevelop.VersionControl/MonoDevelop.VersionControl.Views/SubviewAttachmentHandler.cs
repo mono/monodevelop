@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	sealed class SubviewAttachmentHandler : CommandHandler
+	class SubviewAttachmentHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

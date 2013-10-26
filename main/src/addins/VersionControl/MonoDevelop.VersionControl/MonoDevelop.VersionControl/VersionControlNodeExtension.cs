@@ -251,7 +251,7 @@ namespace MonoDevelop.VersionControl
 	
 
 	
-	sealed class AddinCommandHandler : VersionControlCommandHandler 
+	class AddinCommandHandler : VersionControlCommandHandler 
 	{
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Update)]
@@ -428,7 +428,7 @@ namespace MonoDevelop.VersionControl
 			TestCommand (Commands.ResolveConflicts, item, false);
 		}
 
-		void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
@@ -443,7 +443,7 @@ namespace MonoDevelop.VersionControl
 				item.Visible = res == TestResult.Enable;
 		}
 		
-		TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
+		private TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
 		{
 			VersionControlItemList items = GetItems (projRecurse);
 
@@ -530,7 +530,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	sealed class OpenCommandHandler : VersionControlCommandHandler 
+	class OpenCommandHandler : VersionControlCommandHandler 
 	{
 		[AllowMultiSelection]
 		[CommandHandler (ViewCommands.Open)]

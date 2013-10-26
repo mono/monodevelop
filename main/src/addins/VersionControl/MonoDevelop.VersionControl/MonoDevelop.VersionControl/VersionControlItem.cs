@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public sealed class VersionControlItem
+	public class VersionControlItem
 	{
 		FilePath path;
 		bool isDirectory;
