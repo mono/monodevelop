@@ -50,29 +50,17 @@ type internal IntelliSenseAgentMessage =
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
-/// Used to marshal completion candidates
-/// before serializing to JSON
-// type Candidate =
-//   {
-//     Name: string
-//     Help: string
-//   }
-
 type ResponseMsg<'T> =
   {
     Kind: string
     Data: 'T
   }
 
-type CompletionPayload =
+type Location =
   {
-    Completions: List<String>
-    HelpText: Map<String,String>
-  }
-
-type HelpTextPayload =
-  {
-    HelpText: Map<String,String>
+    File: string
+    Line: int
+    Column: int
   }
 
 /// Provides an easy access to F# IntelliSense service
@@ -158,7 +146,7 @@ type internal IntelliSenseAgent() =
         // but currently editing a script file
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
 
-          // The InteractiveChecker resolution doesn't sometimes
+          // The InteractiveChecker resolution sometimes doesn't
           // include FSharp.Core and other essential assemblies, so we may
           // need to bring over some more code from the monodevelop binding to
           // handle that situation.
@@ -417,8 +405,7 @@ module internal CommandInput =
     return PosCommand(f, filename, (line, col), timeout) }
 
   // Parses always and returns default error message
-  let error = parser {
-    return Error("ERROR: Unknown command or wrong arguments\n<<EOF>>") }
+  let error = parser { return Error("Unknown command or wrong arguments") }
 
   // Parase any of the supported commands
   let parseCommand =
@@ -451,9 +438,17 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) : int =
+
+    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject o)
+
+    let printMsg ty s =
+      match state.OutputMode with
+      | Text -> printfn "%s: %s\n<<EOF>>" ty s
+      | Json -> prAsJson { Kind = ty; Data = s }
+
     let parsed file =
       let ok = Map.containsKey file state.Files
-      if not ok then printfn "ERROR: File '%s' not parsed\n<<EOF>>\n" file
+      if not ok then printMsg "ERROR" (sprintf "File '%s' not parsed" file)
       ok
 
     /// Is the specified position consistent with internal state of file?
@@ -461,7 +456,7 @@ module internal Main =
       let lines = state.Files.[file]
       let ok = line < lines.Length && line >= 0 &&
                col <= lines.[line].Length && col >= 0
-      if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
+      if not ok then printMsg "ERROR" "Position is out of range"
       ok
 
     let getoptions file =
@@ -469,15 +464,6 @@ module internal Main =
       RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                      file,
                      text)
-
-    let printMsg ty s =
-      match state.OutputMode with
-      | Text ->
-        printfn "%s: %s\n<<EOF>>" ty s
-      | Json ->
-        { Kind = ty; Data = s }
-        |> JsonConvert.SerializeObject
-        |> Console.WriteLine
 
     // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
     //             (Option.isSome state.Project)
@@ -491,11 +477,8 @@ module internal Main =
               yield sprintf "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
                          (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message ]
         match state.OutputMode with
-        | Text ->
-          printfn "DATA: errors\n%s\n<<EOF>>" (String.concat "\n" errstrings)
-        | Json ->
-          { Kind = "errors"; Data = errs }
-          |> JsonConvert.SerializeObject |> Console.WriteLine
+        | Text -> printfn "DATA: errors\n%s\n<<EOF>>" (String.concat "\n" errstrings)
+        | Json -> prAsJson { Kind = "errors"; Data = errs }
 
         main state
 
@@ -526,11 +509,8 @@ module internal Main =
                 [ for f in ProjectParser.getFiles p do
                     yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
               match state.OutputMode with
-              | Text ->
-                  printfn "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files)
-              | Json ->
-                  { Kind = "project"; Data = files }
-                  |> JsonConvert.SerializeObject |> Console.WriteLine
+              | Text -> printfn "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files)
+              | Json -> prAsJson { Kind = "project"; Data = files }
               main { state with Project = Some p }
           | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
                       main state
@@ -551,8 +531,7 @@ module internal Main =
                   yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
           match state.OutputMode with
           | Text -> printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
-          | Json -> { Kind = "declarations"; Data = decls }
-                    |> JsonConvert.SerializeObject |> Console.WriteLine
+          | Json -> prAsJson { Kind = "declarations"; Data = decls }
         main state
 
     | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
@@ -581,25 +560,17 @@ module internal Main =
                         | [] -> Map.empty
                         | d::_ -> let tip = TipFormatter.formatTip d.DescriptionText
                                   Map.add d.Name tip Map.empty
-                      {
-                        Kind = "completion"
-                        Data =
-                          {
-                            Completions = [ for d in ds do yield d.Name ]
-                            HelpText = helptext
-                          }
-                      }
-                      |> JsonConvert.SerializeObject
-                      |> Console.WriteLine
 
-                      {
-                        Kind = "helptext"
-                        Data = [ for d in decls.Items do
-                                   yield d.Name, TipFormatter.formatTip d.DescriptionText ]
-                               |> Map.ofList
-                      }
-                      |> JsonConvert.SerializeObject
-                      |> Console.WriteLine
+                      prAsJson { Kind = "helptext"; Data = helptext }
+                                  
+                      prAsJson { Kind = "completion"
+                                 Data = [ for d in ds do yield d.Name ] }
+
+                      prAsJson
+                        { Kind = "helptext"
+                          Data = [ for d in decls.Items do
+                                     yield d.Name, TipFormatter.formatTip d.DescriptionText ]
+                                 |> Map.ofList }
                       
               | None -> 
                   printMsg "ERROR" "Could not get type information"
@@ -620,9 +591,7 @@ module internal Main =
                     Console.WriteLine("DATA: tooltip")
                     Console.WriteLine(TipFormatter.formatTip tip)
                     Console.WriteLine("<<EOF>>")
-                  | Json -> { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
-                            |> JsonConvert.SerializeObject
-                            |> Console.WriteLine
+                  | Json -> prAsJson { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
           
           | FindDeclaration ->
 
@@ -631,7 +600,11 @@ module internal Main =
             | Some (DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
             | Some (DeclFound ((line,col),file)) ->
               
-              printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
+              match state.OutputMode with
+              | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
+              | Json ->
+                  let data = { Line = line; Column = col; File = file }
+                  prAsJson { Kind = "finddecl"; Data = data }
             
         main state
 
@@ -640,7 +613,7 @@ module internal Main =
         main state
 
     | Error(msg) ->
-        Console.WriteLine(msg)
+        printMsg "ERROR" msg
         main state
 
     | Quit ->

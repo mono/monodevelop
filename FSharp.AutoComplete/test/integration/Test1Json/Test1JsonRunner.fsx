@@ -27,6 +27,8 @@ p.tooltip "FileTwo.fs" 8 6
 p.tooltip "Program.fs" 5 15
 p.tooltip "Program.fs" 3 8
 p.tooltip "Script.fsx" 3 9
+p.finddeclaration "Program.fs" 7 22
+p.finddeclaration "Script.fsx" 5 15
 p.declarations "Program.fs"
 p.declarations "FileTwo.fs"
 p.declarations "Script.fsx"
