@@ -36,6 +36,8 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestSimpleCSharpHtml ()
 		{
+			if (Platform.IsWindows)
+				return;
 			var data = Create ("class Foo {}");
 			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
@@ -57,6 +59,8 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestXml ()
 		{
+			if (Platform.IsWindows)
+				return;
 			var data = Create (
 @"<foo
 	attr1 = ""1""
