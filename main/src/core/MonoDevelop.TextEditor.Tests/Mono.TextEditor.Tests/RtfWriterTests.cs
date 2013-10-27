@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		public void TestSimpleCSharpRtf ()
 		{
 			if (Platform.IsWindows)
-				return;
+				Assert.Inconclusive ();
 			var data = Create ("class Foo {}");
 			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
@@ -61,7 +61,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug5628 ()
 		{
 			if (Platform.IsWindows)
-				return;
+				Assert.Inconclusive ();
 			var data = Create ("class Foo {}");
 			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
 			string generatedRtf = RtfWriter.GenerateRtf (data);
@@ -84,7 +84,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug7386 ()
 		{
 			if (Platform.IsWindows)
-				return;
+				Assert.Inconclusive ();
 			var data = Create ("✔");
 			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
 			string generatedRtf = RtfWriter.GenerateRtf (data);
@@ -105,7 +105,7 @@ namespace Mono.TextEditor.Tests
 		public void TestXml ()
 		{
 			if (Platform.IsWindows)
-				return;
+				Assert.Inconclusive ();
 			var data = Create (
 				@"<foo
 	attr1 = ""1""
