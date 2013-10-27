@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public sealed class GitClient : GitVersionControl
+	sealed class GitClient : GitVersionControl
 	{
 	}
 }

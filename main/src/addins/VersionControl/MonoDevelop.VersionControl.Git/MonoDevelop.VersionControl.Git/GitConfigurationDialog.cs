@@ -32,7 +32,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class GitConfigurationDialog : Dialog
+	partial class GitConfigurationDialog : Dialog
 	{
 		readonly GitRepository repo;
 		readonly ListStore storeBranches;

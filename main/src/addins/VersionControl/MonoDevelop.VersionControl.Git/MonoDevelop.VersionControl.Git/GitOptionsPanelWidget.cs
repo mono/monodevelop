@@ -27,7 +27,7 @@
 namespace MonoDevelop.VersionControl.Git
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class GitOptionsPanelWidget : Gtk.Bin
+	partial class GitOptionsPanelWidget : Gtk.Bin
 	{
 		public GitOptionsPanelWidget ()
 		{

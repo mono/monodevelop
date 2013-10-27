@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class EditBranchDialog : Dialog
+	partial class EditBranchDialog : Dialog
 	{
 		readonly ListStore comboStore;
 		readonly string currentTracking;

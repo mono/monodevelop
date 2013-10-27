@@ -28,7 +28,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class UserInfoConflictDialog : Gtk.Dialog
+	partial class UserInfoConflictDialog : Gtk.Dialog
 	{
 		public UserInfoConflictDialog (string mdInfo, string gitInfo)
 		{

@@ -9,3 +9,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("LGPL")]
 [assembly: InternalsVisibleTo ("MonoDevelop.VersionControl.Subversion.Tests")]
+[assembly: InternalsVisibleTo ("MonoDevelop.VersionControl.Subversion.Unix")]
+[assembly: InternalsVisibleTo ("VersionControl.Subversion.Win32")]
