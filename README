@@ -82,7 +82,9 @@ Special Environment Variables
 -----------------------------
 
 BUILD_REVISION
-        If this environment variable exists we assume we are compiling inside wrench
+	If this environment variable exists we assume we are compiling inside wrench.
+	We use this to enable raygun only for 'release' builds and not for normal
+	developer builds compiled on a dev machine with 'make && make run'.
 
 
 References
