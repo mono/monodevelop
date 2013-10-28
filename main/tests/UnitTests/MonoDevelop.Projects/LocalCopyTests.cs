@@ -50,16 +50,19 @@ namespace MonoDevelop.Projects
 			
 			AssertCleanBuild (sol, "Debug");
 			AssertCleanBuild (sol, "Release");
+
+			string dllDebug = Platform.IsWindows ? ".pdb" : ".dll.mdb";
+			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
 			
 			AssertOutputFiles (sol, "VSLocalCopyTest", "Debug", new string[] {
 				"ClassLibrary1.dll",
-				"ClassLibrary1.dll.mdb",
+				"ClassLibrary1" + dllDebug,
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"ClassLibrary4.dll",
-				"ClassLibrary4.dll.mdb",
+				"ClassLibrary4" + dllDebug,
 				"VSLocalCopyTest.exe",
-				"VSLocalCopyTest.exe.mdb",
+				"VSLocalCopyTest" + exeDebug,
 				"TextFile1.txt",
 				"TextFile2.txt",
 				"app.config",
@@ -87,9 +90,9 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary1", "Debug", new string[] {
 				"ClassLibrary1.dll",
-				"ClassLibrary1.dll.mdb",
+				"ClassLibrary1" + dllDebug,
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"TextFile1.txt",
 				"TextFile2.txt",
 				"foo/bar.txt",
@@ -105,7 +108,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary2", "Debug", new string[] {
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"TextFile2.txt"
 			});
 			
@@ -116,7 +119,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary3", "Debug", new string[] {
 				"ClassLibrary3.dll",
-				"ClassLibrary3.dll.mdb"
+				"ClassLibrary3" + dllDebug
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary3", "Release", new string[] {
@@ -125,7 +128,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary4", "Debug", new string[] {
 				"ClassLibrary4.dll",
-				"ClassLibrary4.dll.mdb"
+				"ClassLibrary4" + dllDebug
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary4", "Release", new string[] {
@@ -134,7 +137,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary5", "Debug", new string[] {
 				"ClassLibrary5.dll",
-				"ClassLibrary5.dll.mdb",
+				"ClassLibrary5" + dllDebug,
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary5", "Release", new string[] {
