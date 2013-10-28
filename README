@@ -73,7 +73,7 @@ Packaging for OSX
 Dependencies
 ------------
 
-	Mono >= 2.10
+	Mono >= 3.0.4
 	Gtk# >= 2.12.8
 	monodoc >= 1.0
 	mono-addins >= 0.6
