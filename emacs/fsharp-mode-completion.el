@@ -239,7 +239,7 @@ display in a help buffer instead.")
 
 (defun fsharp-ac-document (item)
   (let* ((prop (gethash item fsharp-ac-current-helptext))
-         (help (if prop (cdr prop) "Loading documentation...")))
+         (help (if prop prop "Loading documentation...")))
     (pos-tip-fill-string help popup-tip-max-width)))
 
 (defun fsharp-ac-candidate ()
