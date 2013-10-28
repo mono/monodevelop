@@ -541,9 +541,9 @@ around to the start of the buffer."
   (setq fsharp-ac-current-helptext data))
 
 (defun fsharp-ac-visit-definition (data)
-  (let* ((file (gethash "file" data))
-         (line (+ 1 (gethash "line" data)))
-         (col (gethash "col" data)))
+  (let* ((file (gethash "File" data))
+         (line (+ 1 (gethash "Line" data)))
+         (col (gethash "Column" data)))
     (find-file file)
     (goto-char (fsharp-ac-line-column-to-pos line col))))
 
