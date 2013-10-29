@@ -382,7 +382,7 @@ possibly many lines of description.")
                                                  (gethash "StartColumn" err)))
               (end (fsharp-ac-line-column-to-pos (+ (gethash "EndLine" err) 1)
                                                  (gethash "EndColumn" err)))
-              (face (if t ;string= "ERROR" (gethash "Severity" err))
+              (face (if (string= "Error" (gethash "Severity" err))
                         'fsharp-error-face
                       'fsharp-warning-face))
               (msg (gethash "Message" err))

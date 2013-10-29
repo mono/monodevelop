@@ -13,6 +13,7 @@ open FSharp.InteractiveAutocomplete.Parsing
 open FSharp.CompilerBinding.Reflection
 
 open Newtonsoft.Json
+open Newtonsoft.Json.Converters
 
 module FsParser = Microsoft.FSharp.Compiler.Parser
 
@@ -62,6 +63,22 @@ type Location =
     Line: int
     Column: int
   }
+
+type SeverityConverter() =
+  inherit JsonConverter()
+
+  override x.CanConvert(t:System.Type) = t = typeof<Severity>
+ 
+  override x.WriteJson(writer, value, serializer) =
+    match value :?> Severity with
+    | Severity.Error -> serializer.Serialize(writer, "Error")
+    | Severity.Warning -> serializer.Serialize(writer, "Warning")
+ 
+  override x.ReadJson(reader, t, _, serializer) =
+    raise (System.NotSupportedException())
+
+  override x.CanRead = false
+  override x.CanWrite = true
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
@@ -437,9 +454,11 @@ module internal Main =
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
 
+  let severityConverter = new SeverityConverter()
+
   let rec main (state:State) : int =
 
-    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject o)
+    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, severityConverter))
 
     let printMsg ty s =
       match state.OutputMode with
