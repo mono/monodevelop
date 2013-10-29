@@ -27,12 +27,11 @@ To compile execute:
 
 There are two variables you can set when running 'configure':
 
-`--prefix=/path/to/prefix`: To set the install prefix.
+To set the install prefix: `--prefix=/path/to/prefix`
 
-You can use `--prefix="pkg-config --variable=prefix mono"` to get MD
-installed with the rest of mono/gtk-sharp/etc.
+To install with the rest of the assemblies: `--prefix="pkg-config --variable=prefix mono"`
 
-`--profile=profile-name`: To choose one build profile.
+To choose a build profile: `--profile=profile-name`
 
 There are some predefined profiles:
 
@@ -40,7 +39,7 @@ There are some predefined profiles:
  * core: builds the MonoDevelop core only.
  * all: builds everything
 
-You can create your own profiles if you need to
+You can create your own profiles if you need to.
 
 To create a profile you only have to add a file to the profiles directory
 containing a list of the directories to build.
