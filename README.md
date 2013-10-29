@@ -27,12 +27,12 @@ To compile execute:
 
 There are two variables you can set when running 'configure':
 
-`--prefix=/path/to/prefix: To set the install prefix.`
+`--prefix=/path/to/prefix`: To set the install prefix.
 
 You can use `--prefix="pkg-config --variable=prefix mono"` to get MD
 installed with the rest of mono/gtk-sharp/etc.
 
-`--profile=profile-name: To choose one build profile.`
+`--profile=profile-name`: To choose one build profile.
 
 There are some predefined profiles:
 
