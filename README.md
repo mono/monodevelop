@@ -27,11 +27,17 @@ To compile execute:
 
 There are two variables you can set when running 'configure':
 
-To set the install prefix: `--prefix=/path/to/prefix`
+To set the install prefix:
 
-To install with the rest of the assemblies: `--prefix="pkg-config --variable=prefix mono"`
+`--prefix=/path/to/prefix`
 
-To choose a build profile: `--profile=profile-name`
+To install with the rest of the assemblies:
+
+`--prefix="pkg-config --variable=prefix mono"`
+
+To choose a build profile:
+
+`--profile=profile-name`
 
 There are some predefined profiles:
 
@@ -52,10 +58,10 @@ install it by executing:
 Installing *(Optional)*
 ----------
 
-`make install`
-
 (It's possible that you need to install for your locale to be
 correctly set.)
+
+`make install`
 
 Packaging for OSX
 -----------------
