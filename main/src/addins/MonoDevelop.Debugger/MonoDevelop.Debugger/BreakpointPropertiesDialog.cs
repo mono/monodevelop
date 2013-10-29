@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger
 		ExpressionChanges
 	}
 
-	sealed class BreakpointPropertiesDialog2 : Xwt.Dialog
+	sealed class BreakpointPropertiesDialog : Xwt.Dialog
 	{
 		// For button sensitivity.
 		Xwt.DialogButton buttonOk;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger
 		string parsedFunction;
 		readonly HashSet<string> classes = new HashSet<string> ();
 
-		public BreakpointPropertiesDialog2 (BreakEvent be)
+		public BreakpointPropertiesDialog (BreakEvent be)
 		{
 			this.be = be;
 
@@ -117,6 +117,9 @@ namespace MonoDevelop.Debugger
 			ignoreHitType.Items.Add (HitCountMode.MultipleOf, GettextCatalog.GetString ("when hit count is a multiple of"));
 
 			ignoreHitCount.IncrementValue = 1;
+			ignoreHitCount.ClimbRate = 1;
+			ignoreHitCount.MinimumValue = 0;
+			ignoreHitCount.MaximumValue = Int32.MaxValue;
 
 			conditionalHitType.Items.Add (ConditionalHitWhen.ConditionIsTrue, GettextCatalog.GetString ("is true"));
 			conditionalHitType.Items.Add (ConditionalHitWhen.ExpressionChanges, GettextCatalog.GetString ("expression changes"));
@@ -305,10 +308,7 @@ namespace MonoDevelop.Debugger
 			hboxCondition.Sensitive = !stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
 
 			// Check conditional
-			if (!String.IsNullOrEmpty (entryConditionalExpression.Text))
-				conditionalHitType.Show ();
-			else
-				conditionalHitType.Hide ();
+			conditionalHitType.Sensitive = !String.IsNullOrEmpty (entryConditionalExpression.Text);
 
 			// Check ignoring hit counts.
 			if (ignoreHitType.SelectedItem.Equals (HitCountMode.None))
