@@ -212,6 +212,7 @@ namespace Mono.TextEditor
 			} else if (data.Caret.Offset == line.Offset) {
 				DocumentLine lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				if (lineAbove.Length == 0 && data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
+					data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, data.IndentationTracker.GetVirtualIndentationColumn (data.Caret.Line - 1, 1));
 					data.Replace (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength, data.IndentationTracker.GetIndentationString (data.Caret.Line - 1, 1));
 				} else {
 					data.Remove (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
