@@ -18,25 +18,20 @@ Compiling
 
 If you are building from Git, make sure that you initialize the submodules
 that are part of MonoDevelop, to do this execute:
-
 `git submodule update --init --recursive`
 
 To compile execute:
-
 `./configure ; make`
 
 There are two variables you can set when running 'configure':
 
 To set the install prefix:
-
 `--prefix=/path/to/prefix`
 
 To install with the rest of the assemblies:
-
 `--prefix="pkg-config --variable=prefix mono"`
 
 To choose a build profile:
-
 `--profile=profile-name`
 
 There are some predefined profiles:
@@ -45,23 +40,20 @@ There are some predefined profiles:
  * core: builds the MonoDevelop core only.
  * all: builds everything
 
-You can create your own profiles if you need to.
-
-To create a profile you only have to add a file to the profiles directory
+You can create your own profile by adding a file to the profiles directory
 containing a list of the directories to build.
 
-You can run MonoDevelop from the build directory without having to
-install it by executing:
-
+You can run MonoDevelop from the build directory by executing:
 `make run`
 
 Installing *(Optional)*
 ----------
 
+You can install MonoDevelop by running:
+`make install`
+
 (It's possible that you need to install for your locale to be
 correctly set.)
-
-`make install`
 
 Packaging for OSX
 -----------------
@@ -83,7 +75,7 @@ Dependencies
 Special Environment Variables
 -----------------------------
 
-BUILD_REVISION
+**BUILD_REVISION**
 
 	If this environment variable exists we assume we are compiling inside wrench.
 	We use this to enable raygun only for 'release' builds and not for normal
@@ -105,7 +97,7 @@ http://developer.gnome.org/projects/gup/hig/1.0/
 
 http://freedesktop.org/Standards/
 
-**Integrating with GNOME (a little out of date)**
+**Integrating with GNOME** *(a little out of date)*
 
 http://developers.sun.com/solaris/articles/integrating_gnome.html
 
