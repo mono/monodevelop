@@ -17,13 +17,13 @@ Compiling
 ---------
 
 If you are building from Git, make sure that you initialize the submodules
-that are part of this repository. To do this execute:
+that are part of this repository by executing:
 `git submodule update --init --recursive`
 
 To compile execute:
 `./configure ; make`
 
-There are two variables you can set when running 'configure':
+There are two variables you can set when running `configure`:
 
 * The install prefix: `--prefix=/path/to/prefix`
 
@@ -58,7 +58,7 @@ Packaging for OSX
 
 To package MonoDevelop for OSX in a convenient MonoDevelop.app
 file, just do this after MonoDevelop has finished building (with
-make):
+`make`):
 `cd main/build/MacOSX ; make MonoDevelop.app`
 
 Dependencies
