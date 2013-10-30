@@ -491,12 +491,17 @@ module internal Main =
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
-        let errstrings =
-          [ for e in errs do
-              yield sprintf "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
-                         (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message ]
         match state.OutputMode with
-        | Text -> printfn "DATA: errors\n%s\n<<EOF>>" (String.concat "\n" errstrings)
+        | Text ->
+          let sb = new System.Text.StringBuilder()
+          sb.AppendLine("DATA: errors") |> ignore
+          for e in errs do
+            sb.AppendLine(sprintf "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
+                            (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message)
+            |> ignore
+          sb.Append("<<EOF>>") |> ignore
+          Console.WriteLine(sb.ToString())
+
         | Json -> prAsJson { Kind = "errors"; Data = errs }
 
         main state
@@ -541,15 +546,16 @@ module internal Main =
         let file = Path.GetFullPath file
         if parsed file then
           let decls = agent.GetDeclarations(getoptions file)
-          let declstrings =
-            [ for tld in decls do
-                let (s1, e1), (s2, e2) = tld.Declaration.Range
-                yield sprintf "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
-                for d in tld.Nested do
-                  let (s1, e1), (s2, e2) = d.Range
-                  yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
           match state.OutputMode with
-          | Text -> printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
+          | Text ->
+              let declstrings =
+                [ for tld in decls do
+                    let (s1, e1), (s2, e2) = tld.Declaration.Range
+                    yield sprintf "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+                    for d in tld.Nested do
+                      let (s1, e1), (s2, e2) = d.Range
+                      yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
+              printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
           | Json -> prAsJson { Kind = "declarations"; Data = decls }
         main state
 

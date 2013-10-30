@@ -4,4 +4,3 @@ DATA: project
 <<EOF>>
 ERROR: File '<absolute path removed>/test/integration/RobustCommands/NoSuchFile.fs' not parsed
 <<EOF>>
-

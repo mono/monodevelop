@@ -6,7 +6,7 @@ INFO: Background parsing started
 <<EOF>>
 ERROR: Could not get type information
 <<EOF>>
-INFO: Could not fetch tooltip
+INFO: No tooltip information
 <<EOF>>
 DATA: completion
 Equals
