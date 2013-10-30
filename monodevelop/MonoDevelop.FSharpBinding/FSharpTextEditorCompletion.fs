@@ -5,8 +5,10 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Linq
 open System.Diagnostics
 open MonoDevelop.Core
+open MonoDevelop.Components
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
@@ -334,4 +336,159 @@ type FSharpTextEditorCompletion() =
               else loop depth (i+1) parameterIndex
           let res = loop 0 i 1
           res
+
+
+open Microsoft.FSharp.Compiler.Range
+type FSharpPathExtension() =
+    inherit TextEditorExtension()
+
+    let pathChanged = new Event<_,_>()
+    let mutable currentPath = [||]
+    member x.Document = base.Document
+    member x.GetEntityMarkup(node: DeclarationItem) =
+        let prefix = match node.Kind with
+                     | NamespaceDecl-> "Namespace: "
+                     | ModuleFileDecl -> "ModuleFile: "
+                     | ExnDecl -> "Exn: "
+                     | ModuleDecl -> "Module: "
+                     | TypeDecl -> "Type: "
+                     | MethodDecl -> "Method: "
+                     | PropertyDecl -> "Property: "
+                     | FieldDecl -> "Field: "
+                     | OtherDecl -> "" 
+        let name = node.Name.Split('.')
+        if name.Length > 0 then prefix + name.Last()
+        else prefix + node.Name
+
+    override x.Initialize() =
+        currentPath <- [| new PathEntry("No selection", Tag = null) |]
+        x.Document.Editor.Caret.PositionChanged.AddHandler(fun o e -> x.PathUpdated e)
+        x.Document.DocumentParsed.AddHandler(fun o e -> x.PathUpdated null)
+
+    member private x.PathUpdated(documentLocation) =
+        let loc = x.Document.Editor.Caret.Location
+        
+        if x.Document.ParsedDocument = null then () else
+        match x.Document.ParsedDocument.Ast with
+        | :? TypedParseResult as ast ->
+
+            let posGt (p1Column, p1Line) (p2Column, p2Line) = 
+                (p1Line > p2Line || (p1Line = p2Line && p1Column > p2Column))
+
+            let posEq (p1Column, p1Line) (p2Column, p2Line) = 
+                (p1Line = p2Line &&  p1Column = p2Column)
+
+            let posGeq p1 p2 =
+                posEq p1 p2 || posGt p1 p2
+
+            let inside (docloc:Mono.TextEditor.DocumentLocation) ((start, finish) :Range) =
+                let cursor = (docloc.Column, docloc.Line)
+                posGeq cursor start && posGeq finish cursor
+
+            let toplevel = ast.Untyped.GetNavigationItems().Declarations
+
+            #if DEBUG
+            let allthings = [| for tl in  toplevel do yield (tl.Declaration.Name, tl.Nested |> Array.map (fun n -> n.Name)) |]
+            #endif
+
+            let topLevelTypesInsideCursor =
+                toplevel |> Array.filter (fun tl -> inside loc tl.Declaration.Range)
+                         |> Array.sortBy(fun xs -> xs.Declaration.Range)
+
+            let newPath = ResizeArray<_>()
+            for top in topLevelTypesInsideCursor do
+                let name = top.Declaration.Name
+                if name.Contains(".") then
+                    let nameparts = name.[.. name.LastIndexOf(".")]
+                    newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = (ast, nameparts)))
+                else newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = ast))
+            
+            if topLevelTypesInsideCursor.Length > 0 then
+                let lastToplevel = topLevelTypesInsideCursor.Last()
+                //only first child found is returned, could there be multiple children found?
+                let child = lastToplevel.Nested |> Array.tryFind (fun tl -> inside loc tl.Range)
+                let multichild = lastToplevel.Nested |> Array.filter (fun tl -> inside loc tl.Range)
+
+                Debug.Assert( multichild.Length = 1, String.Format("{0} children found please investigate!", multichild.Length))
+                match child with
+                | Some(c) -> newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
+                | None -> newPath.Add(PathEntry("No selection", Tag = lastToplevel))
+
+            let previousPath = currentPath
+            //ensure the path has chnaged from the previous one before setting and raising event.
+            let samePath = Seq.forall2 (fun (p1:PathEntry) (p2:PathEntry) -> p1.Markup = p2.Markup) previousPath newPath
+            if not samePath then
+                if newPath.Count = 0 then currentPath <- [|PathEntry("No selection", Tag = ast)|]
+                else currentPath <- newPath.ToArray()
+
+                //invoke pathChanged
+                pathChanged.Trigger(x, DocumentPathChangedEventArgs(previousPath))
+        | _ -> ()
+
+    override x.Dispose() =
+        x.Document.Editor.Caret.PositionChanged.RemoveHandler(fun o e -> x.PathUpdated e)
+        x.Document.DocumentParsed.RemoveHandler(fun o e -> x.PathUpdated null)
+
+    interface IPathedDocument with
+        member x.CurrentPath = currentPath
+        member x.CreatePathWidget(index) =
+            let path = (x :> IPathedDocument).CurrentPath
+            if path = null || index < 0 || index >= path.Length then null else
+            let tag = path.[index].Tag
+            let window = new DropDownBoxListWindow(new FSharpDataProvider(x, tag))
+            window.FixedRowHeight <- 22
+            window.MaxVisibleRows <- 14
+            window.SelectItem (path.[index].Tag)
+            window :> _
+
+        member x.add_PathChanged(handler) = pathChanged.Publish.AddHandler(handler)
+        member x.remove_PathChanged(handler) = pathChanged.Publish.RemoveHandler(handler)
+
+
+and FSharpDataProvider(ext:FSharpPathExtension, tag) =
+    let memberList = ResizeArray<_>()
+
+    let reset() =  
+        memberList.Clear()
+        match tag with
+        | :? TypedParseResult as tpr ->
+            let navitems = tpr.Untyped.GetNavigationItems()
+            for decl in navitems.Declarations do
+                memberList.Add(decl.Declaration)
+        | :? (TypedParseResult * string) as typeAndFilter ->
+            let tpr, filter = typeAndFilter 
+            let navitems = tpr.Untyped.GetNavigationItems()
+            for decl in navitems.Declarations do
+                if decl.Declaration.Name.StartsWith(filter) then
+                    memberList.Add(decl.Declaration)
+        | :? TopLevelDeclaration as tld ->
+            for item in tld.Nested do
+                 memberList.Add(item)
+        | _ -> ()
+
+    do reset()
+
+    interface DropDownBoxListWindow.IListDataProvider with
+        member x.IconCount = memberList.Count
+        member x.Reset() = reset()
+        member x.GetTag (n) = memberList.[n] :> obj
+
+        member x.ActivateItem(n) =
+            let node = memberList.[n]
+            let extEditor = ext.Document.GetContent<IExtensibleTextEditor>()
+            if extEditor <> null then
+                let (scol,sline), _ = node.Range
+                extEditor.SetCaretTo(max 1 sline, max 1 scol, true)
+
+        member x.GetMarkup(n) =
+            let node = memberList.[n]
+            ext.GetEntityMarkup (node)
+
+        member x.GetIcon(n) =
+            let node = memberList.[n]
+            ImageService.GetPixbuf(ServiceUtils.getIcon node.Glyph, Gtk.IconSize.Menu)         
+
+
+
+
 
