@@ -28,9 +28,27 @@ module Styles =
         | Parameter name -> name
         | Code name -> name
         | Exception name -> name
-            
+
+module Linq2Xml =
+    let xn = XName.op_Implicit
+    let xs ns local = XName.Get(local, ns)
+    let firstOrDefault seq = Enumerable.FirstOrDefault(seq)
+    let firstOrNone seq = 
+        let iter = Enumerable.FirstOrDefault(seq)
+        if iter <> null then Some(iter) else None
+
+    let singleOrDefault seq = Enumerable.SingleOrDefault(seq)
+    let where (pred: XElement -> bool) elements = Enumerable.Where(elements, pred)
+    let attribute name (element:XElement) = element.Attribute <| xn name
+    let attributeValue name element = (attribute name element).Value
+    let descendants xs (element: XElement) = element.Descendants(xs)
+    let previousNodeOrNone (element: XElement) =
+        match element.PreviousNode with
+        | null -> None 
+        | node -> Some(node)
+                       
 module Tooltips = 
-        
+    open Linq2Xml    
     let strip start (str:string)= 
         if str.StartsWith start then str.Substring(start.Length)
         else str
@@ -41,12 +59,6 @@ module Tooltips =
         |> String.concat(" ")
             
     let unqualifyName (txt:String) = txt.Substring(txt.LastIndexOf(".") + 1)  
-
-    let xn = XName.op_Implicit
-    let firstOrDefault seq = Enumerable.FirstOrDefault(seq)
-    let singleOrDefault seq = Enumerable.SingleOrDefault(seq)
-    let where (pred: XElement -> bool) elements = Enumerable.Where(elements, pred)
-    let attribute name (element:XElement) = element.Attribute <| xn name
             
     let elementValue (addStyle: Style -> string) (element:XElement) =
         let sb = StringBuilder()
