@@ -5,16 +5,22 @@ This project contains advanced editing support for F# for a number of open edito
 * [F# addin for MonoDevelop and Xamarin Studio](monodevelop/README.md)
 * Some reusable components shared by these (see below)
 
-## Basic Components
+## Shared Components
 
-The core component is the FSharp.CompilerBinding.dll. This is used by both fsautocomplete.exe, a command-line utility to sit behind Emacs, Vim and other editing environments, an the MonoDevelop components.
+The core shared component is FSharp.Compiler.Editor.dll from the 
+community [FSharp.Compiler.Service](https://github.com/fsharp/FSharp.Compiler.Service) project. 
+This is used by both [fsautocomplete.exe](https://github.com/fsharp/fsharpbinding/tree/master/FSharp.AutoComplete), 
+a command-line utility to sit behind Emacs, Vim and other editing environments components. 
 
 Building:
 
 	./configure.sh
 	make
 
-This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe. To understand how to use these components, see the other projects.
+This produces bin/fsautocomplete.exe. To understand how to use these components, see the other projects.
+
+An old component called FSharp.CompilerBinding.dll is also present, it was used as a shim to the F# compiler before
+the availability of FSharp.Compiler.Editor.dll.
 
 ## Other Editors
 
