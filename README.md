@@ -3,6 +3,7 @@
 This project contains advanced editing support for F# for a number of open editors. It is made up of the following projects:
 * [F# mode for Emacs](emacs/README.md)
 * [F# addin for MonoDevelop and Xamarin Studio](monodevelop/README.md)
+* Some reusable components shared by these (see below)
 
 ## Basic Components
 
