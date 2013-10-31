@@ -234,24 +234,33 @@ type internal IntelliSenseAgent() =
       with :? System.TimeoutException as e ->
                  None) info
 
-  member private x.FindLongIdents(lineStr, column) =
-      // Parsing - find the identifier around the current location
-      // (we look for full identifier in the backward direction, but only
-      // for a short identifier forward - this means that when you hover
-      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-      let lookBack = Parsing.createBackStringReader lineStr column
-      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+  member private x.FindLongIdents(lineStr, col) =
+    // Parsing - find the identifier around the current location
+    // (we look for full identifier in the backward direction, but only
+    // for a short identifier forward - this means that when you hover
+    // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+    let lookBack = createBackStringReader lineStr (col-1)
+    let lookForw = createForwardStringReader lineStr col
+    
+    let backIdentOpt = tryGetFirst parseBackLongIdent lookBack
+    match backIdentOpt with 
+    | None -> None 
+    | Some backIdent -> 
+    let nextIdentOpt = tryGetFirst parseIdent lookForw
+    match nextIdentOpt with 
+    | None -> None 
+    | Some nextIdent -> 
+    
+    let currentIdent, identIsland =
+      match List.rev backIdent with
+      | last::prev -> 
+          let current = last + nextIdent
+          current, current::prev |> List.rev
+      | [] -> "", []
 
-      let identIsland =
-        match List.rev backIdent with
-        | last::prev -> (last + nextIdent)::prev |> List.rev
-        | [] -> []
-
-      match identIsland with
-      | [ "" ] -> None
-      | _ -> Some identIsland
+    match identIsland with
+    | [] | [ "" ] -> None
+    | _ -> Some identIsland
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
