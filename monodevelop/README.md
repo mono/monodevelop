@@ -14,7 +14,7 @@ Adds open source F# support to the open source editor MonoDevelop. Features:
 * xbuild support for Visual Studio .fsproj and .sln files without change (requires Mono 3.0 and F# 3.0)
 * MonoDevelop also includes C# 5.0 and other features
 
-Requires MonoDevelop or Xamarin Studio 4.0.12 and later versions
+Requires MonoDevelop or Xamarin Studio 4.0.13 and later versions
 
 ### Installation
 
