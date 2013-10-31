@@ -348,7 +348,7 @@ The current buffer must be an F# file that exists on disk."
 ;;; ----------------------------------------------------------------------------
 ;;; Errors and Overlays
 
-(defstruct fsharp-error start end face text)
+(defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
 (make-local-variable 'fsharp-ac-errors)
@@ -386,11 +386,13 @@ possibly many lines of description.")
                         'fsharp-error-face
                       'fsharp-warning-face))
               (msg (gethash "Message" err))
+              (file (gethash "FileName" err))
               )
           (add-to-list 'parsed (make-fsharp-error :start beg
                                                   :end   end
                                                   :face  face
-                                                  :text  msg)))))))
+                                                  :text  msg
+                                                  :file  file)))))))
 
 (defun fsharp-ac/show-error-overlay (err)
   "Draw overlays in the current buffer to represent fsharp-error ERR."
@@ -402,11 +404,14 @@ possibly many lines of description.")
          (end  (fsharp-error-end err))
          (face (fsharp-error-face err))
          (txt  (fsharp-error-text err))
+         (file (fsharp-error-text err))
          (ofaces (mapcar (lambda (o) (overlay-get o 'face))
                          (overlays-in beg end)))
          )
-    (unless (and (eq face 'fsharp-warning-face)
-                 (memq 'fsharp-error-face ofaces))
+    (unless (or (string= (expand-file-name buffer-file-name)
+                         (expand-file-name file))
+             (and (eq face 'fsharp-warning-face)
+                 (memq 'fsharp-error-face ofaces)))
 
       (when (and (eq face 'fsharp-error-face)
                  (memq 'fsharp-warning-face ofaces))
