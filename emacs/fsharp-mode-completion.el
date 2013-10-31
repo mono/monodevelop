@@ -238,8 +238,11 @@ display in a help buffer instead.")
     ))
 
 (defun fsharp-ac-document (item)
-  (let* ((prop (gethash item fsharp-ac-current-helptext))
+  (let* ((ticks (s-match "^``\\(.*\\)``$" item))
+         (key (if ticks (cadr ticks) item))
+         (prop (gethash key fsharp-ac-current-helptext))
          (help (if prop prop "Loading documentation...")))
+    (message "key was '%s'" key)
     (pos-tip-fill-string help popup-tip-max-width)))
 
 (defun fsharp-ac-candidate ()
@@ -352,12 +355,6 @@ The current buffer must be an F# file that exists on disk."
 
 (defvar fsharp-ac-errors)
 (make-local-variable 'fsharp-ac-errors)
-
-(defconst fsharp-ac-error-regexp
-     "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
-     "Regexp to match errors that come from fsautocomplete. Each
-starts with a character range for position and is followed by
-possibly many lines of description.")
 
 (defun fsharp-ac-request-errors ()
   (when (fsharp-ac-can-make-request)
@@ -528,6 +525,17 @@ around to the start of the buffer."
       
     (setq msg (fsharp-ac--get-msg proc)))))
 
+
+(defun fsharp-ac--isIdChar (c)
+  (let ((gc (get-char-code-property c 'general-category)))
+    (or
+     (-any? (lambda (x) (string= gc x)) '("Lu" "Ll" "Lt" "Lm" "Lo" "Nl" "Nd" "Pc" "Mn" "Mc"))
+     (eq c 39))))
+
+(defun fsharp-ac--isNormalId (s)
+  (-all? (lambda (x) x) (mapcar 'isIdChar s)))
+
+
 (defun fsharp-ac-handle-completion (data)
     (case fsharp-ac-status
       (preempted
@@ -536,7 +544,9 @@ around to the start of the buffer."
        (ac-update))
 
       (otherwise
-       (setq fsharp-ac-current-candidate data
+       (setq fsharp-ac-current-candidate (-map (lambda (s) (if (fsharp-ac--isNormalId s) s
+                                                        (s-append "``" (s-prepend "``" s))))
+                                               data)
              fsharp-ac-status 'acknowledged)
        (fsharp-ac--ac-start :force-init t)
        (ac-update)
