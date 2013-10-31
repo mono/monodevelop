@@ -4,6 +4,7 @@ This project contains advanced editing support for F# for a number of open edito
 * [F# mode for Emacs](emacs/README.md)
 * [F# addin for MonoDevelop and Xamarin Studio](monodevelop/README.md)
 * Some reusable components shared by these (see below)
+* Some information on using F# with Sublime Text 2, Vim and other editors (see below)
 
 ## Shared Components
 
