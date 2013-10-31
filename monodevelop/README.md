@@ -1,4 +1,4 @@
-# F# Language Support for MonoDevelop and Xamarin Studio
+## F# Language Support for MonoDevelop and Xamarin Studio
 
 
 Adds open source F# support to the open source editor MonoDevelop. Features:
@@ -16,7 +16,7 @@ Adds open source F# support to the open source editor MonoDevelop. Features:
 
 Requires MonoDevelop or Xamarin Studio 4.0.12 and later versions
 
-## Installation
+### Installation
 
 First check install MonoDevelop/Xamarin Studio. Check if F# support is already installed using the AddIn manager.
    MonoDevelop/Xamarin Studio
@@ -34,19 +34,13 @@ If not, install the F# Language Binding via the AddIn manager.
         --> Language Bindings 
         --> F# Language Binding
 
-## Using the ASP.NET MVC 4 Template
-
-On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
-You can then create a project from the template, build it, and run. 
-
-On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DLLs.
 
 ### Building and installing from scratch
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
 
-## Build on Linux/Mac:
+### Build on Linux/Mac:
 
 First get nuget.exe and install the required nuget packages:
 
@@ -58,7 +52,7 @@ Now make:
 	make 
 	make install
 
-## Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
+### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 	cd monodevelop
 	configure.bat
@@ -66,7 +60,14 @@ Now make:
 
 
 
-## Can't get it to work?  
+### Using the ASP.NET MVC 4 Template
+
+On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
+You can then create a project from the template, build it, and run. 
+
+On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DLLs.
+
+### Can't get it to work?  
 
 Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
 
@@ -115,7 +116,7 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 	devenv /debugexe "c:\Program Files (x86)\Xamarin Studio\bin\XamarinStudio.exe"
 
 
-## Notes for People Preparing Releases
+### Notes for People Preparing Releases
 
 Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
 of MonoDevelop and Xamarin Studio. The information below will be obsolete once this is done.
