@@ -150,16 +150,8 @@ To build the .mpack files to upload to this site, use:
 
 	cd monodevelop
 	./configure.sh
-	make packs
+	make pack
 
-The files go under pack/...
+The pack file goes under pack/...
 
-The build process builds several versions of the addin for specific different versions of MonoDevelop.  MonoDevelop APIs can 
-change a bit and are not binary compatible. We try to keep up with 
-  (a) the latest version available as an Ubuntu package
-  (b) the latest version available in the 'Stable' channel on Windows and Mac
-  (c) the latest version available in the 'Beta' channel on Windows and Mac
-
-When developing generally use (c)
-
-The build is performed against the MonoDevelop binaries we depend on in dependencies/... which have been copied from MonoDevelop installs.
+The build is performed against the installed MonoDevelop or Xamarin Studio on your machine.
