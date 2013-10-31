@@ -304,6 +304,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ShowLoading ();
 			info.Start (true);
+			revertButton.Sensitive = revertToButton.Sensitive = false;
 		}
 
 		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
