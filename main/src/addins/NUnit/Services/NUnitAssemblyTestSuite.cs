@@ -433,7 +433,7 @@ namespace MonoDevelop.NUnit
 						RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
 					} else {
 						testContext.Monitor.ReportRuntimeError (null, ex);
-						throw ex;
+						throw;
 					}
 					result = UnitTestResult.CreateFailure (ex);
 				} else {
