@@ -1101,8 +1101,14 @@
     <EmbeddedResource Include="icons\error-16.png">
       <LogicalName>error-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16%402x.png">
+      <LogicalName>error-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16.png">
       <LogicalName>warning-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16%402x.png">
+      <LogicalName>warning-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
