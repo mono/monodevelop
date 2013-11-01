@@ -86,7 +86,7 @@ namespace Mono.TextEditor.Vi
 		{
 			if (obj == null)
 				return false;
-			if (ReferenceEquals (this, obj))
+			if (object.Equals (this, obj))
 				return true;
 			if (!(obj is ViKey))
 				return false;
