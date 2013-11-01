@@ -1143,8 +1143,11 @@
     <EmbeddedResource Include="icons\clear-16.png">
       <LogicalName>clear-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-steady-14.png">
-      <LogicalName>status-steady-14.png</LogicalName>
+    <EmbeddedResource Include="icons\status-ready-14.png">
+      <LogicalName>status-ready-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-ready-14%402x.png">
+      <LogicalName>status-ready-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-success-14.png">
       <LogicalName>status-success-14.png</LogicalName>
@@ -1155,8 +1158,14 @@
     <EmbeddedResource Include="icons\status-warning-14.png">
       <LogicalName>status-warning-14.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\status-error-14.png">
-      <LogicalName>status-error-14.png</LogicalName>
+    <EmbeddedResource Include="icons\status-warning-14%402x.png">
+      <LogicalName>status-warning-14@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-failure-14.png">
+      <LogicalName>status-failure-14.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-failure-14%402x.png">
+      <LogicalName>status-failure-14@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
       <LogicalName>link-chat.png</LogicalName>
