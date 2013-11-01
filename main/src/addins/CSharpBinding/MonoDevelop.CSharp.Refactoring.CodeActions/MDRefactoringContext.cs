@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public SyntaxTree Unit {
 			get {
 				Debug.Assert (!IsInvalid);
-				return ParsedDocument.GetAst<SyntaxTree> ();
+				return Resolver.RootNode as SyntaxTree;
 			}
 		}
 

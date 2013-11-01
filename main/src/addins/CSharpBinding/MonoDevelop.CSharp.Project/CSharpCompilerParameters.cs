@@ -71,9 +71,6 @@ namespace MonoDevelop.CSharp.Project
 		[ProjectPathItemProperty ("DocumentationFile")]
 		FilePath documentationFile;
 		
-		[ItemProperty ("additionalargs", DefaultValue = "")]
-		string additionalArgs = string.Empty;
-		
 		[ItemProperty ("LangVersion", DefaultValue = "Default")]
 		string langVersion = "Default";
 		
@@ -146,11 +143,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 	
-		public string AdditionalArguments {
-			get { return additionalArgs; }
-			set { additionalArgs = value ?? string.Empty; }
-		}
-		
+
 		public LangVersion LangVersion {
 			get {
 				var val = TryLangVersionFromString (langVersion);

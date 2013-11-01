@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 using System.Linq;
 using Mono.Addins.Description;
+using System.Diagnostics;
 
 namespace MonoDevelop.Tests.TestRunner
 {
@@ -41,20 +42,21 @@ namespace MonoDevelop.Tests.TestRunner
 			var args = new List<string> (arguments);
 			bool useGuiUnit = false;
 			foreach (var ar in args) {
-				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
+				if ((ar.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) || ar.EndsWith (".exe", StringComparison.OrdinalIgnoreCase)) && File.Exists (ar)) {
 					try {
-						var asm = Assembly.LoadFrom (ar);
-						HashSet<string> ids = new HashSet<string> ();
+						var path = Path.GetFullPath (ar);
+						var asm = Assembly.LoadFrom (path);
+						var ids = new HashSet<string> ();
 						foreach (var aname in asm.GetReferencedAssemblies ()) {
 							if (aname.Name == "GuiUnit") {
-								Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (ar), "GuiUnit.exe"));
+								Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (path), "GuiUnit.exe"));
 								useGuiUnit = true;
 							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
 						}
 
 						foreach (var id in ids)
-							AddinManager.LoadAddin (new Mono.Addins.ConsoleProgressStatus (false), id);
+							AddinManager.LoadAddin (new ConsoleProgressStatus (false), id);
 
 					} catch (Exception ex) {
 						Console.WriteLine (ex);
@@ -64,15 +66,14 @@ namespace MonoDevelop.Tests.TestRunner
 			if (useGuiUnit) {
 				var runnerType = Type.GetType ("GuiUnit.TestRunner, GuiUnit");
 				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
-				return (int) method.Invoke (null, new [] { args.ToArray () });
-			} else {
-				args.RemoveAll (a => a.StartsWith ("-port="));
-				args.Add ("-domain=None");
-				return NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
+				return (int)method.Invoke (null, new [] { args.ToArray () });
 			}
+			args.RemoveAll (a => a.StartsWith ("-port=", StringComparison.Ordinal));
+			args.Add ("-domain=None");
+			return NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
 		}
 
-		IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
+		static IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
 		{
 			foreach (var adn in AddinManager.Registry.GetAddins ().Union (AddinManager.Registry.GetAddinRoots ())) {
 				foreach (ModuleDescription m in adn.Description.AllModules) {

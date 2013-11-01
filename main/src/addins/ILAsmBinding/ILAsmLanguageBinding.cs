@@ -49,7 +49,7 @@ namespace ILAsmBinding
 		
 		public bool IsSourceCodeFile (FilePath fileName)
 		{
-			return string.Compare (Path.GetExtension (fileName), ".il", true) == 0;
+			return String.Compare (Path.GetExtension (fileName), ".il", StringComparison.OrdinalIgnoreCase) == 0;
 		}
 		
 		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
@@ -83,7 +83,7 @@ namespace ILAsmBinding
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { 
+			return new [] { 
 				ClrVersion.Net_1_1, 
 				ClrVersion.Net_2_0,
 				ClrVersion.Clr_2_1,

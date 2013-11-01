@@ -50,11 +50,11 @@ namespace MonoDevelop.Core
 		static FileServiceErrorHandler errorHandler;
 		
 		static FileSystemExtension fileSystemChain;
-		static FileSystemExtension defaultExtension = Platform.IsWindows ? new DefaultFileSystemExtension () : new UnixFileSystemExtension () ;
+		static readonly FileSystemExtension defaultExtension = Platform.IsWindows ? new DefaultFileSystemExtension () : new UnixFileSystemExtension () ;
 		
-		static EventQueue eventQueue = new EventQueue ();
+		static readonly EventQueue eventQueue = new EventQueue ();
 		
-		static string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
+		static readonly string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 		public static string ApplicationRootPath {
 			get {
 				return applicationRootPath;

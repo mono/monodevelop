@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects
 	{
 		string[] buildActions;
 
-		public Project ()
+		protected Project ()
 		{
 			FileService.FileChanged += OnFileChanged;
 			files = new ProjectFileCollection ();
@@ -405,10 +405,10 @@ namespace MonoDevelop.Projects
 		
 		//HACK: the build code is structured such that support file copying is in here instead of the item handler
 		//so in order to avoid doing them twice when using the msbuild engine, we special-case them
-		bool UsingMSBuildEngine ()
+		bool UsingMSBuildEngine (ConfigurationSelector sel)
 		{
 			var msbuildHandler = ItemHandler as MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectHandler;
-			return msbuildHandler != null && msbuildHandler.UseMSBuildEngineForItem (this);
+			return msbuildHandler != null && msbuildHandler.UseMSBuildEngineForItem (this, sel);
 		}
 
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
@@ -423,7 +423,7 @@ namespace MonoDevelop.Projects
 			
 			StringParserService.Properties["Project"] = Name;
 			
-			if (UsingMSBuildEngine ()) {
+			if (UsingMSBuildEngine (configuration)) {
 				return DoBuild (monitor, configuration);
 			}
 			
@@ -649,7 +649,7 @@ namespace MonoDevelop.Projects
 				return;
 			}
 			
-			if (UsingMSBuildEngine ()) {
+			if (UsingMSBuildEngine (configuration)) {
 				DoClean (monitor, config.Selector);
 				return;
 			}

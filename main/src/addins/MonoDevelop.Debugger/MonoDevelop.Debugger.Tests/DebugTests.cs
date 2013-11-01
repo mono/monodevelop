@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using NUnit.Framework;
 using UnitTests;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
@@ -33,24 +32,25 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Debugger.Tests
 {
 	public abstract class DebugTests: TestBase
 	{
-		string eid;
+		readonly protected string EngineId;
 		DebuggerEngine engine;
 		
-		public DebugTests (string engineId)
+		protected DebugTests (string engineId)
 		{
-			eid = engineId;
+			EngineId = engineId;
 		}
 		
 		public override void Setup ()
 		{
 			base.Setup ();
 			foreach (DebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
-				if (e.Id == eid) {
+				if (e.Id == EngineId) {
 					engine = e;
 					break;
 				}
@@ -60,23 +60,40 @@ namespace MonoDevelop.Debugger.Tests
 		
 		protected DebuggerSession Start (string test)
 		{
-			DotNetExecutionCommand cmd = new DotNetExecutionCommand ();
+			TargetRuntime runtime;
+			switch (EngineId) {
+			case "MonoDevelop.Debugger.Win32":
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
+				break;
+			case "Mono.Debugger.Soft":
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("Mono");
+				break;
+			default:
+				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+				break;
+			}
+
+			if (runtime == null)
+				return null;
+
+			var cmd = new DotNetExecutionCommand ();
 			cmd.Command = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "MonoDevelop.Debugger.Tests.TestApp.exe");
 			cmd.Arguments = test;
-			
+			cmd.TargetRuntime = runtime;
+
 			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
 			DebuggerSession session = engine.CreateSession ();
-			DebuggerSessionOptions ops = new DebuggerSessionOptions ();
+			var ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
 			FilePath path = Util.TestsRootDir;
 			path = path.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;
 			TextFile file = TextFile.ReadFile (path);
-			int i = file.Text.IndexOf ("void " + test);
+			int i = file.Text.IndexOf ("void " + test, StringComparison.Ordinal);
 			if (i == -1)
 				throw new Exception ("Test not found: " + test);
-			i = file.Text.IndexOf ("/*break*/", i);
+			i = file.Text.IndexOf ("/*break*/", i, StringComparison.Ordinal);
 			if (i == -1)
 				throw new Exception ("Break marker not found: " + test);
 			int line, col;
@@ -84,11 +101,9 @@ namespace MonoDevelop.Debugger.Tests
 			Breakpoint bp = session.Breakpoints.Add (path, line);
 			bp.Enabled = true;
 			
-			ManualResetEvent done = new ManualResetEvent (false);
+			var done = new ManualResetEvent (false);
 			
-			session.OutputWriter = delegate (bool isStderr, string text) {
-				Console.WriteLine ("PROC:" + text);
-			};
+			session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
 			
 			session.TargetHitBreakpoint += delegate {
 				done.Set ();

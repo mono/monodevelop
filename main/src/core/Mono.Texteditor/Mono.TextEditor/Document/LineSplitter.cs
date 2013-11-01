@@ -154,8 +154,11 @@ namespace Mono.TextEditor
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.Length);
 				nodes.Add (newLine);
-				if (offset > 0 && delimiterType != delimiter.UnicodeNewline)
-					LineEndingMismatch = true;
+				if (offset > 0) {
+					LineEndingMismatch |= delimiterType != delimiter.UnicodeNewline;
+				} else {
+					delimiterType = delimiter.UnicodeNewline;
+				}
 				offset = delimiterEndOffset;
 			}
 			var lastLine = new TreeNode (text.Length - offset, 0);

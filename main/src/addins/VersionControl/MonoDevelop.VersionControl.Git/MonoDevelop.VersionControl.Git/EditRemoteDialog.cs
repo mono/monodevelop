@@ -27,7 +27,7 @@
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class EditRemoteDialog : Gtk.Dialog
+	partial class EditRemoteDialog : Gtk.Dialog
 	{
 		readonly RemoteSource remote;
 		readonly bool updating;

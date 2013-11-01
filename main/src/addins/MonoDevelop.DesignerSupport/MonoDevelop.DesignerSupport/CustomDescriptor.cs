@@ -165,7 +165,7 @@ namespace MonoDevelop.DesignerSupport
  
 		public override void RemoveValueChanged (object component, EventHandler handler)
 		{
-			RemoveValueChanged (component, handler);
+			prop.RemoveValueChanged (component, handler);
 		}
 
 		public override object GetValue (object component)

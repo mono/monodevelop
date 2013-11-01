@@ -22,8 +22,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>DEBUG</DefineConstants>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,8 +36,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -2263,6 +2263,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\IRefactoringContext.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ImplicitFrameworkAssemblyReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\PortableFrameworkSubsetNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchInSolutionSearchCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

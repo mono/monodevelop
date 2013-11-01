@@ -12,8 +12,8 @@ using off_t = System.Int64;
 using size_t = System.Int32;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix {
-	public abstract class LibSvnClient {
-		public LibSvnClient ()
+	abstract class LibSvnClient {
+		protected LibSvnClient ()
 		{
 			client_version ();
 		}

@@ -655,10 +655,10 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			return MtaThread.Run (delegate
 			{
-				BreakEventInfo binfo = new BreakEventInfo ();
+				var binfo = new BreakEventInfo ();
 
 				lock (documents) {
-					Breakpoint bp = be as Breakpoint;
+					var bp = be as Breakpoint;
 					if (bp != null) {
 						if (bp is FunctionBreakpoint) {
 							// FIXME: implement breaking on function name
@@ -707,6 +707,20 @@ namespace MonoDevelop.Debugger.Win32
 							binfo.Handle = corBp;
 							binfo.SetStatus (BreakEventStatus.Bound, null);
 							return binfo;
+						}
+					}
+
+					var cp = be as Catchpoint;
+					if (cp != null) {
+						foreach (ModuleInfo mod in modules.Values) {
+							CorMetadataImport mi = mod.Importer;
+							if (mi != null) {
+								foreach (Type t in mi.DefinedTypes)
+									if (t.FullName == cp.ExceptionName) {
+										binfo.SetStatus (BreakEventStatus.Bound, null);
+										return binfo;
+									}
+							}
 						}
 					}
 				}

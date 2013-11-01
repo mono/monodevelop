@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (searchProjectAdded) break;
 			}
 			foreach (var project in collectedProjects)
-				yield return new FileList (project, TypeSystemService.GetProjectContext (project), project.Files.Select (f => f.FilePath));
+				yield return new FileList (project, TypeSystemService.GetProjectContext (project), project.Files.Where (f => f.BuildAction == BuildAction.Compile).Select (f => f.FilePath));
 			
 			foreach (var files in collectedFiles)
 				yield return new FileList (files.Key, TypeSystemService.GetProjectContext (files.Key), files.Value.Select (f => (FilePath)f));

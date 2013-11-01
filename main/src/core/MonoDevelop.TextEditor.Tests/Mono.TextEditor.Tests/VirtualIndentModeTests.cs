@@ -442,6 +442,28 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (2, 3), data.MainSelection.Anchor);
 
 		}
+
+		/// <summary>
+		/// Bug 15476 - Cursor is getting stuck when deleting last empty line with indents 
+		/// </summary>
+		[Test]
+		public void TestBug15476 ()
+		{
+			var data = CreateData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n\t\t\r\n\r\n");
+			data.Options.DefaultEolMarker = "\r\n";
+			data.IndentationTracker = new DefaultIndentationTracker (data.Document);
+			data.Caret.Location = new DocumentLocation (4, 3);
+
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (4, 2), data.Caret.Location);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (4, 1), data.Caret.Location);
+
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
+
+		}
+
 	}
 }
 

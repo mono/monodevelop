@@ -39,7 +39,7 @@ using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class MyersDiff : GitCommand<IList<DiffEntry>>
+	sealed class MyersDiff : GitCommand<IList<DiffEntry>>
 	{
 		AbstractTreeIterator oldTree;
 
@@ -171,7 +171,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="cached">whether to view the changes you staged for the next commit</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetCached(bool cached)
+		public MyersDiff SetCached(bool cached)
 		{
 			this.cached = cached;
 			return this;
@@ -179,7 +179,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="pathFilter">parameter, used to limit the diff to the named path</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetPathFilter(TreeFilter pathFilter)
+		public MyersDiff SetPathFilter(TreeFilter pathFilter)
 		{
 			this.pathFilter = pathFilter;
 			return this;
@@ -187,7 +187,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="oldTree">the previous state</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetOldTree(AbstractTreeIterator oldTree)
+		public MyersDiff SetOldTree(AbstractTreeIterator oldTree)
 		{
 			this.oldTree = oldTree;
 			return this;
@@ -195,7 +195,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="newTree">the updated state</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetNewTree(AbstractTreeIterator newTree)
+		public MyersDiff SetNewTree(AbstractTreeIterator newTree)
 		{
 			this.newTree = newTree;
 			return this;
@@ -204,7 +204,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <param name="showNameAndStatusOnly">whether to return only names and status of changed files
 		/// 	</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetShowNameAndStatusOnly(bool showNameAndStatusOnly
+		public MyersDiff SetShowNameAndStatusOnly(bool showNameAndStatusOnly
 		                                                             )
 		{
 			this.showNameAndStatusOnly = showNameAndStatusOnly;
@@ -213,7 +213,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="out">the stream to write line data</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetOutputStream(OutputStream @out)
+		public MyersDiff SetOutputStream(OutputStream @out)
 		{
 			this.@out = @out;
 			return this;
@@ -223,7 +223,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set number of context lines instead of the usual three.</remarks>
 		/// <param name="contextLines">the number of context lines</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetContextLines(int contextLines)
+		public MyersDiff SetContextLines(int contextLines)
 		{
 			this.contextLines = contextLines;
 			return this;
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set the given source prefix instead of "a/".</remarks>
 		/// <param name="sourcePrefix">the prefix</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetSourcePrefix(string sourcePrefix)
+		public MyersDiff SetSourcePrefix(string sourcePrefix)
 		{
 			this.sourcePrefix = sourcePrefix;
 			return this;
@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set the given destination prefix instead of "b/".</remarks>
 		/// <param name="destinationPrefix">the prefix</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetDestinationPrefix(string destinationPrefix
+		public MyersDiff SetDestinationPrefix(string destinationPrefix
 		                                                         )
 		{
 			this.destinationPrefix = destinationPrefix;
@@ -258,7 +258,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <seealso cref="NGit.NullProgressMonitor">NGit.NullProgressMonitor</seealso>
 		/// <param name="monitor">a progress monitor</param>
 		/// <returns>this instance</returns>
-		public virtual MyersDiff SetProgressMonitor(ProgressMonitor monitor)
+		public MyersDiff SetProgressMonitor(ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
 			return this;

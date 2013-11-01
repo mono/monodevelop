@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield return c;
 			}
 
-			foreach (var m in type.GetMethods (m  => m.IsDestructor)) {
+			foreach (var m in type.GetMethods (m  => m.IsDestructor, GetMemberOptions.IgnoreInheritedMembers)) {
 				yield return m;
 			}
 		}

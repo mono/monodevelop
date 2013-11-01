@@ -369,7 +369,7 @@ namespace MonoDevelop.CSharpBinding
 			var data = Create ("namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo$\n\t\t}\n\t}\n}\n");
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, "namespace aFoo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
+			CheckOutput (data, "namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
 		}
 	}
 }

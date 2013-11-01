@@ -28,7 +28,7 @@ using System;
 namespace MonoDevelop.VersionControl.Git
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class GitCommitDialogExtensionWidget : Gtk.Bin
+	partial class GitCommitDialogExtensionWidget : Gtk.Bin
 	{
 		public GitCommitDialogExtensionWidget ()
 		{

@@ -91,7 +91,7 @@ namespace MonoDevelop.Debugger.Win32
 			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_VALUETYPE;
 		}
 
-		public override bool IsClass (object type)
+		public override bool IsClass (EvaluationContext ctx, object type)
 		{
 			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_CLASS && ((CorType)type).Class != null;
 		}

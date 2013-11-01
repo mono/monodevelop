@@ -24,12 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests.Soft
 {
-	[TestFixture()]
+	[TestFixture]
 	public class SdbStackFrameTests: StackFrameTests
 	{
 		public SdbStackFrameTests (): base ("Mono.Debugger.Soft")

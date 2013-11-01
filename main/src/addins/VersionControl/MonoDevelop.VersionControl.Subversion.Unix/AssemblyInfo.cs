@@ -50,3 +50,4 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
 
+[assembly: InternalsVisibleTo ("MonoDevelop.VersionControl.Subversion.Tests")]

@@ -34,12 +34,8 @@ namespace MonoDevelop.CSharp.Project
 		private global::Gtk.Label label86;
 		private global::Gtk.Entry ignoreWarningsEntry;
 		private global::Gtk.CheckButton warningsAsErrorsCheckButton;
-		private global::Gtk.Label label94;
 		private global::Gtk.HBox hbox5;
 		private global::Gtk.Label label74;
-		private global::Gtk.HBox hbox6;
-		private global::Gtk.Label label88;
-		private global::Gtk.Entry additionalArgsEntry;
 
 		protected virtual void Build ()
 		{
@@ -291,13 +287,13 @@ namespace MonoDevelop.CSharp.Project
 			w21.Expand = false;
 			w21.Fill = false;
 			// Container child hbox60.Gtk.Box+BoxChild
-			this.warningLevelSpinButton = new global::Gtk.SpinButton (0D, 4D, 1D);
+			this.warningLevelSpinButton = new global::Gtk.SpinButton (0, 4, 1);
 			this.warningLevelSpinButton.CanFocus = true;
 			this.warningLevelSpinButton.Name = "warningLevelSpinButton";
-			this.warningLevelSpinButton.Adjustment.PageIncrement = 1D;
-			this.warningLevelSpinButton.ClimbRate = 1D;
+			this.warningLevelSpinButton.Adjustment.PageIncrement = 1;
+			this.warningLevelSpinButton.ClimbRate = 1;
 			this.warningLevelSpinButton.Numeric = true;
-			this.warningLevelSpinButton.Value = 2D;
+			this.warningLevelSpinButton.Value = 2;
 			this.hbox60.Add (this.warningLevelSpinButton);
 			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.warningLevelSpinButton]));
 			w22.Position = 1;
@@ -357,18 +353,6 @@ namespace MonoDevelop.CSharp.Project
 			w29.Expand = false;
 			w29.Fill = false;
 			// Container child vbox62.Gtk.Box+BoxChild
-			this.label94 = new global::Gtk.Label ();
-			this.label94.Name = "label94";
-			this.label94.Xalign = 0F;
-			this.label94.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Additional Options</b>");
-			this.label94.UseMarkup = true;
-			this.label94.UseUnderline = true;
-			this.vbox62.Add (this.label94);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.label94]));
-			w30.Position = 4;
-			w30.Expand = false;
-			w30.Fill = false;
-			// Container child vbox62.Gtk.Box+BoxChild
 			this.hbox5 = new global::Gtk.HBox ();
 			this.hbox5.Name = "hbox5";
 			this.hbox5.Spacing = 6;
@@ -377,41 +361,15 @@ namespace MonoDevelop.CSharp.Project
 			this.label74.WidthRequest = 18;
 			this.label74.Name = "label74";
 			this.hbox5.Add (this.label74);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label74]));
-			w31.Position = 0;
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label74]));
+			w30.Position = 0;
+			w30.Expand = false;
+			w30.Fill = false;
+			this.vbox62.Add (this.hbox5);
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.hbox5]));
+			w31.Position = 4;
 			w31.Expand = false;
 			w31.Fill = false;
-			// Container child hbox5.Gtk.Box+BoxChild
-			this.hbox6 = new global::Gtk.HBox ();
-			this.hbox6.Name = "hbox6";
-			this.hbox6.Spacing = 6;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.label88 = new global::Gtk.Label ();
-			this.label88.Name = "label88";
-			this.label88.LabelProp = global::Mono.Unix.Catalog.GetString ("_Additional arguments:");
-			this.label88.UseUnderline = true;
-			this.hbox6.Add (this.label88);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.label88]));
-			w32.Position = 0;
-			w32.Expand = false;
-			w32.Fill = false;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.additionalArgsEntry = new global::Gtk.Entry ();
-			this.additionalArgsEntry.CanFocus = true;
-			this.additionalArgsEntry.Name = "additionalArgsEntry";
-			this.additionalArgsEntry.IsEditable = true;
-			this.additionalArgsEntry.InvisibleChar = '●';
-			this.hbox6.Add (this.additionalArgsEntry);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.additionalArgsEntry]));
-			w33.Position = 1;
-			this.hbox5.Add (this.hbox6);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbox6]));
-			w34.Position = 1;
-			this.vbox62.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.hbox5]));
-			w35.Position = 5;
-			w35.Expand = false;
-			w35.Fill = false;
 			this.Add (this.vbox62);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -419,7 +377,6 @@ namespace MonoDevelop.CSharp.Project
 			this.label87.MnemonicWidget = this.symbolsEntry;
 			this.label85.MnemonicWidget = this.warningLevelSpinButton;
 			this.label86.MnemonicWidget = this.warningLevelSpinButton;
-			this.label88.MnemonicWidget = this.warningLevelSpinButton;
 			this.Show ();
 		}
 	}

@@ -7,14 +7,13 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/NUnit/MonoDevelop.NUnit.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="428 412">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="428 473">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -487,21 +486,6 @@ None</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="label94">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Additional Options&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-            <property name="UseUnderline">True</property>
-          </widget>
-          <packing>
-            <property name="Position">4</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.HBox" id="hbox5">
             <property name="MemberName" />
             <property name="Spacing">6</property>
@@ -517,45 +501,9 @@ None</property>
                 <property name="Fill">False</property>
               </packing>
             </child>
-            <child>
-              <widget class="Gtk.HBox" id="hbox6">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Label" id="label88">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">_Additional arguments:</property>
-                    <property name="UseUnderline">True</property>
-                    <property name="MnemonicWidget">warningLevelSpinButton</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Entry" id="additionalArgsEntry">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

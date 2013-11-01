@@ -667,6 +667,8 @@ namespace Mono.TextEditor
 
 			imContext.ClientWindow = this.GdkWindow;
 			Caret.PositionChanged += CaretPositionChanged;
+
+			SetWidgetBgFromStyle ();
 		}	
 
 		protected override void OnUnrealized ()
@@ -721,6 +723,15 @@ namespace Mono.TextEditor
 			// when the bg color is differs from the color style bg color (e.g. oblivion style)
 			if (this.textEditorData.ColorStyle != null && GdkWindow != null) {
 				settingWidgetBg = true; //prevent infinite recusion
+
+				Widget parent = this;
+				while (parent.Parent != null && !(parent is ScrolledWindow)) {
+					parent = parent.Parent;
+				}
+
+				if (parent != null) {
+					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+				}
 				
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
@@ -732,7 +743,6 @@ namespace Mono.TextEditor
 		{
 			base.OnStyleSet (previous_style);
 			if (!settingWidgetBg && textEditorData.ColorStyle != null) {
-//				textEditorData.ColorStyle.UpdateFromGtkStyle (this.Style);
 				SetWidgetBgFromStyle ();
 			}
 		}
