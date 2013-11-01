@@ -63,7 +63,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			#region ISearchDataSource implementation
 
-			Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
+			Xwt.Drawing.Image ISearchDataSource.GetIcon (int item)
 			{
 				return null;
 			}
