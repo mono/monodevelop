@@ -126,7 +126,7 @@ namespace MonoDevelop.GtkCore
 					var pargs = at.PositionalArguments;
 					if (pargs != null && pargs.Count > 0) {
 						var val = pargs[0] as ConstantResolveResult;
-						if (val is string)
+						if (val != null && val.ConstantValue is string)
 							return val.ConstantValue.ToString ();
 					}
 				}
