@@ -160,7 +160,7 @@ namespace MonoDevelop.Core
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
 		{
-			ReportUnhandledException (ex, willShutDown, silently);
+			ReportUnhandledException (ex, willShutDown, silently, null);
 		}
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
