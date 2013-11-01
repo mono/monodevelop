@@ -249,19 +249,20 @@ namespace MonoDevelop.MacInterop
 			if (handle == IntPtr.Zero)
 				return null;
 			
-			string str;
-			
-			int l = CFStringGetLength (handle);
-			IntPtr u = CFStringGetCharactersPtr (handle);
+			int length = CFStringGetLength (handle);
+			var unicode = CFStringGetCharactersPtr (handle);
 			IntPtr buffer = IntPtr.Zero;
-			if (u == IntPtr.Zero){
-				CFRange r = new CFRange (0, l);
-				buffer = Marshal.AllocCoTaskMem (l * 2);
-				CFStringGetCharacters (handle, r, buffer);
-				u = buffer;
+			string str;
+
+			if (unicode == IntPtr.Zero){
+				var range = new CFRange (0, length);
+				buffer = Marshal.AllocCoTaskMem (length * 2);
+				CFStringGetCharacters (handle, range, buffer);
+				unicode = buffer;
 			}
+
 			unsafe {
-				str = new string ((char *) u, 0, l);
+				str = new string ((char *) unicode, 0, length);
 			}
 			
 			if (buffer != IntPtr.Zero)
@@ -270,34 +271,6 @@ namespace MonoDevelop.MacInterop
 			return str;
 		}
 		
-		#endregion
-
-		#region CFMutableDictionary
-
-//		struct CFDictionaryKeyCallBacks {
-//			CFIndex version;
-//			CFDictionaryRetainCallBack retain;
-//			CFDictionaryReleaseCallBack release;
-//			CFDictionaryCopyDescriptionCallBack copyDescription;
-//			CFDictionaryEqualCallBack equal;
-//			CFDictionaryHashCallBack hash;
-//		};
-//
-//		struct CFDictionaryValueCallBacks {
-//			CFIndex version;
-//			CFDictionaryRetainCallBack retain;
-//			CFDictionaryReleaseCallBack release;
-//			CFDictionaryCopyDescriptionCallBack copyDescription;
-//			CFDictionaryEqualCallBack equal;
-//		};
-
-		// use kCFTypeDictionaryKeyCallBacks and kCFTypeDictionaryValueCallBacks
-
-		// CFDictionaryRef CFDictionaryCreate (CFAllocatorRef allocator, const void **keys, const void **values, CFIndex numValues, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
-		// CFMutableDictionaryRef CFDictionaryCreateMutable (CFAllocatorRef allocator, CFIndex capacity, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
-
-		// void CFDictionaryAddValue (CFMutableDictionaryRef theDict, const void *key, const void *value);
-
 		#endregion
 
 		static string GetError (OSStatus status)
