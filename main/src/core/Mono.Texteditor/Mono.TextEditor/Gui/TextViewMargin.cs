@@ -2442,7 +2442,7 @@ namespace Mono.TextEditor
 						cr.Fill ();
 					}
 					cr.Rectangle (divider, area.Y, right - divider, area.Height);
-					cr.SetSourceColor (DimColor (color));
+					cr.SetSourceColor (color);
 					cr.Fill ();
 
 					if (beforeDividerWidth > 0) {
