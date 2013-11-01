@@ -32,8 +32,8 @@ using svn_revnum_t = System.IntPtr;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix {
 	
-	public class LibSvnClient1 : LibSvnClient {
-		private const string svnclientlib = "libsvn_client-1.so.1";
+	sealed class LibSvnClient1 : LibSvnClient {
+		const string svnclientlib = "libsvn_client-1.so.1";
 		
 		public override IntPtr client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool)
 		{

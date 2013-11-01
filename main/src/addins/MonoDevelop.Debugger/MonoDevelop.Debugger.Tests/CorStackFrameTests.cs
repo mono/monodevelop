@@ -1,5 +1,5 @@
 //
-// UserGitConfigDialog.cs
+// CorStackFrametests.cs
 //
 // Author:
 //       Therzok <teromario@yahoo.com>
@@ -23,32 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+using NUnit.Framework;
 
-namespace MonoDevelop.VersionControl.Git
+namespace MonoDevelop.Debugger.Tests.Win32
 {
-	partial class UserGitConfigDialog : Gtk.Dialog
+	[TestFixture]
+	[Platform (Include = "Win")]
+	public class CorStackFrameTests : StackFrameTests
 	{
-		public UserGitConfigDialog ()
+		public CorStackFrameTests (): base ("MonoDevelop.Debugger.Win32")
 		{
-			this.Build ();
-			SetResponseSensitive (Gtk.ResponseType.Ok, false);
-		}
-
-		protected void OnChanged (object sender, EventArgs e)
-		{
-			bool allowedOk = !String.IsNullOrWhiteSpace (usernameEntry.Text) &&
-							 !String.IsNullOrWhiteSpace (emailEntry.Text);
-
-			SetResponseSensitive (Gtk.ResponseType.Ok, allowedOk);
-		}
-
-		public string UserText {
-			get { return usernameEntry.Text; }
-		}
-
-		public string EmailText {
-			get { return emailEntry.Text; }
 		}
 	}
 }

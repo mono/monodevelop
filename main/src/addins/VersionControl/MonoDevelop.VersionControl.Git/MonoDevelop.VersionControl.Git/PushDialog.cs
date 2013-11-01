@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class PushDialog : Gtk.Dialog
+	partial class PushDialog : Gtk.Dialog
 	{
 		readonly GitRepository repo;
 		

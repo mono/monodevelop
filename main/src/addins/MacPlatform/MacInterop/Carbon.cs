@@ -570,7 +570,7 @@ namespace MonoDevelop.MacInterop
 		int value;
 		
 		public int Value {
-			get { return Value; }
+			get { return value; }
 		}
 		
 		public OSType (int value)

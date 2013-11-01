@@ -30,7 +30,7 @@ using NGit.Transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class CredentialsDialog : Gtk.Dialog
+	partial class CredentialsDialog : Gtk.Dialog
 	{
 		readonly CredentialItem.YesNoType singleYesNoCred;
 		

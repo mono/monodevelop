@@ -726,15 +726,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		static FindReplace find;
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryReplace.Entry.Text ?? "");
+			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton ());
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
-			SearchReplace (null);
+			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton ());
 		}
 
-		readonly List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
+		readonly static List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
 		void UpdateStopButton ()
 		{
 			buttonStop.Sensitive = searchesInProgress.Count > 0;
@@ -750,7 +750,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		void SearchReplace (string replacePattern)
+		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton)
 		{
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
@@ -762,14 +762,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 			
-			Scope scope = GetScope ();
 			if (scope == null)
 				return;
 			
 			find = new FindReplace ();
 
-			string pattern = comboboxentryFind.Entry.Text;
-			FilterOptions options = GetFilterOptions ();
+			string pattern = findPattern;
 			if (!find.ValidatePattern (options, pattern)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
@@ -786,7 +784,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 					lock (searchesInProgress)
 						searchesInProgress.Add (searchMonitor);
-					UpdateStopButton ();
+					if (UpdateStopButton != null) {
+						Application.Invoke (delegate {
+							UpdateStopButton ();
+						});
+					}
 
 					DateTime timer = DateTime.Now;
 					string errorMessage = null;
@@ -821,9 +823,11 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
 					searchesInProgress.Remove (searchMonitor);
 				}
-				Application.Invoke (delegate {
-					UpdateStopButton ();
-				});
+				if (UpdateStopButton != null) {
+					Application.Invoke (delegate {
+						UpdateStopButton ();
+					});
+				}
 			});
 		}
 	}

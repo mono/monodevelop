@@ -5,7 +5,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion.Gui
 {
-	public partial class SslServerTrustDialog : Gtk.Dialog
+	partial class SslServerTrustDialog : Gtk.Dialog
 	{
 		SslFailure failures;
 		

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -50,7 +51,7 @@ namespace MonoDevelop.Core
 
 		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
 
-		static RaygunClient raygunClient;
+		static RaygunClient raygunClient = null;
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
@@ -100,10 +101,12 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
+#if ENABLE_RAYGUN
 			string raygunKey = BrandingService.GetString ("RaygunApiKey");
 			if (raygunKey != null) {
 				raygunClient = new RaygunClient (raygunKey);
 			}
+#endif
 
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			System.Diagnostics.Debug.Listeners.Clear ();
@@ -157,7 +160,7 @@ namespace MonoDevelop.Core
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
 		{
-			ReportUnhandledException (ex, willShutDown, silently);
+			ReportUnhandledException (ex, willShutDown, silently, null);
 		}
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
@@ -192,8 +195,13 @@ namespace MonoDevelop.Core
 					data = stream.ToArray ();
 				}
 
+				var customData = new Hashtable ();
+				customData["SystemInformation"] = SystemInformation.GetTextDescription ();
+
 				if (raygunClient != null) {
-					raygunClient.Send (ex, tags);
+					ThreadPool.QueueUserWorkItem (delegate {
+						raygunClient.Send (ex, tags, customData, BuildInfo.Version);
+					});
 				}
 
 				// Log to disk only if uploading fails.

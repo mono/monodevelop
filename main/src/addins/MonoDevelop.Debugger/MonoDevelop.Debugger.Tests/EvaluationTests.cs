@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Mono.Debugging.Client;
 using NUnit.Framework;
 
@@ -35,7 +34,7 @@ namespace MonoDevelop.Debugger.Tests
 		DebuggerSession ds;
 		StackFrame frame;
 		
-		public EvaluationTests (string de): base (de)
+		protected EvaluationTests (string de): base (de)
 		{
 		}
 		
@@ -43,14 +42,19 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			base.Setup ();
 			ds = Start ("TestEvaluation");
+			if (ds == null)
+				Assert.Ignore ("Engine not found: {0}", EngineId);
+
 			frame = ds.ActiveThread.Backtrace.GetFrame (0);
 		}
 		
 		public override void TearDown ()
 		{
 			base.TearDown ();
-			ds.Exit ();
-			ds.Dispose ();
+			if (ds != null) {
+				ds.Exit ();
+				ds.Dispose ();
+			}
 		}
 
 
@@ -59,7 +63,7 @@ namespace MonoDevelop.Debugger.Tests
 			return frame.GetExpressionValue (exp, true).Sync ();
 		}
 		
-		[Test()]
+		[Test]
 		public void This ()
 		{
 			ObjectValue val = Eval ("this");
@@ -67,7 +71,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.MainClass", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void UnaryOperators ()
 		{
 			ObjectValue val = Eval ("~1234");
@@ -91,7 +95,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void TypeReference ()
 		{
 			ObjectValue val = Eval ("System.String");
@@ -110,7 +114,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 		
-		[Test()]
+		[Test]
 		public virtual void TypeReferenceGeneric ()
 		{
 			ObjectValue val = Eval ("System.Collections.Generic.Dictionary<string,int>");
@@ -119,7 +123,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 		
-		[Test()]
+		[Test]
 		public virtual void Typeof ()
 		{
 			ObjectValue val = Eval ("typeof(System.Console)");
@@ -127,7 +131,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{System.Console}", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
@@ -168,7 +172,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void Indexers ()
 		{
 			ObjectValue val = Eval ("numbers[0]");
@@ -200,7 +204,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void MemberReference ()
 		{
 			ObjectValue val = Eval ("alist.Count");
@@ -226,7 +230,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void ConditionalExpression ()
 		{
 			ObjectValue val = Eval ("true ? \"yes\" : \"no\"");
@@ -238,7 +242,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void Cast ()
 		{
 			ObjectValue val;
@@ -364,7 +368,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void BinaryOperators ()
 		{
 			ObjectValue val;
@@ -457,7 +461,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("bool", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public virtual void Assignment ()
 		{
 			ObjectValue val;
@@ -494,7 +498,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("1", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public virtual void AssignmentStatic ()
 		{
 			ObjectValue val;
@@ -508,7 +512,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"some static\"", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatBool ()
 		{
 			ObjectValue val;
@@ -518,7 +522,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("false", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatNumber ()
 		{
 			ObjectValue val;
@@ -545,7 +549,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("123.456", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatString ()
 		{
 			ObjectValue val;
@@ -559,7 +563,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\" \\\" \\\\ \\a \\b \\f \\v \\n \\r \\t\"", val.Value);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatChar ()
 		{
 			ObjectValue val;
@@ -612,7 +616,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("9 '\\t'", val.DisplayValue);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatObject ()
 		{
 			ObjectValue val;
@@ -634,7 +638,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("WithToString", val.TypeName);*/
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatArray ()
 		{
 			ObjectValue val;
@@ -652,7 +656,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int[,,]", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatGeneric ()
 		{
 			ObjectValue val;
@@ -678,7 +682,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("Thing<string>.Done<int>", val.TypeName);
 		}
 		
-		[Test()]
+		[Test]
 		public void FormatEnum ()
 		{
 			ObjectValue val;

@@ -14,6 +14,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Subversion</property>
     <property name="Modal">True</property>
     <property name="Resizable">False</property>
@@ -224,6 +225,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Repository Certified by an Unknown Authority</property>
     <property name="Modal">True</property>
     <property name="Buttons">2</property>
@@ -711,6 +713,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Client Certificate Required</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
@@ -784,6 +787,7 @@
                 <child>
                   <widget class="MonoDevelop.Components.FileEntry" id="fileentry">
                     <property name="MemberName" />
+                    <property name="DisplayAsRelativePath">False</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -872,6 +876,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Password for client certificate</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>

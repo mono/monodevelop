@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class MergeDialog : Dialog
+	partial class MergeDialog : Dialog
 	{
 		readonly TreeStore store;
 		readonly GitRepository repo;

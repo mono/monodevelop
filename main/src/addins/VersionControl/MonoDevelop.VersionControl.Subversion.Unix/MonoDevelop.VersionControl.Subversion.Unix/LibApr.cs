@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
-	public abstract class LibApr
+	abstract class LibApr
 	{
 		public static readonly int APR_OS_DEFAULT = 0xFFF;
 		public static readonly int APR_WRITE = 2;
@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 		
-		public LibApr ()
+		protected LibApr ()
 		{
 			initialize ();
 		}
@@ -64,9 +64,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 	}
 
-	public class LibApr0: LibApr
+	sealed class LibApr0: LibApr
 	{
-		private const string aprlib = "libapr-0.so.0";
+		const string aprlib = "libapr-0.so.0";
 		
 		public override int initialize() { return apr_initialize (); }
 		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
@@ -97,9 +97,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		[DllImport(aprlib)] static extern int apr_file_close (IntPtr file); 	
 	}
 
-	public class LibApr1: LibApr
+	sealed class LibApr1: LibApr
 	{
-		private const string aprlib = "libapr-1.so.0";
+		const string aprlib = "libapr-1.so.0";
 		
 		public override int initialize() { return apr_initialize (); }
 		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }

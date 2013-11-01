@@ -135,6 +135,14 @@ namespace Mono.TextEditor.Tests
 			byte[] input = new byte[] { (byte)'a',(byte)'a', 0xEF, 0xBB, 0xBF };
 			Assert.AreEqual ("aa\uFEFF", TextFileUtility.GetText (input));
 		}
+
+		[Test()]
+		public void TestGB18030 ()
+		{
+			var src = "南北西东";
+			byte[] input = Encoding.GetEncoding (54936).GetBytes (src);
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
+		}
 	}
 }
 

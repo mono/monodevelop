@@ -15,7 +15,7 @@ using System.Timers;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
-	public sealed class SvnClient : SubversionVersionControl
+	sealed class SvnClient : SubversionVersionControl
 	{
 		static LibApr apr;
 		static readonly Lazy<bool> isInstalled;
@@ -201,7 +201,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 	}
 
-	public sealed class UnixSvnBackend : SubversionBackend
+	sealed class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
 			get {
@@ -1527,7 +1527,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 		
-		private class LogCollector
+		class LogCollector
 		{
 			static readonly DateTime Epoch = new DateTime (1970, 1, 1);
 			

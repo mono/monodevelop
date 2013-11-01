@@ -290,7 +290,7 @@ namespace Mono.TextEditor
 		public double LineNumberToY (int lineNumber)
 		{
 			int curLine = System.Math.Min (tree.Root.totalCount, lineNumber);
-			if (curLine < 0)
+			if (curLine <= 0)
 				return 0;
 			lock (tree) {
 				var node = GetSingleLineNode (curLine);

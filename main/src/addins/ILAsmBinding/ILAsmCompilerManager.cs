@@ -53,10 +53,10 @@ namespace ILAsmBinding
 //			ILAsmCompilerParameters compilerParameters = (ILAsmCompilerParameters)configuration.CompilationParameters ?? new ILAsmCompilerParameters ();
 			string outputName       = configuration.CompiledOutputName;
 			
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			sb.AppendFormat ("\"/output:{0}\" ", outputName);
 			
-			List<string> gacRoots = new List<string> ();
+			var gacRoots = new List<string> ();
 			
 			
 			switch (configuration.CompileTarget) {
@@ -90,13 +90,13 @@ namespace ILAsmBinding
 			
 			string ilasm = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "ilasm");
 			if (ilasm == null) {
-				BuildResult res = new BuildResult ();
+				var res = new BuildResult ();
 				res.AddError (GettextCatalog.GetString ("IL compiler (ilasm) not found."));
 				if (configuration.TargetRuntime is MsNetTargetRuntime)
 					res.AddError (GettextCatalog.GetString ("You may need to install the .NET SDK."));
 				return res;
 			}
-			string outstr = ilasm + " " + sb.ToString ();
+			string outstr = ilasm + " " + sb;
 			monitor.Log.WriteLine (outstr);
 			
 			string workingDir = ".";
@@ -110,7 +110,7 @@ namespace ILAsmBinding
 					workingDir = ".";
 			}
 
-			LoggingService.LogInfo ("ilasm " + sb.ToString ());
+			LoggingService.LogInfo ("ilasm " + sb);
 			
 			var envVars = configuration.TargetRuntime.GetToolsExecutionEnvironment (configuration.TargetFramework);
 			int exitCode = DoCompilation (outstr, workingDir, envVars, gacRoots, ref output, ref error);
@@ -134,11 +134,11 @@ namespace ILAsmBinding
 		
 		static BuildResult ParseOutput (string stdout, string stderr)
 		{
-			BuildResult result = new BuildResult ();
+			var result = new BuildResult ();
 			
-			StringBuilder compilerOutput = new StringBuilder ();
+			var compilerOutput = new StringBuilder ();
 			bool typeLoadException = false;
-			foreach (string s in new string[] { stdout, stderr }) {
+			foreach (string s in new [] { stdout, stderr }) {
 				StreamReader sr = File.OpenText (s);
 				while (true) {
 					if (typeLoadException) {
@@ -155,8 +155,8 @@ namespace ILAsmBinding
 					if (curLine.Length == 0) 
 						continue;
 					
-					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException") || 
-					    curLine.StartsWith ("Unhandled Exception: System.IO.FileNotFoundException")) {
+					if (curLine.StartsWith ("Unhandled Exception: System.TypeLoadException", StringComparison.Ordinal) ||
+					    curLine.StartsWith ("Unhandled Exception: System.IO.FileNotFoundException", StringComparison.Ordinal)) {
 						result.ClearErrors ();
 						typeLoadException = true;
 					}
@@ -169,7 +169,7 @@ namespace ILAsmBinding
 				sr.Close();
 			}
 			if (typeLoadException) {
-				Regex reg  = new Regex (@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
+				var reg  = new Regex (@".*WARNING.*used in (mscorlib|System),.*", RegexOptions.Multiline);
 				if (reg.Match (compilerOutput.ToString ()).Success)
 					result.AddError ("", 0, 0, "", "Error: A referenced assembly may be built with an incompatible CLR version. See the compilation output for more details.");
 				else
@@ -179,19 +179,19 @@ namespace ILAsmBinding
 			return result;
 		}
 		
-		static int DoCompilation (string outstr, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error) 
+		static int DoCompilation (string outstr, string workingDir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
 			
-			StreamWriter outwr = new StreamWriter (output);
-			StreamWriter errwr = new StreamWriter (error);
+			var outwr = new StreamWriter (output);
+			var errwr = new StreamWriter (error);
 			string[] tokens = outstr.Split (' ');
 			
 			outstr = outstr.Substring (tokens[0].Length+1);
 
-			ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], outstr);
-			pinfo.WorkingDirectory = working_dir;
+			var pinfo = new ProcessStartInfo (tokens[0], outstr);
+			pinfo.WorkingDirectory = workingDir;
 			
 			if (gacRoots.Count > 0) {
 				// Create the gac prefix string
@@ -208,7 +208,7 @@ namespace ILAsmBinding
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;
 			
-			MonoDevelop.Core.Execution.ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
+			ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
 			pw.WaitForOutput();
 			int exitCode = pw.ExitCode;
 			outwr.Close();
@@ -217,21 +217,21 @@ namespace ILAsmBinding
 			return exitCode;
 		}
 
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*?)\s?\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*(:|(--))\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-		static BuildError CreateErrorFromString (string error_string)
+		static readonly Regex regexError = new Regex (@"^(\s*(?<file>.*?)\s?\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*(:|(--))\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+		static BuildError CreateErrorFromString (string errorString)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from breaking this.
-			if (error_string.StartsWith ("WROTE SYMFILE") ||
-			    error_string.StartsWith ("OffsetTable") ||
-			    error_string.StartsWith ("Compilation succeeded") ||
-			    error_string.StartsWith ("Compilation failed"))
+			if (errorString.StartsWith ("WROTE SYMFILE", StringComparison.Ordinal) ||
+			    errorString.StartsWith ("OffsetTable", StringComparison.Ordinal) ||
+			    errorString.StartsWith ("Compilation succeeded", StringComparison.Ordinal) ||
+			    errorString.StartsWith ("Compilation failed", StringComparison.Ordinal))
 				return null;
 			
-			Match match = regexError.Match(error_string);
+			Match match = regexError.Match(errorString);
 			if (!match.Success) 
 				return null;
 			
-			BuildError error = new BuildError ();
+			var error = new BuildError ();
 			error.FileName = match.Result ("${file}") ?? "";
 			
 			string line = match.Result ("${line}");

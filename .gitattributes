@@ -17,6 +17,15 @@
 # sln is always CRLF, even on linux, so don't convert
 *.sln	-crlf
 
+# configure and makefiles should be lf only
+configure
+configure.in
+configure.ac
+configure.sh
+Makefile
+Makefile.am
+Makefile.include
+
 # These files can be converted, since they're new
 .gitattributes	crlf
 .gitignore	crlf

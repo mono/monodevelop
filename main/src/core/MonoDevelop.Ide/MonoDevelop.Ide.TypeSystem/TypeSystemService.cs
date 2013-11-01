@@ -1674,7 +1674,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
-		public static void Unload (WorkspaceItem item)
+		internal static void Unload (WorkspaceItem item)
 		{
 			var ws = item as Workspace;
 			if (ws != null) {
@@ -1696,23 +1696,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static void UnloadProject (Project project)
+		internal static void UnloadProject (Project project)
 		{
-			lock (projectWrapperUpdateLock) {
-				if (DecLoadCount (project) != 0)
-					return;
-				Counters.ParserService.ProjectsLoaded--;
-				project.FileAddedToProject -= OnFileAdded;
-				project.FileRemovedFromProject -= OnFileRemoved;
-				project.FileRenamedInProject -= OnFileRenamed;
-				project.Modified -= OnProjectModified;
+			if (DecLoadCount (project) != 0)
+				return;
+			Counters.ParserService.ProjectsLoaded--;
+			project.FileAddedToProject -= OnFileAdded;
+			project.FileRemovedFromProject -= OnFileRemoved;
+			project.FileRenamedInProject -= OnFileRenamed;
+			project.Modified -= OnProjectModified;
 				
-				var wrapper = projectContents [project];
+			ProjectContentWrapper wrapper;
+			lock (projectWrapperUpdateLock) {
+				wrapper = projectContents [project];
 				projectContents.Remove (project);
-
-				StoreProjectCache (project, wrapper);
-				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 			}
+			StoreProjectCache (project, wrapper);
+			OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 		}
 
 		public static event EventHandler<ProjectUnloadEventArgs> ProjectUnloaded;
@@ -2696,45 +2696,41 @@ namespace MonoDevelop.Ide.TypeSystem
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
 
-					lock (projectWrapperUpdateLock) {
-						foreach (var file in projectFiles) {
-							if (file.BuildAction == null)
-								continue;
-							// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-							var oldFile = cnt.GetFile (file.Name);
-							oldFileNewFile.Add (Tuple.Create (file, oldFile));
-						}
+					foreach (var file in projectFiles) {
+						if (file.BuildAction == null)
+							continue;
+						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
+						var oldFile = cnt.GetFile (file.Name);
+						oldFileNewFile.Add (Tuple.Create (file, oldFile));
 					}
 
 					// This is disk intensive and slow
 					oldFileNewFile.RemoveAll (t => !IsFileModified (t.Item1, t.Item2));
 
-					lock (projectWrapperUpdateLock) {
-						foreach (var v in oldFileNewFile) {
-							var file = v.Item1;
-							var oldFile = v.Item2;
-							if (oldFile == null) {
-								var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name), file.BuildAction);
-								if (parser == null)
-									continue;
-							}
-							modifiedFiles.Add (file);
+					foreach (var v in oldFileNewFile) {
+						var file = v.Item1;
+						var oldFile = v.Item2;
+						if (oldFile == null) {
+							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name), file.BuildAction);
+							if (parser == null)
+								continue;
 						}
-						var tags = content.GetExtensionObject <ProjectCommentTags> ();
-
-						// check if file needs to be removed from project content 
-						foreach (var file in cnt.Files) {
-							if (project.GetProjectFile (file.FileName) == null) {
-								content.UpdateContent (c => c.RemoveFiles (file.FileName));
-								content.InformFileRemoved (new ParsedFileEventArgs (file));
-								if (tags != null)
-									tags.RemoveFile (project, file.FileName);
-							}
-						}
-					
-						if (modifiedFiles.Count > 0)
-							QueueParseJob (content, modifiedFiles);
+						modifiedFiles.Add (file);
 					}
+					var tags = content.GetExtensionObject <ProjectCommentTags> ();
+
+					// check if file needs to be removed from project content 
+					foreach (var file in cnt.Files) {
+						if (project.GetProjectFile (file.FileName) == null) {
+							content.UpdateContent (c => c.RemoveFiles (file.FileName));
+							content.InformFileRemoved (new ParsedFileEventArgs (file));
+							if (tags != null)
+								tags.RemoveFile (project, file.FileName);
+						}
+					}
+				
+					if (modifiedFiles.Count > 0)
+						QueueParseJob (content, modifiedFiles);
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception in check modified files.", e);
 				} finally {

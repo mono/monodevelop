@@ -124,15 +124,14 @@ namespace MonoDevelop.VersionControl.Views
 			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
 
 			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
-//			revertButton.Sensitive = false;
+			revertButton.Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
 
 			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
-//			revertToButton.Sensitive = false;
+			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
 
 			refreshButton = new DocumentToolButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("Refresh"));
-//			refreshButton.Sensitive = false;
 			refreshButton.Clicked += new EventHandler (RefreshClicked);
 
 			searchEntry = new SearchEntry ();
@@ -305,6 +304,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ShowLoading ();
 			info.Start (true);
+			revertButton.Sensitive = revertToButton.Sensitive = false;
 		}
 
 		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
@@ -596,6 +596,8 @@ namespace MonoDevelop.VersionControl.Views
 			
 			if (d == null)
 				return;
+
+			revertButton.Sensitive = revertToButton.Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {

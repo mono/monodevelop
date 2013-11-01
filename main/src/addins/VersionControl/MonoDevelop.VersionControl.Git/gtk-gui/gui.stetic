@@ -13,6 +13,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.PushDialog" design-size="730 540">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Push to Repository</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -150,6 +151,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserInfoConflictDialog" design-size="529 249">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">User Information Conflict</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -431,6 +433,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.GitConfigurationDialog" design-size="602 410">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Git Repository Configuration</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
@@ -849,6 +852,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.EditBranchDialog" design-size="400 200">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Branch Properties</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1031,6 +1035,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.EditRemoteDialog" design-size="422 206">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Remote Source</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1256,6 +1261,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.MergeDialog" design-size="469 487">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
@@ -1383,6 +1389,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.CredentialsDialog" design-size="500 132">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Git Credentials</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">4</property>
@@ -1502,6 +1509,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.Git.GitOptionsPanelWidget" design-size="391 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox2">
         <property name="MemberName" />
@@ -1596,6 +1604,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.StashManagerDialog" design-size="575 367">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Stash Manager</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
@@ -1749,6 +1758,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.NewStashDialog" design-size="412 114">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Stash</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1842,6 +1852,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget" design-size="319 114">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
@@ -1988,6 +1999,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserGitConfigDialog" design-size="400 184">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>

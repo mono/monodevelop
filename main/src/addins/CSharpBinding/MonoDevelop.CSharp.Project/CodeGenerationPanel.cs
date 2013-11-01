@@ -59,7 +59,6 @@ namespace MonoDevelop.CSharp.Project
 			generateOverflowChecksCheckButton.Active   = compilerParameters.GenerateOverflowChecks;
 			warningsAsErrorsCheckButton.Active         = compilerParameters.TreatWarningsAsErrors;
 			warningLevelSpinButton.Value               = compilerParameters.WarningLevel;
-			additionalArgsEntry.Text                   = compilerParameters.AdditionalArguments;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 			
 			int i = CSharpLanguageBinding.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
@@ -91,7 +90,6 @@ namespace MonoDevelop.CSharp.Project
 			compilerParameters.GenerateOverflowChecks = generateOverflowChecksCheckButton.Active;
 			compilerParameters.TreatWarningsAsErrors  = warningsAsErrorsCheckButton.Active;
 			compilerParameters.WarningLevel           = warningLevelSpinButton.ValueAsInt;
-			compilerParameters.AdditionalArguments    = additionalArgsEntry.Text;
 			compilerParameters.NoWarnings             = ignoreWarningsEntry.Text;
 			compilerParameters.PlatformTarget         = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
 
