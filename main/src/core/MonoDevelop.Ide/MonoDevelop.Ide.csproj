@@ -824,18 +824,6 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-normal-32%402x.png">
       <LogicalName>ico-stop-normal-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationBuildingIcon.png">
-      <LogicalName>notificationBuildingIcon.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationDisclosure-Active.png">
-      <LogicalName>notificationDisclosure-Active.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationDisclosure-Normal.png">
-      <LogicalName>notificationDisclosure-Normal.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationErrorIcon.png">
-      <LogicalName>notificationErrorIcon.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-down-16.png">
       <LogicalName>disclose-arrow-down-16.png</LogicalName>
     </EmbeddedResource>
