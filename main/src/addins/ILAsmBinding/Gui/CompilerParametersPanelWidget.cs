@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Gtk;
@@ -32,17 +31,17 @@ using Gtk;
 namespace ILAsmBinding
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	partial class CompilerParametersPanelWidget : Gtk.Bin
+	partial class CompilerParametersPanelWidget : Bin
 	{
 		public CompilerParametersPanelWidget()
 		{
 			this.Build();
 			
-			ListStore store = new ListStore (typeof (string));
+			var store = new ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Executable"));
 			store.AppendValues (GettextCatalog.GetString ("Library"));
 			compileTargetCombo.Model = store;
-			CellRendererText cr = new CellRendererText ();
+			var cr = new CellRendererText ();
 			compileTargetCombo.PackStart (cr, true);
 			compileTargetCombo.AddAttribute (cr, "text", 0);
 		}
@@ -59,11 +58,7 @@ namespace ILAsmBinding
 		
 		public void Store ()
 		{
-			if (compileTargetCombo.Active == 0) {
-				project.CompileTarget = CompileTarget.Exe;
-			} else {
-				project.CompileTarget = CompileTarget.Library;
-			}
+			project.CompileTarget = compileTargetCombo.Active == 0 ? CompileTarget.Exe : CompileTarget.Library;
 			configuration.DebugMode = checkbuttonIncludeDebugInfo.Active;
 		}
 	}
