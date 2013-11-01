@@ -69,9 +69,9 @@ namespace MonoDevelop.Components.Docking
 
 		static DockItemTitleTab ()
 		{
-			pixClose = Xwt.Drawing.Image.FromResource ("stock-close-12.png");
-			pixAutoHide = Xwt.Drawing.Image.FromResource ("stock-auto-hide.png");
-			pixDock = Xwt.Drawing.Image.FromResource ("stock-dock.png");
+			pixClose = Xwt.Drawing.Image.FromResource ("pad-close-9.png");
+			pixAutoHide = Xwt.Drawing.Image.FromResource ("pad-minimize-9.png");
+			pixDock = Xwt.Drawing.Image.FromResource ("pad-dock-9.png");
 		}
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)

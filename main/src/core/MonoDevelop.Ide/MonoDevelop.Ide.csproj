@@ -635,20 +635,23 @@
     <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.SortByCat.png">
       <LogicalName>MonoDevelop.Components.PropertyGrid.SortByCat.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-auto-hide.png">
-      <LogicalName>stock-auto-hide.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-minimize-9.png">
+      <LogicalName>pad-minimize-9.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-close-12.png">
-      <LogicalName>stock-close-12.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-minimize-7%402x.png">
+      <LogicalName>pad-minimize-7@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-dock.png">
-      <LogicalName>stock-dock.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-close-9.png">
+      <LogicalName>pad-close-9.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-menu-left-12.png">
-      <LogicalName>stock-menu-left-12.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-close-7%402x.png">
+      <LogicalName>pad-close-7@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-menu-right-12.png">
-      <LogicalName>stock-menu-right-12.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-dock-9.png">
+      <LogicalName>pad-dock-9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-dock-7%402x.png">
+      <LogicalName>pad-dock-7@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml">
       <LogicalName>ProjectPadContextMenu.addin.xml</LogicalName>
