@@ -109,6 +109,16 @@ display in a help buffer instead.")
   (with-current-buffer (find-file-noselect file)
     (fsharp-ac-parse-current-buffer)))
 
+
+(defun fsharp-ac--isIdChar (c)
+  (let ((gc (get-char-code-property c 'general-category)))
+    (or
+     (-any? (lambda (x) (string= gc x)) '("Lu" "Ll" "Lt" "Lm" "Lo" "Nl" "Nd" "Pc" "Mn" "Mc"))
+     (eq c 39))))
+
+(defun fsharp-ac--isNormalId (s)
+  (-all? (lambda (x) x) (mapcar 'fsharp-ac--isIdChar s)))
+
 ;;; ----------------------------------------------------------------------------
 ;;; File Parsing and loading
 
@@ -242,7 +252,6 @@ display in a help buffer instead.")
          (key (if ticks (cadr ticks) item))
          (prop (gethash key fsharp-ac-current-helptext))
          (help (if prop prop "Loading documentation...")))
-    (message "key was '%s'" key)
     (pos-tip-fill-string help popup-tip-max-width)))
 
 (defun fsharp-ac-candidate ()
@@ -524,17 +533,6 @@ around to the start of the buffer."
         (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
       
     (setq msg (fsharp-ac--get-msg proc)))))
-
-
-(defun fsharp-ac--isIdChar (c)
-  (let ((gc (get-char-code-property c 'general-category)))
-    (or
-     (-any? (lambda (x) (string= gc x)) '("Lu" "Ll" "Lt" "Lm" "Lo" "Nl" "Nd" "Pc" "Mn" "Mc"))
-     (eq c 39))))
-
-(defun fsharp-ac--isNormalId (s)
-  (-all? (lambda (x) x) (mapcar 'isIdChar s)))
-
 
 (defun fsharp-ac-handle-completion (data)
     (case fsharp-ac-status
