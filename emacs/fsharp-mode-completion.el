@@ -64,7 +64,7 @@ display in a help buffer instead.")
 
 ;;; Both in seconds. Note that background process uses ms.
 (defvar fsharp-ac-blocking-timeout 0.4)
-(defvar fsharp-ac-idle-timeout 2)
+(defvar fsharp-ac-idle-timeout 1)
 
 ;;; ----------------------------------------------------------------------------
 
@@ -273,10 +273,7 @@ display in a help buffer instead.")
 
     (acknowledged
      (setq fsharp-ac-status 'idle)
-     fsharp-ac-current-candidate)
-
-    (preempted
-     nil)))
+     fsharp-ac-current-candidate)))
 
 (defun fsharp-ac-prefix ()
   (or (ac-prefix-symbol)
@@ -351,11 +348,10 @@ The current buffer must be an F# file that exists on disk."
 
 (defun fsharp-ac/complete-at-point ()
   (interactive)
-  (if (and (fsharp-ac-can-make-request)
+  (when (and (fsharp-ac-can-make-request)
            (eq fsharp-ac-status 'idle)
            fsharp-ac-intellisense-enabled)
-      (fsharp-ac--ac-start)
-    (setq fsharp-ac-status 'preempted)))
+      (fsharp-ac--ac-start)))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Errors and Overlays
@@ -535,20 +531,13 @@ around to the start of the buffer."
     (setq msg (fsharp-ac--get-msg proc)))))
 
 (defun fsharp-ac-handle-completion (data)
-    (case fsharp-ac-status
-      (preempted
-       (setq fsharp-ac-status 'idle)
-       (fsharp-ac--ac-start)
-       (ac-update))
-
-      (otherwise
-       (setq fsharp-ac-current-candidate (-map (lambda (s) (if (fsharp-ac--isNormalId s) s
-                                                        (s-append "``" (s-prepend "``" s))))
-                                               data)
-             fsharp-ac-status 'acknowledged)
-       (fsharp-ac--ac-start :force-init t)
-       (ac-update)
-       (setq fsharp-ac-status 'idle))))
+  (setq fsharp-ac-current-candidate (-map (lambda (s) (if (fsharp-ac--isNormalId s) s
+                                                   (s-append "``" (s-prepend "``" s))))
+                                          data)
+        fsharp-ac-status 'acknowledged)
+  (fsharp-ac--ac-start :force-init t)
+  (ac-update)
+  (setq fsharp-ac-status 'idle))
 
 (defun fsharp-ac-handle-doctext (data)
   (setq fsharp-ac-current-helptext data))

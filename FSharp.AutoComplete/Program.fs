@@ -216,8 +216,9 @@ type internal IntelliSenseAgent() =
       // Otherwise try to get type information & run the request
       agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
-  /// Invokes dot-completion request and writes information to the standard output
-  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet> =
+  /// Invokes dot-completion request. Returns possible completions
+  /// and current residue.
+  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
     let info = x.GetTypeCheckInfo(opts, time)
     Option.bind (fun (info: TypeCheckResults) ->
       // Get the long identifier before the current location
@@ -230,7 +231,7 @@ type internal IntelliSenseAgent() =
       // Get items & generate output
       try
         Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
-              |> Async.RunSynchronously)
+              |> Async.RunSynchronously, residue)
       with :? System.TimeoutException as e ->
                  None) info
 
@@ -578,7 +579,7 @@ module internal Main =
               let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
 
               match decls with
-              | Some decls ->
+              | Some (decls, residue) ->
                   match state.OutputMode with
                   | Text ->
                       printfn "DATA: completion"
@@ -586,14 +587,13 @@ module internal Main =
                       printfn "<<EOF>>"
 
                   | Json ->
-
                       let ds = List.sortBy (fun (d: Declaration) -> d.Name)
                                  [ for d in decls.Items do yield d ]
                       let helptext =
-                        match ds with
-                        | [] -> Map.empty
-                        | d::_ -> let tip = TipFormatter.formatTip d.DescriptionText
-                                  Map.add d.Name tip Map.empty
+                        match List.tryFind (fun (d: Declaration) -> d.Name.StartsWith residue) ds with
+                        | None -> Map.empty
+                        | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
+                                    Map.add d.Name tip Map.empty
 
                       prAsJson { Kind = "helptext"; Data = helptext }
                                   
