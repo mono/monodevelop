@@ -29,7 +29,7 @@
 (require 'fsharp-doc)
 (require 'inf-fsharp-mode)
 
-(defconst fsharp-mode-version 0.9
+(defconst fsharp-mode-version 1.0
   "Version of this fsharp-mode")
 
 ;;; Compilation

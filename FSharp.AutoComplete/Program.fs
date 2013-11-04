@@ -5,7 +5,6 @@ namespace FSharp.InteractiveAutocomplete
 
 open System
 open System.IO
-//open System.Collections.Generic
 
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
