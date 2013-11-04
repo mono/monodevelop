@@ -364,7 +364,10 @@ The current buffer must be an F# file that exists on disk."
 (defun fsharp-ac-request-errors ()
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
-    (log-psendstr fsharp-ac-completion-process "errors\n")))
+    (log-psendstr fsharp-ac-completion-process "errors\n"))
+  ; Perform some emergency fixup if things got out of sync
+  (when (not ac-completing)
+    (setq fsharp-ac-status 'idle)))
 
 (defun fsharp-ac-line-column-to-pos (line col)
   (save-excursion
