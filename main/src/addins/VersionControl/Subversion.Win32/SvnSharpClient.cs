@@ -439,15 +439,14 @@ namespace SubversionAddinWindows
 									  ent.RemoteUpdateCommitAuthor, "(unavailable)", null);
 			}
 
-			SvnSchedule sched = ent.WorkingCopyInfo != null ? ent.WorkingCopyInfo.Schedule : SvnSchedule.Normal;
-			VersionStatus status = ConvertStatus (sched, ent.LocalContentStatus);
+			VersionStatus status = ConvertStatus (SvnSchedule.Normal, ent.LocalContentStatus);
 
 			bool readOnly = File.Exists (ent.FullPath) && (File.GetAttributes (ent.FullPath) & FileAttributes.ReadOnly) != 0;
 
 			if (ent.WorkingCopyInfo != null) {
-				if (ent.RemoteLock != null || ent.WorkingCopyInfo.LockToken != null) {
+				if (ent.RemoteLock != null || ent.LocalLock != null) {
 					status |= VersionStatus.LockRequired;
-					if (ent.WorkingCopyInfo.LockToken != null || (ent.RemoteLock != null && ent.RemoteLock.Token != null))
+					if (ent.LocalLock != null || (ent.RemoteLock != null && ent.RemoteLock.Token != null))
 						status |= VersionStatus.LockOwned;
 					else
 						status |= VersionStatus.Locked;
@@ -459,7 +458,7 @@ namespace SubversionAddinWindows
 			string repoPath = ent.Uri != null ? ent.Uri.ToString () : null;
 			SvnRevision newRev = null;
 			if (ent.WorkingCopyInfo != null)
-				newRev = new SvnRevision (repo, (int) ent.WorkingCopyInfo.Revision);
+				newRev = new SvnRevision (repo, (int) ent.Revision);
 
 			var ret = new VersionInfo (ent.FullPath, repoPath, ent.NodeKind == SvnNodeKind.Directory,
 											   status, newRev,
