@@ -43,11 +43,14 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
-			if (dataObject is SolutionItem)
-				OldChangeLogData.Migrate ((SolutionItem)dataObject);
-			else if (dataObject is Solution)
-				OldChangeLogData.Migrate (((Solution)dataObject).RootFolder);
-			
+			var solutionItem = dataObject as SolutionItem;
+			if (solutionItem != null)
+				OldChangeLogData.Migrate (solutionItem);
+			else {
+				var solution = dataObject as Solution;
+				if (solution != null)
+					OldChangeLogData.Migrate (solution.RootFolder);
+			}
 			base.Initialize (dialog, dataObject);
 		}
 		

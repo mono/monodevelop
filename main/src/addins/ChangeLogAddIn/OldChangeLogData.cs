@@ -35,7 +35,7 @@ namespace MonoDevelop.ChangeLogAddIn
 	class OldChangeLogData
 	{
 		[ItemProperty]
-		ChangeLogPolicyEnum policy = ChangeLogPolicyEnum.UseParentPolicy;
+		readonly ChangeLogPolicyEnum policy = ChangeLogPolicyEnum.UseParentPolicy;
 		
 		OldChangeLogData ()
 		{
@@ -55,7 +55,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			if (entry.ParentFolder != null)
 				Migrate (entry.ParentFolder);
 			
-			OldChangeLogData data = entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as OldChangeLogData;
+			var data = entry.ExtendedProperties ["MonoDevelop.ChangeLogAddIn.ChangeLogInfo"] as OldChangeLogData;
 			if (data == null)
 				return;
 			

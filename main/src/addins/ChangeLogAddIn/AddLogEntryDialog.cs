@@ -33,12 +33,12 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
-	internal partial class AddLogEntryDialog : Gtk.Dialog
+	partial class AddLogEntryDialog : Dialog
 	{
-		ListStore store;
-		Dictionary<ChangeLogEntry,string> changes = new Dictionary<ChangeLogEntry,string> ();
-		TextMark editMark;
-		TextTag oldTextTag;
+		readonly ListStore store;
+		readonly Dictionary<ChangeLogEntry, string> changes = new Dictionary<ChangeLogEntry, string> ();
+		readonly TextMark editMark;
+		readonly TextTag oldTextTag;
 		bool loading;
 		
 		public AddLogEntryDialog (Dictionary<string,ChangeLogEntry> entries)
@@ -52,8 +52,8 @@ namespace MonoDevelop.ChangeLogAddIn
 			Pango.TabArray tabs = new Pango.TabArray (1, true);
 			tabs.SetTab (0, Pango.TabAlign.Left, GetStringWidth (" ") * 4);
 			textview.Tabs = tabs;
-			textview.SizeRequested += delegate (object o, SizeRequestedArgs args) {
-				textview.WidthRequest = GetStringWidth (string.Empty.PadRight (80));
+			textview.SizeRequested += delegate {
+				textview.WidthRequest = GetStringWidth (String.Empty.PadRight (80));
 			};
 			font.Dispose ();
 			
@@ -66,9 +66,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			foreach (ChangeLogEntry ce in entries.Values) {
 				Gdk.Pixbuf pic;
 				if (ce.CantGenerate)
-					pic = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+					pic = ImageService.GetPixbuf (Stock.DialogWarning, IconSize.Menu);
 				else if (ce.IsNew)
-					pic = ImageService.GetPixbuf (Gtk.Stock.New, Gtk.IconSize.Menu);
+					pic = ImageService.GetPixbuf (Stock.New, IconSize.Menu);
 				else
 					pic = null;
 				store.AppendValues (ce, pic, ce.File);
@@ -78,7 +78,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			TreeIter it;
 			
 			editMark = textview.Buffer.CreateMark (null, textview.Buffer.EndIter, false);
-			oldTextTag = new Gtk.TextTag ("readonly");
+			oldTextTag = new TextTag ("readonly");
 			oldTextTag.Foreground = "gray";
 			oldTextTag.Editable = false;
 			textview.Buffer.TagTable.Add (oldTextTag);
@@ -87,10 +87,10 @@ namespace MonoDevelop.ChangeLogAddIn
 				fileList.Selection.SelectIter (it);
 		}
 		
-		private int GetStringWidth (string str)
+		int GetStringWidth (string str)
 		{
 			int width, height;
-			Pango.Layout layout = new Pango.Layout (textview.PangoContext);
+			var layout = new Pango.Layout (textview.PangoContext);
 			layout.SetText (str);
 			layout.GetPixelSize (out width, out height);
 			layout.Dispose ();
@@ -105,7 +105,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				textview.Sensitive = false;
 			} else {
 				textview.Sensitive = true;
-				ChangeLogEntry ce = (ChangeLogEntry) store.GetValue (it, 0);
+				var ce = (ChangeLogEntry) store.GetValue (it, 0);
 				boxNewFile.Visible = ce.IsNew && !ce.CantGenerate;
 				boxNoFile.Visible = ce.CantGenerate;
 				loading = true;
@@ -132,7 +132,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			TreeIter it;
 			if (!fileList.Selection.GetSelected (out it))
 				return;
-			ChangeLogEntry ce = (ChangeLogEntry) store.GetValue (it, 0);
+			var ce = (ChangeLogEntry) store.GetValue (it, 0);
 			changes [ce] = textview.Buffer.GetText (textview.Buffer.StartIter, textview.Buffer.GetIterAtMark (editMark), true);
 		}
 		
