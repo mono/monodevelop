@@ -46,12 +46,14 @@
   "A list of errors containing a square bracket to check the parsing")
 
 (check "parses errors from given string"
-  (using-file (concat fs-file-dir "Program.fs")
+  (stubbing-process-functions
+   (using-file
+    (concat fs-file-dir "Program.fs")
     (let ((json-array-type 'list)
           (json-object-type 'hash-table)
           (json-key-type 'string))
       (should= 3 (length (fsharp-ac-parse-errors
-                          (gethash "Data" (json-read-from-string err-brace-str))))))))
+                          (gethash "Data" (json-read-from-string err-brace-str)))))))))
 
 (defmacro check-filter (desc &rest body)
   "Test properties of filtered output from the ac-process."
