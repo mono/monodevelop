@@ -455,7 +455,7 @@ namespace MonoDevelop.Ide
 					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
 			}
 
-			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, detail, AlertButton.Ok);
+			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), AlertButton.Ok);
 
 			theme = fallback ?? themes.FirstOrDefault () ?? theme;
 		}

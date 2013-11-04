@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 		
 		public int Run (string[] arguments)
 		{
-			Console.WriteLine ("MonoDevelop Build Tool");
+			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Build Tool"));
 			foreach (string s in arguments)
 				ReadArgument (s);
 			
