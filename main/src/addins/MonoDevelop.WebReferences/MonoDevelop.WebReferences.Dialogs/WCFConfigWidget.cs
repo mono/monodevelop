@@ -120,9 +120,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			var name = type.FullName;
 			var pos = name.IndexOf ("`", StringComparison.Ordinal);
-			if (pos < 0)
-				return name;
-			return name.Substring (0, pos);
+			return pos < 0 ? name : name.Substring (0, pos);
 		}
 		
 		void PopulateBox (ComboBox box, string category, List<Type> types)
@@ -144,7 +142,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			box.Active = types.IndexOf (current);
 		}
 		
-		void UpdateBox (ComboBox box, string category, List<Type> types)
+		void UpdateBox (ComboBox box, string category, IList<Type> types)
 		{
 			var mapping = Options.CollectionMappings.FirstOrDefault (m => m.Category == category);
 			if (mapping == null) {

@@ -57,7 +57,7 @@ namespace MonoDevelop.WebReferences.WS
 
 		public override string GetDescriptionMarkup ()
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 			foreach (object dd in protocol.Documents.Values) {
 				if (dd is ServiceDescription) {
 					Library.GenerateWsdlXml (text, protocol);
@@ -80,7 +80,7 @@ namespace MonoDevelop.WebReferences.WS
 		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
 			if (!dotNetProject.Items.GetAll<WebReferencesDir> ().Any ()) {
-				WebReferencesDir met = new WebReferencesDir ();
+				var met = new WebReferencesDir ();
 				met.Path = basePath.ParentDirectory;
 				dotNetProject.Items.Add (met);
 			}
@@ -107,7 +107,7 @@ namespace MonoDevelop.WebReferences.WS
 			if (wru == null)
 				return;
 			
-			WebServiceDiscoveryResultWS wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
+			var wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
 			if (wref == null)
 				return;
 			
@@ -128,9 +128,9 @@ namespace MonoDevelop.WebReferences.WS
 		{
 			// Setup the proxy namespace and compile unit
 			CodeDomProvider codeProv = GetProvider (dotNetProject);
-			CodeNamespace codeNamespace = new CodeNamespace (proxyNamespace);
-			CodeConstructor urlConstructor = new CodeConstructor ();
-			CodeCompileUnit codeUnit = new CodeCompileUnit ();
+			var codeNamespace = new CodeNamespace (proxyNamespace);
+			var urlConstructor = new CodeConstructor ();
+			var codeUnit = new CodeCompileUnit ();
 			codeUnit.Namespaces.Add (codeNamespace);
 
 			// Setup the importer and import the service description into the code unit
@@ -156,7 +156,7 @@ namespace MonoDevelop.WebReferences.WS
 			
 			// Generate the code and save the file
 			string fileSpec = Path.Combine (basePath, dotNetProject.LanguageBinding.GetFileName (referenceName));
-			StreamWriter writer = new StreamWriter (fileSpec);
+			var writer = new StreamWriter (fileSpec);
 			codeProv.GenerateCodeFromCompileUnit (codeUnit, writer, new CodeGeneratorOptions ());
 			
 			writer.Close ();
@@ -167,10 +167,8 @@ namespace MonoDevelop.WebReferences.WS
 		public override string GetServiceURL ()
 		{
 			WebReferenceUrl wru = Item.Project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == Item.BasePath);
-			if (wru == null)
-				return null;
+			return wru == null ? null : wru.ServiceLocationURL;
 
-			return wru.ServiceLocationURL;
 		}
 	}
 }

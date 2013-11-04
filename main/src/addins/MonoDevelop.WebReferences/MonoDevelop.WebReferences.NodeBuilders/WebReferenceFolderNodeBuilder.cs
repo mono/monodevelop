@@ -68,7 +68,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the data for the current node in the tree.</param>
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			WebReferenceFolder folder = (WebReferenceFolder) dataObject;
+			var folder = (WebReferenceFolder) dataObject;
 			foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItems (folder.Project))
 				treeBuilder.AddChild(item);
 		}

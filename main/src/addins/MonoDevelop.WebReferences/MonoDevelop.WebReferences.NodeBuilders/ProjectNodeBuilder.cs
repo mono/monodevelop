@@ -33,13 +33,13 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			DotNetProject project = (DotNetProject) dataObject;
+			var project = (DotNetProject) dataObject;
 			return WebReferencesService.GetWebReferenceItems (project).Any ();
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			DotNetProject project = (DotNetProject) dataObject;
+			var project = (DotNetProject) dataObject;
 			if (WebReferencesService.GetWebReferenceItems (project).Any ())
 				treeBuilder.AddChild (new WebReferenceFolder (project));
 		}

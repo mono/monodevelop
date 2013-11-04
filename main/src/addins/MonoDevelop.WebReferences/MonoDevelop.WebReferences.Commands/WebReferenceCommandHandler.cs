@@ -23,7 +23,7 @@ namespace MonoDevelop.WebReferences.Commands
 		public void NewWebReference()
 		{
 			// Get the project and project folder
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(DotNetProject), true) as DotNetProject;
+			var project = CurrentNode.GetParentDataItem (typeof(DotNetProject), true) as DotNetProject;
 			
 			// Check and switch the runtime environment for the current project
 			if (project.TargetFramework.Id == TargetFrameworkMoniker.NET_1_1)
@@ -32,14 +32,14 @@ namespace MonoDevelop.WebReferences.Commands
 				question += "Web Service is not supported in this version.";
 				question += "Do you want switch the runtime environment for this project version 2.0 ?";
 				
-				AlertButton switchButton = new AlertButton ("_Switch to .NET2"); 
+				var switchButton = new AlertButton ("_Switch to .NET2"); 
 				if (MessageService.AskQuestion(question, AlertButton.Cancel, switchButton) == switchButton)
 					project.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);					
 				else
 					return;
 			}
 			
-			WebReferenceDialog dialog = new WebReferenceDialog (project);
+			var dialog = new WebReferenceDialog (project);
 			dialog.NamespacePrefix = project.DefaultNamespace;
 			
 			try {
@@ -125,7 +125,7 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandHandler (WebReferenceCommands.Delete)]
 		public void Delete()
 		{
-			WebReferenceItem item = (WebReferenceItem) CurrentNode.DataItem;
+			var item = (WebReferenceItem) CurrentNode.DataItem;
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the web service reference '{0}'?", item.Name), AlertButton.Delete))
 				return;
 			item.Delete();
@@ -138,7 +138,7 @@ namespace MonoDevelop.WebReferences.Commands
 		public void DeleteAll()
 		{
 			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-			List<WebReferenceItem> items = new List<WebReferenceItem> (WebReferencesService.GetWebReferenceItems (project));
+			var items = new List<WebReferenceItem> (WebReferencesService.GetWebReferenceItems (project));
 			foreach (var item in items)
 				item.Delete();
 

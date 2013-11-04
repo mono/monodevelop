@@ -38,7 +38,7 @@ namespace MonoDevelop.WebReferences
 		WebReferenceItem item;
 		readonly WebServiceEngine engine;
 		
-		public WebServiceDiscoveryResult (WebServiceEngine engine, WebReferenceItem item)
+		protected WebServiceDiscoveryResult (WebServiceEngine engine, WebReferenceItem item)
 		{
 			this.item = item;
 			this.engine = engine;
@@ -85,7 +85,7 @@ namespace MonoDevelop.WebReferences
 				Directory.CreateDirectory (basePath);
 			
 			// Remove old files from the service directory
-			List<ProjectFile> toRemove = new List<ProjectFile>(project.Files.GetFilesInPath (basePath));
+			var toRemove = new List<ProjectFile>(project.Files.GetFilesInPath (basePath));
 			foreach (ProjectFile f in toRemove)
 				project.Files.Remove (f);
 			
@@ -95,13 +95,13 @@ namespace MonoDevelop.WebReferences
 			// Generate the proxy class
 			string proxySpec = CreateProxyFile (project, basePath, namspace + "." + referenceName, "Reference");
 			
-			ProjectFile mapFile = new ProjectFile (mapSpec);
+			var mapFile = new ProjectFile (mapSpec);
 			mapFile.BuildAction = BuildAction.None;
 			mapFile.Subtype = Subtype.Code;
 			mapFile.Generator = ProxyGenerator;
 			project.Files.Add (mapFile);
 			
-			ProjectFile proxyFile = new ProjectFile (proxySpec);
+			var proxyFile = new ProjectFile (proxySpec);
 			proxyFile.BuildAction = BuildAction.Compile;
 			proxyFile.Subtype = Subtype.Code;
 			proxyFile.DependsOn = mapFile.FilePath;

@@ -26,11 +26,11 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 			if (parentNode.Options ["ShowAllFiles"])
 				return;
 			
-			ProjectFolder folder = dataObject as ProjectFolder;
+			var folder = dataObject as ProjectFolder;
 			if (folder == null)
 				return;
 
-			DotNetProject project = folder.Project as DotNetProject;
+			var project = folder.Project as DotNetProject;
 			if (project == null)
 				return;
 			

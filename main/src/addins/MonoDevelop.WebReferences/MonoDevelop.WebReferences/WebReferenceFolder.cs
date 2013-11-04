@@ -30,7 +30,7 @@ namespace MonoDevelop.WebReferences
 		/// <returns>True of the other object is equal to the current object, otherwise false.</returns>
 		public override bool Equals (object obj)
 		{
-			WebReferenceFolder folder = obj as WebReferenceFolder;
+			var folder = obj as WebReferenceFolder;
 			return folder != null && project == folder.project;
 		}
 		

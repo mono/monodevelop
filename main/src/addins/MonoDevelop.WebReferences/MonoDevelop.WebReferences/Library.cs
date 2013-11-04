@@ -20,10 +20,10 @@ namespace MonoDevelop.WebReferences
 		/// <returns>A ServiceDescription for the specified uri.</returns>
 		public static ServiceDescription ReadServiceDescription(string uri) 
 		{
-			ServiceDescription desc = new ServiceDescription();
+			var desc = new ServiceDescription();
 			try 
 			{
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+				var request = (HttpWebRequest)WebRequest.Create(uri);
 				WebResponse response  = request.GetResponse();
 			
 				desc = ServiceDescription.Read(response.GetResponseStream());
@@ -41,16 +41,20 @@ namespace MonoDevelop.WebReferences
 		public static ServiceDescriptionImporter ReadServiceDescriptionImporter(DiscoveryClientProtocol protocol)
 		{
    			// Service Description Importer
-			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
+			var importer = new ServiceDescriptionImporter();
 			importer.ProtocolName = "Soap";
 			// Add all the schemas and service descriptions to the importer
 			protocol.ResolveAll ();
 			foreach (object doc in protocol.Documents.Values)
 			{
-				if (doc is ServiceDescription)
-					importer.AddServiceDescription((ServiceDescription)doc, null, null);
-				else if (doc is XmlSchema)
-					importer.Schemas.Add((XmlSchema)doc);
+				var serviceDescription = doc as ServiceDescription;
+				if (serviceDescription != null)
+					importer.AddServiceDescription (serviceDescription, null, null);
+				else {
+					var xmlSchema = doc as XmlSchema;
+					if (xmlSchema != null)
+						importer.Schemas.Add (xmlSchema);
+				}
 			}			
 			return importer;
 		}
@@ -63,7 +67,7 @@ namespace MonoDevelop.WebReferences
 			text.Append ("<big><b>" + GettextCatalog.GetString ("Web Service References") + "</b></big>\n\n");
 			foreach (object oref in doc.References)
 			{
-				DiscoveryReference dref = oref as DiscoveryReference;
+				var dref = oref as DiscoveryReference;
 				if (dref == null)
 					continue;
 				if (dref is ContractReference) {
@@ -82,8 +86,8 @@ namespace MonoDevelop.WebReferences
 		public static void GenerateWsdlXml (StringBuilder text, DiscoveryClientProtocol protocol)
 		{
 			// Code Namespace & Compile Unit
-			CodeNamespace codeNamespace = new CodeNamespace();
-			CodeCompileUnit codeUnit = new CodeCompileUnit();
+			var codeNamespace = new CodeNamespace();
+			var codeUnit = new CodeCompileUnit();
 			codeUnit.Namespaces.Add(codeNamespace);
 			
 			// Import and set the warning
@@ -102,7 +106,7 @@ namespace MonoDevelop.WebReferences
 				
 				foreach (CodeTypeMember mem in type.Members)
 				{
-					CodeMemberMethod met = mem as CodeMemberMethod;
+					var met = mem as CodeMemberMethod;
 					if (met != null && !(mem is CodeConstructor))
 					{
 						// Method
@@ -144,7 +148,7 @@ namespace MonoDevelop.WebReferences
 		
 		public static string GetCommentElements (CodeTypeMember member)
 		{
-			StringBuilder coms = new StringBuilder ();
+			var coms = new StringBuilder ();
 			foreach (CodeCommentStatement comment in member.Comments)
 			{
 				string com = comment.Comment.Text;
@@ -164,9 +168,7 @@ namespace MonoDevelop.WebReferences
 		public static FilePath GetWebReferencePath (Project project)
 		{
 			FilePath fp = project.BaseDirectory.Combine ("WebReferences");
-			if (Directory.Exists (fp))
-				return fp;
-			return project.BaseDirectory.Combine ("Web References");
+			return Directory.Exists (fp) ? fp : project.BaseDirectory.Combine ("Web References");
 		}
 		
 		/// <summary>Checks whether or not the current project does contain any web references.</summary>

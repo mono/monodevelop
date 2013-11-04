@@ -330,7 +330,7 @@ namespace Mono.ServiceContractTool
 			var od = context.Operation;
 
 			// sync method implementation
-			CodeMemberMethod cm = new CodeMemberMethod ();
+			var cm = new CodeMemberMethod ();
 			type.Members.Add (cm);
 			cm.Name = od.Name;
 			// Analysis disable BitwiseOperatorOnEnumWithoutFlags
@@ -377,7 +377,7 @@ namespace Mono.ServiceContractTool
 			var asyncResultType = new CodeTypeReference (typeof (IAsyncResult));
 
 			// BeginXxx() implementation
-			CodeMemberMethod cm = new CodeMemberMethod {
+			var cm = new CodeMemberMethod {
 				Name = "Begin" + od.Name,
 				// Analysis disable BitwiseOperatorOnEnumWithoutFlags
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,

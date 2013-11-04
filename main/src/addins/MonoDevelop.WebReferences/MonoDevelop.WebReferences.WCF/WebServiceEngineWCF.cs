@@ -67,7 +67,7 @@ namespace MonoDevelop.WebReferences.WCF
 		{
 			MetadataSet metadata = null;
 			try {
-				MetadataExchangeClient client = new MetadataExchangeClient (new EndpointAddress (url));
+				var client = new MetadataExchangeClient (new EndpointAddress (url));
 
 				Console.WriteLine ("\nAttempting to download metadata from {0} using WS-MetadataExchange..", url);
 				metadata = client.GetMetadata ();
@@ -75,10 +75,7 @@ namespace MonoDevelop.WebReferences.WCF
 				//MetadataExchangeClient wraps exceptions, thrown while
 				//fetching the metadata, in an InvalidOperationException
 				string msg;
-				if (e.InnerException == null)
-					msg = e.Message;
-				else
-					msg = e.InnerException.ToString ();
+				msg = e.InnerException == null ? e.Message : e.InnerException.ToString ();
 
 				Console.WriteLine ("WS-MetadataExchange query failed for the url '{0}' with exception :\n {1}",
 					url, msg);
@@ -110,7 +107,7 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			// TODO: Read as MetadataSet
 			
-			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
+			var protocol = new DiscoveryClientProtocol ();
 			
 			foreach (MetadataFile dcr in resfile.Metadata)
 			{
@@ -130,7 +127,7 @@ namespace MonoDevelop.WebReferences.WCF
 				}
 
 				dr.Url = dcr.SourceUrl;
-				FileStream fs = new FileStream (basePath.Combine (dcr.FileName), FileMode.Open, FileAccess.Read);
+				var fs = new FileStream (basePath.Combine (dcr.FileName), FileMode.Open, FileAccess.Read);
 				protocol.Documents.Add (dr.Url, dr.ReadDocument (fs));
 				fs.Close ();
 				protocol.References.Add (dr.Url, dr);

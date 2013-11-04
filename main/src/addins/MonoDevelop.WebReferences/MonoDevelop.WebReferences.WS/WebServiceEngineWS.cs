@@ -49,7 +49,7 @@ namespace MonoDevelop.WebReferences.WS
 		public override WebServiceDiscoveryResult Load (WebReferenceItem item)
 		{
 			// Read the map file into the discovery client protocol and setup the code generator
-			DiscoveryProtocol protocol = new DiscoveryProtocol ();
+			var protocol = new DiscoveryProtocol ();
 			protocol.ReadAllUseBasePath (item.MapFile.FilePath);
 			return new WebServiceDiscoveryResultWS (protocol, item);
 		}
@@ -108,7 +108,7 @@ namespace MonoDevelop.WebReferences.WS
 					string url = GetUrl (file.FilePath);
 					if (url == null)
 						continue;
-					WebReferenceUrl wru = new WebReferenceUrl (url);
+					var wru = new WebReferenceUrl (url);
 					wru.RelPath = file.FilePath.ParentDirectory;
 					project.Items.Add (wru);
 				}
@@ -117,16 +117,19 @@ namespace MonoDevelop.WebReferences.WS
 		
 		static string GetUrl (FilePath mapPath)
 		{
-			DiscoveryProtocol protocol = new DiscoveryProtocol ();
+			var protocol = new DiscoveryProtocol ();
 			protocol.ReadAllUseBasePath (mapPath);
 			
 			// Refresh the disco and wsdl from the server
 			foreach (object doc in protocol.References.Values) {
 				string url = null;
-				if (doc is DiscoveryDocumentReference) {
-					url = ((DiscoveryDocumentReference)doc).Url;
-				} else if (doc is ContractReference) {
-					url = ((ContractReference)doc).Url;
+				var discoveryDocumentReference = doc as DiscoveryDocumentReference;
+				if (discoveryDocumentReference != null) {
+					url = discoveryDocumentReference.Url;
+				} else {
+					var contractReference = doc as ContractReference;
+					if (contractReference != null)
+						url = contractReference.Url;
 				}
 				
 				if (!string.IsNullOrEmpty (url))

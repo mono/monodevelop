@@ -8,14 +8,12 @@ namespace MonoDevelop.WebReferences
 	public class WebReferenceItem
 	{
 		readonly DotNetProject project;
-		string name;
 		readonly ProjectFile mapFile;
 		readonly WebServiceEngine engine;
 		
-		public string Name
-		{
-			get { return name; }
-			set { name = value; }
+		public string Name {
+			get;
+			set;
 		}
 		
 		public ProjectFile MapFile {
@@ -33,7 +31,7 @@ namespace MonoDevelop.WebReferences
 		public WebReferenceItem (WebServiceEngine engine, DotNetProject project, string name, FilePath basePath, ProjectFile mapFile)
 		{
 			this.engine = engine;
-			this.name = name;
+			this.Name = name;
 			this.project = project;
 			this.mapFile = mapFile;
 			BasePath = basePath.CanonicalPath;

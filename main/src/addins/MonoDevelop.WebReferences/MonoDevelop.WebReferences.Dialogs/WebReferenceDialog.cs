@@ -61,25 +61,23 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		/// <summary>Gets or Sets the current url for web service</summary>
 		/// <value>A string containing the url of the web service</value>
-		public string ServiceUrl
-		{
-			get { return serviceUrl; }
-			set { serviceUrl = value; }
+		public string ServiceUrl {
+			get;
+			set;
 		}
 		
 		/// <summary>Gets or Sets the namespace prefix for the web service</summary>
 		/// <value>A string containing namespace prefix value for the web service</value>
-		public string NamespacePrefix
-		{
-			get { return namespacePrefix; }
-			set { namespacePrefix = value; }
+		public string NamespacePrefix {
+			get;
+			set;
 		}
 		
 		/// <summary>Gets the default namespace for the web service based of the service url and namespace prefix</summary>
 		/// <value>A string containing default namespace for the web service</value>
 		public string DefaultNamespace
 		{
-			get { return namespacePrefix; }
+			get { return NamespacePrefix; }
 		}
 		
 		/// <summary>Gets the default reference name for the web service based of the service url</summary>
@@ -88,10 +86,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			get
 			{
-				Uri discoveryUri = new Uri (ServiceUrl);
-				if (discoveryUri != null)
-					return MakeValidId (discoveryUri.Host);
-				return String.Empty;
+				var discoveryUri = new Uri (ServiceUrl);
+				return discoveryUri != null ? MakeValidId (discoveryUri.Host) : String.Empty;
 			}
 		}
 		
@@ -132,10 +128,9 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		/// <summary>Gets or Sets the the base path of the where the web reference.</summary>
 		/// <value>A string containing the base path where all the web references are stored in.</value>
-		public string BasePath
-		{
-			get { return basePath; }
-			set { basePath = value; }
+		public string BasePath {
+			get;
+			set;
 		}
 		
 		/// <summary>Gets the the base path for the current reference.</summary>
@@ -153,10 +148,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		#region Member Variables
 		const string homeUrl = "http://www.w3schools.com/WebServices/TempConvert.asmx";
-		string serviceUrl = "";
-		string namespacePrefix = "";
 		WebServiceDiscoveryResult selectedService;
-		string basePath = "";
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion
 		
@@ -164,10 +156,12 @@ namespace MonoDevelop.WebReferences.Dialogs
 		public WebReferenceDialog (DotNetProject project)
 		{
 			Build ();
-			this.basePath = Library.GetWebReferencePath (project);
+			this.BasePath = Library.GetWebReferencePath (project);
 			this.isWebService = false;
 			this.project = project;
 			this.modified = true;
+			this.NamespacePrefix = String.Empty;
+			ServiceUrl = String.Empty;
 
 			tbxReferenceURL.Text = homeUrl;
 
@@ -183,7 +177,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 			Build ();
 			this.isWebService = true;
 			this.wcfOptions = options;
-			this.namespacePrefix = item.Project.DefaultNamespace;
+			this.NamespacePrefix = item.Project.DefaultNamespace;
+			ServiceUrl = String.Empty;
 
 			ChangeState (DialogState.ModifyConfig);
 			
@@ -348,9 +343,9 @@ namespace MonoDevelop.WebReferences.Dialogs
 			string url = param as string;
 			// Set the service url
 			lock (queryLock) {
-				if (serviceUrl == url)
+				if (ServiceUrl == url)
 					return;
-				serviceUrl = url; 
+				ServiceUrl = url; 
 			}
 			
 			WebServiceEngine serviceEngine;
@@ -366,7 +361,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			try {
 				service = serviceEngine.Discover (url);
 			} catch (Exception ex) {
-				serviceUrl = null;
+				ServiceUrl = null;
 				IsWebService = false;
 				selectedService = null;
 				LoggingService.LogError ("Error while discovering web services", ex);
@@ -392,7 +387,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		void UpdateService (WebServiceDiscoveryResult service, string url)
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 			
 			if (service == null) {
 				IsWebService = false;
@@ -424,10 +419,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 			if (docLabel != null) {
 				docLabel.Wrap = false;
-				if (text.Length >= 0)
-					docLabel.Markup = text.ToString ();
-				else
-					docLabel.Markup = GettextCatalog.GetString ("Web service not found.");
+				docLabel.Markup = text.Length >= 0 ? text.ToString () : GettextCatalog.GetString ("Web service not found.");
 			}
 			return;
 		}
@@ -460,7 +452,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		protected virtual void OnComboModelChanged (object sender, EventArgs e)
 		{
-			serviceUrl = null;
+			ServiceUrl = null;
 			ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), tbxReferenceURL.Text);
 		}
 
@@ -537,7 +529,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return;
 
 			if (state != DialogState.Uninitialized)
-				frmBrowser.Forall (c => frmBrowser.Remove (c));
+				frmBrowser.Forall (frmBrowser.Remove);
 
 			browser = null;
 			browserWidget = null;
@@ -636,22 +628,20 @@ namespace MonoDevelop.WebReferences.Dialogs
 			if (tempCredentials.TryGetValue (uri.Host + uri.AbsolutePath, out nc))
 				return nc; // Exact match
 			
-			UserPasswordDialog dlg = new UserPasswordDialog (uri.Host);
+			var dlg = new UserPasswordDialog (uri.Host);
 			if (tempCredentials.TryGetValue (uri.Host, out nc) || credentials.TryGetValue (uri.Host, out nc)) {
 				dlg.User = nc.UserName;
 				dlg.Password = nc.Password;
 			}
 			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int)ResponseType.Ok) {
 					nc = new NetworkCredential (dlg.User, dlg.Password);
 					tempCredentials [uri.Host + uri.AbsolutePath] = nc;
 					tempCredentials [uri.Host] = nc;
 					return nc;
 				}
-				else {
-					Canceled = true;
-					return null;
-				}
+				Canceled = true;
+				return null;
 			} finally {
 				dlg.Destroy ();
 			}
