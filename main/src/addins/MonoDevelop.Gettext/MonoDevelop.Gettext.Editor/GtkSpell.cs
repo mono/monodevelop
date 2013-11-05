@@ -36,22 +36,23 @@ namespace MonoDevelop.Gettext.Editor
 	// as GtkSpell sharp looks quite old and unmaintained, here is simple wrapper 
 	static class GtkSpell
 	{
+		const string LIBGTKSPELL = "libgtkspell";
 		static bool isSupported;
 		
 #region Native methods
-		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGTKSPELL, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtkspell_new_attach (IntPtr textView, string locale, IntPtr error);
 
-		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGTKSPELL, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtkspell_detach (IntPtr ptr);
 
-		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGTKSPELL, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtkspell_recheck_all (IntPtr ptr);
 
-		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGTKSPELL, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtkspell_get_from_text_view (IntPtr textView);
 		
-//		[DllImport ("libgtkspell")]
+//		[DllImport (LIBGTKSPELL)]
 //		static extern bool gtkspell_set_language (IntPtr spell, string lang, IntPtr error);
 #endregion
 		

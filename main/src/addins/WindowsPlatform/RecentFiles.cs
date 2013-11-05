@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
+using CustomControls.OS;
 
 namespace MonoDevelop.Platform
 {
@@ -52,10 +53,10 @@ namespace MonoDevelop.Platform
 			base.AddProject (fileName, displayName);
 		}
 		
-		[DllImport ("Shell32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (Win32.SHELL32, CharSet = CharSet.Unicode)]
 		static extern void SHAddToRecentDocs (SHARD uFlags, string pv);
 		
-		[DllImport ("Shell32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (Win32.SHELL32, CharSet = CharSet.Unicode)]
 		static extern void SHAddToRecentDocs (SHARD uFlags, IntPtr pv);
 		
 		enum SHARD : uint

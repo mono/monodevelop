@@ -50,6 +50,7 @@ namespace MonoDevelop.Components
 
     public static class CairoExtensions
     {
+		internal const string LIBCAIRO = "libcairo-2.dll";
 		public static Cairo.Rectangle ToCairoRect (this Gdk.Rectangle rect)
 		{
 			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
@@ -421,10 +422,10 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr cairo_pattern_set_extend(IntPtr pattern, CairoExtend extend);
 
-		[DllImport ("libcairo-2.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport (LIBCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		internal static extern IntPtr cairo_get_source (IntPtr cr);
 
 		enum CairoExtend {
@@ -488,7 +489,7 @@ namespace MonoDevelop.Components
 
         private static bool native_push_pop_exists = true;
 
-        [DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_push_group (IntPtr ptr);
         private static CairoInteropCall cairo_push_group_call = new CairoInteropCall ("PushGroup");
 
@@ -507,7 +508,7 @@ namespace MonoDevelop.Components
             }
         }
 
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_pop_group_to_source (IntPtr ptr);
         private static CairoInteropCall cairo_pop_group_to_source_call = new CairoInteropCall ("PopGroupToSource");
 
@@ -666,13 +667,13 @@ namespace MonoDevelop.Components
 	{
 		const string CoreGraphics = "/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/CoreGraphics";
 
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (CairoExtensions.LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr cairo_quartz_surface_create (Cairo.Format format, uint width, uint height);
 
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (CairoExtensions.LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr cairo_quartz_surface_get_cg_context (IntPtr surface);
 
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (CairoExtensions.LIBCAIRO, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr cairo_get_target (IntPtr context);
 
 		[DllImport (CoreGraphics, EntryPoint="CGContextConvertRectToDeviceSpace", CallingConvention = CallingConvention.Cdecl)]

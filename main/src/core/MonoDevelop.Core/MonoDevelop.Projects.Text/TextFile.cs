@@ -41,6 +41,8 @@ namespace MonoDevelop.Projects.Text
 {
 	public class TextFile: IEditableTextFile
 	{
+		const string LIBGLIB = "libglib-2.0-0.dll";
+
 		FilePath name;
 		StringBuilder text;
 		string sourceEncoding;
@@ -235,16 +237,16 @@ namespace MonoDevelop.Projects.Text
 				throw ex;
 			}
 		}
-		
-		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+			
+		[DllImport(LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		//note: textLength is signed, read/written are not
 		static extern IntPtr g_convert(byte[] text, IntPtr textLength, string toCodeset, string fromCodeset, 
 		                               ref IntPtr read, ref IntPtr written, ref IntPtr err);
 		
-		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_free (IntPtr ptr);
 		
-		[DllImport("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_error_free (IntPtr err);
 		
 		#endregion

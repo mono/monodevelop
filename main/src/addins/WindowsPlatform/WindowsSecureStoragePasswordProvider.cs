@@ -252,14 +252,16 @@ namespace MonoDevelop.Platform.Windows
 
 	static class NativeMethods
 	{
-		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredWriteW")]
+		const string ADVAPI32 = "advapi32.dll";
+
+		[DllImport (ADVAPI32, CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredWriteW")]
 		internal static extern bool CredWrite ([In] ref NativeCredential credential, [In] uint flags);
 
-		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredReadW")]
+		[DllImport (ADVAPI32, CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredReadW")]
 		internal static extern bool CredRead (string targetName, NativeCredentialType type, CredentialFlags flags,
 			out IntPtr credential);
 
-		[DllImport ("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "CredFree")]
+		[DllImport (ADVAPI32, CharSet = CharSet.Unicode, EntryPoint = "CredFree")]
 		internal static extern bool CredFree ([In] IntPtr cred);
 	}
 }

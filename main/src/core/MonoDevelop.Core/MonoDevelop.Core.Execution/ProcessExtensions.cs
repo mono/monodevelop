@@ -88,7 +88,7 @@ namespace MonoDevelop.Core.Execution
 			return procRelations;
 		}
 
-		static uint TH32CS_SNAPPROCESS = 2;
+		const uint TH32CS_SNAPPROCESS = 2;
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct PROCESSENTRY32
@@ -106,13 +106,14 @@ namespace MonoDevelop.Core.Execution
 			public string szExeFile;
 		};
 	
-		[DllImport("kernel32.dll", SetLastError = true)]
+		const string kernel = "kernel32.dll";
+		[DllImport(kernel, SetLastError = true)]
 		static extern IntPtr CreateToolhelp32Snapshot (uint dwFlags, uint th32ProcessID);
 
-		[DllImport("kernel32.dll")]
+		[DllImport(kernel)]
 		static extern bool Process32First (IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
 
-		[DllImport("kernel32.dll")]
+		[DllImport(kernel)]
 		static extern bool Process32Next (IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
 	}
 }

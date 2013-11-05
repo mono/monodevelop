@@ -34,6 +34,8 @@ namespace MonoDevelop.MacInterop
 {
 	public static class GtkQuartz
 	{
+		const string LIBQUARTZ = "libgtk-quartz-2.0.dylib";
+
 		//this may be needed to work around focusing issues in GTK/Cocoa interop
 		public static void FocusWindow (Gtk.Window widget)
 		{
@@ -79,10 +81,10 @@ namespace MonoDevelop.MacInterop
 			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
 		}
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 	}
 }
