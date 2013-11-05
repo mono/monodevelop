@@ -249,7 +249,10 @@ module XA
 
 from Script
 <<EOF>>
-INFO: No tooltip information
+DATA: tooltip
+module XA
+
+from Script
 <<EOF>>
 INFO: No tooltip information
 <<EOF>>
@@ -259,10 +262,9 @@ DATA: finddecl
 <absolute path removed>/test/integration/OutOfRange/Script.fsx:2:7
 <<EOF>>
 DATA: finddecl
-ERROR: Could not find point of declaration
+<absolute path removed>/test/integration/OutOfRange/Script.fsx:2:7
 <<EOF>>
-DATA: finddecl
-ERROR: Could not find point of declaration
+ERROR: Could not find declaration
 <<EOF>>
 ERROR: Position is out of range
 <<EOF>>

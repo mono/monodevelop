@@ -64,7 +64,7 @@ display in a help buffer instead.")
 
 ;;; Both in seconds. Note that background process uses ms.
 (defvar fsharp-ac-blocking-timeout 0.4)
-(defvar fsharp-ac-idle-timeout 2)
+(defvar fsharp-ac-idle-timeout 1)
 
 ;;; ----------------------------------------------------------------------------
 
@@ -108,6 +108,16 @@ display in a help buffer instead.")
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
     (fsharp-ac-parse-current-buffer)))
+
+
+(defun fsharp-ac--isIdChar (c)
+  (let ((gc (get-char-code-property c 'general-category)))
+    (or
+     (-any? (lambda (x) (string= gc x)) '("Lu" "Ll" "Lt" "Lm" "Lo" "Nl" "Nd" "Pc" "Mn" "Mc"))
+     (eq c 39))))
+
+(defun fsharp-ac--isNormalId (s)
+  (-all? (lambda (x) x) (mapcar 'fsharp-ac--isIdChar s)))
 
 ;;; ----------------------------------------------------------------------------
 ;;; File Parsing and loading
@@ -238,9 +248,11 @@ display in a help buffer instead.")
     ))
 
 (defun fsharp-ac-document (item)
-  (pos-tip-fill-string
-   (cdr (get-text-property 0 'fsharp-ac-doc item))
-   popup-tip-max-width))
+  (let* ((ticks (s-match "^``\\(.*\\)``$" item))
+         (key (if ticks (cadr ticks) item))
+         (prop (gethash key fsharp-ac-current-helptext))
+         (help (if prop prop "Loading documentation...")))
+    (pos-tip-fill-string help popup-tip-max-width)))
 
 (defun fsharp-ac-candidate ()
   (interactive)
@@ -261,10 +273,7 @@ display in a help buffer instead.")
 
     (acknowledged
      (setq fsharp-ac-status 'idle)
-     fsharp-ac-current-candidate)
-
-    (preempted
-     nil)))
+     fsharp-ac-current-candidate)))
 
 (defun fsharp-ac-prefix ()
   (or (ac-prefix-symbol)
@@ -339,30 +348,26 @@ The current buffer must be an F# file that exists on disk."
 
 (defun fsharp-ac/complete-at-point ()
   (interactive)
-  (if (and (fsharp-ac-can-make-request)
+  (when (and (fsharp-ac-can-make-request)
            (eq fsharp-ac-status 'idle)
            fsharp-ac-intellisense-enabled)
-      (fsharp-ac--ac-start)
-    (setq fsharp-ac-status 'preempted)))
+      (fsharp-ac--ac-start)))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Errors and Overlays
 
-(defstruct fsharp-error start end face text)
+(defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
 (make-local-variable 'fsharp-ac-errors)
 
-(defconst fsharp-ac-error-regexp
-     "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
-     "Regexp to match errors that come from fsautocomplete. Each
-starts with a character range for position and is followed by
-possibly many lines of description.")
-
 (defun fsharp-ac-request-errors ()
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
-    (log-psendstr fsharp-ac-completion-process "errors\n")))
+    (log-psendstr fsharp-ac-completion-process "errors\n"))
+  ; Perform some emergency fixup if things got out of sync
+  (when (not ac-completing)
+    (setq fsharp-ac-status 'idle)))
 
 (defun fsharp-ac-line-column-to-pos (line col)
   (save-excursion
@@ -373,26 +378,26 @@ possibly many lines of description.")
       (forward-char col)
       (point))))
 
-(defun fsharp-ac-parse-errors (str)
+(defun fsharp-ac-parse-errors (data)
   "Extract the errors from the given process response. Returns a list of fsharp-error."
   (save-match-data
     (let (parsed)
-      (while (string-match fsharp-ac-error-regexp str)
-        (let ((beg (fsharp-ac-line-column-to-pos (+ (string-to-number (match-string 1 str)) 1)
-                      (string-to-number (match-string 2 str))))
-              (end (fsharp-ac-line-column-to-pos (+ (string-to-number (match-string 3 str)) 1)
-                      (string-to-number (match-string 4 str))))
-              (face (if (string= "ERROR" (match-string 5 str))
+      (dolist (err data parsed)
+        (let ((beg (fsharp-ac-line-column-to-pos (+ (gethash "StartLine" err) 1)
+                                                 (gethash "StartColumn" err)))
+              (end (fsharp-ac-line-column-to-pos (+ (gethash "EndLine" err) 1)
+                                                 (gethash "EndColumn" err)))
+              (face (if (string= "Error" (gethash "Severity" err))
                         'fsharp-error-face
                       'fsharp-warning-face))
-              (msg (match-string 6 str))
+              (msg (gethash "Message" err))
+              (file (gethash "FileName" err))
               )
-          (setq str (substring str (match-end 0)))
           (add-to-list 'parsed (make-fsharp-error :start beg
                                                   :end   end
                                                   :face  face
-                                                  :text  msg))))
-      parsed)))
+                                                  :text  msg
+                                                  :file  file)))))))
 
 (defun fsharp-ac/show-error-overlay (err)
   "Draw overlays in the current buffer to represent fsharp-error ERR."
@@ -404,11 +409,14 @@ possibly many lines of description.")
          (end  (fsharp-error-end err))
          (face (fsharp-error-face err))
          (txt  (fsharp-error-text err))
+         (file (fsharp-error-text err))
          (ofaces (mapcar (lambda (o) (overlay-get o 'face))
                          (overlays-in beg end)))
          )
-    (unless (and (eq face 'fsharp-warning-face)
-                 (memq 'fsharp-error-face ofaces))
+    (unless (or (string= (expand-file-name buffer-file-name)
+                         (expand-file-name file))
+             (and (eq face 'fsharp-warning-face)
+                 (memq 'fsharp-error-face ofaces)))
 
       (when (and (eq face 'fsharp-error-face)
                  (memq 'fsharp-warning-face ofaces))
@@ -485,16 +493,17 @@ around to the start of the buffer."
 ;;;
 ;;; Handle output from the completion process.
 
-(defconst fsharp-ac-eom "\n<<EOF>>\n")
-
 (defun fsharp-ac--get-msg (proc)
   (with-current-buffer (process-buffer proc)
     (goto-char (point-min))
-    (let ((eofloc (search-forward fsharp-ac-eom nil t)))
+    (let ((eofloc (search-forward "\n" nil t)))
       (when eofloc
-        (let ((msg (buffer-substring-no-properties (point-min) (match-beginning 0))))
+        (let ((json-array-type 'list)
+              (json-object-type 'hash-table)
+              (json-key-type 'string)
+              (msg (buffer-substring-no-properties (point-min) (match-beginning 0))))
           (delete-region (point-min) (match-end 0))
-          msg)))))
+          (json-read-from-string msg))))))
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
@@ -508,74 +517,62 @@ around to the start of the buffer."
   (let ((msg (fsharp-ac--get-msg proc)))
     (while msg
       ;(message "[filter] length(msg) = %d" (length msg))
-      (cond
-       ((s-starts-with? "DATA: completion" msg) (fsharp-ac-handle-completion msg))
-       ((s-starts-with? "DATA: finddecl" msg)   (fsharp-ac-visit-definition msg))
-       ((s-starts-with? "DATA: tooltip" msg)    (fsharp-ac-handle-tooltip msg))
-       ((s-starts-with? "DATA: errors" msg)     (fsharp-ac-handle-errors msg))
-       ((s-starts-with? "DATA: project" msg)    (fsharp-ac-handle-project msg))
-       ((s-starts-with? "ERROR: " msg)          (fsharp-ac-handle-process-error msg))
-       ((s-starts-with? "INFO: " msg) (when fsharp-ac-verbose (fsharp-ac-message-safely msg)))
+      (let ((kind (gethash "Kind" msg))
+            (data (gethash "Data" msg)))
+        (cond
+         ((s-equals? "ERROR" kind) (fsharp-ac-handle-process-error data))
+         ((s-equals? "INFO" kind) (when fsharp-ac-verbose (fsharp-ac-message-safely data)))
+         ((s-equals? "completion" kind) (fsharp-ac-handle-completion data))
+         ((s-equals? "helptext" kind) (fsharp-ac-handle-doctext data))
+         ((s-equals? "errors" kind) (fsharp-ac-handle-errors data))
+         ((s-equals? "project" kind) (fsharp-ac-handle-project data))
+         ((s-equals? "tooltip" kind) (fsharp-ac-handle-tooltip data))
+         ((s-equals? "finddecl" kind) (fsharp-ac-visit-definition data))
        (t
-        (fsharp-ac-message-safely "Error: unrecognised message: '%s'" msg)))
+        (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
       
     (setq msg (fsharp-ac--get-msg proc)))))
 
-(defun fsharp-ac-handle-completion (str)
-  (setq str
-        (s-replace "DATA: completion" "" str))
-  (let* ((json-array-type 'list)
-         (cs (json-read-from-string str))
-         (names (-map (lambda (e) (propertize (cdr (assq 'Name e))
-                                         'fsharp-ac-doc
-                                         (assq 'Help e))) cs)))
+(defun fsharp-ac-handle-completion (data)
+  (setq fsharp-ac-current-candidate (-map (lambda (s) (if (fsharp-ac--isNormalId s) s
+                                                   (s-append "``" (s-prepend "``" s))))
+                                          data)
+        fsharp-ac-status 'acknowledged)
+  (fsharp-ac--ac-start :force-init t)
+  (ac-update)
+  (setq fsharp-ac-status 'idle))
 
-    (case fsharp-ac-status
-      (preempted
-       (setq fsharp-ac-status 'idle)
-       (fsharp-ac--ac-start)
-       (ac-update))
+(defun fsharp-ac-handle-doctext (data)
+  (setq fsharp-ac-current-helptext data))
 
-      (otherwise
-       (setq fsharp-ac-current-candidate names
-             fsharp-ac-status 'acknowledged)
-       (fsharp-ac--ac-start :force-init t)
-       (ac-update)
-       (setq fsharp-ac-status 'idle)))))
+(defun fsharp-ac-visit-definition (data)
+  (let* ((file (gethash "File" data))
+         (line (+ 1 (gethash "Line" data)))
+         (col (gethash "Column" data)))
+    (find-file file)
+    (goto-char (fsharp-ac-line-column-to-pos line col))))
 
-(defun fsharp-ac-visit-definition (str)
-  (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" str)
-      (let ((file (match-string 1 str))
-            (line (+ 1 (string-to-number (match-string 2 str))))
-            (col (string-to-number (match-string 3 str))))
-        (find-file (match-string 1 str))
-        (goto-char (fsharp-ac-line-column-to-pos line col)))
-    (fsharp-ac-message-safely "Unable to find definition.")))
-
-(defun fsharp-ac-handle-errors (str)
+(defun fsharp-ac-handle-errors (data)
   "Display error overlays and set buffer-local error variables for error navigation."
   (fsharp-ac-clear-errors)
-  (let ((errs (fsharp-ac-parse-errors
-                 (concat (replace-regexp-in-string "DATA: errors\n" "" str) "\n")))
-        )
+  (let ((errs (fsharp-ac-parse-errors data)))
     (setq fsharp-ac-errors errs)
     (mapc 'fsharp-ac/show-error-overlay errs)))
 
-(defun fsharp-ac-handle-tooltip (str)
+(defun fsharp-ac-handle-tooltip (data)
   "Display information from the background process. If the user
 has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
   (when (equal major-mode 'fsharp-mode)
     (unless (or (active-minibuffer-window) cursor-in-echo-area)
-      (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-        (if fsharp-ac-awaiting-tooltip
-            (progn
-              (setq fsharp-ac-awaiting-tooltip nil)
-              (if fsharp-ac-use-popup
-                  (fsharp-ac/show-popup cleaned)
-                (fsharp-ac/show-info-window cleaned)))
-          (fsharp-ac-message-safely (fsharp-doc/format-for-minibuffer cleaned)))))))
+      (if fsharp-ac-awaiting-tooltip
+          (progn
+            (setq fsharp-ac-awaiting-tooltip nil)
+            (if fsharp-ac-use-popup
+                (fsharp-ac/show-popup data)
+              (fsharp-ac/show-info-window data)))
+        (fsharp-ac-message-safely (fsharp-doc/format-for-minibuffer data))))))
 
 (defun fsharp-ac/show-popup (str)
   (if (display-graphic-p)
@@ -593,8 +590,8 @@ display a short summary in the minibuffer."
       (with-help-window fsharp-ac-info-buffer-name
         (princ str)))))
 
-(defun fsharp-ac-handle-project (str)
-  (setq fsharp-ac-project-files (cdr (split-string str "\n")))
+(defun fsharp-ac-handle-project (data)
+  (setq fsharp-ac-project-files data)
   (fsharp-ac-parse-file (car (last fsharp-ac-project-files))))
 
 (defun fsharp-ac-handle-process-error (str)

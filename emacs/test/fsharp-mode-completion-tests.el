@@ -4,13 +4,13 @@
 
 (defconst finddeclstr1
   (let ((file (concat fs-file-dir "Program.fs")))
-    (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:1:6\n<<EOF>>\n" file file))
+    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":1,\"Column\":6}}\n" file))
   "A message for jumping to a definition in the same file")
 
 (defconst finddeclstr2
   (let ((file (concat fs-file-dir "FileTwo.fs")))
-    (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:12:11\n<<EOF>>\n" file file))
-    "A message for jumping to a definition in the another file")
+    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":12,\"Column\":11}}\n" file file))
+    "A message for jumping to a definition in another file")
 
 (check "jumping to local definition should not change buffer"
   (let ((f (concat fs-file-dir "Program.fs")))
@@ -42,22 +42,18 @@
 ;;; Error parsing
 
 (defconst err-brace-str
-  (mapconcat
-     'identity
-     '("DATA: errors"
-       "[9:0-9:2] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16)."
-       "Try indenting this token further or using standard formatting conventions."
-       "[11:0-11:2] ERROR Unexpected symbol '[<' in expression"
-       "Followed by more stuff on this line"
-       "[12:0-12:3] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16).
-Try indenting this token further or using standard formatting conventions."
-       "<<EOF>>"
-       "")
-     "\n")
+  "{\"Kind\":\"errors\",\"Data\":[{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":9,\"EndLine\":9,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"},{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":11,\"EndLine\":11,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Error\",\"Message\":\"Unexpected symbol '[<' in expression\",\"Subcategory\":\"parse\"},{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":12,\"EndLine\":12,\"StartColumn\":0,\"EndColumn\":3,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"}]}\n"
   "A list of errors containing a square bracket to check the parsing")
 
 (check "parses errors from given string"
-    (should= 3 (length (fsharp-ac-parse-errors err-brace-str))))
+  (stubbing-process-functions
+   (using-file
+    (concat fs-file-dir "Program.fs")
+    (let ((json-array-type 'list)
+          (json-object-type 'hash-table)
+          (json-key-type 'string))
+      (should= 3 (length (fsharp-ac-parse-errors
+                          (gethash "Data" (json-read-from-string err-brace-str)))))))))
 
 (defmacro check-filter (desc &rest body)
   "Test properties of filtered output from the ac-process."
@@ -83,8 +79,8 @@ Try indenting this token further or using standard formatting conventions."
     (should (equal text
                    (concat "Possible incorrect indentation: "
                            "this token is offside of context started at "
-                           "position (2:16)."
-                           "\nTry indenting this token further or using standard "
+                           "position (8:1). "
+                           "Try indenting this token further or using standard "
                            "formatting conventions.")))))
 
 (check-filter "first overlay should have the warning face"
@@ -146,28 +142,23 @@ function bound to VAR in BODY. "
      (flet ((,sym (x &rest xs) (setq ,var x)))
        ,@body)))
 
-(defun format-output (header &optional content)
-  (concat header "\n" content
-          fsharp-ac-eom))
-
 (check-handler "prints message on error"
   (stub-fn message err
-    (fsharp-ac-filter-output nil (format-output "ERROR: foo"))
+    (fsharp-ac-filter-output nil "{\"Kind\": \"ERROR\", \"Data\": \"foo\"}\n")
     (should-match "foo" err)))
 
-(check-handler "does not print message on type information error"
-  (stub-fn message called
-    (fsharp-ac-filter-output nil (format-output "ERROR: could not get type information"))
-    (should-not called)))
-
 ;;; Tooltips and typesigs
+
+(defconst tooltip-msg
+  "{\"Kind\": \"tooltip\", \"Data\": \"foo\"}\n"
+  "A simple tooltip message")
 
 (check-handler "uses popup in terminal if tooltip is requested"
   (let ((fsharp-ac-use-popup t))
     (flet ((display-graphic-p () nil))
       (stub-fn popup-tip tip
         (fsharp-ac/show-tooltip-at-point)
-        (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+        (fsharp-ac-filter-output nil tooltip-msg)
         (should-match "foo" tip)))))
 
 (check-handler "uses pos-tip in GUI if tooltip is requested"
@@ -175,21 +166,21 @@ function bound to VAR in BODY. "
     (flet ((display-graphic-p () t))
       (stub-fn pos-tip-show tip
         (fsharp-ac/show-tooltip-at-point)
-        (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+        (fsharp-ac-filter-output nil tooltip-msg)
         (should-match "foo" tip)))))
 
 (check-handler "does not show popup if typesig is requested"
   (let ((fsharp-ac-use-popup t))
     (stub-fn popup-tip called
       (fsharp-ac/show-typesig-at-point)
-      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac-filter-output nil tooltip-msg)
       (should-not called))))
 
 (check-handler "does not show popup if use-popup is nil"
   (let ((fsharp-ac-use-popup nil))
     (stub-fn popup-tip called
       (fsharp-ac/show-tooltip-at-point)
-      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac-filter-output nil tooltip-msg)
       (should-not called))))
 
 (check-handler "displays tooltip in info window if use-popup is nil"
@@ -198,11 +189,11 @@ function bound to VAR in BODY. "
     ;; with-help-window is a macro and macrolet and labels don't seem to work.
     (stub-fn help-window-setup win
       (fsharp-ac/show-tooltip-at-point)
-      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac-filter-output nil tooltip-msg)
       (should-match "fsharp info" (buffer-name (window-buffer win))))))
 
 (check-handler "displays typesig in minibuffer if typesig is requested"
   (stub-fn message sig
     (fsharp-ac/show-typesig-at-point)
-    (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
+    (fsharp-ac-filter-output nil tooltip-msg)
     (should= "foo" sig)))

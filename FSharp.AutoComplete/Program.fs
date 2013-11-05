@@ -5,7 +5,6 @@ namespace FSharp.InteractiveAutocomplete
 
 open System
 open System.IO
-open System.Collections.Generic
 
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -13,6 +12,7 @@ open FSharp.InteractiveAutocomplete.Parsing
 open FSharp.CompilerBinding.Reflection
 
 open Newtonsoft.Json
+open Newtonsoft.Json.Converters
 
 module FsParser = Microsoft.FSharp.Compiler.Parser
 
@@ -27,16 +27,14 @@ type OutputMode =
   | Json
   | Text
 
-
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
-type internal RequestOptions(opts, file, src, mode) =
+type internal RequestOptions(opts, file, src) =
   member x.Options : CheckOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
-  member x.OutputMode : OutputMode = mode
   member x.WithSource(source) =
-    RequestOptions(opts, file, source, mode)
+    RequestOptions(opts, file, source)
 
   override x.ToString() =
     sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
@@ -52,13 +50,34 @@ type internal IntelliSenseAgentMessage =
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
-/// Used to marshal completion candidates
-/// before serializing to JSON
-type Candidate =
+type ResponseMsg<'T> =
   {
-    Name: string
-    Help: string
+    Kind: string
+    Data: 'T
   }
+
+type Location =
+  {
+    File: string
+    Line: int
+    Column: int
+  }
+
+type SeverityConverter() =
+  inherit JsonConverter()
+
+  override x.CanConvert(t:System.Type) = t = typeof<Severity>
+ 
+  override x.WriteJson(writer, value, serializer) =
+    match value :?> Severity with
+    | Severity.Error -> serializer.Serialize(writer, "Error")
+    | Severity.Warning -> serializer.Serialize(writer, "Warning")
+ 
+  override x.ReadJson(reader, t, _, serializer) =
+    raise (System.NotSupportedException())
+
+  override x.CanRead = false
+  override x.CanWrite = true
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
@@ -143,7 +162,7 @@ type internal IntelliSenseAgent() =
         // but currently editing a script file
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
 
-          // The InteractiveChecker resolution doesn't sometimes
+          // The InteractiveChecker resolution sometimes doesn't
           // include FSharp.Core and other essential assemblies, so we may
           // need to bring over some more code from the monodevelop binding to
           // handle that situation.
@@ -164,14 +183,13 @@ type internal IntelliSenseAgent() =
           UnresolvedReferences = None }
 
     // Print contents of check option for debugging purposes
-    Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-                         opts.ProjectFileName
-                         opts.ProjectFileNames
-                         opts.ProjectOptions
-                         opts.IsIncompleteTypeCheckEnvironment
-                         opts.UseScriptResolutionRules
+    // Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+    //                      opts.ProjectFileName
+    //                      opts.ProjectFileNames
+    //                      opts.ProjectOptions
+    //                      opts.IsIncompleteTypeCheckEnvironment
+    //                      opts.UseScriptResolutionRules
     opts
-
 
   /// Get errors from the last parse request
   member x.GetErrors() =
@@ -197,113 +215,77 @@ type internal IntelliSenseAgent() =
       // Otherwise try to get type information & run the request
       agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
-  /// Invokes dot-completion request and writes information to the standard output
-  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+  /// Invokes dot-completion request. Returns possible completions
+  /// and current residue.
+  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
     let info = x.GetTypeCheckInfo(opts, time)
-    let decls =
-      Option.bind (fun (info: TypeCheckResults) ->
-        // Get the long identifier before the current location
-        // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-        let residue, longName =
-          lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+    Option.bind (fun (info: TypeCheckResults) ->
+      // Get the long identifier before the current location
+      // 'residue' is the part after the last dot and 'longName' is before
+      // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+      let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+      let residue, longName =
+        lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
-        // Get items & generate output
-        try
-          Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
-                |> Async.RunSynchronously)
-        with :? System.TimeoutException as e ->
-                   printfn "ERROR: GetDeclarations timed out\n<<EOF>>"
-                   None) info
-                   
-    match decls with
-    | Some decls ->
-      printfn "DATA: completion"
-      match opts.OutputMode with
-      | Json ->
-        let cs =
-          [ for d in decls.Items do
-            yield { Name = d.Name
-                    Help = TipFormatter.formatTip d.DescriptionText } ]
-        Console.WriteLine(JsonConvert.SerializeObject(cs))
-      | Text ->
-        for d in decls.Items do Console.WriteLine(d.Name)
-      printfn "<<EOF>>"
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+      // Get items & generate output
+      try
+        Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
+              |> Async.RunSynchronously, residue)
+      with :? System.TimeoutException as e ->
+                 None) info
 
+  member private x.FindLongIdents(lineStr, col) =
+    // Parsing - find the identifier around the current location
+    // (we look for full identifier in the backward direction, but only
+    // for a short identifier forward - this means that when you hover
+    // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+    let lookBack = createBackStringReader lineStr (col-1)
+    let lookForw = createForwardStringReader lineStr col
+    
+    let backIdentOpt = tryGetFirst parseBackLongIdent lookBack
+    match backIdentOpt with 
+    | None -> None 
+    | Some backIdent -> 
+    let nextIdentOpt = tryGetFirst parseIdent lookForw
+    match nextIdentOpt with 
+    | None -> None 
+    | Some nextIdent -> 
+    
+    let currentIdent, identIsland =
+      match List.rev backIdent with
+      | last::prev -> 
+          let current = last + nextIdent
+          current, current::prev |> List.rev
+      | [] -> "", []
+
+    match identIsland with
+    | [] | [ "" ] -> None
+    | _ -> Some identIsland
 
   /// Gets ToolTip for the specified location (and prints it to the output)
-  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
-      // Parsing - find the identifier around the current location
-      // (we look for full identifier in the backward direction, but only
-      // for a short identifier forward - this means that when you hover
-      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-      let lookBack = Parsing.createBackStringReader lineStr column
-      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
 
-      let identIsland =
-        match List.rev backIdent with
-        | last::prev -> (last + nextIdent)::prev |> List.rev
-        | [] -> []
-
-      match identIsland with
-      | [ "" ] ->
-        // There is no identifier at the current location
-        printfn "INFO: No identifier found at this location\n<<EOF>>"
-      | _ ->
+    Option.bind (fun identIsland ->
+      Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
-        match tip with
-        | DataTipText(elems)
-          when elems |> List.forall (function
-            DataTipElementNone -> true | _ -> false) ->
-              printfn "INFO: No tooltip information\n<<EOF>>"
-        | _ ->
-          Console.WriteLine("DATA: tooltip")
-          Console.WriteLine(TipFormatter.formatTip tip)
-          Console.WriteLine("<<EOF>>")
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+        info.GetDataTipText(pos, lineStr, identIsland, identToken)
+        ) (x.GetTypeCheckInfo(opts, time))
+      ) (x.FindLongIdents(lineStr, column))
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
   member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
-      // Parsing - find the identifier around the current location
-      // (we look for full identifier in the backward direction, but only
-      // for a short identifier forward - this means that when you hover
-      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-      let lookBack = Parsing.createBackStringReader lineStr column
-      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
 
-      let identIsland =
-        match List.rev backIdent with
-        | last::prev -> (last + nextIdent)::prev |> List.rev
-        | [] -> []
-
-      match identIsland with
-      | [ "" ] ->
-        // There is no identifier at the current location
-        printfn "ERROR: No identifier found at this location\n<<EOF>>"
-      | _ ->
+    Option.bind (fun identIsland ->
+      Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        // Get items & generate output
-        // TODO: Need this first because of VS debug info coming out
-        Console.WriteLine("DATA: finddecl")
-        match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
-        | DeclFound ((line,col),file) ->
-            printfn "%s:%d:%d\n<<EOF>>" file line col
-        | DeclNotFound _ -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
-    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+        info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true)
+        ) (x.GetTypeCheckInfo(opts, time))
+      ) (x.FindLongIdents(lineStr, column))
+
+
 
 // --------------------------------------------------------------------------------------
 // Utilities for parsing & processing command line input
@@ -334,10 +316,8 @@ module internal CommandInput =
       - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project
-    outputmode {json,text}
-      - switches the output format. 'json' offers richer data
-        for some commands. default is 'text'"
-
+    "
+    
   let outputText = @"
     Output format
     =============
@@ -451,8 +431,7 @@ module internal CommandInput =
     return PosCommand(f, filename, (line, col), timeout) }
 
   // Parses always and returns default error message
-  let error = parser {
-    return Error("ERROR: Unknown command or wrong arguments\n<<EOF>>") }
+  let error = parser { return Error("Unknown command or wrong arguments") }
 
   // Parase any of the supported commands
   let parseCommand =
@@ -460,7 +439,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> outputmode <|> quit <|> error
+      let cmds = errors <|> outputmode <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -484,10 +463,20 @@ module internal Main =
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
 
+  let severityConverter = new SeverityConverter()
+
   let rec main (state:State) : int =
+
+    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, severityConverter))
+
+    let printMsg ty s =
+      match state.OutputMode with
+      | Text -> printfn "%s: %s\n<<EOF>>" ty s
+      | Json -> prAsJson { Kind = ty; Data = s }
+
     let parsed file =
       let ok = Map.containsKey file state.Files
-      if not ok then printfn "ERROR: File '%s' not parsed\n<<EOF>>\n" file
+      if not ok then printMsg "ERROR" (sprintf "File '%s' not parsed" file)
       ok
 
     /// Is the specified position consistent with internal state of file?
@@ -495,25 +484,38 @@ module internal Main =
       let lines = state.Files.[file]
       let ok = line < lines.Length && line >= 0 &&
                col <= lines.[line].Length && col >= 0
-      if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
+      if not ok then printMsg "ERROR" "Position is out of range"
       ok
 
-    Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
-                (Option.isSome state.Project)
-                (Map.fold (fun ks k _ -> k::ks) [] state.Files)
-                state.OutputMode
+    let getoptions file =
+      let text = String.concat "\n" state.Files.[file]
+      RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                     file,
+                     text)
+
+    // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
+    //             (Option.isSome state.Project)
+    //             (Map.fold (fun ks k _ -> k::ks) [] state.Files)
+    //             state.OutputMode
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
-        printfn "DATA: errors"
-        for e in errs do
-          printfn "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
-                    (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
-        Console.WriteLine("<<EOF>>")
+        match state.OutputMode with
+        | Text ->
+          let sb = new System.Text.StringBuilder()
+          sb.AppendLine("DATA: errors") |> ignore
+          for e in errs do
+            sb.AppendLine(sprintf "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
+                            (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message)
+            |> ignore
+          sb.Append("<<EOF>>") |> ignore
+          Console.WriteLine(sb.ToString())
+
+        | Json -> prAsJson { Kind = "errors"; Data = errs }
+
         main state
 
-    | OutputMode m ->
-        main { state with OutputMode = m }
+    | OutputMode m -> main { state with OutputMode = m }
 
     | Parse(file,full) ->
         // Trigger parse request for a particular file
@@ -523,62 +525,120 @@ module internal Main =
         if File.Exists file then
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
-                                    text,
-                                    state.OutputMode)
+                                    text)
           agent.TriggerParseRequest(opts, full)
-          Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
+          printMsg "INFO" "Background parsing started"
           main { state with Files = Map.add file lines state.Files }
         else
-          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
+          printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state
 
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
           match ProjectParser.load file with
-          | Some p -> Console.WriteLine("DATA: project")
-                      for f in ProjectParser.getFiles p do
-                        Console.WriteLine(IO.Path.Combine(ProjectParser.getDirectory p, f))
-                      Console.WriteLine("<<EOF>>")
-                      main { state with Project = Some p }
-          | None   -> printfn "ERROR: Project file '%s' is invalid\n<<EOF>>" file
+          | Some p -> 
+              let files =
+                [ for f in ProjectParser.getFiles p do
+                    yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
+              match state.OutputMode with
+              | Text -> printfn "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files)
+              | Json -> prAsJson { Kind = "project"; Data = files }
+              main { state with Project = Some p }
+          | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
                       main state
         else
-          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
+          printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state
 
     | Declarations file ->
         let file = Path.GetFullPath file
         if parsed file then
-          let text = String.concat "\n" state.Files.[file]
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text,
-                                    state.OutputMode)
-          let decls = agent.GetDeclarations(opts)
-          printfn "DATA: declarations"
-          for tld in decls do
-            let (s1, e1), (s2, e2) = tld.Declaration.Range
-            printfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
-            for d in tld.Nested do
-              let (s1, e1), (s2, e2) = d.Range
-              printfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
-          printfn "<<EOF>>"
+          let decls = agent.GetDeclarations(getoptions file)
+          match state.OutputMode with
+          | Text ->
+              let declstrings =
+                [ for tld in decls do
+                    let (s1, e1), (s2, e2) = tld.Declaration.Range
+                    yield sprintf "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+                    for d in tld.Nested do
+                      let (s1, e1), (s2, e2) = d.Range
+                      yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
+              printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
+          | Json -> prAsJson { Kind = "declarations"; Data = decls }
         main state
 
     | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
         let file = Path.GetFullPath file
         if parsed file && posok file line col then
-          let text = String.concat "\n" state.Files.[file]
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text,
-                                    state.OutputMode)
+          let opts = getoptions file
 
           match cmd with
-          | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
-          | ToolTip -> agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
-          | FindDeclaration -> agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout)
+          | Completion ->
+              let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+
+              match decls with
+              | Some (decls, residue) ->
+                  match state.OutputMode with
+                  | Text ->
+                      printfn "DATA: completion"
+                      for d in decls.Items do Console.WriteLine(d.Name)
+                      printfn "<<EOF>>"
+
+                  | Json ->
+                      let ds = List.sortBy (fun (d: Declaration) -> d.Name)
+                                 [ for d in decls.Items do yield d ]
+                      let helptext =
+                        match List.tryFind (fun (d: Declaration) -> d.Name.StartsWith residue) ds with
+                        | None -> Map.empty
+                        | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
+                                    Map.add d.Name tip Map.empty
+
+                      prAsJson { Kind = "helptext"; Data = helptext }
+                                  
+                      prAsJson { Kind = "completion"
+                                 Data = [ for d in ds do yield d.Name ] }
+
+                      prAsJson
+                        { Kind = "helptext"
+                          Data = [ for d in decls.Items do
+                                     yield d.Name, TipFormatter.formatTip d.DescriptionText ]
+                                 |> Map.ofList }
+                      
+              | None -> 
+                  printMsg "ERROR" "Could not get type information"
+
+          | ToolTip ->
+              let tipopt = agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
+
+              match tipopt with
+              | None -> printMsg "INFO" "No tooltip information"
+              | Some tip ->
+              match tip with
+              | DataTipText(elems) when elems |> List.forall (function
+                DataTipElementNone -> true | _ -> false) ->
+                printMsg "INFO" "No tooltip information"
+              | _ ->
+                  match state.OutputMode with
+                  | Text ->
+                    Console.WriteLine("DATA: tooltip")
+                    Console.WriteLine(TipFormatter.formatTip tip)
+                    Console.WriteLine("<<EOF>>")
+                  | Json -> prAsJson { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
+          
+          | FindDeclaration ->
+
+            match agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout) with
+            | None
+            | Some (DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
+            | Some (DeclFound ((line,col),file)) ->
+              
+              match state.OutputMode with
+              | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
+              | Json ->
+                  let data = { Line = line; Column = col; File = file }
+                  prAsJson { Kind = "finddecl"; Data = data }
+            
         main state
 
     | Help ->
@@ -586,7 +646,7 @@ module internal Main =
         main state
 
     | Error(msg) ->
-        Console.WriteLine(msg)
+        printMsg "ERROR" msg
         main state
 
     | Quit ->
