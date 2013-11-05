@@ -154,7 +154,7 @@ public class MonoDevelopProcessHost
 			return;
 		}
 		Console.WriteLine ();
-		Console.WriteLine ("MonoDevelop Tool Runner");
+		Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Tool Runner"));
 		Console.WriteLine ();
 		Console.WriteLine ("Usage: mdtool [options] <tool> ... : Runs a tool.");
 		Console.WriteLine ("       mdtool setup ... : Runs the setup utility.");
@@ -169,7 +169,7 @@ public class MonoDevelopProcessHost
 	
 	static int RunSetup (string[] args)
 	{
-		Console.WriteLine ("MonoDevelop Add-in Setup Utility");
+		Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Add-in Setup Utility"));
 		bool verbose = false;
 		foreach (string a in args)
 			if (a == "-v")
