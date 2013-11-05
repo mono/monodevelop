@@ -397,12 +397,12 @@ namespace MonoDevelop.Projects
 		}
 		#endregion
 
+		// FIXME: rename this to LogicalName for a better mapping to the MSBuild property
 		public string ResourceId {
 			get {
-				if (BuildAction != MonoDevelop.Projects.BuildAction.EmbeddedResource)
-					return string.Empty;
-				if (string.IsNullOrEmpty (resourceId) && project is DotNetProject)
+				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && project is DotNetProject)
 					return ((DotNetProject)project).ResourceHandler.GetDefaultResourceId (this);
+
 				return resourceId;
 			}
 			set {
