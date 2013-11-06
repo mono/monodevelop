@@ -4,7 +4,8 @@ This project contains advanced editing support for F# for a number of open edito
 * [F# mode for Emacs](emacs/README.md)
 * [F# addin for MonoDevelop and Xamarin Studio](monodevelop/README.md)
 * Some reusable components shared by these (see below)
-* Some information on using F# with Sublime Text 2, Vim and other editors (see below)
+
+See the [F# Cross-Platform Development Guide](http://fsharp.org/guides/mac-linux-cross-platform/index.html#editing) for F# with Sublime Text 2, Vim and other editors not covered here.
 
 ## Shared Components
 
@@ -23,16 +24,5 @@ This produces bin/fsautocomplete.exe. To understand how to use these components,
 An old component called FSharp.CompilerBinding.dll is also present, it was used as a shim to the F# compiler before
 the availability of FSharp.Compiler.Editor.dll.
 
-## Other Editors
-
-Other editors also provide basic editing support for F#, unrelated to this repository. Some links:
-
-* Sublime Text 2
-  * [Configuring Sublime Text 2 To Work With F#](http://onor.io/2012/01/26/configuring-sublime-text-2-to-work-with-fsharp/)
-  * [Using Sublime Text 2 as F# REPL](http://blog.kulman.sk/using-sublime-text-2-as-f-repl/)
-
-* Vim
-  * [Writing and Running F# Scripts with Vim](http://juliankay.com/development/writing-and-running-f-scripts-with-vim/)
-  * [Vim Runtime Files for F#](https://github.com/kongo2002/fsharp-vim)
 
 For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
