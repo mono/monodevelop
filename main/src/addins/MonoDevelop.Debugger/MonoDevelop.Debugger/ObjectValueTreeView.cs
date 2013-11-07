@@ -45,23 +45,25 @@ using Mono.TextEditor;
 namespace MonoDevelop.Debugger
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public class ObjectValueTreeView: Gtk.TreeView, ICompletionWidget
+	public class ObjectValueTreeView: TreeView, ICompletionWidget
 	{
-		List<string> valueNames = new List<string> ();
-		Dictionary<string,string> oldValues = new Dictionary<string,string> ();
-		List<ObjectValue> values = new List<ObjectValue> ();
-		Dictionary<ObjectValue,TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
-		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
-		Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
-		TreeStore store;
-		TreeViewState state;
-		string createMsg;
+		readonly Dictionary<ObjectValue, TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
+		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
+		readonly Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
+		readonly Dictionary<string, string> oldValues = new Dictionary<string, string> ();
+		readonly List<ObjectValue> values = new List<ObjectValue> ();
+		readonly List<string> valueNames = new List<string> ();
+
+		readonly Gdk.Pixbuf noLiveIcon;
+		readonly Gdk.Pixbuf liveIcon;
+
+		readonly TreeViewState state;
+		readonly TreeStore store;
+		readonly string createMsg;
 		bool restoringState = false;
 		bool compact;
 		StackFrame frame;
 		bool disposed;
-		Gdk.Pixbuf noLiveIcon;
-		Gdk.Pixbuf liveIcon;
 		
 		bool columnsAdjusted;
 		bool columnSizesUpdating;
@@ -70,26 +72,26 @@ namespace MonoDevelop.Debugger
 		double valueColWidth;
 		double typeColWidth;
 		
-		CellRendererText crtExp;
-		CellRendererText crtValue;
-		CellRendererText crtType;
-		CellRendererIcon crpButton;
-		CellRendererIcon crpPin;
-		CellRendererIcon crpLiveUpdate;
-		CellRendererIcon crpViewer;
-		Gtk.Entry editEntry;
+		readonly CellRendererText crtExp;
+		readonly CellRendererText crtValue;
+		readonly CellRendererText crtType;
+		readonly CellRendererIcon crpButton;
+		readonly CellRendererIcon crpPin;
+		readonly CellRendererIcon crpLiveUpdate;
+		readonly CellRendererIcon crpViewer;
+		Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
-		TreeViewColumn expCol;
-		TreeViewColumn valueCol;
-		TreeViewColumn typeCol;
-		TreeViewColumn pinCol;
+		readonly TreeViewColumn expCol;
+		readonly TreeViewColumn valueCol;
+		readonly TreeViewColumn typeCol;
+		readonly TreeViewColumn pinCol;
 		
-		string errorColor = "red";
-		string modifiedColor = "blue";
-		string disabledColor = "gray";
+		const string errorColor = "red";
+		const string modifiedColor = "blue";
+		const string disabledColor = "gray";
 		
-		static CommandEntrySet menuSet;
+		static readonly CommandEntrySet menuSet;
 		
 		const int NameCol = 0;
 		const int ValueCol = 1;
@@ -138,7 +140,7 @@ namespace MonoDevelop.Debugger
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
 			newFont.Size = (newFont.Size * 8) / 10;
 			
-			liveIcon = ImageService.GetPixbuf (Gtk.Stock.Execute, IconSize.Menu);
+			liveIcon = ImageService.GetPixbuf (Stock.Execute, IconSize.Menu);
 			noLiveIcon = ImageService.MakeTransparent (liveIcon, 0.5);
 			
 			expCol = new TreeViewColumn ();
@@ -161,12 +163,12 @@ namespace MonoDevelop.Debugger
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
 			crpViewer = new CellRendererIcon ();
-			crpViewer.IconId = Gtk.Stock.ZoomIn;
+			crpViewer.IconId = Stock.ZoomIn;
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleCol);
 			crpButton = new CellRendererIcon ();
-			crpButton.StockSize = (uint)Gtk.IconSize.Menu;
-			crpButton.IconId = Gtk.Stock.Refresh;
+			crpButton.StockSize = (uint) IconSize.Menu;
+			crpButton.IconId = Stock.Refresh;
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleCol);
 			crtValue = new CellRendererText ();
@@ -397,16 +399,16 @@ namespace MonoDevelop.Debugger
 				compact = value;
 				Pango.FontDescription newFont;
 				if (compact) {
-					newFont = this.Style.FontDescription.Copy ();
+					newFont = Style.FontDescription.Copy ();
 					newFont.Size = (newFont.Size * 8) / 10;
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
-					crpButton.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
-					crpViewer.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.ZoomIn).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
+					crpButton.Pixbuf = ImageService.GetPixbuf (Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
+					crpViewer.Pixbuf = ImageService.GetPixbuf (Stock.ZoomIn).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
 					ColumnsAutosize ();
 				} else {
-					newFont = this.Style.FontDescription;
+					newFont = Style.FontDescription;
 					expCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.MaxWidth = int.MaxValue;
@@ -719,7 +721,7 @@ namespace MonoDevelop.Debugger
 				strval = val.Value;
 				valueColor = disabledColor;
 				if (val.CanRefresh)
-					valueButton = Gtk.Stock.Refresh;
+					valueButton = Stock.Refresh;
 				canEdit = false;
 			}
 			else if (val.IsEvaluating) {
@@ -905,19 +907,19 @@ namespace MonoDevelop.Debugger
 			return sb.ToString ();
 		}
 
-		void OnExpEditing (object s, Gtk.EditingStartedArgs args)
+		void OnExpEditing (object s, EditingStartedArgs args)
 		{
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
-			Gtk.Entry e = (Gtk.Entry) args.Editable;
+			Entry e = (Entry) args.Editable;
 			if (e.Text == createMsg)
 				e.Text = string.Empty;
 			
 			OnStartEditing (args);
 		}
 		
-		void OnExpEdited (object s, Gtk.EditedArgs args)
+		void OnExpEdited (object s, EditedArgs args)
 		{
 			OnEndEditing ();
 			
@@ -950,13 +952,13 @@ namespace MonoDevelop.Debugger
 		
 		bool editing;
 		
-		void OnValueEditing (object s, Gtk.EditingStartedArgs args)
+		void OnValueEditing (object s, EditingStartedArgs args)
 		{
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			
-			var entry = (Gtk.Entry) args.Editable;
+			var entry = (Entry) args.Editable;
 			
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
 			string strVal = val != null ? val.Value : null;
@@ -967,14 +969,16 @@ namespace MonoDevelop.Debugger
 			OnStartEditing (args);
 		}
 		
-		void OnValueEdited (object s, Gtk.EditedArgs args)
+		void OnValueEdited (object s, EditedArgs args)
 		{
 			OnEndEditing ();
 			
 			TreeIter it;
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
-			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
+
+			ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+
 			try {
 				string newVal = args.NewText;
 /*				if (newVal == null) {
@@ -986,6 +990,7 @@ namespace MonoDevelop.Debugger
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not set value for object '" + val.Name + "'", ex);
 			}
+
 			store.SetValue (it, ValueCol, val.DisplayValue);
 
 			// Update the color
@@ -1008,10 +1013,10 @@ namespace MonoDevelop.Debugger
 			OnEndEditing ();
 		}
 		
-		void OnStartEditing (Gtk.EditingStartedArgs args)
+		void OnStartEditing (EditingStartedArgs args)
 		{
 			editing = true;
-			editEntry = (Gtk.Entry) args.Editable;
+			editEntry = (Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
 			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 			if (StartEditing != null)
@@ -1048,7 +1053,7 @@ namespace MonoDevelop.Debugger
 		uint keyValue;
 
 		[GLib.ConnectBeforeAttribute]
-		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
+		void OnEditKeyPress (object s, KeyPressEventArgs args)
 		{
 			wasHandled = false;
 			key = args.Event.Key;
@@ -1069,7 +1074,7 @@ namespace MonoDevelop.Debugger
 
 		void PopupCompletion (Entry entry)
 		{
-			Gtk.Application.Invoke (delegate {
+			Application.Invoke (delegate {
 				char c = (char)Gdk.Keyval.ToUnicode (keyValue);
 				if (currentCompletionData == null && IsCompletionChar (c)) {
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
@@ -1297,10 +1302,10 @@ namespace MonoDevelop.Debugger
 				return;
 
 			if (selected.Length == 1) {
-				object focus = IdeApp.Workbench.RootWindow.Focus;
+				var editable = IdeApp.Workbench.RootWindow.Focus as Editable;
 
-				if (focus is Gtk.Editable) {
-					((Gtk.Editable) focus).CopyClipboard ();
+				if (editable != null) {
+					editable.CopyClipboard ();
 					return;
 				}
 			}
@@ -1524,7 +1529,8 @@ namespace MonoDevelop.Debugger
 
 		protected virtual void OnCompletionContextChanged (EventArgs e)
 		{
-			EventHandler handler = this.CompletionContextChanged;
+			var handler = CompletionContextChanged;
+
 			if (handler != null)
 				handler (this, e);
 		}
@@ -1559,9 +1565,9 @@ namespace MonoDevelop.Debugger
 		{
 			string txt = editEntry.Text;
 			if (offset >= txt.Length)
-				return (char)0;
-			else
-				return txt [offset];
+				return '\0';
+
+			return txt [offset];
 		}
 		
 		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
@@ -1711,12 +1717,14 @@ namespace MonoDevelop.Debugger
 			get;
 			set;
 		}
-		static List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
+
+		static readonly List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
 		public IEnumerable<ICompletionKeyHandler> KeyHandler { get { return keyHandler;} }
 
 		public void OnCompletionListClosed (EventArgs e)
 		{
-			EventHandler handler = this.CompletionListClosed;
+			var handler = CompletionListClosed;
+
 			if (handler != null)
 				handler (this, e);
 		}
@@ -1726,7 +1734,7 @@ namespace MonoDevelop.Debugger
 	
 	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
-		CompletionItem item;
+		readonly CompletionItem item;
 		
 		public DebugCompletionData (CompletionItem item)
 		{
