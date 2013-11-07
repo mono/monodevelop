@@ -45,7 +45,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.Debugger
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public class ObjectValueTreeView: TreeView, ICompletionWidget
+	public class ObjectValueTreeView : TreeView, ICompletionWidget
 	{
 		readonly Dictionary<ObjectValue, TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
