@@ -260,10 +260,10 @@ and whether it is in a project directory.")
   "Attempt to load FILE using the F# compiler binding.
 If FILE is part of an F# project, load the project.
 Otherwise, treat as a stand-alone file."
-  (or (when (not (fsharp-ac--process-live-p))
-        (fsharp-ac/load-project (fsharp-mode/find-fsproj file)))
-      (fsharp-ac/load-file file))
   (when fsharp-ac-intellisense-enabled
+    (or (when (not (fsharp-ac--process-live-p))
+          (fsharp-ac/load-project (fsharp-mode/find-fsproj file)))
+        (fsharp-ac/load-file file))
     (auto-complete-mode 1)
     (setq ac-auto-start nil
           ac-use-comphist nil

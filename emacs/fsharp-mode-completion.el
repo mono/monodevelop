@@ -206,8 +206,12 @@ display in a help buffer instead.")
   (when (fsharp-ac--process-live-p)
     (kill-process fsharp-ac-completion-process))
 
-  (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-  (fsharp-ac--reset-timer))
+  (condition-case nil
+      (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+    (fsharp-ac--reset-timer)
+    (error
+     (setq fsharp-ac-intellisense-enabled nil)
+     (message "Failed to start fsautocomplete. Disabling intellisense."))))
 
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
