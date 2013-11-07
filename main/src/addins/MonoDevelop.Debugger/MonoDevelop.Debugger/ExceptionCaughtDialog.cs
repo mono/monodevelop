@@ -215,10 +215,10 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtMessage : IDisposable
 	{
-		ExceptionInfo ex;
+		ExceptionCaughtMiniButton miniButton;
 		ExceptionCaughtDialog dialog;
 		ExceptionCaughtButton button;
-		ExceptionCaughtMiniButton miniButton;
+		readonly ExceptionInfo ex;
 
 		public ExceptionCaughtMessage (ExceptionInfo val, FilePath file, int line, int col)
 		{
@@ -308,11 +308,11 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtButton: TopLevelWidgetExtension
 	{
-		ExceptionCaughtMessage dlg;
-		ExceptionInfo exception;
+		readonly Gdk.Pixbuf closeSelOverImage;
+		readonly Gdk.Pixbuf closeSelImage;
+		readonly ExceptionCaughtMessage dlg;
+		readonly ExceptionInfo exception;
 		Gtk.Label messageLabel;
-		Gdk.Pixbuf closeSelImage;
-		Gdk.Pixbuf closeSelOverImage;
 
 		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg, FilePath file, int line)
 		{
