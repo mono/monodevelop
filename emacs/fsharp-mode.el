@@ -29,9 +29,6 @@
 (require 'fsharp-doc)
 (require 'inf-fsharp-mode)
 
-(defconst fsharp-mode-version 1.0.1
-  "Version of this fsharp-mode")
-
 ;;; Compilation
 
 (defvar fsharp-compile-command
@@ -360,12 +357,6 @@ whole string."
   (let ((name (buffer-file-name)))
     (if (string-match "^\\(.*\\)\\.\\(fs\\|fsi\\)$" name)
         (shell-command (concat (match-string 1 name) ".exe")))))
-
-(defun fsharp-mode-version ()
-  "Echo the current version of `fsharp-mode' in the minibuffer."
-  (interactive)
-  (message "Using `fsharp-mode' version %s" fsharp-mode-version)
-  (fsharp-keep-region-active))
 
 ;;; Project
 
