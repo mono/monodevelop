@@ -22,8 +22,8 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,8 +36,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerConsoleView.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

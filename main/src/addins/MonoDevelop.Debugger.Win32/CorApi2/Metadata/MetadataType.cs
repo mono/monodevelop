@@ -423,9 +423,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						break;
 					MetadataPropertyInfo prop = new MetadataPropertyInfo (m_importer, methodToken, this);
 					try {
-						MethodInfo mi = prop.GetGetMethod ();
+						MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
 						if (mi == null)
-							mi = prop.GetSetMethod ();
+							continue;
 						if (FlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
 							al.Add (prop);
 					}

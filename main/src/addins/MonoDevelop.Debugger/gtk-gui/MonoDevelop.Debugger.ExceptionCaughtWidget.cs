@@ -73,8 +73,6 @@ namespace MonoDevelop.Debugger
 			this.hbox2.Add (this.vboxExceptionInfo);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vboxExceptionInfo]));
 			w4.Position = 1;
-			w4.Expand = false;
-			w4.Fill = false;
 			this.vbox2.Add (this.hbox2);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
 			w5.Position = 0;
