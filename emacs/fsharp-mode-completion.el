@@ -206,8 +206,12 @@ display in a help buffer instead.")
   (when (fsharp-ac--process-live-p)
     (kill-process fsharp-ac-completion-process))
 
-  (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-  (fsharp-ac--reset-timer))
+  (condition-case nil
+      (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+    (fsharp-ac--reset-timer)
+    (error
+     (setq fsharp-ac-intellisense-enabled nil)
+     (message "Failed to start fsautocomplete. Disabling intellisense."))))
 
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
@@ -288,7 +292,7 @@ The current buffer must be an F# file that exists on disk."
     (and file
          (fsharp-ac--process-live-p)
          (not ac-completing)
-         (or (member (expand-file-name file) fsharp-ac-project-files)
+         (or (member (file-truename file) fsharp-ac-project-files)
              (string-match-p (rx (or "fsx" "fsscript"))
                              (file-name-extension file))))))
 
@@ -591,7 +595,7 @@ display a short summary in the minibuffer."
         (princ str)))))
 
 (defun fsharp-ac-handle-project (data)
-  (setq fsharp-ac-project-files data)
+  (setq fsharp-ac-project-files (-map 'file-truename data))
   (fsharp-ac-parse-file (car (last fsharp-ac-project-files))))
 
 (defun fsharp-ac-handle-process-error (str)
