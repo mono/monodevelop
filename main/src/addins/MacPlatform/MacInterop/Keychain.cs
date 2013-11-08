@@ -528,11 +528,8 @@ namespace MonoDevelop.MacInterop
 			                                              0, null, (uint) path.Length, path, (ushort) uri.Port,
 			                                              protocol, auth, out passwordLength, out passwordData, ref item);
 
-			if (result == OSStatus.ItemNotFound)
-				return null;
-
 			if (result != OSStatus.Ok)
-				throw new Exception ("Could not find internet username and password: " + GetError (result));
+				return null;
 
 			var username = GetUsernameFromKeychainItemRef (item);
 
@@ -564,11 +561,8 @@ namespace MonoDevelop.MacInterop
 
 			CFRelease (item);
 
-			if (result == OSStatus.ItemNotFound)
-				return null;
-
 			if (result != OSStatus.Ok)
-				throw new Exception ("Could not find internet password: " + GetError (result));
+				return null;
 
 			return Marshal.PtrToStringAuto (passwordData, (int) passwordLength);
 		}
