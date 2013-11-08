@@ -42,7 +42,7 @@
 ;;; Error parsing
 
 (defconst err-brace-str
-  "{\"Kind\":\"errors\",\"Data\":[{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":9,\"EndLine\":9,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"},{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":11,\"EndLine\":11,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Error\",\"Message\":\"Unexpected symbol '[<' in expression\",\"Subcategory\":\"parse\"},{\"FileName\":\"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/integration/Test1Json/Program.fs\",\"StartLine\":12,\"EndLine\":12,\"StartColumn\":0,\"EndColumn\":3,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"}]}\n"
+  "{\"Kind\":\"errors\",\"Data\":[{\"FileName\":\"<filename>\",\"StartLine\":9,\"EndLine\":9,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":11,\"EndLine\":11,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Error\",\"Message\":\"Unexpected symbol '[<' in expression\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":12,\"EndLine\":12,\"StartColumn\":0,\"EndColumn\":3,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"}]}\n"
   "A list of errors containing a square bracket to check the parsing")
 
 (check "parses errors from given string"
@@ -61,8 +61,10 @@
   `(check ,desc
      (using-file "*fsharp-complete*"
        (stubbing-process-functions
-        (find-file (concat fs-file-dir "Program.fs"))
-        (fsharp-ac-filter-output nil err-brace-str)
+        (let* ((file (concat fs-file-dir "Program.fs"))
+               (errmsg (s-replace "<filename>" file err-brace-str)))
+          (find-file file)
+          (fsharp-ac-filter-output nil errmsg))
        ,@body))))
 
 (check-filter "error clears partial data"
