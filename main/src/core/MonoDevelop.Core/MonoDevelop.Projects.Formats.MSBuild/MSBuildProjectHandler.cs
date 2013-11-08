@@ -37,11 +37,9 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Core.Instrumentation;
-using System.Text;
 using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -134,7 +132,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					projectBuilder.Dispose ();
 					projectBuilder = null;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName);
+				var sln = item.ParentSolution;
+				var slnFile = sln != null ? sln.FileName : null;
+				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName, slnFile);
 				lastBuildToolsVersion = toolsVersion;
 				lastBuildRuntime = runtime.Id;
 				lastFileName = item.FileName;
@@ -220,7 +220,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (UseMSBuildEngineForItem (Item, configuration)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
-					
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
 					var configs = GetConfigurations (item, configuration);
