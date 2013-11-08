@@ -207,8 +207,9 @@ display in a help buffer instead.")
     (kill-process fsharp-ac-completion-process))
 
   (condition-case nil
-      (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-    (fsharp-ac--reset-timer)
+      (progn
+        (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+        (fsharp-ac--reset-timer))
     (error
      (setq fsharp-ac-intellisense-enabled nil)
      (message "Failed to start fsautocomplete. Disabling intellisense."))))
