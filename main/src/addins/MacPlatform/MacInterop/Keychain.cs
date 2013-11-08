@@ -26,13 +26,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-
-using MonoDevelop.Core;
 
 namespace MonoDevelop.MacInterop
 {
