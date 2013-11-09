@@ -570,7 +570,7 @@ type internal LanguageService private () =
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn + 1, error.EndLine + 1, error.EndColumn + 1))
+      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn, error.EndLine + 1, error.EndColumn + 1))
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file
