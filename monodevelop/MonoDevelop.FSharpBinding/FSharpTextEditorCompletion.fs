@@ -409,7 +409,7 @@ type FSharpPathExtension() =
                 let child = lastToplevel.Nested |> Array.tryFind (fun tl -> inside loc tl.Range)
                 let multichild = lastToplevel.Nested |> Array.filter (fun tl -> inside loc tl.Range)
 
-                Debug.Assert( multichild.Length = 1, String.Format("{0} children found please investigate!", multichild.Length))
+                Debug.Assert( multichild.Length <= 1, String.Format("{0} children found please investigate!", multichild.Length))
                 match child with
                 | Some(c) -> newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
                 | None -> newPath.Add(PathEntry("No selection", Tag = lastToplevel))
