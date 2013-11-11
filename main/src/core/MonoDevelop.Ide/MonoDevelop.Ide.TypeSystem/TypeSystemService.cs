@@ -939,8 +939,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public bool ReferencesConnected {
 				get {
-					return referencesConnected && referencedWrappers.All (w => w.ReferencesConnected);
+					return GetReferencesConnected (this, new HashSet<ProjectContentWrapper> ());
 				}
+			}
+
+			static bool GetReferencesConnected (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
+			{
+				if (wrapper.Contains (pcw))
+					return true;
+				wrapper.Add (pcw); 
+				return pcw.referencesConnected && pcw.referencedWrappers.All (w => GetReferencesConnected (w, wrapper));
 			}
 
 			public IProjectContent Content {
