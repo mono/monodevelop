@@ -78,7 +78,8 @@ namespace MonoDevelop.CodeIssues
 		static readonly Type[] groupingProviders = {
 			typeof(CategoryGroupingProvider),
 			typeof(ProviderGroupingProvider),
-			typeof(SeverityGroupingProvider)
+			typeof(SeverityGroupingProvider),
+			typeof(ProjectGroupingProvider)
 		};
 
 		public CodeIssuePadControl ()
