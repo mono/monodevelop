@@ -1,5 +1,5 @@
 //
-// ProjectGroupingProvider.cs
+// FileGroupingProvider.cs
 //
 // Author:
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>
@@ -24,20 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
-	[GroupingDescription("Project")]
-	public class ProjectGroupingProvider : AbstractGroupingProvider<Project>
+	[GroupingDescription("File")]
+	public class FileGroupingProvider : AbstractGroupingProvider<ProjectFile>
 	{
 		#region implemented abstract members of AbstractGroupingProvider
-		protected override Project GetGroupingKey (IssueSummary issue)
+		protected override ProjectFile GetGroupingKey (IssueSummary issue)
 		{
-			return issue.Project;
+			return issue.File;
 		}
 		protected override string GetGroupName (IssueSummary issue)
 		{
-			return issue.Project.Name;
+			FilePath parent = issue.Project.FileName.ParentDirectory;
+			FilePath current = issue.File.FilePath;
+			if (current.IsChildPathOf (current))
+				return issue.File.FilePath.ToRelative (parent);
+			return current.ToRelative (issue.Project.ParentSolution.BaseDirectory);
 		}
 		#endregion
 	}

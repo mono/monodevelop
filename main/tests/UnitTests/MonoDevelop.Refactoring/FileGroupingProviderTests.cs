@@ -1,5 +1,5 @@
 //
-// ProjectGroupingProvider.cs
+// FileGroupingProviderTests.cs
 //
 // Author:
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>
@@ -23,22 +23,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.CodeIssues;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.Refactoring
 {
-	[GroupingDescription("Project")]
-	public class ProjectGroupingProvider : AbstractGroupingProvider<Project>
+	public class FileGroupingProviderTests : GroupingProviderTestBase<FileGroupingProvider>
 	{
-		#region implemented abstract members of AbstractGroupingProvider
-		protected override Project GetGroupingKey (IssueSummary issue)
+		#region implemented abstract members of GroupingProviderTestBase
+
+		protected override FileGroupingProvider CreateProviderInstance ()
 		{
-			return issue.Project;
+			return new FileGroupingProvider ();
 		}
-		protected override string GetGroupName (IssueSummary issue)
+
+		protected override IssueSummary[] GetDistinctSummaries ()
 		{
-			return issue.Project.Name;
+			return new [] {
+				new IssueSummary {
+					File = new ProjectFile ("File1")
+				},
+				new IssueSummary {
+					File = new ProjectFile ("File2")
+				}
+			};
 		}
+
 		#endregion
 	}
 }

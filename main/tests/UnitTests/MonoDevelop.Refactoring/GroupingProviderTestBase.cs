@@ -69,7 +69,8 @@ namespace MonoDevelop.Refactoring
 				Severity = Severity.None,
 				Project = new DotNetAssemblyProject {
 					Name = "ProjectName"
-				}
+				},
+				File = new ProjectFile ("FileName")
 			};
 		}
 		

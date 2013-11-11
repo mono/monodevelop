@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.CodeIssues;
-using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring

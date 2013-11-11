@@ -79,7 +79,8 @@ namespace MonoDevelop.CodeIssues
 			typeof(CategoryGroupingProvider),
 			typeof(ProviderGroupingProvider),
 			typeof(SeverityGroupingProvider),
-			typeof(ProjectGroupingProvider)
+			typeof(ProjectGroupingProvider),
+			typeof(FileGroupingProvider)
 		};
 
 		public CodeIssuePadControl ()
