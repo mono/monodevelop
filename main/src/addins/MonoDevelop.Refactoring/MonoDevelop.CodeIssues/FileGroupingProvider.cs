@@ -38,11 +38,7 @@ namespace MonoDevelop.CodeIssues
 		}
 		protected override string GetGroupName (IssueSummary issue)
 		{
-			FilePath parent = issue.Project.FileName.ParentDirectory;
-			FilePath current = issue.File.FilePath;
-			if (current.IsChildPathOf (current))
-				return issue.File.FilePath.ToRelative (parent);
-			return current.ToRelative (issue.Project.ParentSolution.BaseDirectory);
+			return issue.File.FilePath.ToRelative (issue.Project.BaseDirectory);
 		}
 		#endregion
 	}

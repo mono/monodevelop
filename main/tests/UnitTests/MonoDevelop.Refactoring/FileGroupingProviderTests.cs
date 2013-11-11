@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Projects;
+using System.IO;
 
 namespace MonoDevelop.Refactoring
 {
@@ -41,10 +42,16 @@ namespace MonoDevelop.Refactoring
 		{
 			return new [] {
 				new IssueSummary {
-					File = new ProjectFile ("File1")
+					File = new ProjectFile (Path.Combine ("Directory1", "File1")),
+					Project = new DotNetAssemblyProject {
+						BaseDirectory = "Directory1"
+					}
 				},
 				new IssueSummary {
-					File = new ProjectFile ("File2")
+					File = new ProjectFile (Path.Combine ("Directory2", "File2")),
+					Project = new DotNetAssemblyProject {
+						BaseDirectory = "Directory1"
+					}
 				}
 			};
 		}
