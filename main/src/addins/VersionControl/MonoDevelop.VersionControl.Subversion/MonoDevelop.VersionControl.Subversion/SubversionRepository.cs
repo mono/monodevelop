@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public override string[] SupportedProtocols {
 			get {
-				return new string[] {"svn", "svn+ssh", "http", "https", "file"};
+				return new [] {"svn", "svn+ssh", "http", "https", "file"};
 
 			}
 		}
@@ -37,11 +37,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override IEnumerable<Repository> ChildRepositories {
 			get {
-				List<Repository> list = new List<Repository> ();
+				var list = new List<Repository> ();
 				
 				foreach (DirectoryEntry ent in Svn.ListUrl (Url, false)) {
 					if (ent.IsDirectory) {
-						SubversionRepository rep = new SubversionRepository (VersionControlSystem, Url + "/" + ent.Name, null);
+						var rep = new SubversionRepository (VersionControlSystem, Url + "/" + ent.Name, null);
 						rep.Name = ent.Name;
 						list.Add (rep);
 					}
@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
-			SvnRevision rev = (SvnRevision) revision;
+			var rev = (SvnRevision) revision;
 			return rev.ChangedFiles ?? new RevisionPath [0];
 		}
 
@@ -112,7 +112,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				return true;
 			if ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
 				return true;
-			AlertButton but = new AlertButton ("Lock File");
+			var but = new AlertButton ("Lock File");
 			if (!MessageService.Confirm (GettextCatalog.GetString ("File locking required"), GettextCatalog.GetString ("The file '{0}' must be locked before editing.", path), but))
 				return false;
 			try {
@@ -142,13 +142,13 @@ namespace MonoDevelop.VersionControl.Subversion
 				url += "/";
 			url += serverPath;
 			
-			string[] paths = new string[] {url};
+			string[] paths = { url };
 
 			CreateDirectory (paths, message, monitor);
-			Svn.Checkout (this.Url + "/" + serverPath, localPath, null, true, monitor);
+			Svn.Checkout (Url + "/" + serverPath, localPath, null, true, monitor);
 
 			RootPath = localPath;
-			Set<FilePath> dirs = new Set<FilePath> ();
+			var dirs = new Set<FilePath> ();
 			PublishDir (dirs, localPath, false, monitor);
 
 			foreach (FilePath file in files) {
@@ -156,7 +156,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Add (file, false, monitor);
 			}
 
-			Svn.Commit (new FilePath[] { localPath }, message, monitor);
+			Svn.Commit (new [] { localPath }, message, monitor);
 			
 			return new SubversionRepository (VersionControlSystem, paths[0], localPath);
 		}
@@ -179,7 +179,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			List<FilePath> list = new List<FilePath> ();
+			var list = new List<FilePath> ();
 			foreach (ChangeSetItem it in changeSet.Items)
 				list.Add (it.LocalPath);
 			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
@@ -192,7 +192,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
-			Svn.Checkout (this.Url, targetLocalPath, rev, recurse, monitor);
+			Svn.Checkout (Url, targetLocalPath, rev, recurse, monitor);
 		}
 
 		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -247,7 +247,7 @@ namespace MonoDevelop.VersionControl.Subversion
 						if (!path.IsChildPathOf (RootPath))
 							throw new InvalidOperationException ("File outside the repository directory");
 
-						List<FilePath> dirChain = new List<FilePath> ();
+						var dirChain = new List<FilePath> ();
 						FilePath parentDir = path.CanonicalPath;
 						do {
 							parentDir = parentDir.ParentDirectory;
@@ -259,7 +259,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 						// Found all parent unversioned dirs. Versin them now.
 						dirChain.Reverse ();
-						FileUpdateEventArgs args = new FileUpdateEventArgs ();
+						var args = new FileUpdateEventArgs ();
 						foreach (var d in dirChain) {
 							Svn.Add (d, false, monitor);
 							args.Add (new FileUpdateEventInfo (this, d, true));
@@ -274,7 +274,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public string Root {
 			get {
 				try {
-					UriBuilder ub = new UriBuilder (Url);
+					var ub = new UriBuilder (Url);
 					ub.Path = string.Empty;
 					ub.Query = string.Empty;
 					return ub.ToString ();
@@ -341,16 +341,16 @@ namespace MonoDevelop.VersionControl.Subversion
 				Revert (localDestPath, true, monitor);
 				
 				// Get the list of files in the directory to be replaced
-				ArrayList oldFiles = new ArrayList ();
+				var oldFiles = new ArrayList ();
 				GetDirectoryFiles (localDestPath, oldFiles);
 				
 				// Get the list of files to move
-				ArrayList newFiles = new ArrayList ();
+				var newFiles = new ArrayList ();
 				GetDirectoryFiles (localSrcPath, newFiles);
 				
 				// Move all new files to the new destination
-				Hashtable copiedFiles = new Hashtable ();
-				Hashtable copiedFolders = new Hashtable ();
+				var copiedFiles = new Hashtable ();
+				var copiedFolders = new Hashtable ();
 				foreach (string file in newFiles) {
 					string src = Path.GetFullPath (file);
 					string dst = Path.Combine (localDestPath, src.Substring (((string)localSrcPath).Length + 1));
@@ -374,7 +374,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 
 				// Delete all old files which have not been replaced
-				ArrayList foldersToDelete = new ArrayList ();
+				var foldersToDelete = new ArrayList ();
 				foreach (string oldFile in oldFiles) {
 					if (!copiedFiles.Contains (oldFile)) {
 						DeleteFile (oldFile, true, monitor, false);
@@ -511,7 +511,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			string diff = Svn.GetUnifiedDiff (versionInfo.LocalPath, false, false);
 			if (!string.IsNullOrEmpty (diff))
-				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ();
+				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new [] { versionInfo.LocalPath }).FirstOrDefault ();
 			return null;
 		}
 		
@@ -524,7 +524,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			if (localPaths != null) {
-				ArrayList list = new ArrayList ();
+				var list = new ArrayList ();
 				foreach (string path in localPaths) {
 					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
 					if (string.IsNullOrEmpty (diff))
@@ -540,8 +540,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override Annotation[] GetAnnotations (FilePath repositoryPath)
 		{
-			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, SvnRevision.Base));
-			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
+			var annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, SvnRevision.Base));
+			var nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
 			var baseDocument = new Mono.TextEditor.TextDocument (GetBaseText (repositoryPath));
 			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (repositoryPath));
 			
@@ -561,7 +561,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override string CreatePatch (IEnumerable<DiffInfo> diffs)
 		{
-			StringBuilder patch = new StringBuilder ();
+			var patch = new StringBuilder ();
 			
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
