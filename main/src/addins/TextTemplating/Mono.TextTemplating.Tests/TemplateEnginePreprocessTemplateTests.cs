@@ -26,11 +26,7 @@
 
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.IO;
 using NUnit.Framework;
-using Microsoft.VisualStudio.TextTemplating;
-
 namespace Mono.TextTemplating.Tests
 {
 	[TestFixture]
@@ -65,7 +61,7 @@ namespace Mono.TextTemplating.Tests
 		
 		string Preprocess (string input)
 		{
-			DummyHost host = new DummyHost ();
+			var host = new DummyHost ();
 			return Preprocess (input, host);
 		}
 		
@@ -73,16 +69,13 @@ namespace Mono.TextTemplating.Tests
 		{
 			string className = "PreprocessedTemplate";
 			string classNamespace = "Templating";
-			string language = null;
-			string[] references = null;
+			string language;
+			string[] references;
 			
-			TemplatingEngine engine = new TemplatingEngine ();
+			var engine = new TemplatingEngine ();
 			string output = engine.PreprocessTemplate (input, host, className, classNamespace, out language, out references);
 			ReportErrors (host.Errors);
-			if (output != null) {
-				return TemplatingEngineHelper.CleanCodeDom (output, "\n");
-			}
-			return null;
+			return output != null ? TemplatingEngineHelper.CleanCodeDom (output, "\n") : null;
 		}
 		
 		void ReportErrors(CompilerErrorCollection errors)
@@ -94,7 +87,7 @@ namespace Mono.TextTemplating.Tests
 		
 		DummyHost CreateDummyHostForControlBlockAfterIncludedTemplateWithClassFeatureBlockTest()
 		{
-			DummyHost host = new DummyHost ();
+			var host = new DummyHost ();
 			
 			string includeTemplateFileName = @"d:\test\IncludedFile.tt";
 			host.Locations.Add (includeTemplateFileName, includeTemplateFileName);

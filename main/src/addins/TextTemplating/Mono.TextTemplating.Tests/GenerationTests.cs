@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Microsoft.VisualStudio.TextTemplating;
@@ -49,7 +48,7 @@ namespace Mono.TextTemplating.Tests
 		public void GenerateMacNewlines ()
 		{
 			string MacInput = ParsingTests.ParseSample1.Replace ("\n", "\r");
-			string MacOutput = OutputSample1.Replace ("\\n", "\\r").Replace ("\n", "\r");;
+			string MacOutput = OutputSample1.Replace ("\\n", "\\r").Replace ("\n", "\r");
 			Generate (MacInput, MacOutput, "\r");
 		}
 		
@@ -65,7 +64,7 @@ namespace Mono.TextTemplating.Tests
 		// in order to match the newlines in the verbatim code blocks
 		void Generate (string input, string expectedOutput, string newline)
 		{
-			DummyHost host = new DummyHost ();
+			var host = new DummyHost ();
 			string className = "GeneratedTextTransformation4f504ca0";
 			string code = GenerateCode (host, input, className, newline);
 			Assert.AreEqual (0, host.Errors.Count);
@@ -100,7 +99,7 @@ namespace Mono.TextTemplating.Tests
 			}
 			
 			var opts = new System.CodeDom.Compiler.CodeGeneratorOptions ();
-			using (var writer = new System.IO.StringWriter ()) {
+			using (var writer = new StringWriter ()) {
 				writer.NewLine = generatorNewline;
 				settings.Provider.GenerateCodeFromCompileUnit (ccu, writer, opts);
 				return writer.ToString ();
