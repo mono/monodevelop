@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Mono.MHex.Data;
 using Xwt;
 
@@ -42,12 +41,12 @@ namespace Mono.MHex.Data
 		
 		internal void InternalHandleKeypress (HexEditor editor, Key key, uint unicodeChar, ModifierKeys modifier)
 		{
-			this.Editor = editor; 
+			Editor = editor; 
 			
 			HandleKeypress (key, unicodeChar, modifier);
 			
 			//make sure that nothing funny goes on when the mode should have finished
-			this.Editor = null;
+			Editor = null;
 		}
 
 		protected abstract void HandleKeypress (Key key, uint unicodeChar, ModifierKeys modifier);

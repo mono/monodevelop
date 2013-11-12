@@ -79,7 +79,7 @@ namespace Mono.MHex.Data
 			node.parent = parent;
 			node.color = red;
 			
-			this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (parent));
+			OnChildrenChanged (new RedBlackTreeNodeEventArgs (parent));
 			FixTreeOnInsert (node);
 			Count++;
 		}
@@ -122,13 +122,13 @@ namespace Mono.MHex.Data
 		void RotateLeft (RedBlackTreeNode node) 
 		{
 			RedBlackTreeNode right = node.right;
-			this.Replace (node, right);
+			Replace (node, right);
 			node.right = right.left;
 			if (node.right != null) 
 				node.right.parent = node;
 			right.left = node;
 			node.parent = right;
-			this.OnNodeRotateLeft (new RedBlackTreeNodeEventArgs (node));
+			OnNodeRotateLeft (new RedBlackTreeNodeEventArgs (node));
 		}
 
 		void RotateRight (RedBlackTreeNode node) 
@@ -140,7 +140,7 @@ namespace Mono.MHex.Data
 				node.left.parent = node;
 			left.right = node;
 			node.parent = left;			
-			this.OnNodeRotateRight (new RedBlackTreeNodeEventArgs (node));
+			OnNodeRotateRight (new RedBlackTreeNodeEventArgs (node));
 		}
 		
 		public void RemoveAt (RedBlackTreeIterator iter)
@@ -149,7 +149,7 @@ namespace Mono.MHex.Data
 				RemoveNode (iter.node);
 			} catch (Exception e) {
 				string s1 = "remove:" + iter.node.value;
-				string s2 = this.ToString ();
+				string s2 = ToString ();
 				Console.WriteLine (s1);
 				Console.WriteLine (s2);
 				Console.WriteLine ("----");
@@ -168,7 +168,7 @@ namespace Mono.MHex.Data
 					oldNode.parent.left = newNode;
 				else
 					oldNode.parent.right = newNode;
-				this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (oldNode.parent));
+				OnChildrenChanged (new RedBlackTreeNodeEventArgs (oldNode.parent));
 			}
 		}
 		
@@ -187,7 +187,7 @@ namespace Mono.MHex.Data
 				outerLeft.right = node.right;
 				if (outerLeft.right != null) 
 					outerLeft.right.parent = outerLeft;
-				this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (outerLeft));
+				OnChildrenChanged (new RedBlackTreeNodeEventArgs (outerLeft));
 				return;
 			}
 			Count--;
@@ -309,7 +309,7 @@ namespace Mono.MHex.Data
 		
 		public bool Contains(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
+			var iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) 
 					return true;
@@ -320,10 +320,10 @@ namespace Mono.MHex.Data
 		
 		public bool Remove(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
+			var iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) {
-					this.RemoveAt (iter);
+					RemoveAt (iter);
 					return true;
 				}
 				iter.MoveNext ();
@@ -359,7 +359,7 @@ namespace Mono.MHex.Data
 		{
 			if (Root == null) 
 				return null;
-			RedBlackTreeNode dummyNode = new RedBlackTreeNode (default(T));
+			var dummyNode = new RedBlackTreeNode (default(T));
 			dummyNode.right = Root;
 			return new RedBlackTreeIterator (dummyNode);
 		}
@@ -406,7 +406,7 @@ namespace Mono.MHex.Data
 		
 		void AppendNode (StringBuilder builder, RedBlackTreeNode node, int indent)
 		{
-			builder.Append (GetIndent (indent) + "Node (" + (node.color == red ? "r" : "b" ) + "):" + node.value.ToString () + Environment.NewLine);
+			builder.Append (GetIndent (indent) + "Node (" + (node.color == red ? "r" : "b") + "):" + node.value + Environment.NewLine);
 			builder.Append (GetIndent (indent) + "Left: ");
 			if (node.left != null) {
 				builder.Append (Environment.NewLine);
@@ -427,7 +427,7 @@ namespace Mono.MHex.Data
 		
 		public override string ToString ()
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			AppendNode (result, Root, 0);
 			return result.ToString ();
 		}
@@ -449,7 +449,7 @@ namespace Mono.MHex.Data
 			
 			public RedBlackTreeNode Clone ()
 			{
-				RedBlackTreeNode result = new RedBlackTreeNode ((T)(value as ICloneable).Clone ());
+				var result = new RedBlackTreeNode ((T)(value as ICloneable).Clone ());
 				if (left != null) {
 					result.left = left.Clone ();
 					result.left.parent = result;
@@ -522,7 +522,7 @@ namespace Mono.MHex.Data
 			
 			public RedBlackTreeIterator Clone ()
 			{
-				return new RedBlackTreeIterator (this.startNode);
+				return new RedBlackTreeIterator (startNode);
 			}
 			
 			public bool IsValid {
@@ -543,13 +543,13 @@ namespace Mono.MHex.Data
 			
 			object System.Collections.IEnumerator.Current {
 				get {
-					return this.Current;
+					return Current;
 				}
 			}
 			
 			public void Reset ()
 			{
-				this.node = this.startNode; 
+				node = startNode; 
 			}
 			
 			public void Dispose ()

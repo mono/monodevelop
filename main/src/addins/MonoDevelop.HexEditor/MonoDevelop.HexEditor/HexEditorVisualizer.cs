@@ -40,10 +40,6 @@ namespace MonoDevelop.HexEditor
 	{
 		Mono.MHex.HexEditor hexEditor;
 
-		public HexEditorVisualizer ()
-		{
-		}
-
 		#region IValueVisualizer implementation
 
 		public override string Name {
@@ -143,7 +139,7 @@ namespace MonoDevelop.HexEditor
 		#endregion
 	}
 
-	class RawStringBuffer : Mono.MHex.Data.IBuffer
+	class RawStringBuffer : IBuffer
 	{
 		readonly RawValueString array;
 		long offset;
@@ -204,7 +200,7 @@ namespace MonoDevelop.HexEditor
 		#endregion
 	}
 
-	abstract class RawArrayBuffer : Mono.MHex.Data.IBuffer
+	abstract class RawArrayBuffer : IBuffer
 	{
 		readonly RawValueArray array;
 		protected long Offset;

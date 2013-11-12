@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Xwt.Drawing;
 using Xwt;
 
@@ -51,11 +50,11 @@ namespace Mono.MHex.Rendering
 		{
 		}
 
-		protected internal override void Draw (Context drawable, Rectangle area, long line, double x, double y)
+		protected internal override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			drawable.Rectangle (x, y, Width, Editor.LineHeight);
-			drawable.SetColor (Style.HexDigitBg);
-			drawable.Fill ();
+			ctx.Rectangle (x, y, Width, Editor.LineHeight);
+			ctx.SetColor (Style.HexDigitBg);
+			ctx.Fill ();
 		}
 	}
 }

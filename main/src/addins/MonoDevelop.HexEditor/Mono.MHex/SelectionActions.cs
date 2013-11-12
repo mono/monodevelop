@@ -67,7 +67,7 @@ namespace Mono.MHex
 		
 		public static void Select (HexEditorData data, Action<HexEditorData> caretMoveAction)
 		{
-			PositionChangedHandler handler = new PositionChangedHandler (data);
+			var handler = new PositionChangedHandler (data);
 			data.Caret.OffsetChanged += handler.DataCaretPositionChanged;
 			
 			StartSelection (data);
@@ -79,7 +79,7 @@ namespace Mono.MHex
 
 		class PositionChangedHandler
 		{
-			HexEditorData data;
+			readonly HexEditorData data;
 			
 			public PositionChangedHandler (HexEditorData data)
 			{

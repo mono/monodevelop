@@ -50,7 +50,7 @@ namespace Mono.MHex.Data
 		
 		public override void AddRedraw (HexEditor editor)
 		{
-			editor.RepaintArea (0, (int)(Line * editor.LineHeight - editor.HexEditorData.VAdjustment.Value), editor.Bounds.Width, editor.LineHeight);
+			editor.RepaintArea (0, (Line * editor.LineHeight - editor.HexEditorData.VAdjustment.Value), editor.Bounds.Width, editor.LineHeight);
 		}
 	}
 	
@@ -77,7 +77,7 @@ namespace Mono.MHex.Data
 			if (margin != null)
 				editor.RepaintMarginArea (margin, 
 				                          margin.XOffset, 
-				                          (int)(Line * editor.LineHeight - editor.HexEditorData.VAdjustment.Value), 
+				                          (Line * editor.LineHeight - editor.HexEditorData.VAdjustment.Value), 
 				                          margin.Width, 
 				                          editor.LineHeight);
 		}

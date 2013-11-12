@@ -28,7 +28,7 @@ using System;
 
 namespace Mono.MHex.Data
 {
-	class ReplaceEventArgs : System.EventArgs
+	class ReplaceEventArgs : EventArgs
 	{
 		public long Offset {
 			get;

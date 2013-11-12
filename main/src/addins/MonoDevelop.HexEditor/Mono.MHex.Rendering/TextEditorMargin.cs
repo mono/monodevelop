@@ -64,16 +64,16 @@ namespace Mono.MHex.Rendering
 		{
 			var layout = new TextLayout (Editor);
 			layout.Font = Editor.Options.Font;
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			long startOffset = line * Editor.BytesInRow;
-			long endOffset   = System.Math.Min (startOffset + Editor.BytesInRow, Data.Length);
+			long endOffset   = Math.Min (startOffset + Editor.BytesInRow, Data.Length);
 			byte[] lineBytes = Data.GetBytes (startOffset, (int)(endOffset - startOffset));
-			for (int i = 0; i < lineBytes.Length; i++) {
-				byte b = lineBytes[i];
+			foreach (var b in lineBytes) {
 				char ch = (char)b;
 				if (b < 128 && (Char.IsLetterOrDigit (ch) || Char.IsPunctuation (ch))) {
 					sb.Append (ch);
-				} else {
+				}
+				else {
 					sb.Append (".");
 				}
 			}
