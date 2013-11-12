@@ -39,25 +39,25 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class BindDesignDialog: IDisposable
 	{
-		[Glade.Widget ("BindDesignDialog")] protected Gtk.Dialog dialog;
-		[Glade.Widget] protected Gtk.Label labelMessage;
-		[Glade.Widget] protected Gtk.ComboBox comboClasses;
-		[Glade.Widget] protected Gtk.Entry entryClassName;
-		[Glade.Widget] protected Gtk.Entry entryNamespace;
-		[Glade.Widget] protected Gtk.RadioButton radioSelect;
-		[Glade.Widget] protected Gtk.RadioButton radioCreate;
-		[Glade.Widget] protected Gtk.Table tableNewClass;
-		[Glade.Widget] protected Gtk.Button okButton;
-		[Glade.Widget] protected Gtk.EventBox fileEntryBox;
+		[Glade.Widget ("BindDesignDialog")] protected Dialog dialog;
+		[Glade.Widget] protected Label labelMessage;
+		[Glade.Widget] protected ComboBox comboClasses;
+		[Glade.Widget] protected Entry entryClassName;
+		[Glade.Widget] protected Entry entryNamespace;
+		[Glade.Widget] protected RadioButton radioSelect;
+		[Glade.Widget] protected RadioButton radioCreate;
+		[Glade.Widget] protected Table tableNewClass;
+		[Glade.Widget] protected Button okButton;
+		[Glade.Widget] protected EventBox fileEntryBox;
 		
-		FolderEntry fileEntry;
+		readonly FolderEntry fileEntry;
 		
-		ListStore store;
+		readonly ListStore store;
 		static string lastNamespace = "";
 		
 		public BindDesignDialog (string id, ArrayList validClasses, string baseFolder)
 		{
-			XML glade = new XML (null, "gui.glade", "BindDesignDialog", null);
+			var glade = new XML (null, "gui.glade", "BindDesignDialog", null);
 			glade.Autoconnect (this);
 			labelMessage.Text = GettextCatalog.GetString ("The widget design {0} is not currently bound to a class.", id);
 			
@@ -71,7 +71,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				foreach (string cname in validClasses)
 					store.AppendValues (cname);
 				comboClasses.Model = store;
-				CellRendererText cr = new CellRendererText ();
+				var cr = new CellRendererText ();
 				comboClasses.PackStart (cr, true);
 				comboClasses.AddAttribute (cr, "text", 0);
 				comboClasses.Active = 0;
@@ -93,13 +93,13 @@ namespace MonoDevelop.GtkCore.Dialogs
 				entryNamespace.Text = lastNamespace;
 			}
 			
-			dialog.Response += new Gtk.ResponseHandler (OnResponse);
+			dialog.Response += OnResponse;
 			UpdateStatus ();
 		}
 		
-		void OnResponse (object ob, Gtk.ResponseArgs args)
+		void OnResponse (object ob, ResponseArgs args)
 		{
-			dialog.Response -= new Gtk.ResponseHandler (OnResponse);
+			dialog.Response -= OnResponse;
 			if (args.ResponseId == ResponseType.Ok && radioCreate.Active)
 				lastNamespace = Namespace;
 		}
@@ -118,15 +118,14 @@ namespace MonoDevelop.GtkCore.Dialogs
 				if (radioCreate.Active) {
 					return entryClassName.Text;
 				} else {
-					Gtk.TreeIter it;
+					TreeIter it;
 					if (!comboClasses.GetActiveIter (out it))
 						return "";
-					string s = (string) store.GetValue (it, 0);
+					string s = (string)store.GetValue (it, 0);
 					int i = s.IndexOf ('.');
 					if (i != -1)
-						return s.Substring (i+1);
-					else
-						return s;
+						return s.Substring (i + 1);
+					return s;
 				}
 			}
 		}
@@ -136,15 +135,14 @@ namespace MonoDevelop.GtkCore.Dialogs
 				if (radioCreate.Active) {
 					return entryNamespace.Text;
 				} else {
-					Gtk.TreeIter it;
+					TreeIter it;
 					if (!comboClasses.GetActiveIter (out it))
 						return "";
-					string s = (string) store.GetValue (it, 0);
+					string s = (string)store.GetValue (it, 0);
 					int i = s.IndexOf ('.');
 					if (i != -1)
 						return s.Substring (0, i);
-					else
-						return "";
+					return "";
 				}
 			}
 		}

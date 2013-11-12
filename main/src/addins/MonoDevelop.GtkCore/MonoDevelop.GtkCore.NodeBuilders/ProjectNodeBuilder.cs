@@ -27,15 +27,8 @@
 //
 
 using System;
-using System.Collections;
-
 using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
-
-using MonoDevelop.GtkCore.GuiBuilder;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -60,10 +53,10 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				instance = null;
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			if (GtkDesignInfo.HasDesignedObjects ((Project)dataObject))
-				builder.AddChild (new WindowsFolder ((Project)dataObject));
+				treeBuilder.AddChild (new WindowsFolder ((Project)dataObject));
 		}
 		
 		public static void OnSupportChanged (Project p)

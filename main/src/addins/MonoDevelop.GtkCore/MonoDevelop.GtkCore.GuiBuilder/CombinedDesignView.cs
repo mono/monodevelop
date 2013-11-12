@@ -42,8 +42,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class CombinedDesignView : AbstractViewContent
 	{
 		IViewContent content;
-		Gtk.Widget control;
-		List<TabView> tabs = new List<TabView> ();
+		Widget control;
+		readonly List<TabView> tabs = new List<TabView> ();
 		
 		public CombinedDesignView (IViewContent content)
 		{
@@ -54,14 +54,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					ShowPage (0);
 				};
 			}*/
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
-			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
+			content.ContentChanged += OnTextContentChanged;
+			content.DirtyChanged += OnTextDirtyChanged;
 			
-			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
+			var crc = new CommandRouterContainer (content.Control, content, true);
 			crc.Show ();
 			control = crc;
 			
-			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
+			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
 		}
 		
 		public virtual Stetic.Designer Designer {
@@ -74,9 +74,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		protected void AddButton (string label, Gtk.Widget page)
+		protected void AddButton (string label, Widget page)
 		{
-			TabView view = new TabView (label, page);
+			var view = new TabView (label, page);
 			tabs.Add (view);
 			if (WorkbenchWindow != null) {
 				view.WorkbenchWindow = WorkbenchWindow;
@@ -84,12 +84,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public bool HasPage (Gtk.Widget page)
+		public bool HasPage (Widget page)
 		{
 			return tabs.Any (p => p.Control == page);
 		}
 		
-		public void RemoveButton (Gtk.Widget page)
+		public void RemoveButton (Widget page)
 		{
 /*			int i = notebook.PageNum (page);
 			if (i != -1)
@@ -133,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (WorkbenchWindow.ActiveViewContent == this)
 				OnPageShown (0);
 			else {
-				TabView tab = WorkbenchWindow.ActiveViewContent as TabView;
+				var tab = WorkbenchWindow.ActiveViewContent as TabView;
 				if (tab != null) {
 					int n = tabs.IndexOf (tab);
 					if (n != -1)
@@ -160,9 +160,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
-			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
-			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
+			content.ContentChanged -= OnTextContentChanged;
+			content.DirtyChanged -= OnTextDirtyChanged;
+			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
 			content.Dispose ();
 			
 			content = null;
@@ -177,7 +177,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.Load (fileName);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Widget Control {
 			get { return control; }
 		}
 		
@@ -246,7 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public void JumpTo (int line, int column)
 		{
-			IEditableTextBuffer ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			var ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
 			if (ip != null) {
 				ShowPage (0);
 				ip.SetCaretTo (line, column);
@@ -256,10 +256,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class TabView: AbstractBaseViewContent, IAttachableViewContent
 	{
-		string label;
-		Gtk.Widget content;
+		readonly string label;
+		readonly Widget content;
 		
-		public TabView (string label, Gtk.Widget content)
+		public TabView (string label, Widget content)
 		{
 			this.label = label;
 			this.content = content;
@@ -267,9 +267,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override object GetContent (Type type)
 		{
-			if (type.IsInstanceOfType (Control))
-				return Control;
-			return base.GetContent (type);
+			return type.IsInstanceOfType (Control) ? Control : base.GetContent (type);
 		}
 		
 		#region IAttachableViewContent implementation

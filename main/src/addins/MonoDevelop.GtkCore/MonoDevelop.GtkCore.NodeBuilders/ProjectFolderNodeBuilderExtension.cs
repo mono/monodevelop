@@ -49,12 +49,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			get { return typeof(UserInterfaceCommandHandler); }
 		}
 		
-		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
 		{
-			if (treeNavigator.Options ["ShowAllFiles"])
+			if (parentNode.Options ["ShowAllFiles"])
 				return;
 
-			ProjectFolder folder = dataObject as ProjectFolder;
+			var folder = dataObject as ProjectFolder;
 			if (folder != null && folder.Project is DotNetProject) {
 				GtkDesignInfo info = GtkDesignInfo.FromProject (folder.Project);
 				if (info.GtkGuiFolder == folder.Path)
@@ -65,49 +65,49 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	class UserInterfaceCommandHandler: NodeCommandHandler
 	{
-		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewDialog)]
+		[CommandHandler (GtkCommands.AddNewDialog)]
 		public void AddNewDialogToProject()
 		{
 			AddNewWindow ("DialogFileTemplate");
 		}
 		
-		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewDialog)]
+		[CommandUpdateHandler (GtkCommands.AddNewDialog)]
 		public void UpdateAddNewDialogToProject (CommandInfo cinfo)
 		{
 			cinfo.Visible = CanAddWindow ();
 		}
 		
-		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
+		[CommandHandler (GtkCommands.AddNewWindow)]
 		public void AddNewWindowToProject()
 		{
 			AddNewWindow ("WindowFileTemplate");
 		}
 		
-		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
+		[CommandUpdateHandler (GtkCommands.AddNewWindow)]
 		public void UpdateAddNewWindowToProject (CommandInfo cinfo)
 		{
 			cinfo.Visible = CanAddWindow ();
 		}
 		
-		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
+		[CommandHandler (GtkCommands.AddNewWidget)]
 		public void AddNewWidgetToProject()
 		{
 			AddNewWindow ("WidgetFileTemplate");
 		}
 		
-		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
+		[CommandUpdateHandler (GtkCommands.AddNewWidget)]
 		public void UpdateAddNewWidgetToProject (CommandInfo cinfo)
 		{
 			cinfo.Visible = CanAddWindow ();
 		}
 		
-		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
+		[CommandHandler (GtkCommands.AddNewActionGroup)]
 		public void AddNewActionGroupToProject()
 		{
 			AddNewWindow ("ActionGroupFileTemplate");
 		}
 		
-		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
+		[CommandUpdateHandler (GtkCommands.AddNewActionGroup)]
 		public void UpdateAddNewActionGroupToProject(CommandInfo cinfo)
 		{
 			cinfo.Visible = CanAddWindow ();
@@ -116,7 +116,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.ImportGladeFile)]
 		protected void OnImportGladeFile ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			var project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			GuiBuilderService.ImportGladeFile (project);
 		}
 		
@@ -129,7 +129,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.EditIcons)]
 		protected void OnEditIcons ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			var project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			GuiBuilderProject gp = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			sp.EditIcons ();
@@ -145,7 +145,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandHandler (GtkCommands.GtkSettings)]
 		protected void OnGtkSettings ()
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
+			var project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			IdeApp.ProjectOperations.ShowOptions (project, "SteticOptionsPanel");
 		}
 		
@@ -157,28 +157,24 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		bool CanAddWindow ()
 		{
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			var project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			return GtkDesignInfo.SupportsDesigner (project);
 		}
 		
 		public void AddNewWindow (string id)
 		{
-			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
+			var project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
 			if (project == null)
 				return;
 			
 			object dataItem = CurrentNode.DataItem;
 			
-			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
+			var folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			
 			if (project.UsePartialTypes)
 				id = "Partial" + id;
 			
-			string path;
-			if (folder != null)
-				path = folder.Path;
-			else
-				path = project.BaseDirectory;
+			string path = folder != null ? folder.Path : project.BaseDirectory;
 
 			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
 			

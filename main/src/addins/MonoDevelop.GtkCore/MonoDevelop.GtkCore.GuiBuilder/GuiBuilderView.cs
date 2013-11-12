@@ -41,7 +41,6 @@ using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.DesignerSupport;
 
 using Gtk;
-using Gdk;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -52,13 +51,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.ActionGroupDesigner actionsBox;
 		GuiBuilderWindow window;
 		
-		DesignerPage designerPage;
-		ActionGroupPage actionsPage;
+		readonly DesignerPage designerPage;
+		readonly ActionGroupPage actionsPage;
 		
 		
 		CodeBinder codeBinder;
 		GuiBuilderProject gproject;
-		string rootName;
+		readonly string rootName;
 		object designerStatus;
 		
 		public GuiBuilderView (IViewContent content, GuiBuilderWindow window): base (content)
@@ -101,7 +100,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CloseDesigner ();
 			CloseProject ();
 			if (project != null) {
-				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName);
+				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (ContentName);
 				if (w != null) {
 					AttachWindow (w);
 					if (designerStatus != null)
@@ -113,7 +112,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		void LoadDesigner ()
 		{
-			this.window = gproject.GetWindow (rootName);
+			window = gproject.GetWindow (rootName);
 			if (window == null) {
 				// The window doesn't exist anymore
 				return;
@@ -150,8 +149,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Actions designer
 			actionsBox = designer.CreateActionGroupDesigner ();
 			actionsBox.AllowActionBinding = !gproject.Project.UsePartialTypes;
-			actionsBox.BindField += new EventHandler (OnBindActionField);
-			actionsBox.ModifiedChanged += new EventHandler (OnActionshanged);
+			actionsBox.BindField += OnBindActionField;
+			actionsBox.ModifiedChanged += OnActionshanged;
 			
 			actionsPage.ClearChild ();
 			actionsPage.PackStart (actionsBox, true, true, 0);
@@ -232,9 +231,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			base.Dispose ();
 		}
 		
-		Gtk.Widget CreateDesignerNotAvailableWidget ()
+		static Widget CreateDesignerNotAvailableWidget ()
 		{
-			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("Designer not available"));
+			var label = new Label (GettextCatalog.GetString ("Designer not available"));
 			label.Show ();
 			return label;
 		}
@@ -247,7 +246,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
 				if (gproject.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, null, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure (gproject.Project, designer.RootComponent, null, false, false);
 			}
 			base.OnPageShown (npage);
 		}
@@ -271,7 +270,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// old name, and UpdateField will be able to find it (to rename the
 				// references to the field, it needs to have the old name).
 				if (gproject.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure (gproject.Project, designer.RootComponent, args, false, false);
 				
 				codeBinder.UpdateField (args.Component, args.OldName);
 			}
@@ -280,7 +279,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		void OnComponentTypesChanged (object s, EventArgs a)
+		static void OnComponentTypesChanged (object s, EventArgs a)
 		{
 			if (ToolboxProvider.Instance != null)
 				ToolboxProvider.Instance.NotifyItemsChanged ();
@@ -398,9 +397,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 	}
 	
-	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument
+	class DesignerPage: EventBox, ICustomPropertyPadProvider, IToolboxConsumer, IOutlinedDocument
 	{
-		GuiBuilderProject gproject;
+		readonly GuiBuilderProject gproject;
 		
 		public DesignerPage (GuiBuilderProject gproject)
 		{
@@ -409,17 +408,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public Stetic.ComponentType[] GetComponentTypes ()
 		{
-			if (Designer != null)
-				return Designer.GetComponentTypes ();
-			else
-				return null;
+			return Designer != null ? Designer.GetComponentTypes () : null;
 		}
 		
 		public DotNetProject Project {
 			get { return gproject.Project; }
 		}
 		
-		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+		Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
 		{
 			return PropertiesWidget.Instance;
 		}
@@ -437,7 +433,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ClearChild ()
 		{
 			if (Child != null) {
-				Gtk.Widget w = Child;
+				Widget w = Child;
 				Remove (w);
 				w.Destroy ();
 			}
@@ -450,7 +446,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		//Toolbox service uses this to filter toolbox items.
 		ToolboxItemFilterAttribute[] IToolboxConsumer.ToolboxFilterAttributes {
 			get {
-				return new ToolboxItemFilterAttribute [] {
+				return new [] {
 					new ToolboxItemFilterAttribute ("gtk-sharp", ToolboxItemFilterType.Custom)
 				};
 			}
@@ -460,7 +456,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		//If not expecting it, should just return false
 		bool IToolboxConsumer.CustomFilterSupports (ItemToolboxNode item)
 		{
-			ComponentToolboxNode cnode = item as ComponentToolboxNode;
+			var cnode = item as ComponentToolboxNode;
 			if (cnode != null && gproject.SteticProject != null) {
 				if (cnode.GtkVersion == null || Mono.Addins.Addin.CompareVersions (gproject.SteticProject.TargetGtkVersion, cnode.GtkVersion) <= 0)
 					return true;
@@ -472,10 +468,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return ComponentToolboxNode.GtkWidgetDomain; }
 		}
 			
-		void IToolboxConsumer.DragItem (ItemToolboxNode item, Gtk.Widget source, Gdk.DragContext ctx)
+		void IToolboxConsumer.DragItem (ItemToolboxNode item, Widget source, Gdk.DragContext ctx)
 		{
 			if (Designer != null) {
-				ComponentToolboxNode node = item as ComponentToolboxNode;
+				var node = item as ComponentToolboxNode;
 				if (node != null) {
 					if (node.Reference == null)
 						Designer.BeginComponentDrag (node.ComponentType, source, ctx);
@@ -598,17 +594,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			cinfo.Enabled = Designer != null && Designer.UndoQueue.CanRedo;
 		}
 		
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		Widget IOutlinedDocument.GetOutlineWidget ()
 		{
 			return GuiBuilderDocumentOutline.Instance;
 		}
 		
-		IEnumerable<Gtk.Widget> MonoDevelop.DesignerSupport.IOutlinedDocument.GetToolbarWidgets ()
+		IEnumerable<Widget> IOutlinedDocument.GetToolbarWidgets ()
 		{
 			return null;
 		}
 
-		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
+		void IOutlinedDocument.ReleaseOutlineWidget ()
 		{
 			//Do nothing. We keep the instance to avoid creation cost when switching documents.
 		}

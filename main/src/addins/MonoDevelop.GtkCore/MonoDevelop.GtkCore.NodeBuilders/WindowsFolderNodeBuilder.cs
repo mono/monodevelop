@@ -39,11 +39,11 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WindowsFolderNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler updateDelegate;
+		readonly EventHandler updateDelegate;
 		
 		public WindowsFolderNodeBuilder ()
 		{
-			updateDelegate = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
+			updateDelegate = DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
 		}
 		
 		public override Type NodeDataType {
@@ -76,16 +76,16 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			closedIcon = Context.GetIcon (Stock.ClosedResourceFolder);
 		}
 
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			Project p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
 			if (!info.GuiBuilderProject.HasError) {
-				builder.AddChild (new StockIconsNode (p));
+				treeBuilder.AddChild (new StockIconsNode (p));
 				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
-					builder.AddChild (fi);
+					treeBuilder.AddChild (fi);
 				foreach (Stetic.ActionGroupInfo group in info.GuiBuilderProject.SteticProject.ActionGroups)
-					builder.AddChild (group);
+					treeBuilder.AddChild (group);
 			}
 		}
 
@@ -98,13 +98,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		{
 			if (otherNode.DataItem is ProjectReferenceCollection)
 				return 1;
-			else
-				return -1;
+			return -1;
 		}
 
 		public override void OnNodeAdded (object dataObject)
 		{
-			WindowsFolder w = (WindowsFolder) dataObject;
+			var w = (WindowsFolder) dataObject;
 			w.Changed += updateDelegate;
 		}
 		

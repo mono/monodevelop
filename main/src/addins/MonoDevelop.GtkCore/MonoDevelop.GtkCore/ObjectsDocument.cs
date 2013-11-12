@@ -29,7 +29,6 @@
 
 using System;
 using System.Xml;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -43,7 +42,7 @@ namespace MonoDevelop.GtkCore
 
 	public class ObjectsDocument : XmlDocument
 	{
-		string path;
+		readonly string path;
 
 		public ObjectsDocument (string path) : base ()
 		{
@@ -53,7 +52,7 @@ namespace MonoDevelop.GtkCore
 		
 		public StringCollection ObjectNames {
 			get {
-				StringCollection names = new StringCollection ();
+				var names = new StringCollection ();
 				foreach (XmlNode node in DocumentElement) {
 					if (node.Name != "object")
 						continue;
@@ -76,10 +75,9 @@ namespace MonoDevelop.GtkCore
 				if (DocumentElement.HasAttribute ("attr-sync")) {
 					if (DocumentElement.GetAttribute ("attr-sync").ToLower () == "off")
 						return SyncState.Off;
-					else
-						return SyncState.On;
-				} else
-					return SyncState.Unspecified;
+					return SyncState.On;
+				}
+				return SyncState.Unspecified;
 			}
 			set {
 				switch (value) {
@@ -109,7 +107,7 @@ namespace MonoDevelop.GtkCore
 				Indent = true,
 				OmitXmlDeclaration = true,
 			};
-			using (var writer = XmlTextWriter.Create (path, settings)) {
+			using (var writer = XmlWriter.Create (path, settings)) {
 				Save (writer);
 			}
 		}
@@ -124,7 +122,7 @@ namespace MonoDevelop.GtkCore
 				if (cls == null)
 					continue;
 				CodeGenerationService.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
-				XmlElement elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
+				var elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
 				if (elem != null && elem.HasAttribute ("palette-category")) {
 					CodeGenerationService.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
 				}
@@ -137,16 +135,17 @@ namespace MonoDevelop.GtkCore
 				InsertToolboxItemAttributes (parser);
 				AttrSyncState = SyncState.On;
 				return;
-			} else if (AttrSyncState == SyncState.Off)
+			}
+			if (AttrSyncState == SyncState.Off)
 				return;
 
-			StringCollection tb_names = new StringCollection ();
+			var tb_names = new StringCollection ();
 			foreach (var cls in parser.GetToolboxItems().Values) {
 				UpdateClass (parser, stetic, cls, null);
 				tb_names.Add (cls.FullName);
 			}
 
-			List<XmlElement> toDelete = new List<XmlElement> ();
+			var toDelete = new List<XmlElement> ();
 
 			foreach (XmlElement elem in SelectNodes ("objects/object")) {
 				string name = elem.GetAttribute ("type");
@@ -164,7 +163,7 @@ namespace MonoDevelop.GtkCore
 		{
 			string typeName = widgetClass.FullName;
 			string basetypeName = GetBaseType (parser, widgetClass, stetic);
-			XmlElement objectElem = (XmlElement) SelectSingleNode ("objects/object[@type='" + typeName + "']");
+			var objectElem = (XmlElement) SelectSingleNode ("objects/object[@type='" + typeName + "']");
 			
 			if (objectElem == null) {
 			
@@ -194,10 +193,10 @@ namespace MonoDevelop.GtkCore
 			UpdateObject (parser, basetypeName, objectElem, widgetClass, wrapperClass);
 		}
 		
-		string GetBaseType (WidgetParser parser, ITypeDefinition widgetClass, Stetic.Project stetic)
+		static string GetBaseType (WidgetParser parser, ITypeDefinition widgetClass, Stetic.Project stetic)
 		{
 			string[] types = stetic.GetWidgetTypes ();
-			Hashtable typesHash = new Hashtable ();
+			var typesHash = new Hashtable ();
 			foreach (string t in types)
 				typesHash [t] = t;
 				
@@ -212,8 +211,8 @@ namespace MonoDevelop.GtkCore
 			else
 				objectElem.SetAttribute ("internal", "true");
 
-			ListDictionary properties = new ListDictionary ();
-			ListDictionary events = new ListDictionary ();
+			var properties = new ListDictionary ();
+			var events = new ListDictionary ();
 			
 			parser.CollectMembers (widgetClass, true, topType, properties, events);
 			if (wrapperClass != null)
@@ -226,7 +225,7 @@ namespace MonoDevelop.GtkCore
 				MergeEvent (parser, objectElem, ev);
 			
 			// Remove old properties
-			ArrayList toDelete = new ArrayList ();
+			var toDelete = new ArrayList ();
 			foreach (XmlElement xprop in objectElem.SelectNodes ("itemgroups/itemgroup/property")) {
 				if (!properties.Contains (xprop.GetAttribute ("name")))
 					toDelete.Add (xprop);
@@ -239,7 +238,7 @@ namespace MonoDevelop.GtkCore
 			}
 			
 			foreach (XmlElement el in toDelete) {
-				XmlElement pe = (XmlElement) el.ParentNode;
+				var pe = (XmlElement) el.ParentNode;
 				pe.RemoveChild (el);
 				if (pe.ChildNodes.Count == 0)
 					pe.ParentNode.RemoveChild (pe);
@@ -257,7 +256,7 @@ namespace MonoDevelop.GtkCore
 			string cat = parser.GetCategory (prop);
 			XmlElement itemGroup = GetItemGroup (prop.DeclaringType, itemGroups, cat, "Properties");
 			
-			XmlElement propElem = (XmlElement) itemGroup.SelectSingleNode ("property[@name='" + prop.Name + "']");
+			var propElem = (XmlElement) itemGroup.SelectSingleNode ("property[@name='" + prop.Name + "']");
 			if (propElem == null) {
 				propElem = itemGroup.OwnerDocument.CreateElement ("property");
 				propElem.SetAttribute ("name", prop.Name);
@@ -276,7 +275,7 @@ namespace MonoDevelop.GtkCore
 			string cat = parser.GetCategory (evnt);
 			XmlElement itemGroup = GetItemGroup (evnt.DeclaringType, itemGroups, cat, "Signals");
 			
-			XmlElement signalElem = (XmlElement) itemGroup.SelectSingleNode ("signal[@name='" + evnt.Name + "']");
+			var signalElem = (XmlElement) itemGroup.SelectSingleNode ("signal[@name='" + evnt.Name + "']");
 			if (signalElem == null) {
 				signalElem = itemGroup.OwnerDocument.CreateElement ("signal");
 				signalElem.SetAttribute ("name", evnt.Name);
@@ -295,7 +294,7 @@ namespace MonoDevelop.GtkCore
 			
 			if (itemGroup == null) {
 				itemGroup = itemGroups.OwnerDocument.CreateElement ("itemgroup");
-				if (cat != null && cat != "") {
+				if (!string.IsNullOrEmpty (cat)) {
 					itemGroup.SetAttribute ("name", cat);
 					itemGroup.SetAttribute ("label", cat);
 				} else

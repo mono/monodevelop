@@ -61,7 +61,7 @@ namespace MonoDevelop.GtkCore {
 					if (!IsGtkReference (pref))
 						continue;
 					string val = pref.StoredReference;
-					int idx = val.IndexOf (",") + 1;
+					int idx = val.IndexOf (",", StringComparison.Ordinal) + 1;
 					return val.Substring (idx).Trim ();
 				}
 				return String.Empty;
@@ -83,10 +83,10 @@ namespace MonoDevelop.GtkCore {
 				string assm_version = CurrentAssemblyVersion;
 				if (String.IsNullOrEmpty (assm_version))
 					return String.Empty;
-				int idx = assm_version.IndexOf (",");
+				int idx = assm_version.IndexOf (",", StringComparison.Ordinal);
 				if (idx > 0)
 					assm_version = assm_version.Substring (0, idx);
-				idx = assm_version.IndexOf ("=");
+				idx = assm_version.IndexOf ("=", StringComparison.Ordinal);
 				if (idx > 0)
 					assm_version = assm_version.Substring (idx + 1);
 				string[] toks = assm_version.Split ('.');
@@ -96,14 +96,14 @@ namespace MonoDevelop.GtkCore {
 			}
 		}
 		
-		string GetGtkAssemblyVersion (string pkg_version)
+		string GetGtkAssemblyVersion (string pkgVersion)
 		{
-			if (String.IsNullOrEmpty (pkg_version))
+			if (String.IsNullOrEmpty (pkgVersion))
 				return String.Empty;
 
-			pkg_version = pkg_version + ".";
+			pkgVersion = pkgVersion + ".";
 			foreach (SystemAssembly asm in project.AssemblyContext.GetAssemblies ()) {
-				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkg_version)) {
+				if (asm.Name == "gtk-sharp" && asm.Version.StartsWith (pkgVersion, StringComparison.Ordinal)) {
 					int i = asm.FullName.IndexOf (',');
 					return asm.FullName.Substring (i+1).Trim ();
 				}
@@ -111,14 +111,14 @@ namespace MonoDevelop.GtkCore {
 			return string.Empty;
 		}
 
-		string GetGtkPackageVersion (string assembly_version)
+		string GetGtkPackageVersion (string assemblyVersion)
 		{
-			if (String.IsNullOrEmpty (assembly_version))
+			if (String.IsNullOrEmpty (assemblyVersion))
 				return String.Empty;
 			
-			int i = assembly_version.IndexOf ('=');
-			assembly_version = assembly_version.Substring (i+1);
-			return GetVersionPrefix (assembly_version);
+			int i = assemblyVersion.IndexOf ('=');
+			assemblyVersion = assemblyVersion.Substring (i+1);
+			return GetVersionPrefix (assemblyVersion);
 		}
 
 		public bool Update ()
@@ -126,10 +126,10 @@ namespace MonoDevelop.GtkCore {
 			return Update (CurrentAssemblyVersion);
 		}
 
-		bool Update (string assm_version)
+		bool Update (string assmVersion)
 		{
-			if (assm_version == null)
-				throw new ArgumentException (assm_version);
+			if (assmVersion == null)
+				throw new ArgumentException (assmVersion);
 
 			bool changed = false;
 			updating = true;
@@ -152,20 +152,20 @@ namespace MonoDevelop.GtkCore {
 					continue;
 				
 				string sr = r.StoredReference;
-				string version = sr.Substring (sr.IndexOf (",") + 1).Trim ();
-				if (version != assm_version) {
+				string version = sr.Substring (sr.IndexOf (",", StringComparison.Ordinal) + 1).Trim ();
+				if (version != assmVersion) {
 					project.References.Remove (r);
-					if (name == "gnome-sharp" && assm_version == "Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f") {
+					if (name == "gnome-sharp" && assmVersion == "Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f") {
 						project.References.Add (new ProjectReference (ReferenceType.Package, name + ", Version=2.24.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f"));
 					} else {
-						project.References.Add (new ProjectReference (ReferenceType.Package, name + ", " + assm_version));
+						project.References.Add (new ProjectReference (ReferenceType.Package, name + ", " + assmVersion));
 					}
 					changed = true;
 				}
 			}
 
 			if (!gtk) {
-				project.References.Add (new ProjectReference (ReferenceType.Package, "gtk-sharp" + ", " + assm_version));
+				project.References.Add (new ProjectReference (ReferenceType.Package, "gtk-sharp" + ", " + assmVersion));
 				changed = true;
 			}
 
@@ -174,7 +174,7 @@ namespace MonoDevelop.GtkCore {
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (!gdk) {
-				project.References.Add (new ProjectReference (ReferenceType.Package, "gdk-sharp" + ", " + assm_version));
+				project.References.Add (new ProjectReference (ReferenceType.Package, "gdk-sharp" + ", " + assmVersion));
 				changed = true;
 			}
 				
@@ -194,7 +194,7 @@ namespace MonoDevelop.GtkCore {
 		}
 		
 		static bool updating;
-		static string[] gnome_assemblies = new string [] { 
+		static readonly string[] gnome_assemblies = { 
 			"art-sharp", "atk-sharp", "gconf-sharp", "gdk-sharp", 
 			"glade-sharp","glib-sharp", "gnome-sharp",
 			"gnome-vfs-sharp", "gtk-dotnet", "gtkhtml-sharp", 
@@ -213,8 +213,8 @@ namespace MonoDevelop.GtkCore {
 				return;
 
 			string sr = args.ProjectReference.StoredReference;
-			string version = sr.Substring (sr.IndexOf (",") + 1).Trim ();
-			ReferenceManager rm = new ReferenceManager (args.Project as DotNetProject);
+			string version = sr.Substring (sr.IndexOf (",", StringComparison.Ordinal) + 1).Trim ();
+			var rm = new ReferenceManager (args.Project as DotNetProject);
 			rm.Update (version);
 		}
 
@@ -223,7 +223,7 @@ namespace MonoDevelop.GtkCore {
 			if (updating || !IsGtkReference (args.ProjectReference))
 				return;
 
-			DotNetProject dnp = args.Project as DotNetProject;
+			var dnp = args.Project as DotNetProject;
 
 			if (MessageService.Confirm (GettextCatalog.GetString ("The Gtk# User Interface designer will be disabled by removing the gtk-sharp reference."), new AlertButton (GettextCatalog.GetString ("Disable Designer"))))
 				GtkDesignInfo.DisableProject (dnp);
@@ -234,7 +234,7 @@ namespace MonoDevelop.GtkCore {
 		static string GetReferenceName (ProjectReference pref)
 		{
 			string stored = pref.StoredReference;
-			int idx =stored.IndexOf (",");
+			int idx = stored.IndexOf (",", StringComparison.Ordinal);
 			if (idx == -1)
 				return stored.Trim ();
 
@@ -287,7 +287,7 @@ namespace MonoDevelop.GtkCore {
 			}
 		}
 		
-		string GetVersionPrefix (string version)
+		static string GetVersionPrefix (string version)
 		{
 			int i = version.IndexOf ('.');
 			i = version.IndexOf ('.', i + 1);

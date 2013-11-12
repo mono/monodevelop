@@ -28,8 +28,6 @@
 //
 
 using System;
-using System.Xml;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -42,7 +40,7 @@ namespace MonoDevelop.GtkCore
 
 	public class WidgetParser
 	{
-		ICompilation ctx;
+		readonly ICompilation ctx;
 
 		public ICompilation Ctx {
 			get {
@@ -153,7 +151,7 @@ namespace MonoDevelop.GtkCore
 			if (!member.IsPublic)
 				return false;
 
-			IProperty prop = member as IProperty;
+			var prop = member as IProperty;
 			if (prop != null) {
 				if (!prop.CanGet || !prop.CanSet)
 					return false;
@@ -206,10 +204,9 @@ namespace MonoDevelop.GtkCore
 					var val = pargs[0] as ConstantResolveResult;
 					if (val.ConstantValue == null)
 						return false;
-					else if (val.ConstantValue is bool)
+					if (val.ConstantValue is bool)
 						return (bool) val.ConstantValue;
-					else 
-						return val.ConstantValue != null;
+					return val.ConstantValue != null;
 				}
 			}
 
@@ -221,7 +218,7 @@ namespace MonoDevelop.GtkCore
 			return false;
 		}
 		
-		static string[] supported_types = new string[] {
+		static readonly string[] supported_types = {
 			"System.Boolean",
 			"System.Char",
 			"System.SByte",

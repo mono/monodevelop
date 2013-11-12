@@ -33,7 +33,6 @@ using System.CodeDom;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
@@ -44,8 +43,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class GuiBuilderWindow: IDisposable
 	{
 		Stetic.WidgetInfo rootWidget;
-		GuiBuilderProject fproject;
-		Stetic.Project gproject;
+		readonly GuiBuilderProject fproject;
+		readonly Stetic.Project gproject;
 		string name;
 		
 		public event WindowEventHandler Changed;
@@ -106,7 +105,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Find the classes that could be bound to this design
 			var ctx = fproject.GetParserContext ();
-			ArrayList list = new ArrayList ();
+			var list = new ArrayList ();
 			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ()) {
 				if (IsValidClass (cls))
 					list.Add (cls.FullName);
@@ -115,7 +114,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Ask what to do
 
 			try {
-				using (BindDesignDialog dialog = new BindDesignDialog (Name, list, Project.Project.BaseDirectory)) {
+				using (var dialog = new BindDesignDialog (Name, list, Project.Project.BaseDirectory)) {
 					if (!dialog.Run ())
 						return false;
 					
@@ -209,7 +208,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)
 		{
 			foreach (Stetic.Signal signal in comp.GetSignals ()) {
-				CodeMemberMethod met = new CodeMemberMethod ();
+				var met = new CodeMemberMethod ();
 				met.Name = signal.Handler;
 				met.Attributes = MemberAttributes.Family;
 				met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);

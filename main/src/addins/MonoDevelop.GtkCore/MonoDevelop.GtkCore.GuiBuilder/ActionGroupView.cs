@@ -27,9 +27,7 @@
 //
 
 using System;
-using System.Collections;
 
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
@@ -44,10 +42,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		Stetic.ActionGroupDesigner designer;
 		CodeBinder codeBinder;
-		GuiBuilderProject project;
+		readonly GuiBuilderProject project;
 		Stetic.ActionGroupComponent group;
 		Stetic.ActionGroupInfo groupInfo;
-		string groupName;
+		readonly string groupName;
 		
 		public ActionGroupView (IViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
 		{
@@ -68,9 +66,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			designer = project.SteticProject.CreateActionGroupDesigner (groupInfo, false);
 			designer.AllowActionBinding = project.Project.UsePartialTypes;
-			designer.BindField += new EventHandler (OnBindField);
+			designer.BindField += OnBindField;
 			
-			ActionGroupPage actionsPage = new ActionGroupPage ();
+			var actionsPage = new ActionGroupPage ();
 			actionsPage.PackStart (designer, true, true, 0);
 			actionsPage.ShowAll ();
 			
@@ -129,7 +127,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
 				if (project.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, null, false, false);
+					GuiBuilderService.GenerateSteticCodeStructure (project.Project, designer.RootComponent, null, false, false);
 			}
 			base.OnPageShown (npage);
 		}
@@ -215,10 +213,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class ActionGroupPage: Gtk.VBox, ICustomPropertyPadProvider
 	{
-		public ActionGroupPage ()
-		{
-		}
-		
 		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
 		{
 			return PropertiesWidget.Instance;

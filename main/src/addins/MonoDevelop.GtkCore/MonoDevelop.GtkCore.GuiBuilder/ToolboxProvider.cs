@@ -24,7 +24,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			DesignerPage view = consumer as DesignerPage;
+			var view = consumer as DesignerPage;
 			if (view == null)
 				return null;
 			
@@ -32,11 +32,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (types == null)
 				return null;
 				
-			Hashtable refs = new Hashtable ();
-			Hashtable projects = new Hashtable ();
+			var refs = new Hashtable ();
+			var projects = new Hashtable ();
 			string of = FileService.GetFullPath (view.Project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration));
 			projects [of] = view.Project.Name;
-			foreach (ProjectReference pr in ((DotNetProject)view.Project).References)
+			foreach (ProjectReference pr in view.Project.References)
 				foreach (string f in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
 					if (pr.ReferenceType == ReferenceType.Project)
 						projects[FileService.GetFullPath (f)] = pr.Reference;
@@ -44,7 +44,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						refs[FileService.GetFullPath (f)] = f;
 				}
 			
-			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			var list = new List<ItemToolboxNode> ();
 			foreach (ComponentType type in types) {
 				if (type.Category == "window")
 					continue;
@@ -54,10 +54,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					fullName = FileService.GetFullPath (type.Library);
 
 				if (type.ClassName == "Gtk.Action" || (fullName != null && refs.Contains (fullName))) {
-					ComponentToolboxNode node = new ComponentToolboxNode (type);
+					var node = new ComponentToolboxNode (type);
 					list.Add (node);
 				} else if (fullName != null && projects.Contains (fullName)) {
-					ComponentToolboxNode node = new ComponentToolboxNode (type);
+					var node = new ComponentToolboxNode (type);
 					node.Category = (string) projects [fullName];
 					list.Add (node);
 				}
@@ -94,11 +94,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		[ItemProperty]
 		string reference;
 		[ItemProperty]
-		string className;
+		readonly string className;
 		[ItemProperty]
-		string gtkVersion;
+		readonly string gtkVersion;
 		
-		static ToolboxItemFilterAttribute[] attributes = new ToolboxItemFilterAttribute[] {
+		static readonly ToolboxItemFilterAttribute[] attributes = {
 			new ToolboxItemFilterAttribute ("gtk-sharp", ToolboxItemFilterType.Require)
 		};
 		
@@ -133,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		[Browsable (false)]
-		public Stetic.ComponentType ComponentType {
+		public ComponentType ComponentType {
 			get {
 				return componentType;
 			}
@@ -183,14 +183,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		string GetCategoryName (string cat)
+		static string GetCategoryName (string cat)
 		{
 			if (cat == "container")
 				return GettextCatalog.GetString ("Containers");
-			else if (cat == "widget")
+			if (cat == "widget")
 				return GettextCatalog.GetString ("Widgets");
-			else
-				return cat;
+			return cat;
 		}
 		
 		[Browsable (false)]

@@ -53,7 +53,7 @@ namespace MonoDevelop.GtkCore
 		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			foreach (XmlNode node in filenode.ChildNodes) {
-				XmlElement elem = node as XmlElement;
+				var elem = node as XmlElement;
 				if (elem == null) continue;
 				
 				if (elem.Name == "SteticTemplate") {
@@ -80,12 +80,12 @@ namespace MonoDevelop.GtkCore
 		public override bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name)
 		{
 			if (!GtkDesignInfo.SupportsDesigner (project)) {
-				ReferenceManager mgr = new ReferenceManager (project as DotNetProject);
+				var mgr = new ReferenceManager (project as DotNetProject);
 				mgr.GtkPackageVersion = mgr.DefaultGtkVersion;
 				mgr.Dispose ();
 			}
 
-			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 				
 			GuiBuilderProject gproject = info.GuiBuilderProject;
 			
@@ -94,7 +94,7 @@ namespace MonoDevelop.GtkCore
 
 			TypeSystemService.ParseFile (project, fileName);
 			
-			DotNetProject netProject = project as DotNetProject;
+			var netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
 			string cname = Path.GetFileNameWithoutExtension (fileName);
 			string fullName = ns.Length > 0 ? ns + "." + cname : cname;
@@ -109,7 +109,7 @@ namespace MonoDevelop.GtkCore
 				string content = widgetElem.OuterXml;
 				content = StringParserService.Parse (content, tags);
 				
-				XmlDocument doc = new XmlDocument ();
+				var doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
 				gproject.AddNewComponent (doc.DocumentElement);
@@ -123,7 +123,7 @@ namespace MonoDevelop.GtkCore
 				string content = widgetElem.OuterXml;
 				content = StringParserService.Parse (content, tags);
 				
-				XmlDocument doc = new XmlDocument ();
+				var doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
 				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);

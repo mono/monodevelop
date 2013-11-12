@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.GtkCore.GuiBuilder;
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -49,11 +48,11 @@ namespace MonoDevelop.GtkCore.Dialogs
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class GtkDesignerOptionsPanelWidget : Gtk.Bin
+	public partial class GtkDesignerOptionsPanelWidget : Bin
 	{
 		public GtkDesignerOptionsPanelWidget()
 		{
-			this.Build();
+			Build ();
 		}
 		
 		public bool AutoSwitchLayout {

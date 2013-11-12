@@ -36,7 +36,7 @@ namespace MonoDevelop.GtkCore
 {
 	public class ProjectResourceProvider: MarshalByRefObject, Stetic.IResourceProvider
 	{
-		Project project;
+		readonly Project project;
 		
 		public ProjectResourceProvider (Project project)
 		{
@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore
 		
 		public Stetic.ResourceInfo[] GetResources ()
 		{
-			ArrayList list = new ArrayList ();
+			var list = new ArrayList ();
 			foreach (ProjectFile file in project.Files) {
 				if (file.BuildAction == BuildAction.EmbeddedResource)
 					list.Add (new Stetic.ResourceInfo (file.ResourceId, file.Name, DesktopService.GetMimeTypeForUri (file.Name)));

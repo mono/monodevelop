@@ -26,16 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Gtk;
-using System;
-using System.Collections;
-using System.CodeDom;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	internal class ClassUtils
+	static class ClassUtils
 	{
 		public static IField FindWidgetField (ITypeDefinition cls, string name)
 		{
