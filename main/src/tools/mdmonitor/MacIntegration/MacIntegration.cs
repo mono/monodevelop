@@ -31,9 +31,11 @@ using System.IO;
 
 namespace MacIntegration
 {
-	public class IgeMacMenu
+	public static class IgeMacMenu
 	{
-		[DllImport("libigemacintegration.dylib")]
+		internal const string maclib = "libigemacintegration.dylib";
+
+		[DllImport(maclib)]
 		static extern void ige_mac_menu_connect_window_key_handler (IntPtr window);
 
 		public static void ConnectWindowKeyHandler (Gtk.Window window)
@@ -41,7 +43,7 @@ namespace MacIntegration
 			ige_mac_menu_connect_window_key_handler (window.Handle);
 		}
 
-		[DllImport("libigemacintegration.dylib")]
+		[DllImport(maclib)]
 		static extern void ige_mac_menu_set_global_key_handler_enabled (bool enabled);
 
 		public static bool GlobalKeyHandlerEnabled {
@@ -50,7 +52,7 @@ namespace MacIntegration
 			}
 		}
 
-		[DllImport("libigemacintegration.dylib")]
+		[DllImport(maclib)]
 		static extern void ige_mac_menu_set_menu_bar (IntPtr menu_shell);
 
 		public static Gtk.MenuShell MenuBar { 
@@ -59,7 +61,7 @@ namespace MacIntegration
 			}
 		}
 
-		[DllImport("libigemacintegration.dylib")]
+		[DllImport(maclib)]
 		static extern void ige_mac_menu_set_quit_menu_item (IntPtr quit_item);
 
 		public static Gtk.MenuItem QuitMenuItem { 
@@ -68,7 +70,7 @@ namespace MacIntegration
 			}
 		}
 
-		[DllImport("libigemacintegration.dylib")]
+		[DllImport(maclib)]
 		static extern IntPtr ige_mac_menu_add_app_menu_group ();
 
 		public static IgeMacMenuGroup AddAppMenuGroup ()
@@ -81,7 +83,7 @@ namespace MacIntegration
 
 	public class IgeMacMenuGroup : GLib.Opaque
 	{
-		[DllImport("libigemacintegration.dylib")]
+		[DllImport(IgeMacMenu.maclib)]
 		static extern void ige_mac_menu_add_app_menu_item (IntPtr raw, IntPtr menu_item, IntPtr label);
 
 		public void AddMenuItem (Gtk.MenuItem menu_item, string label)

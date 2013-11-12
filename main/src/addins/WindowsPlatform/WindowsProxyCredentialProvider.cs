@@ -148,27 +148,30 @@ namespace MonoDevelop.Platform.Windows
 
 	static class Native
 	{
-		[DllImport ("ole32.dll")]
+		const string OLE32 = "ole32.dll";
+		const string CREDUI = "credui.dll";
+
+		[DllImport (OLE32)]
 		internal static extern void CoTaskMemFree (IntPtr ptr);
 
-		[DllImport ("credui.dll")]
+		[DllImport (CREDUI)]
 		internal static extern CredUiReturnCodes CredUIPromptForCredentials (ref CredentialUiInfo uiInfo, string targetName,
 			IntPtr reserved1, int iError, StringBuilder userName, int maxUserName, StringBuilder password, int maxPassword,
 			[MarshalAs (UnmanagedType.Bool)] ref bool pfSave, CredentialsUiFlags windowsFlags);
 
-		[DllImport ("credui.dll", CharSet = CharSet.Unicode)]
+		[DllImport (CREDUI, CharSet = CharSet.Unicode)]
 		internal static extern WindowsCredentialPromptReturnCode CredUIPromptForWindowsCredentials (ref CredentialUiInfo uiInfo,
 			int authError, ref int authPackage, IntPtr inAuthBuffer, uint inAuthBufferSize,
 			out IntPtr refOutAuthBuffer, out int refOutAuthBufferSize, ref bool fSave,
 			CredentialsUiWindowsFlags uiWindowsFlags);
 
-		[DllImport ("credui.dll", CharSet = CharSet.Auto)]
+		[DllImport (CREDUI, CharSet = CharSet.Auto)]
 		internal static extern bool CredUnPackAuthenticationBuffer (int dwFlags, IntPtr pAuthBuffer,
 			int cbAuthBuffer, StringBuilder pszUserName, ref int pcchMaxUserName,
 			StringBuilder pszDomainName, ref int pcchMaxDomainame, StringBuilder pszPassword,
 			ref int pcchMaxPassword);
 
-		[DllImport ("credui.dll", CharSet = CharSet.Auto)]
+		[DllImport (CREDUI, CharSet = CharSet.Auto)]
 		internal static extern bool CredPackAuthenticationBuffer (int dwFlags, string pszUserName, string pszPassword,
 																  IntPtr packedCredentials, ref uint packedCredentialsLength);
 

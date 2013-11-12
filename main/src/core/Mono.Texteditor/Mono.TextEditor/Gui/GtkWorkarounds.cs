@@ -37,6 +37,7 @@ namespace Mono.TextEditor
 	public static class GtkWorkarounds
 	{
 		const string LIBOBJC ="/usr/lib/libobjc.dylib";
+		const string USER32DLL = "User32.dll";
 		
 		[DllImport (LIBOBJC, EntryPoint = "sel_registerName")]
 		static extern IntPtr sel_registerName (string selector);
@@ -71,7 +72,7 @@ namespace Mono.TextEditor
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect64 (out CGRect64 rect, IntPtr klass, IntPtr selector);
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 
 		struct CGRect32
@@ -259,10 +260,10 @@ namespace Mono.TextEditor
 		[UnmanagedFunctionPointer (CallingConvention.Winapi)]
 		delegate int EnumMonitorsCallback (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		extern static int EnumDisplayMonitors (IntPtr hdc, IntPtr clip, EnumMonitorsCallback callback, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
 		static Gdk.Rectangle WindowsGetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
@@ -735,7 +736,7 @@ namespace Mono.TextEditor
 			mod = accels[0].Modifier;
 		}
 
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[System.Runtime.InteropServices.DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
 		
 		enum DwmWindowAttribute
@@ -774,7 +775,7 @@ namespace Mono.TextEditor
 		[DllImport ("dwmapi.dll")]
 		static extern int DwmIsCompositionEnabled (out bool enabled);
 		
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		static extern bool GetWindowRect (IntPtr hwnd, out Win32Rect rect);
 		
 		public static void SetImCursorLocation (Gtk.IMContext ctx, Gdk.Window clientWindow, Gdk.Rectangle cursor)
@@ -832,7 +833,7 @@ namespace Mono.TextEditor
 			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
 		}
 
-		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_leak_fixed_marker ();
 
 		static HashSet<Type> fixedContainerTypes;
@@ -984,7 +985,7 @@ namespace Mono.TextEditor
 		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 		delegate void ForallDelegate (IntPtr container, bool include_internals, IntPtr cb, IntPtr data);
 		
-		[DllImport("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 
 		public static string MarkupLinks (string text)
@@ -1037,10 +1038,10 @@ namespace Mono.TextEditor
 
 		static bool canSetOverlayScrollbarPolicy = true;
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_scrolled_window_set_overlay_policy (IntPtr sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy);
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_scrolled_window_get_overlay_policy (IntPtr sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy);
 
 		public static void SetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy)
@@ -1072,7 +1073,7 @@ namespace Mono.TextEditor
 			canSetOverlayScrollbarPolicy = false;
 		}
 
-		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern bool gtk_tree_view_get_tooltip_context (IntPtr raw, ref int x, ref int y, bool keyboard_tip, out IntPtr model, out IntPtr path, IntPtr iter);
 
 		//the GTK# version of this has 'out' instead of 'ref', preventing passing the x,y values in
@@ -1092,10 +1093,10 @@ namespace Mono.TextEditor
 		
 		static bool supportsHiResIcons = false; // Disabled for now
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
 		
 		[DllImport (PangoUtil.LIBGTK)]

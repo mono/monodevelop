@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui
 
 	public class Log
 	{
-
+		const string LIBGLIB = "libglib-2.0-0.dll";
 		static Hashtable handlers;
 
 		static void EnsureHash ()
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui
 				handlers = new Hashtable ();
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_logv (IntPtr log_domain, LogLevelFlags flags, IntPtr message);
 
 		public void WriteLog (string logDomain, LogLevelFlags flags, string format, params object[] args)
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui
 			GLib.Marshaller.Free (nmessage);
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern uint g_log_set_handler (IntPtr log_domain, LogLevelFlags flags, LogFunc2 log_func, LogFunc user_data);
 
 		static readonly LogFunc2 LogFuncTrampoline = (string domain, LogLevelFlags level, string message, LogFunc user_data) => {
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Gui
 			return result;
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern uint g_log_remove_handler (IntPtr log_domain, uint handler_id);
 
 		public static void RemoveLogHandler (string logDomain, uint handlerID)
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern PrintFunc g_set_print_handler (PrintFunc handler);
 
 		public static PrintFunc SetPrintHandler (PrintFunc handler)
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 			return g_set_print_handler (handler);
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern PrintFunc g_set_printerr_handler (PrintFunc handler);
 
 		public static PrintFunc SetPrintErrorHandler (PrintFunc handler)
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.Gui
 			return g_set_printerr_handler (handler);
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_log_default_handler (IntPtr log_domain, LogLevelFlags log_level, IntPtr message, IntPtr unused_data);
 
 		public static void DefaultHandler (string logDomain, LogLevelFlags logLevel, string message)
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui
 			GLib.Marshaller.Free (nmess);
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		extern static LogLevelFlags g_log_set_always_fatal (LogLevelFlags fatal_mask);
 
 		public static LogLevelFlags SetAlwaysFatal (LogLevelFlags fatalMask)
@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui
 			return g_log_set_always_fatal (fatalMask);
 		}
 
-		[DllImport ("libglib-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
 		extern static LogLevelFlags g_log_set_fatal_mask (IntPtr log_domain, LogLevelFlags fatal_mask);
 
 		public static LogLevelFlags SetAlwaysFatal (string logDomain, LogLevelFlags fatalMask)
