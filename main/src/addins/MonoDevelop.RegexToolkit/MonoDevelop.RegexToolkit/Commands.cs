@@ -42,7 +42,7 @@ namespace MonoDevelop.RegexToolkit
 	
 	class ViewOnlyContent : AbstractViewContent
 	{
-		Widget widget;
+		readonly Widget widget;
 		
 		public override Widget Control {
 			get {
@@ -53,27 +53,27 @@ namespace MonoDevelop.RegexToolkit
 		public ViewOnlyContent (Widget widget, string contentName)
 		{
 			this.widget = widget;
-			this.ContentName = contentName;
+			ContentName = contentName;
 			IsViewOnly = true;
 		}
 		
 		public override void Load (string fileName)
 		{
-			throw new System.NotImplementedException ();
+			throw new NotImplementedException ();
 		}
 		
 	}
 	
 	class DefaultAttachableViewContent : AbstractAttachableViewContent
 	{
-		Widget widget;
+		readonly Widget widget;
 		
 		public override Widget Control {
 			get {
 				return widget;
 			}
 		}
-		string tabPageLabel;
+		readonly string tabPageLabel;
 		public override string TabPageLabel {
 			get {
 				return tabPageLabel;

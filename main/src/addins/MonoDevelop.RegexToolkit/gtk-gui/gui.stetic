@@ -355,6 +355,7 @@
   <widget class="Gtk.Bin" id="MonoDevelop.RegexToolkit.ElementHelpWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox4">
         <property name="MemberName" />
