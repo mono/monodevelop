@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using Mono.Addins;
 using System.Linq;
 using Mono.Addins.Description;
-using System.Diagnostics;
 
 namespace MonoDevelop.Tests.TestRunner
 {
