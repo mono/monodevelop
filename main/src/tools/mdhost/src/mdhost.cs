@@ -33,14 +33,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Logging;
 using MonoDevelop.Core.Execution;
 using System.IO;
-using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting.Lifetime;
 using System.Reflection;
 using System.Collections;
-using Mono.Remoting.Channels.Unix;
 using Mono.Addins;
 using System.Runtime.Remoting.Channels.Tcp;
 
@@ -51,7 +49,7 @@ public class MonoDevelopProcessHost
 	public static int Main (string[] args)
 	{
 		string tmpFile = null;
-		TextReader input = null;
+		TextReader input;
 		try {
 			// The first parameter is the task id
 			// The second parameter is the temp file that contains the data
@@ -84,13 +82,13 @@ public class MonoDevelopProcessHost
 			string unixPath = RegisterRemotingChannel ();
 			
 			byte[] data = Convert.FromBase64String (sref);
-			MemoryStream ms = new MemoryStream (data);
-			BinaryFormatter bf = new BinaryFormatter ();
-			IProcessHostController pc = (IProcessHostController) bf.Deserialize (ms);
+			var ms = new MemoryStream (data);
+			var bf = new BinaryFormatter ();
+			var pc = (IProcessHostController) bf.Deserialize (ms);
 			
 			LoggingService.AddLogger (new LocalLogger (pc.GetLogger (), args[0]));
 			
-			ProcessHost rp = new ProcessHost (pc);
+			var rp = new ProcessHost (pc);
 			pc.RegisterHost (rp);
 			try {
 				pc.WaitForExit ();
@@ -119,8 +117,8 @@ public class MonoDevelopProcessHost
 		formatterProps ["strictBinding"] = false;
 		
 		IDictionary dict = new Hashtable ();
-		BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider(formatterProps, null);
-		BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider(formatterProps, null);
+		var clientProvider = new BinaryClientFormatterSinkProvider(formatterProps, null);
+		var serverProvider = new BinaryServerFormatterSinkProvider(formatterProps, null);
 		serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
 		
 		// Mono's and .NET's IPC channels have interoperability issues, so use TCP in this case
@@ -143,14 +141,13 @@ public class MonoDevelopProcessHost
 		get {
 			if (Type.GetType ("Mono.Runtime") != null)
 				return "Mono";
-			else
-				return ".NET";
+			return ".NET";
 		}
 	}
 	
 	static void WatchParentProcess (int pid)
 	{
-		Thread t = new Thread (delegate () {
+		var t = new Thread (delegate () {
 			while (true) {
 				try {
 					// Throws exception if process is not running.
@@ -174,8 +171,8 @@ public class MonoDevelopProcessHost
 
 class LocalLogger: ILogger
 {
-	ILogger wrapped;
-	string id;
+	readonly ILogger wrapped;
+	readonly string id;
 	
 	public LocalLogger (ILogger wrapped, string id)
 	{
@@ -205,13 +202,13 @@ class LocalLogger: ILogger
 
 public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 {
-	IProcessHostController controller;
+	readonly IProcessHostController controller;
 	
 	public ProcessHost (IProcessHostController controller)
 	{
 		this.controller = controller;
-		MarshalByRefObject mbr = (MarshalByRefObject) controller;
-		ILease lease = mbr.GetLifetimeService () as ILease;
+		var mbr = (MarshalByRefObject) controller;
+		var lease = mbr.GetLifetimeService () as ILease;
 		lease.Register (this);
 	}
 	
@@ -259,8 +256,8 @@ public class ProcessHost: MarshalByRefObject, IProcessHost, ISponsor
 	
 	public void Dispose ()
 	{
-		MarshalByRefObject mbr = (MarshalByRefObject) controller;
-		ILease lease = mbr.GetLifetimeService () as ILease;
+		var mbr = (MarshalByRefObject) controller;
+		var lease = mbr.GetLifetimeService () as ILease;
 		lease.Unregister (this);
 	}
 	
