@@ -36,7 +36,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderDisplayBinding : IViewDisplayBinding
 	{
-		bool excludeThis = false;
+		bool excludeThis;
 		
 		public string Name {
 			get { return MonoDevelop.Core.GettextCatalog.GetString ("Window Designer"); }
@@ -68,7 +68,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			GuiBuilderView view = new GuiBuilderView (content, GetWindow (fileName));
+			var view = new GuiBuilderView (content, GetWindow (fileName));
 			excludeThis = false;
 			return view;
 		}
@@ -90,7 +90,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return null;
 
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			if (file.StartsWith (info.GtkGuiFolder))
+			if (file.StartsWith (info.GtkGuiFolder, System.StringComparison.Ordinal))
 				return null;
 			
 			var doc = TypeSystemService.ParseFile (project, file);

@@ -25,17 +25,15 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.RegexToolkit
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	partial class ElementHelpWidget : Gtk.Bin
+	partial class ElementHelpWidget : Bin
 	{
 		TreeStore elementsStore;
 //		IWorkbenchWindow workbenchWindow;
@@ -47,7 +45,7 @@ namespace MonoDevelop.RegexToolkit
 //			this.regexWidget = regexWidget;
 			this.Build ();
 			
-			elementsStore = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(string));
+			elementsStore = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(string));
 			this.elementsTreeview.Model = this.elementsStore;
 			this.elementsTreeview.HeadersVisible = false;
 			this.elementsTreeview.Selection.Mode = SelectionMode.Browse;
@@ -74,10 +72,10 @@ namespace MonoDevelop.RegexToolkit
 //			this.elementsTreeview.MotionNotifyEvent += HandleMotionNotifyEvent;
 			
 			this.elementsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
-				Gtk.TreeIter iter;
+				TreeIter iter;
 				if (elementsStore.GetIter (out iter, e.Path)) {
 					string text = elementsStore.GetValue (iter, 3) as string;
-					if (!System.String.IsNullOrEmpty (text)) {
+					if (!String.IsNullOrEmpty (text)) {
 						regexWidget.InsertText (text);
 						workbenchWindow.SwitchView (0);
 					}
@@ -97,7 +95,7 @@ namespace MonoDevelop.RegexToolkit
 				cell.Visible = false;
 				return;
 			}
-			CellRendererText txtRenderer = (CellRendererText)cell;
+			var txtRenderer = (CellRendererText)cell;
 			txtRenderer.Visible = true;
 			txtRenderer.Text = str;
 		}
@@ -115,14 +113,14 @@ namespace MonoDevelop.RegexToolkit
 					continue;
 				switch (reader.LocalName) {
 				case "Group":
-					TreeIter groupIter = this.elementsStore.AppendValues (Gtk.Stock.Info,
+					TreeIter groupIter = elementsStore.AppendValues (Gtk.Stock.Info,
 						GettextCatalog.GetString (reader.GetAttribute ("_name")), "", "");
 					while (reader.Read ()) {
 						if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "Group") 
 							break;
 						switch (reader.LocalName) {
 						case "Element":
-							this.elementsStore.AppendValues (groupIter, null, 
+							elementsStore.AppendValues (groupIter, null, 
 							        	GettextCatalog.GetString (reader.GetAttribute ("_name")),
 									GettextCatalog.GetString (reader.GetAttribute ("_description")),
 									reader.ReadElementString ());

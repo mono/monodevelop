@@ -6,7 +6,6 @@
 // </file>
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("MonoDevelop")]
 [assembly: AssemblyDescription("A full-featured IDE for Mono and Gtk#.")]

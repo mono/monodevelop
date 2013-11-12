@@ -38,23 +38,23 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	class WidgetBuilderOptionPanel: ItemOptionsPanel
 	{
-		class WidgetBuilderOptionPanelWidget : Gtk.VBox
+		class WidgetBuilderOptionPanelWidget : VBox
 		{
-			Gtk.CheckButton checkGettext;
-			Gtk.Entry entryGettext;
-			Gtk.ComboBox comboVersions;
+			readonly CheckButton checkGettext;
+			readonly Entry entryGettext;
+			readonly ComboBox comboVersions;
 			
-			DotNetProject project;
+			readonly DotNetProject project;
 			
 			public WidgetBuilderOptionPanelWidget (Project project) : base (false, 6)
 			{
 				this.project = project as DotNetProject;
 
-				Gtk.HBox box = new Gtk.HBox (false, 3);
-				Gtk.Label lbl = new Gtk.Label (GettextCatalog.GetString ("Target Gtk# version:"));
+				var box = new HBox (false, 3);
+				var lbl = new Label (GettextCatalog.GetString ("Target Gtk# version:"));
 				box.PackStart (lbl, false, false, 0);
 				comboVersions = ComboBox.NewText ();
-				ReferenceManager refmgr = new ReferenceManager (project as DotNetProject);
+				var refmgr = new ReferenceManager (project as DotNetProject);
 				foreach (string v in refmgr.SupportedGtkVersions)
 					comboVersions.AppendText (v);
 				comboVersions.Active = refmgr.SupportedGtkVersions.IndexOf (refmgr.GtkPackageVersion);
@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
 
-				HSeparator sep = new HSeparator ();
+				var sep = new HSeparator ();
 				sep.Show ();
 				PackStart (sep, false, false, 0);
 				
@@ -75,9 +75,9 @@ namespace MonoDevelop.GtkCore.Dialogs
 				checkGettext.Active = designInfo.GenerateGettext;
 				checkGettext.Show ();
 				PackStart (checkGettext, false, false, 0);
-				box = new Gtk.HBox (false, 3);
+				box = new HBox (false, 3);
 				box.PackStart (new Label (GettextCatalog.GetString ("Gettext class:")), false, false, 0);
-				entryGettext = new Gtk.Entry ();
+				entryGettext = new Entry ();
 				entryGettext.Text = designInfo.GettextClass;
 				entryGettext.Sensitive = checkGettext.Active;
 				box.PackStart (entryGettext, false, false, 0);
@@ -93,7 +93,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			public void Store ()
 			{
-				ReferenceManager refmgr = new ReferenceManager (project);
+				var refmgr = new ReferenceManager (project);
 				if (!string.IsNullOrEmpty (comboVersions.ActiveText))
 					refmgr.GtkPackageVersion = comboVersions.ActiveText;
 				if (GtkDesignInfo.HasDesignedObjects (project)) {

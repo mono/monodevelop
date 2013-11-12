@@ -43,10 +43,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class ActionGroupDisplayBinding : IViewDisplayBinding
 	{
-		bool excludeThis = false;
+		bool excludeThis;
 		
 		public string Name {
-			get { return MonoDevelop.Core.GettextCatalog.GetString ("Action Group Editor"); }
+			get { return GettextCatalog.GetString ("Action Group Editor"); }
 		}
 		
 		public bool CanUseAsDefault {
@@ -77,15 +77,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
-			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) ownerProject);
+			GtkDesignInfo info = GtkDesignInfo.FromProject (ownerProject);
 			
 			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			ActionGroupView view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
+			var view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;
 		}
 		
-		Stetic.ActionGroupInfo GetActionGroup (string file)
+		static Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
 			Project project = IdeApp.Workspace.GetProjectContainingFile (file);
 			if (!GtkDesignInfo.HasDesignedObjects (project))
@@ -103,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 			// Find the classes that could be bound to this design
 			
-			ArrayList list = new ArrayList ();
+			var list = new ArrayList ();
 			var ctx = gproject.GetParserContext ();
 			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ())
 				if (IsValidClass (cls))
@@ -111,7 +111,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 			// Ask what to do
 			
-			using (BindDesignDialog dialog = new BindDesignDialog (group.Name, list, project.BaseDirectory)) {
+			using (var dialog = new BindDesignDialog (group.Name, list, project.BaseDirectory)) {
 				if (!dialog.Run ())
 					return null;
 				
@@ -153,7 +153,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Add signal handlers
 			foreach (Stetic.ActionComponent action in group.GetActions ()) {
 				foreach (Stetic.Signal signal in action.GetSignals ()) {
-					CodeMemberMethod met = new CodeMemberMethod ();
+					var met = new CodeMemberMethod ();
 					met.Name = signal.Handler;
 					met.Attributes = MemberAttributes.Family;
 					met.ReturnType = new CodeTypeReference (signal.SignalDescriptor.HandlerReturnTypeName);

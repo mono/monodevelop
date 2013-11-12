@@ -33,7 +33,7 @@ namespace Mono.MHex
 {
 	class SimpleEditMode : EditMode
 	{
-		Dictionary<int, Action<HexEditorData>> keyBindings = new Dictionary<int, Action<HexEditorData>> ();
+		readonly Dictionary<int, Action<HexEditorData>> keyBindings = new Dictionary<int, Action<HexEditorData>> ();
 		
 		
 		public SimpleEditMode ()

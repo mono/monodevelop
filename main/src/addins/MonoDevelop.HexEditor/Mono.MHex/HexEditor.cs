@@ -26,10 +26,7 @@
 
 using System;
 using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Timers;
 
 using Xwt;
@@ -54,14 +51,14 @@ namespace Mono.MHex
 			set;
 		}
 		
-		IconMargin iconMargin;
+		readonly IconMargin iconMargin;
 		internal HexEditorMargin hexEditorMargin;
-		GutterMargin gutterMargin;
+		readonly GutterMargin gutterMargin;
 		internal TextEditorMargin textEditorMargin;
 		
-		List<Margin> margins = new List<Margin> ();
+		readonly List<Margin> margins = new List<Margin> ();
 		public List<Margin> Margins {
-			get { return this.margins; }
+			get { return margins; }
 		}
 		
 		public int LineHeight {
@@ -166,7 +163,7 @@ namespace Mono.MHex
 			margins.ForEach (margin => margin.PurgeLayoutCache ());
 		}
 		
-		ISegment oldSelection = null;
+		ISegment oldSelection;
 		void HexEditorDataSelectionChanged (object sender, EventArgs e)
 		{
 			ISegment selection = HexEditorData.IsSomethingSelected ? HexEditorData.MainSelection.Segment : null;
@@ -186,8 +183,8 @@ namespace Mono.MHex
 			if (selection != null && oldSelection != null) {
 				
 				if (startLine != oldStartLine && endLine != oldEndLine) {
-					from = System.Math.Min (startLine, oldStartLine);
-					to   = System.Math.Max (endLine, oldEndLine);
+					from = Math.Min (startLine, oldStartLine);
+					to   = Math.Max (endLine, oldEndLine);
 				} else if (startLine != oldStartLine) {
 					from = startLine;
 					to   = oldStartLine;
@@ -196,12 +193,12 @@ namespace Mono.MHex
 					to   = oldEndLine;
 				} else if (startLine == oldStartLine && endLine == oldEndLine)  {
 					if (selection.Offset == oldSelection.Offset) {
-						this.RepaintLine (endLine);
+						RepaintLine (endLine);
 					} else if (selection.EndOffset == oldSelection.EndOffset) {
-						this.RepaintLine (startLine);
+						RepaintLine (startLine);
 					} else { // 3rd case - may happen when changed programmatically
-						this.RepaintLine (endLine);
-						this.RepaintLine (startLine);
+						RepaintLine (endLine);
+						RepaintLine (startLine);
 					}
 					from = to = -1;
 				}
@@ -217,8 +214,8 @@ namespace Mono.MHex
 			
 			oldSelection = selection;
 			if (from >= 0 && to >= 0) {
-				long start = System.Math.Max (0, System.Math.Min (from, to)) - 1;
-				long end = System.Math.Max (from, to) + 1;
+				long start = Math.Max (0, Math.Min (from, to)) - 1;
+				long end = Math.Max (from, to) + 1;
 				RepaintLines (start, end);
 			} 
 		}
@@ -234,14 +231,14 @@ namespace Mono.MHex
 				margin.OptionsChanged (); 
 			});
 			
-			this.CalculateBytesInRow ();
+			CalculateBytesInRow ();
 			SetAdjustments (Bounds);
 			OnBytesInRowChanged (EventArgs.Empty);
 		}
 		
 		protected virtual void OnBytesInRowChanged (EventArgs e)
 		{
-			EventHandler handler = this.BytesInRowChanged;
+			EventHandler handler = BytesInRowChanged;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -252,8 +249,8 @@ namespace Mono.MHex
 		int oldHAdjustment = -1;
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (HexEditorData.HAdjustment.Value != System.Math.Ceiling (HexEditorData.HAdjustment.Value)) {
-				HexEditorData.HAdjustment.Value = System.Math.Ceiling (HexEditorData.HAdjustment.Value);
+			if (HexEditorData.HAdjustment.Value != Math.Ceiling (HexEditorData.HAdjustment.Value)) {
+				HexEditorData.HAdjustment.Value = Math.Ceiling (HexEditorData.HAdjustment.Value);
 				return;
 			}
 			
@@ -261,28 +258,28 @@ namespace Mono.MHex
 			if (oldHAdjustment == curHAdjustment)
 				return;
 			
-//			this.RepaintArea (this.textViewMargin.XOffset, 0, this.Bounds.Width - this.textViewMargin.XOffset, this.Bounds.Height);
+//			RepaintArea (textViewMargin.XOffset, 0, Bounds.Width - textViewMargin.XOffset, Bounds.Height);
 			oldHAdjustment = curHAdjustment;
 		}
 		
 //		double oldVadjustment = -1;
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			if (HexEditorData.VAdjustment.Value != System.Math.Ceiling (HexEditorData.VAdjustment.Value)) {
-				HexEditorData.VAdjustment.Value = System.Math.Ceiling (HexEditorData.VAdjustment.Value);
+			if (HexEditorData.VAdjustment.Value != Math.Ceiling (HexEditorData.VAdjustment.Value)) {
+				HexEditorData.VAdjustment.Value = Math.Ceiling (HexEditorData.VAdjustment.Value);
 				return;
 			}
 			long firstVisibleLine = (long)(HexEditorData.VAdjustment.Value / LineHeight);
 			long lastVisibleLine  = (long)((HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight);
 			margins.ForEach (margin => margin.SetVisibleWindow (firstVisibleLine, lastVisibleLine));
 			
-//			int delta = (int)(HexEditorData.VAdjustment.Value - this.oldVadjustment);
+//			int delta = (int)(HexEditorData.VAdjustment.Value - oldVadjustment);
 //			oldVadjustment = HexEditorData.VAdjustment.Value;
 			
 			// update pending redraws
 
-//			if (System.Math.Abs (delta) >= Bounds.Height - this.LineHeight * 2) {
-//				this.Repaint ();
+//			if (System.Math.Abs (delta) >= Bounds.Height - LineHeight * 2) {
+//				Repaint ();
 //				return;
 //			}
 //			
@@ -307,17 +304,17 @@ namespace Mono.MHex
 			ResetCaretBlink ();
 		}
 
-		protected override void SetScrollAdjustments (ScrollAdjustment hAdjustement, ScrollAdjustment vAdjustement)
+		protected override void SetScrollAdjustments (ScrollAdjustment horizontal, ScrollAdjustment vertical)
 		{
 			if (HexEditorData.HAdjustment != null)
 				HexEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (HexEditorData.VAdjustment != null)
 				HexEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
 			
-			HexEditorData.HAdjustment = hAdjustement;
-			HexEditorData.VAdjustment = vAdjustement;
+			HexEditorData.HAdjustment = horizontal;
+			HexEditorData.VAdjustment = vertical;
 			
-			if (hAdjustement == null || vAdjustement == null)
+			if (horizontal == null || vertical == null)
 				return;
 
 			HexEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
@@ -326,7 +323,7 @@ namespace Mono.MHex
 
 /*		void UpdateAdjustments ()
 		{
-			SetAdjustments (this.Bounds);
+			SetAdjustments (Bounds);
 		}
 		*/
 		
@@ -340,13 +337,13 @@ namespace Mono.MHex
 			if (HexEditorData.HAdjustment == null)
 				return;
 /*			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
-			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				int maxX = longestLineWidth + 2 * this.textViewMargin.CharWidth;
-				int width = Bounds.Width - this.TextViewMargin.XOffset;
+			if (longestLine != null && textEditorData.HAdjustment != null) {
+				int maxX = longestLineWidth + 2 * textViewMargin.CharWidth;
+				int width = Bounds.Width - TextViewMargin.XOffset;
 				
-				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
+				textEditorData.HAdjustment.SetBounds (0, maxX, textViewMargin.CharWidth, width, width);
 				if (maxX < width)
-					this.textEditorData.HAdjustment.Value = 0;
+					textEditorData.HAdjustment.Value = 0;
 			}
 			textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;*/
 		}
@@ -375,47 +372,47 @@ namespace Mono.MHex
 		
 		#region Drawing
 
-		protected override void OnDraw (Context ctx, Rectangle area)
+		protected override void OnDraw (Context ctx, Rectangle dirtyRect)
 		{
-			int reminder  = (int)HexEditorData.VAdjustment.Value % (int)LineHeight;
+			int reminder  = (int)HexEditorData.VAdjustment.Value % LineHeight;
 			long firstLine = (long)(HexEditorData.VAdjustment.Value / (long)LineHeight);
-			long startLine = (long)(area.Top + reminder) / (int)this.LineHeight;
-			long endLine   = (long)(area.Bottom + reminder) / (int)this.LineHeight - 1;
-			if ((area.Bottom + reminder) % (int)this.LineHeight != 0)
+			long startLine = (long)(dirtyRect.Top + reminder) / (int)LineHeight;
+			long endLine   = (long)(dirtyRect.Bottom + reminder) / (int)LineHeight - 1;
+			if ((dirtyRect.Bottom + reminder) % (int)LineHeight != 0)
 				endLine++;
 			// Initialize the rendering of the margins. Determine wether each margin has to be
 			// rendered or not and calculate the X offset.
-			List<Margin> marginsToRender = new List<Margin> ();
+			var marginsToRender = new List<Margin> ();
 			double curX = 0;
-			foreach (Margin margin in this.margins) {
+			foreach (Margin margin in margins) {
 				if (margin.IsVisible) {
 					margin.XOffset = curX;
-					if (curX >= area.X || margin.Width < 0)
+					if (curX >= dirtyRect.X || margin.Width < 0)
 						marginsToRender.Add (margin);
 					curX += margin.Width;
 				}
 			}
 
-			int curY = (int)(startLine * this.LineHeight - reminder);
+			int curY = (int)(startLine * LineHeight - reminder);
 
 			for (long visualLineNumber = startLine; visualLineNumber <= endLine; visualLineNumber++) {
 				long logicalLineNumber = visualLineNumber + firstLine;
 				foreach (Margin margin in marginsToRender) {
 					try {
-						margin.Draw (ctx, area, logicalLineNumber, margin.XOffset, curY);
+						margin.Draw (ctx, dirtyRect, logicalLineNumber, margin.XOffset, curY);
 					} catch (Exception e) {
-						System.Console.WriteLine (e);
+						Console.WriteLine (e);
 					}
 				}
 				curY += LineHeight;
-				if (curY > area.Bottom)
+				if (curY > dirtyRect.Bottom)
 					break;
 			}
 			if (requestResetCaretBlink) {
 				ResetCaretBlink ();
 				requestResetCaretBlink = false;
 			}
-			DrawCaret (ctx, area);
+			DrawCaret (ctx, dirtyRect);
 		}
 
 		public void RepaintLine (long line)
@@ -424,7 +421,7 @@ namespace Mono.MHex
 			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight;
 			margins.ForEach (margin => margin.PurgeLayoutCache (line));
 			if (firstVisibleLine <= line && line <= lastVisibleLine)
-				QueueDraw (new Rectangle (0, (int)(line * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, LineHeight));
+				QueueDraw (new Rectangle (0, (line * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, LineHeight));
 		}
 		
 		public void RepaintLines (long start, long end)
@@ -432,12 +429,12 @@ namespace Mono.MHex
 			long firstVisibleLine = (long)(HexEditorData.VAdjustment.Value / LineHeight);
 			long lastVisibleLine =  (long)(HexEditorData.VAdjustment.Value + Bounds.Height) / LineHeight;
 			
-			start = System.Math.Max (start, firstVisibleLine);
-			end = System.Math.Min (end, lastVisibleLine);
+			start = Math.Max (start, firstVisibleLine);
+			end = Math.Min (end, lastVisibleLine);
 			
 			for (long line = start; line <= end; line++)
 				margins.ForEach (margin => margin.PurgeLayoutCache (line));
-			RepaintArea (0, (int)(start * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, (int)((end - start) * LineHeight));
+			RepaintArea (0, (start * LineHeight - HexEditorData.VAdjustment.Value), Bounds.Width, (int)((end - start) * LineHeight));
 		}
 		
 		public void RepaintArea (double x, double y, double width, double height)
@@ -456,8 +453,8 @@ namespace Mono.MHex
 			QueueDraw ();
 		}		
 		
-		Timer caretTimer = null;
-		object lockObject = new object ();
+		Timer caretTimer;
+		readonly object lockObject = new object ();
 		
 		public void ResetCaretBlink ()
 		{
@@ -499,7 +496,7 @@ namespace Mono.MHex
 		#endregion
 		
 		#region Caret
-		bool requestResetCaretBlink = false;
+		bool requestResetCaretBlink;
 		bool caretBlink = true;
 		public void RequestResetCaretBlink ()
 		{
@@ -544,7 +541,7 @@ namespace Mono.MHex
 		public void ScrollToCaret ()
 		{
 			double caretY = HexEditorData.Caret.Offset / BytesInRow * LineHeight;
-			HexEditorData.VAdjustment.Value = System.Math.Max (caretY - HexEditorData.VAdjustment.PageSize + LineHeight, System.Math.Min (caretY, HexEditorData.VAdjustment.Value));
+			HexEditorData.VAdjustment.Value = Math.Max (caretY - HexEditorData.VAdjustment.PageSize + LineHeight, Math.Min (caretY, HexEditorData.VAdjustment.Value));
 		}
 		
 		#endregion
@@ -553,7 +550,7 @@ namespace Mono.MHex
 		protected override void OnBoundsChanged ()
 		{
 			base.OnBoundsChanged ();
-			this.CalculateBytesInRow ();
+			CalculateBytesInRow ();
 			OptionsChanged (this, EventArgs.Empty);
 			SetAdjustments (Bounds);
 			OnBytesInRowChanged (EventArgs.Empty);
@@ -601,7 +598,7 @@ namespace Mono.MHex
 					Options.ZoomIn ();
 				else 
 					Options.ZoomOut ();
-				this.Repaint ();
+				Repaint ();
 				return true;
 			}
 			return base.OnScrollEvent (evnt); 
@@ -638,44 +635,44 @@ namespace Mono.MHex
 		}*/
 		
 		internal int pressedButton = -1;
-		protected override void OnButtonPressed (ButtonEventArgs e)
+		protected override void OnButtonPressed (ButtonEventArgs args)
 		{
-			base.OnButtonPressed (e);
-			this.SetFocus ();
-			if (e.Button != PointerButton.Left)
+			base.OnButtonPressed (args);
+			SetFocus ();
+			if (args.Button != PointerButton.Left)
 				return;
-			pressedButton = (int)e.Button;
-			Margin margin = GetMarginAtX ((int)e.X);
+			pressedButton = (int)args.Button;
+			Margin margin = GetMarginAtX ((int)args.X);
 			if (margin != null) 
-				margin.MousePressed (new MarginMouseEventArgs (this, margin, e));
+				margin.MousePressed (new MarginMouseEventArgs (this, margin, args));
 		}
 
-		protected override void OnButtonReleased (ButtonEventArgs e)
+		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
-			base.OnButtonReleased (e);
+			base.OnButtonReleased (args);
 
-			if (e.Button != PointerButton.Left)
+			if (args.Button != PointerButton.Left)
 				return;
 			pressedButton = -1;
-			Margin margin = GetMarginAtX ((int)e.X);
+			Margin margin = GetMarginAtX ((int)args.X);
 			
 			if (margin != null)
-				margin.MouseReleased (new MarginMouseEventArgs (this, margin, e));
+				margin.MouseReleased (new MarginMouseEventArgs (this, margin, args));
 		}
 
-		protected override void OnMouseMoved (MouseMovedEventArgs e)
+		protected override void OnMouseMoved (MouseMovedEventArgs args)
 		{
-			base.OnMouseMoved (e);
+			base.OnMouseMoved (args);
 
-			Margin margin = GetMarginAtX ((int)e.X);
+			Margin margin = GetMarginAtX ((int)args.X);
 			
 			if (margin != null)
-				margin.MouseHover (new MarginMouseMovedEventArgs (this, margin, e));
+				margin.MouseHover (new MarginMouseMovedEventArgs (this, margin, args));
 		}
 		
 		Margin GetMarginAtX (int x)
 		{
-			return this.margins.FirstOrDefault (margin => margin.XOffset <= x && x < margin.XOffset + margin.Width);
+			return margins.FirstOrDefault (margin => margin.XOffset <= x && x < margin.XOffset + margin.Width);
 		}
 		#endregion
 	}

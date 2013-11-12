@@ -40,25 +40,25 @@ namespace MonoDevelop.GtkCore.Dialogs
 {
 	public class SelectRenamedClassDialog: IDisposable
 	{
-		[Glade.Widget ("SelectRenamedClassDialog")] protected Gtk.Dialog dialog;
-		[Glade.Widget] protected Gtk.TreeView treeClasses;
-		ListStore store;
+		[Glade.Widget ("SelectRenamedClassDialog")] protected Dialog dialog;
+		[Glade.Widget] protected TreeView treeClasses;
+		readonly ListStore store;
 		
 		public SelectRenamedClassDialog (IEnumerable<IType> classes)
 		{
-			XML glade = new XML (null, "gui.glade", "SelectRenamedClassDialog", null);
+			var glade = new XML (null, "gui.glade", "SelectRenamedClassDialog", null);
 			glade.Autoconnect (this);
 			
 			store = new ListStore (typeof(Pixbuf), typeof(string));
 			treeClasses.Model = store;
 			
-			TreeViewColumn column = new TreeViewColumn ();
+			var column = new TreeViewColumn ();
 		
 			var pr = new CellRendererPixbuf ();
 			column.PackStart (pr, false);
 			column.AddAttribute (pr, "pixbuf", 0);
 			
-			CellRendererText crt = new CellRendererText ();
+			var crt = new CellRendererText ();
 			column.PackStart (crt, true);
 			column.AddAttribute (crt, "text", 1);
 			
@@ -77,8 +77,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public string SelectedClass {
 			get {
-				Gtk.TreeModel foo;
-				Gtk.TreeIter iter;
+				TreeModel foo;
+				TreeIter iter;
 				if (!treeClasses.Selection.GetSelected (out foo, out iter))
 					return null;
 				return (string) store.GetValue (iter, 1);

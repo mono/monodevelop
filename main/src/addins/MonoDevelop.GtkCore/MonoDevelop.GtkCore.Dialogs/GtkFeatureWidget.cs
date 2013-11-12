@@ -1,5 +1,4 @@
 
-using System;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -7,24 +6,24 @@ using Gtk;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
-	class GtkFeatureWidget : Gtk.VBox
+	class GtkFeatureWidget : VBox
 	{
-		ComboBox versionCombo;
+		readonly ComboBox versionCombo;
 		
 		public GtkFeatureWidget (DotNetProject project)
 		{
 			Spacing = 6;
 			
-			versionCombo = Gtk.ComboBox.NewText ();
-			ReferenceManager refmgr = new ReferenceManager (project);
+			versionCombo = ComboBox.NewText ();
+			var refmgr = new ReferenceManager (project);
 			foreach (string v in refmgr.SupportedGtkVersions)
 				versionCombo.AppendText (v);
 			versionCombo.Active = 0;
 			refmgr.Dispose ();
 			
 			// GTK# version selector
-			HBox box = new HBox (false, 6);
-			Gtk.Label vlab = new Label (GettextCatalog.GetString ("Target GTK# version:"));
+			var box = new HBox (false, 6);
+			var vlab = new Label (GettextCatalog.GetString ("Target GTK# version:"));
 			box.PackStart (vlab, false, false, 0);
 			box.PackStart (versionCombo, false, false, 0);
 			box.PackStart (new Label (GettextCatalog.GetString ("(or upper)")), false, false, 0);
@@ -53,16 +52,15 @@ namespace MonoDevelop.GtkCore.Dialogs
 			if (!(entry is DotNetProject) || !GtkDesignInfo.SupportsRefactoring (entry as DotNetProject))
 				return FeatureSupportLevel.NotSupported;
 			
-			ReferenceManager refmgr = new ReferenceManager ((DotNetProject)entry);
+			var refmgr = new ReferenceManager ((DotNetProject)entry);
 			if (refmgr.SupportedGtkVersions.Count == 0)
 				return FeatureSupportLevel.NotSupported;
 			
 			if (GtkDesignInfo.SupportsDesigner ((Project)entry))
 				return FeatureSupportLevel.Enabled;
-			else if (entry is DotNetAssemblyProject)
+			if (entry is DotNetAssemblyProject)
 				return FeatureSupportLevel.SupportedByDefault;
-			else
-				return FeatureSupportLevel.Supported;
+			return FeatureSupportLevel.Supported;
 		}
 		
 		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
@@ -72,13 +70,13 @@ namespace MonoDevelop.GtkCore.Dialogs
 
 		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
-			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
-			ReferenceManager refmgr = new ReferenceManager ((DotNetProject) entry);
+			var fw = (GtkFeatureWidget) editor;
+			var refmgr = new ReferenceManager ((DotNetProject) entry);
 			refmgr.GtkPackageVersion = fw.SelectedVersion;
 			refmgr.Dispose ();
 		}
 		
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
 		{
 			return null;
 		}

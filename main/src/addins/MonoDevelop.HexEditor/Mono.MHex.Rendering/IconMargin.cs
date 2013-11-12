@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Xwt.Drawing;
 using Xwt;
 
@@ -54,25 +53,25 @@ namespace Mono.MHex.Rendering
 			layout.Font = Editor.Options.Font;
 			layout.Text = "!";
 //			int tmp;
-			this.marginWidth = layout.GetSize ().Height;
+			marginWidth = layout.GetSize ().Height;
 			marginWidth *= 12;
 			marginWidth /= 10;
 			layout.Dispose ();
 		}
 		
-		internal protected override void Draw (Context win, Rectangle area, long line, double x, double y)
+		internal protected override void Draw (Context ctx, Rectangle area, long line, double x, double y)
 		{
-			win.Rectangle (x, y, Width, Editor.LineHeight);
-			win.SetColor (Style.IconBarBg);
-			win.Fill ();
-			win.MoveTo (x + Width - 1, y);
-			win.LineTo (x + Width - 1, y + Editor.LineHeight);
-			win.SetColor (Style.IconBarSeperator);
-			win.Stroke ();
+			ctx.Rectangle (x, y, Width, Editor.LineHeight);
+			ctx.SetColor (Style.IconBarBg);
+			ctx.Fill ();
+			ctx.MoveTo (x + Width - 1, y);
+			ctx.LineTo (x + Width - 1, y + Editor.LineHeight);
+			ctx.SetColor (Style.IconBarSeperator);
+			ctx.Stroke ();
 
 			foreach (long bookmark in Data.Bookmarks) {
 				if (line * Editor.BytesInRow <= bookmark && bookmark < line * Editor.BytesInRow + Editor.BytesInRow) {
-					DrawBookmark (win, x, y);
+					DrawBookmark (ctx, x, y);
 					return;
 				}
 			}

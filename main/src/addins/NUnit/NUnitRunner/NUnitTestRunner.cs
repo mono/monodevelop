@@ -30,23 +30,12 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-
 using NUnit.Core;
-using NUnit.Framework;
-using NUnit.Core.Filters;
-
 namespace MonoDevelop.NUnit.External
 {
 	public class NUnitTestRunner: MarshalByRefObject
 	{
-		public NUnitTestRunner ()
-		{
-		}
-
 		public void PreloadAssemblies (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
 		{
 			// Note: We need to load all nunit.*.dll assemblies before we do *anything* else in this class
@@ -98,7 +87,7 @@ namespace MonoDevelop.NUnit.External
 			} else
 				tr = new RemoteTestRunner ();
 
-			TestPackage package = new TestPackage (path);
+			var package = new TestPackage (path);
 			if (!string.IsNullOrEmpty (suiteName))
 				package.TestName = suiteName;
 			tr.Load (package);
@@ -115,7 +104,7 @@ namespace MonoDevelop.NUnit.External
 		
 		NunitTestInfo BuildTestInfo (Test test)
 		{
-			NunitTestInfo ti = new NunitTestInfo ();
+			var ti = new NunitTestInfo ();
 			// The name of inherited tests include the base class name as prefix.
 			// That prefix has to be removed
 			string tname = test.TestName.Name;
@@ -134,11 +123,10 @@ namespace MonoDevelop.NUnit.External
 
 			// Trim short name from end of full name to get the path
 			string testNameWithDelimiter = "." + tname;
-			if (test.TestName.FullName.EndsWith (testNameWithDelimiter)) {
+			if (test.TestName.FullName.EndsWith (testNameWithDelimiter, StringComparison.Ordinal)) {
 				int pathLength = test.TestName.FullName.Length - testNameWithDelimiter.Length;
-				ti.PathName = test.TestName.FullName.Substring(0, pathLength );
-			}
-			else
+				ti.PathName = test.TestName.FullName.Substring (0, pathLength);
+			} else
 				ti.PathName = null;
 			
 			if (test.Tests != null && test.Tests.Count > 0) {
@@ -176,7 +164,7 @@ namespace MonoDevelop.NUnit.External
 	[Serializable]
 	public class TestNameFilter: ITestFilter
 	{
-		string[] names;
+		readonly string[] names;
 		
 		public TestNameFilter (params string[] names)
 		{

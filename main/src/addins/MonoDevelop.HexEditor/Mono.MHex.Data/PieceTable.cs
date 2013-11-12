@@ -67,7 +67,7 @@ namespace Mono.MHex.Data
 			
 			public TreeNode SplitRight (long leftLength)
 			{
-				return InternalSplitRight (System.Math.Min (Length, System.Math.Max (0, leftLength)));
+				return InternalSplitRight (Math.Min (Length, Math.Max (0, leftLength)));
 			}
 			
 			protected abstract TreeNode InternalSplitRight (long leftLength);
@@ -102,7 +102,7 @@ namespace Mono.MHex.Data
 			
 			public object Clone ()
 			{
-				OriginalTreeNode result = new OriginalTreeNode (BufferOffset, Length);
+				var result = new OriginalTreeNode (BufferOffset, Length);
 				result.TotalLength = TotalLength;
 				return result;
 			}
@@ -122,7 +122,7 @@ namespace Mono.MHex.Data
 			
 			public override byte[] GetBytes (HexEditorData hexEditorData, long myOffset, long offset, int count)
 			{
-				byte[] result = new byte[count];
+				var result = new byte[count];
 				for (int i = 0, j = (int)(AddBufferOffset + offset - myOffset); i < result.Length; i++, j++) {
 					result[i] = hexEditorData.addBuffer [j];
 				}
@@ -140,7 +140,7 @@ namespace Mono.MHex.Data
 			}
 			public object Clone ()
 			{
-				DataTreeNode result = new DataTreeNode (AddBufferOffset, Length);
+				var result = new DataTreeNode (AddBufferOffset, Length);
 				result.TotalLength = TotalLength;
 				return result;
 			}
@@ -161,9 +161,7 @@ namespace Mono.MHex.Data
 		
 		public PieceTable ()
 		{
-			tree.ChildrenChanged += delegate (object sender, RedBlackTree<TreeNode>.RedBlackTreeNodeEventArgs args) {
-				UpdateNode (args.Node);
-			};
+			tree.ChildrenChanged += (sender, args) => UpdateNode (args.Node);
 			tree.NodeRotateLeft += delegate (object sender, RedBlackTree<TreeNode>.RedBlackTreeNodeEventArgs args) {
 				UpdateNode (args.Node);
 				UpdateNode (args.Node.parent);
@@ -211,9 +209,9 @@ namespace Mono.MHex.Data
 		
 		RedBlackTree<TreeNode>.RedBlackTreeNode InsertAfter (RedBlackTree<TreeNode>.RedBlackTreeNode node, TreeNode nodeToInsert)
 		{
-			RedBlackTree<TreeNode>.RedBlackTreeNode newNode = new RedBlackTree<TreeNode>.RedBlackTreeNode (nodeToInsert);
+			var newNode = new RedBlackTree<TreeNode>.RedBlackTreeNode (nodeToInsert);
 			
-			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (node);
+			var iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (node);
 			
 			if (iter.node.right == null) {
 				tree.Insert (iter.node, newNode, false);
@@ -273,7 +271,7 @@ namespace Mono.MHex.Data
 				return;
 			}
 			long endSegmentLength = endNode != null ? offset + length - endNode.value.CalcOffset (endNode) : 0;
-			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (startNode);
+			var iter = new RedBlackTree<TreeNode>.RedBlackTreeIterator (startNode);
 			RedBlackTree<TreeNode>.RedBlackTreeNode node;
 			do {
 				node = iter.CurrentNode;

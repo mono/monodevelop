@@ -39,11 +39,7 @@ namespace MonoDevelop.TextTemplating.Gui
 	{
 		bool disposed;
 		T4ParsedDocument parsedDoc;
-		
-		public T4EditorExtension ()
-		{
-		}
-		
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -90,13 +86,12 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		protected string GetBufferText (DomRegion region)
 		{
-			MonoDevelop.Ide.Gui.Content.ITextBuffer buf = Buffer;
+			ITextBuffer buf = Buffer;
 			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
 			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
 				return buf.GetText (start, end);
-			else
-				return null;
+			return null;
 		}
 		
 		#endregion
@@ -109,7 +104,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			if (pos <= 0)
 				return null;
 			int triggerWordLength = 0;
-			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
+			return HandleCodeCompletion (completionContext, true, ref triggerWordLength);
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (
@@ -117,8 +112,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
-				return HandleCodeCompletion ((CodeCompletionContext) completionContext, 
-				                             false, ref triggerWordLength);
+				return HandleCodeCompletion (completionContext, false, ref triggerWordLength);
 			}
 			return null;
 		}
@@ -134,7 +128,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		#region Outline
 		
-		bool refreshingOutline = false;
+		bool refreshingOutline;
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
 		
@@ -161,7 +155,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			};
 			
 			RefillOutlineStore ();
-			var sw = new MonoDevelop.Components.CompactScrolledWindow ();;
+			var sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
@@ -192,21 +186,21 @@ namespace MonoDevelop.TextTemplating.Gui
 			if (doc == null)
 				return;
 			
-			Gdk.Color normal   = new Gdk.Color (0x00, 0x00, 0x00);
-			Gdk.Color blue     = new Gdk.Color (0x10, 0x40, 0xE0);
-			Gdk.Color green    = new Gdk.Color (0x08, 0xC0, 0x30);
-			Gdk.Color orange   = new Gdk.Color (0xFF, 0xA0, 0x00);
-			Gdk.Color red      = new Gdk.Color (0xC0, 0x00, 0x20);
+			var normal   = new Gdk.Color (0x00, 0x00, 0x00);
+			var blue     = new Gdk.Color (0x10, 0x40, 0xE0);
+			var green    = new Gdk.Color (0x08, 0xC0, 0x30);
+			var orange   = new Gdk.Color (0xFF, 0xA0, 0x00);
+			var red      = new Gdk.Color (0xC0, 0x00, 0x20);
 			
 			Gtk.TreeIter parent = Gtk.TreeIter.Zero;
 			foreach (Mono.TextTemplating.ISegment segment in doc.TemplateSegments) {
-				Mono.TextTemplating.Directive dir = segment as Mono.TextTemplating.Directive;
+				var dir = segment as Mono.TextTemplating.Directive;
 				if (dir != null) {
 					parent = Gtk.TreeIter.Zero;
 					store.AppendValues ("<#@ " + dir.Name + " #>", red, segment);
 					continue;
 				}
-				Mono.TextTemplating.TemplateSegment ts = segment as Mono.TextTemplating.TemplateSegment;
+				var ts = segment as Mono.TextTemplating.TemplateSegment;
 				if (ts != null) {
 					string name;
 					if (ts.Text.Length > 40) {
@@ -262,7 +256,7 @@ namespace MonoDevelop.TextTemplating.Gui
 			if (outlineTreeView == null)
 				return;
 			
-			Gtk.ScrolledWindow w = (Gtk.ScrolledWindow) outlineTreeView.Parent;
+			var w = (Gtk.ScrolledWindow) outlineTreeView.Parent;
 			w.Destroy ();
 			outlineTreeView.Destroy ();
 			outlineTreeStore.Dispose ();

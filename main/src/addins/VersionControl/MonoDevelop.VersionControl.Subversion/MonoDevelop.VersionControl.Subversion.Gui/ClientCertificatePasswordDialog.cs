@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
-					ClientCertificatePasswordDialog dlg = new ClientCertificatePasswordDialog (realm, may_save);
+					var dlg = new ClientCertificatePasswordDialog (realm, may_save);
 					try {
 						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {

@@ -43,7 +43,7 @@ namespace Mono.MHex.Data
 	
 	class ArrayBuffer : IBuffer
 	{
-		byte[] content;
+		readonly byte[] content;
 
 		public ArrayBuffer (byte[] buffer)
 		{
@@ -64,7 +64,7 @@ namespace Mono.MHex.Data
 		
 		public byte[] GetBytes (long offset, int count)
 		{
-			byte[] result = new byte[count];
+			var result = new byte[count];
 			for (int i = 0; i < result.Length; i++) {
 				result[i] = content[offset + i];
 			}
@@ -74,7 +74,7 @@ namespace Mono.MHex.Data
 		public static IBuffer Load (Stream stream)
 		{
 			int count = (int) stream.Length;
-			byte[] buf= new byte[count];
+			var buf= new byte[count];
 
 			stream.Read (buf, 0, count);
 
@@ -109,7 +109,7 @@ namespace Mono.MHex.Data
 		public byte[] GetBytes (long offset, int count)
 		{
 			stream.Position = offset;
-			byte[] result = new byte[(int)count];
+			var result = new byte[count];
 			if (count != stream.Read (result, 0, count))
 				throw new IOException ("can't read enough bytes from input stream"); 
 			return result;
@@ -117,7 +117,7 @@ namespace Mono.MHex.Data
 		
 		public static IBuffer Load (string fileName)
 		{
-			FileBuffer result =  new FileBuffer ();
+			var result =  new FileBuffer ();
 			result.stream = File.OpenRead (fileName);
 			return result;
 		}

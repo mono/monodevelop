@@ -61,7 +61,7 @@ namespace MonoDevelop.GtkCore
 		
 		GtkDesignInfo (DotNetProject project)
 		{
-			IExtendedDataItem item = (IExtendedDataItem) project;
+			IExtendedDataItem item = project;
 			item.ExtendedProperties ["GtkDesignInfo"] = this;
 			Project = project;
 		}
@@ -198,7 +198,7 @@ namespace MonoDevelop.GtkCore
 			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISABLE_STETIC"))) {
 				return false;
 			}
-			DotNetProject dnp = project as DotNetProject;
+			var dnp = project as DotNetProject;
 			return dnp != null && HasGtkReference (dnp) && SupportsRefactoring (dnp);
 		}
 
@@ -215,7 +215,7 @@ namespace MonoDevelop.GtkCore
 			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
-			int idx = pref.StoredReference.IndexOf (",");
+			int idx = pref.StoredReference.IndexOf (",", StringComparison.Ordinal);
 			if (idx == -1)
 				return false;
 
@@ -236,20 +236,20 @@ namespace MonoDevelop.GtkCore
 			if (!SupportsDesigner (project))
 				return;
 			try {
-				FileInfo fi = new FileInfo (SteticFile);
+				var fi = new FileInfo (SteticFile);
 				fi.LastWriteTime = DateTime.Now;
 			} catch {
 				// Ignore errors here
 			}
 		}
 		
-		bool CleanGtkFolder (StringCollection remaining_files)
+		bool CleanGtkFolder (StringCollection remainingFiles)
 		{
 			bool projectModified = false;
 
 			// Remove all project files which are not in the generated list
 			foreach (ProjectFile pf in project.Files.GetFilesInPath (GtkGuiFolder)) {
-				if (remaining_files.Contains (pf.FilePath))
+				if (remainingFiles.Contains (pf.FilePath))
 					continue;
 
 				project.Files.Remove (pf);
@@ -257,7 +257,7 @@ namespace MonoDevelop.GtkCore
 				projectModified = true;
 			}
 
-			if (remaining_files.Count == 0)
+			if (remainingFiles.Count == 0)
 				FileService.DeleteDirectory (GtkGuiFolder);
 
 			return projectModified;
@@ -277,7 +277,7 @@ namespace MonoDevelop.GtkCore
 			
 			if (!File.Exists (SteticFile)) {
 				initialGeneration = true;
-				StreamWriter sw = new StreamWriter (SteticFile);
+				var sw = new StreamWriter (SteticFile);
 				sw.WriteLine ("<stetic-interface />");
 				sw.Close ();
 				FileService.NotifyFileChanged (SteticFile);
@@ -308,8 +308,7 @@ namespace MonoDevelop.GtkCore
 			files.Add (ObjectsFile);
 			files.Add (SteticFile);
 
-			if (CleanGtkFolder (files))
-				projectModified = true;
+			projectModified |= CleanGtkFolder (files);
 
 			return ReferenceManager.Update () || projectModified;
 		}
@@ -319,7 +318,7 @@ namespace MonoDevelop.GtkCore
 			if (!File.Exists (ObjectsFile))
 				return;
 
-			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
+			var doc = new ObjectsDocument (ObjectsFile);
 			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject);
 		}
 
@@ -329,12 +328,12 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			GtkDesignInfo info = FromProject (project);
-			StringCollection saveFiles = new StringCollection ();
+			var saveFiles = new StringCollection ();
 			saveFiles.AddRange (new string[] {info.ObjectsFile, info.SteticFile});
 			info.CleanGtkFolder (saveFiles);
 			project.Files.Remove (info.ObjectsFile);
 			project.Files.Remove (info.SteticFile);
-			IExtendedDataItem item = (IExtendedDataItem) project;
+			IExtendedDataItem item = project;
 			item.ExtendedProperties.Remove ("GtkDesignInfo");
 			info.Dispose ();
 			ProjectNodeBuilder.OnSupportChanged (project);
@@ -345,7 +344,7 @@ namespace MonoDevelop.GtkCore
 			if (!(project is DotNetProject))
 				return new GtkDesignInfo ();
 
-			IExtendedDataItem item = (IExtendedDataItem) project;
+			IExtendedDataItem item = project;
 			GtkDesignInfo info = item.ExtendedProperties ["GtkDesignInfo"] as GtkDesignInfo;
 			if (info == null)
 				info = new GtkDesignInfo ((DotNetProject) project);

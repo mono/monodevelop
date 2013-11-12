@@ -32,7 +32,7 @@ namespace Mono.MHex
 	class HexEditorOptions : IHexEditorOptions, IDisposable
 	{
 		public const string DEFAULT_FONT = "Mono 10";
-		static HexEditorOptions options = new HexEditorOptions ();
+		static readonly HexEditorOptions options = new HexEditorOptions ();
 		public static HexEditorOptions DefaultOptions {
 			get {
 				return options;
@@ -67,12 +67,12 @@ namespace Mono.MHex
 		public void ZoomIn ()
 		{
 			zoom *= 1.1;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+			Zoom = Math.Min (8.0, Math.Max (0.7, zoom));
 		}
 		public void ZoomOut ()
 		{
 			zoom *= 0.9;
-			Zoom = System.Math.Min (8.0, System.Math.Max (0.7, zoom));
+			Zoom = Math.Min (8.0, Math.Max (0.7, zoom));
 		}
 		public void ZoomReset ()
 		{

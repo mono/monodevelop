@@ -38,7 +38,7 @@ namespace MonoDevelop.TextTemplating.Parser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
-			ParsedTemplate template = new ParsedTemplate (fileName);
+			var template = new ParsedTemplate (fileName);
 			try {
 				var tk = new Tokeniser (fileName, content.ReadToEnd ());
 				template.ParseWithoutIncludes (tk);

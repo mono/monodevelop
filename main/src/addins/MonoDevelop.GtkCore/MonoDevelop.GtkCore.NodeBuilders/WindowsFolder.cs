@@ -34,8 +34,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	class WindowsFolder
 	{
-		Project project;
-		GuiBuilderProject gproject;
+		readonly Project project;
+		readonly GuiBuilderProject gproject;
 		
 		public event EventHandler Changed;
 		
@@ -64,7 +64,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 
 		public override bool Equals (object obj)
 		{
-			WindowsFolder wf = obj as WindowsFolder;
+			var wf = obj as WindowsFolder;
 			return wf != null && wf.project == project;
 		}
 

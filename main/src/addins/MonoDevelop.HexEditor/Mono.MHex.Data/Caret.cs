@@ -30,7 +30,7 @@ namespace Mono.MHex.Data
 {
 	class Caret
 	{
-		HexEditorData data;
+		readonly HexEditorData data;
 		
 		long offset;
 		public long Offset {
@@ -38,7 +38,7 @@ namespace Mono.MHex.Data
 				return offset; 
 			}
 			set { 
-				value = System.Math.Min (data.Length, System.Math.Max (0, value));
+				value = Math.Min (data.Length, Math.Max (0, value));
 				if (offset != value) {
 					long old = offset;
 					offset = value; 
@@ -116,7 +116,7 @@ namespace Mono.MHex.Data
 		
 		protected virtual void OnOffsetChanged (CaretLocationEventArgs e)
 		{
-			EventHandler<CaretLocationEventArgs> handler = this.OffsetChanged;
+			EventHandler<CaretLocationEventArgs> handler = OffsetChanged;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -125,7 +125,7 @@ namespace Mono.MHex.Data
 		
 		protected virtual void OnChanged (EventArgs e)
 		{
-			EventHandler handler = this.Changed;
+			EventHandler handler = Changed;
 			if (handler != null)
 				handler (this, e);
 		}

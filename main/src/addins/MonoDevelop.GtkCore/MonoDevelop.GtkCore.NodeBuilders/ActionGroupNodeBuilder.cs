@@ -53,27 +53,27 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
+			var group = (Stetic.ActionGroupInfo) dataObject;
 			return group.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
+			var group = (Stetic.ActionGroupInfo) dataObject;
 			label = group.Name;
 			icon = ImageService.GetPixbuf ("md-gtkcore-actiongroup", Gtk.IconSize.Menu);
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
-			group.Changed += new EventHandler (OnChanged);
+			var group = (Stetic.ActionGroupInfo) dataObject;
+			group.Changed += OnChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) dataObject;
-			group.Changed -= new EventHandler (OnChanged);
+			var group = (Stetic.ActionGroupInfo) dataObject;
+			group.Changed -= OnChanged;
 		}
 		
 		void OnChanged (object s, EventArgs a)
@@ -88,7 +88,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override void ActivateItem ()
 		{
-			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			var w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
 			if (w != null) {
 				if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 					return;
@@ -101,8 +101,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				}
 			}
 			else {
-				Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-				Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
+				var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+				var group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
 				GuiBuilderService.OpenActionGroup (project, group);
 			}
 		}
@@ -110,24 +110,24 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override bool CanDeleteItem ()
 		{
 			// Don't allow deleting action groups local to a window
-			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			var w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
 			return (w == null);
 		}
 		
 		public override void DeleteItem ()
 		{
 			// Don't allow deleting action groups local to a window
-			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
+			var w = (GuiBuilderWindow) CurrentNode.GetParentDataItem (typeof(GuiBuilderWindow), false);
 			if (w != null)
 				return;
 
-			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
-			Stetic.ActionGroupInfo group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
+			var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+			var group = (Stetic.ActionGroupInfo) CurrentNode.DataItem;
 			GuiBuilderProject gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			string sfile = gproject.GetSourceCodeFile (group);
 
 			if (sfile != null) {
-				using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (group.Name, sfile, group)) {
+				using (var dialog = new ConfirmWindowDeleteDialog (group.Name, sfile, group)) {
 					if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 						if (dialog.DeleteFile) {
 							ProjectFile file = project.GetProjectFile (sfile);

@@ -26,12 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
@@ -39,7 +37,6 @@ using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -53,10 +50,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeBinder
 	{
-		ITextFileProvider textFileProvider;
+		readonly ITextFileProvider textFileProvider;
 		Stetic.Component targetObject;
-		Project project;
-		GuiBuilderProject gproject;
+		readonly Project project;
+		readonly GuiBuilderProject gproject;
 		string className;
 		string classFile;
 		
@@ -73,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public Stetic.Component TargetObject {
 			get { return targetObject; }
 			set {
-				this.targetObject = value;
+				targetObject = value;
 				if (targetObject != null) {
 					var cls = gproject.FindClass (GetClassName (targetObject));
 					if (cls != null) {
@@ -111,7 +108,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			Stetic.SignalCollection objectSignals = obj.GetSignals ();
 			if (objectSignals != null) {
-				Stetic.Signal[] signals = new Stetic.Signal [objectSignals.Count];
+				var signals = new Stetic.Signal [objectSignals.Count];
 				objectSignals.CopyTo (signals, 0);
 				var resolved = cls.Resolve (project);
 				foreach (Stetic.Signal signal in signals) {
@@ -127,7 +124,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				UpdateBindings (ob, cls);
 		}
 		
-		IMethod FindSignalHandler (IType cls, Stetic.Signal signal)
+		static IMethod FindSignalHandler (IType cls, Stetic.Signal signal)
 		{
 			foreach (var met in cls.GetMethods ()) {
 				if (met.Name == signal.Handler) {
@@ -220,7 +217,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		IUnresolvedField GetFieldCode (IUnresolvedTypeDefinition cls, Stetic.Component obj, string name)
+		static IUnresolvedField GetFieldCode (IUnresolvedTypeDefinition cls, Stetic.Component obj, string name)
 		{
 			return new DefaultUnresolvedField (cls, name) {
 				ReturnType = ReflectionHelper.ParseReflectionName (obj.Type.ClassName),
@@ -228,7 +225,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		};
 	}
 		
-		IField FindField (IType cls, string name)
+		static IField FindField (IType cls, string name)
 		{
 			foreach (IField field in cls.GetFields ())
 				if (field.Name == name)
@@ -276,7 +273,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// If not found, warn the user.
 			
 			if (unit != null && unit.TopLevelTypeDefinitions.Count > 0) {
-				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (unit.TopLevelTypeDefinitions.Select (c => c.Resolve (project)))) {
+				using (var dialog = new SelectRenamedClassDialog (unit.TopLevelTypeDefinitions.Select (c => c.Resolve (project)))) {
 					if (dialog.Run ()) {
 						className = dialog.SelectedClass;
 						if (className == null)

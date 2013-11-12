@@ -40,7 +40,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WidgetNodeBuilder: TypeNodeBuilder
 	{
-		WindowEventHandler onChanged;
+		readonly WindowEventHandler onChanged;
 		
 		public WidgetNodeBuilder ()
 		{
@@ -61,46 +61,43 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			return win.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			label = win.Name;
 			
 //			if (win.RootWidget.IsWindow)
 //				icon = ImageService.GetPixbuf ("md-gtkcore-window");
-			if (win.RootWidget.IsWindow)
-				icon = ImageService.GetPixbuf ("md-gtkcore-dialog", Gtk.IconSize.Menu);
-			else
-				icon = ImageService.GetPixbuf ("md-gtkcore-widget", Gtk.IconSize.Menu);
+			icon = ImageService.GetPixbuf (win.RootWidget.IsWindow ? "md-gtkcore-dialog" : "md-gtkcore-widget", Gtk.IconSize.Menu);
 		}
 		
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			foreach (Stetic.ActionGroupInfo agroup in win.RootWidget.ActionGroups) {
-				builder.AddChild (agroup);
+				treeBuilder.AddChild (agroup);
 			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			return win.RootWidget.ActionGroups.GetEnumerator().MoveNext ();
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			win.Changed += onChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
+			var win = (GuiBuilderWindow) dataObject;
 			win.Changed -= onChanged;
 		}
 		
@@ -116,7 +113,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override void ActivateItem ()
 		{
-			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
+			var w = (GuiBuilderWindow) CurrentNode.DataItem;
 			if (w.SourceCodeFile == FilePath.Null && !w.BindToClass ())
 				return;
 			
@@ -130,9 +127,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override void DeleteItem ()
 		{
-			GuiBuilderWindow w = (GuiBuilderWindow) CurrentNode.DataItem;
+			var w = (GuiBuilderWindow) CurrentNode.DataItem;
 			string fn = FileService.AbsoluteToRelativePath (w.Project.Project.BaseDirectory, w.SourceCodeFile);
-			using (ConfirmWindowDeleteDialog dialog = new ConfirmWindowDeleteDialog (w.Name, fn, w.RootWidget)) {
+			using (var dialog = new ConfirmWindowDeleteDialog (w.Name, fn, w.RootWidget)) {
 				if (dialog.Run () == (int) Gtk.ResponseType.Yes) {
 					if (dialog.DeleteFile) {
 						ProjectFile file = w.Project.Project.GetProjectFile (w.SourceCodeFile);

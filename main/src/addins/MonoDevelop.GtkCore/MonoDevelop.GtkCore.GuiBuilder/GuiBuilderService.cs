@@ -34,7 +34,6 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Deployment;
@@ -46,9 +45,9 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	class GuiBuilderService
+	static class GuiBuilderService
 	{
-		static string GuiBuilderLayout = "Visual Design";
+		const string GuiBuilderLayout = "Visual Design";
 		static int loadedGuiProjects;
 		
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
@@ -65,7 +64,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static bool generating;
 		
-		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.None;
+		static readonly Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.None;
 //		static Stetic.IsolationMode IsolationMode = Stetic.IsolationMode.ProcessUnix;
 		
 		static GuiBuilderService ()
@@ -201,7 +200,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				SetDesignerLayout ();
 				return;
 			}
-			else if (SteticApp.ActiveDesigner != null) {
+			if (SteticApp.ActiveDesigner != null) {
 				SteticApp.ActiveDesigner = null;
 				RestoreLayout ();
 			}
@@ -217,7 +216,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					Pad p = IdeApp.Workbench.GetPad<MonoDevelop.DesignerSupport.ToolboxPad> ();
 					if (p != null) p.Visible = true;
 					p = IdeApp.Workbench.GetPad<MonoDevelop.DesignerSupport.PropertyPad> ();
-					if (p != null) p.Visible = true;
+					p.Visible |= p != null;
 				}
 			}
 		}
@@ -322,13 +321,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (item != null)
 				component = item.Component;
 			
-			CodeCompileUnit cu = new CodeCompileUnit ();
+			var cu = new CodeCompileUnit ();
 			
 			if (project.UsePartialTypes) {
-				CodeNamespace cns = new CodeNamespace (ns);
+				var cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
 				
-				CodeTypeDeclaration type = new CodeTypeDeclaration (name);
+				var type = new CodeTypeDeclaration (name);
 				type.IsPartial = true;
 				type.Attributes = MemberAttributes.Public;
 				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
@@ -349,7 +348,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			} else {
 				if (!saveToFile)
 					return fileName;
-				CodeNamespace cns = new CodeNamespace ();
+				var cns = new CodeNamespace ();
 				cns.Comments.Add (new CodeCommentStatement ("Generated code for component " + component.Name));
 				cu.Namespaces.Add (cns);
 			}
@@ -361,7 +360,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string text;
 			var pol = project.Policies.Get<TextStylePolicy> ();
 			using (var fileStream = new StringWriter ()) {
-				var options = new CodeGeneratorOptions () {
+				var options = new CodeGeneratorOptions {
 					IndentString = pol.TabsToSpaces? new string (' ', pol.TabWidth) : "\t",
 					BlankLinesBetweenMembers = true,
 				};
@@ -442,7 +441,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 				info.GuiBuilderProject.UpdateLibraries ();
 				
-				ArrayList projects = new ArrayList ();
+				var projects = new ArrayList ();
 				projects.Add (info.GuiBuilderProject.File);
 				
 				generating = true;
@@ -458,7 +457,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							// Generate the code in another process if stetic is not isolated
-							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
+							var cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
 							using (cob) {
 								generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, project.UsePartialTypes);
 							}
@@ -478,7 +477,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					// No need to create another process, since stetic has its own backend process
 					// or the widget libraries have no custom wrappers
 					try {
-						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+						var options = new Stetic.GenerationOptions ();
 						options.UseGettext = info.GenerateGettext;
 						options.GettextClass = info.GettextClass;
 						options.UsePartialClasses = project.UsePartialTypes;
@@ -509,7 +508,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				string ext = Path.GetExtension (info.SteticGeneratedFile);
 				
 				var pol = project.Policies.Get<TextStylePolicy> ();
-				var codeGeneratorOptions = new CodeGeneratorOptions () {
+				var codeGeneratorOptions = new CodeGeneratorOptions {
 					IndentString = pol.TabsToSpaces? new string (' ', pol.TabWidth) : "\t",
 					BlankLinesBetweenMembers = true
 				};
@@ -520,7 +519,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						fname = info.SteticGeneratedFile;
 					else
 						fname = Path.Combine (basePath, unit.Name) + ext;
-					StringWriter sw = new StringWriter ();
+					var sw = new StringWriter ();
 					try {
 						foreach (CodeNamespace ns in unit.Namespaces)
 							ns.Comments.Add (new CodeCommentStatement ("This file has been generated by the GUI designer. Do not modify."));
@@ -555,13 +554,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			ProjectFile pfile = prj.Files.GetFile (file);
 			if (pfile == null) {
-				var files = IdeApp.ProjectOperations.AddFilesToProject (prj, new string[] { file }, prj.BaseDirectory);
+				var files = IdeApp.ProjectOperations.AddFilesToProject (prj, new [] { file }, prj.BaseDirectory);
 				if (files.Count == 0 || files[0] == null)
 					return null;
 				pfile = files [0];
 			}
 			if (pfile.BuildAction == BuildAction.EmbeddedResource) {
-				AlertButton embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));
+				var embedButton = new AlertButton (GettextCatalog.GetString ("_Use as Source"));
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("You are requesting the file '{0}' to be used as source for an image. However, this file is already added to the project as a resource. Are you sure you want to continue (the file will have to be removed from the resource list)?"), AlertButton.Cancel, embedButton) == embedButton)
 					return null;
 			}
@@ -591,7 +590,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -654,13 +653,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			Stetic.Application app = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 			
-			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
+			var projects = new Stetic.Project [projectFiles.Count];
 			for (int n=0; n < projectFiles.Count; n++) {
 				projects [n] = app.CreateProject ();
 				projects [n].Load ((string) projectFiles [n]);
 			}
 			
-			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
+			var options = new Stetic.GenerationOptions ();
 			options.UseGettext = useGettext;
 			options.GettextClass = gettextClass;
 			options.UsePartialClasses = usePartialClasses;

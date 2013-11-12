@@ -53,9 +53,9 @@ namespace MonoDevelop.HexEditor
 		[CommandHandler (Commands.ShowHexEditor)]
 		protected void OnShowHexEditor () 
 		{
-			HexEditorView view = new HexEditorView ();
+			var view = new HexEditorView ();
 			
-			ProjectFile file   = CurrentNode.DataItem as ProjectFile;
+			var file   = CurrentNode.DataItem as ProjectFile;
 			if (file != null)
 				view.Load (file.FilePath);
 			

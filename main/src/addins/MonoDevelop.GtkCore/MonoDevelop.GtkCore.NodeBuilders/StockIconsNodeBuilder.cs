@@ -2,7 +2,6 @@
 using System;
 using Gdk;
 
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
@@ -15,7 +14,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public StockIconsNode (Project project)
 		{
-			this.Project = project;
+			Project = project;
 		}
 		
 		public Project Project;
@@ -23,7 +22,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	public class StockIconsNodeBuilder: TypeNodeBuilder
 	{
-		Pixbuf iconsIcon;
+		readonly Pixbuf iconsIcon;
 		
 		public override Type NodeDataType {
 			get { return typeof(StockIconsNode); }
@@ -66,14 +65,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override void ActivateItem ()
 		{
-			StockIconsNode node = (StockIconsNode) CurrentNode.DataItem;
+			var node = (StockIconsNode) CurrentNode.DataItem;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (node.Project);
 			GuiBuilderProject gp = info.GuiBuilderProject;
 			Stetic.Project sp = gp.SteticProject;
 			sp.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gp.Project.BaseDirectory);
-			sp.ImportFileCallback = delegate (string file) {
-				return GuiBuilderService.ImportFile (gp.Project, file);
-			};
+			sp.ImportFileCallback = file => GuiBuilderService.ImportFile (gp.Project, file);
 			sp.EditIcons ();
 			gp.SaveProject (true);
 		}

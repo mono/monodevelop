@@ -14,24 +14,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (!IdeApp.IsInitialized)
 				return false;
 			
-			DotNetProject project = item as DotNetProject;
+			var project = item as DotNetProject;
 			return project != null && GtkDesignInfo.HasDesignedObjects (project);
 		}
 
-		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
+		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
 		{
-			DotNetProject project = (DotNetProject) entry;
+			var project = (DotNetProject) item;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
 			// The code generator must run in the GUI thread since it needs to
 			// access to Gtk classes
-			Generator gen = new Generator ();
+			var gen = new Generator ();
 			lock (gen) {
 				Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
 				Monitor.Wait (gen);
 			}
 					
-			BuildResult res = base.Build (monitor, entry, configuration);
+			BuildResult res = base.Build (monitor, item, configuration);
 
 			if (gen.Messages != null) {
 				foreach (string s in gen.Messages)
@@ -59,9 +59,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class Generator
 	{
+		readonly object locker = new object ();
 		public void Run (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
-			lock (this) {
+			lock (locker) {
 				try {
 					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
 					if (res != null)
@@ -69,7 +70,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				} catch (Exception ex) {
 					Error = ex;
 					LoggingService.LogError (ex.ToString ());
-					Messages = new string [] { Error.Message };
+					Messages = new  [] { Error.Message };
 				}
 				Monitor.PulseAll (this);
 			}

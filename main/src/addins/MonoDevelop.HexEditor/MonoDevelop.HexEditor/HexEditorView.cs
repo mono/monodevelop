@@ -36,10 +36,10 @@ namespace MonoDevelop.HexEditor
 {
 	class HexEditorView : AbstractXwtViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
-		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
-		ScrollView window ;
+		readonly Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
+		readonly ScrollView window;
 		
-		public override Xwt.Widget Widget {
+		public override Widget Widget {
 			get {
 				return window;
 			}
@@ -69,7 +69,7 @@ namespace MonoDevelop.HexEditor
 		{
 			File.WriteAllBytes (fileName, hexEditor.HexEditorData.Bytes);
 			ContentName = fileName;
-			this.IsDirty = false;
+			IsDirty = false;
 		}
 		
 		public override void Load (string fileName)
@@ -79,7 +79,7 @@ namespace MonoDevelop.HexEditor
 			}
 			
 			ContentName = fileName;
-			this.IsDirty = false;
+			IsDirty = false;
 			hexEditor.SetFocus ();
 		}
 

@@ -29,10 +29,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			string svnPath = GetDirectoryDotSvn (path);
-			if (!String.IsNullOrEmpty (svnPath))
-				return new SubversionRepository (this, null, svnPath);
+			return !String.IsNullOrEmpty (svnPath) ? new SubversionRepository (this, null, svnPath) : null;
 
-			return null;
 		}
 
 		protected override Repository OnCreateRepositoryInstance ()
@@ -57,7 +55,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public Revision[] GetHistory (Repository repo, FilePath sourcefile, Revision since)
 		{
-			List<Revision> revs = new List<Revision>();
+			var revs = new List<Revision>();
 			
 			SvnRevision startrev = SvnRevision.Working;
 			SvnRevision sincerev = SvnRevision.First;
@@ -109,17 +107,17 @@ namespace MonoDevelop.VersionControl.Subversion
 			return VersionInfo.CreateUnversioned (localPath, false);
 		}
 
-		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
+		VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
 		{
-			SubversionRepository srepo = (SubversionRepository)repo;
-			SubversionVersionControl vcs = (SubversionVersionControl)repo.VersionControlSystem;
+			var srepo = (SubversionRepository)repo;
+			var vcs = (SubversionVersionControl)repo.VersionControlSystem;
 			// If the directory is not versioned, there is no version info
 			if (!Directory.Exists (GetDirectoryDotSvn (vcs, sourcefile.ParentDirectory)))
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			if (!sourcefile.IsChildPathOf (srepo.RootPath))
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			
-			List<VersionInfo> statuses = new List<VersionInfo> ();
+			var statuses = new List<VersionInfo> ();
 			statuses.AddRange (Status (repo, sourcefile, SvnRevision.Head, false, false, getRemoteStatus));
 
 			if (statuses.Count == 0)
@@ -128,16 +126,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (statuses.Count != 1)
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			
-			VersionInfo ent = (VersionInfo) statuses[0];
+			VersionInfo ent = statuses [0];
 			if (ent.IsDirectory)
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			
 			return ent;
 		}
 
-		private VersionInfo GetDirStatus (Repository repo, FilePath localPath, bool getRemoteStatus)
+		VersionInfo GetDirStatus (Repository repo, FilePath localPath, bool getRemoteStatus)
 		{
-			SubversionVersionControl vcs = (SubversionVersionControl)repo.VersionControlSystem;
+			var vcs = (SubversionVersionControl)repo.VersionControlSystem;
 			// If the directory is not versioned, there is no version info
 			if (!Directory.Exists (GetDirectoryDotSvn (vcs, localPath)))
 				return VersionInfo.CreateUnversioned (localPath, true);
@@ -151,7 +149,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, FilePath sourcepath, bool getRemoteStatus, bool recursive)
 		{
-			List<VersionInfo> list = new List<VersionInfo> ();
+			var list = new List<VersionInfo> ();
 			list.AddRange (Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus));
 			return list.ToArray ();
 		}
@@ -212,10 +210,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public string GetUnifiedDiff (FilePath path, bool recursive, bool remoteDiff)
 		{
-			if (remoteDiff)
-				return GetUnifiedDiff (path, SvnRevision.Head, path, SvnRevision.Working, recursive);
-			else
-				return GetUnifiedDiff (path, SvnRevision.Base, path, SvnRevision.Working, recursive);
+			return GetUnifiedDiff (path, remoteDiff ? SvnRevision.Head : SvnRevision.Base, path, SvnRevision.Working, recursive);
 		}
 
 		public abstract string GetUnifiedDiff (FilePath path1, SvnRevision revision1, FilePath path2, SvnRevision revision2, bool recursive);

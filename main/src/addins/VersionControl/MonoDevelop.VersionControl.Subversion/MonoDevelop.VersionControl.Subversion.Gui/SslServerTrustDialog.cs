@@ -21,8 +21,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			labelUntil.Text = cert_info.ValidUntil;
 			labelFprint.Text = cert_info.Fingerprint;
 			
-			if (!may_save)
-				radioAccept.Visible = false;
+			radioAccept.Visible &= may_save;
 			
 			string reason = "";
 			if ((failures & SslFailure.NotYetValid) != 0)
@@ -44,10 +43,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		
 		public SslFailure AcceptedFailures {
 			get {
-				if (radioNotAccept.Active)
-					return SslFailure.None;
-				else
-					return failures;
+				return radioNotAccept.Active ? SslFailure.None : failures;
 			}
 		}
 
@@ -61,7 +57,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			
 			EventHandler del = delegate {
 					try {
-						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
+						var dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
 						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;

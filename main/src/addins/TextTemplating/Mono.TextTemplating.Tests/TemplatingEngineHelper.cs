@@ -57,9 +57,7 @@ namespace Mono.TextTemplating.Tests
 							afterLineDirective = false;
 						}
 
-						if (line.Contains ("#line")) {
-							afterLineDirective = true;
-						}
+						afterLineDirective |= line.Contains ("#line");
 
 						writer.Write (line);
 						writer.Write (newLine);

@@ -40,7 +40,7 @@ namespace Mono.MHex.Rendering
 			private set;
 		}
 		
-		protected Mono.MHex.Data.HexEditorData Data {
+		protected HexEditorData Data {
 			get {
 				return Editor.HexEditorData;
 			}
@@ -121,7 +121,7 @@ namespace Mono.MHex.Rendering
 			}
 		}
 		
-		Dictionary<long, LayoutWrapper> layoutCache = new Dictionary<long, LayoutWrapper> ();
+		readonly Dictionary<long, LayoutWrapper> layoutCache = new Dictionary<long, LayoutWrapper> ();
 		protected virtual LayoutWrapper RenderLine (long line)
 		{
 			return null;
@@ -143,7 +143,7 @@ namespace Mono.MHex.Rendering
 		
 		public void SetVisibleWindow (long startLine, long endLine)
 		{
-			List<long> toRemove = new List<long> ();
+			var toRemove = new List<long> ();
 			foreach (long lineNumber in layoutCache.Keys) {
 				if (lineNumber < startLine || lineNumber > endLine) 
 					toRemove.Add (lineNumber);
@@ -198,7 +198,7 @@ namespace Mono.MHex.Rendering
 			if (textIndex < curIndex) {
 				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
 			} else {
-				int count = System.Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
+				int count = Math.Min ((int)(textIndex - curIndex), charArray.Length - (int)curIndex);
 				
 				if (count > 0)
 					byteIndex += (uint)Encoding.UTF8.GetByteCount (charArray, (int)curIndex, count);
@@ -253,7 +253,7 @@ namespace Mono.MHex.Rendering
 	
 	class MarginMouseEventArgs : EventArgs
 	{
-		Margin margin;
+		readonly Margin margin;
 
 		public double X {
 			get {
@@ -327,7 +327,7 @@ namespace Mono.MHex.Rendering
 			}
 		}
 
-		Margin margin;
+		readonly Margin margin;
 
 		public MarginMouseMovedEventArgs (HexEditor editor, Margin margin, MouseMovedEventArgs args)
 		{

@@ -62,7 +62,7 @@ namespace Mono.MHex.Data
 			set;
 		}
 			
-		List<long> bookmarks = new List<long> ();
+		readonly List<long> bookmarks = new List<long> ();
 		public List<long> Bookmarks {
 			get {
 				return bookmarks;
@@ -94,7 +94,7 @@ namespace Mono.MHex.Data
 				return node.value.GetBytes (this, nodeOffset, offset, count);
 			byte[] nodeBytes = node.value.GetBytes (this, nodeOffset, offset, (int)(nodeEndOffset - offset));
 			
-			byte[] result = new byte[count];
+			var result = new byte[count];
 			if (nodeBytes.Length > 0) {
 				nodeBytes.CopyTo (result, 0);
 				GetBytes (offset + nodeBytes.Length, count - nodeBytes.Length).CopyTo (result, nodeBytes.Length);
@@ -114,15 +114,15 @@ namespace Mono.MHex.Data
 			HAdjustment = new ScrollAdjustment ();
 		}
 		
-		PieceTable pieceTable = new PieceTable ();
+		readonly PieceTable pieceTable = new PieceTable ();
 		internal IBuffer buffer;
 		
 		public IBuffer Buffer {
 			get { 
-				return this.buffer; 
+				return buffer; 
 			}
 			set { 
-				this.buffer = value; 
+				buffer = value; 
 				pieceTable.SetBuffer (buffer);
 				OnBufferChanged (EventArgs.Empty);
 			}
@@ -132,7 +132,7 @@ namespace Mono.MHex.Data
 		
 		protected virtual void OnBufferChanged (EventArgs e)
 		{
-			EventHandler handler = this.BufferChanged;
+			EventHandler handler = BufferChanged;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -202,7 +202,7 @@ namespace Mono.MHex.Data
 		
 		protected virtual void OnUpdateRequested (EventArgs e)
 		{
-			EventHandler handler = this.UpdateRequested;
+			EventHandler handler = UpdateRequested;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -233,7 +233,7 @@ namespace Mono.MHex.Data
 			}
 		}
 		
-		Selection mainSelection = null;
+		Selection mainSelection;
 		public Selection MainSelection {
 			get {
 				return mainSelection;
@@ -255,7 +255,7 @@ namespace Mono.MHex.Data
 		
 		public void ClearSelection ()
 		{
-			if (!this.IsSomethingSelected)
+			if (!IsSomethingSelected)
 				return;
 			MainSelection = null;
 			OnSelectionChanged (EventArgs.Empty);
@@ -263,14 +263,14 @@ namespace Mono.MHex.Data
 		
 		public void SetSelection (long anchor, long lead)
 		{
-			anchor = System.Math.Min (Length, System.Math.Max (0, anchor));
-			lead = System.Math.Min (Length, System.Math.Max (0, lead));
+			anchor = Math.Min (Length, Math.Max (0, anchor));
+			lead = Math.Min (Length, Math.Max (0, lead));
 			MainSelection = new Selection (anchor, lead);
 		}
 		
 		public void DeleteSelection ()
 		{
-			if (!this.IsSomethingSelected)
+			if (!IsSomethingSelected)
 				return;
 			long start = MainSelection.Segment.Offset;
 			switch (MainSelection.SelectionMode) {
@@ -289,7 +289,7 @@ namespace Mono.MHex.Data
 		
 		public void ExtendSelectionTo (long offset)
 		{
-			offset = System.Math.Min (Length, System.Math.Max (0, offset));
+			offset = Math.Min (Length, Math.Max (0, offset));
 			if (MainSelection == null) 
 				MainSelection = new Selection (offset, offset);
 			MainSelection.Lead = offset;
@@ -357,8 +357,8 @@ namespace Mono.MHex.Data
 			}
 		}
 		
-		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
-		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
+		readonly Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
+		readonly Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
 		UndoOperation currentAtomicOperation;
 		
 		public bool EnableUndo {
@@ -373,7 +373,7 @@ namespace Mono.MHex.Data
 			}
 		}
 		
-		bool isInUndo = false;
+		bool isInUndo;
 		int atomicUndoLevel;
 		public void BeginAtomicUndo ()
 		{
@@ -423,7 +423,7 @@ namespace Mono.MHex.Data
 		
 		internal protected virtual void OnUndone (UndoOperationEventArgs e)
 		{
-			EventHandler<UndoOperationEventArgs> handler = this.Undone;
+			EventHandler<UndoOperationEventArgs> handler = Undone;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -444,7 +444,7 @@ namespace Mono.MHex.Data
 		
 		internal protected virtual void OnRedone (UndoOperationEventArgs e)
 		{
-			EventHandler<UndoOperationEventArgs> handler = this.Redone;
+			EventHandler<UndoOperationEventArgs> handler = Redone;
 			if (handler != null)
 				handler (this, e);
 		}

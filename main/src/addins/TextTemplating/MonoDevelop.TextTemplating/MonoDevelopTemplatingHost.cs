@@ -34,10 +34,6 @@ namespace MonoDevelop.TextTemplating
 	{
 		TemplatingAppDomainRecycler.Handle domainHandle;
 
-		public MonoDevelopTemplatingHost ()
-		{
-		}
-
 		public void AddMonoDevelopHostImport ()
 		{
 			Imports.Add ("MonoDevelop.TextTemplating");

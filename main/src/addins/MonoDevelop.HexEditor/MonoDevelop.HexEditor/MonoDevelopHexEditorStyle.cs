@@ -24,13 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Mono.TextEditor.Highlighting;
 using Mono.MHex.Rendering;
-using Xwt;
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using Xwt.Drawing;
 
 namespace MonoDevelop.HexEditor
@@ -38,7 +34,7 @@ namespace MonoDevelop.HexEditor
 	class MonoDevelopHexEditorStyle : HexEditorStyle
 	{
 		ColorScheme colorStyle;
-		Mono.MHex.HexEditor hexEditor;
+		readonly Mono.MHex.HexEditor hexEditor;
 		
 		public MonoDevelopHexEditorStyle (Mono.MHex.HexEditor hexEditor)
 		{

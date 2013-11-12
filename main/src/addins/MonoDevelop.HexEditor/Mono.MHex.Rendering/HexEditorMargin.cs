@@ -88,9 +88,9 @@ namespace Mono.MHex.Rendering
 			var layout = new TextLayout (Editor);
 			layout.Font = Editor.Options.Font;
 //			layout.Tabs = tabArray;
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			long startOffset = line * Editor.BytesInRow;
-			long endOffset   = System.Math.Min (startOffset + Editor.BytesInRow, Data.Length);
+			long endOffset   = Math.Min (startOffset + Editor.BytesInRow, Data.Length);
 			byte[] lineBytes = Data.GetBytes (startOffset, (int)(endOffset - startOffset));
 			for (int i = 0; i < lineBytes.Length; i++) {
 				sb.Append (string.Format ("{0:X2}", lineBytes[i]));
@@ -148,7 +148,7 @@ namespace Mono.MHex.Rendering
 			int caretIndex = groupNumber * (Editor.Options.GroupBytes * 2 + 1) + groupByte * 2;
 			if (useSubPositon)
 				caretIndex += Caret.SubPosition;
-			LayoutWrapper layout = GetLayout ((int)Caret.Line);
+			LayoutWrapper layout = GetLayout (Caret.Line);
 			var rectangle = layout.Layout.GetCoordinateFromIndex (caretIndex);
 			var text = layout.Layout.Text;
 

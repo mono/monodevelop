@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public SvnRevision (Repository repo, int rev, DateTime time, string author, string message, RevisionPath[] changedFiles)
 			: base (repo, time, author, message)
 		{
-			this.ChangedFiles = changedFiles;
+			ChangedFiles = changedFiles;
 			Rev = rev;
 			Kind = 1;
 		}

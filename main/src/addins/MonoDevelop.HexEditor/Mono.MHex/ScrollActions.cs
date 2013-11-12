@@ -33,13 +33,13 @@ namespace Mono.MHex
 	{
 		public static void Up (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.LowerValue, 
+			data.VAdjustment.Value = Math.Max (data.VAdjustment.LowerValue, 
 			                                          data.VAdjustment.Value - data.VAdjustment.StepIncrement); 
 		}
 		
 		public static void Down (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.UpperValue - data.VAdjustment.PageSize, 
+			data.VAdjustment.Value = Math.Min (data.VAdjustment.UpperValue - data.VAdjustment.PageSize, 
 			                                          data.VAdjustment.Value + data.VAdjustment.StepIncrement); 
 		}
 	}

@@ -24,12 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.GtkCore
 {
-	internal static class Counters
+	static class Counters
 	{
 		public static Counter GuiProjectsInMemory = InstrumentationService.CreateCounter ("GUI Projects in Memory", "GTK# Designer");
 		public static Counter GuiProjectsLoaded = InstrumentationService.CreateCounter ("GUI Projects Loaded", "GTK# Designer");

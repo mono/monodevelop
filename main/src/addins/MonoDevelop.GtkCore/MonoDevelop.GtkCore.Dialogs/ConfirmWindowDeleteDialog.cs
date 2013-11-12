@@ -28,7 +28,6 @@
 
 using System;
 using Glade;
-using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
@@ -42,7 +41,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public ConfirmWindowDeleteDialog (string windowName, string fileName, Stetic.ProjectItemInfo obj)
 		{
-			XML glade = new XML (null, "gui.glade", "ConfirmWindowDeleteDialog", null);
+			var glade = new XML (null, "gui.glade", "ConfirmWindowDeleteDialog", null);
 			glade.Autoconnect (this);
 			
 			if (obj is Stetic.WidgetInfo && ((Stetic.WidgetInfo)obj).IsWindow) {

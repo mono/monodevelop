@@ -30,18 +30,13 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
-
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	class PropertiesWidget: Gtk.VBox
+	class PropertiesWidget: VBox
 	{
 		public static PropertiesWidget Instance;
 		
-		Stetic.SignalsEditor signalsEditor;
+		readonly Stetic.SignalsEditor signalsEditor;
 		
 		static PropertiesWidget ()
 		{
@@ -52,16 +47,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			Stetic.WidgetPropertyTree grid = GuiBuilderService.SteticApp.PropertiesWidget;
 			
-			Notebook tabs = new Notebook ();
+			var tabs = new Notebook ();
 			
 			tabs.AppendPage (grid, new Label (GettextCatalog.GetString ("Properties")));
 			
 			signalsEditor = GuiBuilderService.SteticApp.SignalsWidget;
-			signalsEditor.SignalActivated += new EventHandler (OnSignalActivated);
+			signalsEditor.SignalActivated += OnSignalActivated;
 			tabs.AppendPage (signalsEditor, new Label (GettextCatalog.GetString ("Signals")));
 			
-			Gtk.EventBox infoBox = new Gtk.EventBox ();
-			tabs.AppendPage (infoBox, new Gtk.Label (""));
+			var infoBox = new EventBox ();
+			tabs.AppendPage (infoBox, new Label (""));
 			
 			PackStart (tabs, true, true, 0);
 			

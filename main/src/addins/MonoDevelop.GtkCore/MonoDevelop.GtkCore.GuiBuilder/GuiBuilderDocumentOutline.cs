@@ -27,16 +27,14 @@
 //
 
 
-using System;
 using Gtk;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	internal class GuiBuilderDocumentOutline: Alignment, ICustomPropertyPadProvider
+	class GuiBuilderDocumentOutline: Alignment, ICustomPropertyPadProvider
 	{
 		static GuiBuilderDocumentOutline instance;
 		
@@ -56,7 +54,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
+		Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
 		{
 			return PropertiesWidget.Instance;
 		}

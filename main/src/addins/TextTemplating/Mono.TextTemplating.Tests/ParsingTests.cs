@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -53,7 +52,7 @@ baz \#>
 		public void TokenTest ()
 		{
 			string tf = "test.input";
-			Tokeniser tk = new Tokeniser (tf, ParseSample1);
+			var tk = new Tokeniser (tf, ParseSample1);
 			
 			//line 1
 			Assert.IsTrue (tk.Advance ());
@@ -138,9 +137,9 @@ baz \#>
 		{
 			string tf = "test.input";
 			
-			ParsedTemplate pt = new ParsedTemplate ("test.input");
-			Tokeniser tk = new Tokeniser (tf, ParseSample1);
-			DummyHost host = new DummyHost ();
+			var pt = new ParsedTemplate ("test.input");
+			var tk = new Tokeniser (tf, ParseSample1);
+			var host = new DummyHost ();
 			pt.Parse (host, tk);
 			
 			Assert.AreEqual (0, pt.Errors.Count);

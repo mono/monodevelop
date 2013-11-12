@@ -11,20 +11,19 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		{
 			Build ();
 			
-			if (user != null && user.Length > 0) {
+			if (!string.IsNullOrEmpty (user)) {
 				entryUser.Text = user;
 				entryPwd.HasFocus = true;
 			}
 			
 			labelRealm.Text = GettextCatalog.GetString ("Authentication realm: ") + realm;
-			if (!mayRemember)
-				checkSavePwd.Visible = false;
+			checkSavePwd.Visible &= mayRemember;
 			
 			if (!showPassword) {
-				entryUser.Activated += new EventHandler (OnPasswdActivated);
+				entryUser.Activated += OnPasswdActivated;
 				entryPwd.Visible = labelPwd.Visible = false;
 			} else
-				entryPwd.Activated += new EventHandler (OnPasswdActivated);
+				entryPwd.Activated += OnPasswdActivated;
 		}
 		
 		public string User {
@@ -41,7 +40,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 		
 		void OnPasswdActivated (object o, EventArgs e)
 		{
-			this.Respond ((int) Gtk.ResponseType.Ok);
+			Respond ((int)Gtk.ResponseType.Ok);
 		}
 
 		internal static bool Show (bool showPwd, string realm, bool may_save, ref string user_name, out string password, out bool save)
@@ -54,7 +53,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			
 			EventHandler del = delegate {
 					try {
-						UserPasswordDialog dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
+						var dlg = new UserPasswordDialog (user, realm, may_save, showPwd);
 						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							s = dlg.SavePassword ? 1 : 0;

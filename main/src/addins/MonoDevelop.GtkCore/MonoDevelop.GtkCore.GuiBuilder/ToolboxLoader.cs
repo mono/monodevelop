@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Projects;
@@ -40,7 +39,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	public class ToolboxLoader: IToolboxLoader
 	{
 		public virtual string[] FileTypes {
-			get { return new string [] { "dll", "exe" }; }
+			get { return new  [] { "dll", "exe" }; }
 		}
 
 		public virtual IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
@@ -57,7 +56,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				rname = filename;
 			}
 			
-			List<ItemToolboxNode> list = new List<ItemToolboxNode> ();
+			var list = new List<ItemToolboxNode> ();
 			ComponentType[] types = null;
 			DispatchService.GuiSyncDispatch (delegate {
 				// Stetic is not thread safe, it has to be used from the gui thread
@@ -66,7 +65,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			foreach (ComponentType ct in types) {
 				if (ct.Category == "window")
 					continue;
-				ComponentToolboxNode cn = new ComponentToolboxNode (ct);
+				var cn = new ComponentToolboxNode (ct);
 				cn.ReferenceType = rt;
 				cn.Reference = rname;
 				list.Add (cn);

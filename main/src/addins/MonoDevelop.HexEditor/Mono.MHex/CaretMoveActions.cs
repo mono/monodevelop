@@ -39,12 +39,12 @@ namespace Mono.MHex
 		
 		public static void Up (HexEditorData data)
 		{
-			data.Caret.Offset = System.Math.Max (0, data.Caret.Offset - data.BytesInRow);
+			data.Caret.Offset = Math.Max (0, data.Caret.Offset - data.BytesInRow);
 		}
 		
 		public static void Down (HexEditorData data)
 		{
-			data.Caret.Offset = System.Math.Min (data.Length, data.Caret.Offset + data.BytesInRow);
+			data.Caret.Offset = Math.Min (data.Length, data.Caret.Offset + data.BytesInRow);
 		}
 		
 		public static void Left (HexEditorData data)
@@ -53,7 +53,7 @@ namespace Mono.MHex
 				data.Caret.SubPosition--;
 				return;
 			}
-			long newOffset = System.Math.Max (0, data.Caret.Offset - 1);
+			long newOffset = Math.Max (0, data.Caret.Offset - 1);
 			if (newOffset != data.Caret.Offset) {
 				data.Caret.Offset = newOffset;
 				data.Caret.SubPosition = data.Caret.MaxSubPosition;
@@ -66,7 +66,7 @@ namespace Mono.MHex
 				data.Caret.SubPosition++;
 				return;
 			}
-			long newOffset = System.Math.Min (data.Length, data.Caret.Offset + 1);
+			long newOffset = Math.Min (data.Length, data.Caret.Offset + 1);
 			if (newOffset != data.Caret.Offset) {
 				data.Caret.Offset = newOffset;
 			}
@@ -74,7 +74,7 @@ namespace Mono.MHex
 		
 		public static void LineEnd (HexEditorData data)
 		{
-			data.Caret.Offset = System.Math.Min (data.Length - 1, data.Caret.Offset + data.BytesInRow - 1 - data.Caret.Offset % data.BytesInRow);
+			data.Caret.Offset = Math.Min (data.Length - 1, data.Caret.Offset + data.BytesInRow - 1 - data.Caret.Offset % data.BytesInRow);
 			data.Caret.SubPosition = 0;
 		}
 		
@@ -96,16 +96,16 @@ namespace Mono.MHex
 		
 		public static void PageUp (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.LowerValue, data.VAdjustment.Value - data.VAdjustment.PageSize); 
+			data.VAdjustment.Value = Math.Max (data.VAdjustment.LowerValue, data.VAdjustment.Value - data.VAdjustment.PageSize); 
 			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight) / data.LineHeight);
-			data.Caret.Offset = (long)System.Math.Max (0, data.Caret.Offset - data.BytesInRow * pageLines);
+			data.Caret.Offset = Math.Max (0, data.Caret.Offset - data.BytesInRow * pageLines);
 		}
 		
 		public static void PageDown (HexEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.UpperValue - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.PageSize); 
+			data.VAdjustment.Value = Math.Min (data.VAdjustment.UpperValue - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.PageSize); 
 			int pageLines = (int)(data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight) / data.LineHeight);
-			data.Caret.Offset = (long)System.Math.Min (data.Length, data.Caret.Offset + data.BytesInRow * pageLines);
+			data.Caret.Offset = Math.Min (data.Length, data.Caret.Offset + data.BytesInRow * pageLines);
 		}
 		
 	}

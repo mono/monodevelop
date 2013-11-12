@@ -1,8 +1,5 @@
 
-using System;
 using Mono.Addins;
-using Mono.Addins.Description;
-
 [assembly:Addin ("HexEditor", 
         Namespace = "MonoDevelop",
         Version = MonoDevelop.BuildInfo.Version,

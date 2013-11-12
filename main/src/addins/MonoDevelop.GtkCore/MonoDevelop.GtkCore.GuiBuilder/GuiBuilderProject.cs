@@ -49,14 +49,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		List<GuiBuilderWindow> formInfos;
 		Stetic.Project gproject;
-		DotNetProject project;
-		string fileName;
+		readonly DotNetProject project;
+		readonly string fileName;
 		bool hasError;
 		bool needsUpdate = true;
 		
 		FileSystemWatcher watcher;
 		DateTime lastSaveTime;
-		object fileSaveLock = new object ();
+		readonly object fileSaveLock = new object ();
 		bool disposed;
 		bool librariesUpdated;
 		
@@ -114,7 +114,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (System.IO.File.Exists (fileName)) {
 				watcher.Path = Path.GetDirectoryName (fileName);
 				watcher.Filter = Path.GetFileName (fileName);
-				watcher.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
+				watcher.Changed += DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
 				watcher.EnableRaisingEvents = true;
 			}
 		}	
@@ -280,7 +280,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					if (w.RootWidget == widget)
 						return;
 			
-				GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
+				var win = new GuiBuilderWindow (this, gproject, widget);
 				formInfos.Add (win);
 			
 				if (notify) {
@@ -349,7 +349,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					string path = Path.Combine (dir, t.FullName + ".xml");
 					if (!System.IO.File.Exists (path))
 						continue;
-					XmlDocument xmldoc = new XmlDocument ();
+					var xmldoc = new XmlDocument ();
 					xmldoc.Load (path);
 					AddNewComponent (xmldoc.DocumentElement);
 					System.IO.File.Delete (path);
@@ -359,7 +359,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		void OnFileRemoved (object sender, ProjectFileEventArgs e)
 		{
-			ArrayList toDelete = new ArrayList ();
+			var toDelete = new ArrayList ();
 
 			foreach (ProjectFileEventInfo args in e) {
 				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
@@ -410,7 +410,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string path = null;
 			
 			if (pref.ReferenceType == ReferenceType.Project) {
-				DotNetProject p = project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
+				var p = project.ParentSolution.FindProjectByName (pref.Reference) as DotNetProject;
 				if (p != null)
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
@@ -420,8 +420,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
 				return path;
-			else
-				return null;
+			return null;
 		}
 		
 		public void ImportGladeFile ()
@@ -490,9 +489,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public FilePath GetSourceCodeFile (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			var cls = GetClass (obj, getUserClass);
-			if (cls != null)
-				return cls.Region.FileName;
-			return null;
+			return cls != null ? cls.Region.FileName : null;
 		}
 		
 		IUnresolvedTypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
@@ -529,7 +526,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					}
 					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
 						continue;
-					return cls.Parts.First ();
+					return cls.Parts [0];
 				}
 			}
 			return null;
@@ -561,7 +558,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			string[] oldLibs = gproject.WidgetLibraries;
 			
-			ArrayList libs = new ArrayList ();
+			var libs = new ArrayList ();
 			string[] internalLibs;
 			
 			foreach (var pref in project.References) {
@@ -570,7 +567,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					libs.Add (wref);
 			}
 			
-			ReferenceManager refmgr = new ReferenceManager (project);
+			var refmgr = new ReferenceManager (project);
 			string target_version = refmgr.TargetGtkVersion;
 			refmgr.Dispose ();
 			
@@ -582,11 +579,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			string outLib = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			if (!string.IsNullOrEmpty (outLib))
-				internalLibs = new string [] { outLib };
+				internalLibs = new  [] { outLib };
 			else
 				internalLibs = new string [0];
 
-			string[] newLibs = (string[]) libs.ToArray (typeof(string));
+			var newLibs = (string[]) libs.ToArray (typeof(string));
 			
 			// See if something has changed
 			if (LibrariesChanged (oldLibs, internalLibs, newLibs)) {
@@ -600,7 +597,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				SaveAll (true);
 		}
 		
-		bool LibrariesChanged (string[] oldLibs, string[] internalLibs, string[] newLibs)
+		static bool LibrariesChanged (string[] oldLibs, string[] internalLibs, string[] newLibs)
 		{
 			if (oldLibs.Length == newLibs.Length + internalLibs.Length) {
 				foreach (string s in newLibs) {
@@ -612,8 +609,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						return true;
 				}
 				return false;
-			} else
-				return true;
+			}
+			return true;
 		}
 		
 		void NotifyChanged ()
@@ -624,12 +621,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		public StringCollection GenerateFiles (string guiFolder)
 		{
-			StringCollection files = new StringCollection ();
+			var files = new StringCollection ();
 
 			if (hasError)
 				return files;
 
-			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+			var binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
 			string path = Path.Combine (guiFolder, binding.GetFileName ("generated"));
 			if (!System.IO.File.Exists (path)) {
 				// Generate an empty build class
@@ -656,7 +653,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	public class WindowEventArgs: EventArgs
 	{
-		GuiBuilderWindow win;
+		readonly GuiBuilderWindow win;
 		
 		public WindowEventArgs (GuiBuilderWindow win)
 		{
