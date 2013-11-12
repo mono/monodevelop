@@ -49,7 +49,7 @@ namespace Mono.TextTemplating
 		//	var session = new Microsoft.VisualStudio.TextTemplating.TextTemplatingSession ();
 			string preprocess = null;
 			
-			optionSet = new OptionSet () {
+			optionSet = new OptionSet {
 				{ "o=|out=", "The name of the output {file}", s => outputFile = s },
 				{ "r=", "Assemblies to reference", s => generator.Refs.Add (s) },
 				{ "u=", "Namespaces to import <{0:namespace}>", s => generator.Imports.Add (s) },
@@ -59,7 +59,7 @@ namespace Mono.TextTemplating
 				{ "a=", "Parameters ([processorName]![directiveName]!name!value)", s => parameters.Add (s) },
 				{ "h|?|help", "Show help", s => ShowHelp (false) },
 		//		{ "k=,", "Session {key},{value} pairs", (s, t) => session.Add (s, t) },
-				{ "c=", "Preprocess the template into {0:class}", (s) => preprocess = s },
+				{ "c=", "Preprocess the template into {0:class}", s => preprocess = s },
 			};
 			
 			var remainingArgs = optionSet.Parse (args);
@@ -165,7 +165,7 @@ namespace Mono.TextTemplating
 				Console.WriteLine ("Use --help to display options.");
 			} else {
 				Console.WriteLine ("Options:");
-				optionSet.WriteOptionDescriptions (System.Console.Out);
+				optionSet.WriteOptionDescriptions (Console.Out);
 			}
 			Console.WriteLine ();
 			Environment.Exit (0);
