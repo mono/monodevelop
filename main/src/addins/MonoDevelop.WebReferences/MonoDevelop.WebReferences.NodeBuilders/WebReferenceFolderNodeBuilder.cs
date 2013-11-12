@@ -4,7 +4,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.WebReferences.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.WebReferences.NodeBuilders
 {
@@ -65,13 +64,13 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		}
 		
 		/// <summary>Add entries for all the web references in the project to the tree builder.</summary>
-		/// <param name="builder">An ITreeBuilder containing all the data for the current DotNet project.</param>
+		/// <param name="treeBuilder">An ITreeBuilder containing all the data for the current DotNet project.</param>
 		/// <param name="dataObject">An object containing the data for the current node in the tree.</param>
-		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			WebReferenceFolder folder = (WebReferenceFolder) dataObject;
+			var folder = (WebReferenceFolder) dataObject;
 			foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItems (folder.Project))
-				builder.AddChild(item);
+				treeBuilder.AddChild(item);
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>

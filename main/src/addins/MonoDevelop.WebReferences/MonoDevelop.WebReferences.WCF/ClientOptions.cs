@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Xml.Serialization;
-using System.Xml;
 using System.Collections.Generic;
 
 namespace MonoDevelop.WebReferences.WCF

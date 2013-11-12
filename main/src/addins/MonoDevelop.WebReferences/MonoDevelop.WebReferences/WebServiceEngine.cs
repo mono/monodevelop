@@ -41,7 +41,7 @@ namespace MonoDevelop.WebReferences
 		
 		public virtual void Delete (WebReferenceItem item)
 		{
-			List<ProjectFile> toRemove = new List<ProjectFile> (item.Project.Files.GetFilesInPath (item.BasePath));
+			var toRemove = new List<ProjectFile> (item.Project.Files.GetFilesInPath (item.BasePath));
 			foreach (ProjectFile file in toRemove)
 				item.Project.Files.Remove (file);
 			FileService.DeleteDirectory (item.BasePath);
@@ -50,8 +50,8 @@ namespace MonoDevelop.WebReferences
 		protected DiscoveryClientProtocol DiscoResolve (string url)
 		{
 			// Checks the availablity of any services
-			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
-			AskCredentials creds = new AskCredentials ();
+			var protocol = new DiscoveryClientProtocol ();
+			var creds = new AskCredentials ();
 			protocol.Credentials = creds;
 			bool unauthorized;
 			
@@ -62,12 +62,12 @@ namespace MonoDevelop.WebReferences
 				try {
 					protocol.DiscoverAny (url);
 				} catch (WebException wex) {
-					HttpWebResponse wr = wex.Response as HttpWebResponse;
+					var wr = wex.Response as HttpWebResponse;
 					if (!creds.Canceled && wr != null && wr.StatusCode == HttpStatusCode.Unauthorized) {
 						unauthorized = true;
 						continue;
-					} else
-						throw;
+					}
+					throw;
 				}
 			} while (unauthorized);
 			

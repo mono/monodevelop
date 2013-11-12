@@ -35,8 +35,8 @@ namespace MonoDevelop.WebReferences.WCF
 	public class ReferenceGroup
 	{
 		ClientOptions options = new ClientOptions ();
-		List<MetadataSource> sources = new List<MetadataSource> ();
-		List<MetadataFile> metadata = new List<MetadataFile> ();
+		readonly List<MetadataSource> sources = new List<MetadataSource> ();
+		readonly List<MetadataFile> metadata = new List<MetadataFile> ();
 		
 		[XmlAttribute]
 		public string ID { get; set; }
