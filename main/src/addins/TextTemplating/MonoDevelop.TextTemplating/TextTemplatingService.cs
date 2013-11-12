@@ -24,16 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using Mono.TextTemplating;
-using Microsoft.VisualStudio.TextTemplating;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
-using System.IO;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {

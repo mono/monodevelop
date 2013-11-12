@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
@@ -36,8 +35,8 @@ namespace MonoDevelop.TextTemplating.Parser
 	
 	public class T4ParsedDocument : ParsedDocument
 	{
-		string fileName;
-		IList<Error> errors;
+		readonly string fileName;
+		readonly IList<Error> errors;
 
 		public override string FileName {
 			get {
@@ -63,7 +62,7 @@ namespace MonoDevelop.TextTemplating.Parser
 		public IEnumerable<Directive> TemplateDirectives {
 			get {
 				foreach (ISegment seg in TemplateSegments) {
-					Directive dir = seg as Directive;
+					var dir = seg as Directive;
 					if (dir != null)
 						yield return dir;
 				}
@@ -73,7 +72,7 @@ namespace MonoDevelop.TextTemplating.Parser
 		public IEnumerable<TemplateSegment> TemplateContent {
 			get {
 				foreach (ISegment seg in TemplateSegments) {
-					TemplateSegment ts = seg as TemplateSegment;
+					var ts = seg as TemplateSegment;
 					if (ts != null)
 						yield return ts;
 				}
@@ -89,11 +88,12 @@ namespace MonoDevelop.TextTemplating.Parser
 						continue;
 					
 					string name;
-					TemplateSegment ts = seg as TemplateSegment;
+					var ts = seg as TemplateSegment;
 					if (ts != null) {
 						if (ts.Type == SegmentType.Content) {
 							continue;
-						} else if (ts.Type == SegmentType.Expression) {
+						}
+						if (ts.Type == SegmentType.Expression) {
 							name = "<#=...#>";
 						} else if (ts.Type == SegmentType.Helper) {
 							name = "<#+...#>";
@@ -101,11 +101,11 @@ namespace MonoDevelop.TextTemplating.Parser
 							name = "<#...#>";
 						}
 					} else {
-						Directive dir = (Directive)seg;
+						var dir = (Directive)seg;
 						name = "<#@" + dir.Name + "...#>";
 					}
 					
-					DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
+					var region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 				                                      seg.EndLocation.Line, seg.EndLocation.Column);
 					
 					yield return new FoldingRegion (name, region, false);

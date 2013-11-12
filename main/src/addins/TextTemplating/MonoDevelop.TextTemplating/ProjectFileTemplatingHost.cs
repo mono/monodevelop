@@ -32,17 +32,17 @@ namespace MonoDevelop.TextTemplating
 {
 	class ProjectFileTemplatingHost : MonoDevelopTemplatingHost
 	{
-		ProjectFile file;
+		readonly ProjectFile file;
 
 		public ProjectFileTemplatingHost (ProjectFile file)
 		{
 			this.file = file;
 		}
 
-		protected override string SubstitutePlaceholders (string s)
+		protected override string SubstitutePlaceholders (string value)
 		{
 			var model = file.Project.ParentSolution.GetStringTagModel ();
-			return StringParserService.Parse (s, model);
+			return StringParserService.Parse (value, model);
 		}
 	}
 }

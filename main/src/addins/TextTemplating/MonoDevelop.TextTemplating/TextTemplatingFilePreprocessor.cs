@@ -57,7 +57,7 @@ namespace MonoDevelop.TextTemplating
 					result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
 					monitor.Log.WriteLine (msg);
 					return;
-				};
+				}
 				
 				var outputFile = file.FilePath.ChangeExtension (provider.FileExtension);
 				var encoding = System.Text.Encoding.UTF8;
@@ -73,14 +73,14 @@ namespace MonoDevelop.TextTemplating
 				result.GeneratedFilePath = outputFile;
 				result.Errors.AddRange (host.Errors);
 				foreach (var err in host.Errors)
-					monitor.Log.WriteLine (err.ToString ());
+					monitor.Log.WriteLine (err);
 			}, result);
 		}
 		
 		static bool warningLogged;
 		
 		internal static void LogicalSetData (string name, object value,
-			System.CodeDom.Compiler.CompilerErrorCollection errors)
+			CompilerErrorCollection errors)
 		{
 			if (warningLogged)
 				return;
