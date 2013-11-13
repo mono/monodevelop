@@ -204,6 +204,14 @@ namespace MonoDevelop.Ide.Gui
 				var project = Project;
 				if (project == null)
 					return false;
+				var solution = project.ParentSolution;
+
+				if (solution != null && IdeApp.Workspace != null) {
+					var config = IdeApp.Workspace.ActiveConfiguration;
+					if (config != null && !solution.GetConfiguration (config).BuildEnabledForItem (project))
+						return false;
+				}
+
 				var pf = project.GetProjectFile (FileName);
 				return pf != null && pf.BuildAction == BuildAction.Compile;
 			}
