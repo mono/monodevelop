@@ -591,7 +591,7 @@ namespace Mono.TextEditor.Highlighting
 			PropertyDecsription val;
 			if (!textColors.TryGetValue (color, out val)) {
 				Console.WriteLine ("Chunk style : " + color + " is undefined.");
-				return null;
+				return GetChunkStyle ("Plain Text");
 			}
 			return val.Info.GetValue (this, null) as ChunkStyle;
 		}
