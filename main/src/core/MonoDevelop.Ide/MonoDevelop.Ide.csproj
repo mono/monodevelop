@@ -638,20 +638,20 @@
     <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-minimize-9.png">
       <LogicalName>pad-minimize-9.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-minimize-7%402x.png">
-      <LogicalName>pad-minimize-7@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-minimize-9%402x.png">
+      <LogicalName>pad-minimize-9@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-close-9.png">
       <LogicalName>pad-close-9.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-close-7%402x.png">
-      <LogicalName>pad-close-7@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-close-9%402x.png">
+      <LogicalName>pad-close-9@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-dock-9.png">
       <LogicalName>pad-dock-9.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-dock-7%402x.png">
-      <LogicalName>pad-dock-7@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\pad-dock-9%402x.png">
+      <LogicalName>pad-dock-9@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml">
       <LogicalName>ProjectPadContextMenu.addin.xml</LogicalName>
