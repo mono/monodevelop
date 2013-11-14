@@ -345,7 +345,7 @@ namespace MonoDevelop.Debugger.Gdb
 				RunCommand ("-break-condition", handle.ToString (), "(" + bp.ConditionExpression + ") != " + val);
 			}
 			
-			if (bp.HitAction == HitAction.PrintExpression) {
+			if (!string.IsNullOrEmpty (bp.TraceExpression) && bp.HitAction == HitAction.PrintExpression) {
 				GdbCommandResult res = RunCommand ("-data-evaluate-expression", Escape (bp.TraceExpression));
 				string val = res.GetValue ("value");
 				NotifyBreakEventUpdate (binfo, 0, val);
