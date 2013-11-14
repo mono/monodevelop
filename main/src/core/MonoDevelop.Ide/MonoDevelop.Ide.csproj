@@ -927,11 +927,17 @@
     <EmbeddedResource Include="icons\file-generic-32.png">
       <LogicalName>file-generic-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-prev.png">
-      <LogicalName>tabbar-prev.png</LogicalName>
+    <EmbeddedResource Include="icons\tabbar-prev-12.png">
+      <LogicalName>tabbar-prev-12.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tabbar-next.png">
-      <LogicalName>tabbar-next.png</LogicalName>
+    <EmbeddedResource Include="icons\tabbar-prev-12%402x.png">
+      <LogicalName>tabbar-prev-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-12.png">
+      <LogicalName>tabbar-next-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-12%402x.png">
+      <LogicalName>tabbar-next-12@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-prev-normal-16.png">
       <LogicalName>breadcrumb-prev-normal-16.png</LogicalName>

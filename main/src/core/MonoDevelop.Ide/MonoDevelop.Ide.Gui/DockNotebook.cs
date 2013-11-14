@@ -408,8 +408,8 @@ namespace MonoDevelop.Ide.Gui
 
 	class TabStrip: EventBox, Xwt.Motion.IAnimatable
 	{
-		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev.png");
-		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next.png");
+		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
+		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
 
 		List<Gtk.Widget> children = new List<Widget> ();
 		DockNotebook notebook;
