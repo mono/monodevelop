@@ -804,7 +804,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (currentWrapper == null)
 					return false;
-				return currentWrapper.InLoad || !currentWrapper.ReferencesConnected;
+				return !currentWrapper.IsLoaded || !currentWrapper.ReferencesConnected;
 			}
 		}
 
