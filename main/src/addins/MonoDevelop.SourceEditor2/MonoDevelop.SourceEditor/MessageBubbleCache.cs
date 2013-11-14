@@ -58,8 +58,8 @@ namespace MonoDevelop.SourceEditor
 			warningPixbuf = ImageService.GetPixbuf ("md-bubble-warning", Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
-			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;
-			editor.MotionNotifyEvent += HandleMotionNotifyEvent;
+			editor.TextArea.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			editor.TextArea.MotionNotifyEvent += HandleMotionNotifyEvent;
 			editor.TextArea.BeginHover += HandleBeginHover;
 			editor.VAdjustment.ValueChanged += HandleValueChanged;
 			editor.HAdjustment.ValueChanged += HandleValueChanged;
@@ -289,8 +289,8 @@ namespace MonoDevelop.SourceEditor
 			editor.VAdjustment.ValueChanged -= HandleValueChanged;
 			editor.HAdjustment.ValueChanged -= HandleValueChanged;
 			editor.TextArea.BeginHover -= HandleBeginHover;
-			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
-			editor.MotionNotifyEvent -= HandleMotionNotifyEvent;
+			editor.TextArea.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
+			editor.TextArea.MotionNotifyEvent -= HandleMotionNotifyEvent;
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;
 			if (textWidthDictionary != null) {
 				foreach (var l in textWidthDictionary.Values) {
