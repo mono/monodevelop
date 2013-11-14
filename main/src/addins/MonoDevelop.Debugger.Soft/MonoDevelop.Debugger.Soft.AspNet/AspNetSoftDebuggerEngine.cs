@@ -56,8 +56,10 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			case ClrVersion.Net_2_0:
 				return prefix.Combine ("lib", "mono", "2.0");
 			case ClrVersion.Net_4_0:
-				var net45Path = prefix.Combine ("lib", "mono", "4.5");
-				if (Directory.Exists (net45Path)) return net45Path;
+                //The way 3.2.3 is packaged on Windows, XSP isn't put in the 4.5 folder
+		        var isWindows = MonoDevelop.Core.Platform.IsWindows;
+                var net45Path = prefix.Combine ("lib", "mono", "4.5");
+                if (Directory.Exists (net45Path) && !isWindows) return net45Path;
 				return prefix.Combine ("lib", "mono", "4.0");
 			case ClrVersion.Net_4_5:
 				return prefix.Combine ("lib", "mono", "4.5");
@@ -86,15 +88,15 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			
 			FilePath fxDir = GetFxDir (runtime, cmd.ClrVersion);
 			FilePath xspPath = fxDir.Combine (xspName).ChangeExtension (".exe");
-			
+            
 			//no idea why xsp is sometimes relocated to a "winhack" dir on Windows
 			if (MonoDevelop.Core.Platform.IsWindows && !File.Exists (xspPath)) {
 				var winhack = fxDir.Combine ("winhack");
 				if (Directory.Exists (winhack))
 					xspPath = winhack.Combine (xspName).ChangeExtension (".exe");
 			}
-			
-			if (!File.Exists (xspPath))
+
+            if (!File.Exists (xspPath))
 				throw new UserException (GettextCatalog.GetString (
 					"The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
 			
