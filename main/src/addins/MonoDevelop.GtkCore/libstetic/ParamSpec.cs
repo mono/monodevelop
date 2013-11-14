@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace Stetic {
 
 	public class ParamSpec : IDisposable {
+		const string LIBGOBJ = "libgobject-2.0-0.dll";
 		IntPtr _obj;
 
 		public ParamSpec (IntPtr raw)
@@ -199,31 +200,31 @@ namespace Stetic {
 			return pspec;
 		}
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_param_spec_ref (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_param_spec_unref (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_param_spec_sink (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_param_spec_get_name (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_param_spec_get_nick (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_param_spec_get_blurb (IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention=CallingConvention.Cdecl)]
 		static extern bool g_param_value_defaults (IntPtr obj, ref GLib.Value value);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_type_class_ref (IntPtr gtype);
 
-		[DllImport("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(LIBGOBJ, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_object_class_find_property (IntPtr klass, string name);
 
 		[DllImport("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]

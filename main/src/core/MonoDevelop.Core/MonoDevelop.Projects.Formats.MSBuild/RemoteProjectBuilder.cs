@@ -43,9 +43,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 		}
 
-		public IProjectBuilder LoadProject (string file, string binPath)
+		public IProjectBuilder LoadProject (string file, string solutionFile, string binPath)
 		{
-			return engine.LoadProject (file, binPath);
+			return engine.LoadProject (file, solutionFile, binPath);
 		}
 		
 		public void UnloadProject (IProjectBuilder pb)
@@ -71,10 +71,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteBuildEngine engine;
 		IProjectBuilder builder;
 		
-		internal RemoteProjectBuilder (string file, string binPath, RemoteBuildEngine engine)
+		internal RemoteProjectBuilder (string file, string solutionFile, string binPath, RemoteBuildEngine engine)
 		{
 			this.engine = engine;
-			builder = engine.LoadProject (file, binPath);
+			builder = engine.LoadProject (file, solutionFile, binPath);
 		}
 		
 		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,

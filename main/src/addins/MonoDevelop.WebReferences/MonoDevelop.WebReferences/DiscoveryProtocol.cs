@@ -7,7 +7,7 @@ namespace MonoDevelop.WebReferences
 {
 	/// <summary>Provides support for programmatically invoking XML Web services discovery.</summary>
 	[System.ComponentModel.DesignerCategory ("Code")]
-	public class DiscoveryProtocol : System.Web.Services.Discovery.DiscoveryClientProtocol
+	public class DiscoveryProtocol : DiscoveryClientProtocol
 	{
 		/// <summary>
 		/// Reads in a file containing a map of saved discovery documents populating the Documents and References properties, 
@@ -22,30 +22,30 @@ namespace MonoDevelop.WebReferences
 		public DiscoveryClientResultCollection ReadAllUseBasePath(string topLevelFilename)
 		{
 			string basePath = (new FileInfo(topLevelFilename)).Directory.FullName;
-			StreamReader sr = new StreamReader (topLevelFilename);
-			XmlSerializer ser = new XmlSerializer (typeof (DiscoveryClientResultsFile));
-			DiscoveryClientResultsFile resfile = (DiscoveryClientResultsFile) ser.Deserialize (sr);
+			var sr = new StreamReader (topLevelFilename);
+			var ser = new XmlSerializer (typeof (DiscoveryClientResultsFile));
+			var resfile = (DiscoveryClientResultsFile) ser.Deserialize (sr);
 			sr.Close ();
 			
 			foreach (DiscoveryClientResult dcr in resfile.Results)
 			{
 				// Done this cause Type.GetType(dcr.ReferenceTypeName) returned null
-				Type type = null;
+				Type type;
 				switch (dcr.ReferenceTypeName)
 				{
 					case "System.Web.Services.Discovery.ContractReference":
-						type = typeof(System.Web.Services.Discovery.ContractReference);
+						type = typeof(ContractReference);
 						break;
 					case "System.Web.Services.Discovery.DiscoveryDocumentReference":
-						type = typeof(System.Web.Services.Discovery.DiscoveryDocumentReference);
+						type = typeof(DiscoveryDocumentReference);
 						break;
 					default:
 						continue;
 				}
 				
-				DiscoveryReference dr = (DiscoveryReference) Activator.CreateInstance(type);
+				var dr = (DiscoveryReference) Activator.CreateInstance(type);
 				dr.Url = dcr.Url;
-				FileStream fs = new FileStream (Path.Combine(basePath, dcr.Filename), FileMode.Open, FileAccess.Read);
+				var fs = new FileStream (Path.Combine(basePath, dcr.Filename), FileMode.Open, FileAccess.Read);
 				Documents.Add (dr.Url, dr.ReadDocument (fs));
 				fs.Close ();
 				References.Add (dr.Url, dr);

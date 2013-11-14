@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 		}
 		
 		
-		[DllImport("libpangocairo-1.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_cairo_show_layout (IntPtr cr, IntPtr layout);
 
 		public static void ShowLayout (this Cairo.Context cr, Pango.Layout layout)
@@ -77,7 +77,7 @@ namespace Mono.TextEditor
 			pango_cairo_show_layout (cr == null ? IntPtr.Zero : cr.Handle, layout == null ? IntPtr.Zero : layout.Handle);
 		}
 
-		[DllImport("libpangocairo-1.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_cairo_create_layout (IntPtr cr);
 
 		public static Pango.Layout CreateLayout (this Cairo.Context cr)
@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 			return GLib.Object.GetObject (raw_ret) as Pango.Layout;
 		}
 
-		[DllImport("libpangocairo-1.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_cairo_layout_path (IntPtr cr, IntPtr layout);
 
 		public static void LayoutPath (this Cairo.Context cr, Pango.Layout layout)
@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 			pango_cairo_layout_path (cr == null ? IntPtr.Zero : cr.Handle, layout == null ? IntPtr.Zero : layout.Handle);
 		}
 
-		[DllImport("libpangocairo-1.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_cairo_context_set_resolution (IntPtr pango_context, double dpi);
 
 		public static void ContextSetResolution (this Pango.Context context, double dpi)
@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 			pango_cairo_context_set_resolution (context == null ? IntPtr.Zero : context.Handle, dpi);
 		}
 
-		[DllImport("libpangocairo-1.0-0.dll", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_layout_get_context (IntPtr layout);
 
 		public static string GetColorString (Gdk.Color color)

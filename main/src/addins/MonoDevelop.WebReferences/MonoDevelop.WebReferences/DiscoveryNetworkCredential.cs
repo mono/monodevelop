@@ -15,7 +15,7 @@ namespace MonoDevelop.WebReferences
 		
 		public bool IsDefaultAuthenticationType 
 		{
-			get { return String.Compare(authenticationType, DefaultAuthenticationType, true) == 0; }
+			get { return String.Compare (authenticationType, DefaultAuthenticationType, StringComparison.OrdinalIgnoreCase) == 0; }
 		}
 		#endregion
 		
@@ -24,7 +24,7 @@ namespace MonoDevelop.WebReferences
 		#endregion
 		
 		#region Member Variables
-		string authenticationType = String.Empty;
+		readonly string authenticationType = String.Empty;
 		#endregion
 		
 		public DiscoveryNetworkCredential(string userName, string password, string domain, string authenticationType) : base(userName, password, domain)

@@ -27,17 +27,11 @@
 //
 using System;
 using System.CodeDom;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using System.Threading;
 
 namespace Mono.ServiceContractTool
 {
@@ -83,8 +77,8 @@ namespace Mono.ServiceContractTool
 			generate_sync = generateSync;
 		}
 
-		MoonlightChannelBaseContext ml_context;
-		bool generate_sync;
+		readonly MoonlightChannelBaseContext ml_context;
+		readonly bool generate_sync;
 
 		// IContractBehavior
 		public void AddBindingParameters (ContractDescription contractDescription, ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
@@ -165,7 +159,9 @@ namespace Mono.ServiceContractTool
 			// protected override TChannel CreateChannel()
 			var creator = new CodeMemberMethod ();
 			creator.Name = "CreateChannel";
+			// Analysis disable BitwiseOperatorOnEnumWithoutFlags
 			creator.Attributes = MemberAttributes.Family | MemberAttributes.Override;
+			// Analysis restore BitwiseOperatorOnEnumWithoutFlags
 			creator.ReturnType = gt;
 			creator.Statements.Add (
 				new CodeMethodReturnStatement (
@@ -199,7 +195,7 @@ namespace Mono.ServiceContractTool
 			}
 		}
 
-		bool ShouldPreserveBaseTypes (CodeTypeDeclaration ct)
+		static bool ShouldPreserveBaseTypes (CodeTypeDeclaration ct)
 		{
 			foreach (CodeTypeReference cr in ct.BaseTypes) {
 				if (cr.BaseType == "System.ServiceModel.ClientBase`1")
@@ -279,8 +275,8 @@ namespace Mono.ServiceContractTool
 			generate_sync = generateSync;
 		}
 
-		MoonlightChannelBaseContext ml_context;
-		bool generate_sync;
+		readonly MoonlightChannelBaseContext ml_context;
+		readonly bool generate_sync;
 
 		// IOperationBehavior
 
@@ -334,11 +330,13 @@ namespace Mono.ServiceContractTool
 			var od = context.Operation;
 
 			// sync method implementation
-			CodeMemberMethod cm = new CodeMemberMethod ();
+			var cm = new CodeMemberMethod ();
 			type.Members.Add (cm);
 			cm.Name = od.Name;
+			// Analysis disable BitwiseOperatorOnEnumWithoutFlags
 			cm.Attributes = MemberAttributes.Public 
 					| MemberAttributes.Final;
+			// Analysis restore BitwiseOperatorOnEnumWithoutFlags
 
 			var inArgs = new List<CodeParameterDeclarationExpression > ();
 
@@ -379,9 +377,11 @@ namespace Mono.ServiceContractTool
 			var asyncResultType = new CodeTypeReference (typeof (IAsyncResult));
 
 			// BeginXxx() implementation
-			CodeMemberMethod cm = new CodeMemberMethod () {
+			var cm = new CodeMemberMethod {
 				Name = "Begin" + od.Name,
+				// Analysis disable BitwiseOperatorOnEnumWithoutFlags
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+				// Analysis restore BitwiseOperatorOnEnumWithoutFlags
 				ReturnType = asyncResultType
 				};
 			type.Members.Add (cm);
@@ -405,9 +405,11 @@ namespace Mono.ServiceContractTool
 
 			// EndXxx() implementation
 
-			cm = new CodeMemberMethod () {
+			cm = new CodeMemberMethod {
 				Name = "End" + od.Name,
+				// Analysis disable BitwiseOperatorOnEnumWithoutFlags
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+				// Analysis restore BitwiseOperatorOnEnumWithoutFlags
 				ReturnType = context.EndMethod.ReturnType };
 			type.Members.Add (cm);
 
@@ -434,7 +436,7 @@ namespace Mono.ServiceContractTool
 				cm.Statements.Add (new CodeMethodReturnStatement (new CodeCastExpression (context.EndMethod.ReturnType, ret)));
 		}
 
-		void AddMethodParam (CodeMemberMethod cm, Type type, string name)
+		static void AddMethodParam (CodeMemberMethod cm, Type type, string name)
 		{
 			cm.Parameters.Add (new CodeParameterDeclarationExpression (new CodeTypeReference (type), name));
 		}

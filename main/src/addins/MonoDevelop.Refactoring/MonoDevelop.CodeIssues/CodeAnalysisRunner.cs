@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeIssues
 
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null)
+			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
 				return Enumerable.Empty<Result> ();
 
 			#if PROFILE

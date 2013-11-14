@@ -32,7 +32,6 @@ using Gtk;
 using MonoDevelop.VersionControl;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -40,10 +39,10 @@ namespace MonoDevelop.ChangeLogAddIn
 {
 	public class CommitDialogExtensionWidget: CommitDialogExtension
 	{
-		HBox box = new HBox ();
-		VBox vbox = new VBox ();
-		Button logButton;
-		Button optionsButton;
+		readonly HBox box = new HBox ();
+		readonly VBox vbox = new VBox ();
+		readonly Button logButton;
+		readonly Button optionsButton;
 		ChangeSet cset;
 		Label msgLabel;
 		Label pathLabel;
@@ -65,18 +64,18 @@ namespace MonoDevelop.ChangeLogAddIn
 			optionsButton = new Button (GettextCatalog.GetString ("Options..."));
 			optionsButton.Clicked += OnClickOptions;
 			
-			VBox aux = new VBox ();
+			var aux = new VBox ();
 			box.PackStart (aux, false, false, 3);
-			HBox haux = new HBox ();
+			var haux = new HBox ();
 			haux.Spacing = 6;
 			aux.PackStart (haux, false, false, 0);
 			haux.PackStart (logButton, false, false, 0);
 			haux.PackStart (optionsButton, false, false, 0);
 		}
 		
-		public override bool Initialize (ChangeSet cset)
+		public override bool Initialize (ChangeSet changeSet)
 		{	
-			this.cset = cset;
+			cset = changeSet;
 			msgLabel = new Label ();
 			pathLabel = new Label ();
 			msgLabel.Xalign = 0;
@@ -227,7 +226,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			requireComment = false;
 			
 			foreach (ChangeSetItem item in cset.Items) {
-				MonoDevelop.Projects.SolutionItem parentItem;
+				SolutionItem parentItem;
 				ChangeLogPolicy policy;
 				string logf = ChangeLogService.GetChangeLogForFile (cset.BaseLocalPath, item.LocalPath,
 				                                                    out parentItem, out policy);
@@ -246,8 +245,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				
 				if (string.IsNullOrEmpty (item.Comment) && !item.IsDirectory) {
 					uncommentedCount++;
-					if (policy != null && policy.VcsIntegration == VcsIntegration.RequireEntry)
-						requireComment = true;
+					requireComment |= policy != null && policy.VcsIntegration == VcsIntegration.RequireEntry;
 				}
 				
 				ChangeLogEntry entry;
@@ -260,15 +258,14 @@ namespace MonoDevelop.ChangeLogAddIn
 					if (cantGenerate)
 						unknownFileCount++;
 				
-					if (!File.Exists (logf))
-						entry.IsNew = true;
+					entry.IsNew |= !File.Exists (logf);
 				
 					entries [logf] = entry;
 				}
 				entry.Items.Add (item);
 			}
 			
-			CommitMessageFormat format = new CommitMessageFormat ();
+			var format = new CommitMessageFormat ();
 			format.TabsAsSpaces = false;
 			format.TabWidth = 8;
 			format.MaxColumns = 70;
@@ -283,19 +280,19 @@ namespace MonoDevelop.ChangeLogAddIn
 		void OnClickButton (object s, EventArgs args)
 		{
 			if (notConfigured) {
-				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralAuthorInfo");
+				IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Window, "GeneralAuthorInfo");
 				UpdateStatus ();
 				GenerateLogEntries ();
 				return;
 			}
 			
 			var dlg = new AddLogEntryDialog (entries);
-			MessageService.ShowCustomDialog (dlg, (Gtk.Window) Toplevel);
+			MessageService.ShowCustomDialog (dlg, (Window) Toplevel);
 		}
 		
 		void OnClickOptions (object s, EventArgs args)
 		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Gtk.Window, "GeneralAuthorInfo");
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (Toplevel as Window, "GeneralAuthorInfo");
 			UpdateStatus ();
 			GenerateLogEntries ();
 		}

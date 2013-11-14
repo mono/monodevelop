@@ -33,26 +33,28 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MonoDevelop.Core;
+using CustomControls.OS;
 
 namespace MonoDevelop.Platform
 {
 	public static class GdkWin32
 	{
 		static readonly uint GotGdkEventsMessage = RegisterWindowMessage ("GDK_WIN32_GOT_EVENTS");
+		internal const string LIBGDK = "libgdk-win32-2.0-0.dll";
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_set_modal_dialog_libgtk_only (IntPtr window);
 
-		[DllImport ("User32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+		[DllImport (Win32.USER32, SetLastError=true, CharSet=CharSet.Auto)]
 		static extern uint RegisterWindowMessage (string lpString);
 
 		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)
@@ -191,7 +193,7 @@ namespace MonoDevelop.Platform
 		static readonly WindowProc GtkWindowProcDelegate = GtkWindowProc;
 		static readonly int DWLP_DLGPROC = IntPtr.Size; // DWLP_MSGRESULT + sizeof(LRESULT);
 
-		[DllImport("user32.dll")]
+		[DllImport(Win32.USER32)]
 		static extern IntPtr CallWindowProc (IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
 		static IntPtr SetWindowLongPtr (IntPtr hWnd, int nIndex, IntPtr dwNewLong)
@@ -201,10 +203,10 @@ namespace MonoDevelop.Platform
 			return SetWindowLongPtr64 (hWnd, nIndex, dwNewLong);
 		}
 
-		[DllImport ("user32.dll", EntryPoint="SetWindowLongPtr")]
+		[DllImport (Win32.USER32, EntryPoint="SetWindowLongPtr")]
 		static extern IntPtr SetWindowLongPtr64 (IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-		[DllImport("user32.dll", EntryPoint="SetWindowLong")]
+		[DllImport(Win32.USER32, EntryPoint="SetWindowLong")]
 		static extern IntPtr SetWindowLongPtr32 (IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
 		static IntPtr GetWindowLongPtr (IntPtr hWnd, int nIndex)
@@ -214,10 +216,10 @@ namespace MonoDevelop.Platform
 			return GetWindowLongPtr64 (hWnd, nIndex);
 		}
 
-		[DllImport ("user32.dll", EntryPoint="GetWindowLongPtr")]
+		[DllImport (Win32.USER32, EntryPoint="GetWindowLongPtr")]
 		static extern IntPtr GetWindowLongPtr64 (IntPtr hWnd, int nIndex);
 
-		[DllImport("user32.dll", EntryPoint="GetWindowLong")]
+		[DllImport(Win32.USER32, EntryPoint="GetWindowLong")]
 		static extern IntPtr GetWindowLongPtr32 (IntPtr hWnd, int nIndex);
 
 		delegate IntPtr WindowProc (IntPtr hdlg, uint uiMsg, IntPtr wParam, IntPtr lParam);

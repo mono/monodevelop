@@ -25,10 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Remoting;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
 using System.Collections.Generic;
@@ -41,13 +38,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		Engine engine;
 		string file;
+		string solutionFile;
 		ILogWriter currentLogWriter;
 		MDConsoleLogger consoleLogger;
 		BuildEngine buildEngine;
 
-		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file)
+		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file, string solutionFile)
 		{
 			this.file = file;
+			this.solutionFile = solutionFile;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
@@ -167,6 +166,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 					}
 				}
+				if (!string.IsNullOrEmpty (solutionFile)) {
+					p.GlobalProperties.SetProperty ("SolutionPath", Path.GetFullPath (solutionFile));
+					p.GlobalProperties.SetProperty ("SolutionName", Path.GetFileNameWithoutExtension (solutionFile));
+					p.GlobalProperties.SetProperty ("SolutionFilename", Path.GetFileName (solutionFile));
+					p.GlobalProperties.SetProperty ("SolutionDir", Path.GetDirectoryName (solutionFile) + Path.DirectorySeparatorChar);
+				};
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);

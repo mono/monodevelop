@@ -30,7 +30,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public interface IBuildEngine: IDisposable
 	{
-		IProjectBuilder LoadProject (string file, string binPath);
+		IProjectBuilder LoadProject (string file, string solutionFile, string binPath);
 		void UnloadProject (IProjectBuilder pb);
 	}
 }

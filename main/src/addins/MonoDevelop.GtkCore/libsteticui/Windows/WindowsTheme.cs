@@ -7,6 +7,11 @@ namespace Stetic.Windows
 {
 	class WindowsTheme
 	{
+		const string USER32 = "user32.dll";
+		const string GDI32 = "gdi32.dll";
+		const string LIBGDK = "libgdk-win32-2.0-0.dll";
+		const string UXTHEME = "uxtheme";
+		const string LIBUXTHEME = "uxtheme.dll";
 		IntPtr hWnd;
 		IntPtr hTheme;
 
@@ -83,56 +88,56 @@ namespace Stetic.Windows
 		const int DT_SINGLELINE = 0x20;
 		
 
-		[DllImport ("uxtheme", ExactSpelling = true)]
+		[DllImport (UXTHEME, ExactSpelling = true)]
 		extern static Int32 DrawThemeBackground (IntPtr hTheme, IntPtr hdc, int iPartId,
 		   int iStateId, ref RECT pRect, ref RECT pClipRect);
 
-		[DllImport ("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
+		[DllImport (LIBUXTHEME, ExactSpelling = true, CharSet = CharSet.Unicode)]
 		static extern IntPtr OpenThemeData (IntPtr hWnd, String classList);
 
-		[DllImport ("uxtheme.dll", ExactSpelling = true)]
+		[DllImport (LIBUXTHEME, ExactSpelling = true)]
 		extern static Int32 CloseThemeData (IntPtr hTheme);
 
-		[DllImport ("uxtheme", ExactSpelling = true)]
+		[DllImport (UXTHEME, ExactSpelling = true)]
 		extern static Int32 GetThemePartSize (IntPtr hTheme, IntPtr hdc, int part, int state, ref RECT pRect, int eSize, out SIZE size);
 
-		[DllImport ("uxtheme", ExactSpelling = true)]
+		[DllImport (UXTHEME, ExactSpelling = true)]
 		extern static Int32 GetThemeBackgroundExtent (IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, ref RECT pBoundingRect, out RECT pContentRect);
 
-		[DllImport ("uxtheme", ExactSpelling = true)]
+		[DllImport (UXTHEME, ExactSpelling = true)]
 		extern static Int32 GetThemeMargins (IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, int iPropId, out MARGINS pMargins);
 
-		[DllImport ("uxtheme", ExactSpelling = true, CharSet = CharSet.Unicode)]
+		[DllImport (UXTHEME, ExactSpelling = true, CharSet = CharSet.Unicode)]
 		extern static Int32 DrawThemeText (IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, String text, int textLength, UInt32 textFlags, UInt32 textFlags2, ref RECT pRect);
 
-		[DllImport ("uxtheme", ExactSpelling = true, CharSet = CharSet.Unicode)]
+		[DllImport (UXTHEME, ExactSpelling = true, CharSet = CharSet.Unicode)]
 		extern static Int32 GetThemeSysFont (IntPtr hTheme, int iFontId, ref LOGFONT plf);
 
-		[DllImport ("gdi32.dll")]
+		[DllImport (GDI32)]
 		static extern IntPtr CreateFontIndirect ([In] ref LOGFONT lplf);
 
-		[DllImport ("gdi32.dll")]
+		[DllImport (GDI32)]
 		static extern int SetBkMode (IntPtr hdc, int iBkMode);
 	
-		[DllImport ("gdi32.dll", ExactSpelling = true, PreserveSig = true, SetLastError = true)]
+		[DllImport (GDI32, ExactSpelling = true, PreserveSig = true, SetLastError = true)]
 		static extern IntPtr SelectObject (IntPtr hdc, IntPtr hgdiobj);
 
-		[DllImport ("gdi32.dll")]
+		[DllImport (GDI32)]
 		static extern bool DeleteObject (IntPtr hObject);
 	
-		[DllImport ("user32.dll")]
+		[DllImport (USER32)]
 		static extern IntPtr GetDC (IntPtr hWnd);
 
-		[DllImport ("user32.dll")]
+		[DllImport (USER32)]
 		static extern int ReleaseDC (IntPtr hWnd, IntPtr hDC);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr raw);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
 
-		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
 	}
 

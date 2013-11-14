@@ -1,4 +1,3 @@
-using System;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.WebReferences
@@ -16,7 +15,7 @@ namespace MonoDevelop.WebReferences
 		#endregion
 		
 		#region Member Variables
-		private DotNetProject project;
+		readonly DotNetProject project;
 		#endregion
 		
 		/// <summary>Initializes a new instance of the WebReferenceFolder class by specifying the parent project.</summary>
@@ -27,12 +26,11 @@ namespace MonoDevelop.WebReferences
 		}
 		
 		/// <summary>Checks if the specified other object is equal to the current object.</summary>
-		/// <param name="other">An object containing the object that needs to be compared to the current object.</param>
+		/// <param name="obj">An object containing the object that needs to be compared to the current object.</param>
 		/// <returns>True of the other object is equal to the current object, otherwise false.</returns>
-		public override bool Equals (object other)
+		public override bool Equals (object obj)
 		{
-			
-			WebReferenceFolder folder = other as WebReferenceFolder;
+			var folder = obj as WebReferenceFolder;
 			return folder != null && project == folder.project;
 		}
 		

@@ -57,9 +57,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return doneEvent; }
 		}
 
-		public IProjectBuilder LoadProject (string file, string binDir)
+		public IProjectBuilder LoadProject (string file, string solutionFile, string binDir)
 		{
-			return new ProjectBuilder (this, GetEngine (binDir), file);
+			return new ProjectBuilder (this, GetEngine (binDir), file, solutionFile);
 		}
 		
 		public void UnloadProject (IProjectBuilder pb)

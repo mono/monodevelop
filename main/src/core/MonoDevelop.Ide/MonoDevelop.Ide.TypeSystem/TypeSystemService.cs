@@ -939,8 +939,30 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public bool ReferencesConnected {
 				get {
-					return referencesConnected && referencedWrappers.All (w => w.ReferencesConnected);
+					return GetReferencesConnected (this, new HashSet<ProjectContentWrapper> ());
 				}
+			}
+
+			static bool GetReferencesConnected (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
+			{
+				if (wrapper.Contains (pcw))
+					return true;
+				wrapper.Add (pcw); 
+				return pcw.referencesConnected && pcw.referencedWrappers.All (w => GetReferencesConnected (w, wrapper));
+			}
+
+			public bool IsLoaded {
+				get {
+					return GetIsLoaded (this, new HashSet<ProjectContentWrapper> ());
+				}
+			}
+
+			static bool GetIsLoaded (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
+			{
+				if (wrapper.Contains (pcw))
+					return true;
+				wrapper.Add (pcw); 
+				return !pcw.InLoad && pcw.referencedWrappers.All (w => GetIsLoaded (w, wrapper));
 			}
 
 			public IProjectContent Content {
@@ -2592,6 +2614,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 			lock (parseQueueLock) {
 				RemoveParseJob (context);
+				context.LoadOperationDepth++;
 				parseQueueIndex [context] = job;
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
@@ -2629,17 +2652,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ParsingJob job;
 				if (parseQueueIndex.TryGetValue (project, out job)) {
 					parseQueueIndex.Remove (project);
-				}
-			}
-		}
-
-		static void RemoveParseJobs (IProjectContent context)
-		{
-			lock (parseQueueLock) {
-				foreach (var pj in parseQueue) {
-					if (pj.Context == context) {
-						parseQueueIndex.Remove (pj.Context);
-					}
+					project.LoadOperationDepth--;
 				}
 			}
 		}
@@ -2806,6 +2819,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
 							monitor.ReportError (null, ex);
+						} finally {
+							job.Context.LoadOperationDepth--;
 						}
 					}
 					

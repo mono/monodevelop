@@ -234,6 +234,45 @@ class Foo
 				Console.WriteLine (newText);
 			Assert.AreEqual (expected, newText);
 		}
+
+		/// <summary>
+		/// Bug 16174 - Editor still inserting unwanted tabs
+		/// </summary>
+		[Test]
+		public void TestBug16174_AutoIndent ()
+		{
+			TestViewContent content;
+
+			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
+			ext.document.Editor.Options.IndentStyle = IndentStyle.Auto;
+			MiscActions.InsertNewLine (content.Data);
+			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+
+			var newText = content.Text;
+
+			var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
+			if (newText != expected)
+				Console.WriteLine (newText);
+			Assert.AreEqual (expected, newText);
+		}
+
+		[Test]
+		public void TestBug16174_VirtualIndent ()
+		{
+			TestViewContent content;
+
+			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
+			ext.document.Editor.Options.IndentStyle = IndentStyle.Virtual;
+			MiscActions.InsertNewLine (content.Data);
+			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+
+			var newText = content.Text;
+
+			var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
+			if (newText != expected)
+				Console.WriteLine (newText);
+			Assert.AreEqual (expected, newText);
+		}
 	}
 }
 

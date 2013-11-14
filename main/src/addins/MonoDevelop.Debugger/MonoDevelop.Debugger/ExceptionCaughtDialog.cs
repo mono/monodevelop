@@ -38,29 +38,34 @@ namespace MonoDevelop.Debugger
 {
 	public partial class ExceptionCaughtWidget : Gtk.Bin
 	{
-		Gtk.TreeStore stackStore;
-		ExceptionInfo exception;
+		readonly Gtk.TreeStore stackStore;
+		readonly ExceptionInfo exception;
 		bool destroyed;
 		
 		public ExceptionCaughtWidget (ExceptionInfo exception)
 		{
 			this.Build ();
 
+			vboxExceptionInfo.Remove (labelMessage);
+			var frame = new InfoFrame (labelMessage);
+			frame.Show ();
+			vboxExceptionInfo.PackStart (frame, false, true, 0);
+
 			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
 			treeStack.Model = stackStore;
 			var crt = new CellRendererText ();
+			crt.Ellipsize = Pango.EllipsizeMode.End;
+			crt.WrapWidth = -1;
 			treeStack.AppendColumn ("", crt, "markup", 0);
 			treeStack.ShowExpanders = false;
+			treeStack.RulesHint = true;
 			
 			valueView.AllowExpanding = true;
 			valueView.Frame = DebuggingService.CurrentFrame;
 			this.exception = exception;
 			
 			exception.Changed += HandleExceptionChanged;
-			treeStack.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-				if (crt.WrapWidth != args.Allocation.Width)
-					crt.WrapWidth = args.Allocation.Width;
-			};
+			treeStack.SizeAllocated += (object o, SizeAllocatedArgs args) => crt.WrapWidth = args.Allocation.Width;
 			
 			Fill ();
 			treeStack.RowActivated += HandleRowActivated;
@@ -68,11 +73,13 @@ namespace MonoDevelop.Debugger
 
 		void HandleRowActivated (object o, RowActivatedArgs args)
 		{
-			Gtk.TreeIter it;
-			if (!stackStore.GetIter (out it, args.Path))
+			TreeIter iter;
+
+			if (!stackStore.GetIter (out iter, args.Path))
 				return;
-			string file = (string) stackStore.GetValue (it, 1);
-			int line = (int) stackStore.GetValue (it, 2);
+
+			string file = (string) stackStore.GetValue (iter, 1);
+			int line = (int) stackStore.GetValue (iter, 2);
 			if (!string.IsNullOrEmpty (file))
 				IdeApp.Workbench.OpenDocument (file, line, 0);
 		}
@@ -103,6 +110,7 @@ namespace MonoDevelop.Debugger
 				valueView.AddValue (exception.Instance);
 				valueView.ExpandRow (new TreePath ("0"), false);
 			}
+
 			if (exception.StackIsEvaluating) {
 				stackStore.AppendValues (GettextCatalog.GetString ("Loading..."), "", 0, 0);
 			}
@@ -110,11 +118,12 @@ namespace MonoDevelop.Debugger
 		
 		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)
 		{
-			TreeIter it = TreeIter.Zero;
+			TreeIter iter = TreeIter.Zero;
+
 			if (showExceptionNode) {
 				treeStack.ShowExpanders = true;
 				string tn = exc.Type + ": " + exc.Message;
-				it = stackStore.AppendValues (tn, null, 0, 0);
+				iter = stackStore.AppendValues (tn, null, 0, 0);
 			}
 
 			foreach (ExceptionStackFrame frame in exc.StackTrace) {
@@ -129,8 +138,8 @@ namespace MonoDevelop.Debugger
 					text += "</small>";
 				}
 
-				if (!it.Equals (TreeIter.Zero))
-					stackStore.AppendValues (it, text, frame.File, frame.Line, frame.Column);
+				if (!iter.Equals (TreeIter.Zero))
+					stackStore.AppendValues (iter, text, frame.File, frame.Line, frame.Column);
 				else
 					stackStore.AppendValues (text, frame.File, frame.Line, frame.Column);
 			}
@@ -150,9 +159,9 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtDialog: Gtk.Dialog
 	{
-		ExceptionCaughtWidget widget;
-		ExceptionInfo ex;
-		ExceptionCaughtMessage msg;
+		readonly ExceptionCaughtWidget widget;
+		readonly ExceptionCaughtMessage msg;
+		readonly ExceptionInfo ex;
 
 		public ExceptionCaughtDialog (ExceptionInfo val, ExceptionCaughtMessage msg)
 		{
@@ -206,10 +215,10 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtMessage : IDisposable
 	{
-		ExceptionInfo ex;
+		ExceptionCaughtMiniButton miniButton;
 		ExceptionCaughtDialog dialog;
 		ExceptionCaughtButton button;
-		ExceptionCaughtMiniButton miniButton;
+		readonly ExceptionInfo ex;
 
 		public ExceptionCaughtMessage (ExceptionInfo val, FilePath file, int line, int col)
 		{
@@ -299,11 +308,11 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtButton: TopLevelWidgetExtension
 	{
-		ExceptionCaughtMessage dlg;
-		ExceptionInfo exception;
+		readonly ExceptionCaughtMessage dlg;
+		readonly ExceptionInfo exception;
 		Gtk.Label messageLabel;
-		Xwt.Drawing.Image closeSelImage;
-		Xwt.Drawing.Image closeSelOverImage;
+		readonly Xwt.Drawing.Image closeSelImage;
+		readonly Xwt.Drawing.Image closeSelOverImage;
 
 		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg, FilePath file, int line)
 		{
@@ -393,7 +402,7 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtMiniButton: TopLevelWidgetExtension
 	{
-		ExceptionCaughtMessage dlg;
+		readonly ExceptionCaughtMessage dlg;
 
 		public ExceptionCaughtMiniButton (ExceptionCaughtMessage dlg, FilePath file, int line)
 		{

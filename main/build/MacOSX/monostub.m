@@ -269,7 +269,8 @@ update_environment (const char *macosDir, const char *app)
 	char *variable;
 	char buf[32];
 	
-	push_env ("DYLD_FALLBACK_LIBRARY_PATH", "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib");
+    /* CommandLineTools are needed for OSX 10.9+ */
+	push_env ("DYLD_FALLBACK_LIBRARY_PATH", "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib");
 	
 	/* Mono "External" directory */
 	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");

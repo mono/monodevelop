@@ -28,6 +28,7 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
@@ -65,7 +66,11 @@ namespace MonoDevelop.Refactoring
 				ProviderDescription = "ProviderDescription",
 				ProviderTitle = "ProviderTitle",
 				Region = new DomRegion("fileName", new TextLocation(2, 3), new TextLocation(2, 10)),
-				Severity = Severity.None
+				Severity = Severity.None,
+				Project = new DotNetAssemblyProject {
+					Name = "ProjectName"
+				},
+				File = new ProjectFile ("FileName")
 			};
 		}
 		

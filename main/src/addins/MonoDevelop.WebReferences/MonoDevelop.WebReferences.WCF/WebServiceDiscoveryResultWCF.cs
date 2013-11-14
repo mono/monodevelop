@@ -48,7 +48,7 @@ namespace MonoDevelop.WebReferences.WCF
 		MetadataSet metadata;
 		DiscoveryClientProtocol protocol;
 		ReferenceGroup refGroup;
-		ClientOptions defaultOptions;
+		readonly ClientOptions defaultOptions;
 
 		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup, ClientOptions defaultOptions): base (WebReferencesService.WcfEngine, item)
 		{
@@ -69,14 +69,15 @@ namespace MonoDevelop.WebReferences.WCF
 
 		public override string GetDescriptionMarkup ()
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 			
 			if (protocol != null) {
 				foreach (object dd in protocol.Documents.Values) {
 					if (dd is ServiceDescription) {
 						Library.GenerateWsdlXml (text, protocol);
 						break;
-					} else if (dd is DiscoveryDocument) {
+					}
+					if (dd is DiscoveryDocument) {
 						Library.GenerateDiscoXml (text, (DiscoveryDocument)dd);
 						break;
 					}
@@ -93,17 +94,17 @@ namespace MonoDevelop.WebReferences.WCF
 			}
 		}
 		
-		protected override string GenerateDescriptionFiles (DotNetProject project, FilePath basePath)
+		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
-			if (!project.Items.GetAll<WCFMetadata> ().Any ()) {
-				WCFMetadata met = new WCFMetadata ();
+			if (!dotNetProject.Items.GetAll<WCFMetadata> ().Any ()) {
+				var met = new WCFMetadata ();
 				met.Path = basePath.ParentDirectory;
-				project.Items.Add (met);
+				dotNetProject.Items.Add (met);
 			}
 			
-			WCFMetadataStorage metStor = project.Items.GetAll<WCFMetadataStorage> ().FirstOrDefault (m => m.Path.CanonicalPath == basePath);
+			WCFMetadataStorage metStor = dotNetProject.Items.GetAll<WCFMetadataStorage> ().FirstOrDefault (m => m.Path.CanonicalPath == basePath);
 			if (metStor == null)
-				project.Items.Add (new WCFMetadataStorage () { Path = basePath });
+				dotNetProject.Items.Add (new WCFMetadataStorage { Path = basePath });
 			
 			string file = Path.Combine (basePath, "Reference.svcmap");
 			if (protocol != null) {
@@ -112,14 +113,14 @@ namespace MonoDevelop.WebReferences.WCF
 				refGroup = ConvertMapFile (file);
 			} else {
 				// TODO
-				ReferenceGroup map = new ReferenceGroup ();
+				var map = new ReferenceGroup ();
 				map.ClientOptions = defaultOptions;
 				map.Save (file);
 				map.ID = Guid.NewGuid ().ToString ();
 				refGroup = map;
 			}
 			foreach (MetadataFile mfile in refGroup.Metadata)
-				project.AddFile (new FilePath (mfile.FileName).ToAbsolute (basePath), BuildAction.None);
+				dotNetProject.AddFile (new FilePath (mfile.FileName).ToAbsolute (basePath), BuildAction.None);
 			
 			return file;
 		}
@@ -130,7 +131,7 @@ namespace MonoDevelop.WebReferences.WCF
 			if (resfile.MetadataSources.Count == 0)
 				return;
 			string url = resfile.MetadataSources [0].Address;
-			WebServiceDiscoveryResultWCF wref = (WebServiceDiscoveryResultWCF) WebReferencesService.WcfEngine.Discover (url);
+			var wref = (WebServiceDiscoveryResultWCF) WebReferencesService.WcfEngine.Discover (url);
 			if (wref == null)
 				return;
 			
@@ -139,7 +140,7 @@ namespace MonoDevelop.WebReferences.WCF
 			GenerateFiles (Item.Project, Item.Project.DefaultNamespace, Item.Name);
 		}
 		
-		public override System.Collections.Generic.IEnumerable<string> GetAssemblyReferences ()
+		public override IEnumerable<string> GetAssemblyReferences ()
 		{
 			yield return "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 			yield return "System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
@@ -149,8 +150,8 @@ namespace MonoDevelop.WebReferences.WCF
 		
 		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
-			CodeCompileUnit ccu = new CodeCompileUnit ();
-			CodeNamespace cns = new CodeNamespace (proxyNamespace);
+			var ccu = new CodeCompileUnit ();
+			var cns = new CodeNamespace (proxyNamespace);
 			ccu.Namespaces.Add (cns);
 			
 			bool targetMoonlight = dotNetProject.TargetFramework.Id.Identifier == ("Silverlight");
@@ -160,7 +161,7 @@ namespace MonoDevelop.WebReferences.WCF
 			bool targetCoreClr = targetMoonlight || targetMonoDroid || targetMonoTouch;
 			bool generateSyncMethods = targetMonoDroid | targetMonoTouch;
 			
-			ServiceContractGenerator generator = new ServiceContractGenerator (ccu);
+			var generator = new ServiceContractGenerator (ccu);
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
 			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetCoreClr)
 				generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
@@ -172,22 +173,18 @@ namespace MonoDevelop.WebReferences.WCF
 //				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
 			
 			MetadataSet mset;
-			if (protocol != null)
-				mset = ToMetadataSet (protocol);
-			else
-				mset = metadata;
+			mset = protocol != null ? ToMetadataSet (protocol) : metadata;
 
 			CodeDomProvider code_provider = GetProvider (dotNetProject);
 			
-			List<IWsdlImportExtension> list = new List<IWsdlImportExtension> ();
+			var list = new List<IWsdlImportExtension> ();
 			list.Add (new TransportBindingElementImporter ());
 			list.Add (new XmlSerializerMessageContractImporter ());
 			
-			WsdlImporter importer = new WsdlImporter (mset);
+			var importer = new WsdlImporter (mset);
 			try {
 				ConfigureImporter (importer);
 			} catch {
-				;
 			}
 
 			Collection<ContractDescription> contracts = importer.ImportAllContracts ();
@@ -240,10 +237,10 @@ namespace MonoDevelop.WebReferences.WCF
 		
 		ReferenceGroup ConvertMapFile (string mapFile)
 		{
-			DiscoveryClientProtocol prot = new DiscoveryClientProtocol ();
+			var prot = new DiscoveryClientProtocol ();
 			DiscoveryClientResultCollection files = prot.ReadAll (mapFile);
 			
-			ReferenceGroup map = new ReferenceGroup ();
+			var map = new ReferenceGroup ();
 			
 			if (refGroup != null) {
 				map.ClientOptions = refGroup.ClientOptions;
@@ -253,23 +250,23 @@ namespace MonoDevelop.WebReferences.WCF
 				map.ID = Guid.NewGuid ().ToString ();
 			}
 			
-			Dictionary<string,int> sources = new Dictionary<string, int> ();
+			var sources = new Dictionary<string, int> ();
 			foreach (DiscoveryClientResult res in files) {
 				string url = res.Url;
-				Uri uri = new Uri (url);
+				var uri = new Uri (url);
 				if (!string.IsNullOrEmpty (uri.Query))
 					url = url.Substring (0, url.Length - uri.Query.Length);
 				int nSource;
 				if (!sources.TryGetValue (url, out nSource)) {
 					nSource = sources.Count + 1;
 					sources [url] = nSource;
-					MetadataSource ms = new MetadataSource ();
+					var ms = new MetadataSource ();
 					ms.Address = url;
 					ms.Protocol = uri.Scheme;
 					ms.SourceId = nSource.ToString ();
 					map.MetadataSources.Add (ms);
 				}
-				MetadataFile file = new MetadataFile ();
+				var file = new MetadataFile ();
 				file.FileName = res.Filename;
 				file.ID = Guid.NewGuid ().ToString ();
 				file.SourceId = nSource.ToString ();
@@ -285,17 +282,17 @@ namespace MonoDevelop.WebReferences.WCF
 			return map;
 		}
 		
-		MetadataSet ToMetadataSet (DiscoveryClientProtocol prot)
+		static MetadataSet ToMetadataSet (DiscoveryClientProtocol prot)
 		{
-			MetadataSet metadata = new MetadataSet ();
+			var metadata = new MetadataSet ();
 			foreach (object o in prot.Documents.Values) {
 				if (o is System.Web.Services.Description.ServiceDescription) {
 					metadata.MetadataSections.Add (
-						new MetadataSection (MetadataSection.ServiceDescriptionDialect, "", (System.Web.Services.Description.ServiceDescription) o));
+						new MetadataSection (MetadataSection.ServiceDescriptionDialect, "", o));
 				}
 				if (o is XmlSchema) {
 					metadata.MetadataSections.Add (
-						new MetadataSection (MetadataSection.XmlSchemaDialect, "", (XmlSchema) o));
+						new MetadataSection (MetadataSection.XmlSchemaDialect, "", o));
 				}
 			}
 
@@ -305,9 +302,7 @@ namespace MonoDevelop.WebReferences.WCF
 		public override string GetServiceURL ()
 		{
 			ReferenceGroup resfile = ReferenceGroup.Read (Item.MapFile.FilePath);
-			if (resfile.MetadataSources.Count == 0)
-				return null;
-			return resfile.MetadataSources [0].Address;
+			return resfile.MetadataSources.Count == 0 ? null : resfile.MetadataSources [0].Address;
 		}
 	}
 }
