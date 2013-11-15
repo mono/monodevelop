@@ -9,6 +9,8 @@ namespace MonoDevelop.VersionControl
 	public class ChangeSet
 	{
 		string globalComment = string.Empty;
+		// Commits should be atomic and small. Therefore having a List instead
+		// of a HashSet should be faster in most cases.
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
 		Repository repo;
 		FilePath basePath;
@@ -61,7 +63,7 @@ namespace MonoDevelop.VersionControl
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
 			CommitMessageFormat messageFormat, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
-			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);
+			var writer = new ChangeLogWriter (path, userInfo);
 			writer.MessageFormat = messageFormat;
 			
 			foreach (ChangeSetItem item in items) {
@@ -85,8 +87,8 @@ namespace MonoDevelop.VersionControl
 
 		public bool ContainsFile (FilePath fileName)
 		{
-			for (int n=0; n<items.Count; n++)
-				if (items [n].LocalPath == fileName)
+			foreach (var item in items)
+				if (item.LocalPath == fileName)
 					return true;
 			return false;
 		}
@@ -98,7 +100,11 @@ namespace MonoDevelop.VersionControl
 		
 		public ChangeSetItem AddFile (VersionInfo fileVersionInfo)
 		{
-			ChangeSetItem item = new ChangeSetItem (fileVersionInfo);
+			ChangeSetItem item = GetFileItem (fileVersionInfo.LocalPath);
+			if (item != null)
+				return item;
+
+			item = new ChangeSetItem (fileVersionInfo);
 			items.Add (item);
 			return item;
 		}
@@ -134,7 +140,7 @@ namespace MonoDevelop.VersionControl
 		
 		public ChangeSet Clone ()
 		{
-			ChangeSet cs = (ChangeSet) MemberwiseClone ();
+			var cs = (ChangeSet) MemberwiseClone ();
 			cs.CopyFrom (this);
 			return cs;
 		}
@@ -184,7 +190,7 @@ namespace MonoDevelop.VersionControl
 		
 		public ChangeSetItem Clone ()
 		{
-			ChangeSetItem cs = (ChangeSetItem) MemberwiseClone ();
+			var cs = (ChangeSetItem) MemberwiseClone ();
 			cs.CopyFrom (this);
 			return cs;
 		}
