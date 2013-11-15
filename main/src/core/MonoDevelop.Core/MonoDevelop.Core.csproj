@@ -12,9 +12,6 @@
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(BUILD_REVISION)' != ''">
-      <DefineConstants>$(DefineConstants);ENABLE_RAYGUN</DefineConstants>
-  </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
       <PropertyGroup>
