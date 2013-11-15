@@ -101,10 +101,12 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
+#if ENABLE_RAYGUN
 			string raygunKey = BrandingService.GetString ("RaygunApiKey");
 			if (raygunKey != null) {
 				raygunClient = new RaygunClient (raygunKey);
 			}
+#endif
 
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			System.Diagnostics.Debug.Listeners.Clear ();
