@@ -1128,19 +1128,25 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			[NonSerialized]
 			int loadOperationDepth = 0;
+			[NonSerialized]
+			readonly object loadOperationLocker = new object ();
 
-			internal int LoadOperationDepth {
-				get {
-					return loadOperationDepth;
-				}
-				set {
-					loadOperationDepth = value;
-					if (loadOperationDepth < 0)
-						throw new InvalidOperationException ();
-					OnLoad (EventArgs.Empty);
+			internal void BeginLoadOperation ()
+			{
+				lock (loadOperationLocker) {
+					loadOperationDepth++;
 				}
 			}
 
+			internal void EndLoadOperation ()
+			{
+				lock (loadOperationLocker) {
+					if (loadOperationDepth > 0) {
+						loadOperationDepth--;
+					}
+				}
+				OnLoad (EventArgs.Empty);
+			}
 			bool inLoad;
 			public bool InLoad {
 				get {
@@ -1269,7 +1275,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
 						try {
-							this.wrapper.LoadOperationDepth++;
+							this.wrapper.BeginLoadOperation ();
 							var p = this.wrapper.Project;
 							var context = LoadProjectCache (p);
 
@@ -1288,7 +1294,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							QueueParseJob (this.wrapper);
 							return context;
 						} finally {
-							this.wrapper.LoadOperationDepth--;
+							this.wrapper.EndLoadOperation ();
 						}
 					});
 				}
@@ -2537,7 +2543,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
 				try {
-					Context.LoadOperationDepth++;
+					Context.BeginLoadOperation ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
 						var fileName = file.FilePath;
 						if (filesSkippedInParseThread.Any (f => f == fileName))
@@ -2558,7 +2564,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
-					Context.LoadOperationDepth--;
+					Context.EndLoadOperation ();
 				}
 			}
 		}
@@ -2614,7 +2620,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 			lock (parseQueueLock) {
 				RemoveParseJob (context);
-				context.LoadOperationDepth++;
+				context.BeginLoadOperation ();
 				parseQueueIndex [context] = job;
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
@@ -2652,7 +2658,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ParsingJob job;
 				if (parseQueueIndex.TryGetValue (project, out job)) {
 					parseQueueIndex.Remove (project);
-					project.LoadOperationDepth--;
+					project.EndLoadOperation ();
 				}
 			}
 		}
@@ -2705,7 +2711,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
-					content.LoadOperationDepth++;
+					content.BeginLoadOperation ();
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
 
@@ -2747,7 +2753,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception in check modified files.", e);
 				} finally {
-					content.LoadOperationDepth--;
+					content.EndLoadOperation ();
 				}
 
 			});
@@ -2820,7 +2826,7 @@ namespace MonoDevelop.Ide.TypeSystem
 								monitor = GetParseProgressMonitor ();
 							monitor.ReportError (null, ex);
 						} finally {
-							job.Context.LoadOperationDepth--;
+							job.Context.EndLoadOperation ();
 						}
 					}
 					
