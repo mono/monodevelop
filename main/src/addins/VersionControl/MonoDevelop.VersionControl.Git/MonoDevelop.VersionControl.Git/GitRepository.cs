@@ -1557,7 +1557,7 @@ namespace MonoDevelop.VersionControl.Git
 			ChangeSet cset = CreateChangeSet (RootPath);
 			ObjectId cid1 = RootRepository.Resolve (remote + "/" + branch);
 			ObjectId cid2 = RootRepository.Resolve (RootRepository.GetBranch ());
-			RevWalk rw = new RevWalk (RootRepository);
+			RevWalk	rw = new RevWalk (RootRepository);
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
@@ -1589,7 +1589,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
 				string diff;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.DELETE:
