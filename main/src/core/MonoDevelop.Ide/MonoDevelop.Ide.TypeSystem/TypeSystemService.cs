@@ -1736,7 +1736,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 			ProjectContentWrapper wrapper;
 			lock (projectWrapperUpdateLock) {
-				wrapper = projectContents [project];
+				if (!projectContents.TryGetValue (project, out wrapper))
+					return;
 				projectContents.Remove (project);
 			}
 			StoreProjectCache (project, wrapper);
