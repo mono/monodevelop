@@ -299,7 +299,7 @@ namespace MonoDevelop.CodeIssues
 
 		void ClearSiblingNodes (TreeNavigator navigator)
 		{
-			if (navigator == null)
+			if (navigator.CurrentPosition == null)
 				return;
 
 			do {
