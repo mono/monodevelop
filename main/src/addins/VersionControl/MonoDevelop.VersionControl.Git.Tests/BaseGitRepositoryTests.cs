@@ -167,9 +167,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file2", "nothing", true, true);
 			AddFile ("file1", "text", true, false);
-			repo2.GetStashes ().Create (null);
+			repo2.GetStashes ().Create (new NullProgressMonitor ());
 			Assert.IsTrue (!File.Exists (RootCheckout + "file1"), "Stash creation failure");
-			repo2.GetStashes ().Pop (null);
+			repo2.GetStashes ().Pop (new NullProgressMonitor ());
 
 			VersionInfo vi = repo2.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd, "Stash pop failure");
