@@ -127,7 +127,7 @@ namespace VersionControl.Subversion.Unix.Tests
 			});
 		}
 
-		public override void TestValidUrl ()
+		protected override void TestValidUrl ()
 		{
 			base.TestValidUrl ();
 			Assert.IsTrue (Repo.IsUrlValid ("file:///dir/repo"));
