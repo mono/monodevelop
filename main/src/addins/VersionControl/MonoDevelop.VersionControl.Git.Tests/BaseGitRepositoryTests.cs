@@ -51,11 +51,11 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			RepoLocation = "file:///" + RootUrl.FullPath + "repo.git";
 
 			// Initialize the bare repo.
-			InitCommand ci = new InitCommand ();
+			var ci = new InitCommand ();
 			ci.SetDirectory (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
 			ci.SetBare (true);
 			ci.Call ();
-			FileRepository bare = new FileRepository (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
+			var bare = new FileRepository (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
 			string branch = Constants.R_HEADS + "master";
 
 			RefUpdate head = bare.UpdateRef (Constants.HEAD);
@@ -132,21 +132,21 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 		protected override Revision GetHeadRevision ()
 		{
-			GitRepository repo2 = (GitRepository)Repo;
-			RevWalk rw = new RevWalk (repo2.RootRepository);
+			var repo2 = (GitRepository)Repo;
+			var rw = new RevWalk (repo2.RootRepository);
 			ObjectId headId = repo2.RootRepository.Resolve (Constants.HEAD);
 			if (headId == null)
 				return null;
 
 			RevCommit commit = rw.ParseCommit (headId);
-			GitRevision rev = new GitRevision (Repo, repo2.RootRepository, commit.Id.Name);
+			var rev = new GitRevision (Repo, repo2.RootRepository, commit.Id.Name);
 			rev.Commit = commit;
 			return rev;
 		}
 
 		protected override void PostCommit (Repository repo)
 		{
-			GitRepository repo2 = (GitRepository)repo;
+			var repo2 = (GitRepository)repo;
 			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
 		}
 
