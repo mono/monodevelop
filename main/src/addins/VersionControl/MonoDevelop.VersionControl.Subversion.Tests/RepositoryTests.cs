@@ -36,7 +36,7 @@ using MonoDevelop.VersionControl;
 namespace VersionControl.Subversion.Unix.Tests
 {
 	[TestFixture]
-	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
+	sealed class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
 		SubversionBackend SvnClient {
 			get { return Repo.Svn; }

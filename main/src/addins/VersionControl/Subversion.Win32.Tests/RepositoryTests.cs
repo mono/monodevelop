@@ -36,21 +36,21 @@ using System;
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
-	public class SharpSvnUtilsTest : BaseSvnUtilsTest
+	sealed class SharpSvnUtilsTest : BaseSvnUtilsTest
 	{
 		[SetUp]
 		public override void Setup ()
 		{
 			RootUrl = new FilePath (FileService.CreateTempDirectory ());
 			RepoLocation = "svn://localhost:3690/repo";
-			svnServe = new Process ();
+			SvnServe = new Process ();
 			base.Setup ();
 		}
 
 		[TearDown]
 		public override void TearDown ()
 		{
-			svnServe.Kill ();
+			SvnServe.Kill ();
 
 			base.TearDown ();
 		}
