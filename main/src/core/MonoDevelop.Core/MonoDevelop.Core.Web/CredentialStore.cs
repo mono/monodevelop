@@ -7,13 +7,6 @@ namespace MonoDevelop.Core.Web
 	class CredentialStore : ICredentialCache
 	{
 		readonly ConcurrentDictionary<Uri, ICredentials> credentialCache = new ConcurrentDictionary<Uri, ICredentials> ();
-		static readonly CredentialStore instance = new CredentialStore ();
-
-		public static CredentialStore Instance {
-			get {
-				return instance;
-			}
-		}
 
 		public ICredentials GetCredentials (Uri uri, CredentialType credentialType)
 		{

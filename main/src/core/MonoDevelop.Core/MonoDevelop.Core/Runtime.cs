@@ -85,7 +85,7 @@ namespace MonoDevelop.Core
 				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
 
 			// Hook up the SSL certificate validation codepath
-			System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+			ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
 				if (sslPolicyErrors == SslPolicyErrors.None)
 					return true;
 				
