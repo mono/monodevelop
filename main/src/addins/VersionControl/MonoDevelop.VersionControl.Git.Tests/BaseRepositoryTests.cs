@@ -125,6 +125,14 @@ namespace MonoDevelop.VersionControl.Tests
 		protected abstract NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ();
 
 		[Test]
+		public void UrlIsValid ()
+		{
+			TestValidUrl ();
+		}
+
+		protected abstract void TestValidUrl ();
+
+		[Test]
 		// Tests Repository.Checkout.
 		public void CheckoutExists ()
 		{

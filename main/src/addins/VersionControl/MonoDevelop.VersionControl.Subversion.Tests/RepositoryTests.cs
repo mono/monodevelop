@@ -127,6 +127,12 @@ namespace VersionControl.Subversion.Unix.Tests
 			});
 		}
 
+		public override void TestValidUrl ()
+		{
+			base.TestValidUrl ();
+			Assert.IsTrue (Repo.IsUrlValid ("file:///dir/repo"));
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);

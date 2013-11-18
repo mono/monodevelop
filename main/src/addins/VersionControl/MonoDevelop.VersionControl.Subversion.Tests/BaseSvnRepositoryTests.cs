@@ -93,6 +93,15 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			return Is.InstanceOf<SubversionRepository> ();
 		}
 
+		protected override void TestValidUrl ()
+		{
+			var repo2 = (SubversionRepository)Repo;
+			Assert.IsTrue (repo2.IsUrlValid ("svn://svnrepo.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("svn+ssh://user@host.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("http://svnrepo.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("https://svnrepo.com:80/repo"));
+		}
+
 		protected override Revision GetHeadRevision ()
 		{
 			return SvnRevision.Head;

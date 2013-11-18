@@ -269,8 +269,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			//Assert.AreEqual ("text2", item.Content);
 		}
 
-		[Test]
-		public void TestGitUrl ()
+		protected override void TestValidUrl ()
 		{
 			var repo2 = (GitRepository)Repo;
 			Assert.IsTrue (repo2.IsUrlValid ("git@github.com:mono/monodevelop"));

@@ -117,6 +117,16 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			});
 		}
 
+		[Test]
+		protected override void TestValidUrl ()
+		{
+			base.TestValidUrl ();
+
+			Assert.Ignore ("File scheme is broken on Windows");
+			var repo2 = (SubversionRepository)Repo;
+			Assert.IsTrue (repo2.IsUrlValid ("file:///c:/dir/repo"));
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnSharpClient (), url, path);
