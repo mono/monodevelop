@@ -1611,5 +1611,46 @@ namespace MonoDevelop.CSharp
 				return str;
 			return Highlight (str, style);
 		}
+
+		public string CreateFooter (IEntity entity)
+		{
+			var type = entity as IType;
+			if (type != null) {
+				var def = type.GetDefinition ();
+				if (def != null) {
+					if (!def.Region.IsEmpty) {
+						var project = def.GetSourceProject ();
+						if (project != null) {
+							var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
+							return
+								(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
+								"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>" + Environment.NewLine +
+								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), def.Region.Begin.Line) + "</small>";
+						}
+					}
+					return
+						(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
+						"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>";
+				}
+				return null;
+			} 
+
+			if (entity.DeclaringTypeDefinition != null) {
+				if (!entity.Region.IsEmpty) {
+					var project = entity.DeclaringTypeDefinition.GetSourceProject ();
+					if (project != null) {
+						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, entity.Region.FileName);
+						return
+							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
+							"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.FullName)) + "</small>" + Environment.NewLine +
+							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), entity.Region.Begin.Line) + "</small>";
+					}
+				}
+				return
+					"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.FullName)) + "</small>" + Environment.NewLine +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.ParentAssembly.AssemblyName)) + "</small>";
+			}
+			return null;
+		}
 	}
 }
