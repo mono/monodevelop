@@ -2162,7 +2162,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (asmLocker) {
 					if (assembly != null)
 						return;
-					assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+					assembly = new DefaultUnresolvedAssembly (fileName);
+
+					assembly = LoadAssembly () ?? assembly; 
+
 					OnLoad (EventArgs.Empty);
 				}
 			}
