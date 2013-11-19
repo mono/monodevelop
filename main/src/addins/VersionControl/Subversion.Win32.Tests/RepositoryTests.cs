@@ -36,21 +36,21 @@ using System;
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
-	public class SharpSvnUtilsTest : BaseSvnUtilsTest
+	sealed class SharpSvnUtilsTest : BaseSvnUtilsTest
 	{
 		[SetUp]
 		public override void Setup ()
 		{
 			RootUrl = new FilePath (FileService.CreateTempDirectory ());
 			RepoLocation = "svn://localhost:3690/repo";
-			svnServe = new Process ();
+			SvnServe = new Process ();
 			base.Setup ();
 		}
 
 		[TearDown]
 		public override void TearDown ()
 		{
-			svnServe.Kill ();
+			SvnServe.Kill ();
 
 			base.TearDown ();
 		}
@@ -115,6 +115,16 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			Assert.DoesNotThrow (delegate {
 				File.WriteAllText (added, "text");
 			});
+		}
+
+		[Test]
+		protected override void TestValidUrl ()
+		{
+			base.TestValidUrl ();
+
+			Assert.Ignore ("File scheme is broken on Windows");
+			var repo2 = (SubversionRepository)Repo;
+			Assert.IsTrue (repo2.IsUrlValid ("file:///c:/dir/repo"));
 		}
 
 		protected override Repository GetRepo (string path, string url)

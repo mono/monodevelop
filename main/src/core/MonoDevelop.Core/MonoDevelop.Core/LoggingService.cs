@@ -181,20 +181,6 @@ namespace MonoDevelop.Core
 				if (ReportCrashes.HasValue && !ReportCrashes.Value)
 					return;
 
-				byte[] data;
-				using (var stream = new MemoryStream ()) {
-					using (var writer = System.Xml.XmlWriter.Create (stream)) {
-						writer.WriteStartElement ("CrashLog");
-						writer.WriteAttributeString ("version", ServiceVersion);
-
-						writer.WriteElementString ("SystemInformation", SystemInformation.GetTextDescription ());
-						writer.WriteElementString ("Exception", ex.ToString ());
-
-						writer.WriteEndElement ();
-					}
-					data = stream.ToArray ();
-				}
-
 				var customData = new Hashtable ();
 				customData["SystemInformation"] = SystemInformation.GetTextDescription ();
 
@@ -203,17 +189,6 @@ namespace MonoDevelop.Core
 						raygunClient.Send (ex, tags, customData, BuildInfo.Version);
 					});
 				}
-
-				// Log to disk only if uploading fails.
-				var filename = string.Format ("{0}.{1}.{2}.crashlog", DateTime.UtcNow.ToString ("yyyy-MM-dd__HH-mm-ss"), SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
-				ThreadPool.QueueUserWorkItem (delegate {
-					if (!TryUploadReport (filename, data)) {
-						if (!Directory.Exists (CrashLogDirectory))
-							Directory.CreateDirectory (CrashLogDirectory);
-
-						File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
-					}
-				});
 
 				//ensure we don't lose the setting
 				if (ReportCrashes != oldReportCrashes) {

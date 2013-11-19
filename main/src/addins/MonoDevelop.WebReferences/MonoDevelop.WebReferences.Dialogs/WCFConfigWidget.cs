@@ -45,6 +45,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 			
 			dictTypes = new List<Type> (DefaultDictionaryTypes);
 			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
+
+			foreach (var access in AccessGenerationTypes)
+				listAccess.AppendText (access);
+
+			listAccess.Active = options.GenerateInternalTypes ? 1 : 0;
 		}
 		
 		public ClientOptions Options {
@@ -70,6 +75,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 			typeof (System.Collections.Specialized.HybridDictionary),
 			typeof (System.Collections.Specialized.ListDictionary),
 			typeof (System.Collections.Specialized.OrderedDictionary)
+		};
+
+		static readonly List<string> AccessGenerationTypes = new List<string> {
+			"Public",
+			"Internal"
 		};
 		
 		public bool Modified {
@@ -162,6 +172,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			UpdateBox (listCollection, "List", listTypes);
 			UpdateBox (dictionaryCollection, "Dictionary", dictTypes);
+
+			if (listAccess.Active != (Options.GenerateInternalTypes ? 1 : 0)) {
+				Options.GenerateInternalTypes = !Options.GenerateInternalTypes;
+				Modified = true;
+			}
 		}
 	}
 }

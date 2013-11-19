@@ -33,9 +33,9 @@ using System.IO;
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
-	public abstract class BaseSvnUtilsTest : BaseRepoUtilsTest
+	abstract class BaseSvnUtilsTest : BaseRepoUtilsTest
 	{
-		protected Process svnServe = null;
+		protected Process SvnServe = null;
 
 		[SetUp]
 		public override void Setup ()
@@ -59,13 +59,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			// Create host (Win32)
 			// This needs to be done after doing the svnAdmin creation.
 			// And before checkout.
-			if (svnServe != null) {
+			if (SvnServe != null) {
 				info = new ProcessStartInfo ();
 				info.FileName = "svnserve";
 				info.Arguments = "-dr " + RootUrl;
 				info.WindowStyle = ProcessWindowStyle.Hidden;
-				svnServe.StartInfo = info;
-				svnServe.Start ();
+				SvnServe.StartInfo = info;
+				SvnServe.Start ();
 
 				// Create user to auth.
 				using (var perm = File. CreateText (RootUrl + Path.DirectorySeparatorChar + "repo" +
@@ -91,6 +91,15 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
 			return Is.InstanceOf<SubversionRepository> ();
+		}
+
+		protected override void TestValidUrl ()
+		{
+			var repo2 = (SubversionRepository)Repo;
+			Assert.IsTrue (repo2.IsUrlValid ("svn://svnrepo.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("svn+ssh://user@host.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("http://svnrepo.com:80/repo"));
+			Assert.IsTrue (repo2.IsUrlValid ("https://svnrepo.com:80/repo"));
 		}
 
 		protected override Revision GetHeadRevision ()

@@ -299,6 +299,9 @@ namespace MonoDevelop.CodeIssues
 
 		void ClearSiblingNodes (TreeNavigator navigator)
 		{
+			if (navigator.CurrentPosition == null)
+				return;
+
 			do {
 				var node = navigator.GetValue (nodeField);
 				if (node != null) {

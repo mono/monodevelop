@@ -141,7 +141,7 @@ namespace MonoDevelop.SourceEditor
 
 			var titem = (ToolTipData)item.Item;
 
-			var tooltipInformation = CreateTooltip (titem, offset, null);
+			var tooltipInformation = CreateTooltip (titem, offset, null, modifierState);
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return null;
 
@@ -179,12 +179,13 @@ namespace MonoDevelop.SourceEditor
 			return tipWindow;
 		}
 
-		TooltipInformation CreateTooltip (ToolTipData data, int offset, Ambience ambience)
+		TooltipInformation CreateTooltip (ToolTipData data, int offset, Ambience ambience, Gdk.ModifierType modifierState)
 		{
 			ResolveResult result = data.Result;
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
+			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
 
 				if (result is AliasNamespaceResolveResult) {
@@ -276,12 +277,13 @@ namespace MonoDevelop.SourceEditor
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
 						return MemberCompletionData.CreateTooltipInformation (
-						doc.Compilation,
-						doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
-						doc.Editor,
-						doc.GetFormattingPolicy (),
-						method, 
-						false);
+							doc.Compilation,
+							doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+							doc.Editor,
+							doc.GetFormattingPolicy (),
+							method,
+							false,
+							createFooter);
 					}
 				} else if (result is CSharpInvocationResolveResult) {
 					var invocationResult = (CSharpInvocationResolveResult)result;
@@ -292,16 +294,18 @@ namespace MonoDevelop.SourceEditor
 						doc.Editor,
 						doc.GetFormattingPolicy (),
 						member, 
-						false);
+						false,
+						createFooter);
 				} else if (result is MemberResolveResult) {
 					var member = ((MemberResolveResult)result).Member;
 					return MemberCompletionData.CreateTooltipInformation (
-					doc.Compilation,
-					doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
-					doc.Editor,
-					doc.GetFormattingPolicy (),
-					member, 
-					false);
+						doc.Compilation,
+						doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+						doc.Editor,
+						doc.GetFormattingPolicy (),
+						member, 
+						false,
+						createFooter);
 				} else if (result is NamespaceResolveResult) {
 					var tooltipInfo = new TooltipInformation ();
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
@@ -329,12 +333,13 @@ namespace MonoDevelop.SourceEditor
 					return tooltipInfo;
 				} else {
 					return MemberCompletionData.CreateTooltipInformation (
-					doc.Compilation,
-					doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
-					doc.Editor,
-					doc.GetFormattingPolicy (),
-					result.Type, 
-					false);
+						doc.Compilation,
+						doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+						doc.Editor,
+						doc.GetFormattingPolicy (),
+						result.Type, 
+						false,
+						createFooter);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating tooltip.", e);
