@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (/*TryGetUsernamePassword (uri, items, out passwordItem) || */TryGetPassphrase (uri, items, out passphraseItem)) {
+			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
 				// If the password store has a password and we already tried using it, it could be incorrect.
 				// If this happens, do not return true and ask the user for a new password.
 				if (!HasReset) {
@@ -75,9 +75,10 @@ namespace MonoDevelop.VersionControl.Git
 				
 			HasReset = false;
 			if (result) {
-				/*if (passwordItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), new string (passwordItem.GetValue ()));
-				} else*/ if (passphraseItem != null) {
+				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
+				if (passwordItem != null) {
+					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
+				} else if (passphraseItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
 				}
 			}
@@ -118,10 +119,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (items.Length == 2 && username != null && password != null) {
 				passwordItem = password;
 
-				var passwordValue = PasswordService.GetWebPassword (actualUrl);
-				if (passwordValue != null) {
-					username.SetValue (actualUrl.UserInfo);
-					password.SetValueNoCopy (passwordValue.ToArray ());
+				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
+				if (cred != null) {
+					username.SetValue (cred.Item1);
+					password.SetValueNoCopy (cred.Item2.ToArray ());
 					return true;
 				}
 			} else {
