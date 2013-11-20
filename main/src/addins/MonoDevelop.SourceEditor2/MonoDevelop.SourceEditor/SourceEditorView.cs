@@ -835,9 +835,9 @@ namespace MonoDevelop.SourceEditor
 			else {
 				inLoad = true;
 				if (loadEncoding == null) {
-					text = TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
-				}
-				else {
+					text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+				} else {
+					encoding = loadEncoding;
 					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				if (reload) {

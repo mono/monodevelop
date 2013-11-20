@@ -156,6 +156,25 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
+		public static string GetText (byte[] bytes, Encoding encoding, out bool hadBom)
+		{
+			byte[] bom = encoding.GetPreamble ();
+			if (bom != null && bom.Length > 0 && bom.Length <= bytes.Length) {
+				hadBom = true;
+				for (int i = 0; i < bom.Length; i++) {
+					if (bytes [i] != bom [i]) {
+						hadBom = false;
+						break;
+					}
+				}
+			} else {
+				hadBom = false;
+			}
+			if (hadBom) 
+				return encoding.GetString (bytes, bom.Length, bytes.Length - bom.Length);
+			return encoding.GetString (bytes);
+		}
+
 		public static string GetText (Stream inputStream)
 		{
 			using (var stream = OpenStream (inputStream)) {
@@ -303,21 +322,8 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("encoding");
 			
 			byte[] content = File.ReadAllBytes (fileName);
-			byte[] bom = encoding.GetPreamble ();
-			if (bom != null && bom.Length > 0 && bom.Length <= content.Length) {
-				hadBom = true;
-				for (int i = 0; i < bom.Length; i++) {
-					if (content [i] != bom [i]) {
-						hadBom= false;
-						break;
-					}
-				}
-			} else {
-				hadBom = false;
-			}
-			return encoding.GetString (content);
+			return GetText (content, encoding, out hadBom); 
 		}
-
 		#endregion
 
 		#region ASCII encoding check
