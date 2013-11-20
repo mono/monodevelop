@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
+			if (/*TryGetUsernamePassword (uri, items, out passwordItem) || */TryGetPassphrase (uri, items, out passphraseItem)) {
 				// If the password store has a password and we already tried using it, it could be incorrect.
 				// If this happens, do not return true and ask the user for a new password.
 				if (!HasReset) {
@@ -75,9 +75,9 @@ namespace MonoDevelop.VersionControl.Git
 				
 			HasReset = false;
 			if (result) {
-				if (passwordItem != null) {
+				/*if (passwordItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri.ToString ()), new string (passwordItem.GetValue ()));
-				} else if (passphraseItem != null) {
+				} else*/ if (passphraseItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
 				}
 			}
