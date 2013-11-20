@@ -927,7 +927,7 @@ namespace MonoDevelop.SourceEditor
 					newText.Append (correctEol);
 			}
 			view.StoreSettings ();
-			view.ReplaceContent (Document.FileName, newText.ToString (), null);
+			view.ReplaceContent (Document.FileName, newText.ToString (), view.SourceEncoding);
 			Document.HasLineEndingMismatchOnTextSet = false;
 			view.LoadSettings ();
 		}
@@ -1073,7 +1073,7 @@ namespace MonoDevelop.SourceEditor
 						AutoSave.RemoveAutoSaveFile (fileName);
 						TextEditor.GrabFocus ();
 						view.Load (fileName);
-						view.ReplaceContent (fileName, content, null);
+						view.ReplaceContent (fileName, content, view.SourceEncoding);
 						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {

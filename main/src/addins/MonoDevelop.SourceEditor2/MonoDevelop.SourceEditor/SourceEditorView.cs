@@ -692,11 +692,15 @@ namespace MonoDevelop.SourceEditor
 					var writeBom = hadBom;
 					var writeText = Document.Text;
 					if (writeEncoding == null) {
-						writeEncoding = Encoding.UTF8;
-						// Disabled. Shows up in the source control as diff, it's atm confusing for the users to see a change without
-						// changed files.
-						writeBom = false;
-//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+						if (this.encoding != null) {
+							writeEncoding = this.encoding;
+						} else { 
+							writeEncoding = Encoding.UTF8;
+							// Disabled. Shows up in the source control as diff, it's atm confusing for the users to see a change without
+							// changed files.
+							writeBom = false;
+	//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+						}
 					}
 					Mono.TextEditor.Utils.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
@@ -910,7 +914,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool warnOverwrite = false;
 		bool inLoad = false;
-		Encoding encoding = null;
+		Encoding encoding;
 		bool hadBom = false;
 
 		internal void ReplaceContent (string fileName, string content, Encoding encoding)
