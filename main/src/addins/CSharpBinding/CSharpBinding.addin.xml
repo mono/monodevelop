@@ -267,32 +267,4 @@
 		<Complete id="C#" insertbefore="Html" language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
 
-
-	<Module>
-	    <Runtime>
-	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
-	    </Runtime>
-		<Dependencies>
-			<Addin id="Autotools" version="4.2"/>
-		</Dependencies>
-		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
-			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
-		</Extension>
-	</Module>
-
-	<Module>
-		<Runtime>
-			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
-		</Runtime>
-		<Dependencies>
-			<Addin id="AspNet" version="4.2"/>
-		</Dependencies>
-		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
-			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
-		</Extension>
-		<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
-			<ReferenceFinder supportedmimetypes = "application/x-aspx,application/x-ascx,application/x-asax,application/x-ashx,application/x-asmx,application/x-asix"
-			                 class = "MonoDevelop.CSharp.Refactoring.ASPNetReferenceFinder" />
-		</Extension>
-	</Module>
 </ExtensionModel>

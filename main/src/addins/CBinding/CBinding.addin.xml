@@ -1,23 +1,5 @@
-<Addin id          = "CBinding"
-       namespace   = "MonoDevelop"
-       name		   = "C/C++ Language Binding"
-       author      = "Marcos David Marín Amador"
-       copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com"
-       description = "C/C++ Language binding"
-       category    = "Language bindings"
-       version     = "4.2">
+<ExtensionModel>
 
-	<Dependencies>
-		<Addin id = "Core" version = "4.2"/>
-		<Addin id = "Ide" version = "4.2"/>
-		<Addin id = "Deployment" version = "4.2"/>
-		<Addin id = "Deployment.Linux" version = "4.2"/>
-		<Addin id = "SourceEditor2" version = "4.2" />
-		<Addin id = "DesignerSupport" version = "4.2" />
-		<Addin id = "Refactoring" version = "4.2" />
-	</Dependencies>
-	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union" size="Menu"/>
 		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion" size="Menu"/>
@@ -263,4 +245,4 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="C/C++" insertbefore="Other" insertafter="Html" language="C/C++" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-</Addin>
+</<ExtensionModel>
