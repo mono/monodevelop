@@ -85,7 +85,7 @@ namespace MonoDevelop.Core
 				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
 
 			// Hook up the SSL certificate validation codepath
-			System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+			ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
 				if (sslPolicyErrors == SslPolicyErrors.None)
 					return true;
 				
@@ -112,6 +112,7 @@ namespace MonoDevelop.Core
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
 				PropertyService.Initialize ();
+				WebService.Initialize ();
 				
 				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {
@@ -124,8 +125,6 @@ namespace MonoDevelop.Core
 				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
-
-				WebService.Initialize ();
 				
 				initialized = true;
 				

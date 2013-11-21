@@ -682,30 +682,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			if (createFooter) {
-				if (entity is IType) {
-					var type = entity as IType;
-					var def = type.GetDefinition ();
-					if (def != null) {
-						if (!string.IsNullOrEmpty (def.ParentAssembly.AssemblyName)) {
-							var project = def.GetSourceProject ();
-							if (project != null) {
-								var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
-								tooltipInfo.FooterMarkup = "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>" + Environment.NewLine +
-									"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), def.Region.Begin.Line) + "</small>";
-							}
-						}
-					}
-
-				} else if (entity.DeclaringTypeDefinition != null) {
-					var project = entity.DeclaringTypeDefinition.GetSourceProject ();
-					if (project != null) {
-						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, entity.Region.FileName);
-						tooltipInfo.FooterMarkup = 
-							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
-							"<small>" + GettextCatalog.GetString ("From:\t{0}", AmbienceService.EscapeText (entity.DeclaringType.FullName)) + "</small>" + Environment.NewLine +
-							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), entity.Region.Begin.Line) + "</small>";
-					}
-				}
+				tooltipInfo.FooterMarkup = sig.CreateFooter (entity);
 			}
 			return tooltipInfo;
 		}
@@ -732,8 +709,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			var def = type.GetDefinition ();
 			if (def != null) {
-				if (createFooter && !string.IsNullOrEmpty (def.ParentAssembly.AssemblyName))
-					tooltipInfo.FooterMarkup = "<small> From " + AmbienceService.EscapeText (def.ParentAssembly.AssemblyName) + "</small>";
+				if (createFooter)
+					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
 				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
 			}
 			return tooltipInfo;

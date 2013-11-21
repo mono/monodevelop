@@ -36,7 +36,7 @@ using MonoDevelop.VersionControl;
 namespace VersionControl.Subversion.Unix.Tests
 {
 	[TestFixture]
-	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
+	sealed class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
 		SubversionBackend SvnClient {
 			get { return Repo.Svn; }
@@ -125,6 +125,12 @@ namespace VersionControl.Subversion.Unix.Tests
 			Assert.DoesNotThrow (delegate {
 				File.WriteAllText (added, "text");
 			});
+		}
+
+		protected override void TestValidUrl ()
+		{
+			base.TestValidUrl ();
+			Assert.IsTrue (Repo.IsUrlValid ("file:///dir/repo"));
 		}
 
 		protected override Repository GetRepo (string path, string url)

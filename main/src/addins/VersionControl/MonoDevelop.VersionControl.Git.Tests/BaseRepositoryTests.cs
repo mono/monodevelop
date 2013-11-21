@@ -35,7 +35,7 @@ using System.Collections.Generic;
 namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
-	public abstract class BaseRepoUtilsTest
+	abstract class BaseRepoUtilsTest
 	{
 		// [Git] Set user and email.
 		protected const string Author = "author";
@@ -123,6 +123,14 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		protected abstract NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ();
+
+		[Test]
+		public void UrlIsValid ()
+		{
+			TestValidUrl ();
+		}
+
+		protected abstract void TestValidUrl ();
 
 		[Test]
 		// Tests Repository.Checkout.

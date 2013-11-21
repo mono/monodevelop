@@ -273,6 +273,21 @@ class Foo
 				Console.WriteLine (newText);
 			Assert.AreEqual (expected, newText);
 		}
+
+
+		/// <summary>
+		/// Bug 16283 - Wrong literal string addition
+		/// </summary>
+		[Test]
+		public void TestBug16283 ()
+		{
+			TestViewContent content;
+			var ext = Setup ("$\"\\dev\\null {0}\"", out content);
+			content.GetTextEditorData ().Insert (0, "@");
+			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
+			var newText = content.Text;
+			Assert.AreEqual ("@\"\\dev\null {0}\"", newText);
+		}
 	}
 }
 

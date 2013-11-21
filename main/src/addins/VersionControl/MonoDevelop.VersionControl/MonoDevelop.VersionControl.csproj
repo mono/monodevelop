@@ -20,9 +20,9 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,8 +34,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -188,6 +188,39 @@
     <EmbeddedResource Include="version-control-16.png">
       <LogicalName>version-control-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="menu_log.png">
+      <LogicalName>menu_log.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_diff.png">
+      <LogicalName>menu_diff.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_update.png">
+      <LogicalName>menu_update.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_status.png">
+      <LogicalName>menu_status.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_commit.png">
+      <LogicalName>menu_commit.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_remote_status.png">
+      <LogicalName>menu_remote_status.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_add.png">
+      <LogicalName>menu_add.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_remove.png">
+      <LogicalName>menu_remove.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_resolve.png">
+      <LogicalName>menu_resolve.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="comment.png">
+      <LogicalName>comment.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="menu_revert.png">
+      <LogicalName>menu_revert.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -277,39 +310,4 @@
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Content Include="menu_log.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_diff.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_update.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_status.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_commit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_remote_status.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_add.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_remove.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_resolve.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="comment.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="menu_revert.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 </Project>

@@ -25,12 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+
+using Gtk;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
-using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -52,9 +55,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class MonoRuntimePanelWidget : Gtk.Bin
 	{
-		ListStore store;
-		List<MonoRuntimeInfo> newInfos = new List<MonoRuntimeInfo> ();
-		List<TargetRuntime> removedRuntimes = new List<TargetRuntime> ();
+		readonly List<TargetRuntime> removedRuntimes = new List<TargetRuntime> ();
+		readonly List<MonoRuntimeInfo> newInfos = new List<MonoRuntimeInfo> ();
+		readonly ListStore store;
 		TreeIter defaultIter;
 		TreeIter runningIter;
 		
@@ -101,13 +104,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			MonoRuntimeInfo newDefaultInfo = ob as MonoRuntimeInfo;
 			if (ob is TargetRuntime)
 				IdeApp.Preferences.DefaultTargetRuntime = (TargetRuntime)ob;
-			
-			foreach (MonoRuntimeInfo rinfo in newInfos) {
+
+			foreach (var rinfo in newInfos) {
 				TargetRuntime tr = MonoTargetRuntime.RegisterRuntime (rinfo);
 				if (rinfo == newDefaultInfo)
 					IdeApp.Preferences.DefaultTargetRuntime = tr;
 			}
-			foreach (MonoTargetRuntime tr in removedRuntimes)
+
+			foreach (var tr in removedRuntimes.OfType<MonoTargetRuntime> ())
 				MonoTargetRuntime.UnregisterRuntime (tr);
 			
 		}

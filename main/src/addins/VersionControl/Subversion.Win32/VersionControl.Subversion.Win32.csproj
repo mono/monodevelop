@@ -42,8 +42,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\SubversionAddinWindows.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,8 +54,8 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\SubversionAddinWindows.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,15 +69,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml" />
+    <EmbeddedResource Include="subversion-logo.png">
+      <LogicalName>subversion-logo.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SharpSvn\SharpPlink-Win32.svnExe">
       <Link>SharpPlink-Win32.svnExe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="subversion-logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\SharpSvn\SharpSvn-DB44-20-win32.dll">
       <Link>SharpSvn-DB44-20-win32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
