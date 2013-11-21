@@ -2653,7 +2653,7 @@ namespace Mono.TextEditor
 		
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
-			if (mx < TextViewMargin.XOffset + TextViewMargin.TextStartPosition) {
+			if (mx < TextViewMargin.TextStartPosition) {
 				HideTooltip ();
 				return;
 			}
