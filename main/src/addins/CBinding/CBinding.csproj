@@ -239,9 +239,6 @@
     <EmbeddedResource Include="icons\cpp-icon-32.png">
       <LogicalName>cpp-icon-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\ConsoleObjCProject.xpt.xml">
       <LogicalName>ConsoleObjCProject.xpt.xml</LogicalName>
     </EmbeddedResource>

@@ -25,141 +25,15 @@
 //
 //
 
-using System;
 using System.IO;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	[TestFixture()]
+	[TestFixture]
 	public class MdsTests: TestBase
 	{
-		[Test()]
-		public void LoadSaveBuildConsoleProject()
-		{
-			string solFile = Util.GetSampleProject ("csharp-console-mdp", "csharp-console-mdp.mds");
-			
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			Assert.IsTrue (item is Solution);
-			
-			Solution sol = (Solution) item;
-			TestProjectsChecks.CheckBasicMdConsoleProject (sol);
-			string projectFile = ((Project)sol.Items [0]).FileName;
-			
-			BuildResult cr = item.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
-			Assert.IsNotNull (cr);
-			Assert.AreEqual (0, cr.ErrorCount);
-			Assert.AreEqual (0, cr.WarningCount);
-			
-			string solXml = Util.GetXmlFileInfoset (solFile);
-			string projectXml = Util.GetXmlFileInfoset (projectFile);
-			
-			sol.Save (Util.GetMonitor ());
-			
-			Assert.AreEqual (solXml, Util.GetXmlFileInfoset (solFile), "Saved solution file");
-			Assert.AreEqual (projectXml, Util.GetXmlFileInfoset (projectFile), "Saved project file");
-		}
-		
-		[Test()]
-		public void NestedSolutions()
-		{
-			string solFile = Util.GetSampleProject ("nested-solutions-mdp", "nested-solutions-mdp.mds");
-			
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			Assert.IsTrue (item is Solution);
-			
-			Solution sol = (Solution) item;
-			
-			BuildResult cr = item.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
-			Assert.IsNotNull (cr);
-			Assert.AreEqual (0, cr.ErrorCount);
-			Assert.AreEqual (0, cr.WarningCount);
-			Assert.AreEqual (6, cr.BuildCount);
-
-			string dir = Path.GetDirectoryName (solFile);
-			string solXml = Util.GetXmlFileInfoset (solFile);
-			string p1Xml = Util.GetXmlFileInfoset (dir, "console-project", "console-project.mdp");
-			string s1Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "nested-solution1.mds");
-			string s2Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution2.mds");
-			string plib1Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "library1", "library1.mdp");
-			string plib2Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "library2", "library2.mdp");
-			string p2Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "console-project2", "console-project2.mdp");
-			string s3Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "nested-solution3.mds");
-			string plib3Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library3", "library3.mdp");
-			string plib4Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library4", "library4.mdp");
-			
-			sol.Save (Util.GetMonitor ());
-			
-			string solXml2 = Util.GetXmlFileInfoset (solFile);
-			string p1Xml2 = Util.GetXmlFileInfoset (dir, "console-project", "console-project.mdp");
-			string s1Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "nested-solution1.mds");
-			string s2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution2.mds");
-			string plib1Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "library1", "library1.mdp");
-			string plib2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "library2", "library2.mdp");
-			string p2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "console-project2", "console-project2.mdp");
-			string s3Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "nested-solution3.mds");
-			string plib3Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library3", "library3.mdp");
-			string plib4Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library4", "library4.mdp");
-			
-			Assert.AreEqual (solXml, solXml2, "solXml");
-			Assert.AreEqual (p1Xml, p1Xml2, "p1Xml");
-			Assert.AreEqual (s1Xml, s1Xml2, "s1Xml");
-			Assert.AreEqual (s2Xml, s2Xml2, "s2Xml");
-			Assert.AreEqual (plib1Xml, plib1Xml2, "plib1Xml");
-			Assert.AreEqual (plib2Xml, plib2Xml2, "plib2Xml");
-			Assert.AreEqual (p2Xml, p2Xml2, "p2Xml");
-			Assert.AreEqual (s3Xml, s3Xml2, "s3Xml");
-			Assert.AreEqual (plib3Xml, plib3Xml2, "plib3Xml");
-			Assert.AreEqual (plib4Xml, plib4Xml2, "plib4Xml");
-		}
-		
-		[Test()]
-		public void CreateNestedSolutions()
-		{
-			Solution sol = TestProjectsChecks.CreateProjectWithFolders ("nested-solutions-md1");
-			sol.ConvertToFormat (Util.FileFormatMD1, true);
-			
-			sol.Save (Util.GetMonitor ());
-			
-			string solFile = Util.GetSampleProjectPath ("nested-solutions-mdp", "nested-solutions-mdp.mds");
-			string dir = Path.GetDirectoryName (solFile);
-			string solXml = Util.GetXmlFileInfoset (solFile);
-			string p1Xml = Util.GetXmlFileInfoset (dir, "console-project", "console-project.mdp");
-			string s1Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "nested-solution1.mds");
-			string s2Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution2.mds");
-			string plib1Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "library1", "library1.mdp");
-			string plib2Xml = Util.GetXmlFileInfoset (dir, "nested-solution1", "library2", "library2.mdp");
-			string p2Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "console-project2", "console-project2.mdp");
-			string s3Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "nested-solution3.mds");
-			string plib3Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library3", "library3.mdp");
-			string plib4Xml = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library4", "library4.mdp");
-			
-			dir = Path.GetDirectoryName (sol.FileName);
-			string solXml2 = Util.GetXmlFileInfoset (solFile);
-			string p1Xml2 = Util.GetXmlFileInfoset (dir, "console-project", "console-project.mdp");
-			string s1Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "nested-solution1.mds");
-			string s2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution2.mds");
-			string plib1Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "library1", "library1.mdp");
-			string plib2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution1", "library2", "library2.mdp");
-			string p2Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "console-project2", "console-project2.mdp");
-			string s3Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "nested-solution3.mds");
-			string plib3Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library3", "library3.mdp");
-			string plib4Xml2 = Util.GetXmlFileInfoset (dir, "nested-solution2", "nested-solution3", "library4", "library4.mdp");
-			
-			Assert.AreEqual (solXml, solXml2, "solXml");
-			Assert.AreEqual (p1Xml, p1Xml2, "p1Xml");
-			Assert.AreEqual (s1Xml, s1Xml2, "s1Xml");
-			Assert.AreEqual (s2Xml, s2Xml2, "s2Xml");
-			Assert.AreEqual (plib1Xml, plib1Xml2, "plib1Xml");
-			Assert.AreEqual (plib2Xml, plib2Xml2, "plib2Xml");
-			Assert.AreEqual (p2Xml, p2Xml2, "p2Xml");
-			Assert.AreEqual (s3Xml, s3Xml2, "s3Xml");
-			Assert.AreEqual (plib3Xml, plib3Xml2, "plib3Xml");
-			Assert.AreEqual (plib4Xml, plib4Xml2, "plib4Xml");
-		}
-		
 		[Test]
 		public void TestSaveWorkspace ()
 		{
@@ -182,31 +56,6 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (File.Exists (ws.FileName));
 			Assert.IsTrue (File.Exists (sol.FileName));
 			Assert.IsTrue (File.Exists (p.FileName));
-		}
-		
-		
-		[Test]
-		public void TestCreateLoadSaveConsoleProject ()
-		{
-			TestProjectsChecks.TestCreateLoadSaveConsoleProject ("MD1");
-		}
-		
-		[Test]
-		public void GenericProject ()
-		{
-			TestProjectsChecks.CheckGenericItemProject ("MD1");
-		}
-		
-		[Test]
-		public void TestLoadSaveSolutionFolders ()
-		{
-			TestProjectsChecks.TestLoadSaveSolutionFolders ("MD1");
-		}
-		
-		[Test]
-		public void TestLoadSaveResources ()
-		{
-			TestProjectsChecks.TestLoadSaveResources ("MD1");
 		}
 	}
 }

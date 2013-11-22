@@ -1,7 +1,0 @@
-<ExtensionModel>
-	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id="VS2003ProjectFileFormat"
-		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
-	</Extension>
-</ExtensionModel>
-

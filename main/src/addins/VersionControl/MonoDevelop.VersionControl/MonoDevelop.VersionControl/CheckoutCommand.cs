@@ -67,23 +67,9 @@ namespace MonoDevelop.VersionControl
 
 			string projectFn = null;
 			
-			string[] list = System.IO.Directory.GetFiles(path);
-			foreach (string str in list ) {
-				if (str.EndsWith (".mds", System.StringComparison.Ordinal)) {
-					projectFn = str;
-					break;
-				}
-			}
-			if ( projectFn == null ) {
-				foreach ( string str in list ) {
-					if (str.EndsWith (".mdp", System.StringComparison.Ordinal)) {
-						projectFn = str;
-						break;
-					}
-				}	
-			}
-			if ( projectFn == null ) {
-				foreach (string str in list ) {
+			string[] list = System.IO.Directory.GetFiles (path);
+			if (projectFn == null) {
+				foreach (string str in list) {
 					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
 						projectFn = str;
 						break;

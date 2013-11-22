@@ -253,7 +253,6 @@
     <Compile Include="MonoDevelop.Projects\MonoDeveloperFormatTests.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
-    <Compile Include="MonoDevelop.Projects\PackagingTests.cs" />
     <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />

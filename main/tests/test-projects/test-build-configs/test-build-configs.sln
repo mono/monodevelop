@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib1", "Lib1\Lib1.csproj", "{DAE0F5D0-50B0-4238-8FBA-46DE5F4D6284}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib2", "Lib2\Lib2.csproj", "{33FD65CB-FF5C-4B8D-BDBE-1326D2688B16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib3", "Lib3\Lib3.csproj", "{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib4", "Lib4\Lib4.csproj", "{ED11EE6A-C2E6-4909-97C0-4C817445D34B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33FD65CB-FF5C-4B8D-BDBE-1326D2688B16}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{33FD65CB-FF5C-4B8D-BDBE-1326D2688B16}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{33FD65CB-FF5C-4B8D-BDBE-1326D2688B16}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{33FD65CB-FF5C-4B8D-BDBE-1326D2688B16}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}.Debug|Any CPU.ActiveCfg = Debug+Extra|Any CPU
+		{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}.Debug|Any CPU.Build.0 = Debug+Extra|Any CPU
+		{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}.Release|Any CPU.ActiveCfg = Release+Extra|Any CPU
+		{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}.Release|Any CPU.Build.0 = Release+Extra|Any CPU
+		{DAE0F5D0-50B0-4238-8FBA-46DE5F4D6284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAE0F5D0-50B0-4238-8FBA-46DE5F4D6284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAE0F5D0-50B0-4238-8FBA-46DE5F4D6284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAE0F5D0-50B0-4238-8FBA-46DE5F4D6284}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED11EE6A-C2E6-4909-97C0-4C817445D34B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED11EE6A-C2E6-4909-97C0-4C817445D34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED11EE6A-C2E6-4909-97C0-4C817445D34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED11EE6A-C2E6-4909-97C0-4C817445D34B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Lib1\Lib1.csproj
+		name = test-build-configs
+	EndGlobalSection
+EndGlobal

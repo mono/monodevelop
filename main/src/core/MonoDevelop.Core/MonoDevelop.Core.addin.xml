@@ -129,11 +129,6 @@
 		<ExtensionNode name="DotNetProject" type="MonoDevelop.Projects.Extensions.DotNetProjectNode"/>
 		<ExtensionNode name="DotNetProjectSubtype" type="MonoDevelop.Projects.Extensions.DotNetProjectSubtypeNode"/>
 	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<Description>Serialization maps for the MonoDevelop 1.0 file format</Description>
-		<ExtensionNode name="SerializationMap" type="MonoDevelop.Projects.Extensions.SerializationMapNode"/>
-	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
 		<Description>Types for per-project policies language binding. These types must be serializable.</Description>
@@ -258,10 +253,6 @@
 		<Class id="InitialStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
 		<Class id="MidStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >

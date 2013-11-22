@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactBook", "ContactBook\ContactBook.csproj", "{73900FE9-EA37-44A6-B673-EDD62C6B755B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWidgets", "CustomWidgets\CustomWidgets.csproj", "{AF8B29A8-B968-4C13-8FFE-D795803BBAB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73900FE9-EA37-44A6-B673-EDD62C6B755B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73900FE9-EA37-44A6-B673-EDD62C6B755B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73900FE9-EA37-44A6-B673-EDD62C6B755B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73900FE9-EA37-44A6-B673-EDD62C6B755B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8B29A8-B968-4C13-8FFE-D795803BBAB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8B29A8-B968-4C13-8FFE-D795803BBAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8B29A8-B968-4C13-8FFE-D795803BBAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8B29A8-B968-4C13-8FFE-D795803BBAB9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = ContactBook\ContactBook.csproj
+		defaultDeployTarget = Install irectory
+		name = ContactBook
+		MakePkgConfig = False
+		MakeLibPC = True
+		DeployTargets = $0
+		$0.DeployTarget = $1
+		$1.Handler = MonoDevelop.DirectoryDeploy
+		$1.Name = Install irectory
+		$1.ctype = DirectoryDeployTarget
+		$0.DeployTarget = $2
+		$2.Handler = MonoDevelop.Autotools.Deployer
+		$2.Name = Release Tarball
+		$2.DefaultConfiguration = Debug
+		$2.ctype = TarballDeployTarget
+	EndGlobalSection
+EndGlobal

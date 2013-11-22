@@ -332,19 +332,10 @@
     <Compile Include="MonoDevelop.Projects.Extensions\IResourceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IPathHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1CustomDataItem.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1FileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionEntityItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\CombineConfiguration.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\CombineConfigurationEntry.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\CmbxFileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\PrjxFileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\CombineConfigurationSet.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\CombineStartupMode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\BuildActionDataType.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFileFormat.cs" />
@@ -463,6 +454,7 @@
     <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
     <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -488,9 +480,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frameworks\framework_NET_4_0.xml">
       <LogicalName>framework_NET_4_0.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="frameworks\framework_NET_4_5.xml">
       <LogicalName>framework_NET_4_5.xml</LogicalName>

@@ -119,7 +119,6 @@
     <Compile Include="gtk-gui\MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs" />
     <Compile Include="ChangeLogService.cs" />
     <Compile Include="ChangeLogPolicy.cs" />
-    <Compile Include="OldChangeLogData.cs" />
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
