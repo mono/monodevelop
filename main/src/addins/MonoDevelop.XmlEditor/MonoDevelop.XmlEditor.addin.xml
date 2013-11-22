@@ -1,12 +1,4 @@
-<Addin name        = "XML Editor"
-       id          = "XmlEditor"
-       namespace   = "MonoDevelop"
-       author      = "Matt Ward, Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://md-xed.sourceforge.net"
-       description = "XML Editor"
-       category    = "IDE extensions"
-       version     = "4.2">
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
@@ -19,13 +11,6 @@
 		<Import file="schemas/manifest.xsd" />
 		<Import file="schemas/nant.xsd" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2"/>
-		<Addin id="Ide" version="4.2"/>
-		<Addin id="DesignerSupport" version="4.2"/>
-		<Addin id="SourceEditor2" version="4.2"/>
-	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
 		<ExtensionNode name = "Association" type = "MonoDevelop.XmlEditor.XmlFileAssociationNode"/>
@@ -154,4 +139,5 @@
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="XmlSchemas" isDirectory="true" />
 	</Extension>
-</Addin>
+
+</ExtensionModel>

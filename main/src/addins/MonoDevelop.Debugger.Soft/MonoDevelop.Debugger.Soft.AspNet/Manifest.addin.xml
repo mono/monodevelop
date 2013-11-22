@@ -1,19 +1,5 @@
-<Addin id          = "MonoDevelop.Debugger.Soft.AspNet"
-       name        = "Mono Soft Debugger Support for ASP.NET"
-       author      = "Michael Hutchinson"
-       url         = "http://www.mono-project.com"
-       description = "Mono Soft Debugger Support for ASP.NET"
-       copyright   = "MIT X11"
-       category    = "Debugging"
-       version     = "4.2">
+<ExtensionModel>
 
-	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="4.2"/>
-		<Addin id="MonoDevelop.Debugger" version="4.2"/>
-		<Addin id="MonoDevelop.AspNet" version="4.2"/>
-		<Addin id="MonoDevelop.Debugger.Soft" version="4.2"/>
-	</Dependencies>
-	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
 			id="Mono.Debugger.Soft.AspNet"
@@ -21,4 +7,5 @@
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly"
 			type="MonoDevelop.Debugger.Soft.AspNet.AspNetSoftDebuggerEngine" />
 	</Extension>
-</Addin>
+
+</ExtensionModel>
