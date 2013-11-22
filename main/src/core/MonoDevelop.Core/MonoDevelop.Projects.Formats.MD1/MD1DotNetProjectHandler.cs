@@ -28,16 +28,12 @@
 using System;
 using System.IO;
 using System.Diagnostics;
-using System.Globalization;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.Text.RegularExpressions;
-using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.Formats.MSBuild;
 using Microsoft.Build.BuildEngine;
 	
 namespace MonoDevelop.Projects.Formats.MD1

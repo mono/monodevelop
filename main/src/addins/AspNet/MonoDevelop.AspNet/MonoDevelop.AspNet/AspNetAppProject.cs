@@ -83,17 +83,6 @@ namespace MonoDevelop.AspNet
 		{
 			base.OnEndLoad ();
 			
-			if (FileFormat.Id == "MD1") {
-				foreach (AspNetAppProjectConfiguration conf in Configurations) {
-					//migrate settings once
-					if (!conf.nonStandardOutputDirectory) {
-						conf.nonStandardOutputDirectory = true;
-						conf.OutputDirectory = String.IsNullOrEmpty (BaseDirectory)? "bin" : Path.Combine (BaseDirectory, "bin");
-					}
-				}
-			}
-			base.OnEndLoad ();
-			
 			//FIX: old version of MD didn't set CompileTarget to Library for ASP.NET projects, 
 			// but implicitly assumed they were always libraries. This is not compatible with VS/MSBuild,
 			// so we automatically "upgrade" this value. 

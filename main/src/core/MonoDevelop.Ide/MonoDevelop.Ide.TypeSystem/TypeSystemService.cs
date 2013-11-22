@@ -2162,7 +2162,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (asmLocker) {
 					if (assembly != null)
 						return;
-					assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+					assembly = new DefaultUnresolvedAssembly (fileName);
+
+					assembly = LoadAssembly () ?? assembly; 
+
 					OnLoad (EventArgs.Empty);
 				}
 			}
@@ -2496,9 +2499,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static Dictionary<string, UnresolvedAssemblyProxy> cachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> ();
 
+		/// <summary>
+		/// Force the update of a project context. Note: This method blocks the thread.
+		/// It was just implemented for use inside unit tests.
+		/// </summary>
 		public static void ForceUpdate (ProjectContentWrapper context)
 		{
 			CheckModifiedFiles ();
+			while (!context.IsLoaded) {
+				Thread.Sleep (10);
+			}
 		}
 
 		#region Parser queue

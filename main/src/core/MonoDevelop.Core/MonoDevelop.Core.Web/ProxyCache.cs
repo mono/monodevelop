@@ -14,15 +14,6 @@ namespace MonoDevelop.Core.Web
 		static readonly IWebProxy originalSystemProxy = WebRequest.GetSystemWebProxy ();
 
 		readonly ConcurrentDictionary<Uri, WebProxy> cache = new ConcurrentDictionary<Uri, WebProxy> ();
-		static readonly Lazy<ProxyCache> instance = new Lazy<ProxyCache> (() => new ProxyCache ());
-
-		public static ProxyCache Instance {
-			get {
-				return instance.Value;
-			}
-		}
-
-		ProxyCache () {}
 
 		public IWebProxy GetProxy (Uri uri)
 		{

@@ -21,9 +21,9 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <AssemblyName>MonoDeveloperExtensions_nunit</AssemblyName>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDeveloperExtensions\MonoDeveloperExtensions_nunit.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,8 +37,8 @@
     </Execution>
     <AssemblyName>NUnit</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDeveloperExtensions\NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDeveloperExtensions.csproj">

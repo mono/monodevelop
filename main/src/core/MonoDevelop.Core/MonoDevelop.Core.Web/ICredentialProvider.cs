@@ -10,7 +10,7 @@ namespace MonoDevelop.Core.Web
 	public interface ICredentialProvider
 	{
 		/// <summary>
-		/// Returns CredentialState state that let's the consumer know if ICredentials
+		/// Returns CredentialState state that lets the consumer know if ICredentials
 		/// were discovered by the ICredentialProvider. The credentials argument is then
 		/// populated with the discovered valid credentials that can be used for the given Uri.
 		/// The proxy instance if passed will be used to ensure that the request goes through the proxy

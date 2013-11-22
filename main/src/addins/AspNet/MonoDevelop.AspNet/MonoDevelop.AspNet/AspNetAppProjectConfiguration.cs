@@ -51,9 +51,6 @@ namespace MonoDevelop.AspNet
 		[ItemProperty ("AspNet/DisableCodeBehindGeneration", DefaultValue = false)]
 		bool disableCodeBehindGeneration = false;
 		
-		//MD1 compatibility
-		internal bool nonStandardOutputDirectory = false;
-		
 		public bool DisableCodeBehindGeneration {
 			get { return disableCodeBehindGeneration; }
 			set { disableCodeBehindGeneration = value; }

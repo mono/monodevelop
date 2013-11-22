@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, sol.Items.Count);
 			Assert.IsTrue (sol.Items [0] is DotNetProject, "Project is DotNetProject");
 			DotNetProject project = (DotNetProject) sol.Items [0];
-			Assert.AreEqual ("csharp-console-mdp", project.Name);
+			Assert.AreEqual ("csharp-console", project.Name);
 			
 			// Check files
 			
@@ -242,101 +242,6 @@ namespace Foo {
 			
 			string pfile = Path.Combine (dir, name);
 			project.FileName = pfile;
-		}
-		
-		public static Solution CreateProjectWithFolders (string hint)
-		{
-			string dir = Util.CreateTmpDir (hint);
-			Directory.CreateDirectory (Util.Combine (dir, "console-project"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution1"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution1", "library1"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution1", "library2"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution2"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution2", "console-project2"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution2", "nested-solution3"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution2", "nested-solution3", "library3"));
-			Directory.CreateDirectory (Util.Combine (dir, "nested-solution2", "nested-solution3", "library4"));
-			
-			Solution sol = new Solution ();
-			sol.FileName = Path.Combine (dir, "nested-solutions-mdp");
-			SolutionConfiguration scDebug = sol.AddConfiguration ("Debug", true);
-			SolutionConfiguration scRelease = sol.AddConfiguration ("Release", true);
-			
-			DotNetProject project1 = CreateProject (Util.Combine (dir, "console-project"), "C#", "console-project");
-			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "Program.cs")));
-			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			sol.RootFolder.Items.Add (project1);
-			
-			// nested-solution1
-			
-			SolutionFolder folder1 = new SolutionFolder ();
-			sol.RootFolder.Items.Add (folder1);
-			folder1.Name = "nested-solution1";
-			
-			DotNetProject projectLib1 = CreateProject (Util.Combine (dir, "nested-solution1", "library1"), "C#", "library1");
-			projectLib1.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "MyClass.cs")));
-			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			projectLib1.CompileTarget = CompileTarget.Library;
-			folder1.Items.Add (projectLib1);
-			
-			DotNetProject projectLib2 = CreateProject (Util.Combine (dir, "nested-solution1", "library2"), "C#", "library2");
-			projectLib2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "MyClass.cs")));
-			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			projectLib2.CompileTarget = CompileTarget.Library;
-			folder1.Items.Add (projectLib2);
-			
-			// nested-solution2
-
-			SolutionFolder folder2 = new SolutionFolder ();
-			folder2.Name = "nested-solution2";
-			sol.RootFolder.Items.Add (folder2);
-			
-			DotNetProject project2 = CreateProject (Util.Combine (dir, "nested-solution2", "console-project2"), "C#", "console-project2");
-			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Program.cs")));
-			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			project2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			
-			// nested-solution3
-
-			SolutionFolder folder3 = new SolutionFolder ();
-			folder3.Name = "nested-solution3";
-			
-			DotNetProject projectLib3 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library3"), "C#", "library3");
-			projectLib3.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "MyClass.cs")));
-			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			projectLib3.CompileTarget = CompileTarget.Library;
-			folder3.Items.Add (projectLib3);
-			
-			DotNetProject projectLib4 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library4"), "C#", "library4");
-			projectLib4.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "MyClass.cs")));
-			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "Properties", "AssemblyInfo.cs")));
-			projectLib4.CompileTarget = CompileTarget.Library;
-			folder3.Items.Add (projectLib4);
-			
-			folder2.Items.Add (folder3);
-			folder2.Items.Add (project2);
-			
-			string file = Path.Combine (dir, "TestSolution.sln");
-			sol.FileName = file;
-			
-			project1.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project1.References.Add (new ProjectReference (projectLib1));
-			project1.References.Add (new ProjectReference (projectLib2));
-			project1.References.Add (new ProjectReference (projectLib3));
-			project1.References.Add (new ProjectReference (projectLib4));
-			
-			project2.References.Add (new ProjectReference (projectLib3));
-			project2.References.Add (new ProjectReference (projectLib4));
-			
-			Assert.AreEqual (2, sol.Configurations.Count);
-			Assert.AreEqual (6, scDebug.Configurations.Count);
-			Assert.AreEqual (6, scRelease.Configurations.Count);
-			
-			return sol;
 		}
 		
 		public static void CheckGenericItemProject (string fileFormat)

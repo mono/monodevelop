@@ -21,10 +21,6 @@
 			import="$(MSBuildBinPath)\Microsoft.VisualBasic.targets"
 			resourceHandler="MonoDevelop.VBNetBinding.VBNetResourceIdBuilder"/>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
-	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "VBNet"

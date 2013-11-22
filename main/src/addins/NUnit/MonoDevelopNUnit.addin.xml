@@ -192,11 +192,6 @@
   	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "NUnitTestClass" resource = "NUnitTestClass.xft.xml"/>
 	</Extension>
-  
-	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id="NUnitAssemblyGroupFileFormat"
-		            class="MonoDevelop.NUnit.NUnitAssemblyGroupFileFormat"/>
-	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />

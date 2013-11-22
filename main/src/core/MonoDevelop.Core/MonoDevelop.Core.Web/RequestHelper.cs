@@ -13,9 +13,9 @@ namespace Xamarin.Components.Ide.Web
 		/// </summary>
 		internal static WebResponse GetResponse (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest)
 		{
-			var proxyCache = WebService.Instance.ProxyCache;
-			var credentialCache = WebService.Instance.CredentialCache;
-			var credentialProvider = WebService.Instance.CredentialProvider;
+			var proxyCache = WebService.ProxyCache;
+			var credentialCache = WebService.CredentialCache;
+			var credentialProvider = WebService.CredentialProvider;
 
 			HttpWebRequest previousRequest = null;
 			IHttpWebResponse previousResponse = null;

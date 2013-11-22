@@ -23,40 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Linq;
 
 using Mono.Addins;
+using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
-	public class WebService
+	public static class WebService
 	{
 		const string WebCredentialProvidersPath = "/MonoDevelop/Core/WebCredentialProviders";
 
-		static readonly Lazy<WebService> instance = new Lazy<WebService> (() => new WebService ());
+		public static IProxyCache ProxyCache { get; private set; }
+		public static ICredentialCache CredentialCache { get; private set; }
+		public static ICredentialProvider CredentialProvider { get; private set; }
 
-		public static WebService Instance {
-			get {
-				return instance.Value;
+		internal static void Initialize ()
+		{
+			CredentialCache = new CredentialStore ();
+			ProxyCache = new ProxyCache ();
+			CredentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
+
+			if (CredentialProvider == null) {
+				LoggingService.LogWarning ("No proxy credential provider was found");
+
 			}
 		}
 
-		public IProxyCache ProxyCache { get; set; }
-		public ICredentialCache CredentialCache { get; set; }
-		public ICredentialProvider CredentialProvider { get; set; }
-
-		WebService () {}
-
-		public static void Initialize ()
+		class NullCredentialsProvider : ICredentialProvider
 		{
-			// We can access extension points now, so we need to get the credential provider, which is platform-specific.
-			// The credential cache and proxy cache are pure managed implementation.
-			Instance.CredentialCache = CredentialStore.Instance;
-			Instance.ProxyCache = Web.ProxyCache.Instance;
-
-			// Get the first registered credential provider
-			Instance.CredentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
+			public ICredentials GetCredentials (
+				Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying)
+			{
+				return null;
+			}
 		}
 	}
 }

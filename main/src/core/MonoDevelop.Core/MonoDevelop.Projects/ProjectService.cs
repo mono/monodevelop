@@ -502,22 +502,19 @@ namespace MonoDevelop.Projects
 			}
 			throw new InvalidOperationException ("Project type '" + type + "' not found");
 		}
-		
+
+		//TODO: find solution that contains the project if possible
 		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
 		{
 			// First of all, check if a solution with the same name already exists
 			
 			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
 			if (formats.Length == 0)
-				formats = new FileFormat [] { DefaultFileFormat };
+				formats = new  [] { DefaultFileFormat };
 			
 			Solution tempSolution = new Solution ();
 			
-			FileFormat solutionFileFormat;
-			if (formats [0].CanWrite (tempSolution))
-				solutionFileFormat = formats [0];
-			else
-				solutionFileFormat = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.FileFormat;
+			FileFormat solutionFileFormat = formats.FirstOrDefault (f => f.CanWrite (tempSolution)) ?? DefaultFileFormat;
 			
 			string solFileName = solutionFileFormat.GetValidFileName (tempSolution, filename);
 			
