@@ -116,7 +116,62 @@ namespace Mono.TextEditor.Vi
 		}
 		
 		#endregion
-		
+
+		private static bool OffsetIsWithinBounds (TextDocument doc, int offset)
+		{
+			return (offset >= 0 && offset <= doc.TextLength - 1);
+		}
+
+		public static int FindNextSubwordEndOffset (TextDocument doc, int offset)
+		{
+			int myoffset = offset + 1;
+
+			if (!OffsetIsWithinBounds (doc, myoffset)) { 
+				return myoffset; 
+			}
+
+			char c = doc.GetCharAt (myoffset);
+			// skip whitespace
+			while (char.IsWhiteSpace (c)) {
+				if (OffsetIsWithinBounds (doc, ++myoffset)) { 
+					c = doc.GetCharAt (myoffset);
+				} else {
+					return offset;
+				}
+			}
+			var initialClass = ViWordFindStrategy.GetCharacterClass (c);
+			while (ViWordFindStrategy.GetCharacterClass (c) == initialClass && 0 <= myoffset && doc.TextLength-1 > myoffset) {
+				c = doc.GetCharAt (++myoffset);
+			}
+
+			return System.Math.Max (offset, myoffset - 1);
+		}
+
+		public static int FindNextWordEndOffset (TextDocument doc, int offset)
+		{
+			int myoffset = offset + 1;
+
+			if (!OffsetIsWithinBounds (doc, myoffset)) { 
+				return myoffset; 
+			}
+
+			char c = doc.GetCharAt (myoffset);
+			// skip whitespace
+			while (char.IsWhiteSpace (c)) {
+				if (OffsetIsWithinBounds (doc, ++myoffset)) { 
+					c = doc.GetCharAt (myoffset);
+				} else {
+					return offset;
+				}
+			}
+
+			while (!char.IsWhiteSpace (c) && 0 <= myoffset && doc.TextLength-1 > myoffset) {
+				c = doc.GetCharAt (++myoffset);
+			}
+
+			return System.Math.Max (offset, myoffset - 1);
+		}	
+
 		/// <summary>
 		/// Gets the character class for a given character.
 		/// </summary>
