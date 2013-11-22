@@ -2441,7 +2441,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (SearchCommands.FindPrevious)]
 		void UpdateFindNextAndPrev (CommandInfo cinfo)
 		{
-			cinfo.Enabled = !string.IsNullOrEmpty (widget.TextEditor.SearchPattern);
+			cinfo.Enabled = !string.IsNullOrEmpty (SearchAndReplaceOptions.SearchPattern);
 		}
 
 		[CommandHandler (SearchCommands.FindPrevious)]
