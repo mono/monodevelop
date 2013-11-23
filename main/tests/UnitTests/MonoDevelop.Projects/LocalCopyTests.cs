@@ -32,6 +32,8 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -198,6 +200,52 @@ namespace MonoDevelop.Projects
 		public void CheckLocalCopyBuildWarnings ()
 		{
 			// See commented assert in AssertCleanBuild
+		}
+
+		[Test]
+		public void LocalCopyDefault ()
+		{
+			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
+
+			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) item;
+			var p = (DotNetProject)sol.Items [0];
+
+			var ar = p.References.First (r => r.Reference.Contains ("gtk"));
+			Assert.AreEqual (false, ar.LocalCopy);
+			ar.LocalCopy = true;
+			Assert.AreEqual (true, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("System.Data"));
+			Assert.AreEqual (false, ar.LocalCopy);
+			ar.LocalCopy = true;
+			Assert.AreEqual (true, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("LibProject"));
+			Assert.AreEqual (true, ar.LocalCopy);
+			ar.LocalCopy = false;
+			Assert.AreEqual (false, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("Xwt"));
+			Assert.AreEqual (true, ar.LocalCopy);
+			ar.LocalCopy = false;
+			Assert.AreEqual (false, ar.LocalCopy);
+
+			sol.Save (new NullProgressMonitor ());
+			sol.Build (new NullProgressMonitor (), "Debug");
+
+			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
+
+			AssertOutputFiles (sol, "ConsoleProject", "Debug", new string[] {
+				"ConsoleProject.exe",
+				"ConsoleProject" + exeDebug,
+				"System.Data.dll",
+				"gtk-sharp.dll"
+			});
+
+			string projectXml1 = Util.GetXmlFileInfoset (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj.saved"));
+			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+			Assert.AreEqual (projectXml1, projectXml2);
 		}
 	}
 }

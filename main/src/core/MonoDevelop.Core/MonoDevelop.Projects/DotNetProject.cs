@@ -570,7 +570,7 @@ namespace MonoDevelop.Projects
 							list.Add (mdbFile, copyIfNewer);
 					}
 				}
-				else if (projectReference.ReferenceType == ReferenceType.Custom) {
+				else {
 					foreach (string refFile in projectReference.GetReferencedFileNames (configuration))
 						list.Add (refFile);
 				}

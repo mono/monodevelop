@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects
 		ReferenceType referenceType = ReferenceType.Custom;
 		DotNetProject ownerProject;
 		string reference = String.Empty;
-		bool localCopy = true;
+		bool? localCopy;
 		
 		// A project may reference assemblies which are not available
 		// in the system where it is opened. For example, opening
@@ -117,14 +117,13 @@ namespace MonoDevelop.Projects
 		{
 			referenceType = ReferenceType.Project;
 			reference = referencedProject.Name;
-			specificVersion = localCopy = true;
+			specificVersion = true;
 		}
 		
 		public ProjectReference (SystemAssembly asm)
 		{
 			referenceType = ReferenceType.Package;
 			reference = asm.FullName;
-			localCopy = false;
 			if (asm.Package.IsFrameworkPackage)
 				specificVersion = false;
 			if (!asm.Package.IsGacPackage)
@@ -184,16 +183,30 @@ namespace MonoDevelop.Projects
 		
 		public bool LocalCopy {
 			get {
-				return localCopy;
+				// When not explicitly set, the default value of LocalCopy depends on the type of reference.
+				// For project and file references the default is true. For framework and package assemblies
+				// (including GAC) the default is false
+
+				if (localCopy.HasValue)
+					return localCopy.Value;
+				return DefaultLocalCopy;
 			}
 			set {
 				localCopy = value;
+				if (ownerProject != null)
+					ownerProject.NotifyModified (null);
 			}
 		}
 		
+		internal bool DefaultLocalCopy {
+			get {
+				return referenceType != ReferenceType.Package;
+			}
+		}
+
 		public bool CanSetLocalCopy {
 			get {
-				return cachedPackage == null || !cachedPackage.IsFrameworkPackage;
+				return true;
 			}
 		}
 

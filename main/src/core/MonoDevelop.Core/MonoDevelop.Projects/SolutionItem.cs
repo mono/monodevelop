@@ -898,7 +898,7 @@ namespace MonoDevelop.Projects
 		/// <param name='hint'>
 		/// Hint about which part of the solution item has been modified. This will typically be the property name.
 		/// </param>
-		protected void NotifyModified (string hint)
+		internal protected void NotifyModified (string hint)
 		{
 			if (!Loading)
 				ItemHandler.OnModified (hint);
