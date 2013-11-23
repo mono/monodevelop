@@ -62,6 +62,7 @@
                 <child>
                   <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                     <property name="MemberName" />
+                    <property name="DisplayAsRelativePath">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -414,6 +415,7 @@
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="entry_location">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
@@ -1143,6 +1145,7 @@
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">3</property>
@@ -1846,6 +1849,7 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="browseButton">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -3596,6 +3600,7 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.FolderEntry" id="projectFolderEntry">
                         <property name="MemberName" />
+                        <property name="DisplayAsRelativePath">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -5767,6 +5772,7 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -7749,6 +7755,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="strongNameFileEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7822,6 +7829,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7955,6 +7963,7 @@ All solutions</property>
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="outputPathEntry">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
@@ -9095,6 +9104,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">2</property>
@@ -10062,6 +10072,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
                 <signal name="PathChanged" handler="OnFolderentryPathChanged" />
               </widget>
               <packing>
@@ -11086,6 +11097,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -11328,6 +11340,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
                             <property name="BrowserTitle">Select Policy Set File</property>
+                            <property name="DisplayAsRelativePath">False</property>
                             <signal name="PathChanged" handler="OnFileEntryPathChanged" />
                           </widget>
                           <packing>

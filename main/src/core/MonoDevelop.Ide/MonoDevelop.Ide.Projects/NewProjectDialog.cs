@@ -403,9 +403,10 @@ namespace MonoDevelop.Ide.Projects {
 			string location = ProjectLocation;
 
 			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
-			
+
 			if (
-				!FileService.IsValidPath (solution) || 
+				(CreateSolutionDirectory &&
+				!FileService.IsValidPath (solution)) || 
 			    !FileService.IsValidFileName(name) ||
 				name.IndexOf (' ') >= 0 ||
 				!FileService.IsValidPath(location))
