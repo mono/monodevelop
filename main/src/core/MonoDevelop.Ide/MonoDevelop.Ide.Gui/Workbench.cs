@@ -478,7 +478,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-					GettextCatalog.GetString ("Opening {0}", info.FileName),
+					GettextCatalog.GetString ("Opening {0}", info.Project != null ?
+						info.FileName.ToRelative (info.Project.ParentSolution.BaseDirectory) :
+						info.FileName),
 					Stock.StatusSolutionOperation,
 					true
 				);
