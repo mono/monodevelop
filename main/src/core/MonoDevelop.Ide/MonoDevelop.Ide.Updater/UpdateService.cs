@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Updater
 	public static class UpdateService
 	{
 		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (3);
+		static readonly string updaterPath = "/MonoDevelop/Ide/Updater/UpdateHandlers";
 
 		static UpdateService ()
 		{
@@ -46,6 +47,14 @@ namespace MonoDevelop.Ide.Updater
 		static void ScheduleUpdateRun ()
 		{
 			new Timer (_ => CheckForUpdates (true), null, AutoUpdateSpan, AutoUpdateSpan);
+		}
+
+		public static bool HasRegisteredIDEUpdaters {
+			get {
+				var handlers = AddinManager.GetExtensionObjects (updaterPath);
+				// Do not include Addin Updater in this.
+				return handlers.Length > 1;
+			}
 		}
 		
 		public static bool AutoCheckForUpdates {
@@ -132,13 +141,11 @@ namespace MonoDevelop.Ide.Updater
 		{
 			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			PropertyService.SaveProperties ();
-			var handlers = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/Updater/UpdateHandlers");
+			var handlers = AddinManager.GetExtensionObjects (updaterPath);
 			
 			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-software-update"); 
 
-			Thread t = new Thread (delegate () {
-				CheckUpdates (mon, handlers, automatic);
-			});
+			Thread t = new Thread (() => CheckUpdates (mon, handlers, automatic));
 			t.Name = "Addin updater";
 			t.Start ();
 		}

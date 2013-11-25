@@ -49,6 +49,11 @@ namespace MonoDevelop.Ide.Updater
 		{
 			UpdateService.CheckForUpdates ();
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = UpdateService.HasRegisteredIDEUpdaters;
+		}
 	}
 }
 
