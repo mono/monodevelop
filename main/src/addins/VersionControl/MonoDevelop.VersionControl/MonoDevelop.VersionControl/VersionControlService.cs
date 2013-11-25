@@ -544,7 +544,10 @@ namespace MonoDevelop.VersionControl
 						repo.Add (v.LocalPath, false, monitor);
 				}
 			}
-			
+
+			if (entry is SolutionFolder && files.Count == 1)
+				return;
+
 			NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
 		}
 		
