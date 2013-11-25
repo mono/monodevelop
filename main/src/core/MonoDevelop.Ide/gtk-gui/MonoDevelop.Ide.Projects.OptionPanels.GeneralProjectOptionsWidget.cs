@@ -30,10 +30,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox27;
 		private global::Gtk.Label label50;
 		private global::Gtk.CheckButton autoInsertNewFilesCheckButton;
-		private global::Gtk.Label msbuildHeaderLabel;
-		private global::Gtk.HBox msbuildOptionsSection;
-		private global::Gtk.Label label51;
-		private global::Gtk.CheckButton msbuildCheck;
 
 		protected virtual void Build ()
 		{
@@ -289,44 +285,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w25.Position = 1;
 			w25.Expand = false;
 			w25.Fill = false;
-			// Container child vbox40.Gtk.Box+BoxChild
-			this.msbuildHeaderLabel = new global::Gtk.Label ();
-			this.msbuildHeaderLabel.Name = "msbuildHeaderLabel";
-			this.msbuildHeaderLabel.Xalign = 0F;
-			this.msbuildHeaderLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Build Engine</b>");
-			this.msbuildHeaderLabel.UseMarkup = true;
-			this.msbuildHeaderLabel.UseUnderline = true;
-			this.vbox40.Add (this.msbuildHeaderLabel);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox40 [this.msbuildHeaderLabel]));
-			w26.Position = 2;
-			w26.Expand = false;
-			w26.Fill = false;
-			// Container child vbox40.Gtk.Box+BoxChild
-			this.msbuildOptionsSection = new global::Gtk.HBox ();
-			this.msbuildOptionsSection.Name = "msbuildOptionsSection";
-			// Container child msbuildOptionsSection.Gtk.Box+BoxChild
-			this.label51 = new global::Gtk.Label ();
-			this.label51.WidthRequest = 18;
-			this.label51.Name = "label51";
-			this.msbuildOptionsSection.Add (this.label51);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.msbuildOptionsSection [this.label51]));
-			w27.Position = 0;
-			w27.Expand = false;
-			w27.Fill = false;
-			// Container child msbuildOptionsSection.Gtk.Box+BoxChild
-			this.msbuildCheck = new global::Gtk.CheckButton ();
-			this.msbuildCheck.Name = "msbuildCheck";
-			this.msbuildCheck.Label = global::Mono.Unix.Catalog.GetString ("Use MSBuild build engine (unsupported for this project type)");
-			this.msbuildCheck.DrawIndicator = true;
-			this.msbuildCheck.UseUnderline = true;
-			this.msbuildOptionsSection.Add (this.msbuildCheck);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.msbuildOptionsSection [this.msbuildCheck]));
-			w28.Position = 1;
-			this.vbox40.Add (this.msbuildOptionsSection);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox40 [this.msbuildOptionsSection]));
-			w29.Position = 3;
-			w29.Expand = false;
-			w29.Fill = false;
 			this.Add (this.vbox40);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
