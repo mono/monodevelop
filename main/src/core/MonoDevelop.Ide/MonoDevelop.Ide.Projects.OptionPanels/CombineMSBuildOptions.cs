@@ -57,11 +57,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				GettextCatalog.GetString ("Use MSBuild build engine (unsupported for this project type)")) {
 				Active = ConfiguredProject.UseMSBuildEngine ?? byDefault
 			};
-			var hbox = new Xwt.HBox ();
-			// Use the same hack as in other pads. TODO: Change it in all.
-			hbox.PackStart (new Xwt.Label {
-				WidthRequest = 18
-			});
+			var hbox = new Xwt.HBox {
+				MarginLeft = 18,
+				Spacing = 6
+			};
 			hbox.PackStart (checkMSBuild);
 			box.PackStart (hbox);
 			box.Show ();
