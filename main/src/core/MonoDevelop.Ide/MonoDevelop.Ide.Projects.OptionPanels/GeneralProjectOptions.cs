@@ -28,9 +28,6 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 using Gtk;
 using MonoDevelop.Projects;
-using System.Runtime.InteropServices;
-using MonoDevelop.Projects.Formats.MSBuild;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -67,29 +64,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			projectNameEntry.Text = project.Name;
 			projectDescriptionTextView.Buffer.Text = project.Description;
-			
-			// TODO msbuild Move to build panel?
+
 			if (project is DotNetProject) {
 				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
-
-				bool byDefault, require;
-				MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
-				if (require) {
-					this.msbuildOptionsSection.Visible = false;
-					this.msbuildHeaderLabel.Visible = false;
-				} else {
-					this.msbuildCheck.Active = project.UseMSBuildEngine ?? byDefault;
-					if (byDefault) {
-						msbuildCheck.Label = GettextCatalog.GetString ("Use MSBuild build engine (recommended for this project type)");
-					} else {
-						msbuildCheck.Label = GettextCatalog.GetString ("Use MSBuild build engine (unsupported for this project type)");
-					}
-				}
 			} else {
 				defaultNamespaceLabel.Visible = false;
 				projectDefaultNamespaceEntry.Visible = false;
-				this.msbuildOptionsSection.Visible = false;
-				this.msbuildHeaderLabel.Visible = false;
 			}
 			
 			switch (project.NewFileSearch) 
@@ -134,17 +114,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			project.Description = projectDescriptionTextView.Buffer.Text;
 			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
-
-				bool byDefault, require;
-				MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
-				if (!require) {
-					var active = msbuildCheck.Active;
-					if (active == byDefault) {
-						project.UseMSBuildEngine = null;
-					} else {
-						project.UseMSBuildEngine = active;
-					}
-				}
 			}
 			
 			if (newFilesOnLoadCheckButton.Active) {

@@ -62,6 +62,7 @@
                 <child>
                   <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                     <property name="MemberName" />
+                    <property name="DisplayAsRelativePath">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">2</property>
@@ -414,6 +415,7 @@
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="entry_location">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
@@ -1143,6 +1145,7 @@
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">3</property>
@@ -1846,6 +1849,7 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="browseButton">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -3596,6 +3600,7 @@ Diagnostic</property>
                     <child>
                       <widget class="MonoDevelop.Components.FolderEntry" id="projectFolderEntry">
                         <property name="MemberName" />
+                        <property name="DisplayAsRelativePath">False</property>
                       </widget>
                       <packing>
                         <property name="Position">1</property>
@@ -5767,6 +5772,7 @@ Diagnostic</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -7749,6 +7755,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FileEntry" id="strongNameFileEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7822,6 +7829,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderEntry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -7955,6 +7963,7 @@ All solutions</property>
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="outputPathEntry">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
@@ -8605,7 +8614,7 @@ All solutions</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget" design-size="561 389">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget" design-size="561 328">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -8987,21 +8996,6 @@ All solutions</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="msbuildHeaderLabel">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Build Engine&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-            <property name="UseUnderline">True</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.HBox" id="msbuildOptionsSection">
             <property name="MemberName" />
             <child>
@@ -9016,29 +9010,13 @@ All solutions</property>
                 <property name="Fill">False</property>
               </packing>
             </child>
-            <child>
-              <widget class="Gtk.CheckButton" id="msbuildCheck">
-                <property name="MemberName" />
-                <property name="Label" translatable="yes">Use MSBuild build engine (unsupported for this project type)</property>
-                <property name="DrawIndicator">True</property>
-                <property name="HasLabel">True</property>
-                <property name="UseUnderline">True</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">2</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
@@ -9095,6 +9073,7 @@ All solutions</property>
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
               </widget>
               <packing>
                 <property name="Position">2</property>
@@ -10062,6 +10041,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
+                <property name="DisplayAsRelativePath">False</property>
                 <signal name="PathChanged" handler="OnFolderentryPathChanged" />
               </widget>
               <packing>
@@ -11086,6 +11066,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -11328,6 +11309,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                           <widget class="MonoDevelop.Components.FileEntry" id="fileEntry">
                             <property name="MemberName" />
                             <property name="BrowserTitle">Select Policy Set File</property>
+                            <property name="DisplayAsRelativePath">False</property>
                             <signal name="PathChanged" handler="OnFileEntryPathChanged" />
                           </widget>
                           <packing>
