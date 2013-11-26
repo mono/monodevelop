@@ -24,8 +24,8 @@
     </Execution>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\AssemblyBrowser\MonoDevelop.AssemblyBrowser.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,8 +39,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\DisplayBindings\AssemblyBrowser\MonoDevelop.AssemblyBrowser.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />

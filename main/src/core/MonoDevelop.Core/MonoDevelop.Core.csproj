@@ -51,8 +51,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>DEBUG</DefineConstants>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -65,8 +65,8 @@
     </Execution>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BUILD_REVISION)' != ''">
     <DefineConstants>$(DefineConstants);ENABLE_RAYGUN</DefineConstants>
