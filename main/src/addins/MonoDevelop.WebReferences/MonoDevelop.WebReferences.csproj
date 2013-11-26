@@ -22,8 +22,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.WebReferences\MonoDevelop.WebReferences.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,8 +36,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.WebReferences\MonoDevelop.WebReferences.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

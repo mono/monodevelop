@@ -18,9 +18,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\GnomePlatform.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>bin\Release\GnomePlatform.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
