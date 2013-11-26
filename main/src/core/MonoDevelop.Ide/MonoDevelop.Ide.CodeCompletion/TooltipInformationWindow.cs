@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		MonoDevelop.Components.FixedWidthWrapLabel headlabel;
+		Label headlabel;
 		public bool Multiple{
 			get {
 				return overloads.Count > 1;
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			var w = Math.Max (headlabel.WidthRequest, headlabel.RealWidth);
+			var w = Math.Max (headlabel.WidthRequest, headlabel.Allocation.Width);
 			requisition.Width = (int)Math.Max (w + ContentBox.LeftPadding + ContentBox.RightPadding, requisition.Width);
 		}
 
@@ -109,13 +109,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
-				headlabel.BreakOnCamelCasing = false;
-				headlabel.BreakOnPunctuation = false;
+//				headlabel.BreakOnCamelCasing = false;
+//				headlabel.BreakOnPunctuation = false;
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
 
 				if (Theme.DrawPager && overloads.Count > 1) {
-					headlabel.WidthRequest = headlabel.RealWidth + 70;
+					headlabel.WidthRequest = headlabel.Allocation.Width + 70;
 				} else {
 					headlabel.WidthRequest = -1;
 				}
@@ -128,11 +128,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
-					var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-					contentLabel.Wrap = Pango.WrapMode.WordChar;
-					contentLabel.BreakOnCamelCasing = true;
-					contentLabel.MaxWidth = 400;
-					contentLabel.BreakOnPunctuation = true;
+					var contentLabel = new Label ();
+					contentLabel.Xalign = 0;
+					contentLabel.LineWrapMode = Pango.WrapMode.WordChar;
+					contentLabel.WidthChars = 40;
+//					contentLabel.BreakOnCamelCasing = true;
+//					contentLabel.BreakOnPunctuation = true;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
@@ -188,14 +189,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headlabel.Markup = "";
 			current_overload = 0;
 		}
-		
+
+		[Obsolete("Will get removed in later versions.")]
 		public void SetFixedWidth (int w)
 		{
-			if (w != -1) {
+			/*		if (w != -1) {
 				headlabel.MaxWidth = w;
 			} else {
 				headlabel.MaxWidth = -1;
-			}
+			}*/
 			QueueResize ();
 		}
 
@@ -205,17 +207,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vbox.Spacing = 2;
 
-			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			var catLabel = new Label ();
+			catLabel.Xalign = 0;
 			catLabel.Text = categoryName;
 			catLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
 			vbox.PackStart (catLabel, false, true, 0);
 
-			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			contentLabel.Wrap = Pango.WrapMode.WordChar;
-			contentLabel.BreakOnCamelCasing = true;
-			contentLabel.MaxWidth = 400;
-			contentLabel.BreakOnPunctuation = true;
+			var contentLabel = new Label ();
+			contentLabel.Xalign = 0;
+			contentLabel.LineWrapMode = Pango.WrapMode.WordChar;
+			//contentLabel.BreakOnCamelCasing = true;
+			contentLabel.MaxWidthChars = 40;
+			//contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
@@ -240,15 +244,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.CanDefault = false;
 			this.Events |= Gdk.EventMask.EnterNotifyMask; 
 			
-			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			headlabel.Indent = -20;
+			headlabel = new Label ();
+			headlabel.Xalign = 0;
 			var des = FontService.GetFontDescription ("Editor").Copy ();
 			des.Size = des.Size * 9 / 10;
-			headlabel.FontDescription = des;
-//			headlabel.MaxWidth = 400;
-			headlabel.Wrap = Pango.WrapMode.WordChar;
-			headlabel.BreakOnCamelCasing = true;
-//			headlabel.BreakOnPunctuation = true;
+			headlabel.ModifyFont (des);
+			headlabel.MaxWidthChars = 40;
+			headlabel.LineWrapMode = Pango.WrapMode.WordChar;
 			descriptionBox.Spacing = 4;
 			VBox vb = new VBox (false, 8);
 			vb.PackStart (headlabel, true, true, 0);
