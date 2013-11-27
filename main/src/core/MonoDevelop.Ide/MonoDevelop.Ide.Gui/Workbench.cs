@@ -59,10 +59,10 @@ namespace MonoDevelop.Ide.Gui
 	public sealed class Workbench
 	{
 		List<Document> documents = new List<Document> ();
-		List<Pad> pads;
+		PadCollection pads;
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
-		
+
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
 		public event EventHandler GuiLocked;
@@ -151,19 +151,18 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return null;
 		}
-		
-		public List<Pad> Pads {
+
+		public PadCollection Pads {
 			get {
 				if (pads == null) {
-					pads = new List<Pad> ();
+					pads = new PadCollection ();
 					foreach (PadCodon pc in workbench.PadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;
 			}
 		}
-		
-		
+
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
 		}
