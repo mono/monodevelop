@@ -1,7 +1,5 @@
 using System;
-using System.CodeDom;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web.Razor;
@@ -9,51 +7,47 @@ using System.Web.Razor.Generator;
 using System.Web.Razor.Parser;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.Web.WebPages;
+using System.Collections.Generic;
 
 namespace MonoDevelop.RazorGenerator
 {
-	delegate void RazorCodeTransformer (
-		RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace,
-		CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod);
-
-	class RazorHost : RazorEngineHost
+	class PreprocessedRazorHost : RazorEngineHost
 	{
-		private readonly RazorCodeTransformer[] _transformers;
-		private readonly string _fullPath;
-		private readonly CodeDomProvider _codeDomProvider;
-		private readonly CodeGeneratorOptions _codeGeneratorOptions;
-		private string _defaultClassName;
+		static readonly IEnumerable<string> defaultImports = new[] {
+			"System",
+			"System.Collections.Generic",
+			"System.Linq",
+			"System.Text"
+		};
+		readonly CodeDomProvider _codeDomProvider;
+		readonly CodeGeneratorOptions codeGeneratorOptions;
+		string defaultClassName;
 
-		public RazorHost(string fullPath, CodeDomProvider codeDomProvider = null,
-		                 RazorCodeTransformer[] transformers = null, CodeGeneratorOptions codeGeneratorOptions = null)
-			: base(RazorCodeLanguage.GetLanguageByExtension(".cshtml"))
+		public PreprocessedRazorHost (string fullPath) : base (RazorCodeLanguage.GetLanguageByExtension (".cshtml"))
 		{
 			if (fullPath == null)
-			{
-				throw new ArgumentNullException("fullPath");
-			}
-			_transformers = transformers;
-			_fullPath = fullPath;
-			_codeDomProvider = codeDomProvider ?? new Microsoft.CSharp.CSharpCodeProvider ();
-			base.DefaultNamespace = "ASP";
+				throw new ArgumentNullException ("fullPath");
+
+			FullPath = fullPath;
+			_codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
+			DefaultNamespace = "ASP";
 			EnableLinePragmas = true;
 
-			base.GeneratedClassContext = new GeneratedClassContext(
-				executeMethodName: GeneratedClassContext.DefaultExecuteMethodName,
-				writeMethodName: GeneratedClassContext.DefaultWriteMethodName,
-				writeLiteralMethodName: GeneratedClassContext.DefaultWriteLiteralMethodName,
-				writeToMethodName: "WriteTo",
-				writeLiteralToMethodName: "WriteLiteralTo",
-				templateTypeName: typeof(HelperResult).FullName,
-				defineSectionMethodName: "DefineSection",
-				beginContextMethodName: "BeginContext",
-				endContextMethodName: "EndContext"
-				)
-			{
+			GeneratedClassContext = new GeneratedClassContext (
+				GeneratedClassContext.DefaultExecuteMethodName,
+				GeneratedClassContext.DefaultWriteMethodName,
+				GeneratedClassContext.DefaultWriteLiteralMethodName,
+				"WriteTo",
+				"WriteLiteralTo",
+				typeof(HelperResult).FullName,
+				"DefineSection",
+				"BeginContext",
+				"EndContext"
+			) {
 				ResolveUrlMethodName = "Href"
 			};
 
-			_codeGeneratorOptions = codeGeneratorOptions ?? new CodeGeneratorOptions () {
+			codeGeneratorOptions = new CodeGeneratorOptions {
 				// HACK: we use true, even though razor uses false, to work around a mono bug where it omits the 
 				// line ending after "#line hidden", resulting in the unparseable "#line hiddenpublic"
 				BlankLinesBetweenMembers = true,
@@ -61,38 +55,26 @@ namespace MonoDevelop.RazorGenerator
 				// matches Razor built-in settings
 				IndentString = String.Empty,
 			};
+
+			foreach (var import in defaultImports)
+				NamespaceImports.Add (import);
 		}
 
-		public CodeDomProvider CodeDomProvider {
-			get { return _codeDomProvider; }
+		public string FullPath {
+			get; private set;
 		}
 
-		public CodeGeneratorOptions CodeGeneratorOptions {
-			get { return _codeGeneratorOptions; }
-		}
-
-		public string FullPath
-		{
-			get { return _fullPath; }
-		}
-
-		public override string DefaultClassName
-		{
-			get
-			{
-				return _defaultClassName ?? GetClassName();
+		public override string DefaultClassName {
+			get {
+				return defaultClassName ?? GetClassName ();
 			}
-			set
-			{
-				if (!String.Equals(value, "__CompiledTemplate", StringComparison.OrdinalIgnoreCase))
-				{
+			set {
+				if (!string.Equals (value, "__CompiledTemplate", StringComparison.OrdinalIgnoreCase)) {
 					//  By default RazorEngineHost assigns the name __CompiledTemplate. We'll ignore this assignment
-					_defaultClassName = value;
+					defaultClassName = value;
 				}
 			}
 		}
-
-		public Func<RazorHost,ParserBase> ParserFactory { get; set; }
 
 		public bool EnableLinePragmas { get; set; }
 
@@ -100,17 +82,14 @@ namespace MonoDevelop.RazorGenerator
 		{
 			errors = new CompilerErrorCollection ();
 
-			// Create the engine
-			RazorTemplateEngine engine = new RazorTemplateEngine(this);
+			var engine = new RazorTemplateEngine (this);
 
 			// Generate code
-			GeneratorResults results = null;
-			try
-			{
-				Stream stream = File.OpenRead(_fullPath);
-				using (var reader = new StreamReader(stream, Encoding.Default, detectEncodingFromByteOrderMarks: true))
-				{
-					results = engine.GenerateCode(reader, className: DefaultClassName, rootNamespace: DefaultNamespace, sourceFileName: _fullPath);
+			GeneratorResults results;
+			try {
+				Stream stream = File.OpenRead (FullPath);
+				using (var reader = new StreamReader (stream, Encoding.Default, true)) {
+					results = engine.GenerateCode (reader, DefaultClassName, DefaultNamespace, FullPath);
 				}
 			} catch (Exception e) {
 				errors.Add (new CompilerError (FullPath, 1, 1, null, e.ToString ()));
@@ -123,14 +102,12 @@ namespace MonoDevelop.RazorGenerator
 				errors.Add (new CompilerError (FullPath, error.Location.LineIndex + 1, error.Location.CharacterIndex + 1, null, error.Message));
 			}
 
-			try
-			{
-				using (StringWriter writer = new StringWriter()) {
-					//Generate the code
-					writer.WriteLine("#pragma warning disable 1591");
-					_codeDomProvider.GenerateCodeFromCompileUnit(results.GeneratedCode, writer, _codeGeneratorOptions);
-					writer.WriteLine("#pragma warning restore 1591");
-					return writer.ToString();
+			try {
+				using (var writer = new StringWriter ()) {
+					writer.WriteLine ("#pragma warning disable 1591");
+					_codeDomProvider.GenerateCodeFromCompileUnit (results.GeneratedCode, writer, codeGeneratorOptions);
+					writer.WriteLine ("#pragma warning restore 1591");
+					return writer.ToString ();
 				}
 			} catch (Exception e) {
 				errors.Add (new CompilerError (FullPath, 1, 1, null, e.ToString ()));
@@ -139,34 +116,31 @@ namespace MonoDevelop.RazorGenerator
 			}
 		}
 
-		public override void PostProcessGeneratedCode(CodeGeneratorContext context)
+		public override void PostProcessGeneratedCode (CodeGeneratorContext context)
 		{
-			if (_transformers == null) {
-				return;
-			}
-			foreach (var t in _transformers) {
-				t (this, context.CompileUnit, context.Namespace, context.GeneratedClass, context.TargetMethod);
-			}
+			PreprocessedTemplateCodeTransformers.AddGeneratedTemplateClassAttribute (context.GeneratedClass);
+			PreprocessedTemplateCodeTransformers.SimplifyHelpers (context.GeneratedClass);
+			PreprocessedTemplateCodeTransformers.InjectBaseClass (context.Namespace, context.GeneratedClass, context.TargetMethod);
+			PreprocessedTemplateCodeTransformers.MakePartialAndRemoveCtor (context.GeneratedClass);
 		}
 
-		public override RazorCodeGenerator DecorateCodeGenerator(RazorCodeGenerator incomingCodeGenerator)
+		public override RazorCodeGenerator DecorateCodeGenerator (RazorCodeGenerator incomingCodeGenerator)
 		{
 			incomingCodeGenerator = new PreprocessedCSharpRazorCodeGenerator (incomingCodeGenerator);
-			var codeGenerator = base.DecorateCodeGenerator(incomingCodeGenerator);
+			var codeGenerator = base.DecorateCodeGenerator (incomingCodeGenerator);
 			codeGenerator.GenerateLinePragmas = EnableLinePragmas;
 			return codeGenerator;
 		}
 
-		public override ParserBase DecorateCodeParser(ParserBase incomingCodeParser)
+		public override ParserBase DecorateCodeParser (ParserBase incomingCodeParser)
 		{
-			return ParserFactory != null? ParserFactory (this) : base.DecorateCodeParser(incomingCodeParser);
+			return new PreprocessedCSharpRazorCodeParser ();
 		}
 
-		protected virtual string GetClassName()
+		protected virtual string GetClassName ()
 		{
-			string filename = Path.GetFileNameWithoutExtension(_fullPath);
-			return ParserHelpers.SanitizeClassName(filename);
+			string filename = Path.GetFileNameWithoutExtension (FullPath);
+			return ParserHelpers.SanitizeClassName (filename);
 		}
 	}
-
 }

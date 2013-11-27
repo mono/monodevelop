@@ -109,7 +109,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			RazorHostKind kind = RazorHostKind.WebPage;
 			if (editorParser.Host is WebCodeRazorHost) {
 				kind = RazorHostKind.WebCode;
-			} else if (editorParser.Host is MonoDevelop.RazorGenerator.RazorHost) {
+			} else if (editorParser.Host is MonoDevelop.RazorGenerator.PreprocessedRazorHost) {
 				kind = RazorHostKind.Template;
 			}
 
@@ -188,10 +188,10 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			if (project != null) {
 				var projectFile = project.GetProjectFile (fileName);
 				if (projectFile != null && projectFile.Generator == "RazorTemplatePreprocessor") {
-					var h = MonoDevelop.RazorGenerator.PreprocessedRazorHost.Create (fileName);
-					h.DesignTimeMode = true;
-					h.EnableLinePragmas = false;
-					return h;
+					return new MonoDevelop.RazorGenerator.PreprocessedRazorHost (fileName) {
+						DesignTimeMode = true,
+						EnableLinePragmas = false,
+					};
 				}
 			}
 

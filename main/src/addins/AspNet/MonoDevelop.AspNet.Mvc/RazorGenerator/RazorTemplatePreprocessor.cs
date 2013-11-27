@@ -67,7 +67,7 @@ namespace MonoDevelop.RazorGenerator
 				return;
 			}
 
-			var host = PreprocessedRazorHost.Create (file.FilePath);
+			var host = new PreprocessedRazorHost (file.FilePath);
 
 			var defaultOutputName = file.FilePath.ChangeExtension (".cs");
 

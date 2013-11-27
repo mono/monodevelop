@@ -9,30 +9,29 @@
 //
 
 using System.CodeDom;
-using System.Collections.Generic;
 using System.Linq;
 using System;
 
 namespace MonoDevelop.RazorGenerator
 {
-	class PreprocessedTemplateCodeTransformers
+	static class PreprocessedTemplateCodeTransformers
 	{
-		public static void MakePartialAndRemoveCtor (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void MakePartialAndRemoveCtor (CodeTypeDeclaration generatedClass)
 		{
 			generatedClass.IsPartial = true;
 			// The generated class has a constructor in there by default.
 			generatedClass.Members.Remove (generatedClass.Members.OfType<CodeConstructor> ().Single ());
 		}
 
-		public static void AddGeneratedTemplateClassAttribute (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void AddGeneratedTemplateClassAttribute (CodeTypeDeclaration generatedClass)
 		{
 			string tool = "RazorTemplatePreprocessor";
-			Version version = typeof (PreprocessedTemplateCodeTransformers).Assembly.GetName().Version;
-			generatedClass.CustomAttributes.Add(
-				new CodeAttributeDeclaration(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
-					new CodeAttributeArgument(new CodePrimitiveExpression(tool)),
-					new CodeAttributeArgument(new CodePrimitiveExpression(version.ToString()))
-			));
+			Version version = typeof(PreprocessedTemplateCodeTransformers).Assembly.GetName ().Version;
+			generatedClass.CustomAttributes.Add (
+				new CodeAttributeDeclaration (typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
+					new CodeAttributeArgument (new CodePrimitiveExpression (tool)),
+					new CodeAttributeArgument (new CodePrimitiveExpression (version.ToString ()))
+				));
 		}
 
 		static void AddComments (CodeTypeMember member, bool docComment, params string[] comments)
@@ -42,7 +41,7 @@ namespace MonoDevelop.RazorGenerator
 			}
 		}
 
-		public static void InjectBaseClass (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void InjectBaseClass (CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			bool generateBaseClass = generatedClass.BaseTypes.Count == 0;
 			bool integrateHelpers = !generateBaseClass && generatedClass.BaseTypes [0].BaseType == "object";
@@ -68,11 +67,10 @@ namespace MonoDevelop.RazorGenerator
 			} else {
 				generatedClass.BaseTypes [0].BaseType = "System.Object";
 				executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
-					| MemberAttributes.Private | MemberAttributes.Final;
+				| MemberAttributes.Private | MemberAttributes.Final;
 				generatedClass.Members.Add (new CodeSnippetTypeMember (baseMembersString));
 			}
 		}
-
 		/* rewrite:
 		public System.Web.WebPages.HelperResult foo (int i)
 		{
@@ -92,13 +90,13 @@ namespace MonoDevelop.RazorGenerator
 			};
 		}
 		*/
-		static string[,] replacements = new string [,] {
-			{ "public System.Web.WebPages.HelperResult " , "public static Action<System.IO.TextWriter> " },
-			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer" , "return __razor_helper_writer" },
-			{ "WriteLiteralTo(__razor_helper_writer," , "__razor_helper_writer.Write(" },
+		static readonly string[,] replacements = {
+			{ "public System.Web.WebPages.HelperResult ", "public static Action<System.IO.TextWriter> " },
+			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer", "return __razor_helper_writer" },
+			{ "WriteLiteralTo(__razor_helper_writer,", "__razor_helper_writer.Write(" },
 		};
 
-		public static void SimplifyHelpers (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void SimplifyHelpers (CodeTypeDeclaration generatedClass)
 		{
 			foreach (var method in generatedClass.Members.OfType<CodeSnippetTypeMember> ()) {
 				using (var writer = new System.IO.StringWriter (new System.Text.StringBuilder (method.Text.Length))) {
@@ -108,13 +106,13 @@ namespace MonoDevelop.RazorGenerator
 						string line;
 						while ((line = reader.ReadLine ()) != null) {
 							if (!foundStart) {
-								if (line.StartsWith ("public System.Web.WebPages.HelperResult")) {
+								if (line.StartsWith ("public System.Web.WebPages.HelperResult", StringComparison.Ordinal)) {
 									foundStart = true;
-								} else if (!string.IsNullOrWhiteSpace (line) && !line.StartsWith ("#line")) {
+								} else if (!string.IsNullOrWhiteSpace (line) && !line.StartsWith ("#line", StringComparison.Ordinal)) {
 									break;
 								}
 							}
-							if (line.StartsWith ("#line")) {
+							if (line.StartsWith ("#line", StringComparison.Ordinal)) {
 								lineHidden = line == "#line hidden";
 							}
 							if (lineHidden && line == "});") {
@@ -123,9 +121,9 @@ namespace MonoDevelop.RazorGenerator
 							}
 							var len = replacements.GetLength (0);
 							for (int i = 0; i < len; i++) {
-								var bad = replacements[i,0];
-								if (line.StartsWith (bad)) {
-									line = replacements[i,1] + line.Substring (bad.Length);
+								var bad = replacements [i, 0];
+								if (line.StartsWith (bad, StringComparison.Ordinal)) {
+									line = replacements [i, 1] + line.Substring (bad.Length);
 								}
 							}
 							writer.WriteLine (line);
@@ -145,7 +143,6 @@ namespace MonoDevelop.RazorGenerator
 		///<remarks>Not intended to be called directly. Call the Generate method instead.</remarks>
 		public abstract void Execute ();
 ";
-
 		const string baseMembersString =
 @"		// This field is OPTIONAL, but used by the default implementation of Generate, Write and WriteLiteral
 		//
