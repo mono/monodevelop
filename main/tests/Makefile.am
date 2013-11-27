@@ -112,7 +112,6 @@ EXTRA_DIST = \
 	test-projects/console-project-with-makefile/rules.make \
 	test-projects/console-project-with-makefile/configure \
 	test-projects/console-project-with-makefile/ConsoleProject.sln \
-	test-projects/ChangeLog \
 	test-projects/console-project/ConsoleProject/ConsoleProject.csproj \
 	test-projects/console-project/ConsoleProject/Properties/AssemblyInfo.cs \
 	test-projects/console-project/ConsoleProject/Program.cs \
