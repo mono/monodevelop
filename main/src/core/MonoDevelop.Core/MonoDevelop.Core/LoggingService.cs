@@ -49,8 +49,6 @@ namespace MonoDevelop.Core
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 
-		public static readonly FilePath CrashLogDirectory = UserProfile.Current.LogDir.Combine ("LogAgent");
-
 		static RaygunClient raygunClient = null;
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
@@ -58,8 +56,6 @@ namespace MonoDevelop.Core
 		static TextWriter defaultError;
 		static TextWriter defaultOut;
 		static bool reporting;
-		static int CrashId;
-		static int Processing;
 
 		// Return value is the new value for 'ReportCrashes'
 		// First parameter is the current value of 'ReportCrashes
@@ -198,81 +194,6 @@ namespace MonoDevelop.Core
 			} finally {
 				reporting = false;
 			}
-		}
-
-		public static void ProcessCache ()
-		{
-			int origValue = -1;
-			try {
-				// Ensure only 1 thread at a time attempts to upload cached reports
-				origValue = Interlocked.CompareExchange (ref Processing, 1, 0);
-				if (origValue != 0)
-					return;
-
-				// Uploading is not enabled, so bail out
-				if (!ReportCrashes.GetValueOrDefault ())
-					return;
-
-				// Definitely no crash reports if this doesn't exist
-				if (!Directory.Exists (CrashLogDirectory))
-					return;
-
-				foreach (var file in Directory.GetFiles (CrashLogDirectory)) {
-					if (TryUploadReport (file, File.ReadAllBytes (file)))
-						File.Delete (file);
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Exception processing cached crashes", ex);
-			} finally {
-				if (origValue == 0)
-					Interlocked.CompareExchange (ref Processing, 0, 1);
-			}
-		}
-
-		static bool TryUploadReport (string filename, byte[] data)
-		{
-			try {
-				// Empty files won't be accepted by the server as it thinks 'ContentLength' has not been set as it's
-				// zero. We don't need empty files anyway.
-				if (data.Length == 0)
-					return true;
-
-				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
-				if (string.IsNullOrEmpty (server))
-					server = "monodevlog.xamarin.com:35162";
-
-				var request = (HttpWebRequest) WebRequest.Create (string.Format ("http://{0}/logagentreport/", server));
-				request.Headers.Add ("LogAgentVersion", ServiceVersion);
-				request.Headers.Add ("LogAgent_Filename", Path.GetFileName (filename));
-				request.Headers.Add ("Content-Encoding", "gzip");
-				request.Method = "POST";
-
-				// Compress the data and then use the compressed length in ContentLength
-				var compressed = new MemoryStream ();
-				using (var zipper = new GZipStream (compressed, CompressionMode.Compress))
-					zipper.Write (data, 0, data.Length);
-				data = compressed.ToArray ();
-
-				request.ContentLength = data.Length;
-				using (var requestStream = request.GetRequestStream ())
-					requestStream.Write (data, 0, data.Length);
-
-				LoggingService.LogDebug ("CrashReport sent to server, awaiting response...");
-
-				// Ensure the server has correctly processed everything.
-				using (var response = (HttpWebResponse) request.GetResponse ()) {
-					if (response.StatusCode != HttpStatusCode.OK) {
-						LoggingService.LogError ("Server responded with status code {1} and error: {0}", response.StatusDescription, response.StatusCode);
-						return false;
-					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Failed to upload report to the server", ex);
-				return false;
-			}
-
-			LoggingService.LogDebug ("Successfully uploaded crash report");
-			return true;
 		}
 
 		static void PurgeOldLogs ()
