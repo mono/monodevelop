@@ -203,11 +203,11 @@ namespace MonoDevelop.RazorGenerator
 		///<remarks>Used by Razor helpers to HTML escape values.</remarks>
 		protected static void WriteTo (System.IO.TextWriter writer, object value)
 		{
-			if (value != null) {
-				writer.Write (System.Web.HttpUtility.HtmlEncode (value.ToString ()));
-				// NOTE: better version for .NET 4+, handles pre-escape HTML (IHtmlString)
-				// writer.Write (System.Web.HttpUtility.HtmlEncode (value));
-			}
+			if (value == null)
+				return;
+			//NOTE: a more sophisticated implementation would write safe and pre-escaped values directly to the
+			//instead of double-escaping. See System.Web.IHtmlString in ASP.NET 4.0 for an example of this.
+			System.Net.WebUtility.HtmlEncode (value.ToString (), writer);
 		}
 ";
 	}
