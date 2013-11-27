@@ -202,7 +202,7 @@ namespace MonoDevelop.Projects
 			// See commented assert in AssertCleanBuild
 		}
 
-		[Test, Ignore ("This is currently not working because of a missing file")]
+		[Test]
 		public void LocalCopyDefault ()
 		{
 			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
