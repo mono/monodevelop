@@ -103,6 +103,7 @@
     <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
     <Compile Include="RazorGenerator\PreprocessedRazorHost.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -94,8 +94,6 @@ namespace MonoDevelop.RazorGenerator
 
 		public Func<RazorHost,ParserBase> ParserFactory { get; set; }
 
-		public RazorCodeGenerator CodeGenerator { get; set; }
-
 		public bool EnableLinePragmas { get; set; }
 
 		public string GenerateCode (out CompilerErrorCollection errors)
@@ -153,7 +151,8 @@ namespace MonoDevelop.RazorGenerator
 
 		public override RazorCodeGenerator DecorateCodeGenerator(RazorCodeGenerator incomingCodeGenerator)
 		{
-			var codeGenerator = CodeGenerator ?? base.DecorateCodeGenerator(incomingCodeGenerator);
+			incomingCodeGenerator = new PreprocessedCSharpRazorCodeGenerator (incomingCodeGenerator);
+			var codeGenerator = base.DecorateCodeGenerator(incomingCodeGenerator);
 			codeGenerator.GenerateLinePragmas = EnableLinePragmas;
 			return codeGenerator;
 		}
@@ -169,4 +168,5 @@ namespace MonoDevelop.RazorGenerator
 			return ParserHelpers.SanitizeClassName(filename);
 		}
 	}
+
 }
