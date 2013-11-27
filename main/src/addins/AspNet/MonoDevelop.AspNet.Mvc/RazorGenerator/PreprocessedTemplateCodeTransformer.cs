@@ -198,8 +198,9 @@ namespace MonoDevelop.RazorGenerator
 			write (__razor_writer);
 		}
 
-		// This method is REQUIRED if the template has any Razor helpers, but you may choose to implement it differently
+		// This method is REQUIRED, but you may choose to implement it differently
 		//
+		///<summary>Writes an object value to the TextWriter, HTML escaping it if necessary.</summary>
 		///<remarks>Used by Razor helpers to HTML escape values.</remarks>
 		protected static void WriteTo (System.IO.TextWriter writer, object value)
 		{
