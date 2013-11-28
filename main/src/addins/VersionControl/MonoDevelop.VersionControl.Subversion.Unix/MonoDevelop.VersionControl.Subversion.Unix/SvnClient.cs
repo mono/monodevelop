@@ -1248,7 +1248,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			public long Remainder;
 			public long SavedProgress;
 			public long KBytes;
-			public Timer LogTimer = new Timer ();
+			public System.Timers.Timer LogTimer = new System.Timers.Timer ();
 			public int Seconds;
 		}
 
