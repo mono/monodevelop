@@ -1726,6 +1726,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void Unload (WorkspaceItem item)
 		{
 			var ws = item as Workspace;
+			TrackFileChanges = false;
 			loadCancellationSource.Cancel ();
 			if (ws != null) {
 				foreach (WorkspaceItem it in ws.Items)
@@ -1752,6 +1753,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			});
 			cachedAssemblyContents.Clear ();
+			parseQueue.Clear ();
+			TrackFileChanges = true;
 		}
 
 		internal static void UnloadProject (Project project)
@@ -2592,7 +2595,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public ProjectContentWrapper Context;
 			public IEnumerable<ProjectFile> FileList;
 			//			public Action<string, IProgressMonitor> ParseCallback;
-			public void Run (IProgressMonitor monitor)
+			public void Run (IProgressMonitor monitor, CancellationToken token)
 			{
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
@@ -2600,6 +2603,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					Context.BeginLoadOperation ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
+						if (token.IsCancellationRequested)
+							return;
 						var fileName = file.FilePath;
 						if (filesSkippedInParseThread.Any (f => f == fileName))
 							continue;
@@ -2610,8 +2615,12 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (parser == null)
 							continue;
 						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						if (token.IsCancellationRequested)
+							return;
 						if (tags != null)
 							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
+						if (token.IsCancellationRequested)
+							return;
 						var oldFile = Context.Content.GetFile (fileName);
 						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
 						if (oldFile != null)
@@ -2619,7 +2628,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
-					Context.EndLoadOperation ();
+					if (!token.IsCancellationRequested)
+						Context.EndLoadOperation ();
 				}
 			}
 		}
@@ -2882,7 +2892,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var job = DequeueParseJob ();
 					if (job != null) {
 						try {
-							job.Run (monitor);
+							job.Run (monitor, loadCancellationSource.Token);
 						} catch (Exception ex) {
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
