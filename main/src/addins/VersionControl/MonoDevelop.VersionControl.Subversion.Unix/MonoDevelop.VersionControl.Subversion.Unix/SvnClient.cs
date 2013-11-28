@@ -201,31 +201,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 	}
 
-	enum InOperationType
-	{
-		None,
-		Status,
-		Log,
-		Annotation,
-		Cat,
-		Update,
-		Revert,
-		Add,
-		Checkout,
-		Commit,
-		Mkdir,
-		Delete,
-		Move,
-		Lock,
-		Unlock,
-		Diff,
-		Merge,
-		Ignore,
-		Unignore,
-		GetDirectory,
-		ListUrl
-	}
-
 	sealed class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
@@ -261,7 +236,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		readonly IntPtr ctx;
 
 		readonly object sync = new object();
-		InOperationType inProgress;
+		bool inProgress;
 
 		IProgressMonitor updatemonitor;
 		ArrayList updateFileList;
@@ -534,7 +509,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
-			IntPtr localpool = TryStartOperation (null, InOperationType.ListUrl);
+			IntPtr localpool = TryStartOperation (null);
 			List<DirectoryEntry> items = new List<DirectoryEntry> ();
 
 			try {
@@ -582,7 +557,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			ArrayList ret = new ArrayList ();
 			
 			StatusCollector collector = new StatusCollector (ret);
-			var localpool = TryStartOperation (null, InOperationType.Status);
+			var localpool = TryStartOperation (null);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
 				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
@@ -619,7 +594,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			List<SvnRevision> ret = new List<SvnRevision> ();
 			IntPtr strptr = IntPtr.Zero;
 
-			var localpool = TryStartOperation (null, InOperationType.Log);
+			var localpool = TryStartOperation (null);
 			try {
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				IntPtr first = apr.array_push (array);
@@ -663,7 +638,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			Annotation[] annotations = new Annotation [numAnnotations];
 			AnnotationCollector collector = new AnnotationCollector (annotations);
 
-			var localpool = TryStartOperation (null, InOperationType.Annotation);
+			var localpool = TryStartOperation (null);
 			try {
 				string path = NormalizePath (file.FullPath, localpool);
 				CheckError (svn.client_blame (path, ref revisionStart, ref revisionEnd, collector.Func, IntPtr.Zero, ctx, localpool));
@@ -714,7 +689,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
-			var localpool = TryStartOperation (null, InOperationType.Cat);
+			var localpool = TryStartOperation (null);
 			try {
 				pathorurl = NormalizePath (pathorurl, localpool);
 				StreamCollector collector = new StreamCollector (stream);
@@ -737,7 +712,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			updateFileList = new ArrayList ();
 			
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Head;
-			var localpool = TryStartOperation (monitor, InOperationType.Update);
+			var localpool = TryStartOperation (monitor);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
 				IntPtr result = Marshal.AllocHGlobal (IntPtr.Size);
@@ -759,7 +734,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
 
-			var localpool = TryStartOperation (monitor, InOperationType.Revert);
+			var localpool = TryStartOperation (monitor);
 			try {
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
@@ -782,7 +757,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Add);
+			var localpool = TryStartOperation (monitor);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
 				CheckError (svn.client_add3 (pathorurl, recurse, true, false, ctx, localpool));
@@ -802,7 +777,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev rev = (LibSvnClient.Rev) revision;
 			
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Checkout);
+			var localpool = TryStartOperation (monitor);
 			try {
 				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
 				url = NormalizePath (new Uri(url).ToString(), localpool);
@@ -826,7 +801,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Commit);
+			var localpool = TryStartOperation (monitor);
 			try {
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
@@ -859,7 +834,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Mkdir);
+			var localpool = TryStartOperation (monitor);
 			try {
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, paths.Length, IntPtr.Size);
@@ -886,7 +861,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Delete);
+			var localpool = TryStartOperation (monitor);
 			try {
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
@@ -913,7 +888,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			nb = new notify_baton ();
 			IntPtr commit_info = IntPtr.Zero;
-			var localpool = TryStartOperation (monitor, InOperationType.Move);
+			var localpool = TryStartOperation (monitor);
 			try {
 				string nsrcPath = NormalizePath (srcPath, localpool);
 				string ndestPath = NormalizePath (destPath, localpool);
@@ -928,7 +903,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Lock);
+			var localpool = TryStartOperation (monitor);
 			try {
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
@@ -952,7 +927,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor, InOperationType.Unlock);
+			var localpool = TryStartOperation (monitor);
 			try {
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
@@ -983,7 +958,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev revision1 = (LibSvnClient.Rev) rev1;
 			LibSvnClient.Rev revision2 = (LibSvnClient.Rev) rev2;
 			
-			var localpool = TryStartOperation (null, InOperationType.Diff);
+			var localpool = TryStartOperation (null);
 			try {
 				IntPtr options = apr.array_make (localpool, 0, IntPtr.Size);
 				
@@ -1039,7 +1014,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
 		{
-			var localpool = TryStartOperation (null, InOperationType.Merge);
+			var localpool = TryStartOperation (null);
 			try {
 				path = NormalizePath (path, localpool);
 				LibSvnClient.Rev working = LibSvnClient.Rev.Working;
@@ -1069,7 +1044,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.svn_string_t new_props;
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
 
-			var localpool = TryStartOperation (null, InOperationType.Ignore);
+			var localpool = TryStartOperation (null);
 			try {
 				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
@@ -1108,7 +1083,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			int index;
 			string props_str;
 
-			var localpool = TryStartOperation (null, InOperationType.Unignore);
+			var localpool = TryStartOperation (null);
 			try {
 				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
@@ -1161,12 +1136,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return IntPtr.Zero;
 		}
 
-		IntPtr TryStartOperation (IProgressMonitor monitor, InOperationType opType)
+		IntPtr TryStartOperation (IProgressMonitor monitor)
 		{
 			lock (sync) {
-				if (inProgress != InOperationType.None)
-					throw new SubversionException (String.Format ("Can't start {0}. {1} Subversion operation is in progress.", opType, inProgress));
-				inProgress = opType;
+				if (inProgress)
+					throw new SubversionException ("Another Subversion operation is already in progress.");
+				inProgress = true;
 				updatemonitor = monitor;
 				progressData = new ProgressData ();
 				return newpool (pool);
@@ -1176,9 +1151,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		void TryEndOperation ()
 		{
 			lock (sync) {
-				if (inProgress == InOperationType.None)
+				if (!inProgress)
 					throw new SubversionException ("No Subversion operation is in progress.");
-				inProgress = InOperationType.None;
+				inProgress = false;
 				updatemonitor = null;
 			}
 		}
@@ -1504,7 +1479,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			IntPtr result;
 			IntPtr scratch = newpool (pool);
-			var localpool = TryStartOperation (null, InOperationType.GetDirectory);
+			var localpool = TryStartOperation (null);
 			try {
 				string new_path = NormalizePath (path.FullPath, localpool);
 				try {
