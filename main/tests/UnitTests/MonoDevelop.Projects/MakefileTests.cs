@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects
 	public class MakefileTests: TestBase
 	{
 		[Test()]
+		[Platform (Exclude = "Win")]
 		public void MakefileSynchronization ()
 		{
 			if (Platform.IsWindows)
