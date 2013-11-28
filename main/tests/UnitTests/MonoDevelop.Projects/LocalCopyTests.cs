@@ -44,6 +44,9 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void CheckLocalCopy ()
 		{
+			if (Platform.IsWindows)
+				Assert.Ignore ();
+
 			string solFile = Util.GetSampleProject ("vs-local-copy", "VSLocalCopyTest.sln");
 			
 			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
@@ -205,6 +208,9 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void LocalCopyDefault ()
 		{
+			if (Platform.IsWindows)
+				Assert.Ignore ();
+
 			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
 
 			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);

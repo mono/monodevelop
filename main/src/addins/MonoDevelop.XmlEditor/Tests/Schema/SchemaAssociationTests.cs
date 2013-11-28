@@ -27,6 +27,9 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void ToXml()
 		{
+			if (MonoDevelop.Core.Platform.IsWindows)
+				Assert.Ignore ();
+
 			XmlFileAssociation schema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			schema.WriteTo(writer);
 			
@@ -37,6 +40,9 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void FromXml()
 		{
+			if (MonoDevelop.Core.Platform.IsWindows)
+				Assert.Ignore ();
+
 			XmlFileAssociation expectedSchema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			expectedSchema.WriteTo(writer);
 

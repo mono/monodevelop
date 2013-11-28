@@ -64,6 +64,9 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void Resources ()
 		{
+			if (Platform.IsWindows)
+				Assert.Ignore ();
+
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
 			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckResourcesSolution (sol);

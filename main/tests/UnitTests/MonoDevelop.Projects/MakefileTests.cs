@@ -41,6 +41,9 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void MakefileSynchronization ()
 		{
+			if (Platform.IsWindows)
+				Assert.Ignore ();
+
 			string solFile = Util.GetSampleProject ("console-project-with-makefile", "ConsoleProject.sln");
 			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			
