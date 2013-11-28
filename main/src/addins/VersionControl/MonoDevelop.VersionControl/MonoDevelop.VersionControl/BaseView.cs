@@ -8,7 +8,7 @@ namespace MonoDevelop.VersionControl
 	{
 		string name;
 		
-		public BaseView (string name)
+		protected BaseView (string name)
 		{
 			this.name = name;
 		}
