@@ -1199,7 +1199,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						foreach (var asm in wrapper.referencedAssemblies.ToArray ()) {
 							if (token.IsCancellationRequested)
 								return;
-							asm.CtxLoader.EnsureAssemblyLoaded ();
+							var ctxLoader = asm.CtxLoader;
+							if (ctxLoader != null)
+								ctxLoader.EnsureAssemblyLoaded ();
 						}
 						foreach (var rw in wrapper.referencedWrappers.ToArray ()) {
 							if (token.IsCancellationRequested)
@@ -1747,13 +1749,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var oldCache = cachedAssemblyContents.Values.ToList ();
-			Task.Factory.StartNew (delegate {
-				foreach (var content in oldCache) {
-					content.Unload ();
-				}
-			});
+			Parallel.ForEach (oldCache, content => content.Unload ());
 			cachedAssemblyContents.Clear ();
-			parseQueue.Clear ();
+			lock (parseQueueLock) {
+				parseQueue.Clear ();
+			}
 			TrackFileChanges = true;
 		}
 
