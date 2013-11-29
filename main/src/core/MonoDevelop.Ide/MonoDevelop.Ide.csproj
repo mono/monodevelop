@@ -878,41 +878,41 @@
     <EmbeddedResource Include="icons\toolbar-pause-button-16.png">
       <LogicalName>toolbar-pause-button-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-left-cap-normal-md4.png">
-      <LogicalName>btn-debug-base-left-cap-normal-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-normal.png">
+      <LogicalName>btn-debug-base-left-cap-normal-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-left-cap-normal-md4%402x.png">
-      <LogicalName>btn-debug-base-left-cap-normal-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-normal%402x.png">
+      <LogicalName>btn-debug-base-left-cap-normal-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-left-cap-pressed-md4.png">
-      <LogicalName>btn-debug-base-left-cap-pressed-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-pressed.png">
+      <LogicalName>btn-debug-base-left-cap-pressed-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-left-cap-pressed-md4%402x.png">
-      <LogicalName>btn-debug-base-left-cap-pressed-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-pressed%402x.png">
+      <LogicalName>btn-debug-base-left-cap-pressed-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-middle-cap-normal-md4.png">
-      <LogicalName>btn-debug-base-middle-cap-normal-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-middle-cap-normal.png">
+      <LogicalName>btn-debug-base-middle-cap-normal-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-middle-cap-normal-md4%402x.png">
-      <LogicalName>btn-debug-base-middle-cap-normal-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-middle-cap-normal%402x.png">
+      <LogicalName>btn-debug-base-middle-cap-normal-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-middle-cap-pressed-md4.png">
-      <LogicalName>btn-debug-base-middle-cap-pressed-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-middle-cap-pressed.png">
+      <LogicalName>btn-debug-base-middle-cap-pressed-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-middle-cap-pressed-md4%402x.png">
-      <LogicalName>btn-debug-base-middle-cap-pressed-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-middle-cap-pressed%402x.png">
+      <LogicalName>btn-debug-base-middle-cap-pressed-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-right-cap-normal-md4.png">
-      <LogicalName>btn-debug-base-right-cap-normal-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-right-cap-normal.png">
+      <LogicalName>btn-debug-base-right-cap-normal-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-right-cap-normal-md4%402x.png">
-      <LogicalName>btn-debug-base-right-cap-normal-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-right-cap-normal%402x.png">
+      <LogicalName>btn-debug-base-right-cap-normal-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-right-cap-pressed-md4.png">
-      <LogicalName>btn-debug-base-right-cap-pressed-md4.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-right-cap-pressed.png">
+      <LogicalName>btn-debug-base-right-cap-pressed-light.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-debug-base-right-cap-pressed-md4%402x.png">
-      <LogicalName>btn-debug-base-right-cap-pressed-md4@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-right-cap-pressed%402x.png">
+      <LogicalName>btn-debug-base-right-cap-pressed-light@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-disabled-md4-32.png">
       <LogicalName>btn-execute-disabled-md4-32.png</LogicalName>
