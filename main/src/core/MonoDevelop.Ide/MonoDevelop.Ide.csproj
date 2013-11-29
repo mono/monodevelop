@@ -461,23 +461,41 @@
     <EmbeddedResource Include="icons\file-addin-16.png">
       <LogicalName>file-addin-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-class-32.png">
-      <LogicalName>file-class-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-class-32.png">
+      <LogicalName>file-class-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32.png">
-      <LogicalName>file-enumeration-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-class-32%402x.png">
+      <LogicalName>file-class-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-interface-32.png">
-      <LogicalName>file-interface-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-enumeration-32.png">
+      <LogicalName>file-enumeration-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-struct-32.png">
-      <LogicalName>file-struct-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-enumeration-32%402x.png">
+      <LogicalName>file-enumeration-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-xml-16.png">
-      <LogicalName>file-xml-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-interface-32.png">
+      <LogicalName>file-interface-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-xml-32.png">
-      <LogicalName>file-xml-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-interface-32%402x.png">
+      <LogicalName>file-interface-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-struct-32.png">
+      <LogicalName>file-struct-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-struct-32%402x.png">
+      <LogicalName>file-struct-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-xml-16.png">
+      <LogicalName>file-xml-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-xml-16%402x.png">
+      <LogicalName>file-xml-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-xml-32.png">
+      <LogicalName>file-xml-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-xml-32%402x.png">
+      <LogicalName>file-xml-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
@@ -596,11 +614,17 @@
     <EmbeddedResource Include="icons\system-software-update-22.png">
       <LogicalName>system-software-update-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-template-16.png">
-      <LogicalName>file-template-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-template-16.png">
+      <LogicalName>file-template-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-template-surround-with-16.png">
-      <LogicalName>file-template-surround-with-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-template-16%402x.png">
+      <LogicalName>file-template-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-template-surround-with-16.png">
+      <LogicalName>file-template-surround-with-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-template-surround-with-16%402x.png">
+      <LogicalName>file-template-surround-with-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-behavior-16.png">
       <LogicalName>text-editor-behavior-16.png</LogicalName>
@@ -927,11 +951,17 @@
     <EmbeddedResource Include="icons\replace-in-files-16.png">
       <LogicalName>replace-in-files-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-resource-16.png">
-      <LogicalName>file-resource-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-resource-16.png">
+      <LogicalName>file-resource-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-resource-32.png">
-      <LogicalName>file-resource-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-resource-16%402x.png">
+      <LogicalName>file-resource-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-resource-32.png">
+      <LogicalName>file-resource-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-resource-32%402x.png">
+      <LogicalName>file-resource-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\save-all-16.png">
       <LogicalName>save-all-16.png</LogicalName>
@@ -942,11 +972,17 @@
     <EmbeddedResource Include="icons\split-window-16.png">
       <LogicalName>split-window-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-text-32.png">
-      <LogicalName>file-text-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-text-32.png">
+      <LogicalName>file-text-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-text-16.png">
-      <LogicalName>file-text-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-text-32%402x.png">
+      <LogicalName>file-text-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-text-16.png">
+      <LogicalName>file-text-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-text-16%402x.png">
+      <LogicalName>file-text-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tip-of-the-day-16.png">
       <LogicalName>tip-of-the-day-16.png</LogicalName>
@@ -960,8 +996,11 @@
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-generic-32.png">
-      <LogicalName>file-generic-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-generic-32.png">
+      <LogicalName>file-generic-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-generic-32%402x.png">
+      <LogicalName>file-generic-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\tabbar-prev-12.png">
       <LogicalName>tabbar-prev-light-12.png</LogicalName>
@@ -1368,24 +1407,6 @@
     <EmbeddedResource Include="icons\solution-16%402x.png">
       <LogicalName>solution-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-class-32%402x.png">
-      <LogicalName>file-class-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-enumeration-32%402x.png">
-      <LogicalName>file-enumeration-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-interface-32%402x.png">
-      <LogicalName>file-interface-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-struct-32%402x.png">
-      <LogicalName>file-struct-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-xml-16%402x.png">
-      <LogicalName>file-xml-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-xml-32%402x.png">
-      <LogicalName>file-xml-32@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-16%402x.png">
       <LogicalName>project-16@2x.png</LogicalName>
     </EmbeddedResource>
@@ -1407,12 +1428,6 @@
     <EmbeddedResource Include="icons\solution-32%402x.png">
       <LogicalName>solution-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-template-16%402x.png">
-      <LogicalName>file-template-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-template-surround-with-16%402x.png">
-      <LogicalName>file-template-surround-with-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-web-overlay-32%402x.png">
       <LogicalName>project-web-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
@@ -1422,68 +1437,53 @@
     <EmbeddedResource Include="icons\workspace-32%402x.png">
       <LogicalName>workspace-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-resource-16%402x.png">
-      <LogicalName>file-resource-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-source-16.png">
+      <LogicalName>file-source-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-resource-32%402x.png">
-      <LogicalName>file-resource-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-source-16%402x.png">
+      <LogicalName>file-source-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-text-32%402x.png">
-      <LogicalName>file-text-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-source-32.png">
+      <LogicalName>file-source-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-text-16%402x.png">
-      <LogicalName>file-text-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-source-32%402x.png">
+      <LogicalName>file-source-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-generic-32%402x.png">
-      <LogicalName>file-generic-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-header-16.png">
+      <LogicalName>file-header-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-source-16.png">
-      <LogicalName>file-source-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-header-16%402x.png">
+      <LogicalName>file-header-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-source-16%402x.png">
-      <LogicalName>file-source-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-header-32.png">
+      <LogicalName>file-header-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-source-32.png">
-      <LogicalName>file-source-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-header-32%402x.png">
+      <LogicalName>file-header-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-source-32%402x.png">
-      <LogicalName>file-source-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-unit-test-32.png">
+      <LogicalName>file-unit-test-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-header-16.png">
-      <LogicalName>file-header-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-unit-test-32%402x.png">
+      <LogicalName>file-unit-test-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-header-16%402x.png">
-      <LogicalName>file-header-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-web-16.png">
+      <LogicalName>file-web-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-header-32.png">
-      <LogicalName>file-header-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-web-16%402x.png">
+      <LogicalName>file-web-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-header-32%402x.png">
-      <LogicalName>file-header-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-web-32.png">
+      <LogicalName>file-web-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-unit-test-32.png">
-      <LogicalName>file-unit-test-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-web-32%402x.png">
+      <LogicalName>file-web-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-unit-test-32%402x.png">
-      <LogicalName>file-unit-test-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-gtk-32.png">
+      <LogicalName>file-gtk-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-web-16.png">
-      <LogicalName>file-web-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-web-16%402x.png">
-      <LogicalName>file-web-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-web-32.png">
-      <LogicalName>file-web-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-web-32%402x.png">
-      <LogicalName>file-web-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-gtk-32.png">
-      <LogicalName>file-gtk-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\file-gtk-32%402x.png">
-      <LogicalName>file-gtk-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\file-gtk-32%402x.png">
+      <LogicalName>file-gtk-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-waiting-1-14.png">
       <LogicalName>status-waiting-1-14.png</LogicalName>
