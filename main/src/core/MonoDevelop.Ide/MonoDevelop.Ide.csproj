@@ -374,44 +374,80 @@
     <EmbeddedResource Include="icons\edit-select-all-22.png">
       <LogicalName>edit-select-all-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-class-16.png">
-      <LogicalName>element-class-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-class-16.png">
+      <LogicalName>element-class-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-delegate-16.png">
-      <LogicalName>element-delegate-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-class-16%402x.png">
+      <LogicalName>element-class-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-enumeration-16.png">
-      <LogicalName>element-enumeration-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-delegate-16.png">
+      <LogicalName>element-delegate-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-event-16.png">
-      <LogicalName>element-event-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-delegate-16%402x.png">
+      <LogicalName>element-delegate-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-extensionmethod-16.png">
-      <LogicalName>element-extensionmethod-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-enumeration-16.png">
+      <LogicalName>element-enumeration-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-field-16.png">
-      <LogicalName>element-field-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-enumeration-16%402x.png">
+      <LogicalName>element-enumeration-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-interface-16.png">
-      <LogicalName>element-interface-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-event-16.png">
+      <LogicalName>element-event-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-constant-16.png">
-      <LogicalName>element-constant-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-event-16%402x.png">
+      <LogicalName>element-event-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-method-16.png">
-      <LogicalName>element-method-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-extensionmethod-16.png">
+      <LogicalName>element-extensionmethod-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-extensionmethod-16%402x.png">
+      <LogicalName>element-extensionmethod-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-field-16.png">
+      <LogicalName>element-field-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-field-16%402x.png">
+      <LogicalName>element-field-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-interface-16.png">
+      <LogicalName>element-interface-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-interface-16%402x.png">
+      <LogicalName>element-interface-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-constant-16.png">
+      <LogicalName>element-constant-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-constant-16%402x.png">
+      <LogicalName>element-constant-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-method-16.png">
+      <LogicalName>element-method-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-method-16%402x.png">
+      <LogicalName>element-method-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-new-16.png">
       <LogicalName>element-method-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-namespace-16.png">
-      <LogicalName>element-namespace-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-namespace-16.png">
+      <LogicalName>element-namespace-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-property-16.png">
-      <LogicalName>element-property-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-namespace-16%402x.png">
+      <LogicalName>element-namespace-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-structure-16.png">
-      <LogicalName>element-structure-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-property-16.png">
+      <LogicalName>element-property-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-property-16%402x.png">
+      <LogicalName>element-property-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-structure-16.png">
+      <LogicalName>element-structure-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-structure-16%402x.png">
+      <LogicalName>element-structure-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-category-16.png">
       <LogicalName>empty-category-16.png</LogicalName>
@@ -1331,42 +1367,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16%402x.png">
       <LogicalName>solution-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-class-16%402x.png">
-      <LogicalName>element-class-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-delegate-16%402x.png">
-      <LogicalName>element-delegate-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-enumeration-16%402x.png">
-      <LogicalName>element-enumeration-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-event-16%402x.png">
-      <LogicalName>element-event-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-extensionmethod-16%402x.png">
-      <LogicalName>element-extensionmethod-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-field-16%402x.png">
-      <LogicalName>element-field-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-interface-16%402x.png">
-      <LogicalName>element-interface-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-constant-16%402x.png">
-      <LogicalName>element-constant-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-method-16%402x.png">
-      <LogicalName>element-method-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-namespace-16%402x.png">
-      <LogicalName>element-namespace-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-property-16%402x.png">
-      <LogicalName>element-property-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-structure-16%402x.png">
-      <LogicalName>element-structure-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-class-32%402x.png">
       <LogicalName>file-class-32@2x.png</LogicalName>
