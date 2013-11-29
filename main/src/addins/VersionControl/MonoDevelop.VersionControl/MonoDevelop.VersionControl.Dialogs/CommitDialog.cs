@@ -189,7 +189,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 					MessageService.ShowException (ex);
 					res = false;
 				}
-				System.Console.WriteLine ("RES: " + res);
 				if (!res) {
 					// Commit failed. Rollback the previous extensions
 					for (int m=0; m<n; m++) {
