@@ -764,11 +764,11 @@
     <EmbeddedResource Include="icons\feedback-16.png">
       <LogicalName>feedback-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\update-available-md4-16.png">
-      <LogicalName>update-available-md4-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\update-available-16.png">
+      <LogicalName>update-available-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\update-available-md4-16%402x.png">
-      <LogicalName>update-available-md4-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\update-available-16%402x.png">
+      <LogicalName>update-available-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="branding\WelcomePage_Logo.png">
       <LogicalName>WelcomePage_Logo.png</LogicalName>
@@ -1185,17 +1185,17 @@
     <EmbeddedResource Include="icons\status-opening-6-14%402x.png">
       <LogicalName>status-opening-6-14@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\error-16.png">
-      <LogicalName>error-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\error-16.png">
+      <LogicalName>error-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\error-16%402x.png">
-      <LogicalName>error-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\error-16%402x.png">
+      <LogicalName>error-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-16.png">
-      <LogicalName>warning-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\warning-16.png">
+      <LogicalName>warning-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-16%402x.png">
-      <LogicalName>warning-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\warning-16%402x.png">
+      <LogicalName>warning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
