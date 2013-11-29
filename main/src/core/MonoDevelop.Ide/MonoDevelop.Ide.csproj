@@ -914,53 +914,53 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-right-cap-pressed%402x.png">
       <LogicalName>btn-debug-base-right-cap-pressed-light@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-disabled-md4-32.png">
-      <LogicalName>btn-execute-disabled-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-disabled-32.png">
+      <LogicalName>btn-execute-disabled-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-disabled-md4-32%402x.png">
-      <LogicalName>btn-execute-disabled-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-disabled-32%402x.png">
+      <LogicalName>btn-execute-disabled-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-hover-md4-32.png">
-      <LogicalName>btn-execute-hover-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-hover-32.png">
+      <LogicalName>btn-execute-hover-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-hover-md4-32%402x.png">
-      <LogicalName>btn-execute-hover-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-hover-32%402x.png">
+      <LogicalName>btn-execute-hover-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-normal-md4-32.png">
-      <LogicalName>btn-execute-normal-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-normal-32.png">
+      <LogicalName>btn-execute-normal-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-normal-md4-32%402x.png">
-      <LogicalName>btn-execute-normal-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-normal-32%402x.png">
+      <LogicalName>btn-execute-normal-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-pressed-md4-32.png">
-      <LogicalName>btn-execute-pressed-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-pressed-32.png">
+      <LogicalName>btn-execute-pressed-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btn-execute-pressed-md4-32%402x.png">
-      <LogicalName>btn-execute-pressed-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-execute-pressed-32%402x.png">
+      <LogicalName>btn-execute-pressed-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-disabled-md4-32.png">
-      <LogicalName>ico-execute-disabled-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-execute-disabled-32.png">
+      <LogicalName>ico-execute-disabled-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-disabled-md4-32%402x.png">
-      <LogicalName>ico-execute-disabled-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-execute-disabled-32%402x.png">
+      <LogicalName>ico-execute-disabled-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-normal-md4-32.png">
-      <LogicalName>ico-execute-normal-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-execute-normal-32.png">
+      <LogicalName>ico-execute-normal-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-execute-normal-md4-32%402x.png">
-      <LogicalName>ico-execute-normal-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-execute-normal-32%402x.png">
+      <LogicalName>ico-execute-normal-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-disabled-md4-32.png">
-      <LogicalName>ico-stop-disabled-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-stop-disabled-32.png">
+      <LogicalName>ico-stop-disabled-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-disabled-md4-32%402x.png">
-      <LogicalName>ico-stop-disabled-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-stop-disabled-32%402x.png">
+      <LogicalName>ico-stop-disabled-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-normal-md4-32.png">
-      <LogicalName>ico-stop-normal-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-stop-normal-32.png">
+      <LogicalName>ico-stop-normal-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-stop-normal-md4-32%402x.png">
-      <LogicalName>ico-stop-normal-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-stop-normal-32%402x.png">
+      <LogicalName>ico-stop-normal-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-down-16.png">
       <LogicalName>disclose-arrow-down-16.png</LogicalName>
@@ -1275,17 +1275,17 @@
     <EmbeddedResource Include="icons\command-16.png">
       <LogicalName>command-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-disabled-md4-32.png">
-      <LogicalName>ico-build-disabled-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-disabled-32.png">
+      <LogicalName>ico-build-disabled-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-disabled-md4-32%402x.png">
-      <LogicalName>ico-build-disabled-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-disabled-32%402x.png">
+      <LogicalName>ico-build-disabled-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-normal-md4-32.png">
-      <LogicalName>ico-build-normal-md4-32.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-normal-32.png">
+      <LogicalName>ico-build-normal-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\ico-build-normal-md4-32%402x.png">
-      <LogicalName>ico-build-normal-md4-32@2x.png</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-normal-32%402x.png">
+      <LogicalName>ico-build-normal-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
       <LogicalName>tree-popup-button-hover.png</LogicalName>
