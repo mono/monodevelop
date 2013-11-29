@@ -6,22 +6,22 @@
 </ExtensionPoint>
 
 <Extension path = "/MonoDevelop/Core/StockIcons">
-	<StockIcon stockid = "md-closed-folder" resource = "folder-closed-16.png" size="Menu" />
-	<StockIcon stockid = "md-closed-reference-folder" resource = "reference-folder-closed-16.png" size="Menu" />
-	<StockIcon stockid = "md-closed-resource-folder" resource = "resource-folder-closed-16.png" size="Menu" />
-	<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-16.png" size="Menu"/>
-	<StockIcon stockid = "md-component-folder-closed" resource = "component-folder-closed-16.png" size="Menu"/>
+	<StockIcon stockid = "md-closed-folder" resource = "folder-closed-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-closed-reference-folder" resource = "reference-folder-closed-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-closed-resource-folder" resource = "resource-folder-closed-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-solution-folder-closed" resource = "solution-folder-closed-light-16.png" size="Menu"/>
+	<StockIcon stockid = "md-component-folder-closed" resource = "component-folder-closed-light-16.png" size="Menu"/>
     
-	<StockIcon stockid = "md-open-folder" resource = "folder-open-16.png" size="Menu" />
-	<StockIcon stockid = "md-open-reference-folder" resource = "reference-folder-open-16.png" size="Menu" />
-	<StockIcon stockid = "md-open-resource-folder" resource = "resource-folder-open-16.png" size="Menu" />
-	<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-16.png" size="Menu"/>
-	<StockIcon stockid = "md-component-folder-open" resource = "component-folder-open-16.png" size="Menu"/>
+	<StockIcon stockid = "md-open-folder" resource = "folder-open-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-open-reference-folder" resource = "reference-folder-open-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-open-resource-folder" resource = "resource-folder-open-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-solution-folder-open" resource = "solution-folder-open-light-16.png" size="Menu"/>
+	<StockIcon stockid = "md-component-folder-open" resource = "component-folder-open-light-16.png" size="Menu"/>
     
-	<StockIcon stockid = "md-folder-overlay" resource = "assembly-reference-overlay-16.png" size="Menu" />
-	<StockIcon stockid = "md-warning-overlay" resource = "invalid-reference-overlay-16.png" size="Menu" />
-	<StockIcon stockid = "md-reference-warning" icon = "md-reference|res:invalid-reference-overlay-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-project-overlay" resource = "project-reference-overlay-16.png" size="Menu" />
+	<StockIcon stockid = "md-folder-overlay" resource = "assembly-reference-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-warning-overlay" resource = "invalid-reference-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-reference-warning" icon = "md-reference|res:invalid-reference-overlay-light-16.png" size = "Menu"/>
+	<StockIcon stockid = "md-project-overlay" resource = "project-reference-overlay-light-16.png" size="Menu" />
     
 	<StockIcon stockid = "md-add-namespace" resource = "add-namespace-16.png"/>
 	<StockIcon stockid = "md-breakpoint" resource = "breakpoint-16.png" size="Menu"/>
@@ -40,7 +40,7 @@
 	<StockIcon stockid = "md-clear-all-bookmarks" resource = "clear-all-bookmarks-22.png" />
 	<StockIcon stockid = "md-close-all-documents" resource = "close-all-documents-16.png" size="Menu" />
 	<StockIcon stockid = "md-close-combine-icon" resource = "close-solution-16.png" size="Menu" />
-	<StockIcon stockid = "md-solution" resource = "solution-16.png" size = "Menu" />
+	<StockIcon stockid = "md-solution" resource = "solution-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-solution" resource = "solution-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-delegate" resource = "element-delegate-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-empty" resource = "empty-16.png" size="Menu" />
@@ -151,7 +151,7 @@
 	<StockIcon stockid = "md-ProtectedOrInternal-property" icon = "res:element-property-light-16.png|res:visibility-protected-or-internal-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-static-property" icon = "res:element-property-light-16.png|res:static-16.png|res:visibility-protected-or-internal-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-struct" icon = "res:element-structure-light-16.png|res:visibility-protected-or-internal-16.png" size="Menu" />
-	<StockIcon stockid = "md-reference" resource = "project-reference-16.png" size="Menu" />
+	<StockIcon stockid = "md-reference" resource = "project-reference-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-reference-package" icon = "md-reference" size="Menu" />
 	<StockIcon stockid = "md-reference-folder" icon = "md-reference|md-folder-overlay" size="Menu" />
 	<StockIcon stockid = "md-reference-project" icon = "md-reference|md-project-overlay" size="Menu" />
@@ -168,7 +168,7 @@
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-32.png" size="Dnd"/>
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" size="Button"/>
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-48.png" size="Dialog"/>
-	<StockIcon stockid = "md-project" resource = "project-16.png" size="Menu"/>
+	<StockIcon stockid = "md-project" resource = "project-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-project" resource = "project-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-console" icon = "md-project|res:project-console-overlay-light-32.png" size="Dnd" />
@@ -219,7 +219,7 @@
 	<StockIcon stockid = "md-addin" resource = "plugin-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-addin" resource = "plugin-22.png" size = "Button"/>
 	<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
-	<StockIcon stockid = "md-workspace" resource = "workspace-16.png" size="Menu"/>
+	<StockIcon stockid = "md-workspace" resource = "workspace-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-workspace" resource = "workspace-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-new-solution-folder" resource = "solution-folder-new-16.png" size="Menu"/>
 	<StockIcon stockid = "md-regular-file" resource = "file-generic-light-32.png" />

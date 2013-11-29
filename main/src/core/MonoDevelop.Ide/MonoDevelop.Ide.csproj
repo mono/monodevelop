@@ -167,44 +167,83 @@
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml">
       <LogicalName>EmptyXMLFile.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\component-folder-closed-16.png">
-      <LogicalName>component-folder-closed-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-closed-16.png">
+      <LogicalName>component-folder-closed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\component-folder-open-16.png">
-      <LogicalName>component-folder-open-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-closed-16%402x.png">
+      <LogicalName>component-folder-closed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-closed-16.png">
-      <LogicalName>folder-closed-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-open-16.png">
+      <LogicalName>component-folder-open-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-folder-closed-16.png">
-      <LogicalName>reference-folder-closed-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-open-16%402x.png">
+      <LogicalName>component-folder-open-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-closed-16.png">
-      <LogicalName>resource-folder-closed-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-closed-16.png">
+      <LogicalName>folder-closed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-closed-16.png">
-      <LogicalName>solution-folder-closed-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-closed-16%402x.png">
+      <LogicalName>folder-closed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-open-16.png">
-      <LogicalName>folder-open-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\reference-folder-closed-16.png">
+      <LogicalName>reference-folder-closed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-folder-open-16.png">
-      <LogicalName>reference-folder-open-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\reference-folder-closed-16%402x.png">
+      <LogicalName>reference-folder-closed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-open-16.png">
-      <LogicalName>resource-folder-open-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\resource-folder-closed-16.png">
+      <LogicalName>resource-folder-closed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-open-16.png">
-      <LogicalName>solution-folder-open-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\resource-folder-closed-16%402x.png">
+      <LogicalName>resource-folder-closed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-reference-overlay-16.png">
-      <LogicalName>assembly-reference-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\solution-folder-closed-16.png">
+      <LogicalName>solution-folder-closed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\invalid-reference-overlay-16.png">
-      <LogicalName>invalid-reference-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\solution-folder-closed-16%402x.png">
+      <LogicalName>solution-folder-closed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-overlay-16.png">
-      <LogicalName>project-reference-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-open-16.png">
+      <LogicalName>folder-open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\folder-open-16%402x.png">
+      <LogicalName>folder-open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-folder-open-16.png">
+      <LogicalName>reference-folder-open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-folder-open-16%402x.png">
+      <LogicalName>reference-folder-open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\resource-folder-open-16.png">
+      <LogicalName>resource-folder-open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\resource-folder-open-16%402x.png">
+      <LogicalName>resource-folder-open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-folder-open-16.png">
+      <LogicalName>solution-folder-open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-folder-open-16%402x.png">
+      <LogicalName>solution-folder-open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\assembly-reference-overlay-16.png">
+      <LogicalName>assembly-reference-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\assembly-reference-overlay-16%402x.png">
+      <LogicalName>assembly-reference-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\invalid-reference-overlay-16.png">
+      <LogicalName>invalid-reference-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\invalid-reference-overlay-16%402x.png">
+      <LogicalName>invalid-reference-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-reference-overlay-16.png">
+      <LogicalName>project-reference-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-reference-overlay-16%402x.png">
+      <LogicalName>project-reference-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\parser-16.png">
       <LogicalName>parser-16.png</LogicalName>
@@ -560,8 +599,11 @@
     <EmbeddedResource Include="icons\plugin-32.png">
       <LogicalName>plugin-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-16.png">
-      <LogicalName>project-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\project-16.png">
+      <LogicalName>project-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-16%402x.png">
+      <LogicalName>project-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\project-32.png">
       <LogicalName>project-light-32.png</LogicalName>
@@ -590,14 +632,20 @@
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-16.png">
-      <LogicalName>project-reference-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\project-reference-16.png">
+      <LogicalName>project-reference-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-reference-16%402x.png">
+      <LogicalName>project-reference-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-namespace-16.png">
       <LogicalName>remove-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-16.png">
-      <LogicalName>solution-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\solution-16.png">
+      <LogicalName>solution-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-16%402x.png">
+      <LogicalName>solution-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\solution-32.png">
       <LogicalName>solution-light-32.png</LogicalName>
@@ -695,8 +743,11 @@
     <EmbeddedResource Include="icons\light\project-web-overlay-32%402x.png">
       <LogicalName>project-web-overlay-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-16.png">
-      <LogicalName>workspace-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\workspace-16.png">
+      <LogicalName>workspace-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\workspace-16%402x.png">
+      <LogicalName>workspace-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\workspace-32.png">
       <LogicalName>workspace-light-32.png</LogicalName>
@@ -1385,57 +1436,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issuestatus-warning-16.png">
       <LogicalName>issuestatus-warning-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\component-folder-closed-16%402x.png">
-      <LogicalName>component-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\component-folder-open-16%402x.png">
-      <LogicalName>component-folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-closed-16%402x.png">
-      <LogicalName>folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-folder-closed-16%402x.png">
-      <LogicalName>reference-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-closed-16%402x.png">
-      <LogicalName>resource-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-closed-16%402x.png">
-      <LogicalName>solution-folder-closed-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\folder-open-16%402x.png">
-      <LogicalName>folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-folder-open-16%402x.png">
-      <LogicalName>reference-folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\resource-folder-open-16%402x.png">
-      <LogicalName>resource-folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-folder-open-16%402x.png">
-      <LogicalName>solution-folder-open-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-reference-overlay-16%402x.png">
-      <LogicalName>assembly-reference-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\invalid-reference-overlay-16%402x.png">
-      <LogicalName>invalid-reference-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-overlay-16%402x.png">
-      <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-16%402x.png">
-      <LogicalName>solution-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-16%402x.png">
-      <LogicalName>project-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-16%402x.png">
-      <LogicalName>project-reference-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-16%402x.png">
-      <LogicalName>workspace-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
