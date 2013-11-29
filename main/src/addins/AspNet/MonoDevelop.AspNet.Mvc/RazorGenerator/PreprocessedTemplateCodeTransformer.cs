@@ -151,6 +151,16 @@ namespace MonoDevelop.RazorGenerator
 			//instead of double-escaping. See System.Web.IHtmlString in ASP.NET 4.0 for an example of this.
 			System.Net.WebUtility.HtmlEncode (value.ToString (), writer);
 		}
+
+		protected static void WriteAttributeTo (System.IO.TextWriter writer, string name, string prefix, string suffix, params Tuple<object, bool>[] values)
+		{
+			throw new NotImplementedException ();
+		}
+
+		protected static void WriteAttribute (string name, string prefix, string suffix, params Tuple<object, bool>[] values)
+		{
+			WriteAttributeTo (__razor_writer, name, prefix, suffix, values);
+		}
 ";
 	}
 }
