@@ -71,70 +71,6 @@ namespace MonoDevelop.RazorGenerator
 				generatedClass.Members.Add (new CodeSnippetTypeMember (baseMembersString));
 			}
 		}
-		/* rewrite:
-		public System.Web.WebPages.HelperResult foo (int i)
-		{
-			return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-				WriteLiteralTo(__razor_helper_writer, "<p>");
-				WriteTo(__razor_helper_writer, i);
-				WriteLiteralTo(__razor_helper_writer, "</p>\n");
-			});
-		}
-		to:
-		public static Action<TextWriter> foo (int i)
-		{
-			return __razor_helper_writer => {
-				__razor_helper_writer.Write("<p>");
-				WriteTo(__razor_helper_writer, i);
-				__razor_helper_writer.Write("</p>\n");
-			};
-		}
-		*/
-		static readonly string[,] replacements = {
-			{ "public System.Web.WebPages.HelperResult ", "public static Action<System.IO.TextWriter> " },
-			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer", "return __razor_helper_writer" },
-			{ "WriteLiteralTo(__razor_helper_writer,", "__razor_helper_writer.Write(" },
-		};
-
-		public static void SimplifyHelpers (CodeTypeDeclaration generatedClass)
-		{
-			foreach (var method in generatedClass.Members.OfType<CodeSnippetTypeMember> ()) {
-				using (var writer = new System.IO.StringWriter (new System.Text.StringBuilder (method.Text.Length))) {
-					bool foundStart = false;
-					using (var reader = new System.IO.StringReader (method.Text)) {
-						bool lineHidden = false;
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							if (!foundStart) {
-								if (line.StartsWith ("public System.Web.WebPages.HelperResult", StringComparison.Ordinal)) {
-									foundStart = true;
-								} else if (!string.IsNullOrWhiteSpace (line) && !line.StartsWith ("#line", StringComparison.Ordinal)) {
-									break;
-								}
-							}
-							if (line.StartsWith ("#line", StringComparison.Ordinal)) {
-								lineHidden = line == "#line hidden";
-							}
-							if (lineHidden && line == "});") {
-								writer.WriteLine ("};");
-								continue;
-							}
-							var len = replacements.GetLength (0);
-							for (int i = 0; i < len; i++) {
-								var bad = replacements [i, 0];
-								if (line.StartsWith (bad, StringComparison.Ordinal)) {
-									line = replacements [i, 1] + line.Substring (bad.Length);
-								}
-							}
-							writer.WriteLine (line);
-						}
-					}
-					if (foundStart) {
-						method.Text = writer.ToString ();
-					}
-				}
-			}
-		}
 
 		const string baseExecuteMethodString =
 @"		// This method is REQUIRED. The generated Razor subclass will override it with the generated code.
@@ -176,6 +112,14 @@ namespace MonoDevelop.RazorGenerator
 		protected void WriteLiteral (string value)
 		{
 			__razor_writer.Write (value);
+		}
+
+		// This method is REQUIRED if the template uses any Razor helpers, but you may choose to implement it differently
+		//
+		///<summary>Writes literal values to the TextWriter without HTML escaping them.</summary>
+		protected static void WriteLiteralTo (System.IO.TextWriter writer, string value)
+		{
+			writer.Write (value);
 		}
 
 		// This method is REQUIRED, but you may choose to implement it differently

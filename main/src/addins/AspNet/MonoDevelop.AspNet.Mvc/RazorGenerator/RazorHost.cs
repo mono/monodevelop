@@ -39,7 +39,7 @@ namespace MonoDevelop.RazorGenerator
 				GeneratedClassContext.DefaultWriteLiteralMethodName,
 				"WriteTo",
 				"WriteLiteralTo",
-				typeof(HelperResult).FullName,
+				"Action<System.IO.TextWriter>",
 				"DefineSection",
 				"BeginContext",
 				"EndContext"
@@ -119,7 +119,6 @@ namespace MonoDevelop.RazorGenerator
 		public override void PostProcessGeneratedCode (CodeGeneratorContext context)
 		{
 			PreprocessedTemplateCodeTransformers.AddGeneratedTemplateClassAttribute (context.GeneratedClass);
-			PreprocessedTemplateCodeTransformers.SimplifyHelpers (context.GeneratedClass);
 			PreprocessedTemplateCodeTransformers.InjectBaseClass (context.Namespace, context.GeneratedClass, context.TargetMethod);
 			PreprocessedTemplateCodeTransformers.MakePartialAndRemoveCtor (context.GeneratedClass);
 		}
