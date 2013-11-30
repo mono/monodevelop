@@ -88,6 +88,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
+					ext.CommitMessageTextViewHook (textview);
 					if (separatorRequired) {
 						HSeparator sep = new HSeparator ();
 						sep.Show ();
