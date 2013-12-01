@@ -151,7 +151,7 @@ namespace MonoDevelop.CSharpBinding
 		public void TestVerbatimToNonVerbatimConversion ()
 		{
 			TestViewContent content;
-			var ext = Setup ("@$\"\t\"", out content);
+			Setup ("@$\"\t\"", out content);
 			content.GetTextEditorData ().Remove (0, 1);
 			var newText = content.Text;
 			Assert.AreEqual ("\"\\t\"", newText);

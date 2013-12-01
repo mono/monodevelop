@@ -126,7 +126,6 @@ namespace MonoDevelop.Ide.Gui
 		static void SimulateInput (CompletionListWindow listWindow, string input)
 		{
 			foreach (char ch in input) {
-				KeyActions ka;
 				switch (ch) {
 				case '8':
 					listWindow.PreProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
