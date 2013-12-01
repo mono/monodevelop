@@ -217,6 +217,11 @@ type FSharpInteractivePad() =
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       ensureCorrectDirectory()
       sendCommand (AddSourceToSelection sel)
+    else
+      //if nothing is selected send the whole line and go to the next line
+      x.SendLine()
+      IdeApp.Workbench.ActiveDocument.Editor.Caret.Line <- IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1
+      IdeApp.Workbench.ActiveDocument.Editor.Caret.Column <- 0
       
   member x.SendLine() = 
     if IdeApp.Workbench.ActiveDocument = null then () 
@@ -282,7 +287,7 @@ type SendSelection() =
     FSharpInteractivePad.CurrentPad.BringToFront(false)
   override x.Update(info:CommandInfo) =
     let fsi = FSharpInteractivePad.CurrentFsi
-    info.Enabled <- fsi.IsSelectionNonEmpty
+    info.Enabled <- true
     info.Visible <- fsi.IsInsideFSharpFile
 
 type SendLine() =
