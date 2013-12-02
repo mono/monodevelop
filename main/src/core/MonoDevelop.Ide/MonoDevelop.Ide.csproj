@@ -1515,6 +1515,18 @@
     <EmbeddedResource Include="icons\light\status-waiting-5-14%402x.png">
       <LogicalName>status-waiting-5-light-14@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-closed-16.png">
+      <LogicalName>web-reference-folder-closed-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-closed-16%402x.png">
+      <LogicalName>web-reference-folder-closed-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-open-16.png">
+      <LogicalName>web-reference-folder-open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-open-16%402x.png">
+      <LogicalName>web-reference-folder-open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
