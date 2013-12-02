@@ -1752,6 +1752,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Parallel.ForEach (oldCache, content => content.Unload ());
 			cachedAssemblyContents.Clear ();
 			lock (parseQueueLock) {
+				parseQueueIndex.Clear ();
 				parseQueue.Clear ();
 			}
 			TrackFileChanges = true;
@@ -2882,7 +2883,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			int pending = 0;
 			IProgressMonitor monitor = null;
-			
+			var token = loadCancellationSource.Token;
 			try {
 				do {
 					if (pending > 5 && monitor == null) {
@@ -2892,7 +2893,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var job = DequeueParseJob ();
 					if (job != null) {
 						try {
-							job.Run (monitor, loadCancellationSource.Token);
+							job.Run (monitor, token);
 						} catch (Exception ex) {
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
@@ -2902,8 +2903,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 					
+					if (token.IsCancellationRequested)
+						break;
 					pending = PendingJobCount;
-					
 				} while (pending > 0);
 				queueEmptied.Set ();
 			} finally {
