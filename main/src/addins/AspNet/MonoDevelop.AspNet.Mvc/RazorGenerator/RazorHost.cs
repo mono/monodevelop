@@ -6,7 +6,6 @@ using System.Web.Razor;
 using System.Web.Razor.Generator;
 using System.Web.Razor.Parser;
 using System.Web.Razor.Parser.SyntaxTree;
-using System.Web.WebPages;
 using System.Collections.Generic;
 
 namespace MonoDevelop.RazorGenerator
@@ -82,7 +81,7 @@ namespace MonoDevelop.RazorGenerator
 		{
 			errors = new CompilerErrorCollection ();
 
-			var engine = new RazorTemplateEngine (this);
+			var engine = new RewritingRazorTemplateEngine (this, new PreprocessedAttributeRewriter ());
 
 			// Generate code
 			GeneratorResults results;

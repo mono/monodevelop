@@ -88,7 +88,6 @@
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
     <Compile Include="Gui\AddControllerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
-    <Compile Include="RazorGenerator\RazorHost.cs" />
     <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -103,6 +102,10 @@
     <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeGenerator.cs" />
+    <Compile Include="RazorGenerator\MarkupRewriter.cs" />
+    <Compile Include="RazorGenerator\RewritingRazorTemplateEngine.cs" />
+    <Compile Include="RazorGenerator\PreprocessedAttributeRewriter.cs" />
+    <Compile Include="RazorGenerator\RazorHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
