@@ -105,7 +105,7 @@
     <Compile Include="RazorGenerator\MarkupRewriter.cs" />
     <Compile Include="RazorGenerator\RewritingRazorTemplateEngine.cs" />
     <Compile Include="RazorGenerator\PreprocessedAttributeRewriter.cs" />
-    <Compile Include="RazorGenerator\RazorHost.cs" />
+    <Compile Include="RazorGenerator\PreprocessedRazorHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

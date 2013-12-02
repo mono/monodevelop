@@ -185,8 +185,8 @@ namespace MonoDevelop.RazorGenerator
 
 			var sb = new StringBuilder ();
 			Block child = target.Children.Where (n => n.IsBlock).Cast<Block> ().FirstOrDefault ();
-			bool isExpresssion = child != null && child.Type == BlockType.Expression;
-			if (isExpresssion) {
+			bool isExpression = child != null && child.Type == BlockType.Expression;
+			if (isExpression) {
 				sb.Append (", Tuple.Create<object,bool> (");
 				//TODO: switcharoo rendering mode
 				//_oldRenderingMode = context.ExpressionRenderingMode;
