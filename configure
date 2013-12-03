@@ -258,7 +258,7 @@ fi
 
 if test `uname` = "Darwin"; then
 	if test "x$BUILD_REVISION" != "x" -o "x$DYLD_FALLBACK_LIBRARY_PATH" = "x"; then
-		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib"
+		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib"
 		export PATH="/Library/Frameworks/Mono.framework/Versions/Current/bin:$PATH"
 		export ACLOCAL_FLAGS="-I /Library/Frameworks/Mono.framework/Versions/Current/share/aclocal"
 	fi
