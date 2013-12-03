@@ -80,25 +80,27 @@ namespace MonoDevelop.RazorGenerator
 		public abstract void Execute ();
 ";
 		const string baseMembersString =
-@"		// This field is OPTIONAL, but used by the default implementation of Generate, Write and WriteLiteral
+@"		// This field is OPTIONAL, but used by the default implementation of Generate, Write, WriteAttribute and WriteLiteral
 		//
 		System.IO.TextWriter __razor_writer;
 
 		// This method is OPTIONAL
 		//
-		///<summary>Executes the template and returns the output as a string.</summary>
+		/// <summary>Executes the template and returns the output as a string.</summary>
+		/// <returns>The template output.</returns>
 		public string GenerateString ()
 		{
 			using (var sw = new System.IO.StringWriter ()) {
 				Generate (sw);
-				return sw.ToString();
+				return sw.ToString ();
 			}
 		}
 
 		// This method is OPTIONAL, you may choose to implement Write and WriteLiteral without use of __razor_writer
 		// and provide another means of invoking Execute.
 		//
-		///<summary>Executes the template, writing to the provided text writer.</summary>
+		/// <summary>Executes the template, writing to the provided text writer.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the template output.</param>
 		public void Generate (System.IO.TextWriter writer)
 		{
 			__razor_writer = writer;
@@ -108,15 +110,18 @@ namespace MonoDevelop.RazorGenerator
 
 		// This method is REQUIRED, but you may choose to implement it differently
 		//
-		///<summary>Writes literal values to the template output without HTML escaping them.</summary>
+		/// <summary>Writes a literal value to the template output without HTML escaping it.</summary>
+		/// <param name=""value"">The literal value.</param>
 		protected void WriteLiteral (string value)
 		{
 			__razor_writer.Write (value);
 		}
 
-		// This method is REQUIRED if the template uses any Razor helpers, but you may choose to implement it differently
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
 		//
-		///<summary>Writes literal values to the TextWriter without HTML escaping them.</summary>
+		/// <summary>Writes a literal value to the TextWriter without HTML escaping it.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the literal.</param>
+		/// <param name=""value"">The literal value.</param>
 		protected static void WriteLiteralTo (System.IO.TextWriter writer, string value)
 		{
 			writer.Write (value);
@@ -124,7 +129,8 @@ namespace MonoDevelop.RazorGenerator
 
 		// This method is REQUIRED, but you may choose to implement it differently
 		//
-		///<summary>Writes values to the template output, HTML escaping them if necessary.</summary>
+		/// <summary>Writes a value to the template output, HTML escaping it if necessary.</summary>
+		/// <param name=""value"">The value.</param>
 		protected void Write (object value)
 		{
 			WriteTo (__razor_writer, value);
@@ -139,10 +145,11 @@ namespace MonoDevelop.RazorGenerator
 			write (__razor_writer);
 		}
 
-		// This method is REQUIRED, but you may choose to implement it differently
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
 		//
-		///<summary>Writes an object value to the TextWriter, HTML escaping it if necessary.</summary>
-		///<remarks>Used by Razor helpers to HTML escape values.</remarks>
+		/// <summary>Writes an object value to the TextWriter, HTML escaping it if necessary.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the value.</param>
+		/// <param name=""value"">The value.</param>
 		protected static void WriteTo (System.IO.TextWriter writer, object value)
 		{
 			if (value == null)
@@ -157,6 +164,10 @@ namespace MonoDevelop.RazorGenerator
 		/// <summary>
 		/// Conditionally writes an attribute to the template output.
 		/// </summary>
+		/// <param name=""name"">The name of the attribute.</param>
+		/// <param name=""prefix"">The prefix of the attribute.</param>
+		/// <param name=""suffix"">The suffix of the attribute.</param>
+		/// <param name=""values"">Attribute values, each specifying a prefix, value and whether it's a literal.</param>
 		protected void WriteAttribute (string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
 		{
 			WriteAttributeTo (__razor_writer, name, prefix, suffix, values);
@@ -167,6 +178,12 @@ namespace MonoDevelop.RazorGenerator
 		/// <summary>
 		/// Conditionally writes an attribute to a TextWriter.
 		/// </summary>
+		/// <param name=""writer"">The TextWriter to which to write the attribute.</param>
+		/// <param name=""name"">The name of the attribute.</param>
+		/// <param name=""prefix"">The prefix of the attribute.</param>
+		/// <param name=""suffix"">The suffix of the attribute.</param>
+		/// <param name=""values"">Attribute values, each specifying a prefix, value and whether it's a literal.</param>
+		///<remarks>Used by Razor helpers to write attributes.</remarks>
 		protected static void WriteAttributeTo (System.IO.TextWriter writer, string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
 		{
 			// this is based on System.Web.WebPages.WebPageExecutingBase
