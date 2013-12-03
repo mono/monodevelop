@@ -131,18 +131,10 @@ namespace MonoDevelop.RazorGenerator
 		//
 		/// <summary>Writes a value to the template output, HTML escaping it if necessary.</summary>
 		/// <param name=""value"">The value.</param>
+		/// <remarks>The value may be a Action<System.IO.TextWriter>, as returned by Razor helpers.</remarks>
 		protected void Write (object value)
 		{
 			WriteTo (__razor_writer, value);
-		}
-
-		// This method is REQUIRED if the template uses any Razor helpers, but you may choose to implement it differently
-		//
-		///<summary>Invokes the action to write directly to the template output.</summary>
-		///<remarks>This is used for Razor helpers, which already perform any necessary HTML escaping.</remarks>
-		protected void Write (Action<System.IO.TextWriter> write)
-		{
-			write (__razor_writer);
 		}
 
 		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
@@ -150,10 +142,18 @@ namespace MonoDevelop.RazorGenerator
 		/// <summary>Writes an object value to the TextWriter, HTML escaping it if necessary.</summary>
 		/// <param name=""writer"">The TextWriter to which to write the value.</param>
 		/// <param name=""value"">The value.</param>
+		/// <remarks>The value may be a Action<System.IO.TextWriter>, as returned by Razor helpers.</remarks>
 		protected static void WriteTo (System.IO.TextWriter writer, object value)
 		{
 			if (value == null)
 				return;
+
+			var write = value as Action<System.IO.TextWriter>;
+			if (write != null) {
+				write (writer);
+				return;
+			}
+
 			//NOTE: a more sophisticated implementation would write safe and pre-escaped values directly to the
 			//instead of double-escaping. See System.Web.IHtmlString in ASP.NET 4.0 for an example of this.
 			System.Net.WebUtility.HtmlEncode (value.ToString (), writer);
