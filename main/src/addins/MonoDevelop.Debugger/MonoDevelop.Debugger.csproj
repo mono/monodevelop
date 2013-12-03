@@ -143,7 +143,6 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\IValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathComparer.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathReference.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerConsoleView.cs" />
