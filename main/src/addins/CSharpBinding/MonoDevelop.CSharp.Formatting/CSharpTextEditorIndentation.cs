@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		readonly IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+		readonly IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 
 		CSharpFormattingPolicy Policy {
 			get {
@@ -484,15 +484,17 @@ namespace MonoDevelop.CSharp.Formatting
 				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
-
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					SafeUpdateIndentEngine (textEditorData.Caret.Offset);
 
 					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
 						FixLineStart (textEditorData, stateTracker, textEditorData.Caret.Line + 1);
 					} else {
-						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
+						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0')) {
 							DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
+						} else {
+							reIndent = lastCharInserted == '\n';
+						}
 					}
 					//reindent the line after the insertion, if needed
 					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
@@ -510,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				if (key != Gdk.Key.Return && (reIndent || automaticReindent)) {
+				if (reIndent || key != Gdk.Key.Return && automaticReindent) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
@@ -541,6 +543,10 @@ namespace MonoDevelop.CSharp.Formatting
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
+
+			if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+				DoReSmartIndent ();
+			}
 
 			CheckXmlCommentCloseTag (keyChar);
 

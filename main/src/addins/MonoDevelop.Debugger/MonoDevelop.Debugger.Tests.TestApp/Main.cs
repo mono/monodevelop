@@ -43,13 +43,13 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 		static string staticString = "some static";
 		string someString = "hi";
-		string[] numbers = new string[] { "one","two","three" };
+		string[] numbers = { "one","two","three" };
 		
 		public void TestEvaluation ()
 		{
 			int n = 32;
 			decimal dec = 123.456m;
-			ArrayList alist = new ArrayList ();
+			var alist = new ArrayList ();
 			alist.Add (1);
 			alist.Add ("two");
 			alist.Add (3);
@@ -58,12 +58,12 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			A b = new B ();
 			A a = new A ();
 			
-			WithDisplayString withDisplayString = new WithDisplayString ();
-			WithProxy withProxy = new WithProxy ();
-			WithToString withToString = new WithToString ();
+			var withDisplayString = new WithDisplayString ();
+			var withProxy = new WithProxy ();
+			var withToString = new WithToString ();
 			
-			int[][] numbersArrays = new int [2][];
-			int[,,] numbersMulti = new int [3,4,5];
+			var numbersArrays = new int [2][];
+			var numbersMulti = new int [3,4,5];
 			
 			var dict = new Dictionary<int, string[]> ();
 			var dictArray = new Dictionary<int, string[]> [2,3];

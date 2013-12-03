@@ -433,7 +433,7 @@ namespace MonoDevelop.NUnit
 						RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
 					} else {
 						testContext.Monitor.ReportRuntimeError (null, ex);
-						throw ex;
+						throw;
 					}
 					result = UnitTestResult.CreateFailure (ex);
 				} else {
@@ -465,40 +465,47 @@ namespace MonoDevelop.NUnit
 			LocalConsole cons = new LocalConsole ();
 
 			try {
+				MonoDevelop.NUnit.External.TcpTestListener tcpListener = null;
 				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 				if (!string.IsNullOrEmpty (cmd.Arguments))
 					cmd.Arguments += " ";
 				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
 
-				bool automaticUpdates = cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests"));
-				if (!string.IsNullOrEmpty (testName))
-					cmd.Arguments += " -run=" + suiteName + "." + testName;
-				else if (!string.IsNullOrEmpty (suiteName))
-					cmd.Arguments += " -run=" + suiteName;
+				bool automaticUpdates = cmd.Command != null && (cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests")));
+				if (!string.IsNullOrEmpty(pathName))
+					cmd.Arguments += " -run=" + test.TestId;
 				if (automaticUpdates) {
-					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor);
+					tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
-				var p = testContext.ExecutionContext.Execute (cmd, cons);
 
-				testContext.Monitor.CancelRequested += p.Cancel;
-				if (testContext.Monitor.IsCancelRequested)
-					p.Cancel ();
-				p.WaitForCompleted ();
-				
-				if (new FileInfo (outFile).Length == 0)
-					throw new Exception ("Command failed");
-				
+				// Note that we always dispose the tcp listener as we don't want it listening
+				// forever if the test runner does not try to connect to it
+				using (tcpListener) {
+					var p = testContext.ExecutionContext.Execute (cmd, cons);
+
+					testContext.Monitor.CancelRequested += p.Cancel;
+					if (testContext.Monitor.IsCancelRequested)
+						p.Cancel ();
+					p.WaitForCompleted ();
+					
+					if (new FileInfo (outFile).Length == 0)
+						throw new Exception ("Command failed");
+				}
+
+				// mdtool.exe does not necessarily guarantee we get automatic updates. It just guarantees
+				// that if guiunit is being used then it will give us updates. If you have a regular test
+				// assembly compiled against nunit.framework.dll 
+				if (automaticUpdates && tcpListener.HasReceivedConnection) {
+					if (testName != null)
+						return localMonitor.SingleTestResult;
+					return test.GetLastResult ();
+				}
+
 				XDocument doc = XDocument.Load (outFile);
 
 				if (doc.Root != null) {
-					if (automaticUpdates) {
-						DispatchService.GuiDispatch (delegate {
-							testContext.ResultsPad.InitializeTestRun (test);
-						});
-					}
-
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
 						cons.SetDone ();
@@ -511,7 +518,10 @@ namespace MonoDevelop.NUnit
 						}
 
 						bool macunitStyle = doc.Root.Element ("environment") != null && doc.Root.Element ("environment").Attribute ("macunit-version") != null;
-						return ReportXmlResult (localMonitor, root, "", macunitStyle);
+						var result = ReportXmlResult (localMonitor, root, "", macunitStyle);
+						if (testName != null)
+							result = localMonitor.SingleTestResult;
+						return result;
 					}
 				}
 				throw new Exception ("Test results could not be parsed.");

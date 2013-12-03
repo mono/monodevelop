@@ -202,6 +202,15 @@ namespace MonoDevelop.AnalysisCore
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Options for \"{0}\"", result.OptionsTitle);
 
+					bool hasBatchFix = false;
+					foreach (var fix in result.Fixes.OfType<IAnalysisFixAction> ().Where (f => f.SupportsBatchFix)) {
+						hasBatchFix = true;
+						var title = string.Format (GettextCatalog.GetString ("Apply in file: {0}"), fix.Label);
+						declSet.CommandInfos.Add (title, new System.Action(fix.BatchFix));
+					}
+					if (hasBatchFix)
+						declSet.CommandInfos.AddSeparator ();
+
 					var ir = result as InspectorResults;
 					if (ir != null) {
 						var inspector = ir.Inspector;

@@ -399,7 +399,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			int diameter = Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2;
 			var x1 = Math.Round (Allocation.Width / 2d);
-			double y1 = indicatorPadding;
+			double y1 = indicatorPadding + diameter / 2;
 			if (diameter % 2 == 0) {
 				x1 += 0.5;
 				y1 += 0.5;

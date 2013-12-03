@@ -1,6 +1,4 @@
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
@@ -20,16 +18,19 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		}
 		
 		/// <summary>Get the attributes for the current node.</summary>
-		/// <param name="treeNavigator">ITreeNavigator containing the tree navigator.</param>
+		/// <param name="parentNode">ITreeNavigator containing the tree navigator.</param>
 		/// <param name="dataObject">An object containing the value of the current node.</param>
 		/// <param name="attributes">A NodeAttributes reference containing all the attribute for the current node.</param>
-		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
+		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
 		{
-			if (treeNavigator.Options ["ShowAllFiles"])
+			if (parentNode.Options ["ShowAllFiles"])
 				return;
 			
-			ProjectFolder folder = dataObject as ProjectFolder;
-			DotNetProject project = folder.Project as DotNetProject;
+			var folder = dataObject as ProjectFolder;
+			if (folder == null)
+				return;
+
+			var project = folder.Project as DotNetProject;
 			if (project == null)
 				return;
 			

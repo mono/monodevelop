@@ -131,23 +131,34 @@ namespace Mono.TextEditor
 			ChangeLength (startNode, startNode.LengthIncludingDelimiter - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
 
+		public bool LineEndingMismatch {
+			get;
+			set;
+		}
+
 		//bool inInit;
 		public void Initalize (string text)
 		{
+			LineEndingMismatch = false;
 			Clear ();
 			if (string.IsNullOrEmpty (text))
 				return;
 			var nodes = new List<TreeNode> ();
 
+			var delimiterType = UnicodeNewline.Unknown;
 			int offset = 0;
 			while (true) {
 				var delimiter = NextDelimiter (text, offset);
 				if (delimiter.IsInvalid)
 					break;
-
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.Length);
 				nodes.Add (newLine);
+				if (offset > 0) {
+					LineEndingMismatch |= delimiterType != delimiter.UnicodeNewline;
+				} else {
+					delimiterType = delimiter.UnicodeNewline;
+				}
 				offset = delimiterEndOffset;
 			}
 			var lastLine = new TreeNode (text.Length - offset, 0);
@@ -219,7 +230,13 @@ namespace Mono.TextEditor
 			public static readonly Delimiter Invalid = new Delimiter (-1, 0);
 
 			public readonly int Offset;
-			public readonly int Length;
+			public readonly UnicodeNewline UnicodeNewline;
+
+			public int Length {
+				get {
+					return UnicodeNewline == UnicodeNewline.CRLF ? 2 : 1;
+				}
+			}
 
 			public int EndOffset {
 				get { return Offset + Length; }
@@ -231,10 +248,10 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public Delimiter (int offset, int length)
+			public Delimiter (int offset, UnicodeNewline unicodeNewline)
 			{
 				Offset = offset;
-				Length = length;
+				UnicodeNewline = unicodeNewline;
 			}
 		}
 
@@ -243,12 +260,13 @@ namespace Mono.TextEditor
 			fixed (char* start = text) {
 				char* p = start + offset;
 				char* endPtr = start + text.Length;
+
 				while (p < endPtr) {
 					char* nextp = p + 1;
 					char nextChar = nextp < endPtr ? *nextp : '\0';
-					var nl = NewLine.GetDelimiterLength (*p, nextChar);
-					if (nl > 0)
-						return new Delimiter ((int)(p - start), nl);
+					var type = NewLine.GetDelimiterType (*p, nextChar);
+					if (type != UnicodeNewline.Unknown)
+						return new Delimiter ((int)(p - start), type);
 					p++;
 				}
 				return Delimiter.Invalid;

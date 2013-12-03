@@ -34,7 +34,6 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using MonoDevelop.Core;
 using WebReferencesDir = MonoDevelop.WebReferences.WS.WebReferences;
-using System.Collections.Generic;
 
 namespace MonoDevelop.WebReferences.WS
 {
@@ -48,7 +47,7 @@ namespace MonoDevelop.WebReferences.WS
 		}
 		
 		public DiscoveryClientProtocol Protocol {
-			get { return this.protocol; }
+			get { return protocol; }
 		}
 
 		public override FilePath GetReferencePath (DotNetProject project, string refName)
@@ -58,12 +57,13 @@ namespace MonoDevelop.WebReferences.WS
 
 		public override string GetDescriptionMarkup ()
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 			foreach (object dd in protocol.Documents.Values) {
 				if (dd is ServiceDescription) {
 					Library.GenerateWsdlXml (text, protocol);
 					break;
-				} else if (dd is DiscoveryDocument) {
+				}
+				if (dd is DiscoveryDocument) {
 					Library.GenerateDiscoXml (text, (DiscoveryDocument)dd);
 					break;
 				}
@@ -77,26 +77,26 @@ namespace MonoDevelop.WebReferences.WS
 			}
 		}
 		
-		protected override string GenerateDescriptionFiles (DotNetProject project, FilePath basePath)
+		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
-			if (!project.Items.GetAll<WebReferencesDir> ().Any ()) {
-				WebReferencesDir met = new WebReferencesDir ();
+			if (!dotNetProject.Items.GetAll<WebReferencesDir> ().Any ()) {
+				var met = new WebReferencesDir ();
 				met.Path = basePath.ParentDirectory;
-				project.Items.Add (met);
+				dotNetProject.Items.Add (met);
 			}
 			
-			WebReferenceUrl wru = project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
+			WebReferenceUrl wru = dotNetProject.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == basePath);
 			if (wru == null) {
 				wru = new WebReferenceUrl (protocol.Url);
 				wru.RelPath = basePath;
-				project.Items.Add (wru);
+				dotNetProject.Items.Add (wru);
 			}
 			
 			protocol.ResolveAll ();
 			DiscoveryClientResultCollection files = protocol.WriteAll (basePath, "Reference.map");
 			
 			foreach (DiscoveryClientResult dr in files)
-				project.AddFile (new FilePath (dr.Filename).ToAbsolute (basePath), BuildAction.None);
+				dotNetProject.AddFile (new FilePath (dr.Filename).ToAbsolute (basePath), BuildAction.None);
 			
 			return Path.Combine (basePath, "Reference.map");
 		}
@@ -107,7 +107,7 @@ namespace MonoDevelop.WebReferences.WS
 			if (wru == null)
 				return;
 			
-			WebServiceDiscoveryResultWS wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
+			var wref = (WebServiceDiscoveryResultWS) WebReferencesService.WsEngine.Discover (wru.UpdateFromURL);
 			if (wref == null)
 				return;
 			
@@ -128,9 +128,9 @@ namespace MonoDevelop.WebReferences.WS
 		{
 			// Setup the proxy namespace and compile unit
 			CodeDomProvider codeProv = GetProvider (dotNetProject);
-			CodeNamespace codeNamespace = new CodeNamespace (proxyNamespace);
-			CodeConstructor urlConstructor = new CodeConstructor ();
-			CodeCompileUnit codeUnit = new CodeCompileUnit ();
+			var codeNamespace = new CodeNamespace (proxyNamespace);
+			var urlConstructor = new CodeConstructor ();
+			var codeUnit = new CodeCompileUnit ();
 			codeUnit.Namespaces.Add (codeNamespace);
 
 			// Setup the importer and import the service description into the code unit
@@ -143,7 +143,7 @@ namespace MonoDevelop.WebReferences.WS
 				if (declarationType.IsClass) 
 					if (declarationType.BaseTypes.Count > 0)
 						// Is a Service Class
-						if (declarationType.BaseTypes [0].BaseType.IndexOf ("SoapHttpClientProtocol") > -1) {
+						if (declarationType.BaseTypes [0].BaseType.IndexOf ("SoapHttpClientProtocol", System.StringComparison.Ordinal) > -1) {
 							// Create new public constructor with the Url as parameter
 							urlConstructor.Attributes = MemberAttributes.Public;
 							urlConstructor.Parameters.Add (new CodeParameterDeclarationExpression ("System.String", "url"));
@@ -156,7 +156,7 @@ namespace MonoDevelop.WebReferences.WS
 			
 			// Generate the code and save the file
 			string fileSpec = Path.Combine (basePath, dotNetProject.LanguageBinding.GetFileName (referenceName));
-			StreamWriter writer = new StreamWriter (fileSpec);
+			var writer = new StreamWriter (fileSpec);
 			codeProv.GenerateCodeFromCompileUnit (codeUnit, writer, new CodeGeneratorOptions ());
 			
 			writer.Close ();
@@ -167,10 +167,8 @@ namespace MonoDevelop.WebReferences.WS
 		public override string GetServiceURL ()
 		{
 			WebReferenceUrl wru = Item.Project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == Item.BasePath);
-			if (wru == null)
-				return null;
+			return wru == null ? null : wru.ServiceLocationURL;
 
-			return wru.ServiceLocationURL;
 		}
 	}
 }

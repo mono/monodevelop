@@ -163,10 +163,10 @@ namespace MonoDevelop.Platform
 		[UnmanagedFunctionPointer (CallingConvention.Winapi)]
 		delegate int EnumMonitorsCallback (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (Win32.USER32)]
 		extern static int EnumDisplayMonitors (IntPtr hdc, IntPtr clip, EnumMonitorsCallback callback, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (Win32.USER32)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
 		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)

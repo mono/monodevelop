@@ -25,6 +25,8 @@
 //
 //
 
+using System;
+using System.Collections;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 
@@ -59,6 +61,23 @@ namespace MonoDevelop.Debugger.Win32
 
 				return array != null ? array.GetElement (indices) : null;
 			});
+		}
+
+		public Array GetElements (int[] indices, int count)
+		{
+			// FIXME: the point of this method is to be more efficient than getting 1 array element at a time...
+			var elements = new ArrayList ();
+
+			int[] idx = new int[indices.Length];
+			for (int i = 0; i < indices.Length; i++)
+				idx[i] = indices[i];
+
+			for (int i = 0; i < count; i++) {
+				elements.Add (GetElement (idx));
+				idx[idx.Length - 1]++;
+			}
+
+			return elements.ToArray ();
 		}
 		
 		public void SetElement (int[] indices, object val)

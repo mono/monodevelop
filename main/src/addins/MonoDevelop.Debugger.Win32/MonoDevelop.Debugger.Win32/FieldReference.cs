@@ -45,8 +45,8 @@ namespace MonoDevelop.Debugger.Win32
 			this.thisobj = thisobj;
 			this.type = type;
 			this.field = field;
-			if (!field.IsStatic)
-				this.thisobj = thisobj;
+			if (field.IsStatic)
+				this.thisobj = null;
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;
@@ -115,7 +115,13 @@ namespace MonoDevelop.Debugger.Win32
 		public override ObjectValueFlags Flags {
 			get {
 				ObjectValueFlags flags = ObjectValueFlags.Field;
-				if (field.IsFamilyOrAssembly || field.IsFamilyAndAssembly)
+
+				if (field.IsStatic)
+					flags |= ObjectValueFlags.Global;
+
+				if (field.IsFamilyOrAssembly)
+					flags |= ObjectValueFlags.InternalProtected;
+				else if (field.IsFamilyAndAssembly)
 					flags |= ObjectValueFlags.Internal;
 				else if (field.IsFamily)
 					flags |= ObjectValueFlags.Protected;

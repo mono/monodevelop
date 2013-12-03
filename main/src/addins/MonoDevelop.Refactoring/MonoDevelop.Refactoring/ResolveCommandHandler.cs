@@ -346,7 +346,7 @@ namespace MonoDevelop.Refactoring
 					}
 				} catch (Exception e) {
 					if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-						LoggingService.LogError ("Error while looking up framework extension methods.", e);
+						LoggingService.LogError (string.Format ("Error while looking up extension method {0}", umResult.MemberName), e);
 				}
 			}
 			bool foundIdentifier = false;
@@ -373,14 +373,13 @@ namespace MonoDevelop.Refactoring
 						scope = scope.Parent;
 					}
 				}
-
 				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
 				if (resolveResult is UnknownIdentifierResolveResult) {
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
 					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
 					foreach (var typeDefinition in allTypes) {
-						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc && 
-							lookup.IsAccessible (typeDefinition, false)) {
+						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
+						    lookup.IsAccessible (typeDefinition, false)) {
 							if (typeDefinition.DeclaringTypeDefinition != null) {
 								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
 								foundIdentifier = true;
@@ -434,8 +433,9 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 			}
+
 			// Try to search framework types
-			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult && node is AstType) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				if (uiResult != null) {
 					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
@@ -449,7 +449,7 @@ namespace MonoDevelop.Refactoring
 						}
 					} catch (Exception e) {
 						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-							LoggingService.LogError ("Error while looking up framework types.", e);
+							LoggingService.LogError (string.Format ("Error while looking up identifier {0}", uiResult.Identifier), e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
@@ -470,7 +470,7 @@ namespace MonoDevelop.Refactoring
 						}
 					} catch (Exception e) {
 						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-							LoggingService.LogError ("Error while looking up framework types.", e);
+							LoggingService.LogError (string.Format ("Error while looking up member resolve result {0}", node), e);
 					}
 					foreach(var kv in lookups)
 						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));

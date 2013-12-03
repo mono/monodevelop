@@ -73,9 +73,6 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		readonly Document guiDocument;
 
-		SyntaxTree unit;
-//		CSharpUnresolvedFile parsedFile;
-//		ICompilation compilation;
 		CSharpAstResolver resolver;
 		CancellationTokenSource src;
 
@@ -129,7 +126,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
 		{
 			var workspace = IdeApp.Workspace;
-			if (workspace == null)
+			if (workspace == null || project == null)
 				yield break;
 			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration != null) {
@@ -169,11 +166,9 @@ namespace MonoDevelop.CSharp.Highlighting
 							var newResolver = newResolverTask.Result;
 							if (newResolver == null)
 								return;
-							unit = newResolver.RootNode as SyntaxTree;
-//							parsedFile = newResolver.UnresolvedFile;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
-								unit.AcceptVisitor (visitor);
+								newResolver.RootNode.AcceptVisitor (visitor);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
 								return;
@@ -695,9 +690,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					try {
 						HighlightingVisitior visitor;
 						if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
-							visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
+							var resolver = csharpSyntaxMode.resolver;
+							visitor = new HighlightingVisitior (resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
 							visitor.tree.InstallListener (doc);
-							csharpSyntaxMode.unit.AcceptVisitor (visitor);
+							resolver.RootNode.AcceptVisitor (visitor);
 							csharpSyntaxMode.lineSegments[line] = visitor;
 						}
 						string style;

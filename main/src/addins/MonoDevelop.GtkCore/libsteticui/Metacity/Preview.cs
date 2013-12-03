@@ -10,6 +10,7 @@ namespace Stetic.Metacity {
 
 	internal class Preview : Gtk.Bin
 	{
+		const string LIBMETACITY = "libmetacity-private.so.0";
 		static Theme theme;
 		public static bool ThemeError = false;
 			
@@ -123,7 +124,7 @@ namespace Stetic.Metacity {
 		protected Preview(GLib.GType gtype) : base(gtype) {}
 		public Preview(IntPtr raw) : base(raw) {}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern IntPtr meta_preview_new();
 
 		public Preview () : base (IntPtr.Zero)
@@ -135,7 +136,7 @@ namespace Stetic.Metacity {
 			Raw = meta_preview_new();
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern void meta_preview_set_title(IntPtr raw, IntPtr title);
 
 		public string Title {
@@ -146,7 +147,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern void meta_preview_set_button_layout(IntPtr raw, ref Stetic.Metacity.ButtonLayout button_layout);
 
 		public Stetic.Metacity.ButtonLayout ButtonLayout
@@ -156,7 +157,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern void meta_preview_set_theme(IntPtr raw, IntPtr theme);
 
 		public Metacity.Theme Theme {
@@ -165,7 +166,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern IntPtr meta_preview_get_mini_icon();
 
 		public static Gdk.Pixbuf MiniIcon { 
@@ -176,7 +177,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern IntPtr meta_preview_get_icon();
 
 		public static Gdk.Pixbuf Icon { 
@@ -187,7 +188,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern void meta_preview_set_frame_type(IntPtr raw, int type);
 
 		public Stetic.Metacity.FrameType FrameType
@@ -197,7 +198,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern IntPtr meta_preview_get_type();
 
 		public static new GLib.GType GType { 
@@ -208,7 +209,7 @@ namespace Stetic.Metacity {
 			}
 		}
 
-		[DllImport("libmetacity-private.so.0")]
+		[DllImport(LIBMETACITY)]
 		static extern void meta_preview_set_frame_flags(IntPtr raw, int flags);
 
 		public Stetic.Metacity.FrameFlags FrameFlags

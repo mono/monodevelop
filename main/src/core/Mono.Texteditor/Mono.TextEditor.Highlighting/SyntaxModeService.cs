@@ -43,8 +43,7 @@ namespace Mono.TextEditor.Highlighting
 		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
 		static Dictionary<string, IStreamProvider> syntaxModeLookup = new Dictionary<string, IStreamProvider> ();
 		static Dictionary<string, IStreamProvider> styleLookup      = new Dictionary<string, IStreamProvider> ();
-		static Dictionary<string, string> isLoadedFromFile = new Dictionary<string, string> ();
-		
+
 		public static string[] Styles {
 			get {
 				List<string> result = new List<string> ();
@@ -58,14 +57,6 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return result.ToArray ();
 			}
-		}
-		
-		public static string GetFileNameForStyle (ColorScheme style)
-		{
-			string result;
-			if (!isLoadedFromFile.TryGetValue (style.Name, out result))
-				return null;
-			return result;
 		}
 		
 		public static void InstallSyntaxMode (string mimeType, ISyntaxModeProvider modeProvider)
@@ -107,6 +98,7 @@ namespace Mono.TextEditor.Highlighting
 			if (!styleLookup.ContainsKey (name))
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
 			var provider = styleLookup [name];
+			styleLookup.Remove (name); 
 			var stream = provider.Open ();
 			try {
 				if (provider is UrlStreamProvider) {
@@ -116,6 +108,7 @@ namespace Mono.TextEditor.Highlighting
 					} else {
 						styles [name] = ColorScheme.LoadFrom (stream);
 					}
+					styles [name].FileName = usp.Url;
 				} else {
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
@@ -196,10 +189,15 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void Remove (ColorScheme style)
 		{
-			if (styles.ContainsKey (style.Name))
-				styles.Remove (style.Name);
 			if (styleLookup.ContainsKey (style.Name))
 				styleLookup.Remove (style.Name);
+
+			foreach (var kv in styles) {
+				if (kv.Value == style) {
+					styles.Remove (kv.Key); 
+					return;
+				}
+			}
 		}
 		
 		public static void Remove (SyntaxMode mode)
@@ -427,7 +425,6 @@ namespace Mono.TextEditor.Highlighting
 						string styleName = ScanStyle (stream);
 						if (!string.IsNullOrEmpty (styleName)) {
 							styleLookup [styleName] = new UrlStreamProvider (file);
-							isLoadedFromFile [styleName] = file;
 						} else {
 							Console.WriteLine ("Invalid .json syntax sheme file : " + file);
 						}
@@ -436,7 +433,6 @@ namespace Mono.TextEditor.Highlighting
 					using (var stream = File.OpenRead (file)) {
 						string styleName = Path.GetFileNameWithoutExtension (file);
 						styleLookup [styleName] = new UrlStreamProvider (file);
-						isLoadedFromFile [styleName] = file;
 					}
 				}
 			}
@@ -500,9 +496,8 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void AddStyle (string fileName, ColorScheme style)
+		public static void AddStyle (ColorScheme style)
 		{
-			isLoadedFromFile [style.Name] = fileName;
 			styles [style.Name] = style;
 		}
 

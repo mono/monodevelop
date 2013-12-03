@@ -75,11 +75,7 @@ namespace CSharpBinding.Autotools
 				if (!hasDebugDefine)
 					writer.Write (" -define:DEBUG");
 			}
-			
-			if (!string.IsNullOrEmpty (parameters.AdditionalArguments)) {
-				writer.Write (" " + parameters.AdditionalArguments + " ");
-			}
-			
+
 			switch (parameters.LangVersion) {
 			case LangVersion.Default:
 				break;

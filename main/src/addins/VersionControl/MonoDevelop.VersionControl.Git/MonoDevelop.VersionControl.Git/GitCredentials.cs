@@ -32,7 +32,7 @@ using NGit.Transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class GitCredentials: CredentialsProvider
+	sealed class GitCredentials: CredentialsProvider
 	{
 		bool HasReset {
 			get; set;
@@ -75,8 +75,9 @@ namespace MonoDevelop.VersionControl.Git
 				
 			HasReset = false;
 			if (result) {
+				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
 				if (passwordItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), new string (passwordItem.GetValue ()));
+					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
 				} else if (passphraseItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
 				}
@@ -118,10 +119,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (items.Length == 2 && username != null && password != null) {
 				passwordItem = password;
 
-				var passwordValue = PasswordService.GetWebPassword (actualUrl);
-				if (passwordValue != null) {
-					username.SetValue (actualUrl.UserInfo);
-					password.SetValueNoCopy (passwordValue.ToArray ());
+				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
+				if (cred != null) {
+					username.SetValue (cred.Item1);
+					password.SetValueNoCopy (cred.Item2.ToArray ());
 					return true;
 				}
 			} else {

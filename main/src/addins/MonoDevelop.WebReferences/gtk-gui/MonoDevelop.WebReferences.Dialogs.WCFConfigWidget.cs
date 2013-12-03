@@ -9,8 +9,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private global::Gtk.ComboBox dictionaryCollection;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
+		private global::Gtk.Label label3;
+		private global::Gtk.ComboBox listAccess;
 		private global::Gtk.ComboBox listCollection;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -58,17 +60,38 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Access level:");
+			this.wcfOptions.Add (this.label3);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.label3]));
+			w4.TopAttach = ((uint)(2));
+			w4.BottomAttach = ((uint)(3));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child wcfOptions.Gtk.Table+TableChild
+			this.listAccess = global::Gtk.ComboBox.NewText ();
+			this.listAccess.Name = "listAccess";
+			this.wcfOptions.Add (this.listAccess);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAccess]));
+			w5.TopAttach = ((uint)(2));
+			w5.BottomAttach = ((uint)(3));
+			w5.LeftAttach = ((uint)(1));
+			w5.RightAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(7));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child wcfOptions.Gtk.Table+TableChild
 			this.listCollection = global::Gtk.ComboBox.NewText ();
 			this.listCollection.Name = "listCollection";
 			this.wcfOptions.Add (this.listCollection);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listCollection]));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(7));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listCollection]));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(7));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.dialog1_VBox.Add (this.wcfOptions);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.wcfOptions]));
-			w5.Position = 0;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.wcfOptions]));
+			w7.Position = 0;
 			this.Add (this.dialog1_VBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

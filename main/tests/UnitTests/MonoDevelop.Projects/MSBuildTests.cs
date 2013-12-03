@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects
 	public class MSBuildTests: TestBase
 	{
 		[Test()]
-		[Ignore ("We don't install the msbuild assemblies in the right place for this tests")]
 		public void LoadSaveBuildConsoleProject()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
@@ -88,7 +87,7 @@ namespace MonoDevelop.Projects
 		public void CreateConsoleProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
-			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
+			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
 			sol.Save (Util.GetMonitor ());
 			
 			// msbuild format
@@ -99,31 +98,14 @@ namespace MonoDevelop.Projects
 			// Make sure we compare using the same guid
 			Project p = sol.Items [0] as Project;
 			string guid = p.ItemId;
-			solXml = solXml.Replace (guid, "{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}");
-			projectXml = projectXml.Replace (guid, "{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}");
+			solXml = solXml.Replace (guid, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
+			projectXml = projectXml.Replace (guid, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
 			
 			string solFile = Util.GetSampleProjectPath ("generated-console-project", "TestSolution.sln");
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.csproj");
 			
-			Assert.AreEqual (File.ReadAllText (solFile), solXml);
-			Assert.AreEqual (Util.GetXmlFileInfoset (projectFile), projectXml);
-
-			// MD1 format
-			
-			sol.ConvertToFormat (Util.FileFormatMD1, true);
-			sol.Save (Util.GetMonitor ());
-
-			solXml = Util.GetXmlFileInfoset (sol.FileName);
-			projectXml = Util.GetXmlFileInfoset (((SolutionEntityItem)sol.Items [0]).FileName);
-
-			solFile = Util.GetSampleProjectPath ("generated-console-project", "TestSolution.mds");
-			projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.mdp");
-			
-			Assert.AreEqual (Util.GetXmlFileInfoset (solFile), solXml, "solXml: " + sol.FileName);
-			Assert.AreEqual (Util.GetXmlFileInfoset (projectFile), projectXml, "projectXml: " + ((SolutionEntityItem)sol.Items [0]).FileName);
-			
-//			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08");
-//			sol.Save (Util.GetMonitor ());
+			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (solFile)), solXml);
+			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
 		}
 		
 		[Test]
@@ -363,6 +345,33 @@ namespace MonoDevelop.Projects
 			conf = ((DotNetProjectConfiguration)p.Configurations [0]);
 
 			Assert.AreEqual (value, conf.OutputAssembly);
+		}
+
+		[Test]
+		public void EvaluateProperties ()
+		{
+			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
+			Environment.SetEnvironmentVariable ("HHH", "EnvTest");
+			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
+
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			Assert.AreEqual ("Program1_test1.cs", p.Files[0].FilePath.FileName, "Basic replacement");
+			Assert.AreEqual ("Program2_test1_test2.cs", p.Files[1].FilePath.FileName, "Property referencing same property");
+			Assert.AreEqual ("Program3_$(DebugType).cs", p.Files[2].FilePath.FileName, "Property inside group with non-evaluable condition");
+			Assert.AreEqual ("Program4_yes_value.cs", p.Files[3].FilePath.FileName, "Evaluation of group condition");
+			Assert.AreEqual ("Program5_yes_value.cs", p.Files[4].FilePath.FileName, "Evaluation of property condition");
+			Assert.AreEqual ("Program6_$(FFF).cs", p.Files[5].FilePath.FileName, "Evaluation of property with non-evaluable condition");
+			Assert.AreEqual ("Program7_test1.cs", p.Files[6].FilePath.FileName, "Item conditions are ignored");
+			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are ignored");
+			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
+			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
+			Assert.AreEqual ("Program11_EnvTest.cs", p.Files[10].FilePath.FileName, "Environment variable");
+
+			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
+			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
+			Assert.IsTrue (asms.Contains (testRef));
 		}
 	}
 }

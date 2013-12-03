@@ -30,7 +30,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class StashManagerDialog : Dialog
+	partial class StashManagerDialog : Dialog
 	{
 		readonly ListStore store;
 		readonly StashCollection stashes;

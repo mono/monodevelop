@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public FilePath FileName {
 			get {
-				if (!Window.ViewContent.IsFile)
+				if (Window == null || !Window.ViewContent.IsFile)
 					return null;
 				return Window.ViewContent.IsUntitled ? Window.ViewContent.UntitledName : Window.ViewContent.ContentName;
 			}
@@ -204,6 +204,14 @@ namespace MonoDevelop.Ide.Gui
 				var project = Project;
 				if (project == null)
 					return false;
+				var solution = project.ParentSolution;
+
+				if (solution != null && IdeApp.Workspace != null) {
+					var config = IdeApp.Workspace.ActiveConfiguration;
+					if (config != null && !solution.GetConfiguration (config).BuildEnabledForItem (project))
+						return false;
+				}
+
 				var pf = project.GetProjectFile (FileName);
 				return pf != null && pf.BuildAction == BuildAction.Compile;
 			}
@@ -683,7 +691,7 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor != null) {
 				InitializeEditor (editor);
-				RunWhenLoaded (ReparseDocument);
+				RunWhenLoaded (delegate { ListenToProjectLoad (Project); });
 			}
 			
 			window.Document = this;
@@ -708,7 +716,7 @@ namespace MonoDevelop.Ide.Gui
 			e.Document.RunWhenLoaded (action);
 		}
 
-		TypeSystemService.ProjectContentWrapper oldWrapper;
+		TypeSystemService.ProjectContentWrapper currentWrapper;
 		internal void SetProject (Project project)
 		{
 			if (Window.ViewContent.Project == project)
@@ -725,18 +733,25 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			StartReparseThread ();
 
-			if (oldWrapper != null) {
-				oldWrapper.InLoadChanged -= HandleInLoadChanged;
-				oldWrapper = null;
+			ListenToProjectLoad (project);
+		}
+
+		void ListenToProjectLoad (Project project)
+		{
+			if (currentWrapper != null) {
+				currentWrapper.Loaded -= HandleInLoadChanged;
+				currentWrapper = null;
 			}
-
 			if (project != null) {
 				var wrapper = TypeSystemService.GetProjectContentWrapper (project);
-				wrapper.InLoadChanged += HandleInLoadChanged;
-				oldWrapper = wrapper;
+				wrapper.Loaded += HandleInLoadChanged;
+				currentWrapper = wrapper;
+				RunWhenLoaded (delegate {
+					currentWrapper.RequestLoad ();
+				});
 			}
+			StartReparseThread ();
 		}
 
 		void HandleInLoadChanged (object sender, EventArgs e)
@@ -762,7 +777,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				string currentParseFile = FileName;
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				string currentParseText = editor.Text;
@@ -787,9 +802,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool IsProjectContextInUpdate {
 			get {
-				if (Project == null)
+				if (currentWrapper == null)
 					return false;
-				return TypeSystemService.GetProjectContentWrapper (Project).InLoad;
+				return !currentWrapper.IsLoaded || !currentWrapper.ReferencesConnected;
 			}
 		}
 
@@ -818,20 +833,26 @@ namespace MonoDevelop.Ide.Gui
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
 			CancelParseTimeout ();
-			
+			if (IsProjectContextInUpdate)
+				return;
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || IsProjectContextInUpdate) {
+					parseTimeout = 0;
 					return false;
+				}
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
+					if (IsProjectContextInUpdate)
+						return;
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
+
 						this.parsedDocument = currentParsedDocument;
 						OnDocumentParsed (EventArgs.Empty);
 					});

@@ -252,7 +252,7 @@ namespace Mono.TextEditor.Vi
 		{
 			CurState = State.Normal;
 			ResetEditorState (Data);
-			
+			motion = Motion.None;
 			commandBuffer.Length = 0;
 			Status = status;
 		}
@@ -617,6 +617,7 @@ namespace Mono.TextEditor.Vi
 						RunActions (action, ClipboardActions.Cut);
 					Status = "-- INSERT --";
 					CurState = State.Insert;
+					motion = Motion.None;
 					Caret.Mode = CaretMode.Insert;
 				} else {
 					Reset ("Unrecognised motion");
@@ -883,6 +884,11 @@ namespace Mono.TextEditor.Vi
 						case 'o':
 						// Fold open
 							action = FoldActions.OpenFold;
+							break;
+						case 'z':
+						case '.':
+							editor.CenterToCaret ();
+							Reset ("");
 							break;
 						default:
 							Reset ("Unknown command");

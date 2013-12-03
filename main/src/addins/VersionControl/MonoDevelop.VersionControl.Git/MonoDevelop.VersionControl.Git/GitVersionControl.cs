@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public abstract class GitVersionControl : VersionControlSystem
+	abstract class GitVersionControl : VersionControlSystem
 	{
 		readonly Dictionary<FilePath,GitRepository> repositories = new Dictionary<FilePath,GitRepository> ();
 		
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
 				return null;
-			if (System.IO.Directory.Exists (path.Combine (".git"))) {
+			if (path.IsGitRepository ()) {
 				GitRepository repo;
 				if (!repositories.TryGetValue (path.CanonicalPath, out repo))
 					repositories [path.CanonicalPath] = repo = new GitRepository (path, null);

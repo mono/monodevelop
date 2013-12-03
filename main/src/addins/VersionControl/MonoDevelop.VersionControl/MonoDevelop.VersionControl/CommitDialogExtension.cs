@@ -23,6 +23,10 @@ namespace MonoDevelop.VersionControl
 		{
 			return true;
 		}
+
+		public virtual void CommitMessageTextViewHook (Gtk.TextView textView)
+		{
+		}
 		
 		/// <summary>
 		/// Called when the commit operation starts.

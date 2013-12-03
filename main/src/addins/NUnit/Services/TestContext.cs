@@ -44,7 +44,6 @@ namespace MonoDevelop.NUnit
 		public TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, IExecutionHandler executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
-			ResultsPad = resultsPad;
 			if (executionContext == null)
 				executionContext = Runtime.ProcessService.DefaultExecutionHandler;
 			this.executionContext = executionContext;
@@ -67,10 +66,6 @@ namespace MonoDevelop.NUnit
 		
 		public IExecutionHandler ExecutionContext {
 			get { return executionContext; }
-		}
-
-		internal TestResultsPad ResultsPad {
-			get; private set;
 		}
 	}
 }

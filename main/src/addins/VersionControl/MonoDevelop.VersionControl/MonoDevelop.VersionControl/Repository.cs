@@ -29,12 +29,12 @@ namespace MonoDevelop.VersionControl
 		
 		public event EventHandler NameChanged;
 		
-		public Repository ()
+		protected Repository ()
 		{
 			infoCache = new VersionInfoCache (this);
 		}
 		
-		public Repository (VersionControlSystem vcs): this ()
+		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
 		}
@@ -292,23 +292,37 @@ namespace MonoDevelop.VersionControl
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
 			try {
-				lock (queryLock) {
-					var groups = fileQueryQueue.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+				while (true) {
+					VersionInfoQuery [] fileQueryQueueClone;
+					DirectoryInfoQuery [] directoryQueryQueueClone;
+
+					lock (queryLock) {
+						if (fileQueryQueue.Count == 0 && directoryQueryQueue.Count == 0) {
+							queryRunning = false;
+							return;
+						}
+
+						fileQueryQueueClone = fileQueryQueue.ToArray ();
+						fileQueryQueue.Clear ();
+						filesInQueryQueue.Clear ();
+
+						directoryQueryQueueClone = directoryQueryQueue.ToArray ();
+						directoriesInQueryQueue.Clear ();
+						directoryQueryQueue.Clear ();
+					}
+
+					// Ensure we do not execute this with the query lock held, otherwise the IDE can hang while trying to add
+					// new queries to the queue while long-running VCS operations are being performed
+					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
-					filesInQueryQueue.Clear ();
 
-					foreach (var item in directoryQueryQueue) {
+					foreach (var item in directoryQueryQueueClone) {
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
-					directoriesInQueryQueue.Clear ();
-
-					fileQueryQueue.Clear ();
-					directoryQueryQueue.Clear ();
-					queryRunning = false;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Version control status query failed", ex);

@@ -58,6 +58,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
+
+		internal static bool ShutDown { get; private set; }
 		
 		public static DataContext DataContext {
 			get {
@@ -84,6 +86,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
+
+			Runtime.ShuttingDown += delegate {
+				ShutDown = true;
+				CleanProjectBuilders ();
+			};
 		}
 
 		static void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
@@ -192,25 +199,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (string typeGuids)
 		{
-			if (!string.IsNullOrEmpty (typeGuids)) {
-				Type ptype = null;
-				DotNetProjectSubtypeNode foundNode = null;
-				foreach (string guid in typeGuids.Split (';')) {
-					string tguid = guid.Trim ();
-					foreach (DotNetProjectSubtypeNode st in GetItemSubtypeNodes ()) {
-						if (st.SupportsType (tguid)) {
-							if (ptype == null || ptype.IsAssignableFrom (st.Type)) {
-								ptype = st.Type;
-								foundNode = st;
-							}
+			if (!string.IsNullOrEmpty (typeGuids))
+				return GetDotNetProjectSubtype (typeGuids.Split (';').Select (t => t.Trim ()));
+			else
+				return null;
+		}
+
+		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (IEnumerable<string> typeGuids)
+		{
+			Type ptype = null;
+			DotNetProjectSubtypeNode foundNode = null;
+			foreach (string guid in typeGuids) {
+				foreach (DotNetProjectSubtypeNode st in GetItemSubtypeNodes ()) {
+					if (st.SupportsType (guid)) {
+						if (ptype == null || ptype.IsAssignableFrom (st.Type)) {
+							ptype = st.Type;
+							foundNode = st;
 						}
 					}
 				}
-				return foundNode;
 			}
-			return null;
+			return foundNode;
 		}
-		
+
 		static IEnumerable<ItemTypeNode> GetItemTypeNodes ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
@@ -465,7 +476,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file)
+		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
 				var toolsFx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (toolsVersion));
@@ -480,7 +491,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				RemoteBuildEngine builder;
 				if (builders.TryGetValue (builderKey, out builder)) {
 					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, binDir, builder);
+					return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
 				}
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
@@ -515,7 +526,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
-				return new RemoteProjectBuilder (file, binDir, builder);
+				return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
 			}
 		}
 		

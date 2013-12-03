@@ -182,7 +182,7 @@ namespace Mono.Instrumentation.Monitor
 		
 		void FillTimerTraces (IEnumerable<TimerTrace> traces, List<CounterValueInfo> list, DateTime startTime, DateTime endTime)
 		{
-			if (traces.Count () == 0) {
+			if (!traces.Any ()) {
 				GetValues (list, startTime, endTime, false, false);
 			} else {
 				GetValues (list, startTime, traces.First ().Timestamp, false, false);
@@ -268,7 +268,7 @@ namespace Mono.Instrumentation.Monitor
 						i++;
 					}
 					list.RemoveRange (n + 1, i - n - 1);
-					val.CanExpand = (i > n + 1) || (val.TimerTraces.Count() > 0);
+					val.CanExpand = (i > n + 1) || (val.TimerTraces.Any ());
 				} else
 					val.Duration = list [n + 1].Time - val.Time;
 			}

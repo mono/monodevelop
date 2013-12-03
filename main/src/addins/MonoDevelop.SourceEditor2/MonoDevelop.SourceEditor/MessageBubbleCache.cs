@@ -30,6 +30,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Fonts;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
+using Cairo;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -45,6 +47,7 @@ namespace MonoDevelop.SourceEditor
 
 		internal Pango.FontDescription fontDescription;
 		internal Pango.FontDescription tooltipFontDescription;
+		internal Pango.FontDescription errorCountFontDescription;
 
 		public MessageBubbleTextMarker CurrentSelectedTextMarker;
 
@@ -55,13 +58,14 @@ namespace MonoDevelop.SourceEditor
 			warningPixbuf = ImageService.GetPixbuf ("md-bubble-warning", Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
-			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;
-			editor.MotionNotifyEvent += HandleMotionNotifyEvent;
+			editor.TextArea.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			editor.TextArea.MotionNotifyEvent += HandleMotionNotifyEvent;
 			editor.TextArea.BeginHover += HandleBeginHover;
 			editor.VAdjustment.ValueChanged += HandleValueChanged;
 			editor.HAdjustment.ValueChanged += HandleValueChanged;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
 			tooltipFontDescription = FontService.GetFontDescription ("MessageBubbleTooltip");
+			errorCountFontDescription = FontService.GetFontDescription ("MessageBubbleCounter");
 		}
 
 		void HandleValueChanged (object sender, EventArgs e)
@@ -105,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 
 			// Layout constants
 			const int verticalTextBorder = 10;
-			const int verticalTextSpace  = 6;
+			const int verticalTextSpace  = 7;
 
 			const int textBorder = 12;
 			const int iconTextSpacing = 8;
@@ -140,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 
 			protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 			{
-				cache.DestroyPopoverWindow ();
+				cache.CancelLeaveDestroyTimeout ();
 				return base.OnEnterNotifyEvent (evnt);
 			}
 
@@ -172,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 
 							g.Translate (
 								textBorder,
-								y + verticalTextSpace / 2
+								y + verticalTextSpace / 2 + 1 + Math.Max (0, (h - icon.Height) / 2)
 							);
 							Gdk.CairoHelper.SetSourcePixbuf (g, icon, 0, 0);
 							g.Paint ();
@@ -235,9 +239,25 @@ namespace MonoDevelop.SourceEditor
 			editor.QueueDraw ();
 		}
 
+		uint leaveDestroyTimeout;
+
+		void CancelLeaveDestroyTimeout ()
+		{
+			if (leaveDestroyTimeout != 0) {
+				GLib.Source.Remove (leaveDestroyTimeout);
+				leaveDestroyTimeout = 0;
+			}
+		}
+
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
-			DestroyPopoverWindow ();
+			CancelLeaveDestroyTimeout ();
+			leaveDestroyTimeout = GLib.Timeout.Add (100, delegate {
+				DestroyPopoverWindow ();
+				leaveDestroyTimeout = 0;
+				return false;
+			}); 
+
 			CancelHoverTimeout ();
 			if (CurrentSelectedTextMarker == null)
 				return;
@@ -263,13 +283,14 @@ namespace MonoDevelop.SourceEditor
 
 		public void Dispose ()
 		{
+			CancelLeaveDestroyTimeout ();
 			CancelHoverTimeout ();
 			DestroyPopoverWindow ();
 			editor.VAdjustment.ValueChanged -= HandleValueChanged;
 			editor.HAdjustment.ValueChanged -= HandleValueChanged;
 			editor.TextArea.BeginHover -= HandleBeginHover;
-			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
-			editor.MotionNotifyEvent -= HandleMotionNotifyEvent;
+			editor.TextArea.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
+			editor.TextArea.MotionNotifyEvent -= HandleMotionNotifyEvent;
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;
 			if (textWidthDictionary != null) {
 				foreach (var l in textWidthDictionary.Values) {
@@ -331,4 +352,3 @@ namespace MonoDevelop.SourceEditor
 		public event EventHandler Changed;
 	}
 }
-

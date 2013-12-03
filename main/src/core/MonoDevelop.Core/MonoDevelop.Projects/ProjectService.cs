@@ -46,6 +46,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 using MonoDevelop.Core.StringParsing;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.Projects
 					einfo.ItemTypeCondition.ObjType = target.GetType ();
 					einfo.ProjectLanguageCondition.TargetProject = target;
 				}
-				ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+				ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
 				chain = CreateExtensionChain (extensions);
 			}
 			else {
@@ -128,7 +129,7 @@ namespace MonoDevelop.Projects
 					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
 					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = (ProjectServiceExtension[]) ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension));
+					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
 					defaultExtensionChain = CreateExtensionChain (extensions);
 				}
 				chain = defaultExtensionChain;
@@ -501,22 +502,19 @@ namespace MonoDevelop.Projects
 			}
 			throw new InvalidOperationException ("Project type '" + type + "' not found");
 		}
-		
+
+		//TODO: find solution that contains the project if possible
 		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
 		{
 			// First of all, check if a solution with the same name already exists
 			
 			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormats (filename, typeof(SolutionEntityItem));
 			if (formats.Length == 0)
-				formats = new FileFormat [] { DefaultFileFormat };
+				formats = new  [] { DefaultFileFormat };
 			
 			Solution tempSolution = new Solution ();
 			
-			FileFormat solutionFileFormat;
-			if (formats [0].CanWrite (tempSolution))
-				solutionFileFormat = formats [0];
-			else
-				solutionFileFormat = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.FileFormat;
+			FileFormat solutionFileFormat = formats.FirstOrDefault (f => f.CanWrite (tempSolution)) ?? DefaultFileFormat;
 			
 			string solFileName = solutionFileFormat.GetValidFileName (tempSolution, filename);
 			

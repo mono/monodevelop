@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class UserGitConfigDialog : Gtk.Dialog
+	partial class UserGitConfigDialog : Gtk.Dialog
 	{
 		public UserGitConfigDialog ()
 		{

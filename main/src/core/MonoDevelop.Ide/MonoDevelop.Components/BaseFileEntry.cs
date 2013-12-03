@@ -33,44 +33,50 @@ using Gdk;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Components {
-	public abstract class BaseFileEntry : Gtk.HBox {
-		
-		string name;
-		
-		Entry text;
-		Button browse;
-		bool loading;
-		protected FileFilterSet filterSet = new FileFilterSet ();
+namespace MonoDevelop.Components
+{
+	public abstract class BaseFileEntry : Gtk.HBox
+	{
+		readonly Entry pathEntry;
+		readonly Button browseButton;
+		bool loading, displayAsRelativePath;
+		readonly FileFilterSet filterSet = new FileFilterSet ();
 		
 		public event EventHandler PathChanged;
 		
 		protected BaseFileEntry (string name) : base (false, 6)
 		{
-			this.name = name;
-			text = new Entry ();
-			browse = Button.NewWithMnemonic (GettextCatalog.GetString ("_Browse..."));
+			this.BrowserTitle = name;
+			pathEntry = new Entry ();
+			browseButton = Button.NewWithMnemonic (GettextCatalog.GetString ("_Browse..."));
 			
-			text.Changed += new EventHandler (OnTextChanged);
-			browse.Clicked += new EventHandler (OnButtonClicked);
+			pathEntry.Changed += OnTextChanged;
+			browseButton.Clicked += OnButtonClicked;
 			
-			PackStart (text, true, true, 0);
-			PackEnd (browse, false, false, 0);
+			PackStart (pathEntry, true, true, 0);
+			PackEnd (browseButton, false, false, 0);
 		}
 		
-		protected abstract string ShowBrowseDialog (string name, string start_in);
+		protected abstract string ShowBrowseDialog (string name, string startIn);
 		
-		public string BrowserTitle {
-			get { return name; }
-			set { name = value; }
-		}
+		public string BrowserTitle { get; set; }
 		
-		string default_path;
-		public string DefaultPath {
-			get { return default_path; }
-			set { default_path = value; }
-		}
+		public string DefaultPath { get; set; }
 
+		public bool DisplayAsRelativePath {
+			get {
+				return displayAsRelativePath;
+			}
+			set {
+				if (value == displayAsRelativePath)
+					return;
+				displayAsRelativePath = value;
+				//if there's a value, use setter to make it relative/absolute
+				var p = Path;
+				if (!string.IsNullOrEmpty (p))
+					Path = p;
+			}
+		}
 		
 		public virtual Gtk.Window TransientFor {
 			get;
@@ -84,11 +90,16 @@ namespace MonoDevelop.Components {
 
 		public new string Path {
 			get {
-				return default_path != null && text.Text.Length > 0 ? System.IO.Path.Combine (default_path, text.Text) : text.Text;
+				FilePath path = pathEntry.Text;
+				if (path.IsAbsolute || path.IsNullOrEmpty || string.IsNullOrEmpty (DefaultPath))
+					return path;
+				return path.ToAbsolute (DefaultPath);
 			}
 			set {
-				loading = true; 
-				text.Text = value;
+				loading = true;
+				if (!string.IsNullOrEmpty (value) && displayAsRelativePath)
+					value = ((FilePath)value).ToRelative (DefaultPath);
+				pathEntry.Text = value;
 				loading = false;
 			}
 		}
@@ -99,17 +110,24 @@ namespace MonoDevelop.Components {
 		
 		void OnButtonClicked (object o, EventArgs args)
 		{
-			string start_in;
-			
-			if (Directory.Exists (Path))
-				start_in = Path;
-			else
-				start_in = default_path;
-			
-			string path = ShowBrowseDialog (name, start_in + System.IO.Path.DirectorySeparatorChar);
-			if (path != null) {
-				text.Text = path;
+			FilePath startIn = Path;
+
+			try {
+				if (!startIn.IsNullOrEmpty && !startIn.IsDirectory) {
+					startIn = startIn.ParentDirectory;
+					if (!startIn.IsNullOrEmpty && !startIn.IsDirectory)
+						startIn = FilePath.Null;
+				}
+			} catch (FileNotFoundException) {
+				startIn = FilePath.Null;
 			}
+
+			if (startIn.IsNull && !string.IsNullOrEmpty (DefaultPath) && Directory.Exists (DefaultPath))
+				startIn = DefaultPath;
+
+			string path = ShowBrowseDialog (BrowserTitle, startIn);
+			if (path != null)
+				pathEntry.Text = path;
 		}
 		
 		void OnTextChanged (object o, EventArgs args)

@@ -41,6 +41,7 @@ using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Refactoring
 {
@@ -204,49 +205,26 @@ namespace MonoDevelop.Refactoring
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
 			return Task.Factory.StartNew (delegate {
 				var result = new List<CodeAction> ();
+				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
+				timer.BeginTiming ();
 				try {
-					#if PROFILE
-					var runList = new List<Tuple<long, string>> ();
-					var globalClock = new Stopwatch();
-					globalClock.Start ();
-
-					#endif
-
 					var parsedDocument = doc.ParsedDocument;
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
 						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
 						if (ctx != null) {
 							foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0)) {
-								#if PROFILE
-								var clock = new Stopwatch();
-								clock.Start ();
-								#endif
 								try {
 									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
 								} catch (Exception ex) {
 									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 								}
-								#if PROFILE
-								clock.Stop ();
-								lock (runList) {
-									runList.Add (Tuple.Create (clock.ElapsedMilliseconds, provider.Title)); 
-								}
-								#endif
 							}
 						}
 					}
-					#if PROFILE
-					globalClock.Stop ();
-					runList.Sort ();
-					Console.WriteLine ("All: " + globalClock.ElapsedMilliseconds +"ms");
-					foreach (var item in runList) {
-						if (item.Item1 == 0)
-							continue;
-						Console.WriteLine (item.Item1 +"ms\t: " + item.Item2);
-					}
-					#endif
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
+				} finally {
+					timer.EndTiming ();
 				}
 				return (IEnumerable<CodeAction>)result;
 			}, cancellationToken);
@@ -334,6 +312,22 @@ namespace MonoDevelop.Refactoring
 			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
 				return new DocumentLocation (location.Line, location.Column - 1);
 			return location;
+		}
+
+		static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+
+		/// <summary>
+		/// Queues a code analysis job.
+		/// </summary>
+		/// <param name="job">The job to queue.</param>
+		/// <param name="progressMessage">
+		/// The message used for a progress monitor, or null if no progress monitor should be used.
+		/// </param>
+		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
+		{
+			if (progressMessage != null)
+				job = new ProgressMonitorWrapperJob (job, progressMessage);
+			return runner.QueueJob (job);
 		}
 	}
 }

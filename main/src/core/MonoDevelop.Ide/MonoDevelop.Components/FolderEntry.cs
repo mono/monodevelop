@@ -27,36 +27,34 @@
 //
 //
 
-using System;
-using System.IO;
-using Gtk;
-using Gdk;
+using System.ComponentModel;
 
-namespace MonoDevelop.Components {
-	[System.ComponentModel.Category("MonoDevelop.Components")]
-	[System.ComponentModel.ToolboxItem(true)]
+namespace MonoDevelop.Components
+{
+	[Category ("MonoDevelop.Components")]
+	[ToolboxItem (true)]
 	public class FolderEntry : BaseFileEntry
 	{
 		public FolderEntry () : base ("")
 		{
 		}
-		
+
 		public FolderEntry (string name) : base (name)
 		{
 		}
-		
-		protected override string ShowBrowseDialog (string name, string start_in)
+
+		protected override string ShowBrowseDialog (string name, string startIn)
 		{
-			SelectFolderDialog fd = new SelectFolderDialog (name);
-			if (start_in != null)
-				fd.InitialFileName = start_in;
-			fd.SetFilters (filterSet);
+			var fd = new SelectFolderDialog (name);
+			if (startIn != null)
+				fd.CurrentFolder = startIn;
+
+			fd.SetFilters (FileFilters);
 			fd.TransientFor = GetTransientFor ();
 			
 			if (fd.Run ())
 				return fd.SelectedFile;
-			else
-				return null;
+			return null;
 		}
 	}
 }

@@ -25,16 +25,14 @@
 //
 //
 
-using System;
 using MonoDevelop.Projects;
 using MonoDevelop.VersionControl;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.ChangeLogAddIn
 {	
 	partial class ProjectOptionPanelWidget : Gtk.Bin
 	{
-		ProjectOptionPanel parent;
+		readonly ProjectOptionPanel parent;
 		CommitMessageStyle style;
 		
 		public ProjectOptionPanelWidget (ProjectOptionPanel parent)
@@ -60,13 +58,13 @@ namespace MonoDevelop.ChangeLogAddIn
 				break;
 			}
 			
-			this.checkVersionControl.Active = policy.VcsIntegration != VcsIntegration.None;
-			this.checkRequireOnCommit.Active = policy.VcsIntegration == VcsIntegration.RequireEntry;
+			checkVersionControl.Active = policy.VcsIntegration != VcsIntegration.None;
+			checkRequireOnCommit.Active = policy.VcsIntegration == VcsIntegration.RequireEntry;
 			
 			style = new CommitMessageStyle ();
 			style.CopyFrom (policy.MessageStyle);
 			
-			CommitMessageFormat format = new CommitMessageFormat ();
+			var format = new CommitMessageFormat ();
 			format.MaxColumns = 70;
 			format.Style = style;
 			

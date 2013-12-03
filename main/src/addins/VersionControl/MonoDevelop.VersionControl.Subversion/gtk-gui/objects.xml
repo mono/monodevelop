@@ -213,6 +213,10 @@
         <property name="DrawRightBorder" />
         <property name="DefaultIconHeight" />
         <property name="DefaultIconWidth" />
+        <property name="DrawButtonShape" />
+        <property name="DrawLeftBorder" />
+        <property name="FixedWidth" />
+        <property name="FixedHeight" />
       </itemgroup>
     </itemgroups>
     <signals />

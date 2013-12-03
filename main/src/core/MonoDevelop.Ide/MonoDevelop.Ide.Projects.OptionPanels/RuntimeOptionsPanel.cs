@@ -60,8 +60,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 	partial class RuntimeOptionsPanelWidget : Gtk.Bin 
 	{
-		DotNetProject project;
-		List<TargetFramework> frameworks;
+		readonly List<TargetFramework> frameworks;
+		readonly DotNetProject project;
 
 		public RuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				notInstalled = true;
 				frameworks.Add (project.TargetFramework);
 			}
-				
+
 			//sort by id ascending, version descending, profile ascending
 			frameworks.Sort ((x, y) => {
 				var cmp = string.CompareOrdinal (x.Id.Identifier, y.Id.Identifier);

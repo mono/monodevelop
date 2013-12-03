@@ -81,6 +81,7 @@
     <Compile Include="Mono.TextEditor.Tests\CompressingTreeListTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\AvlTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SearchAndReplaceTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SemanticRuleTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

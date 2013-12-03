@@ -38,7 +38,7 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyBrowserViewContent : AbstractViewContent, IUrlHandler, INavigable
+	class AssemblyBrowserViewContent : AbstractViewContent, IOpenNamedElementHandler, INavigable
 	{
 		readonly static string[] defaultAssemblies = new string[] { "mscorlib", "System", "System.Core", "System.Xml" };
 		AssemblyBrowserWidget widget;
@@ -107,8 +107,17 @@ namespace MonoDevelop.AssemblyBrowser
 
 		#region IUrlHandler implementation 
 		
-		public void Open (string url)
+		public void Open (INamedElement element)
 		{
+			var member = element as IUnresolvedEntity;
+			if (member == null) {
+				var entity = element as IMember;
+				if (entity != null)
+					member = entity.UnresolvedMember;
+			}
+			if (member == null)
+				return;
+			var url = AssemblyBrowserWidget.GetIdString (member); 
 			widget.Open (url);
 		}
 		

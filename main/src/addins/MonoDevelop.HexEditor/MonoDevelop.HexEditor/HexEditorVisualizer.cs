@@ -64,11 +64,11 @@ namespace MonoDevelop.HexEditor
 		public override bool IsDefaultVisualizer (ObjectValue val)
 		{
 			switch (val.TypeName) {
-				case "sbyte[]":
-				case "byte[]": return true;
-				case "char[]": 
-				case "string": return false;
-				default: return false;
+			case "sbyte[]":
+			case "byte[]": return true;
+			case "char[]": 
+			case "string": return false;
+			default: return false;
 			}
 		}
 
@@ -83,42 +83,37 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor = new Mono.MHex.HexEditor ();
 
-			byte[] buf = null;
+			IBuffer buffer = null;
 
 			if (val.TypeName != "string") {
-				var raw = val.GetRawValue () as RawValueArray;
-				sbyte[] sbuf;
+				var raw = (RawValueArray) val.GetRawValue ();
 
 				switch (val.TypeName) {
 				case "sbyte[]":
-					sbuf = raw.ToArray () as sbyte[];
-					buf = new byte[sbuf.Length];
-					for (int i = 0; i < sbuf.Length; i++)
-						buf[i] = (byte) sbuf[i];
+					buffer = new RawSByteArrayBuffer (raw);
 					break;
 				case "char[]":
-					buf = Encoding.Unicode.GetBytes (new string (raw.ToArray () as char[]));
+					buffer = new RawCharArrayBuffer (raw);
 					break;
 				case "byte[]":
-					buf = raw.ToArray () as byte[];
+					buffer = new RawByteArrayBuffer (raw);
 					break;
 				}
 			} else {
 				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 				ops.ChunkRawStrings = true;
 
-				var raw = val.GetRawValue (ops) as RawValueString;
-
-				buf = Encoding.Unicode.GetBytes (raw.Value);
+				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (ops));
 			}
 
-			hexEditor.HexEditorData.Buffer = new ArrayBuffer (buf);
+			hexEditor.HexEditorData.Buffer = buffer;
 			hexEditor.Sensitive = CanEdit (val);
 
 			var xwtScrollView = new Xwt.ScrollView (hexEditor);
 			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);
 			SetHexEditorOptions ();
 			hexEditor.SetFocus ();
+
 			return scrollWidget;
 		}
 
@@ -126,6 +121,10 @@ namespace MonoDevelop.HexEditor
 		{
 			switch (val.TypeName) {
 			case "byte[]":
+				// HACK: make sure to load the full byte stream...
+				long length = hexEditor.HexEditorData.Length;
+				hexEditor.HexEditorData.GetBytes (length - 1, 1);
+
 				val.SetRawValue (hexEditor.HexEditorData.Bytes);
 				return true;
 			default:
@@ -142,5 +141,173 @@ namespace MonoDevelop.HexEditor
 		}
 
 		#endregion
+	}
+
+	class RawStringBuffer : Mono.MHex.Data.IBuffer
+	{
+		readonly RawValueString array;
+		long offset;
+
+		public RawStringBuffer (RawValueString raw)
+		{
+			Bytes = new byte[raw.Length * 2];
+			Length = raw.Length * 2;
+			array = raw;
+			offset = 0;
+		}
+
+		#region IBuffer implementation
+
+		public long Length {
+			get; private set;
+		}
+
+		public byte[] Bytes {
+			get; private set;
+		}
+
+		public byte[] GetBytes (long index, int count)
+		{
+			while (index < 0 && count > 0) {
+				index++;
+				count--;
+			}
+
+			if (count == 0)
+				return new byte[0];
+
+			count = (int) Math.Min (Length - index, count);
+			var bytes = new byte[count];
+			int i = 0;
+
+			while (index + i < offset && i < count) {
+				bytes[i] = Bytes[index + i];
+				i++;
+			}
+
+			if (i < count) {
+				var chunk = array.Substring ((int) offset, (count - i));
+				var buf = Encoding.Unicode.GetBytes (chunk);
+
+				for (int j = 0; j < buf.Length; j++)
+					Bytes[offset++] = buf[j];
+
+				while (index + i < offset && i < count) {
+					bytes[i] = Bytes[index + i];
+					i++;
+				}
+			}
+
+			return bytes;
+		}
+
+		#endregion
+	}
+
+	abstract class RawArrayBuffer : Mono.MHex.Data.IBuffer
+	{
+		readonly RawValueArray array;
+		protected long Offset;
+
+		protected RawArrayBuffer (RawValueArray raw, int multiplier)
+		{
+			Bytes = new byte[raw.Length * multiplier];
+			Length = raw.Length;
+			array = raw;
+			Offset = 0;
+		}
+
+		protected abstract void AppendBytes (Array values);
+
+		#region IBuffer implementation
+
+		public long Length {
+			get; private set;
+		}
+
+		public byte[] Bytes {
+			get; private set;
+		}
+
+		public byte[] GetBytes (long index, int count)
+		{
+			while (index < 0 && count > 0) {
+				index++;
+				count--;
+			}
+
+			if (count == 0)
+				return new byte[0];
+
+			count = (int) Math.Min (Length - index, count);
+			var bytes = new byte[count];
+			int i = 0;
+
+			while (index + i < Offset && i < count) {
+				bytes[i] = Bytes[index + i];
+				i++;
+			}
+
+			if (i < count) {
+				var chunk = array.GetValues ((int) Offset, (count - i));
+				AppendBytes (chunk);
+
+				while (index + i < Offset && i < count) {
+					bytes[i] = Bytes[index + i];
+					i++;
+				}
+			}
+
+			return bytes;
+		}
+
+		#endregion
+	}
+
+	class RawByteArrayBuffer : RawArrayBuffer
+	{
+		public RawByteArrayBuffer (RawValueArray raw) : base (raw, 1)
+		{
+		}
+
+		protected override void AppendBytes (Array values)
+		{
+			var bytes = (byte[]) values;
+
+			for (int i = 0; i < bytes.Length; i++)
+				Bytes[Offset++] = bytes[i];
+		}
+	}
+
+	class RawSByteArrayBuffer : RawArrayBuffer
+	{
+		public RawSByteArrayBuffer (RawValueArray raw) : base (raw, 1)
+		{
+		}
+
+		protected override void AppendBytes (Array values)
+		{
+			var bytes = (sbyte[]) values;
+
+			for (int i = 0; i < bytes.Length; i++)
+				Bytes[Offset++] = (byte) bytes[i];
+		}
+	}
+
+	class RawCharArrayBuffer : RawArrayBuffer
+	{
+		readonly Encoder encoder;
+
+		public RawCharArrayBuffer (RawValueArray raw) : base (raw, 2)
+		{
+			encoder = Encoding.Unicode.GetEncoder ();
+		}
+
+		protected override void AppendBytes (Array values)
+		{
+			var chars = (char[]) values;
+			int n = encoder.GetBytes (chars, 0, chars.Length, Bytes, (int) Offset, Offset + (chars.Length * 2) == Length);
+			Offset += n;
+		}
 	}
 }

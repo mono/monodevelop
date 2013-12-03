@@ -231,6 +231,7 @@ namespace MonoDevelop.SourceEditor
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
 			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
+			this.generateFormattingUndoStep = PropertyService.Get ("GenerateFormattingUndoStep", false);
 			base.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
 			base.IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", Mono.TextEditor.IncludeWhitespaces.All);
 			base.WrapLines = PropertyService.Get ("WrapLines", false);
@@ -412,6 +413,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+
+		bool generateFormattingUndoStep;
+		public bool GenerateFormattingUndoStep {
+			get {
+				return generateFormattingUndoStep;
+			}
+			set {
+				if (value != this.generateFormattingUndoStep) {
+					this.generateFormattingUndoStep = value;
+					PropertyService.Set ("GenerateFormattingUndoStep", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
 		#endregion
 		
 		bool useViModes = false;

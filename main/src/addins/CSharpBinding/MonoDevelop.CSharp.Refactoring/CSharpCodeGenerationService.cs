@@ -28,6 +28,8 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Linq;
+using Atk;
+using Gdk;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -58,4 +60,3 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 	}
 }
-

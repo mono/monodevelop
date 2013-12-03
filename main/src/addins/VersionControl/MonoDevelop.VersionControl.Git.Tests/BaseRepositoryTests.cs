@@ -35,7 +35,7 @@ using System.Collections.Generic;
 namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
-	public abstract class BaseRepoUtilsTest
+	abstract class BaseRepoUtilsTest
 	{
 		// [Git] Set user and email.
 		protected const string Author = "author";
@@ -60,6 +60,24 @@ namespace MonoDevelop.VersionControl.Tests
 			DeleteDirectory (RootCheckout);
 			AddedItems.Clear ();
 			CommitNumber = 0;
+		}
+
+		[Test]
+		// Tests false positives of repository detection.
+		public void IgnoreScatteredDotDir ()
+		{
+			var working = FileService.CreateTempDirectory ();
+
+			var path = Path.Combine (working, "test");
+			var staleGit = Path.Combine (working, ".git");
+			var staleSvn = Path.Combine (working, ".svn");
+			Directory.CreateDirectory (path);
+			Directory.CreateDirectory (staleGit);
+			Directory.CreateDirectory (staleSvn);
+
+			Assert.IsNull (VersionControlService.GetRepositoryReference ((path).TrimEnd (Path.DirectorySeparatorChar), null));
+
+			DeleteDirectory (working);
 		}
 
 		[Test]
@@ -105,6 +123,14 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		protected abstract NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ();
+
+		[Test]
+		public void UrlIsValid ()
+		{
+			TestValidUrl ();
+		}
+
+		protected abstract void TestValidUrl ();
 
 		[Test]
 		// Tests Repository.Checkout.

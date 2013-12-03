@@ -33,10 +33,13 @@ namespace MonoDevelop.Ide.CustomTools
 {
 	public class ThreadAsyncOperation : IAsyncOperation
 	{
-		Thread thread;
+		readonly object locker = new object ();
+		readonly Thread thread;
+		readonly SingleFileCustomToolResult result;
+		readonly Action task;
+
 		bool cancelled;
-		SingleFileCustomToolResult result;
-		Action task;
+		bool isCompleted;
 
 		public ThreadAsyncOperation (Action task, SingleFileCustomToolResult result)
 		{
@@ -59,11 +62,37 @@ namespace MonoDevelop.Ide.CustomTools
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
 			}
-			if (Completed != null)
-				Completed (this);
+
+			OperationHandler c;
+			lock (locker) {
+				isCompleted = true;
+				c = completed;
+				completed = null;
+			}
+
+			if (c != null)
+				c (this);
 		}
 
-		public event OperationHandler Completed;
+		OperationHandler completed;
+
+		public event OperationHandler Completed {
+			add {
+				lock (locker) {
+					if (!isCompleted) {
+						completed += value;
+						return;
+					}
+				}
+				value (this);
+			}
+			remove {
+				lock (locker) {
+					if (completed != null)
+						completed -= value;
+				}
+			}
+		}
 
 		public void Cancel ()
 		{
@@ -77,7 +106,7 @@ namespace MonoDevelop.Ide.CustomTools
 		}
 
 		public bool IsCompleted {
-			get { return !thread.IsAlive; }
+			get { return isCompleted; }
 		}
 
 		public bool Success {

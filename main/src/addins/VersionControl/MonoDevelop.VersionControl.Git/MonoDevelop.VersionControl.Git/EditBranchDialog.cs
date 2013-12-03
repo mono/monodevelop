@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class EditBranchDialog : Dialog
+	partial class EditBranchDialog : Dialog
 	{
 		readonly ListStore comboStore;
 		readonly string currentTracking;
@@ -45,10 +45,10 @@ namespace MonoDevelop.VersionControl.Git
 			
 			comboStore = new ListStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string));
 			comboSources.Model = comboStore;
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			var crp = new CellRendererPixbuf ();
 			comboSources.PackStart (crp, false);
 			comboSources.AddAttribute (crp, "pixbuf", 1);
-			CellRendererText crt = new CellRendererText ();
+			var crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
 			
@@ -57,8 +57,7 @@ namespace MonoDevelop.VersionControl.Git
 					oldName = branch.Name;
 				currentTracking = branch.Tracking;
 				entryName.Text = branch.Name;
-				if (currentTracking != null)
-					checkTrack.Active = true;
+				checkTrack.Active = currentTracking != null;
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
@@ -106,7 +105,7 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
-			} else if (!IsValidBranchName (entryName.Text)) {
+			} else if (!GitUtil.IsValidBranchName (entryName.Text)) {
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString (@"A branch name can not:
 Start with '.' or end with '/' or '.lock'
 Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
@@ -114,19 +113,6 @@ Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
 				buttonOk.Sensitive = false;
 			} else
 				labelError.Hide ();
-		}
-
-		static bool IsValidBranchName (string name)
-		{
-			// List from: https://github.com/git/git/blob/master/refs.c#L21
-			if (name.StartsWith (".", System.StringComparison.Ordinal) ||
-				name.EndsWith ("/", System.StringComparison.Ordinal) ||
-				name.EndsWith (".lock", System.StringComparison.Ordinal))
-				return false;
-
-			if (name.Contains (" ") || name.Contains ("~") || name.Contains ("..") || name.Contains ("^") || name.Contains (":") || name.Contains ("\\") || name.Contains ("?") || name.Contains ("["))
-				return false;
-			return true;
 		}
 
 		protected virtual void OnCheckTrackToggled (object sender, System.EventArgs e)

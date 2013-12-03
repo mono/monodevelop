@@ -32,6 +32,8 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -40,7 +42,7 @@ namespace MonoDevelop.Projects
 	public class LocalCopyTests : TestBase
 	{
 		[Test]
-		[Ignore ("We don't install the msbuild assemblies in the right place for this tests")]
+		[Platform (Exclude = "Win")]
 		public void CheckLocalCopy ()
 		{
 			string solFile = Util.GetSampleProject ("vs-local-copy", "VSLocalCopyTest.sln");
@@ -51,17 +53,22 @@ namespace MonoDevelop.Projects
 			
 			AssertCleanBuild (sol, "Debug");
 			AssertCleanBuild (sol, "Release");
+
+			string dllDebug = Platform.IsWindows ? ".pdb" : ".dll.mdb";
+			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
 			
 			AssertOutputFiles (sol, "VSLocalCopyTest", "Debug", new string[] {
 				"ClassLibrary1.dll",
-				"ClassLibrary1.dll.mdb",
+				"ClassLibrary1" + dllDebug,
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"ClassLibrary4.dll",
-				"ClassLibrary4.dll.mdb",
+				"ClassLibrary4" + dllDebug,
 				"VSLocalCopyTest.exe",
-				"VSLocalCopyTest.exe.mdb",
+				"VSLocalCopyTest" + exeDebug,
 				"TextFile1.txt",
+				"TextFile2.txt",
+				"app.config",
 				"folder/baz.txt",
 				"foo/bar.txt",
 				"quux.txt",
@@ -76,6 +83,8 @@ namespace MonoDevelop.Projects
 				"ClassLibrary4.dll",
 				"VSLocalCopyTest.exe",
 				"TextFile1.txt",
+				"TextFile2.txt",
+				"app.config",
 				"folder/baz.txt",
 				"foo/bar.txt",
 				"quux.txt",
@@ -84,9 +93,9 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary1", "Debug", new string[] {
 				"ClassLibrary1.dll",
-				"ClassLibrary1.dll.mdb",
+				"ClassLibrary1" + dllDebug,
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"TextFile1.txt",
 				"TextFile2.txt",
 				"foo/bar.txt",
@@ -102,7 +111,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary2", "Debug", new string[] {
 				"ClassLibrary2.dll",
-				"ClassLibrary2.dll.mdb",
+				"ClassLibrary2" + dllDebug,
 				"TextFile2.txt"
 			});
 			
@@ -113,7 +122,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary3", "Debug", new string[] {
 				"ClassLibrary3.dll",
-				"ClassLibrary3.dll.mdb"
+				"ClassLibrary3" + dllDebug
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary3", "Release", new string[] {
@@ -122,7 +131,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary4", "Debug", new string[] {
 				"ClassLibrary4.dll",
-				"ClassLibrary4.dll.mdb"
+				"ClassLibrary4" + dllDebug
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary4", "Release", new string[] {
@@ -131,7 +140,7 @@ namespace MonoDevelop.Projects
 			
 			AssertOutputFiles (sol, "ClassLibrary5", "Debug", new string[] {
 				"ClassLibrary5.dll",
-				"ClassLibrary5.dll.mdb",
+				"ClassLibrary5" + dllDebug,
 			});
 			
 			AssertOutputFiles (sol, "ClassLibrary5", "Release", new string[] {
@@ -182,7 +191,63 @@ namespace MonoDevelop.Projects
 			BuildResult cr = sol.Build (Util.GetMonitor (), configuration);
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
-			Assert.AreEqual (0, cr.WarningCount);
+
+			// Warning check disabled due to bug #15121
+			// Assert.AreEqual (0, cr.WarningCount); 
+		}
+
+		[Test]
+		[Ignore ("Check for build warnings disabled due to a bug in xbuild (BXC 15121)")]
+		public void CheckLocalCopyBuildWarnings ()
+		{
+			// See commented assert in AssertCleanBuild
+		}
+
+		[Test]
+		[Platform (Exclude = "Win")]
+		public void LocalCopyDefault ()
+		{
+			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
+
+			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) item;
+			var p = (DotNetProject)sol.Items [0];
+
+			var ar = p.References.First (r => r.Reference.Contains ("gtk"));
+			Assert.AreEqual (false, ar.LocalCopy);
+			ar.LocalCopy = true;
+			Assert.AreEqual (true, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("System.Data"));
+			Assert.AreEqual (false, ar.LocalCopy);
+			ar.LocalCopy = true;
+			Assert.AreEqual (true, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("LibProject"));
+			Assert.AreEqual (true, ar.LocalCopy);
+			ar.LocalCopy = false;
+			Assert.AreEqual (false, ar.LocalCopy);
+
+			ar = p.References.First (r => r.Reference.Contains ("Xwt"));
+			Assert.AreEqual (true, ar.LocalCopy);
+			ar.LocalCopy = false;
+			Assert.AreEqual (false, ar.LocalCopy);
+
+			sol.Save (new NullProgressMonitor ());
+			sol.Build (new NullProgressMonitor (), "Debug");
+
+			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
+
+			AssertOutputFiles (sol, "ConsoleProject", "Debug", new string[] {
+				"ConsoleProject.exe",
+				"ConsoleProject" + exeDebug,
+				"System.Data.dll",
+				"gtk-sharp.dll"
+			});
+
+			string projectXml1 = Util.GetXmlFileInfoset (p.FileName.ParentDirectory.Combine ("ConsoleProject.csproj.saved"));
+			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+			Assert.AreEqual (projectXml1, projectXml2);
 		}
 	}
 }

@@ -86,7 +86,7 @@ namespace MonoDevelop.Refactoring
 		public static TaskWrapper GetSharedResolver (this Document document)
 		{
 			var parsedDocument = document.ParsedDocument;
-			if (parsedDocument == null)
+			if (parsedDocument == null || document.IsProjectContextInUpdate)
 				return null;
 
 			var unit       = parsedDocument.GetAst<SyntaxTree> ();

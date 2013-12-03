@@ -618,8 +618,6 @@ namespace MonoDevelop.SourceEditor
 
 		public void Save (string fileName, Encoding encoding)
 		{
-			if (!widget.EnsureCorrectEolMarker (fileName))
-				return;
 			if (widget.HasMessageBar)
 				return;
 			
@@ -647,12 +645,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
-				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-					using (var undo = TextEditor.OpenUndoGroup ()) {
-						formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
-						wasEdited = false;
+				try {
+					var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
+					if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
+						using (var undo = TextEditor.OpenUndoGroup ()) {
+							formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
+							wasEdited = false;
+						}
 					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while formatting on save", e);
 				}
 			}
 
@@ -690,15 +692,19 @@ namespace MonoDevelop.SourceEditor
 					var writeBom = hadBom;
 					var writeText = Document.Text;
 					if (writeEncoding == null) {
-						writeEncoding = Encoding.UTF8;
-						// Disabled. Shows up in the source control as diff, it's atm confusing for the users to see a change without
-						// changed files.
-						writeBom = false;
-//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+						if (this.encoding != null) {
+							writeEncoding = this.encoding;
+						} else { 
+							writeEncoding = Encoding.UTF8;
+							// Disabled. Shows up in the source control as diff, it's atm confusing for the users to see a change without
+							// changed files.
+							writeBom = false;
+	//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+						}
 					}
 					Mono.TextEditor.Utils.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
-					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file witch current codepage."), 
+					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
 						1,
 						AlertButton.Cancel,
@@ -806,18 +812,21 @@ namespace MonoDevelop.SourceEditor
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
 
-		public void Load (string fileName, Encoding loadEncoding)
+		void IEncodedTextContent.Load (string fileName, Encoding loadEncoding)
+		{
+			Load (fileName, loadEncoding);
+		}
+
+		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			// Handle the "reload" case.
 			if (ContentName == fileName)
 				AutoSave.RemoveAutoSaveFile (fileName);
-
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
-			
 			// Look for a mime type for which there is a syntax mode
 			UpdateMimeType (fileName);
 			string text = null;
@@ -826,27 +835,30 @@ namespace MonoDevelop.SourceEditor
 				widget.ShowAutoSaveWarning (fileName);
 				this.encoding = loadEncoding;
 				didLoadCleanly = false;
-			} else {
-
+			}
+			else {
 				inLoad = true;
 				if (loadEncoding == null) {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
+					text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 				} else {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
+					encoding = loadEncoding;
+					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
-				Document.Text = text;
-				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+				if (reload) {
+					Document.Replace (0, Document.TextLength, text);
+					Document.DiffTracker.Reset ();
+				} else {
+					Document.Text = text;
+					Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+				}
 				inLoad = false;
 				didLoadCleanly = true;
 			}
-			
 			// TODO: Would be much easier if the view would be created after the containers.
 			CreateDocumentParsedHandler ();
-
 			ContentName = fileName;
-			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);			
+			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
 			RunFirstTimeFoldUpdate (text);
-
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
@@ -855,8 +867,10 @@ namespace MonoDevelop.SourceEditor
 			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
 			widget.TextEditor.TextArea.SizeAllocated += HandleTextEditorVAdjustmentChanged;
-			if (didLoadCleanly)
+			if (didLoadCleanly) {
 				Document.InformLoadComplete ();
+				widget.EnsureCorrectEolMarker (fileName);
+			}
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -900,10 +914,10 @@ namespace MonoDevelop.SourceEditor
 
 		bool warnOverwrite = false;
 		bool inLoad = false;
-		Encoding encoding = null;
+		Encoding encoding;
 		bool hadBom = false;
 
-		public void Load (string fileName, string content, Encoding encoding)
+		internal void ReplaceContent (string fileName, string content, Encoding encoding)
 		{
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -913,7 +927,8 @@ namespace MonoDevelop.SourceEditor
 			UpdateMimeType (fileName);
 			
 			inLoad = true;
-			Document.Text = content;
+			Document.Replace (0, Document.TextLength, content);
+			Document.DiffTracker.Reset ();
 			inLoad = false;
 			this.encoding = encoding;
 			ContentName = fileName;
@@ -1764,19 +1779,21 @@ namespace MonoDevelop.SourceEditor
 		
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			CodeCompletionContext result = new CodeCompletionContext ();
+			var result = new CodeCompletionContext ();
+			if (widget == null)
+				return result;
+			var editor = widget.TextEditor;
+			if (editor == null)
+				return result;
 			result.TriggerOffset = triggerOffset;
-			DocumentLocation loc = widget.TextEditor.Caret.Location;
+			var loc = editor.Caret.Location;
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
-/*			var p = new Cairo.Point ((int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.X,
-			                         (int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.Y);
-			if (widget.TextEditor.Caret.Location.Column == loc.Column)*/
 			var p = this.widget.TextEditor.LocationToPoint (loc);
 			int tx, ty;
-			widget.TextEditor.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditor.Allocation.X + (int)p.X;
-			ty += widget.TextEditor.Allocation.Y + (int)p.Y + (int)TextEditor.LineHeight;
+			editor.ParentWindow.GetOrigin (out tx, out ty);
+			tx += editor.Allocation.X + p.X;
+			ty += editor.Allocation.Y + p.Y + (int)editor.LineHeight;
 
 			result.TriggerXCoord = tx;
 			result.TriggerYCoord = ty;
@@ -2426,7 +2443,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (SearchCommands.FindPrevious)]
 		void UpdateFindNextAndPrev (CommandInfo cinfo)
 		{
-			cinfo.Enabled = !string.IsNullOrEmpty (widget.TextEditor.SearchPattern);
+			cinfo.Enabled = !string.IsNullOrEmpty (SearchAndReplaceOptions.SearchPattern);
 		}
 
 		[CommandHandler (SearchCommands.FindPrevious)]

@@ -37,15 +37,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	public class TooltipInformationWindow : PopoverWindow
 	{
-		List<TooltipInformation> overloads = new List<TooltipInformation> ();
+		readonly List<TooltipInformation> overloads = new List<TooltipInformation> ();
 		int current_overload;
 		
 		public int CurrentOverload {
 			get {
-				return this.current_overload; 
+				return current_overload; 
 			}
 			set {
-				this.current_overload = value;
+				current_overload = value;
 				ShowOverload ();
 			}
 		}
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		MonoDevelop.Components.FixedWidthWrapLabel headlabel;
+		readonly FixedWidthWrapLabel headlabel;
 		public bool Multiple{
 			get {
 				return overloads.Count > 1;
@@ -128,11 +128,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
-					var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+					var contentLabel = new FixedWidthWrapLabel ();
 					contentLabel.Wrap = Pango.WrapMode.WordChar;
-					contentLabel.BreakOnCamelCasing = true;
+					contentLabel.BreakOnCamelCasing = false;
+					contentLabel.BreakOnPunctuation = false;
 					contentLabel.MaxWidth = 400;
-					contentLabel.BreakOnPunctuation = true;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
@@ -188,14 +188,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headlabel.Markup = "";
 			current_overload = 0;
 		}
-		
+
+		[Obsolete("Will get removed in later versions.")]
 		public void SetFixedWidth (int w)
 		{
-			if (w != -1) {
+			/*		if (w != -1) {
 				headlabel.MaxWidth = w;
 			} else {
 				headlabel.MaxWidth = -1;
-			}
+			}*/
 			QueueResize ();
 		}
 
@@ -205,17 +206,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vbox.Spacing = 2;
 
-			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			var catLabel = new FixedWidthWrapLabel ();
 			catLabel.Text = categoryName;
 			catLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
 			vbox.PackStart (catLabel, false, true, 0);
 
-			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			var contentLabel = new FixedWidthWrapLabel ();
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
-			contentLabel.BreakOnCamelCasing = true;
+			contentLabel.BreakOnCamelCasing = false;
+			contentLabel.BreakOnPunctuation = false;
 			contentLabel.MaxWidth = 400;
-			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
 
@@ -224,9 +225,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return vbox;
 		}
 
-		VBox descriptionBox = new VBox (false, 0);
-		VBox vb2 = new VBox (false, 0);
-		Cairo.Color foreColor;
+		readonly VBox descriptionBox = new VBox (false, 0);
+		readonly VBox vb2 = new VBox (false, 0);
+		readonly Cairo.Color foreColor;
 		public TooltipInformationWindow () : base ()
 		{
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
@@ -240,15 +241,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.CanDefault = false;
 			this.Events |= Gdk.EventMask.EnterNotifyMask; 
 			
-			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			headlabel = new FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
 			var des = FontService.GetFontDescription ("Editor").Copy ();
 			des.Size = des.Size * 9 / 10;
 			headlabel.FontDescription = des;
 //			headlabel.MaxWidth = 400;
 			headlabel.Wrap = Pango.WrapMode.WordChar;
-			headlabel.BreakOnCamelCasing = true;
-//			headlabel.BreakOnPunctuation = true;
+			headlabel.BreakOnCamelCasing = false;
+			headlabel.BreakOnPunctuation = false;
 			descriptionBox.Spacing = 4;
 			VBox vb = new VBox (false, 8);
 			vb.PackStart (headlabel, true, true, 0);

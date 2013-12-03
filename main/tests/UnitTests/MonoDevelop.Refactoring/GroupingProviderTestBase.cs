@@ -28,6 +28,7 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
@@ -65,15 +66,19 @@ namespace MonoDevelop.Refactoring
 				ProviderDescription = "ProviderDescription",
 				ProviderTitle = "ProviderTitle",
 				Region = new DomRegion("fileName", new TextLocation(2, 3), new TextLocation(2, 10)),
-				Severity = Severity.None
+				Severity = Severity.None,
+				Project = new DotNetAssemblyProject {
+					Name = "ProjectName"
+				},
+				File = new ProjectFile ("FileName")
 			};
 		}
 		
 		[Test]
 		public void ReturnsSameGroupForSameIssueSummary()
 		{
-			var first = Provider.GetIssueGroup (summary);
-			var second = Provider.GetIssueGroup (summary);
+			var first = Provider.GetIssueGroup (null, summary);
+			var second = Provider.GetIssueGroup (null, summary);
 			
 			Assert.AreSame (first, second, "Two invocations with the same issue summary returned different groups.");
 		}
@@ -88,8 +93,8 @@ namespace MonoDevelop.Refactoring
 						continue;
 					}
 					
-					var first = Provider.GetIssueGroup (summaries[i]);
-					var second = Provider.GetIssueGroup (summaries[j]);
+					var first = Provider.GetIssueGroup (null, summaries[i]);
+					var second = Provider.GetIssueGroup (null, summaries[j]);
 					Assert.AreNotSame (first, second, "The groups should not be the same.");
 				}
 			}
@@ -115,9 +120,9 @@ namespace MonoDevelop.Refactoring
 		[Test]
 		public void ResetRemovesGroups ()
 		{
-			var firstGroup = Provider.GetIssueGroup (summary);
+			var firstGroup = Provider.GetIssueGroup (null, summary);
 			Provider.Reset ();
-			var secondGroup = Provider.GetIssueGroup (summary);
+			var secondGroup = Provider.GetIssueGroup (null, summary);
 			Assert.AreNotEqual (firstGroup, secondGroup, "Reset did not remove the old group.");
 		}
 		
@@ -133,7 +138,7 @@ namespace MonoDevelop.Refactoring
 		[Test]
 		public void SetsNextProviderOfGeneratedGroups ()
 		{
-			var group = Provider.GetIssueGroup (summary);
+			var group = Provider.GetIssueGroup (null, summary);
 			var mock = new MockGroupingProvider ();
 			Provider.Next = mock;
 			Assert.AreSame (mock, group.GroupingProvider, "The grouping provider change was not propagated to the existing group.");

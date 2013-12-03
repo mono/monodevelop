@@ -64,7 +64,7 @@ namespace MonoDevelop.NUnit
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
 			foreach (var p in project.References)
-				if (p.Reference.IndexOf ("GuiUnit") != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
+				if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
 		}
@@ -134,9 +134,16 @@ namespace MonoDevelop.NUnit
 			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
 			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
 			if (command == null && args == null) {
-				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && Path.GetFileName (pref.Reference) == "GuiUnit.exe");
+				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && StringComparer.OrdinalIgnoreCase.Equals (Path.GetFileName (pref.Reference), "GuiUnit.exe"));
 				if (guiUnit != null) {
 					command = guiUnit.Reference;
+				}
+
+				var projectReference = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Project && pref.Reference.StartsWith ("GuiUnit", StringComparison.OrdinalIgnoreCase));
+				if (IdeApp.IsInitialized && command == null && projectReference != null) {
+					var guiUnitProject = IdeApp.Workspace.GetAllProjects ().First (f => f.Name == projectReference.Reference);
+					if (guiUnitProject != null)
+						command = guiUnitProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 				}
 			}
 		}

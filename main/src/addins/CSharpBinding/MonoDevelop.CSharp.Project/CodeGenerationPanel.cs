@@ -45,6 +45,7 @@ namespace MonoDevelop.CSharp.Project
 		public CodeGenerationPanelWidget ()
 		{
 			Build ();
+			xmlDocsEntry.DisplayAsRelativePath = true;
 		}
 		
 		public void Load (DotNetProjectConfiguration configuration)
@@ -53,12 +54,11 @@ namespace MonoDevelop.CSharp.Project
 			compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
 			symbolsEntry.Text                          = compilerParameters.DefineSymbols;
-			generateXmlOutputCheckButton.Active        = compilerParameters.GenerateXmlDocumentation;
+			generateXmlOutputCheckButton.Active        = !string.IsNullOrEmpty (compilerParameters.DocumentationFile);
 			enableOptimizationCheckButton.Active       = compilerParameters.Optimize;
 			generateOverflowChecksCheckButton.Active   = compilerParameters.GenerateOverflowChecks;
 			warningsAsErrorsCheckButton.Active         = compilerParameters.TreatWarningsAsErrors;
 			warningLevelSpinButton.Value               = compilerParameters.WarningLevel;
-			additionalArgsEntry.Text                   = compilerParameters.AdditionalArguments;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 			
 			int i = CSharpLanguageBinding.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
@@ -71,6 +71,12 @@ namespace MonoDevelop.CSharp.Project
 			} else {
 				comboDebug.Active = DEBUG_FULL;
 			}
+
+			xmlDocsEntry.DefaultPath = configuration.OutputDirectory;
+
+			xmlDocsEntry.Path = string.IsNullOrEmpty (compilerParameters.DocumentationFile)
+				? configuration.CompiledOutputName.ChangeExtension (".xml")
+				: compilerParameters.DocumentationFile;
 		}
 
 		public void Store ()
@@ -78,15 +84,14 @@ namespace MonoDevelop.CSharp.Project
 			if (compilerParameters == null)
 				throw new ApplicationException ("Code generation panel wasn't loaded !");
 			
-			compilerParameters.DefineSymbols            = symbolsEntry.Text;
-			compilerParameters.GenerateXmlDocumentation = generateXmlOutputCheckButton.Active;
-			compilerParameters.Optimize                 = enableOptimizationCheckButton.Active;
-			compilerParameters.GenerateOverflowChecks   = generateOverflowChecksCheckButton.Active;
-			compilerParameters.TreatWarningsAsErrors    = warningsAsErrorsCheckButton.Active;
-			compilerParameters.WarningLevel             = warningLevelSpinButton.ValueAsInt;
-			compilerParameters.AdditionalArguments      = additionalArgsEntry.Text;
-			compilerParameters.NoWarnings               = ignoreWarningsEntry.Text;
-			compilerParameters.PlatformTarget           = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
+			compilerParameters.DefineSymbols          = symbolsEntry.Text;
+			compilerParameters.DocumentationFile      = generateXmlOutputCheckButton.Active? xmlDocsEntry.Path : null;
+			compilerParameters.Optimize               = enableOptimizationCheckButton.Active;
+			compilerParameters.GenerateOverflowChecks = generateOverflowChecksCheckButton.Active;
+			compilerParameters.TreatWarningsAsErrors  = warningsAsErrorsCheckButton.Active;
+			compilerParameters.WarningLevel           = warningLevelSpinButton.ValueAsInt;
+			compilerParameters.NoWarnings             = ignoreWarningsEntry.Text;
+			compilerParameters.PlatformTarget         = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
 
 			switch (comboDebug.Active) {
 			case DEBUG_FULL:

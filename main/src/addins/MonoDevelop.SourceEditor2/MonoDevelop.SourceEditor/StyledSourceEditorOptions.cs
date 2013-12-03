@@ -41,6 +41,7 @@ namespace MonoDevelop.SourceEditor
 		EventHandler changed;
 		IEnumerable<string> mimeTypes;
 		TextStylePolicy currentPolicy;
+		string lastMimeType;
 
 		public StyledSourceEditorOptions (Project styleParent, string mimeType)
 		{
@@ -51,8 +52,13 @@ namespace MonoDevelop.SourceEditor
 			get { return currentPolicy; }
 		}
 
+
 		public void UpdateStyleParent (Project styleParent, string mimeType)
 		{
+			if (styleParent != null && policyContainer == styleParent.Policies && mimeType == lastMimeType)
+				return;
+			lastMimeType = mimeType;
+
 			if (policyContainer != null)
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 
@@ -64,15 +70,18 @@ namespace MonoDevelop.SourceEditor
 				policyContainer = styleParent.Policies;
 			else
 				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
-
 			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+
 			policyContainer.PolicyChanged += HandlePolicyChanged;
+			if (changed != null)
+				this.changed (this, EventArgs.Empty);
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
 		{
 			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
-			this.changed (this, EventArgs.Empty);
+			if (changed != null)
+				this.changed (this, EventArgs.Empty);
 		}
 
 		public bool OverrideDocumentEolMarker {

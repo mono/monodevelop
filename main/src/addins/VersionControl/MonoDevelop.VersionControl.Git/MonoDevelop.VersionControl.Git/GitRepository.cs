@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 		NormalUpdate = SaveLocalChanges | UpdateSubmodules,
 	}
 
-	public class GitRepository : UrlBasedRepository
+	public sealed class GitRepository : UrlBasedRepository
 	{
 		static readonly byte[] EmptyContent = new byte[0];
 
@@ -1418,6 +1418,28 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		public void AddTag (string name, Revision rev, string message)
+		{
+			var addTag = new NGit.Api.Git (RootRepository).Tag ();
+			var gitRev = (GitRevision)rev;
+
+			addTag.SetName (name).SetMessage (message).SetObjectId (gitRev.Commit);
+			addTag.SetObjectId (gitRev.Commit).SetTagger (new PersonIdent (RootRepository));
+			addTag.Call ();
+		}
+
+		public void RemoveTag (string name)
+		{
+			var deleteTag = new NGit.Api.Git (RootRepository).TagDelete ();
+			deleteTag.SetTags (name).Call ();
+		}
+
+		public void PushAllTags ()
+		{
+			var pushTags = new NGit.Api.Git (RootRepository).Push ();
+			pushTags.SetPushTags ().Call ();
+		}
+
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
 			var list = new NGit.Api.Git (RootRepository).BranchList ().SetListMode (ListBranchCommand.ListMode.REMOTE);
@@ -1535,7 +1557,7 @@ namespace MonoDevelop.VersionControl.Git
 			ChangeSet cset = CreateChangeSet (RootPath);
 			ObjectId cid1 = RootRepository.Resolve (remote + "/" + branch);
 			ObjectId cid2 = RootRepository.Resolve (RootRepository.GetBranch ());
-			RevWalk rw = new RevWalk (RootRepository);
+			RevWalk	rw = new RevWalk (RootRepository);
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
@@ -1567,7 +1589,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
 				string diff;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.DELETE:

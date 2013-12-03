@@ -38,7 +38,7 @@ namespace MonoDevelop.WebReferences.WCF
 {
 	public class WebServiceEngineWCF: WebServiceEngine
 	{
-		ClientOptions defaultOptions = new ClientOptions ();
+		readonly ClientOptions defaultOptions = new ClientOptions ();
 
 		public ClientOptions DefaultClientOptions {
 			get { return defaultOptions; }
@@ -63,11 +63,11 @@ namespace MonoDevelop.WebReferences.WCF
 			return null;
 		}
 		
-		MetadataSet ResolveWithWSMex (string url)
+		static MetadataSet ResolveWithWSMex (string url)
 		{
 			MetadataSet metadata = null;
 			try {
-				MetadataExchangeClient client = new MetadataExchangeClient (new EndpointAddress (url));
+				var client = new MetadataExchangeClient (new EndpointAddress (url));
 
 				Console.WriteLine ("\nAttempting to download metadata from {0} using WS-MetadataExchange..", url);
 				metadata = client.GetMetadata ();
@@ -75,10 +75,7 @@ namespace MonoDevelop.WebReferences.WCF
 				//MetadataExchangeClient wraps exceptions, thrown while
 				//fetching the metadata, in an InvalidOperationException
 				string msg;
-				if (e.InnerException == null)
-					msg = e.Message;
-				else
-					msg = e.InnerException.ToString ();
+				msg = e.InnerException == null ? e.Message : e.InnerException.ToString ();
 
 				Console.WriteLine ("WS-MetadataExchange query failed for the url '{0}' with exception :\n {1}",
 					url, msg);
@@ -110,27 +107,27 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			// TODO: Read as MetadataSet
 			
-			DiscoveryClientProtocol protocol = new DiscoveryClientProtocol ();
+			var protocol = new DiscoveryClientProtocol ();
 			
 			foreach (MetadataFile dcr in resfile.Metadata)
 			{
 				DiscoveryReference dr;
 				switch (dcr.MetadataType) {
 					case "Wsdl":
-						dr = new System.Web.Services.Discovery.ContractReference ();
+						dr = new ContractReference ();
 						break;
 					case "Disco":
-						dr = new System.Web.Services.Discovery.DiscoveryDocumentReference ();
+						dr = new DiscoveryDocumentReference ();
 						break;
 					case "Schema":
-						dr = new System.Web.Services.Discovery.SchemaReference ();
+						dr = new SchemaReference ();
 						break;
 					default:
 						continue;
 				}
 
 				dr.Url = dcr.SourceUrl;
-				FileStream fs = new FileStream (basePath.Combine (dcr.FileName), FileMode.Open, FileAccess.Read);
+				var fs = new FileStream (basePath.Combine (dcr.FileName), FileMode.Open, FileAccess.Read);
 				protocol.Documents.Add (dr.Url, dr.ReadDocument (fs));
 				fs.Close ();
 				protocol.References.Add (dr.Url, dr);

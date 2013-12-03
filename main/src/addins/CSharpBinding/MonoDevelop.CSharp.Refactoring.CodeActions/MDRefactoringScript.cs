@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MDRefactoringScript script;
 
 				if (loadedDocument.Editor != context.TextEditor) {
-					script = new MDRefactoringScript (new MDRefactoringContext (loadedDocument, loc, context.CancellationToken), FormattingOptions);
+					script = new MDRefactoringScript (MDRefactoringContext.Create (loadedDocument, loc, context.CancellationToken), FormattingOptions);
 					startedScripts.Add (script);
 				} else {
 					script = this;
@@ -352,14 +352,19 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				insertLocation = content.Length;
 			content = content.Substring (0, insertLocation) + newType.ToString (FormattingOptions) + content.Substring (insertLocation);
 
-			var policy = context.Project.Policies.Get<CSharpFormattingPolicy> ();
-			var textPolicy = context.Project.Policies.Get<TextStylePolicy> ();
-
-			content = MonoDevelop.CSharp.Formatting.CSharpFormatter.FormatText (policy, textPolicy, MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType, content, 0, content.Length);
+			var project = context.Project;
+			if (project != null) {
+				var policy = project.Policies.Get<CSharpFormattingPolicy> ();
+				var textPolicy = project.Policies.Get<TextStylePolicy> ();
+				content = MonoDevelop.CSharp.Formatting.CSharpFormatter.FormatText (policy, textPolicy, MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType, content, 0, content.Length);
+			}
 
 			File.WriteAllText (correctFileName, content);
-			context.Project.AddFile (correctFileName);
-			IdeApp.ProjectOperations.Save (context.Project);
+
+			if (project != null) {
+				project.AddFile (correctFileName);
+				IdeApp.ProjectOperations.Save (project);
+			}
 			IdeApp.Workbench.OpenDocument (correctFileName);
 		}
 

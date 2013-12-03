@@ -46,12 +46,9 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
-using MonoDevelop.Projects;
 using System.Collections.Generic;
-using MonoDevelop.Core.LogReporting;
 
 namespace MonoDevelop.Ide
 {
@@ -88,9 +85,8 @@ namespace MonoDevelop.Ide
 			Platform.Initialize ();
 			
 			Counters.Initialization.Trace ("Initializing GTK");
-			if (Platform.IsWindows) {
-				CheckWindowsGtk ();
-			}
+			if (Platform.IsWindows && !CheckWindowsGtk ())
+				return 1;
 			SetupExceptionManager ();
 			
 			try {
@@ -123,7 +119,7 @@ namespace MonoDevelop.Ide
 			EndPoint ep = null;
 			
 			DispatchService.Initialize ();
-			
+
 			// Set a synchronization context for the main gtk thread
 			SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
 			
@@ -322,26 +318,61 @@ namespace MonoDevelop.Ide
 		[return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
 		static extern bool SetDllDirectory (string lpPathName);
 
-		static void CheckWindowsGtk ()
+		static bool CheckWindowsGtk ()
 		{
 			string location = null;
+			Version version = null;
+			Version minVersion = new Version (2, 12, 22);
+
 			using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Xamarin\GtkSharp\InstallFolder")) {
-				if (key != null) {
+				if (key != null)
 					location = key.GetValue (null) as string;
+			}
+			using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
+				if (key != null)
+					Version.TryParse (key.GetValue (null) as string, out version);
+			}
+
+			//TODO: check build version of GTK# dlls in GAC
+			if (version == null || version < minVersion || location == null || !File.Exists (Path.Combine (location, "bin", "libgtk-win32-2.0-0.dll"))) {
+				LoggingService.LogError ("Did not find required GTK# installation");
+				string url = "http://monodevelop.com/Download";
+				string caption = "Fatal Error";
+				string message =
+					"{0} did not find the required version of GTK#. Please click OK to open the download page, where " +
+					"you can download and install the latest version.";
+				if (DisplayWindowsOkCancelMessage (
+					string.Format (message, BrandingService.ApplicationName, url), caption)
+				) {
+					Process.Start (url);
 				}
+				return false;
 			}
-			if (location == null || !File.Exists (Path.Combine (location, "bin", "libgtk-win32-2.0-0.dll"))) {
-				LoggingService.LogError ("Did not find registered GTK# installation");
-				return;
-			}
+
 			var path = Path.Combine (location, @"bin");
 			try {
 				if (SetDllDirectory (path)) {
-					return;
+					return true;
 				}
 			} catch (EntryPointNotFoundException) {
 			}
-			LoggingService.LogError ("Unable to set GTK# dll directory");
+			// this shouldn't happen unless something is weird in Windows
+			LoggingService.LogError ("Unable to set GTK+ dll directory");
+			return true;
+		}
+
+		static bool DisplayWindowsOkCancelMessage (string message, string caption)
+		{
+			var name = typeof(int).Assembly.FullName.Replace ("mscorlib", "System.Windows.Forms");
+			var asm = Assembly.Load (name);
+			var md = asm.GetType ("System.Windows.Forms.MessageBox");
+			var mbb = asm.GetType ("System.Windows.Forms.MessageBoxButtons");
+			var okCancel = Enum.ToObject (mbb, 1);
+			var dr = asm.GetType ("System.Windows.Forms.DialogResult");
+			var ok = Enum.ToObject (dr, 1);
+
+			const BindingFlags flags = BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Static;
+			return md.InvokeMember ("Show", flags, null, null, new object[] { message, caption, okCancel }).Equals (ok);
 		}
 		
 		public bool Initialized {
@@ -455,7 +486,7 @@ namespace MonoDevelop.Ide
 					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
 			}
 
-			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, detail, AlertButton.Ok);
+			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), AlertButton.Ok);
 
 			theme = fallback ?? themes.FirstOrDefault () ?? theme;
 		}
@@ -501,11 +532,12 @@ namespace MonoDevelop.Ide
 		
 		void HandleException (Exception ex, bool willShutdown)
 		{
-			// Log the crash to the MonoDevelop.log file first:
-			LoggingService.LogError (string.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown), ex);
-			
-			// Pass it off to the reporting service now.
-			LogReportingService.ReportUnhandledException (ex, willShutdown);
+			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
+
+			if (willShutdown)
+				LoggingService.LogFatalError (msg, ex);
+			else
+				LoggingService.LogCriticalError (msg, ex);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>
@@ -528,7 +560,7 @@ namespace MonoDevelop.Ide
 				return options.Error != null? -1 : 0;
 			
 			LoggingService.Initialize (options.RedirectOutput);
-			
+
 			int ret = -1;
 			bool retry = false;
 			do {

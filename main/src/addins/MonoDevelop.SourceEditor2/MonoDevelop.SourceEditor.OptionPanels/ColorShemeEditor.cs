@@ -242,7 +242,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");
-			this.fileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileNameForStyle (style);
+			this.fileName = style.FileName;
 			this.colorSheme = style;
 			this.entryName.Text = style.Name;
 			this.entryDescription.Text = style.Description;

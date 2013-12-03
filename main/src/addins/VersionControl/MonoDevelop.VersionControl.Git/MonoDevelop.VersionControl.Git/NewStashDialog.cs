@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public partial class NewStashDialog : Gtk.Dialog
+	partial class NewStashDialog : Gtk.Dialog
 	{
 		public NewStashDialog ()
 		{

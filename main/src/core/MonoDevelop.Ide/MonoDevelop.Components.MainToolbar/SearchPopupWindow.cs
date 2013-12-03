@@ -119,6 +119,7 @@ namespace MonoDevelop.Components.MainToolbar
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
+			categories.Add (new SearchInSolutionSearchCategory ());
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 
@@ -127,6 +128,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask | Gdk.EventMask.PointerMotionMask;
 			ItemActivated += (sender, e) => OpenFile ();
+			/*
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				if (inResize)
 					return;
@@ -139,7 +141,7 @@ namespace MonoDevelop.Components.MainToolbar
 						Visible = true;
 					inResize = false;
 				}
-			};
+			};*/
 		}
 		bool inResize = false;
 
@@ -304,10 +306,11 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-
-			Gdk.Size idealSize = GetIdealSize ();
-			requisition.Width = idealSize.Width;
-			requisition.Height = idealSize.Height;
+			if (!inResize) {
+				Gdk.Size idealSize = GetIdealSize ();
+				requisition.Width = idealSize.Width;
+				requisition.Height = idealSize.Height;
+			}
 		}
 
 		ItemIdentifier GetItemAt (double px, double py)

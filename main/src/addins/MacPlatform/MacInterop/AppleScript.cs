@@ -73,9 +73,9 @@ namespace MonoDevelop.MacInterop
 		public static string Run (string scriptSource)
 		{
 			AEDesc sourceData = new AEDesc ();
+
 			try {
-				//apparently UnicodeText doesn't work
-				AppleEvent.AECreateDescAscii (scriptSource, out sourceData);
+				AppleEvent.AECreateDescUtf8 (scriptSource, out sourceData);
 				return Run (true, ref sourceData);
 			} catch (AppleScriptException ex) {
 				MonoDevelop.Core.LoggingService.LogWarning (

@@ -45,6 +45,11 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public bool LineEndingMismatch {
+			get;
+			set;
+		}
+
 		public int Count {
 			get { return delimiters.Count + 1; }
 		}

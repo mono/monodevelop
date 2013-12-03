@@ -272,7 +272,11 @@ namespace MonoDevelop.Ide.Templates
 					content = formatted;
 			}
 			
-			MemoryStream ms = new MemoryStream ();
+			var ms = new MemoryStream ();
+
+			var bom = Encoding.UTF8.GetPreamble ();
+			ms.Write (bom, 0, bom.Length);
+
 			byte[] data;
 			if (AddStandardHeader) {
 				string header = StandardHeaderService.GetHeader (policyParent, fileName, true);

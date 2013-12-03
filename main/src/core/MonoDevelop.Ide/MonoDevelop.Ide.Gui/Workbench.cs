@@ -59,10 +59,10 @@ namespace MonoDevelop.Ide.Gui
 	public sealed class Workbench
 	{
 		List<Document> documents = new List<Document> ();
-		List<Pad> pads;
+		PadCollection pads;
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		DefaultWorkbench workbench;
-		
+
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
 		public event EventHandler GuiLocked;
@@ -94,12 +94,6 @@ namespace MonoDevelop.Ide.Gui
 				};
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
 					CheckFileStatus ();
-				};
-
-				TypeSystem.TypeSystemService.ProjectContentLoaded += delegate {
-					var doc = ActiveDocument;
-					if (doc != null)
-						doc.ReparseDocument ();
 				};
 
 				pads = null;	// Make sure we get an up to date pad list.
@@ -157,19 +151,18 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return null;
 		}
-		
-		public List<Pad> Pads {
+
+		public PadCollection Pads {
 			get {
 				if (pads == null) {
-					pads = new List<Pad> ();
+					pads = new PadCollection ();
 					foreach (PadCodon pc in workbench.PadContentCollection)
 						WrapPad (pc);
 				}
 				return pads;
 			}
 		}
-		
-		
+
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
 		}
@@ -265,14 +258,7 @@ namespace MonoDevelop.Ide.Gui
 		public Pad GetPad<T> ()
 		{
 			foreach (Pad pad in Pads) {
-				object content;
-				try {
-					content = pad.Content;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating pad " + pad.Title + " content.", e);
-					continue;
-				}
-				if (typeof(T).IsInstanceOfType (content))
+				if (typeof(T).FullName == pad.InternalContent.ClassName)
 					return pad;
 			}
 			return null;
@@ -462,8 +448,7 @@ namespace MonoDevelop.Ide.Gui
 						//if found, select window and jump to line
 						if (vcFound != null) {
 							if (info.Project != null && doc.Project != info.Project) {
-								MessageService.ShowWarning ("File is already open in another project."); 
-								return null;
+								doc.SetProject (info.Project); 
 							}
 
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
@@ -492,7 +477,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-					GettextCatalog.GetString ("Opening {0}", info.FileName),
+					GettextCatalog.GetString ("Opening {0}", info.Project != null ?
+						info.FileName.ToRelative (info.Project.ParentSolution.BaseDirectory) :
+						info.FileName),
 					Stock.StatusSolutionOperation,
 					true
 				);
@@ -994,18 +981,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {
-					if (pi.Id == pad.Id && pad.Content is IMementoCapable) {
-						try {
-							string xml = pi.State.OuterXml;
-							IMementoCapable m = (IMementoCapable) pad.Content; 
-							XmlReader innerReader = new XmlTextReader (new StringReader (xml));
-							innerReader.MoveToContent ();
-							ICustomXmlSerializer cs = (ICustomXmlSerializer)m.Memento;
-							if (cs != null)
-								m.Memento = cs.ReadFrom (innerReader);
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error loading view memento.", ex);
-						}
+
+					if (pi.Id == pad.Id) {
+						pad.InternalContent.SetPreferences(pi);
 						break;
 					}
 				}

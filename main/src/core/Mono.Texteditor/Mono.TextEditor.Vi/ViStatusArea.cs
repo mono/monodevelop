@@ -69,15 +69,22 @@ namespace Mono.TextEditor.Vi
 			base.OnDestroyed ();
 		}
 
+		Gdk.Rectangle lastAllocation;
 		public void AllocateArea (TextArea textArea, Gdk.Rectangle allocation)
 		{
 			if (!Visible)
 				Show ();
 			allocation.Height -= (int)textArea.LineHeight;
+			if (lastAllocation == allocation)
+				return;
+			lastAllocation = allocation;
+
 			if (textArea.Allocation != allocation)
 				textArea.SizeAllocate (allocation);
 			SetSizeRequest (allocation.Width, (int)editor.LineHeight);
-			editor.MoveTopLevelWidget (this, 0, allocation.Height);
+			var pos = ((TextEditor.EditorContainerChild)editor [this]);
+			if (pos.X != 0 || pos.Y != allocation.Height) 
+				editor.MoveTopLevelWidget (this, 0, allocation.Height);
 		}
 
 		public bool ShowCaret {

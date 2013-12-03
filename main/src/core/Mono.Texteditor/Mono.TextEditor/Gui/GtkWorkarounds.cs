@@ -37,6 +37,7 @@ namespace Mono.TextEditor
 	public static class GtkWorkarounds
 	{
 		const string LIBOBJC ="/usr/lib/libobjc.dylib";
+		const string USER32DLL = "User32.dll";
 		
 		[DllImport (LIBOBJC, EntryPoint = "sel_registerName")]
 		static extern IntPtr sel_registerName (string selector);
@@ -64,9 +65,6 @@ namespace Mono.TextEditor
 
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern ulong objc_msgSend_NSUInt64 (IntPtr klass, IntPtr selector);
-
-		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern void objc_msgSend_NSInt64_NSInt32 (IntPtr klass, IntPtr selector, int arg);
 		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect32 (out CGRect32 rect, IntPtr klass, IntPtr selector);
@@ -74,7 +72,7 @@ namespace Mono.TextEditor
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_CGRect64 (out CGRect64 rect, IntPtr klass, IntPtr selector);
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 
 		struct CGRect32
@@ -97,7 +95,7 @@ namespace Mono.TextEditor
 
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow, sel_terminate;
+			sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow;
 		static IntPtr sharedApp;
 		static IntPtr cls_NSEvent;
 		static IntPtr sel_modifierFlags;
@@ -162,7 +160,6 @@ namespace Mono.TextEditor
 			sel_modifierFlags = sel_registerName ("modifierFlags");
 			sel_setHasShadow = sel_registerName ("setHasShadow:");
 			sel_invalidateShadow = sel_registerName ("invalidateShadow");
-			sel_terminate = sel_registerName ("terminate:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
@@ -235,11 +232,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		static void MacTerminate ()
-		{
-			objc_msgSend_NSInt64_NSInt32 (sharedApp, sel_terminate, 0);
-		}
-
 		// Note: we can't reuse RectangleF because the layout is different...
 		[StructLayout (LayoutKind.Sequential)]
 		struct Rect {
@@ -268,10 +260,10 @@ namespace Mono.TextEditor
 		[UnmanagedFunctionPointer (CallingConvention.Winapi)]
 		delegate int EnumMonitorsCallback (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		extern static int EnumDisplayMonitors (IntPtr hdc, IntPtr clip, EnumMonitorsCallback callback, IntPtr user_data);
 
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
 
 		static Gdk.Rectangle WindowsGetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
@@ -310,13 +302,7 @@ namespace Mono.TextEditor
 
 			return new Gdk.Rectangle (x, y, width, height);
 		}
-
-		public static void Terminate ()
-		{
-			if (Platform.IsMac)
-				MacTerminate ();
-		}
-
+		
 		public static Gdk.Rectangle GetUsableMonitorGeometry (this Gdk.Screen screen, int monitor)
 		{
 			if (Platform.IsWindows)
@@ -574,20 +560,24 @@ namespace Mono.TextEditor
 			unchecked {
 				id = (((ulong)(uint)evt.State) | (((ulong)evt.HardwareKeycode) << 32) | (((ulong)evt.Group) << 48));
 			}
-			
+
+			bool remapKey = Platform.IsWindows && evt.HardwareKeycode == 0;
 			MappedKeys mapped;
-			if (!mappedKeys.TryGetValue (id, out mapped))
+			if (remapKey || !mappedKeys.TryGetValue (id, out mapped))
 				mappedKeys[id] = mapped = MapKeys (evt);
 			
 			shortcuts = mapped.Shortcuts;
 			state = mapped.State;
 			key = mapped.Key;
+
+			if (remapKey) {
+				key = (Gdk.Key)evt.KeyValue;
+			}
 		}
 		
 		static MappedKeys MapKeys (Gdk.EventKey evt)
 		{
 			MappedKeys mapped;
-			ushort keycode = evt.HardwareKeycode;
 			Gdk.ModifierType modifier = evt.State;
 			byte grp = evt.Group;
 			
@@ -599,7 +589,7 @@ namespace Mono.TextEditor
 			uint keyval;
 			int effectiveGroup, level;
 			Gdk.ModifierType consumedModifiers;
-			TranslateKeyboardState (keycode, modifier, grp, out keyval, out effectiveGroup,
+			TranslateKeyboardState (evt, modifier, grp, out keyval, out effectiveGroup,
 				out level, out consumedModifiers);
 			mapped.Key = (Gdk.Key)keyval;
 			mapped.State = FixMacModifiers (evt.State & ~consumedModifiers, grp);
@@ -614,7 +604,7 @@ namespace Mono.TextEditor
 			modifier &= ~Gdk.ModifierType.LockMask;
 			
 			//fully decomposed
-			TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.None, 0,
+			TranslateKeyboardState (evt, Gdk.ModifierType.None, 0,
 				out keyval, out effectiveGroup, out level, out consumedModifiers);
 			accelList.Add (new KeyboardShortcut ((Gdk.Key)keyval, FixMacModifiers (modifier, grp) & accelMods));
 			
@@ -622,6 +612,10 @@ namespace Mono.TextEditor
 			if ((modifier & Gdk.ModifierType.ShiftMask) != 0) {
 				keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.ShiftMask, 0,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
+
+				if (Platform.IsWindows && evt.HardwareKeycode == 0) {
+					keyval = (ushort)evt.KeyValue;
+				}
 				
 				// Prevent consumption of non-Shift modifiers (that we didn't even provide!)
 				consumedModifiers &= Gdk.ModifierType.ShiftMask;
@@ -632,7 +626,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 composed
 			if (grp == 1) {
-				TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
+				TranslateKeyboardState (evt, modifier & ~Gdk.ModifierType.ShiftMask, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				
 				// Prevent consumption of Shift modifier (that we didn't even provide!)
@@ -644,7 +638,7 @@ namespace Mono.TextEditor
 			
 			//with group 1 and shift composed
 			if (grp == 1 && (modifier & Gdk.ModifierType.ShiftMask) != 0) {
-				TranslateKeyboardState (evt.HardwareKeycode, modifier, 1,
+				TranslateKeyboardState (evt, modifier, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
 				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
 				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
@@ -659,9 +653,11 @@ namespace Mono.TextEditor
 		
 		// Workaround for bug "Bug 688247 - Ctrl+Alt key not work on windows7 with bootcamp on a Mac Book Pro"
 		// Ctrl+Alt should behave like right alt key - unfortunately TranslateKeyboardState doesn't handle it. 
-		static void TranslateKeyboardState (uint hardware_keycode, Gdk.ModifierType state, int group, out uint keyval,
+		static void TranslateKeyboardState (Gdk.EventKey evt, Gdk.ModifierType state, int group, out uint keyval,
 			out int effective_group, out int level, out Gdk.ModifierType consumed_modifiers)
 		{
+			uint hardware_keycode = evt.HardwareKeycode;
+
 			if (Platform.IsWindows) {
 				const Gdk.ModifierType ctrlAlt = Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask;
 				if ((state & ctrlAlt) == ctrlAlt) {
@@ -677,6 +673,10 @@ namespace Mono.TextEditor
 			
 			keymap.TranslateKeyboardState (hardware_keycode, state, group, out keyval, out effective_group,
 				out level, out consumed_modifiers);
+
+			if (Platform.IsWindows && hardware_keycode == 0) {
+				keyval = evt.KeyValue;
+			}
 		}
 		
 		static Gdk.ModifierType FixMacModifiers (Gdk.ModifierType mod, byte grp)
@@ -736,7 +736,7 @@ namespace Mono.TextEditor
 			mod = accels[0].Modifier;
 		}
 
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[System.Runtime.InteropServices.DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
 		
 		enum DwmWindowAttribute
@@ -775,7 +775,7 @@ namespace Mono.TextEditor
 		[DllImport ("dwmapi.dll")]
 		static extern int DwmIsCompositionEnabled (out bool enabled);
 		
-		[DllImport ("User32.dll")]
+		[DllImport (USER32DLL)]
 		static extern bool GetWindowRect (IntPtr hwnd, out Win32Rect rect);
 		
 		public static void SetImCursorLocation (Gtk.IMContext ctx, Gdk.Window clientWindow, Gdk.Rectangle cursor)
@@ -833,7 +833,7 @@ namespace Mono.TextEditor
 			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
 		}
 
-		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_leak_fixed_marker ();
 
 		static HashSet<Type> fixedContainerTypes;
@@ -985,7 +985,7 @@ namespace Mono.TextEditor
 		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 		delegate void ForallDelegate (IntPtr container, bool include_internals, IntPtr cb, IntPtr data);
 		
-		[DllImport("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 
 		public static string MarkupLinks (string text)
@@ -1038,10 +1038,10 @@ namespace Mono.TextEditor
 
 		static bool canSetOverlayScrollbarPolicy = true;
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_scrolled_window_set_overlay_policy (IntPtr sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy);
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_scrolled_window_get_overlay_policy (IntPtr sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy);
 
 		public static void SetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy)
@@ -1073,7 +1073,7 @@ namespace Mono.TextEditor
 			canSetOverlayScrollbarPolicy = false;
 		}
 
-		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern bool gtk_tree_view_get_tooltip_context (IntPtr raw, ref int x, ref int y, bool keyboard_tip, out IntPtr model, out IntPtr path, IntPtr iter);
 
 		//the GTK# version of this has 'out' instead of 'ref', preventing passing the x,y values in
@@ -1093,10 +1093,10 @@ namespace Mono.TextEditor
 		
 		static bool supportsHiResIcons = false; // Disabled for now
 
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
 		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
+		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
 		
 		[DllImport (PangoUtil.LIBGTK)]

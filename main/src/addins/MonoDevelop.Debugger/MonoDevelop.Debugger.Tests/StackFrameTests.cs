@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Mono.Debugging.Client;
 using NUnit.Framework;
 
@@ -35,7 +34,7 @@ namespace MonoDevelop.Debugger.Tests
 		DebuggerSession ds;
 		StackFrame frame;
 		
-		public StackFrameTests (string de): base (de)
+		protected StackFrameTests (string de): base (de)
 		{
 		}
 		
@@ -43,14 +42,19 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			base.Setup ();
 			ds = Start ("TestEvaluation");
+			if (ds == null)
+				Assert.Ignore ("Engine not found: {0}", EngineId);
+
 			frame = ds.ActiveThread.Backtrace.GetFrame (0);
 		}
 		
 		public override void TearDown ()
 		{
 			base.TearDown ();
-			ds.Exit ();
-			ds.Dispose ();
+			if (ds != null) {
+				ds.Exit ();
+				ds.Dispose ();
+			}
 		}
 		
 		public StackFrame Frame {

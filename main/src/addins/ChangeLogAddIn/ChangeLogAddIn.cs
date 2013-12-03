@@ -64,23 +64,21 @@ namespace MonoDevelop.ChangeLogAddIn
 				info.Enabled = false;
 		}
 
-		private string GetSelectedFile()
+		static string GetSelectedFile()
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				string fn = IdeApp.Workbench.ActiveDocument.FileName;
 				if (fn != null && Path.GetFileName (fn) != "ChangeLog")
 					return fn;
 			}
-			ProjectFile file = IdeApp.ProjectOperations.CurrentSelectedItem as ProjectFile;
+			var file = IdeApp.ProjectOperations.CurrentSelectedItem as ProjectFile;
 			if (file != null)
 				return file.FilePath;
-			SystemFile sf = IdeApp.ProjectOperations.CurrentSelectedItem as SystemFile;
-			if (sf != null)
-				return sf.Path;
-			return null;
+			var sf = IdeApp.ProjectOperations.CurrentSelectedItem as SystemFile;
+			return sf != null ? sf.Path : null;
 		}
 		
-		private void InsertEntry(Document document)
+		static void InsertEntry(Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return;
@@ -92,7 +90,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
 			
 			int pos = GetHeaderEndPosition (document);
-			if (pos > 0 && selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory)) {
+			if (pos > 0 && selectedFileNameDirectory.StartsWith (changeLogFileNameDirectory, StringComparison.Ordinal)) {
 				string text = "\t* " 
 					+ selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
 					+ eol + eol;
@@ -107,7 +105,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			}
 		}
 		
-		private bool InsertHeader (Document document)
+		static bool InsertHeader (Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return false;
@@ -133,7 +131,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			return true;
 		}
         
-		private int GetHeaderEndPosition(Document document)
+		static int GetHeaderEndPosition(Document document)
 		{
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return 0;
@@ -143,10 +141,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			string text = textBuffer.GetText (0, Math.Min (textBuffer.Length, 1023));
 			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
 			
-			return text.IndexOf (eol + eol);
+			return text.IndexOf (eol + eol, StringComparison.Ordinal);
 		}
         
-		private Document GetActiveChangeLogDocument()
+		static Document GetActiveChangeLogDocument()
 		{
 			string file = GetSelectedFile ();
 			if (file == null)

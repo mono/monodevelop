@@ -312,7 +312,7 @@ namespace MonoDevelop.Core.Assemblies
 			fx.RelationsBuilt = true;
 		}
 
-		static IKVM.Reflection.Universe CreateClosedUniverse ()
+		public static IKVM.Reflection.Universe CreateClosedUniverse ()
 		{
 			const IKVM.Reflection.UniverseOptions ikvmOptions =
 				IKVM.Reflection.UniverseOptions.DisablePseudoCustomAttributeRetrieval |

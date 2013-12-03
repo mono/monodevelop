@@ -1,7 +1,5 @@
 
-using System;
 using Mono.Addins;
-using Mono.Addins.Description;
 
 [assembly:Addin ("ILAsmBinding", 
         Namespace = "MonoDevelop",

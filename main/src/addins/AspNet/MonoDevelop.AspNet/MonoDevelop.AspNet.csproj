@@ -20,9 +20,9 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,8 +34,8 @@
       <Execution clr-version="Net_2_0" />
     </Execution>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -205,9 +205,6 @@
     <EmbeddedResource Include="Templates\WebConfig-SubDir.xft.xml">
       <LogicalName>WebConfig-SubDir.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.AspNet.MD1Serialization\md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Templates\WebContentForm-CodeBehind.xft.xml">
       <LogicalName>WebContentForm-CodeBehind.xft.xml</LogicalName>
     </EmbeddedResource>
@@ -276,7 +273,6 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDom.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetDirectiveState.cs" />
     <Compile Include="MonoDevelop.AspNet.StateEngine\AspNetServerCommentState.cs" />
-    <Compile Include="MonoDevelop.AspNet.MD1Serialization\MD1AspNetCustomDataItem.cs" />
     <Compile Include="MonoDevelop.AspNet.Deployment\AspNetDeployServiceExtension.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\Directive.cs" />
     <Compile Include="MonoDevelop.AspNet.Completion\SimpleLists.cs" />

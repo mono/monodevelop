@@ -100,12 +100,21 @@ namespace MonoDevelop.AnalysisCore.Gui
 			double drawTo;
 				
 			if (markerStart < startOffset && endOffset < markerEnd) {
-				drawFrom = startXPos;
 				drawTo = endXPos;
+				var line = editor.GetLineByOffset (startOffset);
+				int offset = line.GetIndentation (editor.Document).Length;
+				drawFrom = startXPos + (layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
 			} else {
-				int start = startOffset < markerStart ? markerStart : startOffset;
+				int start;
+				if (startOffset < markerStart) {
+					start = markerStart;
+				} else {
+					var line = editor.GetLineByOffset (startOffset);
+					int offset = line.GetIndentation (editor.Document).Length;
+					start = startOffset + offset;
+				}
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
-				int /*lineNr,*/ x_pos;
+				int x_pos;
 
 				x_pos = layout.IndexToPos (start - startOffset).X;
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);

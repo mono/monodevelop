@@ -32,6 +32,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using Mono.CSharp.Nullable;
+using GLib;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -40,9 +42,13 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		IAssembly GenerateAssembly(Project project, string code)
 		{
-			var wrapper = TypeSystemService.LoadProject (project);
 			project.Files.Add (new ProjectFile ("test.cs", BuildAction.Compile));
-			TypeSystemService.ParseFile (project, "test.cs", "text/x-csharp", code);
+			var wrapper = TypeSystemService.LoadProject (project);
+			TypeSystemService.ParseFile ("test.cs", "text/x-csharp", code, wrapper);
+			wrapper.RequestLoad ();
+			do {
+				System.Threading.Thread.Sleep (10);
+			} while (wrapper.InLoad);
 			return wrapper.Compilation.MainAssembly;
 		}
 

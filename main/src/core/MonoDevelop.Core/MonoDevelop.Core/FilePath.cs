@@ -26,13 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using Mono.Addins;
-using MonoDevelop.Core.FileSystem;
 
 namespace MonoDevelop.Core
 {
@@ -42,7 +36,7 @@ namespace MonoDevelop.Core
 		static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 		static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
-		string fileName;
+		readonly string fileName;
 
 		public static readonly FilePath Null = new FilePath (null);
 		public static readonly FilePath Empty = new FilePath (string.Empty);

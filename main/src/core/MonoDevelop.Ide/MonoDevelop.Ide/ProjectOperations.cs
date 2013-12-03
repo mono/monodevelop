@@ -295,9 +295,9 @@ namespace MonoDevelop.Ide
 
 			if (isCecilProjectContent && doc != null) {
 				doc.RunWhenLoaded (delegate {
-					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IUrlHandler> ();
+					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
 					if (handler != null)
-						handler.Open (entity.GetIdString ());
+						handler.Open (entity);
 				});
 			}
 		}
@@ -704,7 +704,7 @@ namespace MonoDevelop.Ide
 			};
 		
 			dlg.AddAllFilesFilter ();
-			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj", "*.mdp");
+			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj");
 			
 			if (dlg.Run ()) {
 				try {
@@ -1139,6 +1139,9 @@ namespace MonoDevelop.Ide
 			try {
 				tt.Trace ("Pre-build operations");
 				result = DoBeforeCompileAction ();
+
+				//wait for any custom tools that were triggered by the save, since the build may depend on them
+				MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
 
 				if (result.ErrorCount == 0) {
 					tt.Trace ("Building item");

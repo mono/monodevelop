@@ -33,7 +33,7 @@ using Gtk;
 namespace MonoDevelop.WebReferences.Dialogs
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class WCFConfigWidget : Gtk.Bin
+	public partial class WCFConfigWidget : Bin
 	{
 		public WCFConfigWidget (ClientOptions options)
 		{
@@ -45,6 +45,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 			
 			dictTypes = new List<Type> (DefaultDictionaryTypes);
 			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
+
+			foreach (var access in AccessGenerationTypes)
+				listAccess.AppendText (access);
+
+			listAccess.Active = options.GenerateInternalTypes ? 1 : 0;
 		}
 		
 		public ClientOptions Options {
@@ -53,17 +58,28 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		static readonly Type[] DefaultListTypes = {
 			typeof (Array),
-			typeof (System.Collections.Generic.LinkedList<>),
-			typeof (System.Collections.Generic.List<>),
+			typeof (System.Collections.ArrayList),
+			typeof (LinkedList<>),
+			typeof (List<>),
 			typeof (System.Collections.ObjectModel.Collection<>),
 			typeof (System.Collections.ObjectModel.ObservableCollection<>),
 			typeof (System.ComponentModel.BindingList<>)
 		};
 		
 		static readonly Type[] DefaultDictionaryTypes = {
-			typeof (System.Collections.Generic.Dictionary<,>),
-			typeof (System.Collections.Generic.SortedList<,>),
-			typeof (System.Collections.Generic.SortedDictionary<,>)
+			typeof (Dictionary<, >),
+			typeof (SortedList<, >),
+			typeof (SortedDictionary<, >),
+			typeof (System.Collections.Hashtable),
+			typeof (System.Collections.SortedList),
+			typeof (System.Collections.Specialized.HybridDictionary),
+			typeof (System.Collections.Specialized.ListDictionary),
+			typeof (System.Collections.Specialized.OrderedDictionary)
+		};
+
+		static readonly List<string> AccessGenerationTypes = new List<string> {
+			"Public",
+			"Internal"
 		};
 		
 		public bool Modified {
@@ -71,8 +87,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 			private set;
 		}
 		
-		List<Type> listTypes;
-		List<Type> dictTypes;
+		readonly List<Type> listTypes;
+		readonly List<Type> dictTypes;
 		
 		static bool? runtimeSupport;
 		
@@ -106,19 +122,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 			var type = typeof (char).Assembly.GetType (name);
 			if (type != null)
 				return type;
-			type = typeof (System.Collections.Generic.LinkedList<>).Assembly.GetType (name);
-			if (type != null)
-				return type;
-			return null;
+			type = typeof (LinkedList<>).Assembly.GetType (name);
+			return type;
 		}
 		
 		internal static string GetTypeName (Type type)
 		{
 			var name = type.FullName;
-			var pos = name.IndexOf ("`");
-			if (pos < 0)
-				return name;
-			return name.Substring (0, pos);
+			var pos = name.IndexOf ("`", StringComparison.Ordinal);
+			return pos < 0 ? name : name.Substring (0, pos);
 		}
 		
 		void PopulateBox (ComboBox box, string category, List<Type> types)
@@ -140,7 +152,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			box.Active = types.IndexOf (current);
 		}
 		
-		void UpdateBox (ComboBox box, string category, List<Type> types)
+		void UpdateBox (ComboBox box, string category, IList<Type> types)
 		{
 			var mapping = Options.CollectionMappings.FirstOrDefault (m => m.Category == category);
 			if (mapping == null) {
@@ -160,6 +172,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			UpdateBox (listCollection, "List", listTypes);
 			UpdateBox (dictionaryCollection, "Dictionary", dictTypes);
+
+			if (listAccess.Active != (Options.GenerateInternalTypes ? 1 : 0)) {
+				Options.GenerateInternalTypes = !Options.GenerateInternalTypes;
+				Modified = true;
+			}
 		}
 	}
 }

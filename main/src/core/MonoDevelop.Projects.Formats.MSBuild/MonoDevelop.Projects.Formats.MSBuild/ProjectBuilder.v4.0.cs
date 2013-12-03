@@ -25,14 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Remoting;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Execution;
@@ -44,13 +40,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		ProjectCollection engine;
 		string file;
+		string solutionFile;
 		ILogWriter currentLogWriter;
 		ConsoleLogger consoleLogger;
 		BuildEngine buildEngine;
 
-		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
+		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file, string solutionFile)
 		{
 			this.file = file;
+			this.solutionFile = solutionFile;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
@@ -170,6 +168,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
 					p.FullPath = file;
 				}
+				if (!string.IsNullOrEmpty (solutionFile)) {
+					p.SetProperty ("SolutionPath", Path.GetFullPath (solutionFile));
+					p.SetProperty ("SolutionName", Path.GetFileNameWithoutExtension (solutionFile));
+					p.SetProperty ("SolutionFilename", Path.GetFileName (solutionFile));
+					p.SetProperty ("SolutionDir", Path.GetDirectoryName (solutionFile) + Path.DirectorySeparatorChar);
+				};
 			}
 			p.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))

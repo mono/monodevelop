@@ -83,9 +83,9 @@ namespace CBinding
 			string outputName = Path.Combine (configuration.OutputDirectory,
 			                                  configuration.CompiledOutputName);
 			
-			// Precompile header files and place them in .prec/<config_name>/
+			// Precompile header files and place them in prec/<config_name>/
 			if (configuration.PrecompileHeaders) {
-				string precDir = Path.Combine (configuration.SourceDirectory, ".prec");
+				string precDir = Path.Combine (configuration.IntermediateOutputDirectory, "prec");
 				string precConfigDir = Path.Combine (precDir, configuration.Id);
 				if (!Directory.Exists (precDir))
 					Directory.CreateDirectory (precDir);
@@ -188,7 +188,7 @@ namespace CBinding
 					args.Append ("-I\"" + StringParserService.Parse (inc, GetStringTags (project)) + "\" ");
 			
 			if (configuration.PrecompileHeaders) {
-				string precdir = Path.Combine (configuration.SourceDirectory, ".prec");
+				string precdir = Path.Combine (configuration.IntermediateOutputDirectory, "prec");
 				precdir = Path.Combine (precdir, configuration.Id);
 				args.Append ("-I\"" + precdir + "\"");
 			}
@@ -279,7 +279,7 @@ namespace CBinding
 			
 			foreach (ProjectFile file in projectFiles) {
 				if (file.Subtype == Subtype.Code && CProject.IsHeaderFile (file.Name)) {
-					string precomp = Path.Combine (configuration.SourceDirectory, ".prec");
+					string precomp = Path.Combine (configuration.IntermediateOutputDirectory, "prec");
 					precomp = Path.Combine (precomp, configuration.Id);
 					precomp = Path.Combine (precomp, Path.GetFileName (file.Name) + ".ghc");
 					if (file.BuildAction == BuildAction.Compile) {
@@ -623,10 +623,10 @@ namespace CBinding
 		
 		void CleanPrecompiledHeaders (CProjectConfiguration configuration)
 		{
-			if (string.IsNullOrEmpty (configuration.SourceDirectory))
+			if (string.IsNullOrEmpty (configuration.IntermediateOutputDirectory))
 			    return;
 			
-			string precDir = Path.Combine (configuration.SourceDirectory, ".prec");			
+			string precDir = Path.Combine (configuration.IntermediateOutputDirectory, "prec");			
 
 			if (Directory.Exists (precDir))
 				Directory.Delete (precDir, true);

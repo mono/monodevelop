@@ -36,7 +36,13 @@ namespace MonoDevelop.Debugger.Visualizer
 {
 	public class CStringVisualizer : ValueVisualizer
 	{
+		const int CHUNK_SIZE = 1024;
+
+		RawValueArray rawArray;
 		TextView textView;
+		uint idle_id;
+		int length;
+		int offset;
 
 		public CStringVisualizer ()
 		{
@@ -95,25 +101,69 @@ namespace MonoDevelop.Debugger.Visualizer
 			return text.ToString ();
 		}
 
-		void PopulateTextView (ObjectValue value)
+		bool GetNextSByteArrayChunk ()
 		{
-			var array = value.GetRawValue () as RawValueArray;
+			int amount = Math.Min (length - offset, CHUNK_SIZE);
+			var chunk = rawArray.GetValues (offset, amount) as sbyte[];
+			var text = SByteArrayToCString (chunk);
 			var iter = textView.Buffer.EndIter;
-			string text;
-
-			switch (value.TypeName) {
-			case "sbyte[]":
-				text = SByteArrayToCString (array.ToArray () as sbyte[]);
-				break;
-			case "byte[]":
-				text = ByteArrayToCString (array.ToArray () as byte[]);
-				break;
-			default:
-				text = string.Empty;
-				break;
-			}
 
 			textView.Buffer.Insert (ref iter, text);
+			offset += amount;
+
+			if (offset < length)
+				return true;
+
+			idle_id = 0;
+
+			// Remove this idle callback
+			return false;
+		}
+
+		bool GetNextByteArrayChunk ()
+		{
+			int amount = Math.Min (length - offset, CHUNK_SIZE);
+			var chunk = rawArray.GetValues (offset, amount) as byte[];
+			var text = ByteArrayToCString (chunk);
+			var iter = textView.Buffer.EndIter;
+
+			textView.Buffer.Insert (ref iter, text);
+			offset += amount;
+
+			if (offset < length)
+				return true;
+
+			idle_id = 0;
+
+			// Remove this idle callback
+			return false;
+		}
+
+		void PopulateTextView (ObjectValue value)
+		{
+			rawArray = value.GetRawValue () as RawValueArray;
+			length = rawArray.Length;
+			offset = 0;
+
+			if (length > 0) {
+				switch (value.TypeName) {
+				case "sbyte[]":
+					idle_id = GLib.Idle.Add (GetNextSByteArrayChunk);
+					break;
+				case "byte[]":
+					idle_id = GLib.Idle.Add (GetNextByteArrayChunk);
+					break;
+				default:
+					return;
+				}
+
+				textView.Destroyed += delegate {
+					if (idle_id != 0) {
+						GLib.Source.Remove (idle_id);
+						idle_id = 0;
+					}
+				};
+			}
 		}
 
 		public override Widget GetVisualizerWidget (ObjectValue val)

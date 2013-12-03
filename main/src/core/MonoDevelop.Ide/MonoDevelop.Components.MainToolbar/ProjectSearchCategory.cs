@@ -287,12 +287,18 @@ namespace MonoDevelop.Components.MainToolbar
 			internal SearchResult CheckType (ITypeDefinition type)
 			{
 				int rank;
-				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank))
+				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank)) {
+					if (type.DeclaringType != null)
+						rank--;
 					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false) { Ambience = ambience };
+				}
 				if (!FullSearch)
 					return null;
-				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank))
+				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank)) {
+					if (type.DeclaringType != null)
+						rank--;
 					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true) { Ambience = ambience };
+				}
 				return null;
 			}
 			

@@ -290,7 +290,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
 			Thread errorReader = new Thread (delegate ()
 			{
-				ReadOutput (outputPipe, true);
+				ReadOutput (errorPipe, true);
 			});
 			errorReader.Name = "Debugger error reader";
 			errorReader.IsBackground = true;

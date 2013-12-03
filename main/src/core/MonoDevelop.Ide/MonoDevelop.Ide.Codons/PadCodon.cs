@@ -37,6 +37,8 @@ using Mono.Addins;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 using System.Collections.Generic;
+using System.Xml;
+using System.IO;
 
 namespace MonoDevelop.Ide.Codons
 {
@@ -90,9 +92,11 @@ namespace MonoDevelop.Ide.Codons
 			if (content == null) {
 				content = CreatePad ();
 				content.Initialize (window);
-			} else if (!initializeCalled)
+				ApplyPreferences ();
+			} else if (!initializeCalled) {
 				content.Initialize (window);
-			
+				ApplyPreferences ();
+			}
 			initializeCalled = true;
 			return content;
 		}
@@ -172,6 +176,31 @@ namespace MonoDevelop.Ide.Codons
 			if (cachedDockLabelProvider == null)
 				cachedDockLabelProvider = (IDockItemLabelProvider) Addin.CreateInstance (dockLabelProvider, true);
 			return cachedDockLabelProvider.CreateLabel (orientation);
+		}
+
+		PadUserPrefs preferences = null;
+
+		internal void SetPreferences (PadUserPrefs pi)
+		{
+			preferences = pi;
+			ApplyPreferences ();
+		}
+
+		void ApplyPreferences ()
+		{
+			var memento = content as IMementoCapable;
+			if (memento == null || preferences == null)
+				return;
+			try {
+				string xml = preferences.State.OuterXml;
+				var innerReader = new XmlTextReader (new StringReader (xml));
+				innerReader.MoveToContent ();
+				ICustomXmlSerializer cs = (ICustomXmlSerializer)memento.Memento;
+				if (cs != null)
+					memento.Memento = cs.ReadFrom (innerReader);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading view memento.", ex);
+			}
 		}
 	}
 }

@@ -1,10 +1,12 @@
 // 
 // CommitDialogExtensionWidget.cs
 //  
-// Author:
+// Authors:
 //       Lluis Sanchez Gual <lluis@novell.com>
+//       Andrés G. Aragoneses <knocte@gmail.com>
 // 
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Andrés G. Aragoneses
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +25,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class GitCommitDialogExtension: CommitDialogExtension
+	sealed class GitCommitDialogExtension: CommitDialogExtension
 	{
 		GitCommitDialogExtensionWidget widget;
-		
+
+		Gtk.TextView textView;
+		Gtk.TextTag overflowTextTag;
+
 		public override bool Initialize (ChangeSet changeSet)
 		{
 			if (changeSet.Repository is GitRepository) {
@@ -139,6 +146,45 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (success && widget.PushAfterCommit)
 				GitService.Push ((GitRepository) changeSet.Repository);
+		}
+
+		public override void CommitMessageTextViewHook (Gtk.TextView textView)
+		{
+			this.textView = textView;
+			overflowTextTag = new Gtk.TextTag ("overflow");
+			overflowTextTag.Foreground = "red";
+			overflowTextTag.ForegroundSet = true;
+			textView.Buffer.TagTable.Add (overflowTextTag);
+			textView.Buffer.Changed += OnTextChanged;
+		}
+
+		void OnTextChanged (object source, EventArgs args)
+		{
+			HighlightTextIfTooLong ();
+		}
+
+		const int maxLengthConventionForFirstLineOfCommitMessage = 50;
+
+		void HighlightTextIfTooLong ()
+		{
+			var text = textView.Buffer.Text;
+			var lines = text.Split ('\n');
+			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
+				textView.TooltipText = String.Format (GettextCatalog.GetString (
+					"When using GIT, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+					maxLengthConventionForFirstLineOfCommitMessage);
+				textView.HasTooltip = true;
+
+				Gtk.TextIter start, end, unused;
+				textView.Buffer.GetBounds (out start, out unused);
+				start.ForwardChars (maxLengthConventionForFirstLineOfCommitMessage);
+
+				textView.Buffer.GetBounds (out end, out unused);
+				end.ForwardChars (lines [0].Length);
+				textView.Buffer.ApplyTag (overflowTextTag, start, end);
+			} else {
+				textView.HasTooltip = false;
+			}
 		}
 	}
 }

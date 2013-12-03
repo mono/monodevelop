@@ -14,7 +14,7 @@ PROFILE_NAME=DebugWin32
 endif
 
 XBUILD=xbuild
-XBUILD_VERBOSITY=quiet
+XBUILD_VERBOSITY=normal
 XBUILD_ARGS=/verbosity:$(XBUILD_VERBOSITY) /nologo /property:CodePage=65001
 XBUILD_PROFILE=/property:Configuration=$(PROFILE_NAME)
 

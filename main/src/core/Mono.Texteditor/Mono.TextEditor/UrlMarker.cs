@@ -27,6 +27,7 @@
 using System;
 using Gdk;
 using Mono.TextEditor.Highlighting;
+using Gtk;
 
 namespace Mono.TextEditor
 {
@@ -121,11 +122,13 @@ namespace Mono.TextEditor
 			} else {
 				int start = startOffset < markerStart ? markerStart : startOffset;
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
-				int x_pos = layout.IndexToPos (start - startOffset).X;
-	
+
+				uint curIndex = 0, byteIndex = 0;
+				int x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(start - startOffset), ref curIndex, ref byteIndex)).X;
+
 				@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 	
-				x_pos = layout.IndexToPos (end - startOffset).X;
+				x_pos = layout.IndexToPos ((int)metrics.Layout.TranslateToUTF8Index ((uint)(end - startOffset), ref curIndex, ref byteIndex)).X;
 	
 				to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

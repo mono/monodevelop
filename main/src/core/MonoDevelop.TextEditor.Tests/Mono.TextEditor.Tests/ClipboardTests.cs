@@ -88,6 +88,7 @@ namespace Mono.TextEditor.Tests
 		public void TestPasteDoesntInsertVirtualIndent ()
 		{
 			var data = VirtualIndentModeTests.CreateData ("");
+			data.Options.DefaultEolMarker = "\n";
 			data.Caret.Location =  new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
 			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "\n\n";

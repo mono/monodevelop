@@ -100,7 +100,9 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
-			return RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
+			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
+			result.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (OnTestSessionCompleted));
+			return result;
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
@@ -321,6 +323,15 @@ namespace MonoDevelop.NUnit
 		}
 
 		public event EventHandler TestSuiteChanged;
+
+		void OnTestSessionCompleted (IAsyncOperation op)
+		{
+			var handler = TestSessionCompleted;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
+		}
+
+		public event EventHandler TestSessionCompleted;
 	}
 	
 

@@ -103,6 +103,8 @@ namespace MonoDevelop.Refactoring
 				return resolveResult.Type;
 			if (resolveResult is NamespaceResolveResult)
 				return ((NamespaceResolveResult)resolveResult).Namespace;
+			if (resolveResult is OperatorResolveResult)
+				return ((OperatorResolveResult)resolveResult).UserDefinedOperatorMethod;
 			return null;
 		}
 
@@ -200,8 +202,13 @@ namespace MonoDevelop.Refactoring
 
 		class RefactoringDocumentInfo
 		{
-			public IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
+			public IEnumerable<CodeAction> validActions;
 			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+
+			public override string ToString ()
+			{
+				return string.Format ("[RefactoringDocumentInfo: #validActions={0}, lastDocument={1}]", validActions != null ? validActions.Count ().ToString () : "null", lastDocument);
+			}
 		}
 
 
@@ -329,7 +336,8 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
+			if (!(item is IMethod && ((IMethod)item).SymbolKind == SymbolKind.Operator) && (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace)) {
+
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
 				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));

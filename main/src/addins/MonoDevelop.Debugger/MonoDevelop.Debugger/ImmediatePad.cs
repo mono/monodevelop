@@ -119,7 +119,7 @@ namespace MonoDevelop.Debugger
 
 				if (children.Length > 0 && string.Equals (children[0].Name, "[0..99]")) {
 					// Big Arrays Hack
-					children = children [0].GetAllChildren ();
+					children = children[0].GetAllChildren ();
 					hasMore = true;
 				}
 
@@ -143,15 +143,12 @@ namespace MonoDevelop.Debugger
 
 		void PrintChildValue (ObjectValue val)
 		{
-			string prefix = "\t" + val.Name + ": ";
-			string result = val.Value;
-
 			view.WriteOutput (Environment.NewLine);
 
-			if (string.IsNullOrEmpty (result) || val.IsError || val.IsUnknown || val.IsNotSupported) {
-				view.WriteOutput (prefix + GetErrorText (val));
-			} else {
-				view.WriteOutput (prefix + result);
+			if (val.IsError || val.IsUnknown) {
+				view.WriteOutput (string.Format ("\t{0}", GetErrorText (val)));
+			} else if (!val.IsNotSupported) {
+				view.WriteOutput (string.Format ("\t{0}: {1}", val.Name, val.Value));
 			}
 		}
 

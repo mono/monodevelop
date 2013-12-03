@@ -42,6 +42,7 @@ namespace Mono.TextEditor.Highlighting
 		public string Description { get; set; }
 		public string Originator { get; set; }
 		public string BaseScheme { get; set; }
+		public string FileName { get; set; }
 
 		#region Ambient Colors
 		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
@@ -82,6 +83,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		[ColorDescription("Tooltip Pager Text")]
 		public AmbientColor TooltipPagerText { get; private set; }
+
+		[ColorDescription("Notification Border")]
+		public AmbientColor NotificationBorder { get; private set; }
 
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
@@ -280,6 +284,9 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Tooltip Text")] // not defined in vs.net
 		public ChunkStyle TooltipText { get; private set; }
+
+		[ColorDescription("Notification Text")] // not defined in vs.net
+		public ChunkStyle NotificationText { get; private set; }
 
 		[ColorDescription("Completion Text")] //not defined in vs.net
 		public ChunkStyle CompletionText { get; private set; }
@@ -584,7 +591,7 @@ namespace Mono.TextEditor.Highlighting
 			PropertyDecsription val;
 			if (!textColors.TryGetValue (color, out val)) {
 				Console.WriteLine ("Chunk style : " + color + " is undefined.");
-				return null;
+				return GetChunkStyle ("Plain Text");
 			}
 			return val.Info.GetValue (this, null) as ChunkStyle;
 		}
