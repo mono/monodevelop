@@ -51,6 +51,11 @@ namespace MonoDevelop.Debugger
 		readonly ExceptionInfo exception;
 		bool destroyed;
 
+		protected enum ModelColumn {
+			StackFrame,
+			Markup
+		}
+
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 		{
 			exception = ex;
@@ -116,7 +121,7 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new TreeStore (typeof (string), typeof (string), typeof (int), typeof (int));
+			var store = new TreeStore (typeof (ExceptionStackFrame), typeof (string));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
@@ -127,7 +132,7 @@ namespace MonoDevelop.Debugger
 			crt.Ellipsize = Pango.EllipsizeMode.End;
 			crt.WrapWidth = -1;
 
-			StackTraceTreeView.AppendColumn ("", crt, "markup", 0);
+			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
 
 			StackTraceTreeView.SizeAllocated += (o, args) => crt.WrapWidth = args.Allocation.Width;
 			StackTraceTreeView.RowActivated += StackFrameActivated;
@@ -144,7 +149,7 @@ namespace MonoDevelop.Debugger
 		{
 			var buttons = new HButtonBox () { Layout = ButtonBoxStyle.End, Spacing = 12 };
 
-			var copy = new Button (GettextCatalog.GetString ("Copy"));
+			var copy = new Button (Stock.Copy);
 			copy.Clicked += CopyClicked;
 			copy.Show ();
 
@@ -203,11 +208,10 @@ namespace MonoDevelop.Debugger
 			if (!model.GetIter (out iter, args.Path))
 				return;
 
-			string file = (string) model.GetValue (iter, 1);
-			int line = (int) model.GetValue (iter, 2);
+			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 
-			if (!string.IsNullOrEmpty (file))
-				IdeApp.Workbench.OpenDocument (file, line, 0);
+			if (frame != null && !string.IsNullOrEmpty (frame.File))
+				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
 		}
 
 		void ShowStackTrace (ExceptionInfo ex, bool showExceptionNode)
@@ -216,27 +220,28 @@ namespace MonoDevelop.Debugger
 			TreeIter iter = TreeIter.Zero;
 
 			if (showExceptionNode) {
-				string tn = ex.Type + ": " + ex.Message;
+				var markup = ex.Type + ": " + ex.Message;
+				iter = model.AppendValues (null, markup);
 				StackTraceTreeView.ShowExpanders = true;
-				iter = model.AppendValues (tn, null, 0, 0);
 			}
 
-			foreach (ExceptionStackFrame frame in ex.StackTrace) {
-				string text = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
+			foreach (var frame in ex.StackTrace) {
+				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
+
 				if (!string.IsNullOrEmpty (frame.File)) {
-					text += "\n<small>" + GLib.Markup.EscapeText (frame.File);
+					markup += "\n<small>" + GLib.Markup.EscapeText (frame.File);
 					if (frame.Line > 0) {
-						text += ":" + frame.Line;
+						markup += ":" + frame.Line;
 						if (frame.Column > 0)
-							text += "," + frame.Column;
+							markup += "," + frame.Column;
 					}
-					text += "</small>";
+					markup += "</small>";
 				}
 
 				if (!iter.Equals (TreeIter.Zero))
-					model.AppendValues (iter, text, frame.File, frame.Line, frame.Column);
+					model.AppendValues (iter, frame, markup);
 				else
-					model.AppendValues (text, frame.File, frame.Line, frame.Column);
+					model.AppendValues (frame, markup);
 			}
 
 			var inner = ex.InnerException;
@@ -264,7 +269,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (exception.StackIsEvaluating)
-				stack.AppendValues (GettextCatalog.GetString ("Loading..."), "", 0, 0);
+				stack.AppendValues (null, GettextCatalog.GetString ("Loading..."));
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)
