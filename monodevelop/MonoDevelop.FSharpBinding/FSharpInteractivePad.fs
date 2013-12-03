@@ -218,10 +218,8 @@ type FSharpInteractivePad() =
       ensureCorrectDirectory()
       sendCommand (AddSourceToSelection sel)
     else
-      //if nothing is selected send the whole line and go to the next line
+      //if nothing is selected send the whole line
       x.SendLine()
-      IdeApp.Workbench.ActiveDocument.Editor.Caret.Line <- IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1
-      IdeApp.Workbench.ActiveDocument.Editor.Caret.Column <- 0
       
   member x.SendLine() = 
     if IdeApp.Workbench.ActiveDocument = null then () 
@@ -230,8 +228,11 @@ type FSharpInteractivePad() =
       let line = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line
       let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
-      let sel = String.Format("# {0} \"{1}\"\n{2}\n" ,line ,file.FullPath,text) 
+      let sel = String.Format("# {0} \"{1}\"\n{2}\n", line, file.FullPath, text)
       sendCommand sel
+      //advance to the next line
+      IdeApp.Workbench.ActiveDocument.Editor.Caret.Line <- IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1
+      IdeApp.Workbench.ActiveDocument.Editor.Caret.Column <- 0
 
   member x.IsSelectionNonEmpty = 
     if IdeApp.Workbench.ActiveDocument = null || 
