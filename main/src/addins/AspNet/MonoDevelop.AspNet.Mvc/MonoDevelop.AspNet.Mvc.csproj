@@ -101,11 +101,14 @@
     <Compile Include="RazorEditorParserFixed\CommonResources.Designer.cs" />
     <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeGenerator.cs" />
     <Compile Include="RazorGenerator\MarkupRewriter.cs" />
     <Compile Include="RazorGenerator\RewritingRazorTemplateEngine.cs" />
     <Compile Include="RazorGenerator\PreprocessedAttributeRewriter.cs" />
     <Compile Include="RazorGenerator\PreprocessedRazorHost.cs" />
+    <Compile Include="RazorGenerator\PreprocessedLiteralAttributeCodeGenerator.cs" />
+    <Compile Include="RazorGenerator\PreprocessedAttributeBlockCodeGenerator.cs" />
+    <Compile Include="RazorGenerator\PreprocessedDynamicAttributeBlockCodeGenerator.cs" />
+    <Compile Include="RazorGenerator\RazorWriterHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

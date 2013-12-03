@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Web.Razor.Parser.SyntaxTree;
-using System.Web.Razor.Text;
 using System.Web.Razor.Generator;
 
 namespace MonoDevelop.RazorGenerator
@@ -63,55 +62,6 @@ namespace MonoDevelop.RazorGenerator
 				b.CodeGenerator = new PreprocessedDynamicAttributeBlockCodeGenerator ((DynamicAttributeBlockCodeGenerator)b.CodeGenerator);
 			}
 			return b.Build ();
-		}
-
-		class PreprocessedLiteralAttributeCodeGenerator : LiteralAttributeCodeGenerator
-		{
-			public PreprocessedLiteralAttributeCodeGenerator (LocationTagged<string> prefix, LocationTagged<string> value)
-				: base (prefix, value)
-			{
-			}
-
-			public PreprocessedLiteralAttributeCodeGenerator (LocationTagged<string> prefix, LocationTagged<SpanCodeGenerator> valueGenerator)
-				: base (prefix, valueGenerator)
-			{
-			}
-
-			public override void GenerateCode (Span target, CodeGeneratorContext context)
-			{
-			}
-		}
-
-		class PreprocessedAttributeBlockCodeGenerator : AttributeBlockCodeGenerator
-		{
-			public PreprocessedAttributeBlockCodeGenerator (AttributeBlockCodeGenerator old)
-				: base (old.Name, old.Prefix, old.Suffix)
-			{
-			}
-
-			public override void GenerateStartBlockCode (Block target, CodeGeneratorContext context)
-			{
-			}
-
-			public override void GenerateEndBlockCode (Block target, CodeGeneratorContext context)
-			{
-			}
-		}
-
-		class PreprocessedDynamicAttributeBlockCodeGenerator : DynamicAttributeBlockCodeGenerator
-		{
-			public PreprocessedDynamicAttributeBlockCodeGenerator (DynamicAttributeBlockCodeGenerator old)
-				: base (old.Prefix, old.ValueStart)
-			{
-			}
-
-			public override void GenerateStartBlockCode (Block target, CodeGeneratorContext context)
-			{
-			}
-
-			public override void GenerateEndBlockCode (Block target, CodeGeneratorContext context)
-			{
-			}
 		}
 	}
 }

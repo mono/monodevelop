@@ -8,7 +8,10 @@ using System;
 
 namespace MonoDevelop.RazorGenerator
 {
-	// internal class from System.Web.Razor.Parser
+	// based on System.Web.Razor.Parser.MarkupRewriter
+	// Copyright (c) Microsoft Open Technologies, Inc.
+	// Licensed under the Apache License, Version 2.0
+	//
 	// VisitBlock has been rewritten so it actually visits the children of rewritten blocks
 	//
 	abstract class MarkupRewriter : ParserVisitor, ISyntaxTreeRewriter

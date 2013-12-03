@@ -124,7 +124,6 @@ namespace MonoDevelop.RazorGenerator
 
 		public override RazorCodeGenerator DecorateCodeGenerator (RazorCodeGenerator incomingCodeGenerator)
 		{
-			incomingCodeGenerator = new PreprocessedCSharpRazorCodeGenerator (incomingCodeGenerator);
 			var codeGenerator = base.DecorateCodeGenerator (incomingCodeGenerator);
 			codeGenerator.GenerateLinePragmas = EnableLinePragmas;
 			return codeGenerator;
