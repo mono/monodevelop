@@ -152,15 +152,79 @@ namespace MonoDevelop.RazorGenerator
 			System.Net.WebUtility.HtmlEncode (value.ToString (), writer);
 		}
 
-		protected static void WriteAttributeTo (System.IO.TextWriter writer, string name, string prefix, string suffix, params Tuple<object, bool>[] values)
-		{
-			throw new NotImplementedException ();
-		}
-
-		protected static void WriteAttribute (string name, string prefix, string suffix, params Tuple<object, bool>[] values)
+		// This method is REQUIRED, but you may choose to implement it differently
+		//
+		/// <summary>
+		/// Conditionally writes an attribute to the template output.
+		/// </summary>
+		protected void WriteAttribute (string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
 		{
 			WriteAttributeTo (__razor_writer, name, prefix, suffix, values);
 		}
-";
+
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
+		//
+		/// <summary>
+		/// Conditionally writes an attribute to a TextWriter.
+		/// </summary>
+		protected static void WriteAttributeTo (System.IO.TextWriter writer, string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
+		{
+			// this is based on System.Web.WebPages.WebPageExecutingBase
+			// Copyright (c) Microsoft Open Technologies, Inc.
+			// Licensed under the Apache License, Version 2.0
+			if (values.Length == 0) {
+				// Explicitly empty attribute, so write the prefix and suffix
+				writer.Write (prefix);
+				writer.Write (suffix);
+				return;
+			}
+
+			bool first = true;
+			bool wroteSomething = false;
+
+			for (int i = 0; i < values.Length; i++) {
+				Tuple<string,object,bool> attrVal = values [i];
+				string attPrefix = attrVal.Item1;
+				object value = attrVal.Item2;
+				bool isLiteral = attrVal.Item3;
+
+				if (value == null) {
+					// Nothing to write
+					continue;
+				}
+
+				// The special cases here are that the value we're writing might already be a string, or that the 
+				// value might be a bool. If the value is the bool 'true' we want to write the attribute name instead
+				// of the string 'true'. If the value is the bool 'false' we don't want to write anything.
+				//
+				// Otherwise the value is another object (perhaps an IHtmlString), and we'll ask it to format itself.
+				string stringValue;
+				bool? boolValue = value as bool?;
+				if (boolValue == true) {
+					stringValue = name;
+				} else if (boolValue == false) {
+					continue;
+				} else {
+					stringValue = value as string;
+				}
+
+				if (first) {
+					writer.Write (prefix);
+					first = false;
+				} else {
+					writer.Write (attPrefix);
+				}
+
+				if (isLiteral) {
+					writer.Write (stringValue ?? value);
+				} else {
+					WriteTo (writer, stringValue ?? value);
+				}
+				wroteSomething = true;
+			}
+			if (wroteSomething) {
+				writer.Write (suffix);
+			}
+		}";
 	}
 }
