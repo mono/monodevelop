@@ -105,12 +105,13 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, new Gdk.Color (223, 228, 235));
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
 			ExceptionValueTreeView.AllowEditing = false;
 			ExceptionValueTreeView.AllowAdding = false;
+			ExceptionValueTreeView.RulesHint = false;
 
-			// TODO: set the bg color to a greyish blue
 			ExceptionValueTreeView.Show ();
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
