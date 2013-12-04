@@ -823,23 +823,31 @@ namespace MonoDevelop.Ide.TypeSystem
 				CleanupCache ();
 			}
 		}
-
+		static CancellationTokenSource loadCancellationSource = new CancellationTokenSource ();
+		static bool loadWs = false;
 		static void InternalLoad (WorkspaceItem item)
 		{
 			var ws = item as Workspace;
 			if (ws != null) {
+				loadWs = true;
+				loadCancellationSource.Cancel ();
+				loadCancellationSource = new CancellationTokenSource ();
 				foreach (WorkspaceItem it in ws.Items)
 					InternalLoad (it);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else {
+				if (!loadWs) {
+					loadCancellationSource.Cancel ();
+					loadCancellationSource = new CancellationTokenSource ();
+				}
 				var solution = item as Solution;
 				if (solution != null) {
 					Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 					var list = projectContents.Values.ToList ();
 					Task.Factory.StartNew (delegate {
 						foreach (var wrapper in list) {
-							CheckModifiedFiles (wrapper.Project, wrapper.Project.Files.ToArray (), wrapper);
+							CheckModifiedFiles (wrapper.Project, wrapper.Project.Files.ToArray (), wrapper, loadCancellationSource.Token);
 						}
 					});
 
@@ -1188,12 +1196,14 @@ namespace MonoDevelop.Ide.TypeSystem
 							continue;
 						w.Add (wrapper);
 
-						foreach (var asm in wrapper.referencedAssemblies) {
+						foreach (var asm in wrapper.referencedAssemblies.ToArray ()) {
 							if (token.IsCancellationRequested)
 								return;
-							asm.CtxLoader.EnsureAssemblyLoaded ();
+							var ctxLoader = asm.CtxLoader;
+							if (ctxLoader != null)
+								ctxLoader.EnsureAssemblyLoaded ();
 						}
-						foreach (var rw in wrapper.referencedWrappers) {
+						foreach (var rw in wrapper.referencedWrappers.ToArray ()) {
 							if (token.IsCancellationRequested)
 								return;
 							s.Push (rw); 
@@ -1588,6 +1598,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				OnLoad (EventArgs.Empty);
 			}
+
+			internal void Unload ()
+			{
+				CancelLoad ();
+				foreach (var asm in referencedAssemblies) {
+					asm.Loaded -= HandleReferencedProjectInLoadChange;
+				}
+				loadActions = null;
+				referencedWrappers.Clear ();
+				referencedAssemblies.Clear ();
+				Loaded = null;
+				Content = new CSharpProjectContent ();
+			}
 		}
 
 		static readonly object projectContentLock = new object ();
@@ -1705,13 +1728,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void Unload (WorkspaceItem item)
 		{
 			var ws = item as Workspace;
+			TrackFileChanges = false;
+			loadCancellationSource.Cancel ();
 			if (ws != null) {
 				foreach (WorkspaceItem it in ws.Items)
 					Unload (it);
 				ws.ItemAdded -= OnWorkspaceItemAdded;
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
 				projectContents.Clear ();
-				cachedAssemblyContents.Clear ();
+				loadWs = false;
 			} else {
 				var solution = item as Solution;
 				if (solution != null) {
@@ -1722,6 +1747,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 				}
 			}
+
+			var oldCache = cachedAssemblyContents.Values.ToList ();
+			Parallel.ForEach (oldCache, content => content.Unload ());
+			cachedAssemblyContents.Clear ();
+			lock (parseQueueLock) {
+				parseQueueIndex.Clear ();
+				parseQueue.Clear ();
+			}
+			TrackFileChanges = true;
 		}
 
 		internal static void UnloadProject (Project project)
@@ -1742,6 +1776,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			StoreProjectCache (project, wrapper);
 			OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
+			wrapper.Unload ();
 		}
 
 		public static event EventHandler<ProjectUnloadEventArgs> ProjectUnloaded;
@@ -1977,6 +2012,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			#endregion
+			internal void Unload ()
+			{
+				if (CtxLoader != null) {
+					CtxLoader.Unload ();
+					CtxLoader = null;
+				}
+			}
 
 		}
 
@@ -2227,6 +2269,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				return result;
+			}
+
+			public void Unload ()
+			{
+				assembly = new DefaultUnresolvedAssembly (fileName);
+				Loaded = null;
 			}
 		}
 
@@ -2499,9 +2547,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static Dictionary<string, UnresolvedAssemblyProxy> cachedAssemblyContents = new Dictionary<string, UnresolvedAssemblyProxy> ();
 
+		/// <summary>
+		/// Force the update of a project context. Note: This method blocks the thread.
+		/// It was just implemented for use inside unit tests.
+		/// </summary>
 		public static void ForceUpdate (ProjectContentWrapper context)
 		{
 			CheckModifiedFiles ();
+			while (!context.IsLoaded) {
+				Thread.Sleep (10);
+			}
 		}
 
 		#region Parser queue
@@ -2541,7 +2596,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public ProjectContentWrapper Context;
 			public IEnumerable<ProjectFile> FileList;
 			//			public Action<string, IProgressMonitor> ParseCallback;
-			public void Run (IProgressMonitor monitor)
+			public void Run (IProgressMonitor monitor, CancellationToken token)
 			{
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
@@ -2549,6 +2604,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					Context.BeginLoadOperation ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
+						if (token.IsCancellationRequested)
+							return;
 						var fileName = file.FilePath;
 						if (filesSkippedInParseThread.Any (f => f == fileName))
 							continue;
@@ -2559,8 +2616,12 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (parser == null)
 							continue;
 						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						if (token.IsCancellationRequested)
+							return;
 						if (tags != null)
 							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
+						if (token.IsCancellationRequested)
+							return;
 						var oldFile = Context.Content.GetFile (fileName);
 						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
 						if (oldFile != null)
@@ -2568,7 +2629,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
-					Context.EndLoadOperation ();
+					if (!token.IsCancellationRequested)
+						Context.EndLoadOperation ();
 				}
 			}
 		}
@@ -2711,8 +2773,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content)
+		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content, CancellationToken token = default (CancellationToken))
 		{
+			if (token.IsCancellationRequested)
+				return;
 			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
 					content.BeginLoadOperation ();
@@ -2720,6 +2784,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
 
 					foreach (var file in projectFiles) {
+						if (token.IsCancellationRequested)
+							return;
 						if (file.BuildAction == null)
 							continue;
 						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
@@ -2744,6 +2810,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					// check if file needs to be removed from project content 
 					foreach (var file in cnt.Files) {
+						if (token.IsCancellationRequested)
+							return;
 						if (project.GetProjectFile (file.FileName) == null) {
 							content.UpdateContent (c => c.RemoveFiles (file.FileName));
 							content.InformFileRemoved (new ParsedFileEventArgs (file));
@@ -2751,7 +2819,8 @@ namespace MonoDevelop.Ide.TypeSystem
 								tags.RemoveFile (project, file.FileName);
 						}
 					}
-				
+					if (token.IsCancellationRequested)
+						return;
 					if (modifiedFiles.Count > 0)
 						QueueParseJob (content, modifiedFiles);
 				} catch (Exception e) {
@@ -2814,7 +2883,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			int pending = 0;
 			IProgressMonitor monitor = null;
-			
+			var token = loadCancellationSource.Token;
 			try {
 				do {
 					if (pending > 5 && monitor == null) {
@@ -2824,7 +2893,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var job = DequeueParseJob ();
 					if (job != null) {
 						try {
-							job.Run (monitor);
+							job.Run (monitor, token);
 						} catch (Exception ex) {
 							if (monitor == null)
 								monitor = GetParseProgressMonitor ();
@@ -2834,8 +2903,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 					
+					if (token.IsCancellationRequested)
+						break;
 					pending = PendingJobCount;
-					
 				} while (pending > 0);
 				queueEmptied.Set ();
 			} finally {

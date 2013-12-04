@@ -83,8 +83,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnSizeRequested (ref requisition);
 
-			requisition.Width += (int) primary.Width;
-			requisition.Height += (int) primary.Height;
+			requisition.Width = (int) primary.Width;
+			requisition.Height = (int) primary.Height;
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)

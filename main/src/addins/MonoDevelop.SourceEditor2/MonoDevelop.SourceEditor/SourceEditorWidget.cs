@@ -1718,12 +1718,14 @@ namespace MonoDevelop.SourceEditor
 			Wave = true;
 			
 			StartCol = Info.Region.BeginColumn;
-			var startOffset = line.Offset;
-			while (StartCol < line.Length) {
-				char ch = doc.GetCharAt (startOffset + StartCol - 1);
-				if (!char.IsWhiteSpace (ch))
-					break;
-				StartCol++;
+			if (line != null) {
+				var startOffset = line.Offset;
+				while (StartCol < line.Length) {
+					char ch = doc.GetCharAt (startOffset + StartCol - 1);
+					if (!char.IsWhiteSpace (ch))
+						break;
+					StartCol++;
+				}
 			}
 
 			if (Info.Region.EndColumn > StartCol) {

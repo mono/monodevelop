@@ -116,7 +116,6 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		public event EventHandler DocumentChanged;
-		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closing;
 		public event WorkbenchWindowEventHandler Closed;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;

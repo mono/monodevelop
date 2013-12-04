@@ -704,7 +704,7 @@ namespace MonoDevelop.Ide
 			};
 		
 			dlg.AddAllFilesFilter ();
-			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj", "*.mdp");
+			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj");
 			
 			if (dlg.Run ()) {
 				try {

@@ -437,13 +437,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnShowProperties ()
 		{
-			foreach (Pad pad in IdeApp.Workbench.Pads) {
-				if (pad.Id == "MonoDevelop.DesignerSupport.PropertyPad") {
-					pad.Visible = true;
-					pad.BringToFront (true);
-					return;
-				}
-			}
+			IdeApp.Workbench.Pads.PropertyPad.BringToFront (true);
 		}
 		
 		//NOTE: This command is slightly odd, as it operates on a tri-state value, 

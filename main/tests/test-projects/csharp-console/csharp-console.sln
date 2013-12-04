@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-console", "csharp-console\csharp-console.csproj", "{032D1E66-A1E8-4585-AE76-020A22C74101}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{032D1E66-A1E8-4585-AE76-020A22C74101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032D1E66-A1E8-4585-AE76-020A22C74101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032D1E66-A1E8-4585-AE76-020A22C74101}.Release|Any CPU.ActiveCfg = Release2|Any CPU
+		{032D1E66-A1E8-4585-AE76-020A22C74101}.Release|Any CPU.Build.0 = Release2|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = csharp-console\csharp-console.csproj
+		name = csharp-console
+	EndGlobalSection
+EndGlobal

@@ -222,12 +222,6 @@
 		<FileFilter id = "MSBuildProject"
 		            _label = "Project Files"
 		            extensions = "*.*proj"/>
-		<FileFilter id = "Combine"
-		            _label = "MD 1.0 Solution Files"
-		            extensions = "*.mds"/>
-		<FileFilter id = "Project"
-		            _label = "MD 1.0 Project Files"
-		            extensions = "*.mdp"/>
 		<FileFilter id = "Workbench"
 					_label = "MD Workbench"
 					extensions = "*.mdw"/>

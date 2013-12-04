@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.viewOnly = viewOnly;
 		}
 
-		public EditorCompareWidgetBase ()
+		protected EditorCompareWidgetBase ()
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			Intialize ();

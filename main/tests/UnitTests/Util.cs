@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 
 namespace UnitTests
 {
-	public class Util
+	public static class Util
 	{
 		static string rootDir;
 		static int projectId = 1;
@@ -56,16 +56,20 @@ namespace UnitTests
 			get { return Path.Combine (TestsRootDir, "tmp"); }
 		}
 		
-		public static FileFormat FileFormatMD1 {
-			get { return Services.ProjectService.FileFormats.GetFileFormat ("MD1"); }
-		}
-		
 		public static FileFormat FileFormatMSBuild05 {
 			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05"); }
 		}
 		
 		public static FileFormat FileFormatMSBuild08 {
 			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08"); }
+		}
+
+		public static FileFormat FileFormatMSBuild10 {
+			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild10"); }
+		}
+
+		public static FileFormat FileFormatMSBuild12 {
+			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild12"); }
 		}
 		
 		public static IProgressMonitor GetMonitor ()
@@ -118,6 +122,11 @@ namespace UnitTests
 			XmlDocument doc = new XmlDocument ();
 			doc.Load (file);
 			return Infoset (doc);
+		}
+
+		public static string ToWindowsEndings (string s)
+		{
+			return s.Replace ("\r\n", "\n").Replace ("\n", "\r\n");
 		}
 		
 		static void CopyDir (string src, string dst)

@@ -1780,19 +1780,21 @@ namespace MonoDevelop.SourceEditor
 		
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			CodeCompletionContext result = new CodeCompletionContext ();
+			var result = new CodeCompletionContext ();
+			if (widget == null)
+				return result;
+			var editor = widget.TextEditor;
+			if (editor == null)
+				return result;
 			result.TriggerOffset = triggerOffset;
-			DocumentLocation loc = widget.TextEditor.Caret.Location;
+			var loc = editor.Caret.Location;
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
-/*			var p = new Cairo.Point ((int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.X,
-			                         (int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.Y);
-			if (widget.TextEditor.Caret.Location.Column == loc.Column)*/
 			var p = this.widget.TextEditor.LocationToPoint (loc);
 			int tx, ty;
-			widget.TextEditor.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditor.Allocation.X + (int)p.X;
-			ty += widget.TextEditor.Allocation.Y + (int)p.Y + (int)TextEditor.LineHeight;
+			editor.ParentWindow.GetOrigin (out tx, out ty);
+			tx += editor.Allocation.X + p.X;
+			ty += editor.Allocation.Y + p.Y + (int)editor.LineHeight;
 
 			result.TriggerXCoord = tx;
 			result.TriggerYCoord = ty;
@@ -2442,7 +2444,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (SearchCommands.FindPrevious)]
 		void UpdateFindNextAndPrev (CommandInfo cinfo)
 		{
-			cinfo.Enabled = !string.IsNullOrEmpty (widget.TextEditor.SearchPattern);
+			cinfo.Enabled = !string.IsNullOrEmpty (SearchAndReplaceOptions.SearchPattern);
 		}
 
 		[CommandHandler (SearchCommands.FindPrevious)]

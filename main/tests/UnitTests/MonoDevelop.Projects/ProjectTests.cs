@@ -62,6 +62,7 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test()]
+		[Platform (Exclude = "Win")]
 		public void Resources ()
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");

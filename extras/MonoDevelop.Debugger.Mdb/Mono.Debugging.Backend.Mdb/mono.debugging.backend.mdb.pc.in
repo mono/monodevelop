@@ -1,6 +1,0 @@
-Name: Mono.Debugging.Backend.Mdb
-Description: Mono.Debugging.Backend.Mdb
-Version: 
-
-Requires: 
-Libs: -r:@expanded_libdir@/@PACKAGE@/DebuggerClient.dll

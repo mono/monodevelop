@@ -183,9 +183,6 @@
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
       <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
     </EmbeddedResource>

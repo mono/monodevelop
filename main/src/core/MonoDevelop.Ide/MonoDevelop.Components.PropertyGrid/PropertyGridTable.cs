@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Cairo;
 using System.Linq;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -251,8 +252,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		protected override void ForAll (bool includeInternals, Gtk.Callback callback)
 		{
 			base.ForAll (includeInternals, callback);
-			foreach (var c in children.Keys.ToArray ())
+			foreach (var c in children.Keys.ToArray ()) {
+				if (c.Parent == null) {
+					LoggingService.LogError ("Error found unparented child in property grid:" + c.GetType ()); 
+					continue;
+				}
 				callback (c);
+			}
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -274,7 +280,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.OnSizeAllocated (allocation);
 			int y = 0;
 			MeasureHeight (rows, ref y);
-			if (currentEditor != null && currentEditorRow != null)
+			if (currentEditor != null && currentEditorRow != null && children.ContainsKey (currentEditor))
 				children [currentEditor] = currentEditorRow.EditorBounds;
 			foreach (var cr in children) {
 				var r = cr.Value;

@@ -228,7 +228,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument (PrintingSettings.Instance);
+			try {
+				IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ().PrintPreviewDocument (PrintingSettings.Instance);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while generating the print preview", e);
+				MessageService.ShowError (GettextCatalog.GetString ("Error while generating the print preview"), e.Message);
+			}
 		}
 
 		protected override void Update (CommandInfo info)

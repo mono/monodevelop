@@ -19,7 +19,6 @@ SUBDIRS = \
 	NUnit \
 	MonoDeveloperExtensions \
 	VBNetBinding \
-	prj2make-sharp-lib \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.WebReferences \

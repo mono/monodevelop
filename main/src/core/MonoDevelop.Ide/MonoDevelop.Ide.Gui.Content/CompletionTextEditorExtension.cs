@@ -266,13 +266,17 @@ namespace MonoDevelop.Ide.Gui.Content
 				cpos = Editor.Caret.Offset;
 				wlen = 0;
 			}
-			
-			var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
-			ctx.TriggerWordLength = wlen;
-			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
+			try {
+				var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+				ctx.TriggerWordLength = wlen;
+				completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
 
-			info.Bypass = completionList == null;
-			info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
+				info.Bypass = completionList == null;
+				info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while update show code templates window", e);
+				info.Bypass = true;
+			}
 		}
 	
 		

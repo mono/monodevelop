@@ -769,6 +769,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return EvaluatedElement [name, MSBuildProject.Schema] != null;
 		}
 		
+		public void SetMetadata (string name, bool value)
+		{
+			SetMetadata (name, value ? "True" : "False");
+		}
+
 		public void SetMetadata (string name, string value, bool isXml = false)
 		{
 			// Don't overwrite the metadata value if the new value is the same as the old
@@ -804,6 +809,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return isXml ? elem.InnerXml : elem.InnerText;
 			else
 				return null;
+		}
+
+		public bool? GetBoolMetadata (string name)
+		{
+			var val = GetMetadata (name);
+			if (String.Equals (val, "False", StringComparison.OrdinalIgnoreCase))
+				return false;
+			if (String.Equals (val, "True", StringComparison.OrdinalIgnoreCase))
+				return true;
+			return null;
 		}
 
 		public bool GetMetadataIsFalse (string name)

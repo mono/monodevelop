@@ -114,6 +114,12 @@ namespace MonoDevelop.AssemblyBrowser
 				var entity = element as IMember;
 				if (entity != null)
 					member = entity.UnresolvedMember;
+
+			}
+			if (member == null) {
+				var entity = element as IType;
+				if (entity != null)
+					member = entity.GetDefinition ().Parts [0];
 			}
 			if (member == null)
 				return;

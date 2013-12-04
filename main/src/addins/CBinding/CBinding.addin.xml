@@ -230,10 +230,6 @@
 		<SolutionItem type="CBinding.CProject" extension="cproj" guid="{2857B73E-F847-4B02-9238-064979017E93}"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
-	</Extension>
-	
 <!-- Current Autotools AddIn is very .NET specific
 	<Module>
 	    <Runtime>
