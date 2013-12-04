@@ -21,6 +21,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.AspNet.Mvc\MonoDevelop.AspNet.Mvc.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\build\MonoDevelop.AspNet.Mvc.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="RazorGenerator\PreprocessedAttributeBlockCodeGenerator.cs" />
     <Compile Include="RazorGenerator\PreprocessedDynamicAttributeBlockCodeGenerator.cs" />
     <Compile Include="RazorGenerator\RazorWriterHelper.cs" />
+    <Compile Include="RazorGenerator\FileUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

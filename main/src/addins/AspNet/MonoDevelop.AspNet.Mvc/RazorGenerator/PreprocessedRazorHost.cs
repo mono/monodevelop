@@ -106,12 +106,43 @@ namespace MonoDevelop.RazorGenerator
 					writer.WriteLine ("#pragma warning disable 1591");
 					_codeDomProvider.GenerateCodeFromCompileUnit (results.GeneratedCode, writer, codeGeneratorOptions);
 					writer.WriteLine ("#pragma warning restore 1591");
-					return writer.ToString ();
+					string s = writer.ToString ();
+					return MakeLineDirectivePathsRelative (Path.GetDirectoryName (FullPath), s);
 				}
 			} catch (Exception e) {
 				errors.Add (new CompilerError (FullPath, 1, 1, null, e.ToString ()));
 				//Returning null signifies that generation has failed
 				return null;
+			}
+		}
+
+		// Use relative #line paths so they're machine-independent.
+		// Unix-style separators work fine on Windows so use those everywhere.
+		// Can't just inspect the codedom because Razor writes C# snippets.
+		//
+		// NOTE: this is broken with mcs, but works fine with csc
+		string MakeLineDirectivePathsRelative (string basePath, string source)
+		{
+			using (var sr = new StringReader (source))
+			using (var sw = new StringWriter ()) {
+				string line;
+				while ((line = sr.ReadLine ()) != null) {
+					int b, e;
+					if (!line.StartsWith ("#line ", StringComparison.Ordinal)
+						|| (b = line.IndexOf ('"')) < 0
+						|| (e = line.LastIndexOf ('"')) <= b)
+					{
+						sw.WriteLine (line);
+						continue;
+					}
+					string path = line.Substring (b + 1, e - b - 1);
+					path = FileUtil.AbsoluteToRelativePath (basePath, path);
+					sw.Write (line.Substring (0, b + 1));
+					sw.Write (path);
+					sw.WriteLine (line.Substring (e));
+
+				}
+				return sw.ToString ();
 			}
 		}
 
