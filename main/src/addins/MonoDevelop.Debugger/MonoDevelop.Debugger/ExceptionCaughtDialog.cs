@@ -1,10 +1,11 @@
 // 
 // ExceptionCaughtDialog.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,191 +26,291 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
+
 using Gtk;
-using System.Threading;
+
+using Mono.Debugging.Client;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Debugger
 {
-	public partial class ExceptionCaughtWidget : Gtk.Bin
+	class ExceptionCaughtDialog : Gtk.Dialog
 	{
-		readonly Gtk.TreeStore stackStore;
+		static readonly Gdk.Pixbuf WarningIconPixbuf = Gdk.Pixbuf.LoadFromResource ("exception-icon.png");
+		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
+		protected TreeView StackTraceTreeView { get; private set; }
+		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
+		protected Label ExceptionMessageLabel { get; private set; }
+		protected Label ExceptionTypeLabel { get; private set; }
+		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
 		bool destroyed;
-		
-		public ExceptionCaughtWidget (ExceptionInfo exception)
+
+		protected enum ModelColumn {
+			StackFrame,
+			Markup
+		}
+
+		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 		{
-			this.Build ();
+			exception = ex;
+			message = msg;
 
-			vboxExceptionInfo.Remove (labelMessage);
-			var frame = new InfoFrame (labelMessage);
+			Build ();
+			UpdateDisplay ();
+
+			exception.Changed += ExceptionChanged;
+		}
+
+		Widget CreateExceptionInfoHeader ()
+		{
+			ExceptionMessageLabel = new Label () { Selectable = true, Wrap = true, WidthRequest = 500, Xalign = 0.0f };
+			ExceptionTypeLabel = new Label () { UseMarkup = true, Xalign = 0.0f };
+
+			ExceptionMessageLabel.Show ();
+			ExceptionTypeLabel.Show ();
+
+			var frame = new InfoFrame (ExceptionMessageLabel);
 			frame.Show ();
-			vboxExceptionInfo.PackStart (frame, false, true, 0);
 
-			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
-			treeStack.Model = stackStore;
+			var vbox = new VBox (false, 6);
+			vbox.PackStart (ExceptionTypeLabel, false, true, 0);
+			vbox.PackStart (frame, true, true, 0);
+			vbox.Show ();
+
+			return vbox;
+		}
+
+		Widget CreateExceptionHeader ()
+		{
+			var icon = new Image (WarningIconPixbuf);
+			icon.Show ();
+
+			var hbox = new HBox (false, 12) { BorderWidth = 12 };
+			hbox.PackStart (icon, false, true, 0);
+			hbox.PackStart (CreateExceptionInfoHeader (), true, true, 0);
+			hbox.Show ();
+
+			return hbox;
+		}
+
+		Widget CreateExceptionValueTreeView ()
+		{
+			ExceptionValueTreeView = new ObjectValueTreeView ();
+			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
+			ExceptionValueTreeView.AllowExpanding = true;
+			ExceptionValueTreeView.AllowPinning = false;
+			ExceptionValueTreeView.AllowEditing = false;
+			ExceptionValueTreeView.AllowAdding = false;
+
+			// TODO: set the bg color to a greyish blue
+			ExceptionValueTreeView.Show ();
+
+			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
+			scrolled.ShadowType = ShadowType.In;
+			scrolled.Add (ExceptionValueTreeView);
+			scrolled.Show ();
+
+			return scrolled;
+		}
+
+		Widget CreateStackTraceTreeView ()
+		{
+			var store = new TreeStore (typeof (ExceptionStackFrame), typeof (string));
+			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.HeadersVisible = false;
+			StackTraceTreeView.ShowExpanders = false;
+			StackTraceTreeView.RulesHint = true;
+			StackTraceTreeView.Show ();
+
 			var crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.End;
 			crt.WrapWidth = -1;
-			treeStack.AppendColumn ("", crt, "markup", 0);
-			treeStack.ShowExpanders = false;
-			treeStack.RulesHint = true;
-			
-			valueView.AllowExpanding = true;
-			valueView.Frame = DebuggingService.CurrentFrame;
-			this.exception = exception;
-			
-			exception.Changed += HandleExceptionChanged;
-			treeStack.SizeAllocated += (object o, SizeAllocatedArgs args) => crt.WrapWidth = args.Allocation.Width;
-			
-			Fill ();
-			treeStack.RowActivated += HandleRowActivated;
+
+			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
+
+			StackTraceTreeView.SizeAllocated += (o, args) => crt.WrapWidth = args.Allocation.Width;
+			StackTraceTreeView.RowActivated += StackFrameActivated;
+
+			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
+			scrolled.ShadowType = ShadowType.In;
+			scrolled.Add (StackTraceTreeView);
+			scrolled.Show ();
+
+			return scrolled;
 		}
 
-		void HandleRowActivated (object o, RowActivatedArgs args)
+		Widget CreateButtonBox ()
 		{
+			var buttons = new HButtonBox () { Layout = ButtonBoxStyle.End, Spacing = 12 };
+
+			var copy = new Button (Stock.Copy);
+			copy.Clicked += CopyClicked;
+			copy.Show ();
+
+			buttons.PackStart (copy, false, true, 0);
+
+			var close = new Button (Stock.Close);
+			close.Activated += CloseClicked;
+			close.Clicked += CloseClicked;
+			close.Show ();
+
+			buttons.PackStart (close, false, true, 0);
+
+			buttons.Show ();
+
+			return buttons;
+		}
+
+		void Build ()
+		{
+			Title = GettextCatalog.GetString ("Exception Caught");
+			DefaultHeight = 350;
+			DefaultWidth = 500;
+			VBox.Spacing = 0;
+
+			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
+
+			var vbox = new VBox (false, 0);
+			vbox.PackStart (CreateExceptionValueTreeView (), true, true, 0);
+			vbox.PackStart (CreateStackTraceTreeView (), true, true, 0);
+			vbox.Show ();
+
+			VBox.PackStart (vbox, true, true, 0);
+
+			var actionArea = new HBox (false, 12) { BorderWidth = 6 };
+
+			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
+			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
+			OnlyShowMyCodeCheckbox.Show ();
+
+			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = OnlyShowMyCodeCheckbox };
+			alignment.Show ();
+
+			actionArea.PackStart (alignment, true, true, 0);
+			actionArea.PackStart (CreateButtonBox (), false, true, 0);
+			actionArea.Show ();
+
+			VBox.PackStart (actionArea, false, true, 0);
+			ActionArea.Hide ();
+		}
+
+		void StackFrameActivated (object o, RowActivatedArgs args)
+		{
+			var model = StackTraceTreeView.Model;
 			TreeIter iter;
 
-			if (!stackStore.GetIter (out iter, args.Path))
+			if (!model.GetIter (out iter, args.Path))
 				return;
 
-			string file = (string) stackStore.GetValue (iter, 1);
-			int line = (int) stackStore.GetValue (iter, 2);
-			if (!string.IsNullOrEmpty (file))
-				IdeApp.Workbench.OpenDocument (file, line, 0);
+			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
+
+			if (frame != null && !string.IsNullOrEmpty (frame.File))
+				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
 		}
 
-		void HandleExceptionChanged (object sender, EventArgs e)
+		void ShowStackTrace (ExceptionInfo ex, bool showExceptionNode)
 		{
-			Gtk.Application.Invoke (delegate {
-				Fill ();
-			});
-		}
-		
-		void Fill ()
-		{
-			if (destroyed)
-				return;
-			
-			stackStore.Clear ();
-			valueView.ClearValues ();
-
-			labelType.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
-			labelMessage.Text = string.IsNullOrEmpty (exception.Message) ?
-			                    string.Empty : 
-			                    exception.Message;
-			
-			ShowStackTrace (exception, false);
-			
-			if (!exception.IsEvaluating && exception.Instance != null) {
-				valueView.AddValue (exception.Instance);
-				valueView.ExpandRow (new TreePath ("0"), false);
-			}
-
-			if (exception.StackIsEvaluating) {
-				stackStore.AppendValues (GettextCatalog.GetString ("Loading..."), "", 0, 0);
-			}
-		}
-		
-		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)
-		{
+			var model = (TreeStore) StackTraceTreeView.Model;
 			TreeIter iter = TreeIter.Zero;
 
 			if (showExceptionNode) {
-				treeStack.ShowExpanders = true;
-				string tn = exc.Type + ": " + exc.Message;
-				iter = stackStore.AppendValues (tn, null, 0, 0);
+				var markup = ex.Type + ": " + ex.Message;
+				iter = model.AppendValues (null, markup);
+				StackTraceTreeView.ShowExpanders = true;
 			}
 
-			foreach (ExceptionStackFrame frame in exc.StackTrace) {
-				string text = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
+			foreach (var frame in ex.StackTrace) {
+				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
+
 				if (!string.IsNullOrEmpty (frame.File)) {
-					text += "\n<small>" + GLib.Markup.EscapeText (frame.File);
+					markup += "\n<small>" + GLib.Markup.EscapeText (frame.File);
 					if (frame.Line > 0) {
-						text += ":" + frame.Line;
+						markup += ":" + frame.Line;
 						if (frame.Column > 0)
-							text += "," + frame.Column;
+							markup += "," + frame.Column;
 					}
-					text += "</small>";
+					markup += "</small>";
 				}
 
 				if (!iter.Equals (TreeIter.Zero))
-					stackStore.AppendValues (iter, text, frame.File, frame.Line, frame.Column);
+					model.AppendValues (iter, frame, markup);
 				else
-					stackStore.AppendValues (text, frame.File, frame.Line, frame.Column);
+					model.AppendValues (frame, markup);
 			}
-			
-			ExceptionInfo inner = exc.InnerException;
+
+			var inner = ex.InnerException;
 			if (inner != null)
 				ShowStackTrace (inner, true);
 		}
-		
-		protected override void OnDestroyed ()
+
+		void UpdateDisplay ()
 		{
-			destroyed = true;
-			exception.Changed -= HandleExceptionChanged;
-			base.OnDestroyed ();
+			if (destroyed)
+				return;
+
+			var stack = (TreeStore) StackTraceTreeView.Model;
+			ExceptionValueTreeView.ClearValues ();
+			stack.Clear ();
+
+			ExceptionTypeLabel.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
+			ExceptionMessageLabel.Text = string.IsNullOrEmpty (exception.Message) ? string.Empty : exception.Message;
+
+			ShowStackTrace (exception, false);
+
+			if (!exception.IsEvaluating && exception.Instance != null) {
+				ExceptionValueTreeView.AddValue (exception.Instance);
+				ExceptionValueTreeView.ExpandRow (new TreePath ("0"), false);
+			}
+
+			if (exception.StackIsEvaluating)
+				stack.AppendValues (null, GettextCatalog.GetString ("Loading..."));
 		}
-	}
 
-	class ExceptionCaughtDialog: Gtk.Dialog
-	{
-		readonly ExceptionCaughtWidget widget;
-		readonly ExceptionCaughtMessage msg;
-		readonly ExceptionInfo ex;
-
-		public ExceptionCaughtDialog (ExceptionInfo val, ExceptionCaughtMessage msg)
+		void ExceptionChanged (object sender, EventArgs e)
 		{
-			Title = GettextCatalog.GetString ("Exception Caught");
-			ex = val;
-			widget = new ExceptionCaughtWidget (val);
-			this.msg = msg;
+			Application.Invoke (delegate {
+				UpdateDisplay ();
+			});
+		}
 
-			VBox box = new VBox ();
-			box.Spacing = 6;
-			box.PackStart (widget, true, true, 0);
-			HButtonBox buttonBox = new HButtonBox ();
-			buttonBox.Layout = ButtonBoxStyle.End;
-			buttonBox.BorderWidth = 6;
-			buttonBox.Spacing = 12;
+		void OnlyShowMyCodeToggled (object sender, EventArgs e)
+		{
+			
+		}
 
-			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy"));
-			buttonBox.PackStart (copy, false, false, 0);
-			copy.Clicked += HandleCopyClicked;
+		void CloseClicked (object sender, EventArgs e)
+		{
+			message.Close ();
+		}
 
-			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
-			buttonBox.PackStart (close, false, false, 0);
-			close.Clicked += (sender, e) => msg.Close ();
-			close.Activated += (sender, e) => msg.Close ();
+		void CopyClicked (object sender, EventArgs e)
+		{
+			var text = exception.ToString ();
 
-			box.PackStart (buttonBox, false, false, 0);
-			VBox.Add (box);
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text;
 
-			DefaultWidth = 500;
-			DefaultHeight = 350;
-
-			box.ShowAll ();
-			ActionArea.Hide ();
+			var primary = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			primary.Text = text;
 		}
 
 		protected override bool OnDeleteEvent (Gdk.Event evnt)
 		{
-			msg.Close ();
+			message.Close ();
 			return true;
 		}
 
-		void HandleCopyClicked (object sender, EventArgs e)
+		protected override void OnDestroyed ()
 		{
-			var text = ex.ToString ();
-			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = text;
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = text;
+			destroyed = true;
+			exception.Changed -= ExceptionChanged;
+			base.OnDestroyed ();
 		}
 	}
 
