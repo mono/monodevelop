@@ -114,7 +114,7 @@ namespace MonoDevelop.Debugger
 			ExceptionValueTreeView.Show ();
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
-			scrolled.ShadowType = ShadowType.In;
+			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (ExceptionValueTreeView);
 			scrolled.Show ();
 
@@ -156,7 +156,7 @@ namespace MonoDevelop.Debugger
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
-			scrolled.ShadowType = ShadowType.In;
+			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (StackTraceTreeView);
 			scrolled.Show ();
 
@@ -185,6 +185,13 @@ namespace MonoDevelop.Debugger
 			return buttons;
 		}
 
+		Widget CreateSeparator ()
+		{
+			var separator = new HSeparator ();
+			separator.Show ();
+			return separator;
+		}
+
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Exception Caught");
@@ -195,8 +202,12 @@ namespace MonoDevelop.Debugger
 			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
 
 			var vbox = new VBox (false, 0);
+
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.PackStart (CreateExceptionValueTreeView (), true, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.PackStart (CreateStackTraceTreeView (), true, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.Show ();
 
 			VBox.PackStart (vbox, true, true, 0);
