@@ -28,10 +28,10 @@ using System;
 
 namespace Mono.TextTemplating
 {
-	[Serializable]
 	/// <summary>
 	/// Provides a handler for AssemblyResolve events that looks them up in the domain that created the resolver.
 	/// </summary>
+	[Serializable]
 	public class CrossAppDomainAssemblyResolver
 	{
 		readonly ParentDomainLookup parent = new ParentDomainLookup ();

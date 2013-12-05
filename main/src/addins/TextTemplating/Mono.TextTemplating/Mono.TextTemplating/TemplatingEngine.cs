@@ -274,14 +274,22 @@ namespace Mono.TextTemplating
 			//initialize the custom processors
 			foreach (var kv in settings.DirectiveProcessors) {
 				kv.Value.Initialize (host);
-				var hs = kv.Value as IRecognizeHostSpecific;
-				if (hs == null)
+
+				IRecognizeHostSpecific hs;
+				if (settings.HostSpecific || (
+				        !((IDirectiveProcessor)kv.Value).RequiresProcessingRunIsHostSpecific &&
+				        ((hs = kv.Value as IRecognizeHostSpecific) == null || !hs.RequiresProcessingRunIsHostSpecific)))
 					continue;
-				if (hs.RequiresProcessingRunIsHostSpecific && !settings.HostSpecific) {
-					settings.HostSpecific = true;
-					pt.LogWarning ("Directive processor '" + kv.Key + "' requires hostspecific=true, forcing on.");
-				}
-				hs.SetProcessingRunIsHostSpecific (settings.HostSpecific);
+
+				settings.HostSpecific = true;
+				pt.LogWarning ("Directive processor '" + kv.Key + "' requires hostspecific=true, forcing on.");
+			}
+
+			foreach (var kv in settings.DirectiveProcessors) {
+				((IDirectiveProcessor)kv.Value).SetProcessingRunIsHostSpecific (settings.HostSpecific);
+				var hs = kv.Value as IRecognizeHostSpecific;
+				if (hs != null)
+					hs.SetProcessingRunIsHostSpecific (settings.HostSpecific);
 			}
 			
 			if (settings.Name == null)
@@ -520,11 +528,17 @@ namespace Mono.TextTemplating
 						"ToString")));
 			type.Members.Add (transformMeth);
 			
-			//class code from processors
+			//class code and attributes from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
 				string classCode = processor.GetClassCodeForProcessingRun ();
 				if (classCode != null)
 					type.Members.Add (CreateSnippetMember (classCode));
+				var atts = processor.GetTemplateClassCustomAttributes ();
+				if (atts != null) {
+					if (type.CustomAttributes == null)
+						type.CustomAttributes = new CodeAttributeDeclarationCollection ();
+					type.CustomAttributes.AddRange (atts);
+				}
 			}
 			
 			//generate the Host property if needed
