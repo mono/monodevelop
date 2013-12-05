@@ -49,6 +49,9 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.CodeGeneration;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -128,6 +131,12 @@ namespace MonoDevelop.CSharp.Completion
 				return "C#";
 			}
 		}
+
+		internal MDRefactoringContext MDRefactoringCtx {
+			get;
+			private set;
+		}
+
 		
 		public CSharpCompletionTextEditorExtension ()
 		{
@@ -150,9 +159,22 @@ namespace MonoDevelop.CSharp.Completion
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
 				this.UnresolvedFileCompilation = Document.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+				document.Editor.Caret.PositionChanged += HandlePositionChanged;
 			}
 			
 			Document.DocumentParsed += HandleDocumentParsed; 
+		}
+
+		CancellationTokenSource src = new CancellationTokenSource ();
+		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			Task.Factory.StartNew (delegate {
+				var ctx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location, src.Token);
+				if (ctx != null)
+					MDRefactoringCtx = ctx;
+			});
 		}
 		
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
@@ -325,6 +347,11 @@ namespace MonoDevelop.CSharp.Completion
 			if (ctx == null)
 				return null;
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
+			if (MDRefactoringCtx == null) {
+				src.Cancel ();
+				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
+			}
+
 			var engine = new MonoCSharpCompletionEngine (
 				this,
 				data.Document,
