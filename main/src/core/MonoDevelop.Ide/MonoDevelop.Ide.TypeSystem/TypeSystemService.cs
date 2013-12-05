@@ -2550,11 +2550,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <summary>
 		/// Force the update of a project context. Note: This method blocks the thread.
 		/// It was just implemented for use inside unit tests.
+		/// DO NOT CALL THIS FROM THE GUI THREAD !
 		/// </summary>
 		public static void ForceUpdate (ProjectContentWrapper context)
 		{
 			CheckModifiedFiles ();
-			while (!context.IsLoaded) {
+			int i = 0;
+			while (!context.IsLoaded && i++ < 25) {
 				Thread.Sleep (10);
 			}
 		}
