@@ -535,6 +535,19 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool generateFormattingUndoStep;
+		public virtual bool GenerateFormattingUndoStep {
+			get {
+				return generateFormattingUndoStep;
+			}
+			set {
+				if (generateFormattingUndoStep != value) {
+					generateFormattingUndoStep = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		public virtual ColorScheme GetColorStyle ()
 		{
 			return SyntaxModeService.GetColorStyle (ColorScheme);
@@ -564,6 +577,7 @@ namespace Mono.TextEditor
 			drawIndentationMarkers = other.drawIndentationMarkers;
 			showWhitespaces = other.showWhitespaces;
 			includeWhitespaces = other.includeWhitespaces;
+			generateFormattingUndoStep = other.generateFormattingUndoStep;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

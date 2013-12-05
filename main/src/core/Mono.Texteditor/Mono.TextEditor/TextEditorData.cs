@@ -1231,8 +1231,10 @@ namespace Mono.TextEditor
 				}
 				if (newText != text) {
 					var inserted = Insert (offset, text);
-					undoGroup.Dispose ();
-					undoGroup = OpenUndoGroup ();
+					if (options.GenerateFormattingUndoStep) {
+						undoGroup.Dispose ();
+						undoGroup = OpenUndoGroup ();
+					}
 					var result = Replace (offset, inserted, newText);
 					if (Paste != null)
 						Paste (offset, text, result);
