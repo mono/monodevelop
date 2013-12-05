@@ -452,7 +452,9 @@ namespace Mono.TextTemplating
 			//prep the type
 			var type = new CodeTypeDeclaration (settings.Name);
 			type.IsPartial = true;
-			type.Attributes = (type.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
+			if (settings.InternalVisibility) {
+				type.TypeAttributes = (type.TypeAttributes & ~TypeAttributes.VisibilityMask) | TypeAttributes.NotPublic;
+			}
 			if (!string.IsNullOrEmpty (settings.Inherits)) {
 				type.BaseTypes.Add (new CodeTypeReference (settings.Inherits));
 			} else if (!settings.IncludePreprocessingHelpers) {
