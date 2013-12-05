@@ -456,10 +456,11 @@ namespace MonoDevelop.CSharp
 				pw.WaitForOutput ();
 			}
 			int exitCode = pw.ExitCode;
-			outwr.Close ();
+			bool cancelRequested = pw.CancelRequested;
+			outwr.Close();
 			errwr.Close ();
-			pw.Dispose ();
-			return exitCode;
+			pw.Dispose();
+			return cancelRequested ? 0 : exitCode;
 		}
 		
 		// Snatched from our codedom code, with some changes to make it compatible with csc
