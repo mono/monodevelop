@@ -56,6 +56,7 @@ namespace Mono.TextTemplating
 		public List<string> IncludePaths { get { return includePaths; } }
 		public List<string> ReferencePaths { get { return referencePaths; } }
 		public string OutputFile { get { return outputFile; } }
+		public bool UseRelativeLinePragmas { get; set; }
 		
 		public TemplateGenerator ()
 		{
@@ -182,6 +183,10 @@ namespace Mono.TextTemplating
 		
 		public virtual object GetHostOption (string optionName)
 		{
+			switch (optionName) {
+			case "UseRelativeLinePragmas":
+				return UseRelativeLinePragmas;
+			}
 			return null;
 		}
 		

@@ -21,6 +21,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating\Mono.TextTemplating.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating\Mono.TextTemplating.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -57,6 +59,7 @@
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTemplatingSession.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\Interfaces.cs" />
     <Compile Include="Mono.TextTemplating\RecyclableAppDomain.cs" />
+    <Compile Include="Mono.TextTemplating\FileUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

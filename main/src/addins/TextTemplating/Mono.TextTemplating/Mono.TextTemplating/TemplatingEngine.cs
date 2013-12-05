@@ -193,6 +193,8 @@ namespace Mono.TextTemplating
 		public static TemplateSettings GetSettings (ITextTemplatingEngineHost host, ParsedTemplate pt)
 		{
 			var settings = new TemplateSettings ();
+
+			bool relativeLinePragmas = host.GetHostOption ("UseRelativeLinePragmas") as bool? ?? false;
 			
 			foreach (Directive dt in pt.Directives) {
 				switch (dt.Name) {
@@ -221,6 +223,10 @@ namespace Mono.TextTemplating
 					val = dt.Extract ("CompilerOptions");
 					if (val != null) {
 						settings.CompilerOptions = val;
+					}
+					val = dt.Extract ("relativeLinePragmas");
+					if (val != null) {
+						relativeLinePragmas = bool.Parse (val);
 					}
 					break;
 					
@@ -302,6 +308,8 @@ namespace Mono.TextTemplating
 				pt.LogError ("A provider could not be found for the language '" + settings.Language + "'");
 				return settings;
 			}
+
+			settings.RelativeLinePragmas = relativeLinePragmas;
 			
 			return settings;
 		}
@@ -461,7 +469,10 @@ namespace Mono.TextTemplating
 			//build the code from the segments
 			foreach (TemplateSegment seg in pt.Content) {
 				CodeStatement st = null;
-				var location = new CodeLinePragma (seg.StartLocation.FileName ?? host.TemplateFile, seg.StartLocation.Line);
+				var f = seg.StartLocation.FileName ?? host.TemplateFile;
+				if (settings.RelativeLinePragmas)
+					f = FileUtil.AbsoluteToRelativePath (baseDirectory, f).Replace ('\\', '/');
+				var location = new CodeLinePragma (f, seg.StartLocation.Line);
 				switch (seg.Type) {
 				case SegmentType.Block:
 					if (helperMode)
