@@ -56,14 +56,12 @@ namespace MonoDevelop.Debugger
 		const int FrameIndexColumn = 8;
 		const int CanRefreshColumn = 9;
 
-		Backtrace current_backtrace;
-
-		PadTreeView tree;
-		Gtk.ListStore store;
-		CellRendererIcon refresh;
-		bool needsUpdate;
+		readonly CellRendererIcon refresh;
+		readonly CommandEntrySet menuSet;
+		readonly PadTreeView tree;
+		readonly ListStore store;
 		IPadWindow window;
-		CommandEntrySet menuSet;
+		bool needsUpdate;
 
 		public StackTracePad ()
 		{
@@ -134,8 +132,6 @@ namespace MonoDevelop.Debugger
 			
 			Add (tree);
 			ShowAll ();
-
-			current_backtrace = DebuggingService.CurrentCallStack;
 			UpdateDisplay ();
 			
 			DebuggingService.CallStackChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
@@ -193,19 +189,20 @@ namespace MonoDevelop.Debugger
 			needsUpdate = false;
 			store.Clear ();
 
-			if (current_backtrace == null)
+			if (!DebuggingService.IsPaused)
 				return;
 
 			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions;
+			var backtrace = DebuggingService.CurrentCallStack;
 
-			for (int i = 0; i < current_backtrace.FrameCount; i++) {
+			for (int i = 0; i < backtrace.FrameCount; i++) {
 				string icon;
 				if (i == DebuggingService.CurrentFrameIndex)
 					icon = Gtk.Stock.GoForward;
 				else
 					icon = null;
-				
-				StackFrame frame = current_backtrace.GetFrame (i);
+
+				StackFrame frame = backtrace.GetFrame (i);
 				if (frame.IsDebuggerHidden)
 					continue;
 				
@@ -299,7 +296,6 @@ namespace MonoDevelop.Debugger
 
 		protected void OnClassStackChanged (object o, EventArgs args)
 		{
-			current_backtrace = DebuggingService.CurrentCallStack;
 			UpdateDisplay ();
 		}
 		
