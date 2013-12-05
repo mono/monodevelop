@@ -136,7 +136,7 @@ namespace MonoDevelop.RazorGenerator
 						continue;
 					}
 					string path = line.Substring (b + 1, e - b - 1);
-					path = FileUtil.AbsoluteToRelativePath (basePath, path);
+					path = FileUtil.AbsoluteToRelativePath (basePath, path).Replace ('\\', '/');
 					sw.Write (line.Substring (0, b + 1));
 					sw.Write (path);
 					sw.WriteLine (line.Substring (e));
