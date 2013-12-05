@@ -52,7 +52,6 @@
     <Compile Include="Mono.TextTemplating\TemplatingEngine.cs" />
     <Compile Include="Mono.TextTemplating\TemplateSettings.cs" />
     <Compile Include="Mono.TextTemplating\CrossAppDomainAssemblyResolver.cs" />
-    <Compile Include="Microsoft.VisualStudio.TextTemplating\AssemblyCacheMonitor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\EncodingHelper.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\ParameterDirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTemplatingSession.cs" />

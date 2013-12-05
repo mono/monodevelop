@@ -35,8 +35,8 @@ namespace Mono.TextTemplating
 		const int DEFAULT_TIMEOUT_MS = 2 * 60 * 1000;
 		const int DEFAULT_MAX_USES = 20;
 		
-		string name;
-		object lockObj = new object ();
+		readonly string name;
+		readonly object lockObj = new object ();
 		
 		RecyclableAppDomain domain;
 		
@@ -63,7 +63,7 @@ namespace Mono.TextTemplating
 			AppDomain domain;
             DomainAssemblyLoader assemblyMap;
 			
-			int liveHandles = 0;
+			int liveHandles;
 			int unusedHandles = DEFAULT_MAX_USES;
 			
 			public RecyclableAppDomain (string name)
@@ -175,7 +175,7 @@ namespace Mono.TextTemplating
 		[Serializable]
         class DomainAssemblyLoader : MarshalByRefObject
 		{
-            Dictionary<string, string> map = new Dictionary<string, string>();
+            readonly Dictionary<string, string> map = new Dictionary<string, string>();
 			
 			public DomainAssemblyLoader ()
 			{

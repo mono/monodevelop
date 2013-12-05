@@ -31,7 +31,6 @@ using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
 {
-	
 	public class TemplateSettings
 	{
 		public TemplateSettings ()
@@ -59,6 +58,7 @@ namespace Mono.TextTemplating
 		public Dictionary<string,DirectiveProcessor> DirectiveProcessors { get; private set; }
 		public bool IncludePreprocessingHelpers { get; set; }
 		public bool IsPreprocessed { get; set; }
+		public bool RelativeLinePragmas { get; set; }
 	}
 	
 	public class CustomDirective

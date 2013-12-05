@@ -34,7 +34,7 @@ namespace Mono.TextTemplating
 	/// </summary>
 	public class CrossAppDomainAssemblyResolver
 	{
-		ParentDomainLookup parent = new ParentDomainLookup ();
+		readonly ParentDomainLookup parent = new ParentDomainLookup ();
 		
 		public System.Reflection.Assembly Resolve (object sender, ResolveEventArgs args)
 		{

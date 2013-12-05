@@ -25,16 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Diagnostics;
 
 namespace Mono.TextTemplating
 {
 	
 	public class Tokeniser
 	{
-		string content;
-		int position = 0;
+		readonly string content;
+		int position;
 		string value;
 		State nextState = State.Content;
 		Location nextStateLocation;
@@ -80,7 +78,7 @@ namespace Mono.TextTemplating
 				return GetDirectiveValue ();
 				
 			default:
-				throw new InvalidOperationException ("Unexpected state '" + State.ToString () + "'");
+				throw new InvalidOperationException ("Unexpected state '" + State + "'");
 			}
 		}
 		
@@ -116,13 +114,12 @@ namespace Mono.TextTemplating
 		{
 			int start = position;
 			for (; position < content.Length; position++) {
-				char c = content[position];
+				char c = content [position];
 				if (!Char.IsLetterOrDigit (c)) {
 					value = content.Substring (start, position - start);
 					return State.Directive;
-				} else {
-					nextStateLocation = nextStateLocation.AddCol ();
 				}
+				nextStateLocation = nextStateLocation.AddCol ();
 			}
 			throw new ParserException ("Unexpected end of file.", nextStateLocation);
 		}
@@ -155,7 +152,7 @@ namespace Mono.TextTemplating
 					return State.Directive;
 				}
 			}
-			throw new ParserException ("Unexpected end of file.", nextStateLocation);;
+			throw new ParserException ("Unexpected end of file.", nextStateLocation);
 		}
 		
 		State NextStateInContent ()
@@ -173,28 +170,29 @@ namespace Mono.TextTemplating
 					nextStateLocation = nextStateLocation.AddLine();
 				} else if (c =='<' && position + 2 < content.Length && content[position+1] == '#') {
 					TagEndLocation = nextStateLocation;
-					char type = content[position+2];
+					char type = content [position + 2];
 					if (type == '@') {
 						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
 						position += 3;
 						return State.Directive;
-					} else if (type == '=') {
+					}
+					if (type == '=') {
 						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
 						position += 3;
 						return State.Expression;
-					} else if (type == '+') {
+					}
+					if (type == '+') {
 						nextStateLocation = nextStateLocation.AddCols (2);
 						value = content.Substring (start, position - start);
 						position += 3;
 						return State.Helper;
-					}  else {
-						value = content.Substring (start, position - start);
-						nextStateLocation = nextStateLocation.AddCol ();
-						position += 2;
-						return State.Block;
 					}
+					value = content.Substring (start, position - start);
+					nextStateLocation = nextStateLocation.AddCol ();
+					position += 2;
+					return State.Block;
 				}
 			}
 			//EOF is only valid when we're in content
