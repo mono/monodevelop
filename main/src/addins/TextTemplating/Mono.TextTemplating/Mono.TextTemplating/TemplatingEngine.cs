@@ -218,7 +218,12 @@ namespace Mono.TextTemplating
 					}
 					val = dt.Extract ("hostspecific");
 					if (val != null) {
-						settings.HostSpecific = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
+						if (string.Compare (val, "trueFromBase", StringComparison.OrdinalIgnoreCase) == 0) {
+							settings.HostPropertyOnBase = true;
+							settings.HostSpecific = true;
+						} else {
+							settings.HostSpecific = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
+						}
 					}
 					val = dt.Extract ("CompilerOptions");
 					if (val != null) {
@@ -226,7 +231,15 @@ namespace Mono.TextTemplating
 					}
 					val = dt.Extract ("relativeLinePragmas");
 					if (val != null) {
-						relativeLinePragmas = bool.Parse (val);
+						relativeLinePragmas = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
+					}
+					val = dt.Extract ("linePragmas");
+					if (val != null) {
+						settings.NoLinePragmas = string.Compare (val, "false", StringComparison.OrdinalIgnoreCase) == 0;
+					}
+					val = dt.Extract ("visibility");
+					if (val != null) {
+						settings.InternalVisibility = string.Compare (val, "internal", StringComparison.OrdinalIgnoreCase) == 0;
 					}
 					break;
 					
@@ -439,6 +452,7 @@ namespace Mono.TextTemplating
 			//prep the type
 			var type = new CodeTypeDeclaration (settings.Name);
 			type.IsPartial = true;
+			type.Attributes = (type.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
 			if (!string.IsNullOrEmpty (settings.Inherits)) {
 				type.BaseTypes.Add (new CodeTypeReference (settings.Inherits));
 			} else if (!settings.IncludePreprocessingHelpers) {
@@ -477,10 +491,13 @@ namespace Mono.TextTemplating
 			//build the code from the segments
 			foreach (TemplateSegment seg in pt.Content) {
 				CodeStatement st = null;
-				var f = seg.StartLocation.FileName ?? host.TemplateFile;
-				if (settings.RelativeLinePragmas)
-					f = FileUtil.AbsoluteToRelativePath (baseDirectory, f).Replace ('\\', '/');
-				var location = new CodeLinePragma (f, seg.StartLocation.Line);
+				CodeLinePragma location = null;
+				if (!settings.NoLinePragmas) {
+					var f = seg.StartLocation.FileName ?? host.TemplateFile;
+					if (settings.RelativeLinePragmas)
+						f = FileUtil.AbsoluteToRelativePath (baseDirectory, f).Replace ('\\', '/');
+					location = new CodeLinePragma (f, seg.StartLocation.Line);
+				}
 				switch (seg.Type) {
 				case SegmentType.Block:
 					if (helperMode)
@@ -542,7 +559,7 @@ namespace Mono.TextTemplating
 			}
 			
 			//generate the Host property if needed
-			if (settings.HostSpecific) {
+			if (settings.HostSpecific && !settings.HostPropertyOnBase) {
 				GenerateHostProperty (type);
 			}
 			

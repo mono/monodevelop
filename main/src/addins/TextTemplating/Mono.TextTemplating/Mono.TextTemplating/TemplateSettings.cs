@@ -42,6 +42,7 @@ namespace Mono.TextTemplating
 		}
 		
 		public bool HostSpecific { get; set; }
+		public bool HostPropertyOnBase { get; set; }
 		public bool Debug { get; set; }
 		public string Inherits { get; set; }
 		public string Name { get; set; }
@@ -59,6 +60,8 @@ namespace Mono.TextTemplating
 		public bool IncludePreprocessingHelpers { get; set; }
 		public bool IsPreprocessed { get; set; }
 		public bool RelativeLinePragmas { get; set; }
+		public bool NoLinePragmas { get; set; }
+		public bool InternalVisibility { get; set; }
 	}
 	
 	public class CustomDirective
