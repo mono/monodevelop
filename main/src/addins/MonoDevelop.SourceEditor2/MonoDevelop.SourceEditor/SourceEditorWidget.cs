@@ -1722,11 +1722,13 @@ namespace MonoDevelop.SourceEditor
 			StartCol = Info.Region.BeginColumn;
 			if (line != null) {
 				var startOffset = line.Offset;
-				while (StartCol < line.Length) {
-					char ch = doc.GetCharAt (startOffset + StartCol - 1);
-					if (!char.IsWhiteSpace (ch))
-						break;
-					StartCol++;
+				if (startOffset + StartCol - 1 >= 0) {
+					while (StartCol < line.Length) {
+						char ch = doc.GetCharAt (startOffset + StartCol - 1);
+						if (!char.IsWhiteSpace (ch))
+							break;
+						StartCol++;
+					}
 				}
 			}
 
