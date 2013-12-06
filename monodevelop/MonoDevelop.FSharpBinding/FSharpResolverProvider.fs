@@ -45,6 +45,7 @@ type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) =
   inherit LocalResolveResult(ivar)
   member x.DataTip = tip
 
+//TODO: Implement windows caching so we only rebuild a TooltipInformationWindow if it differs from the last shown one.
 type FSharpLanguageItemTooltipProvider() = 
     inherit Mono.TextEditor.TooltipProvider()
     
@@ -52,7 +53,9 @@ type FSharpLanguageItemTooltipProvider() =
             let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
             let (resolveResult, region) = extEditor.GetLanguageItem (offset)
             if (resolveResult = null) then null else
-                let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), region.EndColumn - region.BeginColumn)
+                //we never set the end dom region so use a single character as the end offset for now otherwise it will be negative
+                //let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), region.EndColumn - region.BeginColumn)
+                let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), 1)
                 TooltipItem (resolveResult, segment)
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
@@ -67,6 +70,21 @@ type FSharpLanguageItemTooltipProvider() =
                 result.RepositionWindow ()                  
                 result :> Gtk.Window
             | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
+    
+    override x.ShowTooltipWindow (editor, offset, modifierState, mouseX, mouseY, item) =
+        let titem = item.Item :?> FSharpLocalResolveResult
+        let tipWindow = x.CreateTooltipWindow (editor, offset, modifierState, item) :?> TooltipInformationWindow
+        if tipWindow = null then null else
+
+        let positionWidget = editor.TextArea
+
+        let p1 = offset |> editor.OffsetToLocation |> editor.LocationToPoint
+  
+        //we never set the end dom region so use a single character '1' as the end offset for now otherwise it will be negative
+        let caret = new Gdk.Rectangle (p1.X - positionWidget.Allocation.X, p1.Y - positionWidget.Allocation.Y, 1, int editor.LineHeight)
+        tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
+        tipWindow :> Gtk.Window
+
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
@@ -98,7 +116,6 @@ type FSharpResolverProvider() =
                   config, 
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
-            
         Debug.WriteLine (sprintf "Resolver: Getting tool tip")
         // Get tool-tip from the language service
         let tip = tyRes.GetToolTip(offset, doc.Editor.Document)
