@@ -231,7 +231,7 @@
 			name = "MSBuild (Visual Studio 2010)"
 			canDefault = "true" />
 		<FileFormat id = "MSBuild12"
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS12"
+			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS12And13"
 			name = "MSBuild (Visual Studio 2012)"
 			canDefault = "true" />
 		<FileFormat id = "MD1" 
