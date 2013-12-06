@@ -373,5 +373,30 @@ namespace MonoDevelop.Projects
 			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
 		}
+
+		void LoadVSConsoleProject (string vsVersion)
+		{
+			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+		}
+
+		[Test]
+		public void LoadVS2010ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2010");
+		}
+
+		[Test]
+		public void LoadVS2012ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2012");
+		}
+
+		[Test]
+		public void LoadVS2013ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2013");
+		}
 	}
 }
