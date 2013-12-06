@@ -662,9 +662,6 @@
     <EmbeddedResource Include="icons\sort-namespace-16.png">
       <LogicalName>sort-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\static-16.png">
-      <LogicalName>static-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\syntax-highlighting-16.png">
       <LogicalName>syntax-highlighting-16.png</LogicalName>
     </EmbeddedResource>
@@ -716,14 +713,41 @@
     <EmbeddedResource Include="icons\view-message-log-16.png">
       <LogicalName>view-message-log-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\visibility-internal-16.png">
-      <LogicalName>visibility-internal-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-overlay-16.png">
+      <LogicalName>element-visibility-internal-overlay-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\visibility-private-16.png">
-      <LogicalName>visibility-private-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-overlay-16%402x.png">
+      <LogicalName>element-visibility-internal-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\visibility-protected-16.png">
-      <LogicalName>visibility-protected-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-visibility-private-overlay-16.png">
+      <LogicalName>element-visibility-private-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-private-overlay-16%402x.png">
+      <LogicalName>element-visibility-private-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-protected-overlay-16.png">
+      <LogicalName>element-visibility-protected-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-protected-overlay-16%402x.png">
+      <LogicalName>element-visibility-protected-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-an-protected-overlay-16.png">
+      <LogicalName>element-visibility-internal-an-protected-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-an-protected-overlay-16%402x.png">
+      <LogicalName>element-visibility-internal-an-protected-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-or-protected-overlay-16.png">
+      <LogicalName>element-visibility-internal-or-protected-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-internal-or-protected-overlay-16%402x.png">
+      <LogicalName>element-visibility-internal-or-protected-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-static-overlay-16.png">
+      <LogicalName>element-visibility-static-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-visibility-static-overlay-16%402x.png">
+      <LogicalName>element-visibility-static-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visual-studio-16.png">
       <LogicalName>visual-studio-16.png</LogicalName>
@@ -1361,12 +1385,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\locale-16.png">
       <LogicalName>locale-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\visibility-internal-and-protected-16.png">
-      <LogicalName>visibility-internal-and-protected-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\visibility-protected-or-internal-16.png">
-      <LogicalName>visibility-protected-or-internal-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\link-overlay-16.png">
       <LogicalName>link-overlay-light-16.png</LogicalName>
