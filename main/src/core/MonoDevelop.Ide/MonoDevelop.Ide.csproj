@@ -1269,6 +1269,12 @@
     <EmbeddedResource Include="icons\light\warning-16%402x.png">
       <LogicalName>warning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-16.png">
+      <LogicalName>information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-16%402x.png">
+      <LogicalName>information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
