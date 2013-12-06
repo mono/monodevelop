@@ -1218,7 +1218,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (dotNetProject != null) {
 				var moniker = dotNetProject.TargetFramework.Id;
-				bool supportsMultipleFrameworks = TargetFormat.FrameworkVersions.Length > 0;
+				bool supportsMultipleFrameworks = TargetFormat.SupportsMonikers ||
+					 TargetFormat.SupportedFrameworks.Length > 0;
 				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
 
 				// If the format only supports one fx version, or the version is the default, there is no need to store it.
@@ -1477,8 +1478,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				//RequiredTargetFramework is undocumented, maybe only a hint for VS. Only seems to be used for .NETFramework
 				var dnp = pref.OwnerProject as DotNetProject;
-				IList supportedFrameworks = TargetFormat.FrameworkVersions;
-				if (dnp != null && pkg != null
+				IList supportedFrameworks = TargetFormat.SupportedFrameworks;
+				if (supportedFrameworks != null && dnp != null && pkg != null
 					&& dnp.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK
 					&& pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework)
 					&& pkg.TargetFramework.Version != "2.0" && supportedFrameworks.Count > 1)
