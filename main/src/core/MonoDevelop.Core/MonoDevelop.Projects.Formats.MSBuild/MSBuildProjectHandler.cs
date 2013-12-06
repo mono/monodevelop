@@ -277,8 +277,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			//determine the file format
 			MSBuildFileFormat format = null;
 			if (expectedFormat != null) {
-				if (p.ToolsVersion != expectedFormat.ToolsVersion) {
-					monitor.ReportWarning (GettextCatalog.GetString ("Project '{0}' has different ToolsVersion than the containing solution.", Path.GetFileNameWithoutExtension (fileName)));
+				if (expectedFormat.SupportsToolsVersion (p.ToolsVersion)) {
+					monitor.ReportWarning (GettextCatalog.GetString (
+						"Project '{0}' has a ToolsVersion that does not match the containing solution.",
+						Path.GetFileNameWithoutExtension (fileName)
+					));
 				} else {
 					format = expectedFormat;
 				}
@@ -289,7 +292,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					toolsVersion = "2.0";
 				format = MSBuildFileFormat.GetFormatForToolsVersion (toolsVersion);
 			}
-			this.SetTargetFormat (format);
+			SetTargetFormat (format);
 			
 			timer.Trace ("Read project guids");
 			

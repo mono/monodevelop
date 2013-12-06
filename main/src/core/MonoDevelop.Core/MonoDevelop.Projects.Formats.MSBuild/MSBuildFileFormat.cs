@@ -225,6 +225,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public abstract string Id { get; }
 
+		// Used to load projects independently of a solution
 		public static MSBuildFileFormat GetFormatForToolsVersion (string toolsVersion)
 		{
 			switch (toolsVersion) {
@@ -232,9 +233,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return new MSBuildFileFormatVS05 ();
 			case "3.5":
 				return new MSBuildFileFormatVS08 ();
+				// since both VS2010 and 2012 support ToolVersion 4.0, just use the newer format
 			case "4.0":
 			case "12.0":
-				//FIXME: what about 10? do we care about it?
 				return new MSBuildFileFormatVS12 ();
 			}
 			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
@@ -329,11 +330,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public override string ProductDescription {
 			get { return "Visual Studio 2010"; }
 		}
-
-		internal override bool SupportsSlnVersion (string version)
-		{
-			return version == "11.00";
-		}
 	}
 
 	// this is actually VS2010 SP1 and later
@@ -364,5 +360,4 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return version == "4.0" || version == "12.00";
 		}
 	}
-
 }
