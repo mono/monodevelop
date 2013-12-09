@@ -285,6 +285,9 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="VersionControl" _label="Version Control">
+			<Condition id="ItemType" value="Solution">
+				<Section id = "VersionControlGeneral" _label = "General" fill="true" class="MonoDevelop.VersionControl.VersionControlSolutionOptionsPanel" />
+			</Condition>
 			<ComplexCondition>
 				<Or>
 					<Condition id="ItemType" value="SolutionItem" />
