@@ -46,22 +46,26 @@ namespace Mono.TextEditor
 		
 		static void PreviousWord (TextEditorData data, bool subword)
 		{
-			int oldLine = data.Caret.Line;
+			using (var undo = data.OpenUndoGroup ()) {
+				int oldLine = data.Caret.Line;
 
-			int caretOffset = data.Caret.Offset;
-			int offset = subword ? data.FindPrevSubwordOffset (caretOffset) : data.FindPrevWordOffset (caretOffset);
-			if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
-				data.Remove (offset, caretOffset - offset);
+				int caretOffset = data.Caret.Offset;
+				int offset = subword ? data.FindPrevSubwordOffset (caretOffset) : data.FindPrevWordOffset (caretOffset);
+				if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
+					data.Remove (offset, caretOffset - offset);
+				}
 			}
 		}
 		
 		static void NextWord (TextEditorData data, bool subword)
 		{
-			int oldLine = data.Caret.Line;
-			int caretOffset = data.Caret.Offset;
-			int offset = subword? data.FindNextSubwordOffset (caretOffset) : data.FindNextWordOffset (caretOffset);
-			if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
-				data.Remove (caretOffset, offset - caretOffset);
+			using (var undo = data.OpenUndoGroup ()) {
+				int oldLine = data.Caret.Line;
+				int caretOffset = data.Caret.Offset;
+				int offset = subword ? data.FindNextSubwordOffset (caretOffset) : data.FindNextWordOffset (caretOffset);
+				if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
+					data.Remove (caretOffset, offset - caretOffset);
+				}
 			}
 		}
 		
@@ -131,10 +135,12 @@ namespace Mono.TextEditor
 		{
 			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
-			var start = GetStartOfLineOffset (data, data.Caret.Location);
-			var end = GetEndOfLineOffset (data, data.Caret.Location);
-			data.Remove (start, end - start);
-			data.Caret.Column = DocumentLocation.MinColumn;
+			using (var undo = data.OpenUndoGroup ()) {
+				var start = GetStartOfLineOffset (data, data.Caret.Location);
+				var end = GetEndOfLineOffset (data, data.Caret.Location);
+				data.Remove (start, end - start);
+				data.Caret.Column = DocumentLocation.MinColumn;
+			}
 		}
 		
 		public static void CaretLineToEnd (TextEditorData data)
@@ -167,62 +173,64 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			if (data.IsSomethingSelected) {
-				var visualAnchorLocation = data.LogicalToVisualLocation (data.MainSelection.Anchor);
-				var visualLeadLocation = data.LogicalToVisualLocation (data.MainSelection.Lead);
-				// case: zero width block selection
-				if (data.MainSelection.SelectionMode == SelectionMode.Block && visualAnchorLocation.Column == visualLeadLocation.Column) {
-					var col = data.MainSelection.Lead.Column;
-					if (col <= DocumentLocation.MinColumn) {
-						data.ClearSelection ();
+			using (var undo = data.OpenUndoGroup ()) {
+				if (data.IsSomethingSelected) {
+					var visualAnchorLocation = data.LogicalToVisualLocation (data.MainSelection.Anchor);
+					var visualLeadLocation = data.LogicalToVisualLocation (data.MainSelection.Lead);
+					// case: zero width block selection
+					if (data.MainSelection.SelectionMode == SelectionMode.Block && visualAnchorLocation.Column == visualLeadLocation.Column) {
+						var col = data.MainSelection.Lead.Column;
+						if (col <= DocumentLocation.MinColumn) {
+							data.ClearSelection ();
+							return;
+						}
+						bool preserve = data.Caret.PreserveSelection;
+						data.Caret.PreserveSelection = true;
+						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
+							var lineSegment = data.Document.GetLine (lineNumber);
+							int insertOffset = lineSegment.GetLogicalColumn (data, visualAnchorLocation.Column - 1) - 1;
+							data.Remove (lineSegment.Offset + insertOffset, 1);
+						}
+
+						var visualColumn = data.GetLine (data.Caret.Location.Line).GetVisualColumn (data, col - 1);
+						data.MainSelection = new Selection (
+							new DocumentLocation (data.MainSelection.Anchor.Line, data.GetLine (data.MainSelection.Anchor.Line).GetLogicalColumn (data, visualColumn)),
+							new DocumentLocation (data.MainSelection.Lead.Line, data.GetLine (data.MainSelection.Lead.Line).GetLogicalColumn (data, visualColumn)),
+							SelectionMode.Block
+						);
+
+						data.Caret.PreserveSelection = preserve;
+						data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 						return;
 					}
-					bool preserve = data.Caret.PreserveSelection;
-					data.Caret.PreserveSelection = true;
-					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
-						var lineSegment = data.Document.GetLine (lineNumber);
-						int insertOffset = lineSegment.GetLogicalColumn (data, visualAnchorLocation.Column - 1) - 1;
-						data.Remove (lineSegment.Offset + insertOffset, 1);
-					}
-
-					var visualColumn = data.GetLine (data.Caret.Location.Line).GetVisualColumn (data, col - 1);
-					data.MainSelection = new Selection (
-						new DocumentLocation (data.MainSelection.Anchor.Line, data.GetLine (data.MainSelection.Anchor.Line).GetLogicalColumn (data, visualColumn)),
-						new DocumentLocation (data.MainSelection.Lead.Line, data.GetLine (data.MainSelection.Lead.Line).GetLogicalColumn (data, visualColumn)),
-						SelectionMode.Block
-					);
-
-					data.Caret.PreserveSelection = preserve;
-					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+					data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
 					return;
 				}
-				data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
-				return;
-			}
 
-			if (data.Caret.Line == DocumentLocation.MinLine && data.Caret.Column == DocumentLocation.MinColumn)
-				return;
+				if (data.Caret.Line == DocumentLocation.MinLine && data.Caret.Column == DocumentLocation.MinColumn)
+					return;
 			
-			// Virtual indentation needs to be fixed before to have the same behavior
-			// if it's there or not (otherwise user has to press multiple backspaces in some cases)
-			data.EnsureCaretIsNotVirtual ();
-			DocumentLine line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column > line.Length + 1) {
-				data.Caret.Column = line.Length + 1;
-			} else if (data.Caret.Offset == line.Offset) {
-				DocumentLine lineAbove = data.Document.GetLine (data.Caret.Line - 1);
-				if (lineAbove.Length == 0 && data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
-					data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, data.IndentationTracker.GetVirtualIndentationColumn (data.Caret.Line - 1, 1));
-					data.Replace (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength, data.IndentationTracker.GetIndentationString (data.Caret.Line - 1, 1));
+				// Virtual indentation needs to be fixed before to have the same behavior
+				// if it's there or not (otherwise user has to press multiple backspaces in some cases)
+				data.EnsureCaretIsNotVirtual ();
+				DocumentLine line = data.Document.GetLine (data.Caret.Line);
+				if (data.Caret.Column > line.Length + 1) {
+					data.Caret.Column = line.Length + 1;
+				} else if (data.Caret.Offset == line.Offset) {
+					DocumentLine lineAbove = data.Document.GetLine (data.Caret.Line - 1);
+					if (lineAbove.Length == 0 && data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
+						data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, data.IndentationTracker.GetVirtualIndentationColumn (data.Caret.Line - 1, 1));
+						data.Replace (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength, data.IndentationTracker.GetIndentationString (data.Caret.Line - 1, 1));
+					} else {
+						data.Remove (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+					}
 				} else {
-					data.Remove (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+					removeCharBeforeCaret (data);
 				}
-			} else {
-				removeCharBeforeCaret (data);
-			}
 
-			// Needs to be fixed after, the line may just contain the indentation
-			data.FixVirtualIndentation ();
+				// Needs to be fixed after, the line may just contain the indentation
+				data.FixVirtualIndentation ();
+			}
 		}
 		
 		static void RemoveCharBeforeCaret (TextEditorData data)
@@ -239,33 +247,34 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			if (data.IsSomethingSelected) {
-				// case: zero width block selection
-				if (data.MainSelection.SelectionMode == SelectionMode.Block && data.MainSelection.Anchor.Column == data.MainSelection.Lead.Column) {
-					var col = data.MainSelection.Lead.Column;
-					if (col <= DocumentLocation.MinColumn) {
-						data.ClearSelection ();
+
+			using (var undoGroup = data.OpenUndoGroup ()) {
+				if (data.IsSomethingSelected) {
+					// case: zero width block selection
+					if (data.MainSelection.SelectionMode == SelectionMode.Block && data.MainSelection.Anchor.Column == data.MainSelection.Lead.Column) {
+						var col = data.MainSelection.Lead.Column;
+						if (col <= DocumentLocation.MinColumn) {
+							data.ClearSelection ();
+							return;
+						}
+						bool preserve = data.Caret.PreserveSelection;
+						data.Caret.PreserveSelection = true;
+						col--;
+						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
+							DocumentLine lineSegment = data.Document.GetLine (lineNumber);
+							if (col < lineSegment.Length)
+								data.Remove (lineSegment.Offset + col, 1);
+						}
+						data.Caret.PreserveSelection = preserve;
+						data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 						return;
 					}
-					bool preserve = data.Caret.PreserveSelection;
-					data.Caret.PreserveSelection = true;
-					col--;
-					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
-						DocumentLine lineSegment = data.Document.GetLine (lineNumber);
-						if (col < lineSegment.Length)
-							data.Remove (lineSegment.Offset + col, 1);
-					}
-					data.Caret.PreserveSelection = preserve;
-					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+					data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
 					return;
 				}
-				data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
-				return;
-			}
-			if (data.Caret.Offset >= data.Document.TextLength)
-				return;
+				if (data.Caret.Offset >= data.Document.TextLength)
+					return;
 
-			using (var undoGroup = data.OpenUndoGroup()) {
 				data.EnsureCaretIsNotVirtual ();
 
 				DocumentLine line = data.Document.GetLine (data.Caret.Line);

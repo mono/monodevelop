@@ -20,6 +20,7 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper ()
 		{
 		}
+		public bool CancelRequested { get; private set; }
 		
 		public new void Start ()
 		{
@@ -137,6 +138,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (!done) {
 					try {
+						CancelRequested = true;
 						this.KillProcessTree ();
 					} catch {
 						// Ignore

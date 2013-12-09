@@ -76,14 +76,16 @@ namespace Mono.TextEditor
 		
 		public static void Select (TextEditorData data, Action<TextEditorData> caretMoveAction)
 		{
-			PositionChangedHandler handler = new PositionChangedHandler (data);
-			data.Caret.PositionChanged += handler.DataCaretPositionChanged;
-			
-			StartSelection (data);
-			caretMoveAction (data);
-			data.Caret.PositionChanged -= handler.DataCaretPositionChanged;
-			data.Caret.AutoScrollToCaret = true;
-			data.Caret.PreserveSelection = false;
+			using (var undoGroup = data.OpenUndoGroup ()) {
+				PositionChangedHandler handler = new PositionChangedHandler (data);
+				data.Caret.PositionChanged += handler.DataCaretPositionChanged;
+
+				StartSelection (data);
+				caretMoveAction (data);
+				data.Caret.PositionChanged -= handler.DataCaretPositionChanged;
+				data.Caret.AutoScrollToCaret = true;
+				data.Caret.PreserveSelection = false;
+			}
 		}
 
 		class PositionChangedHandler
@@ -221,15 +223,17 @@ namespace Mono.TextEditor
 
 		public static void ExpandSelectionToLine (TextEditorData data)
 		{
-			var curLineSegment = data.GetLine (data.Caret.Line).SegmentIncludingDelimiter;
-			var range = data.SelectionRange;
-			var selection = TextSegment.FromBounds (
-				System.Math.Min (range.Offset, curLineSegment.Offset),
-				System.Math.Max (range.EndOffset, curLineSegment.EndOffset));
-			data.Caret.PreserveSelection = true;
-			data.Caret.Offset = selection.EndOffset;
-			data.Caret.PreserveSelection = false;
-			data.SelectionRange = selection;
+			using (var undoGroup = data.OpenUndoGroup ()) {
+				var curLineSegment = data.GetLine (data.Caret.Line).SegmentIncludingDelimiter;
+				var range = data.SelectionRange;
+				var selection = TextSegment.FromBounds (
+					               System.Math.Min (range.Offset, curLineSegment.Offset),
+					               System.Math.Max (range.EndOffset, curLineSegment.EndOffset));
+				data.Caret.PreserveSelection = true;
+				data.Caret.Offset = selection.EndOffset;
+				data.Caret.PreserveSelection = false;
+				data.SelectionRange = selection;
+			}
 		}
 
 		public static void ClearSelection (TextEditorData data)

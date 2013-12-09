@@ -32,14 +32,12 @@ using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
 {
-	
-	
 	public class ParsedTemplate
 	{
-		List<ISegment> segments = new List<ISegment> ();
-		List<ISegment> importedHelperSegments = new List<ISegment> ();
-		CompilerErrorCollection errors = new CompilerErrorCollection ();
-		string rootFileName;
+		readonly List<ISegment> segments = new List<ISegment> ();
+		readonly List<ISegment> importedHelperSegments = new List<ISegment> ();
+		readonly CompilerErrorCollection errors = new CompilerErrorCollection ();
+		readonly string rootFileName;
 		
 		public ParsedTemplate (string rootFileName)
 		{
@@ -53,7 +51,7 @@ namespace Mono.TextTemplating
 		public IEnumerable<Directive> Directives {
 			get {
 				foreach (ISegment seg in segments) {
-					Directive dir = seg as Directive;
+					var dir = seg as Directive;
 					if (dir != null)
 						yield return dir;
 				}
@@ -63,7 +61,7 @@ namespace Mono.TextTemplating
 		public IEnumerable<TemplateSegment> Content {
 			get {
 				foreach (ISegment seg in segments) {
-					TemplateSegment ts = seg as TemplateSegment;
+					var ts = seg as TemplateSegment;
 					if (ts != null)
 						yield return ts;
 				}
@@ -155,7 +153,7 @@ namespace Mono.TextTemplating
 							break;
 						}
 					}
-					if (parseIncludes && directive.Name == "include")
+					if (parseIncludes && directive != null && directive.Name == "include")
 						Import (host, directive, Path.GetDirectoryName (tokeniser.Location.FileName));
 					break;
 				default:
@@ -186,7 +184,7 @@ namespace Mono.TextTemplating
 			if (relativeToDirectory != null && !Path.IsPathRooted (fileName)) {
 				string possible = Path.Combine (relativeToDirectory, fileName);
 				if (File.Exists (possible))
-					fileName = possible;
+					fileName = Path.GetFullPath (possible);
 			}
 			
 			string content, resolvedName;
@@ -204,7 +202,7 @@ namespace Mono.TextTemplating
 		
 		void LogError (string message, Location location, bool isWarning)
 		{
-			CompilerError err = new CompilerError ();
+			var err = new CompilerError ();
 			err.ErrorText = message;
 			if (location.FileName != null) {
 				err.Line = location.Line;
@@ -313,7 +311,7 @@ namespace Mono.TextTemplating
 		
 		public Location AddLine ()
 		{
-			return new Location (this.FileName, this.Line + 1, 1);
+			return new Location (FileName, Line + 1, 1);
 		}
 		
 		public Location AddCol ()

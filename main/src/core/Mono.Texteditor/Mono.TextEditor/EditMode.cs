@@ -205,9 +205,7 @@ namespace Mono.TextEditor
 		{
 			HideMouseCursor ();
 			try {
-				using (var undo = Document.OpenUndoGroup ()) {
-					action (this.textEditorData);
-				}
+				action (this.textEditorData);
 			} catch (Exception e) {
 				Console.WriteLine ("Error while executing action " + action.ToString () + " :" + e);
 			}

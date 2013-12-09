@@ -415,12 +415,12 @@ namespace MonoDevelop.Components
 					if (n == selection) {
 						if (!disableSelection) {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
-							                         true, margin, ypos, lineWidth, he + padding);
+								true, margin, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Selected), 
 							                      xpos + iconWidth + 2, typos, layout);
 						} else {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
-							                         false, margin, ypos, lineWidth, he + padding);
+								false, margin, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Normal), 
 							                      xpos + iconWidth + 2, typos, layout);
 						}

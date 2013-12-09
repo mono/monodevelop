@@ -41,12 +41,8 @@ namespace Microsoft.VisualStudio.TextTemplating
 		bool useMonoHack;
 		
 		bool hostSpecific;
-		List<CodeStatement> postStatements = new List<CodeStatement> ();
-		CodeTypeMemberCollection members = new CodeTypeMemberCollection ();
-		
-		public ParameterDirectiveProcessor ()
-		{
-		}
+		readonly List<CodeStatement> postStatements = new List<CodeStatement> ();
+		readonly CodeTypeMemberCollection members = new CodeTypeMemberCollection ();
 		
 		public override void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{

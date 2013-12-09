@@ -86,9 +86,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				this.strongNameFileEntry.Path = string.Empty;
 			else
 				this.strongNameFileEntry.Path = keyFile;
-			
+
 			this.strongNameFileEntry.DefaultPath = project.BaseDirectory;
-			this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = signAsm != 0;
+			delaySignCheckbutton.Sensitive = this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = signAsm != 0;
 			this.signAssemblyCheckbutton.Toggled += new EventHandler (SignAssemblyCheckbuttonActivated);
 		}
 		

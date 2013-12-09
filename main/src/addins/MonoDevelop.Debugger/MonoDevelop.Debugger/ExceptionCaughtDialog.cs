@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Debugger
 {
@@ -53,7 +54,8 @@ namespace MonoDevelop.Debugger
 
 		protected enum ModelColumn {
 			StackFrame,
-			Markup
+			Markup,
+			IsUserCode
 		}
 
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
@@ -103,42 +105,59 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, new Gdk.Color (223, 228, 235));
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
 			ExceptionValueTreeView.AllowEditing = false;
 			ExceptionValueTreeView.AllowAdding = false;
+			ExceptionValueTreeView.RulesHint = false;
 
-			// TODO: set the bg color to a greyish blue
 			ExceptionValueTreeView.Show ();
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
-			scrolled.ShadowType = ShadowType.In;
+			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (ExceptionValueTreeView);
 			scrolled.Show ();
 
 			return scrolled;
 		}
 
+		static void LineNumberLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
+		{
+			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
+			var renderer = (ExceptionCaughtLineNumberRenderer) cr;
+
+			if (frame != null)
+				renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
+			else
+				renderer.IsUserCode = false;
+
+			renderer.LineNumber = frame != null && !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
+		}
+
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new TreeStore (typeof (ExceptionStackFrame), typeof (string));
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
 			StackTraceTreeView.RulesHint = true;
 			StackTraceTreeView.Show ();
 
+			var ccr = new ExceptionCaughtLineNumberRenderer ();
+
 			var crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.End;
 			crt.WrapWidth = -1;
 
+			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
 			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
 
 			StackTraceTreeView.SizeAllocated += (o, args) => crt.WrapWidth = args.Allocation.Width;
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 128 };
-			scrolled.ShadowType = ShadowType.In;
+			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (StackTraceTreeView);
 			scrolled.Show ();
 
@@ -167,6 +186,13 @@ namespace MonoDevelop.Debugger
 			return buttons;
 		}
 
+		Widget CreateSeparator ()
+		{
+			var separator = new HSeparator ();
+			separator.Show ();
+			return separator;
+		}
+
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Exception Caught");
@@ -177,8 +203,12 @@ namespace MonoDevelop.Debugger
 			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
 
 			var vbox = new VBox (false, 0);
+
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.PackStart (CreateExceptionValueTreeView (), true, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.PackStart (CreateStackTraceTreeView (), true, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
 			vbox.Show ();
 
 			VBox.PackStart (vbox, true, true, 0);
@@ -214,18 +244,31 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
 		}
 
+		static bool IsUserCode (ExceptionStackFrame frame)
+		{
+			if (frame == null || string.IsNullOrEmpty (frame.File))
+				return false;
+
+			return IdeApp.Workspace.GetProjectContainingFile (frame.File) != null;
+		}
+
 		void ShowStackTrace (ExceptionInfo ex, bool showExceptionNode)
 		{
-			var model = (TreeStore) StackTraceTreeView.Model;
+			var model = (ListStore) StackTraceTreeView.Model;
 			TreeIter iter = TreeIter.Zero;
 
 			if (showExceptionNode) {
 				var markup = ex.Type + ": " + ex.Message;
-				iter = model.AppendValues (null, markup);
+				iter = model.AppendValues (null, markup, false);
 				StackTraceTreeView.ShowExpanders = true;
 			}
 
 			foreach (var frame in ex.StackTrace) {
+				bool isUserCode = IsUserCode (frame);
+
+				if (OnlyShowMyCodeCheckbox.Active && !isUserCode)
+					continue;
+
 				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
 
 				if (!string.IsNullOrEmpty (frame.File)) {
@@ -239,9 +282,9 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (!iter.Equals (TreeIter.Zero))
-					model.AppendValues (iter, frame, markup);
+					model.AppendValues (iter, frame, markup, isUserCode);
 				else
-					model.AppendValues (frame, markup);
+					model.AppendValues (frame, markup, isUserCode);
 			}
 
 			var inner = ex.InnerException;
@@ -254,9 +297,9 @@ namespace MonoDevelop.Debugger
 			if (destroyed)
 				return;
 
-			var stack = (TreeStore) StackTraceTreeView.Model;
+			var model = (ListStore) StackTraceTreeView.Model;
 			ExceptionValueTreeView.ClearValues ();
-			stack.Clear ();
+			model.Clear ();
 
 			ExceptionTypeLabel.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
 			ExceptionMessageLabel.Text = string.IsNullOrEmpty (exception.Message) ? string.Empty : exception.Message;
@@ -269,7 +312,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (exception.StackIsEvaluating)
-				stack.AppendValues (null, GettextCatalog.GetString ("Loading..."));
+				model.AppendValues (null, GettextCatalog.GetString ("Loading..."), false);
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)
@@ -281,7 +324,25 @@ namespace MonoDevelop.Debugger
 
 		void OnlyShowMyCodeToggled (object sender, EventArgs e)
 		{
-			
+			if (OnlyShowMyCodeCheckbox.Active) {
+				var model = (ListStore) StackTraceTreeView.Model;
+				TreeIter iter;
+				bool next;
+
+				if (!model.GetIterFirst (out iter))
+					return;
+
+				do {
+					bool isUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
+
+					if (isUserCode)
+						next = model.IterNext (ref iter);
+					else
+						next = model.Remove (ref iter);
+				} while (next);
+			} else {
+				UpdateDisplay ();
+			}
 		}
 
 		void CloseClicked (object sender, EventArgs e)
@@ -311,6 +372,72 @@ namespace MonoDevelop.Debugger
 			destroyed = true;
 			exception.Changed -= ExceptionChanged;
 			base.OnDestroyed ();
+		}
+	}
+
+	class ExceptionCaughtLineNumberRenderer : CellRenderer
+	{
+		static readonly Pango.FontDescription DefaultFont = Pango.FontDescription.FromString ("Menlo 9");
+		const int RoundedRectangleRadius = 2;
+		const int RoundedRectangleHeight = 14;
+		const int RoundedRectangleWidth = 28;
+		const int Padding = 6;
+
+		public bool IsUserCode;
+		public int LineNumber;
+
+		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+		{
+			height = RoundedRectangleHeight + Padding + Padding;
+			width = RoundedRectangleWidth + Padding + Padding;
+			x_offset = Padding;
+			y_offset = Padding;
+		}
+
+		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+		{
+			using (var cr = Gdk.CairoHelper.Create (window)) {
+				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
+				cr.Antialias = Cairo.Antialias.Subpixel;
+
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.Clip ();
+
+				if (IsUserCode)
+					cr.SetSourceRGBA (0.90, 0.60, 0.87, 1.0); // 230, 152, 223
+				else
+					cr.SetSourceRGBA (0.77, 0.77, 0.77, 1.0); // 197, 197, 197
+
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.Fill ();
+
+				cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.11);
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.LineWidth = 2;
+				cr.Stroke ();
+
+				using (var layout = PangoUtil.CreateLayout (widget, LineNumber != -1 ? LineNumber.ToString () : "???")) {
+					layout.Alignment = Pango.Alignment.Left;
+					layout.FontDescription = DefaultFont;
+
+					int width, height;
+					layout.GetPixelSize (out width, out height);
+
+					double y_offset = (RoundedRectangleHeight - height) / 2.0;
+					double x_offset = (RoundedRectangleWidth - width) / 2.0;
+
+					// render the text shadow
+					cr.Save ();
+					cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.34);
+					cr.Translate (x_offset, y_offset + 1);
+					cr.ShowLayout (layout);
+					cr.Restore ();
+
+					cr.SetSourceRGBA (1.0, 1.0, 1.0, 1.0);
+					cr.Translate (x_offset, y_offset);
+					cr.ShowLayout (layout);
+				}
+			}
 		}
 	}
 
