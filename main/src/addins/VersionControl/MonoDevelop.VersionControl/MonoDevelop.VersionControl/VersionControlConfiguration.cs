@@ -7,7 +7,7 @@ namespace MonoDevelop.VersionControl
 	class VersionControlConfiguration
 	{
 		[ItemProperty ("Repositories")]
-		List<Repository> repositories = new List<Repository> ();
+		readonly List<Repository> repositories = new List<Repository> ();
 		
 		public List<Repository> Repositories {
 			get { return repositories; }
@@ -15,5 +15,12 @@ namespace MonoDevelop.VersionControl
 
 		[ItemProperty]
 		public bool Disabled;
+
+		[ItemProperty ("DisabledSolutions")]
+		readonly List<string> disabledSolutions = new List<string> ();
+
+		public List<string> DisabledSolutions {
+			get { return disabledSolutions; }
+		}
 	}
 }
