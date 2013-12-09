@@ -80,6 +80,11 @@ namespace MonoDevelop.AspNet
 				CommandInfo cmd = info.Add (dir.Replace("_", "__"), dir);
 				cmd.Enabled = fullPaths.Contains (proj.BaseDirectory.Combine (dir));
 			}
+
+			if (info.Count == 0) {
+				CommandInfo cmd = info.Add ("None to add", null);
+				cmd.Enabled = false;
+			}
 		}
 
 		static void RemoveDirsNotInProject (List<FilePath> dirs, Project proj)
