@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Semantics;
+using System.ComponentModel;
 
 namespace MonoDevelop.CSharp
 {
@@ -1493,6 +1494,18 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
+		static ulong GetUlong (string str)
+		{
+			try {	
+				if (str [0] == '-')
+					return (ulong)long.Parse (str);
+				return ulong.Parse (str);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while converting " + str + " to a number.", e); 
+				return 0;
+			}
+		}
+
 		void AppendConstant (StringBuilder sb, IType constantType, object constantValue)
 		{
 			if (constantValue is string) {
@@ -1527,6 +1540,32 @@ namespace MonoDevelop.CSharp
 						return;
 					}
 				}
+				// try to decompose flags
+				if (constantType.GetDefinition ().Attributes.Any (attr => attr.AttributeType.Name == "FlagsAttribute" && attr.AttributeType.Namespace == "System")) {
+					var val = GetUlong (constantValue.ToString ());
+					var outVal = 0UL;
+					var fields = new List<IField> ();
+					foreach (var field in constantType.GetFields ()) {
+						if (field.ConstantValue == null)
+							continue;
+						var val2 = GetUlong (field.ConstantValue.ToString ());
+						if ((val & val2) == val2) {
+							fields.Add (field);
+							outVal |= val2;
+						}
+					}
+
+					if (val == outVal && fields.Count > 1) {
+						for (int i = 0; i < fields.Count; i++) {
+							if (i > 0)
+								sb.Append (" | ");
+							var field = fields[i];
+							sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+						}
+						return;
+					}
+				}
+
 				sb.Append ("(" + GetTypeReferenceString (constantType) + ")" + Highlight (constantValue.ToString (), colorStyle.Number));
 				return;
 			}
