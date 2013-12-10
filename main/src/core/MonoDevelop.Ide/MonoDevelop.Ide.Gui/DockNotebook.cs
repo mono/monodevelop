@@ -728,6 +728,7 @@ namespace MonoDevelop.Ide.Gui
 					return true;
 				}
 				if (evnt.Button == 2) {
+					overCloseOnPress = true;
 					notebook.OnCloseTab (t);
 					return true;
 				}
