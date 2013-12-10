@@ -306,8 +306,11 @@ namespace MonoDevelop.CSharp.Refactoring
 					monitor.Step (1);
 				string text;
 				try {
+					if  (!File.Exists (file))
+						continue;
 					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (file);
-				} catch (Exception) {
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while file reading.", e);
 					continue;
 				}
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
