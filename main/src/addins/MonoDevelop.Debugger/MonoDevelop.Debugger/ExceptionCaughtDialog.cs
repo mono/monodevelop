@@ -71,16 +71,21 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateExceptionInfoHeader ()
 		{
-			ExceptionMessageLabel = new Label () { Selectable = true, Wrap = true, WidthRequest = 500, Xalign = 0.0f };
+			ExceptionMessageLabel = new Label () { UseMarkup = true, Selectable = true, Wrap = true, WidthRequest = 500, Xalign = 0.0f, Yalign = 0.0f };
 			ExceptionTypeLabel = new Label () { UseMarkup = true, Xalign = 0.0f };
 
 			ExceptionMessageLabel.Show ();
 			ExceptionTypeLabel.Show ();
 
-			var frame = new InfoFrame (ExceptionMessageLabel);
+			var alignment = new Alignment (0.0f, 0.0f, 0.0f, 0.0f);
+			alignment.Child = ExceptionMessageLabel;
+			alignment.BorderWidth = 6;
+			alignment.Show ();
+
+			var frame = new InfoFrame (alignment);
 			frame.Show ();
 
-			var vbox = new VBox (false, 6);
+			var vbox = new VBox (false, 12);
 			vbox.PackStart (ExceptionTypeLabel, false, true, 0);
 			vbox.PackStart (frame, true, true, 0);
 			vbox.Show ();
@@ -147,8 +152,9 @@ namespace MonoDevelop.Debugger
 			var ccr = new ExceptionCaughtLineNumberRenderer ();
 
 			var crt = new CellRendererText ();
-			crt.Ellipsize = Pango.EllipsizeMode.End;
-			crt.WrapWidth = -1;
+			crt.Ellipsize = Pango.EllipsizeMode.None;
+			crt.WrapMode = Pango.WrapMode.Word;
+			//crt.WidthChars = -1;
 
 			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
 			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
@@ -272,13 +278,13 @@ namespace MonoDevelop.Debugger
 				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
 
 				if (!string.IsNullOrEmpty (frame.File)) {
-					markup += "\n<small>" + GLib.Markup.EscapeText (frame.File);
+					markup += "\n<span size='smaller' foreground='#777777'>" + GLib.Markup.EscapeText (frame.File);
 					if (frame.Line > 0) {
 						markup += ":" + frame.Line;
 						if (frame.Column > 0)
 							markup += "," + frame.Column;
 					}
-					markup += "</small>";
+					markup += "</span>";
 				}
 
 				if (!iter.Equals (TreeIter.Zero))
@@ -302,7 +308,7 @@ namespace MonoDevelop.Debugger
 			model.Clear ();
 
 			ExceptionTypeLabel.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
-			ExceptionMessageLabel.Text = string.IsNullOrEmpty (exception.Message) ? string.Empty : exception.Message;
+			ExceptionMessageLabel.Markup = "<small>" + (exception.Message ?? string.Empty) + "</small>";
 
 			ShowStackTrace (exception, false);
 
@@ -397,7 +403,12 @@ namespace MonoDevelop.Debugger
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
 			using (var cr = Gdk.CairoHelper.Create (window)) {
+				#if CENTER_ROUNDED_RECTANGLE
 				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
+				#else
+				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), cell_area.Y + 4);
+				#endif
+
 				cr.Antialias = Cairo.Antialias.Subpixel;
 
 				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);

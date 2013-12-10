@@ -31,11 +31,11 @@ using Gtk;
 namespace MonoDevelop.Debugger
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	class InfoFrame : Gtk.Frame
+	class InfoFrame : Frame
 	{
 		public InfoFrame ()
 		{
-			Shadow = ShadowType.EtchedIn;
+			Shadow = ShadowType.None;
 		}
 
 		public InfoFrame (Widget child) : this ()
@@ -47,8 +47,14 @@ namespace MonoDevelop.Debugger
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 				cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-				cr.SetSourceRGB (1.0, 0.98, 0.91);
-				cr.Fill ();
+				cr.ClipPreserve ();
+
+				cr.SetSourceRGB (1.00, 0.98, 0.91);
+				cr.FillPreserve ();
+
+				cr.SetSourceRGB (0.87, 0.83, 0.74);
+				cr.LineWidth = 2;
+				cr.Stroke ();
 			}
 
 			return base.OnExposeEvent (evnt);
