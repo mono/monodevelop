@@ -1,10 +1,10 @@
-//
-// VersionControlGeneralOptionsPanel.cs
+﻿//
+// VersionControlSolutionOptionsPanel.cs
 //
 // Author:
-//       Therzok <teromario@yahoo.com>
+//       Marius Ungureanu <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2013 Therzok
+// Copyright (c) 2013 Marius Ungureanu
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,11 @@
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlGeneralOptionsPanel : OptionsPanel
+	public class VersionControlSolutionOptionsPanel : OptionsPanel
 	{
 		Xwt.CheckBox disableVersionControl;
 
@@ -40,8 +41,8 @@ namespace MonoDevelop.VersionControl
 			box.Spacing = 6;
 			box.Margin = 12;
 
-			disableVersionControl = new Xwt.CheckBox (GettextCatalog.GetString ("Disable Version Control globally")) {
-				Active = VersionControlService.ConfigurationGlobalDisabled,
+			disableVersionControl = new Xwt.CheckBox (GettextCatalog.GetString ("Disable Version Control for this solution")) {
+				Active = VersionControlService.IsSolutionDisabled ((Solution)DataObject),
 			};
 			box.PackStart (disableVersionControl);
 			box.Show ();
@@ -50,9 +51,8 @@ namespace MonoDevelop.VersionControl
 
 		public override void ApplyChanges ()
 		{
-			VersionControlService.ConfigurationGlobalDisabled = disableVersionControl.Active;
+			VersionControlService.SetSolutionDisabled ((Solution)DataObject, disableVersionControl.Active);
 			VersionControlService.SaveConfiguration ();
 		}
 	}
 }
-
