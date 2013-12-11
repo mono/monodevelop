@@ -175,6 +175,14 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
+
+		internal void ReplaceItem (SolutionEntityItem oldItem, SolutionEntityItem newItem)
+		{
+			foreach (var e in configurations.Where (ce => ce.Item == oldItem))
+				e.Item = newItem;
+			if (parentSolution != null)
+				parentSolution.UpdateDefaultConfigurations ();
+		}
 		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
@@ -258,6 +266,9 @@ namespace MonoDevelop.Projects
 						item = sol.GetSolutionItem (itemId) as SolutionEntityItem;
 				}
 				return item;
+			}
+			internal set {
+				item = value;
 			}
 		}
 	}

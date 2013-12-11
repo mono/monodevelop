@@ -236,8 +236,8 @@ namespace MonoDevelop.Projects
 				ConnectChildEntryEvents (newItem);
 	
 				NotifyModified ("Items");
-				OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, true), true);
-				OnItemAdded (new SolutionItemChangeEventArgs (newItem, ParentSolution, true), true);
+				OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, true) { ReplacedItem = item } , true);
+				OnItemAdded (new SolutionItemChangeEventArgs (newItem, ParentSolution, true) { ReplacedItem = item }, true);
 				
 				item.Dispose ();
 				return newItem;

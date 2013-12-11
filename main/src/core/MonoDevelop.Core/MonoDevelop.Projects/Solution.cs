@@ -619,26 +619,39 @@ namespace MonoDevelop.Projects
 			SolutionFolder sf = args.SolutionItem as SolutionFolder;
 			if (sf != null) {
 				foreach (SolutionItem eitem in sf.GetAllItems<SolutionItem> ())
-					SetupNewItem (eitem);
+					SetupNewItem (eitem, null);
 			}
 			else {
-				SetupNewItem (args.SolutionItem);
+				SetupNewItem (args.SolutionItem, args.ReplacedItem);
 			}
 			
 			if (SolutionItemAdded != null)
 				SolutionItemAdded (this, args);
 		}
 		
-		void SetupNewItem (SolutionItem item)
+		void SetupNewItem (SolutionItem item, SolutionItem replacedItem)
 		{
 			ConvertToSolutionFormat (item, false);
 			
 			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
-				// Register the new entry in every solution configuration
-				foreach (SolutionConfiguration conf in Configurations)
-					conf.AddItem (eitem);
+				if (replacedItem == null) {
+					// Register the new entry in every solution configuration
+					foreach (SolutionConfiguration conf in Configurations)
+						conf.AddItem (eitem);
+				} else {
+					// Reuse the configuration information of the replaced item
+					foreach (SolutionConfiguration conf in Configurations)
+						conf.ReplaceItem ((SolutionEntityItem)replacedItem, eitem);
+					if (StartupItem == replacedItem)
+						StartupItem = eitem;
+					else {
+						int i = MultiStartupItems.IndexOf ((SolutionEntityItem)replacedItem);
+						if (i != -1)
+							MultiStartupItems [i] = eitem;
+					}
+				}
 			}
 		}
 		
@@ -674,18 +687,20 @@ namespace MonoDevelop.Projects
 		void DetachItem (SolutionEntityItem item, bool reloading)
 		{
 			item.NeedsReload = false;
-			foreach (SolutionConfiguration conf in Configurations)
-				conf.RemoveItem (item);
-			if (!reloading && item is DotNetProject)
-				RemoveReferencesToProject ((DotNetProject) item);
+			if (!reloading) {
+				foreach (SolutionConfiguration conf in Configurations)
+					conf.RemoveItem (item);
+				if (item is DotNetProject)
+					RemoveReferencesToProject ((DotNetProject)item);
+
+				if (StartupItem == item)
+					StartupItem = null;
+				else
+					MultiStartupItems.Remove (item);
+			}
 			
 			// Update the file name because the file format may have changed
 			item.FileName = item.FileName;
-			
-			if (StartupItem == item)
-				StartupItem = null;
-			else
-				MultiStartupItems.Remove (item);
 		}
 		
 		void RemoveReferencesToProject (DotNetProject projectToRemove)
