@@ -3,6 +3,7 @@
 //  
 // Author:
 //       IBBoard <dev@ibboard.co.uk>
+//       Marius Ungureanu <marius.ungureanu@xamarin.com>
 // 
 // Copyright (c) 2011 IBBoard
 // 
@@ -29,41 +30,39 @@ using NUnit.Framework;
 using NGit.Storage.File;
 using NGit.Revwalk;
 using NGit;
-using UnitTests;
 using System.IO;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl.Git
+namespace MonoDevelop.VersionControl.Git.Tests
 {
-	[TestFixture()]
-	public class GitUtilsTests : TestBase
+	[TestFixture]
+	public class GitIntegrityTests
 	{
-		private readonly string PROJECT_ROOT = "../../../";
-		private Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
-		private FileRepository repo;
-		private RevWalk walker;
+		readonly string PROJECT_ROOT = "../../../";
+		readonly Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
+		FileRepository repo;
+		RevWalk walker;
 		
-		[SetUp()]
-		public override void Setup() {
-			base.Setup();
-			DirectoryInfo gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
+		[SetUp]
+		public void Setup() {
+			var gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
 			repo = new FileRepository (gitDir.FullName);
 			walker = new RevWalk (repo);
 		}
 
-		[Test()]
+		[Test]
 		public void TestBlameLineCountWithMultipleCommits ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
 			Assert.That (blameCommits.Length, Is.EqualTo (72));
 		}
 
-		[Test()]
+		[Test]
 		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithMultipleCommits ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
-			List<BlameFragment> blames = new List<BlameFragment> ();
+			var blames = new List<BlameFragment> ();
 			blames.Add (new BlameFragment (1, 27, "b6e41ee2"));
 			blames.Add (new BlameFragment (28, 1, "15ed2793"));
 			blames.Add (new BlameFragment (29, 1, "a78c32a5"));
@@ -88,14 +87,14 @@ namespace MonoDevelop.VersionControl.Git
 			CompareBlames (blameCommits, blames);
 		}
 		
-		[Test()]
+		[Test]
 		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithTwoCommits ()
 		{
 			string commit1 = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
 			string commit2 = "15ed279";
 			RevCommit[] blameCommits = GetBlameForFixedFile (commit2);
-			List<BlameFragment> blames = new List<BlameFragment> ();
+			var blames = new List<BlameFragment> ();
 			blames.Add (new BlameFragment (1, 27, commit1));
 			blames.Add (new BlameFragment (28, 1, commit2));
 			blames.Add (new BlameFragment (29, 5, commit1));
@@ -112,42 +111,42 @@ namespace MonoDevelop.VersionControl.Git
 			CompareBlames (blameCommits, blames);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBlameLineCountWithTwoCommits ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("15ed279");
 			Assert.That (blameCommits.Length, Is.EqualTo (67));
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBlameRevisionsWithOneCommit ()
 		{
 			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
 			RevCommit[] blameCommits = GetBlameForFixedFile (commit);
-			List<BlameFragment> blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 56, commit));			
+			var blames = new List<BlameFragment> ();
+			blames.Add (new BlameFragment (1, 56, commit));	
 			CompareBlames (blameCommits, blames);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBlameLineCountWithOneCommit ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
 			Assert.That (blameCommits.Length, Is.EqualTo (56));
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBlameLineCountWithNoCommits ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298");
 			Assert.That (blameCommits, Is.Null);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBlameForProjectDom ()
 		{
 			RevCommit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
-			List<BlameFragment> blames = new List<BlameFragment> ();
+			var blames = new List<BlameFragment> ();
 			blames.Add(new BlameFragment(1, 59, "3352c438"));
 			blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
 			blames.Add(new BlameFragment(65, 3, "3352c438"));
@@ -225,13 +224,13 @@ namespace MonoDevelop.VersionControl.Git
 		}
 		
 		[Test]
-		public void GetCommitChanges_AddedRemoved ()
+		public void GetCommitChangesAddedRemoved ()
 		{
 			var commit = "9ed729ee";
 			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
 
-			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs"));
-			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs"));
+			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
+			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs", StringComparison.Ordinal));
 
 			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.ADD, add.GetChangeType (), "#1");
 			Assert.AreEqual ("/dev/null", add.GetOldPath (), "#2");
@@ -240,7 +239,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 		
 		[Test]
-		public void GetCommitChanges_Modifications ()
+		public void GetCommitChangesModifications ()
 		{
 			var commit = "c6798c34577";
 			var changedFiles = new [] {
@@ -261,10 +260,10 @@ namespace MonoDevelop.VersionControl.Git
 			Assert.AreEqual (11, changes.Length, "#1");
 			
 			foreach (var file in changedFiles)
-				Assert.IsTrue (changes.Any (f => f.GetNewPath ().EndsWith (".cs")), "#2." + file);
+				Assert.IsTrue (changes.Any (f => f.GetNewPath ().EndsWith (".cs", StringComparison.Ordinal)), "#2." + file);
 		}
 		
-		private RevCommit[] GetBlameForFixedFile (string revision)
+		RevCommit[] GetBlameForFixedFile (string revision)
 		{
 			string filePath = "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
 			return GetBlameForFile (revision, filePath);
@@ -272,7 +271,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		RevCommit[] GetBlameForFile (string revision, string filePath)
 		{
-			RevCommit[] blame = null;
+			RevCommit[] blame;
 			string path = PROJECT_ROOT + filePath;
 			string key = path + revision;
 			blames.TryGetValue(key, out blame);
@@ -294,13 +293,13 @@ namespace MonoDevelop.VersionControl.Git
 			return blame;
 		}
 		
-		void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
+		static void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
 		{
 			foreach (BlameFragment blame in blames) {
-				int zeroBasedStartLine = blame.startLine - 1;
+				int zeroBasedStartLine = blame.StartLine - 1;
 				
-				for (int i = 0; i < blame.lineCount; i++) {
-					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Is.StringStarting (blame.revID), "Error at line {0}", blame.startLine + i);
+				for (int i = 0; i < blame.LineCount; i++) {
+					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Is.StringStarting (blame.RevID), "Error at line {0}", blame.StartLine + i);
 				}
 			}
 		}
@@ -308,15 +307,15 @@ namespace MonoDevelop.VersionControl.Git
 
 	struct BlameFragment
 	{
-		public int startLine;
-		public int lineCount;
-		public string revID;
+		public int StartLine;
+		public int LineCount;
+		public string RevID;
 
 		public BlameFragment (int start,int count, string revision)
 		{
-			startLine = start;
-			lineCount = count;
-			revID = revision;
+			StartLine = start;
+			LineCount = count;
+			RevID = revision;
 		}
 	}
 }
