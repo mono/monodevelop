@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using UnitTests;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -33,10 +32,12 @@ using System.IO;
 using System.Threading;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Assemblies;
+using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
 {
-	public abstract class DebugTests: TestBase
+	[TestFixture]
+	public abstract class DebugTests
 	{
 		readonly protected string EngineId;
 		DebuggerEngine engine;
@@ -45,16 +46,21 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			EngineId = engineId;
 		}
-		
-		public override void Setup ()
+
+		[TestFixtureSetUp]
+		public virtual void SetUp ()
 		{
-			base.Setup ();
 			foreach (DebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
 				if (e.Id == EngineId) {
 					engine = e;
 					break;
 				}
 			}
+		}
+
+		[TestFixtureTearDown]
+		public virtual void TearDown ()
+		{
 		}
 
 		
@@ -76,8 +82,11 @@ namespace MonoDevelop.Debugger.Tests
 			if (runtime == null)
 				return null;
 
+			// main/build/tests
+			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
+
 			var cmd = new DotNetExecutionCommand ();
-			cmd.Command = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "MonoDevelop.Debugger.Tests.TestApp.exe");
+			cmd.Command = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
 			cmd.Arguments = test;
 			cmd.TargetRuntime = runtime;
 
@@ -87,8 +96,7 @@ namespace MonoDevelop.Debugger.Tests
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
-			FilePath path = Util.TestsRootDir;
-			path = path.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;
+			path = path.ParentDirectory.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;
 			TextFile file = TextFile.ReadFile (path);
 			int i = file.Text.IndexOf ("void " + test, StringComparison.Ordinal);
 			if (i == -1)
