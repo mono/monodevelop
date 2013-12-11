@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Projects {
 			string location = ProjectLocation;
 
 			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
-			
+
 			if (
 				!FileService.IsValidPath (solution) || 
 			    !FileService.IsValidFileName(name) ||
@@ -412,6 +412,13 @@ namespace MonoDevelop.Ide.Projects {
 			{
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
 				return false;
+			}
+
+			for (int i = 1; i < name.Length; i++) {
+				if (name[i-1] == '.' &&  char.IsDigit(name[i])) {
+					MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nCannot write '.' followed by a number"));
+					return false;
+				}
 			}
 
 			if (parentFolder != null && parentFolder.ParentSolution.FindProjectByName (name) != null) {

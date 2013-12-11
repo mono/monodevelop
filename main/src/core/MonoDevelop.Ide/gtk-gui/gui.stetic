@@ -414,6 +414,7 @@
                         <child>
                           <widget class="MonoDevelop.Components.FolderEntry" id="entry_location">
                             <property name="MemberName" />
+                            <property name="DisplayAsRelativePath">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">1</property>
