@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -377,7 +378,10 @@ namespace MonoDevelop.Projects
 		void LoadVSConsoleProject (string vsVersion)
 		{
 			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
-			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var monitor = new NullProgressMonitor ();
+			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
 		}
 
