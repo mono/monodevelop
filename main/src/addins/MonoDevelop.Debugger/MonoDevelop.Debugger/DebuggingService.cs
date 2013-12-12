@@ -593,16 +593,22 @@ namespace MonoDevelop.Debugger
 		{
 			// Events may come with a bit of delay, so the debug session
 			// may already have been cleaned up
-			if (console != null)
-				console.Log.Write (text);
+			var logger = console;
+
+			if (logger != null)
+				logger.Log.Write (text);
 		}
 		
 		static void OutputWriter (bool iserr, string text)
 		{
-			if (iserr)
-				console.Error.Write (text);
-			else
-				console.Out.Write (text);
+			var logger = console;
+
+			if (logger != null) {
+				if (iserr)
+					logger.Error.Write (text);
+				else
+					logger.Out.Write (text);
+			}
 		}
 
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
