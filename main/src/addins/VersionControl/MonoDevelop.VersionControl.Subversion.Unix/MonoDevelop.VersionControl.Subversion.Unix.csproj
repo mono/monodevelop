@@ -45,6 +45,7 @@
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\SvnClient.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient0.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient1.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -64,6 +65,11 @@
     <ProjectReference Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
       <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
       <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

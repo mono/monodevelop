@@ -276,6 +276,7 @@
     <Compile Include="MonoDevelop.VersionControl\ResolveConflictsCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlGeneralOptionsPanel.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

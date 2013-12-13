@@ -1,18 +1,5 @@
-<Addin id          = "VBBinding"
-       namespace   = "MonoDevelop"
-       name        = "VB.NET Language Binding"
-       author      = "Levi Bard"
-       copyright   = "LGPL"
-       url         = "http://bard.sytes.net/vbnetbinding"
-       description = "VB.NET Language Binding"
-       category    = "Language bindings"
-       version     = "4.2.3">
+<ExtensionModel>
 
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-	</Dependencies>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject 
 			language="VBNet" 
@@ -84,4 +71,4 @@
 		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
 	</Extension>-->
 	
-</Addin>
+</<ExtensionModel>

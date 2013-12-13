@@ -1,19 +1,7 @@
-<Addin id          = "TestRunner"
-       namespace   = "MonoDevelop"
-       name        = "Test Runner"
-       copyright   = "MIT/X11"
-       url         = "http://www.monodevelop.com"
-       description = "Test runner for the MonoDevelop unit tests"
-       category    = "MonoDevelop Core"
-       isroot      = "false"
-       version     = "4.2.3"
-       compatVersion = "4.0">
+<ExtensionModel>
 
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-	</Dependencies>
-	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "run-md-tests" class = "MonoDevelop.Tests.TestRunner.Runer" description = "Runs the MonoDevelop unit test suite"/>
 	</Extension>
-</Addin>
+
+</ExtensionModel>
