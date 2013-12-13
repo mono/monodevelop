@@ -25,6 +25,7 @@ namespace CSharpBinding.Autotools
 			case ClrVersion.Clr_2_1:
 				return "smcs";
 			case ClrVersion.Net_4_0:
+			case ClrVersion.Net_4_5:
 				return "dmcs";
 			default:
 				throw new Exception ("Cannot handle unknown runtime version ClrVersion.'" + dp.TargetFramework.ClrVersion.ToString () + "'.");
