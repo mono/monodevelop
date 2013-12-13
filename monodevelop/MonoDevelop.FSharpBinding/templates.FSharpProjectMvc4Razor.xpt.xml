@@ -12,6 +12,7 @@
 
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Controllers/HomeController.fs"/>
 	</Actions>
 
 	<!-- Template Content -->
