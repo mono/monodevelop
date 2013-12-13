@@ -113,40 +113,40 @@
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="overlay_added.png">
+    <EmbeddedResource Include="icons\overlay_added.png">
       <LogicalName>overlay_added.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_modified.png">
+    <EmbeddedResource Include="icons\overlay_modified.png">
       <LogicalName>overlay_modified.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_conflicted.png">
+    <EmbeddedResource Include="icons\overlay_conflicted.png">
       <LogicalName>overlay_conflicted.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_normal.png">
+    <EmbeddedResource Include="icons\overlay_normal.png">
       <LogicalName>overlay_normal.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_locked.png">
+    <EmbeddedResource Include="icons\overlay_locked.png">
       <LogicalName>overlay_locked.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_removed.png">
+    <EmbeddedResource Include="icons\overlay_removed.png">
       <LogicalName>overlay_removed.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="repository.png">
+    <EmbeddedResource Include="icons\repository.png">
       <LogicalName>repository.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_controled.png">
+    <EmbeddedResource Include="icons\overlay_controled.png">
       <LogicalName>overlay_controled.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_unversioned.png">
+    <EmbeddedResource Include="icons\overlay_unversioned.png">
       <LogicalName>overlay_unversioned.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_lock_required.png">
+    <EmbeddedResource Include="icons\overlay_lock_required.png">
       <LogicalName>overlay_lock_required.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="overlay_unlocked.png">
+    <EmbeddedResource Include="icons\overlay_unlocked.png">
       <LogicalName>overlay_unlocked.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
@@ -155,40 +155,40 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="version-control-16.png">
+    <EmbeddedResource Include="icons\version-control-16.png">
       <LogicalName>version-control-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_log.png">
+    <EmbeddedResource Include="icons\menu_log.png">
       <LogicalName>menu_log.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_diff.png">
+    <EmbeddedResource Include="icons\menu_diff.png">
       <LogicalName>menu_diff.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_update.png">
+    <EmbeddedResource Include="icons\menu_update.png">
       <LogicalName>menu_update.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_status.png">
+    <EmbeddedResource Include="icons\menu_status.png">
       <LogicalName>menu_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_commit.png">
+    <EmbeddedResource Include="icons\menu_commit.png">
       <LogicalName>menu_commit.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_remote_status.png">
+    <EmbeddedResource Include="icons\menu_remote_status.png">
       <LogicalName>menu_remote_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_add.png">
+    <EmbeddedResource Include="icons\menu_add.png">
       <LogicalName>menu_add.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_remove.png">
+    <EmbeddedResource Include="icons\menu_remove.png">
       <LogicalName>menu_remove.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_resolve.png">
+    <EmbeddedResource Include="icons\menu_resolve.png">
       <LogicalName>menu_resolve.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="comment.png">
+    <EmbeddedResource Include="icons\comment.png">
       <LogicalName>comment.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_revert.png">
+    <EmbeddedResource Include="icons\menu_revert.png">
       <LogicalName>menu_revert.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
