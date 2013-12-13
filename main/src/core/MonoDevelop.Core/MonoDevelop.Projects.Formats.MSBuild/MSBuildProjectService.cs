@@ -479,13 +479,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
-				var toolsFx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (toolsVersion));
-				string binDir = runtime.GetMSBuildBinPath (toolsFx);
-				
-				if (!runtime.IsInstalled (toolsFx))
+				string binDir = runtime.GetMSBuildBinPath (toolsVersion);
+				if (binDir == null) {
 					throw new InvalidOperationException (string.Format (
-						"Runtime '{0}' does not have the MSBuild '{1}' framework installed",
+						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
 						runtime.Id, toolsVersion));
+				}
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
 				RemoteBuildEngine builder;
@@ -504,7 +503,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					RedirectStandardError = true,
 					RedirectStandardInput = true,
 				};
-				runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
+				runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 				
 				Process p = null;
 				try {

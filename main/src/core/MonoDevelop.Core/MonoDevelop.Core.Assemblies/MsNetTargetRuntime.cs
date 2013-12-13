@@ -151,15 +151,15 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public override string GetMSBuildBinPath (TargetFramework fx)
+		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + fx.Id, false);
+			RegistryKey msb = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\" + toolsVersion, false);
 			if (msb != null) {
 				string path = msb.GetValue ("MSBuildToolsPath") as string;
-				if (path != null)
+				if (path != null && File.Exists (Path.Combine (path, "MSBuild.exe")))
 					return path;
 			}
-			return rootDir.Combine ("v2.0.50727");
+			return null;
 		}
 		
 		public override string GetMSBuildExtensionsPath ()

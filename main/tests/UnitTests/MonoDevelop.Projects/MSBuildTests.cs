@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
+using Mono.CSharp;
 using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
@@ -375,7 +376,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
-		void LoadVSConsoleProject (string vsVersion)
+		void LoadBuildVSConsoleProject (string vsVersion)
 		{
 			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
 			var monitor = new NullProgressMonitor ();
@@ -383,24 +384,36 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (monitor.Errors.Length == 0);
 			Assert.IsTrue (monitor.Warnings.Length == 0);
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			var r = sol.Build (monitor, "Debug");
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+			Assert.IsFalse (r.Failed);
+			Assert.IsTrue (r.ErrorCount == 0);
+
+			//there may be a single warning about not being able to find Client profile
+			var f = r.Errors.FirstOrDefault ();
+			var clientProfileError =
+				"Unable to find framework corresponding to the target framework moniker " +
+				"'.NETFramework,Version=v4.0,Profile=Client'";
+			Assert.IsTrue (f == null || f.ErrorText.Contains (clientProfileError));
 		}
 
 		[Test]
-		public void LoadVS2010ConsoleProject ()
+		public void LoadBuildVS2010ConsoleProject ()
 		{
-			LoadVSConsoleProject ("2010");
+			LoadBuildVSConsoleProject ("2010");
 		}
 
 		[Test]
 		public void LoadVS2012ConsoleProject ()
 		{
-			LoadVSConsoleProject ("2012");
+			LoadBuildVSConsoleProject ("2012");
 		}
 
 		[Test]
 		public void LoadVS2013ConsoleProject ()
 		{
-			LoadVSConsoleProject ("2013");
+			LoadBuildVSConsoleProject ("2013");
 		}
 	}
 }
