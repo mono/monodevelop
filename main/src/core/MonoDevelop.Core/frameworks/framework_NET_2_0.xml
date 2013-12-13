@@ -74,5 +74,6 @@
   <Assembly name="Mono.Tasklets" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Web" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="RabbitMQ.Client" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="FSharp.Core" />
 </Assemblies>
 </TargetFramework>
