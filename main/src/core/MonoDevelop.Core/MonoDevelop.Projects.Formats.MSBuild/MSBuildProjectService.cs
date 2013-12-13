@@ -479,6 +479,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
+				//HACK: we don't have a 12.0 runner yet, nor does Mono have ToolsVersion 12 in Mono
+				if (toolsVersion == "12.0")
+					toolsVersion = "4.0";
+
 				string binDir = runtime.GetMSBuildBinPath (toolsVersion);
 				if (binDir == null) {
 					throw new InvalidOperationException (string.Format (
