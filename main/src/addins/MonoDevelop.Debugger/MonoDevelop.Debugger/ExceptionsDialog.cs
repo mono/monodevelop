@@ -27,25 +27,28 @@
 
 using System;
 using System.Collections.Generic;
+
 using Gtk;
+
+using Mono.Debugging.Client;
+using ICSharpCode.NRefactory.TypeSystem;
+
+using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using Mono.Debugging.Client;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Debugger
 {
 	public partial class ExceptionsDialog : Gtk.Dialog
 	{
-		ListStore storeExceptions;
-		ListStore storeSelection;
-		HashSet<string> classes = new HashSet<string> ();
-		TreeViewState tstateExc;
-		TreeViewState tstateSel;
+		readonly HashSet<string> selectedClasses = new HashSet<string> ();
+		readonly HashSet<string> classes = new HashSet<string> ();
+		readonly ListStore storeExceptions;
+		readonly ListStore storeSelection;
+		readonly TreeViewState tstateExc;
+		readonly TreeViewState tstateSel;
 		bool updateScheduled;
-		HashSet<string> selectedClasses = new HashSet<string> ();
 		
 		public ExceptionsDialog()
 		{

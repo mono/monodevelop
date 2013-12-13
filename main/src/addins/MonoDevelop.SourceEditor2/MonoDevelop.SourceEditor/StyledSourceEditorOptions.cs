@@ -285,6 +285,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.EnableQuickDiff = value; }
 		}
 
+		public bool GenerateFormattingUndoStep {
+			get { return DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep; }
+			set { DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = value; }
+		}
+
 		public void ZoomIn ()
 		{
 			DefaultSourceEditorOptions.Instance.ZoomIn ();

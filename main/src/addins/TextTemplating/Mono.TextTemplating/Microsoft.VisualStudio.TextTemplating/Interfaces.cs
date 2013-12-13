@@ -30,6 +30,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.CodeDom;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
@@ -80,5 +81,24 @@ namespace Microsoft.VisualStudio.TextTemplating
 	{
 		ITextTemplatingSession CreateSession ();
 		ITextTemplatingSession Session { get; set; }
+	}
+
+	public interface IDirectiveProcessor
+	{
+		CompilerErrorCollection Errors { get; }
+		bool RequiresProcessingRunIsHostSpecific { get; }
+
+		void FinishProcessingRun ();
+		string GetClassCodeForProcessingRun ();
+		string[] GetImportsForProcessingRun ();
+		string GetPostInitializationCodeForProcessingRun ();
+		string GetPreInitializationCodeForProcessingRun ();
+		string[] GetReferencesForProcessingRun ();
+		CodeAttributeDeclarationCollection GetTemplateClassCustomAttributes ();  //TODO
+		void Initialize (ITextTemplatingEngineHost host);
+		bool IsDirectiveSupported (string directiveName);
+		void ProcessDirective (string directiveName, IDictionary<string, string> arguments);
+		void SetProcessingRunIsHostSpecific (bool hostSpecific);
+		void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors);
 	}
 }

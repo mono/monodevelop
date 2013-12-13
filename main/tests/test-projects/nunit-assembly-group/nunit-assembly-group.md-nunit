@@ -1,9 +1,0 @@
-<NUnitAssemblyGroupProject name="nunit-assembly-group" fileversion="2.0">
-  <Configurations active="Default">
-    <Configuration name="Default" ctype="NUnitAssemblyGroupProjectConfiguration">
-      <Assemblies>
-        <Assembly Path="/home/lluis/work/mdnou/main/build/bin/UnitTests.dll" />
-      </Assemblies>
-    </Configuration>
-  </Configurations>
-</NUnitAssemblyGroupProject>

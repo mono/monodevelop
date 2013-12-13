@@ -36,15 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
-	class MD1UnknownProjectVersion : Exception
-	{
-		public MD1UnknownProjectVersion (string filename, string unsupportedVersion)
-			: base (GettextCatalog.GetString ("The file '{0}' has an unknown format version (version '{1}')'.", filename, unsupportedVersion))
-		{
-		}
-	}
-
-	internal class MD1FileFormat: IFileFormat
+	class MD1FileFormat: IFileFormat
 	{
 		public bool SupportsMixedFormats {
 			get { return true; }
@@ -52,47 +44,25 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
-			if (obj is Project)
-				return Path.ChangeExtension (fileName, ".mdp");
-			else if (obj is Solution)
-				return Path.ChangeExtension (fileName, ".mds");
-			else if (obj is WorkspaceItem)
+			if (obj is WorkspaceItem && !(obj is Solution))
 				return Path.ChangeExtension (fileName, ".mdw");
-			else
-				return Path.ChangeExtension (fileName, ".mdse");
+			throw new InvalidOperationException ();
 		}
 
 		public bool CanReadFile (FilePath file, Type expectedType)
 		{
 			string ext = Path.GetExtension (file).ToLower ();
-			
-			if (ext == ".mds" && expectedType.IsAssignableFrom (typeof(Solution)))
-				return true;
-			else if (ext == ".mdp" && expectedType.IsAssignableFrom (typeof(Project)))
-				return true;
-			else if (ext == ".mdw" && expectedType.IsAssignableFrom (typeof(WorkspaceItem)))
-				return true;
-			return ext == ".mdse" && expectedType.IsAssignableFrom (typeof(SolutionEntityItem));
+			return ext == ".mdw" && expectedType.IsAssignableFrom (typeof(WorkspaceItem));
 		}
 		
 		public bool CanWriteFile (object obj)
 		{
-			return (obj is SolutionEntityItem) || (obj is WorkspaceItem);
+			return (obj is WorkspaceItem && !(obj is Solution));
 		}
 
 		public List<FilePath> GetItemFiles (object obj)
 		{
-			List<FilePath> list = new List<FilePath> ();
-			if (obj is Solution) {
-				Solution sol = (Solution) obj;
-				list.Add (sol.FileName);
-				foreach (SolutionFolder f in sol.GetAllSolutionItems<SolutionFolder> ()) {
-					string fn = f.ExtendedProperties ["FileName"] as string;
-					if (!string.IsNullOrEmpty (fn))
-						list.Add (fn);
-				}
-			}
-			return list;
+			return new List<FilePath> ();
 		}
 
 		public void WriteFile (FilePath file, object node, IProgressMonitor monitor)
@@ -121,55 +91,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		void WriteFileInternal (FilePath actualFile, FilePath outFile, object node, IProgressMonitor monitor)
 		{
-			if (node is Project) {
-				WriteProject (actualFile, outFile, (Project) node, monitor);
-			}
-			else if (node is Solution) {
-				WriteSolution (actualFile, outFile, (Solution) node, monitor);
-			}
-			else if (node is WorkspaceItem) {
-				WriteWorkspaceItem (actualFile, outFile, (WorkspaceItem) node, monitor);
-			}
-			else {
-				WriteSolutionEntityItem (actualFile, outFile, node, monitor);
-			}
-		}
-
-		void WriteProject (FilePath actualFile, FilePath outFile, Project project, IProgressMonitor monitor)
-		{
-			StreamWriter sw = new StreamWriter (outFile);
-			try {
-				monitor.BeginTask (GettextCatalog.GetString("Saving project: {0}", actualFile), 1);
-				XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
-				ser.SerializationContext.BaseFile = actualFile;
-				ser.SerializationContext.ProgressMonitor = monitor;
-				ser.Serialize (sw, project, typeof(Project));
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not save project: {0}", actualFile), ex);
-				throw;
-			} finally {
-				monitor.EndTask ();
-				sw.Close ();
-			}
-		}
-
-		void WriteSolution (FilePath actualFile, FilePath outFile, Solution solution, IProgressMonitor monitor)
-		{
-			StreamWriter sw = new StreamWriter (outFile);
-			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", actualFile), 1);
-				XmlTextWriter tw = new XmlTextWriter (sw);
-				tw.Formatting = Formatting.Indented;
-				DataSerializer serializer = new DataSerializer (MD1ProjectService.DataContext, actualFile);
-				CombineWriterV2 combineWriter = new CombineWriterV2 (serializer, monitor, typeof(Solution));
-				combineWriter.WriteCombine (tw, solution);
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", actualFile), ex);
-				throw;
-			} finally {
-				monitor.EndTask ();
-				sw.Close ();
-			}
+			WriteWorkspaceItem (actualFile, outFile, (WorkspaceItem) node, monitor);
 		}
 
 		void WriteWorkspaceItem (FilePath actualFile, FilePath outFile, WorkspaceItem item, IProgressMonitor monitor)
@@ -205,65 +127,17 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 		}
 
-		void WriteSolutionEntityItem (FilePath actualFile, FilePath outFile, object node, IProgressMonitor monitor)
-		{
-			StreamWriter sw = new StreamWriter (outFile);
-			try {
-				monitor.BeginTask (string.Format (GettextCatalog.GetString("Saving solution item: {0}"), actualFile), 1);
-				XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
-				ser.SerializationContext.BaseFile = actualFile;
-				ser.SerializationContext.ProgressMonitor = monitor;
-				ser.Serialize (sw, node, typeof(SolutionEntityItem));
-			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not save solution item: {0}"), actualFile), ex);
-			} finally {
-				monitor.EndTask ();
-				sw.Close ();
-			}
-		}
-
 		public object ReadFile (FilePath fileName, Type expectedType, IProgressMonitor monitor)
 		{
+			string ext = Path.GetExtension (fileName).ToLower ();
+			if (ext != ".mdw")
+				throw new ArgumentException ();
+
 			object readObject = null;
-			
+
 			ProjectExtensionUtil.BeginLoadOperation ();
 			try {
-				string ext = Path.GetExtension (fileName).ToLower ();
-				
-				if (ext == ".mdp") {
-					object project = ReadProjectFile (fileName, monitor);
-					if (project is DotNetProject)
-						((DotNetProject)project).SetItemHandler (new MD1DotNetProjectHandler ((DotNetProject) project));
-					readObject = project;
-				}
-				else if (ext == ".mds") {
-					readObject = ReadCombineFile (fileName, monitor);
-				}
-				else if (ext == ".mdw") {
-					readObject = ReadWorkspaceItemFile (fileName, monitor);
-				}
-				else {
-					XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
-					try {
-						monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution item: {0}"), fileName), 1);
-						reader.MoveToContent ();
-						XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
-						ser.SerializationContext.BaseFile = fileName;
-						ser.SerializationContext.ProgressMonitor = monitor;
-						SolutionEntityItem entry = (SolutionEntityItem) ser.Deserialize (reader, typeof(SolutionEntityItem));
-						entry.FileName = fileName;
-						MD1ProjectService.InitializeHandler (entry);
-						readObject = entry;
-					}
-					catch (Exception ex) {
-						monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
-						throw;
-					}
-					finally {
-						monitor.EndTask ();
-						reader.Close ();
-					}
-				}
+				readObject = ReadWorkspaceItemFile (fileName, monitor);
 			} finally {
 				ProjectExtensionUtil.EndLoadOperation ();
 			}
@@ -272,64 +146,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (fo != null)
 				fo.ConvertToFormat (MD1ProjectService.FileFormat, false);
 			return readObject;
-		}
-
-		object ReadCombineFile (FilePath file, IProgressMonitor monitor)
-		{
-			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
-			reader.MoveToContent ();
-			
-			string version = reader.GetAttribute ("version");
-			if (version == null) version = reader.GetAttribute ("fileversion");
-			
-			DataSerializer serializer = new DataSerializer (MD1ProjectService.DataContext, file);
-			ICombineReader combineReader = null;
-			
-			if (version == "2.0" || version == "2.1")
-				combineReader = new CombineReaderV2 (serializer, monitor, typeof(Solution));
-			
-			try {
-				if (combineReader != null)
-					return combineReader.ReadCombine (reader);
-				else
-					throw new MD1UnknownProjectVersion (file, version);
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", file), ex);
-				throw;
-			} finally {
-				reader.Close ();
-			}
-		}
-
-		object ReadProjectFile (FilePath fileName, IProgressMonitor monitor)
-		{
-			XmlTextReader reader = null;
-			try {
-				reader = new XmlTextReader (new StreamReader (fileName));
-				reader.MoveToContent ();
-
-				string version = reader.GetAttribute ("version");
-				if (version == null) version = reader.GetAttribute ("fileversion");
-				
-				DataSerializer serializer = new DataSerializer (MD1ProjectService.DataContext, fileName);
-				IProjectReader projectReader = null;
-				
-				monitor.BeginTask (GettextCatalog.GetString ("Loading project: {0}", fileName), 1);
-				
-				if (version == "2.0" || version == "2.1") {
-					projectReader = new ProjectReaderV2 (serializer);
-					return projectReader.ReadProject (reader);
-				}
-				else
-					throw new MD1UnknownProjectVersion (fileName, version);
-			} catch (Exception ex) {
-				monitor.ReportError (GettextCatalog.GetString ("Could not load project: {0}", fileName), ex);
-				throw;
-			} finally {
-				monitor.EndTask ();
-				if (reader != null)
-					reader.Close ();
-			}
 		}
 
 		object ReadWorkspaceItemFile (FilePath fileName, IProgressMonitor monitor)
@@ -358,9 +174,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 		
 		public void ConvertToFormat (object obj)
 		{
-			SolutionItem item = obj as SolutionItem;
-			if (item != null)
-				MD1ProjectService.InitializeHandler (item);
 		}
 
 		public IEnumerable<string> GetCompatibilityWarnings (object obj)

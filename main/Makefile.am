@@ -110,7 +110,7 @@ apidocs:
 	mdassembler --out docs/sources/monodevelop-extension-guide --addins docs/extension-model.xml
 #	cd docs/apiguide && mdassembler --out monodevelop-api-guide --xhtml toc.xhtml && mv monodevelop-api-guide.zip ../web/sources
 
-MD_LAUNCH=$(MD_LAUNCH_SETUP) UBUNTU_MENUPROXY=0 LIBOVERLAY_SCROLLBAR=0 exec -a "monodevelop" $(RUNTIME)
+MD_LAUNCH=$(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) UBUNTU_MENUPROXY=0 LIBOVERLAY_SCROLLBAR=0 exec -a "monodevelop" $(RUNTIME)
 
 run: run-sgen
 

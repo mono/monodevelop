@@ -92,6 +92,8 @@ namespace Mono.TextEditor
 
 		ShowWhitespaces ShowWhitespaces { get; set; }
 		IncludeWhitespaces IncludeWhitespaces { get; set; }
+
+		bool GenerateFormattingUndoStep { get; set; }
 		ColorScheme GetColorStyle ();
 		
 		event EventHandler Changed;

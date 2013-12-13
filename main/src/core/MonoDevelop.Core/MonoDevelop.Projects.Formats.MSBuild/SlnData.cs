@@ -36,7 +36,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class SlnData
 	{
 		string headerComment = "# MonoDevelop";
-		string versionString;
 		Dictionary<SolutionConfiguration, string> configStrings;
 		List<string> globalExtra; // unused GlobalSections
 		Dictionary<string, List<string>> sectionExtras;
@@ -46,7 +45,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void UpdateVersion (MSBuildFileFormat format)
 		{
-			versionString = format.SlnVersion;
+			VersionString = format.SlnVersion;
 			headerComment = "# " + format.ProductDescription;
 		}
 
@@ -57,10 +56,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		// Eg. 9.00 or 10.00
-		public string VersionString {
-			get { return versionString; }
-			set { versionString = value; }
-		}
+		public string VersionString { get; set; }
+
+		public Version VisualStudioVersion { get; set; }
+
+		public Version MinimumVisualStudioVersion { get; set; }
 
 		public Dictionary<SolutionConfiguration, string> ConfigStrings {
 			get {

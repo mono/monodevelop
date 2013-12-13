@@ -75,6 +75,8 @@ namespace MonoDevelop.VersionControl
 					LoggingService.LogError ("Error while loading icons.", e);
 				}
 
+				IdeApp.Workspace.SolutionLoaded += (sender, e) => SessionSolutionDisabled |= IsSolutionDisabled (e.Solution);
+
 				IdeApp.Workspace.FileAddedToProject += OnFileAdded;
 				//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
 				//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
@@ -544,7 +546,10 @@ namespace MonoDevelop.VersionControl
 						repo.Add (v.LocalPath, false, monitor);
 				}
 			}
-			
+
+			if (entry is SolutionFolder && files.Count == 1)
+				return;
+
 			NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
 		}
 		
@@ -599,8 +604,32 @@ namespace MonoDevelop.VersionControl
 		}
 
 		public static bool IsGloballyDisabled {
+			get { return ConfigurationGlobalDisabled || SessionSolutionDisabled; }
+			set { ConfigurationGlobalDisabled = value; }
+		}
+
+		public static bool IsSolutionDisabled (Solution it)
+		{
+			return it.UserProperties.HasValue ("VersionControlDisabled");
+		}
+
+		public static void SetSolutionDisabled (Solution it, bool value)
+		{
+			if (value)
+				it.UserProperties.SetValue ("VersionControlDisabled", true);
+			else
+				it.UserProperties.RemoveValue ("VersionControlDisabled");
+			SessionSolutionDisabled = value;
+		}
+
+		internal static bool ConfigurationGlobalDisabled {
 			get { return GetConfiguration ().Disabled; }
 			set { GetConfiguration ().Disabled = value; }
+		}
+
+		internal static bool SessionSolutionDisabled {
+			get;
+			private set;
 		}
 		
 		static public IEnumerable<Repository> GetRepositories ()

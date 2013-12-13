@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -87,7 +88,7 @@ namespace MonoDevelop.Projects
 		public void CreateConsoleProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
-			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
+			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
 			sol.Save (Util.GetMonitor ());
 			
 			// msbuild format
@@ -98,31 +99,14 @@ namespace MonoDevelop.Projects
 			// Make sure we compare using the same guid
 			Project p = sol.Items [0] as Project;
 			string guid = p.ItemId;
-			solXml = solXml.Replace (guid, "{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}");
-			projectXml = projectXml.Replace (guid, "{DC577202-654B-4FDB-95C7-8CC5DDF6D32D}");
+			solXml = solXml.Replace (guid, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
+			projectXml = projectXml.Replace (guid, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
 			
 			string solFile = Util.GetSampleProjectPath ("generated-console-project", "TestSolution.sln");
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.csproj");
 			
-			Assert.AreEqual (File.ReadAllText (solFile), solXml);
-			Assert.AreEqual (Util.GetXmlFileInfoset (projectFile), projectXml);
-
-			// MD1 format
-			
-			sol.ConvertToFormat (Util.FileFormatMD1, true);
-			sol.Save (Util.GetMonitor ());
-
-			solXml = Util.GetXmlFileInfoset (sol.FileName);
-			projectXml = Util.GetXmlFileInfoset (((SolutionEntityItem)sol.Items [0]).FileName);
-
-			solFile = Util.GetSampleProjectPath ("generated-console-project", "TestSolution.mds");
-			projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.mdp");
-			
-			Assert.AreEqual (Util.GetXmlFileInfoset (solFile), solXml, "solXml: " + sol.FileName);
-			Assert.AreEqual (Util.GetXmlFileInfoset (projectFile), projectXml, "projectXml: " + ((SolutionEntityItem)sol.Items [0]).FileName);
-			
-//			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08");
-//			sol.Save (Util.GetMonitor ());
+			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (solFile)), solXml);
+			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
 		}
 		
 		[Test]
@@ -389,6 +373,34 @@ namespace MonoDevelop.Projects
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
 			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
+		}
+
+		void LoadVSConsoleProject (string vsVersion)
+		{
+			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
+			var monitor = new NullProgressMonitor ();
+			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+		}
+
+		[Test]
+		public void LoadVS2010ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2010");
+		}
+
+		[Test]
+		public void LoadVS2012ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2012");
+		}
+
+		[Test]
+		public void LoadVS2013ConsoleProject ()
+		{
+			LoadVSConsoleProject ("2013");
 		}
 	}
 }

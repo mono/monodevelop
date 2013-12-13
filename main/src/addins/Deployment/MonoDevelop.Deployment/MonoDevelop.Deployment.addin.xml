@@ -180,8 +180,4 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 <!--		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" /> -->
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
-	</Extension>
 </ExtensionModel>

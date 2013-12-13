@@ -19,8 +19,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating\Mono.TextTemplating.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,8 +31,9 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentation>true</GenerateDocumentation>
     <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating\Mono.TextTemplating.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,12 +54,12 @@
     <Compile Include="Mono.TextTemplating\TemplatingEngine.cs" />
     <Compile Include="Mono.TextTemplating\TemplateSettings.cs" />
     <Compile Include="Mono.TextTemplating\CrossAppDomainAssemblyResolver.cs" />
-    <Compile Include="Microsoft.VisualStudio.TextTemplating\AssemblyCacheMonitor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\EncodingHelper.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\ParameterDirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTemplatingSession.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\Interfaces.cs" />
     <Compile Include="Mono.TextTemplating\RecyclableAppDomain.cs" />
+    <Compile Include="Mono.TextTemplating\FileUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

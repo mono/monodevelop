@@ -43,11 +43,11 @@ namespace Mono.TextTemplating
 		Encoding encoding;
 		
 		//host fields
-		CompilerErrorCollection errors = new CompilerErrorCollection ();
-		List<string> refs = new List<string> ();
-		List<string> imports = new List<string> ();
-		List<string> includePaths = new List<string> ();
-		List<string> referencePaths = new List<string> ();
+		readonly CompilerErrorCollection errors = new CompilerErrorCollection ();
+		readonly List<string> refs = new List<string> ();
+		readonly List<string> imports = new List<string> ();
+		readonly List<string> includePaths = new List<string> ();
+		readonly List<string> referencePaths = new List<string> ();
 		
 		//host properties for consumers to access
 		public CompilerErrorCollection Errors { get { return errors; } }
@@ -56,11 +56,12 @@ namespace Mono.TextTemplating
 		public List<string> IncludePaths { get { return includePaths; } }
 		public List<string> ReferencePaths { get { return referencePaths; } }
 		public string OutputFile { get { return outputFile; } }
+		public bool UseRelativeLinePragmas { get; set; }
 		
 		public TemplateGenerator ()
 		{
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
-			Refs.Add (typeof(System.Uri).Assembly.Location);
+			Refs.Add (typeof(Uri).Assembly.Location);
 			Imports.Add ("System");
 		}
 		
@@ -95,7 +96,7 @@ namespace Mono.TextTemplating
 				content = File.ReadAllText (inputFile);
 			} catch (IOException ex) {
 				errors.Clear ();
-				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
+				AddError ("Could not read input file '" + inputFile + "':\n" + ex);
 				return false;
 			}
 			
@@ -106,7 +107,7 @@ namespace Mono.TextTemplating
 				if (!errors.HasErrors)
 					File.WriteAllText (outputFile, output, encoding);
 			} catch (IOException ex) {
-				AddError ("Could not write output file '" + outputFile + "':\n" + ex.ToString ());
+				AddError ("Could not write output file '" + outputFile + "':\n" + ex);
 			}
 			
 			return !errors.HasErrors;
@@ -117,16 +118,16 @@ namespace Mono.TextTemplating
 			errors.Clear ();
 			encoding = Encoding.UTF8;
 			
-			this.outputFile = outputFileName;
-			this.inputFile = inputFileName;
+			outputFile = outputFileName;
+			inputFile = inputFileName;
 			outputContent = Engine.ProcessTemplate (inputContent, this);
-			outputFileName = this.outputFile;
+			outputFileName = outputFile;
 			
 			return !errors.HasErrors;
 		}
 		
 		public bool PreprocessTemplate (string inputFile, string className, string classNamespace, 
-			string outputFile, System.Text.Encoding encoding, out string language, out string[] references)
+			string outputFile, Encoding encoding, out string language, out string[] references)
 		{
 			language = null;
 			references = null;
@@ -141,7 +142,7 @@ namespace Mono.TextTemplating
 				content = File.ReadAllText (inputFile);
 			} catch (IOException ex) {
 				errors.Clear ();
-				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
+				AddError ("Could not read input file '" + inputFile + "':\n" + ex);
 				return false;
 			}
 			
@@ -152,7 +153,7 @@ namespace Mono.TextTemplating
 				if (!errors.HasErrors)
 					File.WriteAllText (outputFile, output, encoding);
 			} catch (IOException ex) {
-				AddError ("Could not write output file '" + outputFile + "':\n" + ex.ToString ());
+				AddError ("Could not write output file '" + outputFile + "':\n" + ex);
 			}
 			
 			return !errors.HasErrors;
@@ -164,7 +165,7 @@ namespace Mono.TextTemplating
 			errors.Clear ();
 			encoding = Encoding.UTF8;
 			
-			this.inputFile = inputFileName;
+			inputFile = inputFileName;
 			outputContent = Engine.PreprocessTemplate (inputContent, this, className, classNamespace, out language, out references);
 			
 			return !errors.HasErrors;
@@ -172,7 +173,7 @@ namespace Mono.TextTemplating
 		
 		CompilerError AddError (string error)
 		{
-			CompilerError err = new CompilerError ();
+			var err = new CompilerError ();
 			err.ErrorText = error;
 			Errors.Add (err);
 			return err;
@@ -182,6 +183,10 @@ namespace Mono.TextTemplating
 		
 		public virtual object GetHostOption (string optionName)
 		{
+			switch (optionName) {
+			case "UseRelativeLinePragmas":
+				return UseRelativeLinePragmas;
+			}
 			return null;
 		}
 		
@@ -224,7 +229,7 @@ namespace Mono.TextTemplating
 		
 		protected virtual string ResolvePath (string path)
 		{
-			path = System.Environment.ExpandEnvironmentVariables (path);
+			path = Environment.ExpandEnvironmentVariables (path);
 			if (Path.IsPathRooted (path))
 				return path;
 			var dir = Path.GetDirectoryName (inputFile);
@@ -236,8 +241,8 @@ namespace Mono.TextTemplating
 		
 		#endregion
 		
-		Dictionary<ParameterKey,string> parameters = new Dictionary<ParameterKey, string> ();
-		Dictionary<string,KeyValuePair<string,string>> directiveProcessors = new Dictionary<string, KeyValuePair<string,string>> ();
+		readonly Dictionary<ParameterKey,string> parameters = new Dictionary<ParameterKey, string> ();
+		readonly Dictionary<string,KeyValuePair<string,string>> directiveProcessors = new Dictionary<string, KeyValuePair<string,string>> ();
 		
 		public void AddDirectiveProcessor (string name, string klass, string assembly)
 		{
@@ -271,7 +276,7 @@ namespace Mono.TextTemplating
 				content = File.ReadAllText (location);
 				return true;
 			} catch (IOException ex) {
-				AddError ("Could not read included file '" + location +  "':\n" + ex.ToString ());
+				AddError ("Could not read included file '" + location + "':\n" + ex);
 			}
 			return false;
 		}
@@ -318,7 +323,7 @@ namespace Mono.TextTemplating
 			}
 		}
 		
-		void ITextTemplatingEngineHost.SetOutputEncoding (System.Text.Encoding encoding, bool fromOutputDirective)
+		void ITextTemplatingEngineHost.SetOutputEncoding (Encoding encoding, bool fromOutputDirective)
 		{
 			this.encoding = encoding;
 		}
@@ -352,11 +357,11 @@ namespace Mono.TextTemplating
 			}
 			
 			string processorName, directiveName, parameterName;
-			int hashCode;
+			readonly int hashCode;
 			
 			public override bool Equals (object obj)
 			{
-				return obj != null && obj is ParameterKey && Equals ((ParameterKey)obj);
+				return obj is ParameterKey && Equals ((ParameterKey)obj);
 			}
 			
 			public bool Equals (ParameterKey other)

@@ -121,7 +121,6 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		static ChangeLogPolicy GetPolicy (SolutionItem item)
 		{
-			OldChangeLogData.Migrate (item);
 			return item.Policies.Get<ChangeLogPolicy> ();
 		}
 	}

@@ -27,11 +27,14 @@
 using System;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
+using System.CodeDom;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
-	public abstract class DirectiveProcessor
+	public abstract class DirectiveProcessor : IDirectiveProcessor
 	{
+		CompilerErrorCollection errors;
+
 		protected DirectiveProcessor ()
 		{
 		}
@@ -46,7 +49,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 			if (languageProvider == null)
 				throw new ArgumentNullException ("languageProvider");
-			this.Errors = errors;
+			this.errors = errors;
 		}
 		
 		public abstract void FinishProcessingRun ();
@@ -57,7 +60,20 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public abstract string[] GetReferencesForProcessingRun ();
 		public abstract bool IsDirectiveSupported (string directiveName);
 		public abstract void ProcessDirective (string directiveName, IDictionary<string, string> arguments);
-		
-		protected CompilerErrorCollection Errors { get; private set; }
+
+		public virtual CodeAttributeDeclarationCollection GetTemplateClassCustomAttributes ()
+		{
+			return null;
+		}
+
+		CompilerErrorCollection IDirectiveProcessor.Errors { get { return errors; } }
+
+		void IDirectiveProcessor.SetProcessingRunIsHostSpecific (bool hostSpecific)
+		{
+		}
+
+		bool IDirectiveProcessor.RequiresProcessingRunIsHostSpecific {
+			get { return false; }
+		}
 	}
 }

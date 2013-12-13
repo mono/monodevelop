@@ -12,6 +12,7 @@ using size_t = System.Int32;
 using off_t = System.Int64;
 using MonoDevelop.Projects.Text;
 using System.Timers;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -1136,11 +1137,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return IntPtr.Zero;
 		}
 
+		string oldStacktrace = String.Empty;
 		IntPtr TryStartOperation (IProgressMonitor monitor)
 		{
 			lock (sync) {
-				if (inProgress)
+				if (inProgress) {
+					LoggingService.LogError ("Old: {0}", oldStacktrace);
+					LoggingService.LogError ("Current: {1}", Environment.StackTrace);
 					throw new SubversionException ("Another Subversion operation is already in progress.");
+				}
+				oldStacktrace = Environment.StackTrace;
 				inProgress = true;
 				updatemonitor = monitor;
 				progressData = new ProgressData ();
@@ -1242,7 +1248,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			public long Remainder;
 			public long SavedProgress;
 			public long KBytes;
-			public Timer LogTimer = new Timer ();
+			public System.Timers.Timer LogTimer = new System.Timers.Timer ();
 			public int Seconds;
 		}
 

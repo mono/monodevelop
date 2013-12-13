@@ -147,9 +147,6 @@
     <EmbeddedResource Include="Gui\nunit-overlay-32.png">
       <LogicalName>nunit-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -175,7 +172,6 @@
     <Compile Include="Gui\NUnitAssemblyGroupNodeBuilder.cs" />
     <Compile Include="Gui\NUnitAssemblyGroupConfigurationNodeBuilder.cs" />
     <Compile Include="Gui\TestAssemblyNodeBuilder.cs" />
-    <Compile Include="Project\NUnitAssemblyGroupFileFormat.cs" />
     <Compile Include="Project\NUnitAssemblyGroupProject.cs" />
     <Compile Include="Project\TestAssembly.cs" />
     <Compile Include="Project\TestAssemblyCollection.cs" />

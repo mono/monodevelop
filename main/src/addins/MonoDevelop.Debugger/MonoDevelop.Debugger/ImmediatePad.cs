@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger
 			if (!DebuggingService.IsDebugging) {
 				view.WriteOutput (GettextCatalog.GetString ("Debug session not started."));
 				FinishPrinting ();
-			} else if (DebuggingService.IsRunning) {
+			} else if (DebuggingService.IsRunning || DebuggingService.CurrentFrame == null) {
 				view.WriteOutput (GettextCatalog.GetString ("The expression can't be evaluated while the application is running."));
 				FinishPrinting ();
 			} else {

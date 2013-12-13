@@ -52,11 +52,6 @@ namespace MonoDevelop.Deployment
 		
 		List<SolutionItem> childCombineEntries;
 		SolutionItem rootSolutionItem;
-
-#region MD 1.0 compatibility fields
-		string[] md1ChildEntries;
-		string md1RootEntry;
-#endregion
 		
 		public PackageBuilder ()
 		{
@@ -126,9 +121,7 @@ namespace MonoDevelop.Deployment
 		{
 			childEntries = new List<SolutionItemReference> (other.childEntries);
 			rootEntry = other.rootEntry;
-			md1ChildEntries = other.md1ChildEntries;
-			md1RootEntry = other.md1RootEntry;
-			
+
 			if (other.childCombineEntries != null)
 				childCombineEntries = new List<SolutionItem> (other.childCombineEntries);
 			else
@@ -190,12 +183,6 @@ namespace MonoDevelop.Deployment
 				childEntries.Add (e);
 		}
 		
-		internal void SetSolutionItemMd1 (string siRoot, string[] children)
-		{
-			md1RootEntry = siRoot;
-			md1ChildEntries = children;
-		}
-		
 		void UpdateEntryNames ()
 		{
 			this.rootEntry = new SolutionItemReference (rootSolutionItem);
@@ -206,13 +193,8 @@ namespace MonoDevelop.Deployment
 		
 		public SolutionItem RootSolutionItem {
 			get {
-				if (rootSolutionItem == null && (rootEntry != null || md1RootEntry != null)) {
-					if (md1RootEntry != null) {
-						rootSolutionItem = GetEntryMD1 (md1RootEntry);
-						md1RootEntry = null;
-					} else
-						rootSolutionItem = GetEntry (rootEntry);
-				}
+				if (rootSolutionItem == null && rootEntry != null)
+					rootSolutionItem = GetEntry (rootEntry);
 				return rootSolutionItem; 
 			}
 		}
@@ -260,16 +242,6 @@ namespace MonoDevelop.Deployment
 				return childCombineEntries.ToArray ();
 			
 			childCombineEntries = new List<SolutionItem> ();
-			
-			if (md1ChildEntries != null) {
-				foreach (string it in md1ChildEntries) {
-					SolutionItem re = GetEntryMD1 (it);
-					if (re != null && !(re is UnknownSolutionItem))
-						childCombineEntries.Add (re);
-				}
-				md1ChildEntries = null;
-				return childCombineEntries.ToArray ();
-			}
 			
 			foreach (SolutionItemReference en in childEntries) {
 				SolutionItem re = GetEntry (en);
@@ -345,42 +317,6 @@ namespace MonoDevelop.Deployment
 					return it.ParentSolution.RootFolder;
 			}
 			return common;
-		}
-		
-		SolutionItem GetEntryMD1 (string fileName)
-		{
-			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
-				SolutionItem fi = FindEntryMD1 (it, FileService.GetFullPath (fileName));
-				if (fi != null)
-					return fi;
-			}
-			return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), fileName);
-		}
-		
-		SolutionItem FindEntryMD1 (object item, string fileName)
-		{
-			if (item is SolutionItem) {
-				string file = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.GetItemFileName ((SolutionItem)item);
-				if (file != null && FileService.GetFullPath (file) == fileName)
-					return (SolutionItem) item;
-			}
-			
-			if (item is Solution) {
-				return FindEntryMD1 (((Solution)item).RootFolder, fileName);
-			}
-			else if (item is SolutionFolder) {
-				foreach (SolutionItem ce in ((SolutionFolder)item).Items) {
-					SolutionItem fi = FindEntryMD1 (ce, fileName);
-					if (fi != null) return fi;
-				}
-			}
-			else if (item is Workspace) {
-				foreach (WorkspaceItem wi in ((Workspace)item).Items) {
-					SolutionItem fi = FindEntryMD1 (wi, fileName);
-					if (fi != null) return fi;
-				}
-			}
-			return null;
 		}
 	}
 }

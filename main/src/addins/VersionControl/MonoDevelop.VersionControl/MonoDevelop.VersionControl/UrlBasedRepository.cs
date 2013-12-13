@@ -9,11 +9,11 @@ namespace MonoDevelop.VersionControl
 		string url;
 		Uri uri;
 		
-		public UrlBasedRepository ()
+		protected UrlBasedRepository ()
 		{
 		}
 		
-		public UrlBasedRepository (VersionControlSystem vcs): base (vcs)
+		protected UrlBasedRepository (VersionControlSystem vcs): base (vcs)
 		{
 		}
 		

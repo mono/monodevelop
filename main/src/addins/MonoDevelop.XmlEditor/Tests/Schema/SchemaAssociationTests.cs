@@ -25,6 +25,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		}
 				
 		[Test]
+		[Platform (Exclude = "Win")]
 		public void ToXml()
 		{
 			XmlFileAssociation schema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
@@ -35,6 +36,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		}
 		
 		[Test]
+		[Platform (Exclude = "Win")]
 		public void FromXml()
 		{
 			XmlFileAssociation expectedSchema = new XmlFileAssociation (".xml", "http://mono-project.com", null);

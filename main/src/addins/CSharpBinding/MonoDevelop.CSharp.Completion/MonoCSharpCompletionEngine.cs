@@ -37,7 +37,6 @@ namespace MonoDevelop.CSharp.Completion
 	class MonoCSharpCompletionEngine : CSharpCompletionEngine
 	{
 		readonly CSharpCompletionTextEditorExtension ext;
-		readonly MDRefactoringContext mdRefactoringCtx;
 
 		public CSharpCompletionTextEditorExtension Ext {
 			get {
@@ -47,15 +46,13 @@ namespace MonoDevelop.CSharp.Completion
 
 		public MDRefactoringContext MDRefactoringCtx {
 			get {
-				return mdRefactoringCtx;
+				return ext.MDRefactoringCtx;
 			}
 		}
 
 		public MonoCSharpCompletionEngine (CSharpCompletionTextEditorExtension ext, ICSharpCode.NRefactory.Editor.IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, ICSharpCode.NRefactory.TypeSystem.IProjectContent content, ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpTypeResolveContext ctx) : base (document, completionContextProvider, factory, content, ctx)
 		{
 			this.ext = ext;
-			this.mdRefactoringCtx = MDRefactoringContext.Create (ext.Document, ext.Document.Editor.Caret.Location);
-
 		}
 
 		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)

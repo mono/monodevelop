@@ -158,7 +158,6 @@
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditor.cs" />
-    <Compile Include="MonoDevelop.Deployment\MD1Serializer.cs" />
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +178,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\packaging-16.png">
       <LogicalName>packaging-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="md1format.xml">
-      <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

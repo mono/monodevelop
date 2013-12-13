@@ -316,6 +316,8 @@ namespace MonoDevelop.AspNet
 			if (database == null)
 				yield break;
 			var baseTypeDefinition = baseType.GetDefinition ();
+			if (baseTypeDefinition == null)
+				yield break;
 			//return classes if they derive from system.web.ui.control
 			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
 				if (!type.IsAbstract && type.IsPublic)

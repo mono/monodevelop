@@ -162,7 +162,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
-			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder">
+			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide = "true">
 				<CommandItem id = "MonoDevelop.AspNet.AspNetCommands.AddAspNetDirectory" />
 			</ItemSet>
 		</Condition>
@@ -247,10 +247,6 @@
 		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Frameset//EN&quot;
 &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&quot;>"
 		         xsdFile = "xhtml1-frameset.xsd" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">

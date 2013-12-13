@@ -1,10 +1,11 @@
 // 
 // ExceptionCaughtDialog.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,191 +26,470 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
+
 using Gtk;
-using System.Threading;
+
+using Mono.Debugging.Client;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Debugger
 {
-	public partial class ExceptionCaughtWidget : Gtk.Bin
+	class ExceptionCaughtDialog : Dialog
 	{
-		readonly Gtk.TreeStore stackStore;
+		static readonly Gdk.Pixbuf WarningIconPixbuf = Gdk.Pixbuf.LoadFromResource ("exception-icon.png");
+		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
+		protected TreeView StackTraceTreeView { get; private set; }
+		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
+		protected Label ExceptionMessageLabel { get; private set; }
+		protected Label ExceptionTypeLabel { get; private set; }
+		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
+		ExceptionInfo selected;
 		bool destroyed;
-		
-		public ExceptionCaughtWidget (ExceptionInfo exception)
-		{
-			this.Build ();
 
-			vboxExceptionInfo.Remove (labelMessage);
-			var frame = new InfoFrame (labelMessage);
-			frame.Show ();
-			vboxExceptionInfo.PackStart (frame, false, true, 0);
-
-			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
-			treeStack.Model = stackStore;
-			var crt = new CellRendererText ();
-			crt.Ellipsize = Pango.EllipsizeMode.End;
-			crt.WrapWidth = -1;
-			treeStack.AppendColumn ("", crt, "markup", 0);
-			treeStack.ShowExpanders = false;
-			treeStack.RulesHint = true;
-			
-			valueView.AllowExpanding = true;
-			valueView.Frame = DebuggingService.CurrentFrame;
-			this.exception = exception;
-			
-			exception.Changed += HandleExceptionChanged;
-			treeStack.SizeAllocated += (object o, SizeAllocatedArgs args) => crt.WrapWidth = args.Allocation.Width;
-			
-			Fill ();
-			treeStack.RowActivated += HandleRowActivated;
+		protected enum ModelColumn {
+			StackFrame,
+			Markup,
+			IsUserCode
 		}
 
-		void HandleRowActivated (object o, RowActivatedArgs args)
+		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 		{
-			TreeIter iter;
+			selected = exception = ex;
+			message = msg;
 
-			if (!stackStore.GetIter (out iter, args.Path))
+			Build ();
+			UpdateDisplay ();
+
+			exception.Changed += ExceptionChanged;
+		}
+
+		Widget CreateExceptionInfoHeader ()
+		{
+			ExceptionMessageLabel = new Label () { UseMarkup = true, Selectable = true, Wrap = true, WidthRequest = 500, Xalign = 0.0f, Yalign = 0.0f };
+			ExceptionTypeLabel = new Label () { UseMarkup = true, Xalign = 0.0f };
+
+			ExceptionMessageLabel.Show ();
+			ExceptionTypeLabel.Show ();
+
+			var alignment = new Alignment (0.0f, 0.0f, 0.0f, 0.0f);
+			alignment.Child = ExceptionMessageLabel;
+			alignment.BorderWidth = 6;
+			alignment.Show ();
+
+			var frame = new InfoFrame (alignment);
+			frame.Show ();
+
+			var vbox = new VBox (false, 12);
+			vbox.PackStart (ExceptionTypeLabel, false, true, 0);
+			vbox.PackStart (frame, true, true, 0);
+			vbox.Show ();
+
+			return vbox;
+		}
+
+		Widget CreateExceptionHeader ()
+		{
+			var icon = new Image (WarningIconPixbuf);
+			icon.Show ();
+
+			var hbox = new HBox (false, 12) { BorderWidth = 12 };
+			hbox.PackStart (icon, false, true, 0);
+			hbox.PackStart (CreateExceptionInfoHeader (), true, true, 0);
+			hbox.Show ();
+
+			return hbox;
+		}
+
+		Widget CreateExceptionValueTreeView ()
+		{
+			ExceptionValueTreeView = new ObjectValueTreeView ();
+			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, new Gdk.Color (223, 228, 235));
+			ExceptionValueTreeView.AllowPopupMenu = false;
+			ExceptionValueTreeView.AllowExpanding = true;
+			ExceptionValueTreeView.AllowPinning = false;
+			ExceptionValueTreeView.AllowEditing = false;
+			ExceptionValueTreeView.AllowAdding = false;
+			ExceptionValueTreeView.RulesHint = false;
+
+			ExceptionValueTreeView.Selection.Changed += ExceptionValueSelectionChanged;
+			ExceptionValueTreeView.Show ();
+
+			var scrolled = new ScrolledWindow () { HeightRequest = 180 };
+
+			scrolled.ShadowType = ShadowType.None;
+			scrolled.Add (ExceptionValueTreeView);
+			scrolled.Show ();
+
+			return scrolled;
+		}
+
+		static void LineNumberLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
+		{
+			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
+			var renderer = (ExceptionCaughtLineNumberRenderer) cr;
+
+			if (!(renderer.CanRender = frame != null))
 				return;
 
-			string file = (string) stackStore.GetValue (iter, 1);
-			int line = (int) stackStore.GetValue (iter, 2);
-			if (!string.IsNullOrEmpty (file))
-				IdeApp.Workbench.OpenDocument (file, line, 0);
+			renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
+			renderer.LineNumber = !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
 		}
 
-		void HandleExceptionChanged (object sender, EventArgs e)
+		Widget CreateStackTraceTreeView ()
 		{
-			Gtk.Application.Invoke (delegate {
-				Fill ();
-			});
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
+			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.HeadersVisible = false;
+			StackTraceTreeView.ShowExpanders = false;
+			StackTraceTreeView.RulesHint = true;
+			StackTraceTreeView.Show ();
+
+			var ccr = new ExceptionCaughtLineNumberRenderer ();
+
+			var crt = new CellRendererText ();
+			crt.Ellipsize = Pango.EllipsizeMode.None;
+			crt.WrapMode = Pango.WrapMode.Word;
+			//crt.WidthChars = -1;
+
+			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
+			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
+
+			StackTraceTreeView.SizeAllocated += (o, args) => crt.WrapWidth = args.Allocation.Width;
+			StackTraceTreeView.RowActivated += StackFrameActivated;
+
+			var scrolled = new ScrolledWindow () { HeightRequest = 180 };
+			scrolled.ShadowType = ShadowType.None;
+			scrolled.Add (StackTraceTreeView);
+			scrolled.Show ();
+
+			return scrolled;
 		}
-		
-		void Fill ()
+
+		Widget CreateButtonBox ()
+		{
+			var buttons = new HButtonBox () { Layout = ButtonBoxStyle.End, Spacing = 12 };
+
+			var copy = new Button (Stock.Copy);
+			copy.Clicked += CopyClicked;
+			copy.Show ();
+
+			buttons.PackStart (copy, false, true, 0);
+
+			var close = new Button (Stock.Close);
+			close.Activated += CloseClicked;
+			close.Clicked += CloseClicked;
+			close.Show ();
+
+			buttons.PackStart (close, false, true, 0);
+
+			buttons.Show ();
+
+			return buttons;
+		}
+
+		Widget CreateSeparator ()
+		{
+			var separator = new HSeparator ();
+			separator.Show ();
+			return separator;
+		}
+
+		void Build ()
+		{
+			Title = GettextCatalog.GetString ("Exception Caught");
+			DefaultHeight = 500;
+			DefaultWidth = 600;
+			VBox.Spacing = 0;
+
+			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
+
+			var paned = new VPaned ();
+			paned.Add1 (CreateExceptionValueTreeView ());
+			paned.Add2 (CreateStackTraceTreeView ());
+			paned.Show ();
+
+			var vbox = new VBox (false, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
+			vbox.PackStart (paned, true, true, 0);
+			vbox.PackStart (CreateSeparator (), false, true, 0);
+			vbox.Show ();
+
+			VBox.PackStart (vbox, true, true, 0);
+
+			var actionArea = new HBox (false, 12) { BorderWidth = 6 };
+
+			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
+			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
+			OnlyShowMyCodeCheckbox.Show ();
+
+			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = OnlyShowMyCodeCheckbox };
+			alignment.Show ();
+
+			actionArea.PackStart (alignment, true, true, 0);
+			actionArea.PackStart (CreateButtonBox (), false, true, 0);
+			actionArea.Show ();
+
+			VBox.PackStart (actionArea, false, true, 0);
+			ActionArea.Hide ();
+		}
+
+		bool TryGetExceptionInfo (TreePath path, out ExceptionInfo ex)
+		{
+			var model = (TreeStore) ExceptionValueTreeView.Model;
+			TreeIter iter, parent;
+
+			ex = exception;
+
+			if (!model.GetIter (out iter, path))
+				return false;
+
+			var value = (ObjectValue) model.GetValue (iter, ObjectValueTreeView.ObjectColumn);
+			if (value.Name != "InnerException")
+				return false;
+
+			int depth = 0;
+			while (model.IterParent (out parent, iter)) {
+				iter = parent;
+				depth++;
+			}
+
+			while (ex != null) {
+				if (depth == 0)
+					return true;
+
+				ex = ex.InnerException;
+				depth--;
+			}
+
+			return false;
+		}
+
+		void ExceptionValueSelectionChanged (object sender, EventArgs e)
+		{
+			var selectedRows = ExceptionValueTreeView.Selection.GetSelectedRows ();
+			ExceptionInfo ex;
+
+			if (TryGetExceptionInfo (selectedRows[0], out ex)) {
+				ShowStackTrace (ex);
+				selected = ex;
+			} else if (selected != exception) {
+				ShowStackTrace (exception);
+				selected = exception;
+			}
+		}
+
+		void StackFrameActivated (object o, RowActivatedArgs args)
+		{
+			var model = StackTraceTreeView.Model;
+			TreeIter iter;
+
+			if (!model.GetIter (out iter, args.Path))
+				return;
+
+			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
+
+			if (frame != null && !string.IsNullOrEmpty (frame.File))
+				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
+		}
+
+		static bool IsUserCode (ExceptionStackFrame frame)
+		{
+			if (frame == null || string.IsNullOrEmpty (frame.File))
+				return false;
+
+			return IdeApp.Workspace.GetProjectContainingFile (frame.File) != null;
+		}
+
+		void ShowStackTrace (ExceptionInfo ex)
+		{
+			var model = (ListStore) StackTraceTreeView.Model;
+
+			model.Clear ();
+
+			foreach (var frame in ex.StackTrace) {
+				bool isUserCode = IsUserCode (frame);
+
+				if (OnlyShowMyCodeCheckbox.Active && !isUserCode)
+					continue;
+
+				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
+
+				if (!string.IsNullOrEmpty (frame.File)) {
+					markup += "\n<span size='smaller' foreground='#777777'>" + GLib.Markup.EscapeText (frame.File);
+					if (frame.Line > 0) {
+						markup += ":" + frame.Line;
+						if (frame.Column > 0)
+							markup += "," + frame.Column;
+					}
+					markup += "</span>";
+				}
+
+				model.AppendValues (frame, markup, isUserCode);
+			}
+
+			if (ex.StackIsEvaluating)
+				model.AppendValues (null, GettextCatalog.GetString ("Loading..."), false);
+		}
+
+		void UpdateDisplay ()
 		{
 			if (destroyed)
 				return;
-			
-			stackStore.Clear ();
-			valueView.ClearValues ();
 
-			labelType.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
-			labelMessage.Text = string.IsNullOrEmpty (exception.Message) ?
-			                    string.Empty : 
-			                    exception.Message;
-			
-			ShowStackTrace (exception, false);
-			
+			ExceptionValueTreeView.ClearValues ();
+
+			ExceptionTypeLabel.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
+			ExceptionMessageLabel.Markup = "<small>" + (exception.Message ?? string.Empty) + "</small>";
+
 			if (!exception.IsEvaluating && exception.Instance != null) {
-				valueView.AddValue (exception.Instance);
-				valueView.ExpandRow (new TreePath ("0"), false);
+				ExceptionValueTreeView.AddValue (exception.Instance);
+				ExceptionValueTreeView.ExpandRow (new TreePath ("0"), false);
 			}
 
-			if (exception.StackIsEvaluating) {
-				stackStore.AppendValues (GettextCatalog.GetString ("Loading..."), "", 0, 0);
+			ShowStackTrace (exception);
+		}
+
+		void ExceptionChanged (object sender, EventArgs e)
+		{
+			Application.Invoke (delegate {
+				UpdateDisplay ();
+			});
+		}
+
+		void OnlyShowMyCodeToggled (object sender, EventArgs e)
+		{
+			var model = (ListStore) StackTraceTreeView.Model;
+			TreeIter iter;
+
+			if (!model.GetIterFirst (out iter))
+				return;
+
+			if (OnlyShowMyCodeCheckbox.Active) {
+				bool next;
+
+				do {
+					bool isUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
+
+					if (isUserCode)
+						next = model.IterNext (ref iter);
+					else
+						next = model.Remove (ref iter);
+				} while (next);
+			} else {
+				ShowStackTrace (selected);
 			}
 		}
-		
-		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)
+
+		void CloseClicked (object sender, EventArgs e)
 		{
-			TreeIter iter = TreeIter.Zero;
-
-			if (showExceptionNode) {
-				treeStack.ShowExpanders = true;
-				string tn = exc.Type + ": " + exc.Message;
-				iter = stackStore.AppendValues (tn, null, 0, 0);
-			}
-
-			foreach (ExceptionStackFrame frame in exc.StackTrace) {
-				string text = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
-				if (!string.IsNullOrEmpty (frame.File)) {
-					text += "\n<small>" + GLib.Markup.EscapeText (frame.File);
-					if (frame.Line > 0) {
-						text += ":" + frame.Line;
-						if (frame.Column > 0)
-							text += "," + frame.Column;
-					}
-					text += "</small>";
-				}
-
-				if (!iter.Equals (TreeIter.Zero))
-					stackStore.AppendValues (iter, text, frame.File, frame.Line, frame.Column);
-				else
-					stackStore.AppendValues (text, frame.File, frame.Line, frame.Column);
-			}
-			
-			ExceptionInfo inner = exc.InnerException;
-			if (inner != null)
-				ShowStackTrace (inner, true);
+			message.Close ();
 		}
-		
-		protected override void OnDestroyed ()
+
+		void CopyClicked (object sender, EventArgs e)
 		{
-			destroyed = true;
-			exception.Changed -= HandleExceptionChanged;
-			base.OnDestroyed ();
-		}
-	}
+			var text = exception.ToString ();
 
-	class ExceptionCaughtDialog: Gtk.Dialog
-	{
-		readonly ExceptionCaughtWidget widget;
-		readonly ExceptionCaughtMessage msg;
-		readonly ExceptionInfo ex;
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text;
 
-		public ExceptionCaughtDialog (ExceptionInfo val, ExceptionCaughtMessage msg)
-		{
-			Title = GettextCatalog.GetString ("Exception Caught");
-			ex = val;
-			widget = new ExceptionCaughtWidget (val);
-			this.msg = msg;
-
-			VBox box = new VBox ();
-			box.Spacing = 6;
-			box.PackStart (widget, true, true, 0);
-			HButtonBox buttonBox = new HButtonBox ();
-			buttonBox.Layout = ButtonBoxStyle.End;
-			buttonBox.BorderWidth = 6;
-			buttonBox.Spacing = 12;
-
-			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy"));
-			buttonBox.PackStart (copy, false, false, 0);
-			copy.Clicked += HandleCopyClicked;
-
-			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
-			buttonBox.PackStart (close, false, false, 0);
-			close.Clicked += (sender, e) => msg.Close ();
-			close.Activated += (sender, e) => msg.Close ();
-
-			box.PackStart (buttonBox, false, false, 0);
-			VBox.Add (box);
-
-			DefaultWidth = 500;
-			DefaultHeight = 350;
-
-			box.ShowAll ();
-			ActionArea.Hide ();
+			var primary = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			primary.Text = text;
 		}
 
 		protected override bool OnDeleteEvent (Gdk.Event evnt)
 		{
-			msg.Close ();
+			message.Close ();
 			return true;
 		}
 
-		void HandleCopyClicked (object sender, EventArgs e)
+		protected override void OnDestroyed ()
 		{
-			var text = ex.ToString ();
-			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = text;
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = text;
+			destroyed = true;
+			exception.Changed -= ExceptionChanged;
+			base.OnDestroyed ();
+		}
+	}
+
+	class ExceptionCaughtLineNumberRenderer : CellRenderer
+	{
+		static readonly Pango.FontDescription DefaultFont = Pango.FontDescription.FromString ("Menlo 9");
+		const int RoundedRectangleRadius = 2;
+		const int RoundedRectangleHeight = 14;
+		const int RoundedRectangleWidth = 28;
+		const int Padding = 6;
+
+		public bool CanRender;
+		public bool IsUserCode;
+		public int LineNumber;
+
+		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+		{
+			height = RoundedRectangleHeight + Padding + Padding;
+			width = RoundedRectangleWidth + Padding + Padding;
+			x_offset = Padding;
+			y_offset = Padding;
+		}
+
+		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+		{
+			if (!CanRender)
+				return;
+
+			using (var cr = Gdk.CairoHelper.Create (window)) {
+				#if CENTER_ROUNDED_RECTANGLE
+				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
+				#else
+				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), cell_area.Y + 4);
+				#endif
+
+				cr.Antialias = Cairo.Antialias.Subpixel;
+
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.Clip ();
+
+				if (IsUserCode)
+					cr.SetSourceRGBA (0.90, 0.60, 0.87, 1.0); // 230, 152, 223
+				else
+					cr.SetSourceRGBA (0.77, 0.77, 0.77, 1.0); // 197, 197, 197
+
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.Fill ();
+
+				cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.11);
+				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+				cr.LineWidth = 2;
+				cr.Stroke ();
+
+				using (var layout = PangoUtil.CreateLayout (widget, LineNumber != -1 ? LineNumber.ToString () : "???")) {
+					layout.Alignment = Pango.Alignment.Left;
+					layout.FontDescription = DefaultFont;
+
+					int width, height;
+					layout.GetPixelSize (out width, out height);
+
+					double y_offset = (RoundedRectangleHeight - height) / 2.0;
+					double x_offset = (RoundedRectangleWidth - width) / 2.0;
+
+					// render the text shadow
+					cr.Save ();
+					cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.34);
+					cr.Translate (x_offset, y_offset + 1);
+					cr.ShowLayout (layout);
+					cr.Restore ();
+
+					cr.SetSourceRGBA (1.0, 1.0, 1.0, 1.0);
+					cr.Translate (x_offset, y_offset);
+					cr.ShowLayout (layout);
+				}
+			}
 		}
 	}
 
