@@ -410,6 +410,7 @@ namespace MonoDevelop.Projects
 			LoadBuildVSConsoleProject ("2012");
 		}
 
+		[Ignore ("ToolsVersion 12.0 does not yet work w/ xbuild")]
 		[Test]
 		public void LoadVS2013ConsoleProject ()
 		{
