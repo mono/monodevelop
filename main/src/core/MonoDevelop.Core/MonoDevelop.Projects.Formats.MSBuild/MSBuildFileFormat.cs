@@ -344,7 +344,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public override string ToolsVersion {
-			get { return "12.0"; }
+			get { return "4.0"; }
 		}
 
 		public override string SlnVersion {
