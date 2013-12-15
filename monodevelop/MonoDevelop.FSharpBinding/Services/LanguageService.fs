@@ -32,6 +32,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 open Microsoft.FSharp.Compiler.Ast  
 open Microsoft.FSharp.Compiler.Range
+open FSharp.Parser
 // --------------------------------------------------------------------------------------
 
 /// Contains settings of the F# language service
@@ -338,10 +339,15 @@ module internal TipFormatter =
 /// of the current cursor location etc.)
 module Parsing = 
   open FSharp.Parser
-  
+
+  let charIsValidSymbol ch =
+      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '?'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
+  let stringIsValidSymbol (str:string) = str |> Seq.forall charIsValidSymbol
+  let parseSymbol = sat charIsValidSymbol
+
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
   let parseIdent =  
-    many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
+    many ((sat PrettyNaming.IsIdentifierPartCharacter) <|> parseSymbol) |> map String.ofSeq
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
   /// Parse F# short-identifier and reverse the resulting string
@@ -350,6 +356,11 @@ module Parsing =
         let! x = optional (string "``")
         let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
         let! _ = optional (string "``") 
+        return res }
+
+  let parseBackSymbol =  
+    parser { 
+        let! res = many parseSymbol |> map String.ofReversedSeq 
         return res }
 
   /// Parse remainder of a long identifier before '.' (e.g. "Name.space.")
@@ -376,7 +387,7 @@ module Parsing =
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {
     return! parser {
-      let! ident = parseBackIdent
+      let! ident = parseBackIdent <|> parseBackSymbol
       let! rest = parseBackLongIdentRest
       return ident::rest |> List.rev }
     return [] }
@@ -406,7 +417,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     let preCrack (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
-        let line, col = max (loc.Line - 1) 0, loc.Column
+        let line, col = max (loc.Line - 1) 0, loc.Column-1
         let currentLine = doc.Lines |> Seq.nth line
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
         (loc, line, col, currentLine, lineStr)
@@ -440,11 +451,12 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
         Debug.WriteLine(sprintf "Result: Crack symbol text at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
                               line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
-
-        let token = Parser.tagOfToken(Parser.token.IDENT("")) 
+        
         match identIsland with
         | [] | [ "" ] -> None
-        | _ -> Some (line,col,lineStr,identIsland,currentIdent,token)
+        //if the ident is a symbol, spool along to the end of the current definition
+        | _ -> let col = if Parsing.stringIsValidSymbol currentIdent then col + nextIdent.Length else col
+               Some (line,col,lineStr,identIsland,currentIdent,token)
         
     /// Crack the info prior to a '(' or ',' once the method tip trigger '(' shows
     let crackSymbolTextAtGetMethodsTrigger (offset:int, doc:Mono.TextEditor.TextDocument) = 
