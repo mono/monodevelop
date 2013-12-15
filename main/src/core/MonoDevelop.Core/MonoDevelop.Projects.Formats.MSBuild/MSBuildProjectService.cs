@@ -479,15 +479,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
-				//HACK: xbuild does not support toolsversion 12
-				if (toolsVersion == "12.0" && runtime is MonoTargetRuntime)
-					toolsVersion = "4.0";
-
 				string binDir = runtime.GetMSBuildBinPath (toolsVersion);
 				if (binDir == null) {
-					throw new InvalidOperationException (string.Format (
+					string error = null;
+					if (runtime is MsNetTargetRuntime) {
+						if (toolsVersion == "12.0") {
+							error = "MSBuild 2013 is not installed. Please download and install it from " +
+							        "http://www.microsoft.com/en-us/download/details.aspx?id=40760";
+						}
+					};
+					throw new InvalidOperationException (error ?? string.Format (
 						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
-						runtime.Id, toolsVersion));
+						runtime.Id, toolsVersion)
+					);
 				}
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
