@@ -7,6 +7,11 @@ This project contains advanced editing support for F# for a number of open edito
 
 See the [F# Cross-Platform Development Guide](http://fsharp.org/guides/mac-linux-cross-platform/index.html#editing) for F# with Sublime Text 2, Vim and other editors not covered here.
 
+## Building and Using
+
+See  [emacs/README.md](emacs/README.md) or  [monodevelop/README.md](monodevelop/README.md)
+
+
 ## Shared Components
 
 The core shared component is FSharp.Compiler.Editor.dll from the 
