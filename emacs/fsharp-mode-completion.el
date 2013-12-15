@@ -245,7 +245,7 @@ display in a help buffer instead.")
 
 (defvar fsharp-ac-source
   '((candidates . fsharp-ac-candidate)
-    (prefix . fsharp-ac-prefix)
+    (prefix . fsharp-ac--residue)
     (requires . 0)
     (document . fsharp-ac-document)
     ;(action . fsharp-ac-action)
@@ -280,11 +280,61 @@ display in a help buffer instead.")
      (setq fsharp-ac-status 'idle)
      fsharp-ac-current-candidate)))
 
-(defun fsharp-ac-prefix ()
-  (or (ac-prefix-symbol)
-      (let ((c (char-before)))
-        (when (eq ?\. c)
-          (point)))))
+(defconst fsharp-ac--ident
+  (rx (one-or-more (not (any ".` \t\r\n"))))
+  "Regexp for normal identifiers")
+
+(defconst fsharp-ac--rawIdent
+  (rx (seq
+       "``"
+       (one-or-more
+        (or
+         (not (any "`\n\r\t"))
+         (seq "`" (not (any "`\n\r\t")))))
+       "``"))
+  "Regexp for raw identifiers")
+
+(defconst fsharp-ac--rawIdResidue
+  (rx (seq
+       "``"
+       (one-or-more
+        (or
+         (not (any "`\n\r\t"))
+         (seq "`" (not (any "`\n\r\t")))))
+       string-end))
+  "Regexp for residues starting with backticks")
+
+(defconst fsharp-ac--dottedIdentNormalResidue
+  (rx-to-string
+   `(seq (zero-or-more
+          (seq
+           (or (regexp ,fsharp-ac--ident)
+               (regexp ,fsharp-ac--rawIdent))
+           "."))
+         (group (zero-or-more (not (any ".` \t\r\n"))))
+         string-end))
+  "Regexp for a dotted ident with a standard residue")
+
+(defconst fsharp-ac--dottedIdentRawResidue
+  (rx-to-string `(seq (zero-or-more
+                       (seq
+                        (or (regexp ,fsharp-ac--ident)
+                            (regexp ,fsharp-ac--rawIdent))
+                        "."))
+                      (group (regexp ,fsharp-ac--rawIdResidue))))
+  "Regexp for a dotted ident with a raw residue")
+
+(defun fsharp-ac--residue ()
+  (let ((result 
+         (let ((line (buffer-substring-no-properties (line-beginning-position) (point))))
+           (- (point)
+              (cadr
+                (-min-by 'car-less-than-car
+                 (-map (lambda (r) (let ((e (-map 'length (s-match r line))))
+                                (if e e '(0 0))))
+                       (list fsharp-ac--dottedIdentRawResidue
+                             fsharp-ac--dottedIdentNormalResidue))))))))
+    result))
 
 (defun fsharp-ac-can-make-request ()
   "Test whether it is possible to make a request with the compiler binding.

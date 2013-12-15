@@ -224,8 +224,11 @@ type internal IntelliSenseAgent() =
       // 'residue' is the part after the last dot and 'longName' is before
       // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
       let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+      let results = Parser.apply Parsing.parseBackIdentWithEitherResidue lookBack
       let residue, longName =
-        lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+        List.sortBy (fun (s,ss) -> String.length s + (List.sumBy String.length ss)) results
+        |> List.rev
+        |> List.head
 
       // Get items & generate output
       try
