@@ -106,6 +106,9 @@ namespace MonoDevelop.VersionControl.Views
 			FilePath path = items.FindMostSpecificParent ();
 			bool isSingleDirectory = false;
 
+			if (!path.Exists)
+				return false;
+
 			if (!path.IsDirectory)
 				path = path.ParentDirectory;
 			else if (items.Count == 1)
