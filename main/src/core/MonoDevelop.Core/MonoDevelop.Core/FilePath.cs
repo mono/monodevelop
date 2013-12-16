@@ -74,10 +74,6 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public bool Exists { 
-			get { return Directory.Exists (this) || File.Exists (this); }
-		}
-
 		/// <summary>
 		/// Returns a path in standard form, which can be used to be compared
 		/// for equality with other canonical paths. It is similar to FullPath,
