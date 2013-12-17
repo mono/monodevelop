@@ -458,9 +458,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         
         match identIsland with
         | [] | [ "" ] -> None
-        //if the ident is a symbol, spool along to the end of the current definition
-        | _ -> let col = if Parsing.isSymbolicOp currentIdent then col + nextIdent.Length else col
-               Some (line,col,lineStr,identIsland,currentIdent,token)
+        | _ -> Some (line,col + nextIdent.Length,lineStr,identIsland,currentIdent,token)
         
     /// Crack the info prior to a '(' or ',' once the method tip trigger '(' shows
     let crackSymbolTextAtGetMethodsTrigger (offset:int, doc:Mono.TextEditor.TextDocument) = 
@@ -513,17 +511,8 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | None -> DataTipText []
         | Some(line,col,lineStr,identIsland,currentIdent,token) ->
           let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
-          match res with
-          | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
-            // This works if we're inside "member x.Foo" and want to get 
-            // tool tip for "Foo" (but I'm not sure why)
-            Debug.WriteLine("Result: First attempt returned nothing"   )
-            let res = info.GetDataTipText((line, col + 2), lineStr, [ currentIdent ], token)
-            Debug.WriteLine( "Result: Returning the result of second try"   )
-            res
-          | _ -> 
-            Debug.WriteLine( "Result: Got something, returning"  )
-            res 
+          Debug.WriteLine( "Result: Got something, returning"  )
+          res
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         match crackSymbolText(offset, doc) with 
