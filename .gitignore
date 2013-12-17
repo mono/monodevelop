@@ -16,6 +16,8 @@ pack/*
 lib/NUnit.*
 lib/FsUnit.*
 
+FSharp.AutoComplete/test/integration/RawIdTest/FSharp.Data
+
 # Emacs
 *.elc
 emacs/deps

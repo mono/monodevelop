@@ -149,11 +149,32 @@ module Parsing =
     many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
+
+  let rawIdChar = sat (fun c -> c <> '\n' && c <> '\t' && c <> '\r' && c <> '`')
+
+  let singleBackTick = parser {
+    let! _ = char '`'
+    let! x = rawIdChar
+    return ['`';x]
+  }
+
+  let rawIdCharAsString = parser {
+    let! x = rawIdChar
+    return [x]
+  }
+
+  // Parse a raw identifier backwards
+  let rawIdResidue = parser {
+    let! x = many (rawIdCharAsString <|> singleBackTick)
+    let! _ = string "``"
+    return List.concat x
+  }
+
   /// Parse F# short-identifier and reverse the resulting string
   let parseBackIdent =  
     parser { 
         let! x = optional (string "``")
-        let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
+        let! res = many (if x.IsSome then rawIdChar else fsharpIdentCharacter) |> map String.ofReversedSeq 
         let! _ = optional (string "``") 
         return res }
 
@@ -167,16 +188,27 @@ module Parsing =
       return ident::rest }
     return [] } 
     
-  /// Parse long identifier with residue (backwards) (e.g. "Debug.Wri")
+  /// Parse long identifier with raw residue (backwards) (e.g. "Debug.``A.B Hel")
   /// and returns it as a tuple (reverses the results after parsing)
-  let parseBackIdentWithResidue = parser {
-    let! residue = many fsharpIdentCharacter 
+  let parseBackIdentWithRawResidue = parser {
+    let! residue = rawIdResidue
     let residue = String.ofReversedSeq residue
-    let! _ = optional (string "``")
     return! parser {
       let! long = parseBackLongIdentRest
       return residue, long |> List.rev }
-    return residue, [] }   
+    return residue, [] }
+
+  /// Parse long identifier with residue (backwards) (e.g. "Debug.Wri")
+  /// and returns it as a tuple (reverses the results after parsing)
+  let parseBackIdentWithResidue = parser {
+    let! residue = many fsharpIdentCharacter
+    let residue = String.ofReversedSeq residue
+    return! parser {
+      let! long = parseBackLongIdentRest
+      return residue, long |> List.rev }
+    return residue, [] }
+
+  let parseBackIdentWithEitherResidue = parseBackIdentWithResidue <|> parseBackIdentWithRawResidue
 
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {

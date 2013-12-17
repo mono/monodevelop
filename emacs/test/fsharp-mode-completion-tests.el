@@ -199,3 +199,19 @@ function bound to VAR in BODY. "
     (fsharp-ac/show-typesig-at-point)
     (fsharp-ac-filter-output nil tooltip-msg)
     (should= "foo" sig)))
+
+;;; Residue computation
+
+(defmacro check-residue (desc line res)
+  `(check ,desc
+     (with-temp-buffer
+       (insert ,line)
+       (should= ,res (buffer-substring-no-properties (fsharp-ac--residue) (buffer-end 1))))))
+
+(check-residue "standard residue" "System.Console.WriteL" "WriteL")
+(check-residue "standard residue, previous raw identifier" "System.``Hello Console``.WriteL" "WriteL")
+(check-residue "raw residue, standard previous" "System.Console.``Writ eL" "``Writ eL")
+(check-residue "raw residue, raw previous" "System.``Hello Console``.``Wr$ it.eL" "``Wr$ it.eL")
+(check-residue "raw residue, trailing dot" "System.Console.``WriteL." "``WriteL.")
+
+
