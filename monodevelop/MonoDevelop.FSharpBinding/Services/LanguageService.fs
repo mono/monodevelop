@@ -32,6 +32,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 open Microsoft.FSharp.Compiler.Ast  
 open Microsoft.FSharp.Compiler.Range
+open FSharp.Parser
 // --------------------------------------------------------------------------------------
 
 /// Contains settings of the F# language service
@@ -338,10 +339,24 @@ module internal TipFormatter =
 /// of the current cursor location etc.)
 module Parsing = 
   open FSharp.Parser
-  
+
+  let inline isFirstOpChar ch =
+      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
+  let isOpChar ch = ch = '?' || isFirstOpChar ch
+      
+  let private symOpLits = [ "?"; "?<-"; "<@"; "<@@"; "@>"; "@@>" ]
+
+  let isSymbolicOp (str:string) =
+    List.exists ((=) str) symOpLits ||
+      (str.Length > 1 && isFirstOpChar str.[0] && Seq.forall isOpChar str.[1..])
+
+  let parseSymOpFragment = some (sat isOpChar)
+  let parseBackSymOpFragment = parseSymOpFragment |> map String.ofReversedSeq
+
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
-  let parseIdent =  
-    many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
+  let parseIdent =
+    parseSymOpFragment <|> many (sat PrettyNaming.IsIdentifierPartCharacter)
+     |> map String.ofSeq
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
   /// Parse F# short-identifier and reverse the resulting string
@@ -376,7 +391,7 @@ module Parsing =
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {
     return! parser {
-      let! ident = parseBackIdent
+      let! ident = parseBackSymOpFragment <|> parseBackIdent
       let! rest = parseBackLongIdentRest
       return ident::rest |> List.rev }
     return [] }
@@ -406,7 +421,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     let preCrack (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
-        let line, col = max (loc.Line - 1) 0, loc.Column
+        let line, col = max (loc.Line - 1) 0, loc.Column-1
         let currentLine = doc.Lines |> Seq.nth line
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
         (loc, line, col, currentLine, lineStr)
@@ -440,11 +455,10 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
         Debug.WriteLine(sprintf "Result: Crack symbol text at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
                               line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
-
-        let token = Parser.tagOfToken(Parser.token.IDENT("")) 
+        
         match identIsland with
         | [] | [ "" ] -> None
-        | _ -> Some (line,col,lineStr,identIsland,currentIdent,token)
+        | _ -> Some (line,col + nextIdent.Length,lineStr,identIsland,currentIdent,token)
         
     /// Crack the info prior to a '(' or ',' once the method tip trigger '(' shows
     let crackSymbolTextAtGetMethodsTrigger (offset:int, doc:Mono.TextEditor.TextDocument) = 
@@ -497,17 +511,8 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | None -> DataTipText []
         | Some(line,col,lineStr,identIsland,currentIdent,token) ->
           let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
-          match res with
-          | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
-            // This works if we're inside "member x.Foo" and want to get 
-            // tool tip for "Foo" (but I'm not sure why)
-            Debug.WriteLine("Result: First attempt returned nothing"   )
-            let res = info.GetDataTipText((line, col + 2), lineStr, [ currentIdent ], token)
-            Debug.WriteLine( "Result: Returning the result of second try"   )
-            res
-          | _ -> 
-            Debug.WriteLine( "Result: Got something, returning"  )
-            res 
+          Debug.WriteLine( "Result: Got something, returning"  )
+          res
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         match crackSymbolText(offset, doc) with 
