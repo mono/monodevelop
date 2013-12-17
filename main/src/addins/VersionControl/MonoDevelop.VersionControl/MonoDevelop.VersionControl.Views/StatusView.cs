@@ -736,7 +736,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
-			CommitCommand.Commit (vc, changeSet.Clone (), false);
+			CommitCommand.Commit (vc, changeSet.Clone ());
 			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
