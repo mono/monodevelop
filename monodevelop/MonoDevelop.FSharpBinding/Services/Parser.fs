@@ -90,6 +90,11 @@ let rec many p = parser {
     return it::res } 
   return [] }
 
+let rec some p = parser {
+  let! first = p
+  let! rest = many p
+  return first::rest }
+
 let rec map f p = parser { 
   let! v = p 
   return f v }

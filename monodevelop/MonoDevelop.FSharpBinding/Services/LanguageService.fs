@@ -340,14 +340,23 @@ module internal TipFormatter =
 module Parsing = 
   open FSharp.Parser
 
-  let charIsValidSymbol ch =
-      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '?'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
-  let stringIsValidSymbol (str:string) = str |> Seq.forall charIsValidSymbol
-  let parseSymbol = sat charIsValidSymbol
+  let inline isFirstOpChar ch =
+      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
+  let isOpChar ch = ch = '?' || isFirstOpChar ch
+      
+  let private symOpLits = [ "?"; "?<-"; "<@"; "<@@"; "@>"; "@@>" ]
+
+  let isSymbolicOp (str:string) =
+    List.exists ((=) str) symOpLits ||
+      (str.Length > 1 && isFirstOpChar str.[0] && Seq.forall isOpChar str.[1..])
+
+  let parseSymOpFragment = some (sat isOpChar)
+  let parseBackSymOpFragment = parseSymOpFragment |> map String.ofReversedSeq
 
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
-  let parseIdent =  
-    many ((sat PrettyNaming.IsIdentifierPartCharacter) <|> parseSymbol) |> map String.ofSeq
+  let parseIdent =
+    parseSymOpFragment <|> many (sat PrettyNaming.IsIdentifierPartCharacter)
+     |> map String.ofSeq
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
   /// Parse F# short-identifier and reverse the resulting string
@@ -356,11 +365,6 @@ module Parsing =
         let! x = optional (string "``")
         let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
         let! _ = optional (string "``") 
-        return res }
-
-  let parseBackSymbol =  
-    parser { 
-        let! res = many parseSymbol |> map String.ofReversedSeq 
         return res }
 
   /// Parse remainder of a long identifier before '.' (e.g. "Name.space.")
@@ -387,7 +391,7 @@ module Parsing =
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {
     return! parser {
-      let! ident = parseBackIdent <|> parseBackSymbol
+      let! ident = parseBackSymOpFragment <|> parseBackIdent
       let! rest = parseBackLongIdentRest
       return ident::rest |> List.rev }
     return [] }
@@ -455,7 +459,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         match identIsland with
         | [] | [ "" ] -> None
         //if the ident is a symbol, spool along to the end of the current definition
-        | _ -> let col = if Parsing.stringIsValidSymbol currentIdent then col + nextIdent.Length else col
+        | _ -> let col = if Parsing.isSymbolicOp currentIdent then col + nextIdent.Length else col
                Some (line,col,lineStr,identIsland,currentIdent,token)
         
     /// Crack the info prior to a '(' or ',' once the method tip trigger '(' shows
