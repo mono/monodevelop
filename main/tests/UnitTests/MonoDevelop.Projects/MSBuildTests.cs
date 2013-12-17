@@ -395,7 +395,9 @@ namespace MonoDevelop.Projects
 			var clientProfileError =
 				"Unable to find framework corresponding to the target framework moniker " +
 				"'.NETFramework,Version=v4.0,Profile=Client'";
-			Assert.IsTrue (f == null || f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
+
+			if (f != null)
+				Assert.IsTrue (f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
 		}
 
 		[Test]
