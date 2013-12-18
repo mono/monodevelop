@@ -26,6 +26,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -51,6 +52,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void UnloadProject (IProjectBuilder pb)
 		{
 			engine.UnloadProject (pb);
+		}
+
+		public void SetUICulture (CultureInfo uiCulture)
+		{
+			engine.SetUICulture (uiCulture);
 		}
 		
 		public void Dispose ()

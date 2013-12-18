@@ -31,15 +31,20 @@ using System.IO;
 
 using Mono.Unix;
 using System.Globalization;
+using System.Threading;
 
 namespace MonoDevelop.Core
 {
 	public static class GettextCatalog
 	{
+		static Thread mainThread;
+
 		static GettextCatalog ()
 		{
+			mainThread = Thread.CurrentThread;
+
 			//variable can be used to override where Gettext looks for the catalogues
-			string catalog = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
+			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
 			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
@@ -85,6 +90,10 @@ namespace MonoDevelop.Core
 			catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
+		}
+
+		public static CultureInfo UICulture {
+			get { return mainThread.CurrentUICulture; }
 		}
 		
 		#region GetString

@@ -40,6 +40,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using Cecil = Mono.Cecil;
+using System.Threading;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -521,7 +522,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					byte[] data = Convert.FromBase64String (sref);
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();
-					builder = new RemoteBuildEngine (p, (IBuildEngine) bf.Deserialize (ms));
+					var engine = (IBuildEngine)bf.Deserialize (ms);
+					engine.SetUICulture (GettextCatalog.UICulture);
+					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
 						try {
