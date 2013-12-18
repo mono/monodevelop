@@ -101,12 +101,6 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
-    <Condition id="ActiveLanguage" value="F#">
-      <Panel id = "FSharpBuildOrderPanel" _label = "Build Order" class = "MonoDevelop.FSharp.BuildOrderPanel"/>
-    </Condition>
-  </Extension>
-
   <Extension path="/MonoDevelop/Core/StockIcons">
     <StockIcon stockid="md-fs-logo32" resource="icons.fsharp-icon-32.png" />
     <StockIcon stockid="md-fs-script32" resource="icons.fsharp-script-32.png" />
