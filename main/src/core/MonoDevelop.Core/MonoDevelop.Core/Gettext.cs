@@ -61,7 +61,7 @@ namespace MonoDevelop.Core
 							}
 					}
 					if (!ci.IsNeutralCulture)
-						System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+						mainThread.CurrentUICulture = ci;
 				}
 				else
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
