@@ -53,7 +53,7 @@ namespace MonoDevelop.Core
 					lang = lang.Replace("_", "-");
 					CultureInfo ci = CultureInfo.GetCultureInfo(lang);
 					if (ci.IsNeutralCulture) {
-						// We need a neutral culture
+						// We need a non-neutral culture
 						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
 							if (c.Parent != null && c.Parent.Name == ci.Name) {
 								ci = c;
@@ -67,7 +67,7 @@ namespace MonoDevelop.Core
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
 			}
 			
-			if (string.IsNullOrEmpty (catalog)) {
+			if (string.IsNullOrEmpty (catalog) || !Directory.Exists (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				location = Path.GetDirectoryName (location);
 				if (Platform.IsWindows) {
