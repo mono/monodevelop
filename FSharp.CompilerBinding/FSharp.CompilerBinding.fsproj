@@ -51,5 +51,6 @@
     <Compile Include="Digraph.fs" />
     <Compile Include="OrderAssemblyReferences.fs" />
     <Compile Include="CompilerLocationUtils.fs" />
+    <Compile Include="Parser.fs" />
   </ItemGroup>
 </Project>

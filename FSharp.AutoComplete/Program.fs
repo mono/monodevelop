@@ -8,8 +8,7 @@ open System.IO
 
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.InteractiveAutocomplete.Parsing
-open FSharp.CompilerBinding.Reflection
+open FSharp.CompilerBinding
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Converters
@@ -242,14 +241,14 @@ type internal IntelliSenseAgent() =
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let lookBack = createBackStringReader lineStr (col-1)
-    let lookForw = createForwardStringReader lineStr col
+    let lookBack = Parsing.createBackStringReader lineStr (col-1)
+    let lookForw = Parsing.createForwardStringReader lineStr col
     
-    let backIdentOpt = tryGetFirst parseBackLongIdent lookBack
+    let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackLongIdent lookBack
     match backIdentOpt with 
     | None -> None 
     | Some backIdent -> 
-    let nextIdentOpt = tryGetFirst parseIdent lookForw
+    let nextIdentOpt = Parsing.tryGetFirst Parsing.parseIdent lookForw
     match nextIdentOpt with 
     | None -> None 
     | Some nextIdent -> 

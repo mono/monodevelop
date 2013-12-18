@@ -42,7 +42,6 @@
     <Compile Include="Options.fs" />
     <Compile Include="TipFormatter.fs" />
     <Compile Include="ProjectParser.fs" />
-    <Compile Include="Parser.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

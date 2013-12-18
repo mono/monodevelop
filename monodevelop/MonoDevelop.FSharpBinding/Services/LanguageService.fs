@@ -32,7 +32,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 open Microsoft.FSharp.Compiler.Ast  
 open Microsoft.FSharp.Compiler.Range
-open FSharp.Parser
 // --------------------------------------------------------------------------------------
 
 /// Contains settings of the F# language service
@@ -333,86 +332,6 @@ module internal TipFormatter =
     "<b>" + parts.[0] + "</b>" +
       (if parts.Length > 1 then "\n\n" + parts.[1] else "")
     
-
-// --------------------------------------------------------------------------------------
-/// Parsing utilities for IntelliSense (e.g. parse identifier on the left-hand side
-/// of the current cursor location etc.)
-module Parsing = 
-  open FSharp.Parser
-
-  let inline isFirstOpChar ch =
-      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
-  let isOpChar ch = ch = '?' || isFirstOpChar ch
-      
-  let private symOpLits = [ "?"; "?<-"; "<@"; "<@@"; "@>"; "@@>" ]
-
-  let isSymbolicOp (str:string) =
-    List.exists ((=) str) symOpLits ||
-      (str.Length > 1 && isFirstOpChar str.[0] && Seq.forall isOpChar str.[1..])
-
-  let parseSymOpFragment = some (sat isOpChar)
-  let parseBackSymOpFragment = parseSymOpFragment |> map String.ofReversedSeq
-
-  /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
-  let parseIdent =
-    parseSymOpFragment <|> many (sat PrettyNaming.IsIdentifierPartCharacter)
-     |> map String.ofSeq
-
-  let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
-  /// Parse F# short-identifier and reverse the resulting string
-  let parseBackIdent =  
-    parser { 
-        let! x = optional (string "``")
-        let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
-        let! _ = optional (string "``") 
-        return res }
-
-  /// Parse remainder of a long identifier before '.' (e.g. "Name.space.")
-  /// (designed to look backwards - reverses the results after parsing)
-  let rec parseBackLongIdentRest = parser {
-    return! parser {
-      let! _ = char '.'
-      let! ident = parseBackIdent
-      let! rest = parseBackLongIdentRest
-      return ident::rest }
-    return [] } 
-    
-  /// Parse long identifier with residue (backwards) (e.g. "Debug.Wri")
-  /// and returns it as a tuple (reverses the results after parsing)
-  let parseBackIdentWithResidue = parser {
-    let! residue = many fsharpIdentCharacter 
-    let residue = String.ofReversedSeq residue
-    let! _ = optional (string "``")
-    return! parser {
-      let! long = parseBackLongIdentRest
-      return residue, long |> List.rev }
-    return residue, [] }   
-
-  /// Parse long identifier and return it as a list (backwards, reversed)
-  let parseBackLongIdent = parser {
-    return! parser {
-      let! ident = parseBackSymOpFragment <|> parseBackIdent
-      let! rest = parseBackLongIdentRest
-      return ident::rest |> List.rev }
-    return [] }
-
-  let parseBackTriggerThenLongIdent = parser {
-    let! _ = (char '(' <|> char '<')
-    let! _  = many whitespace
-    return! parseBackLongIdent
-    }
-
-  /// Create sequence that reads the string backwards
-  let createBackStringReader (str:string) from = seq { 
-    for i in (min from (str.Length - 1)) .. -1 .. 0 do yield str.[i] }
-
-  /// Create sequence that reads the string forwards
-  let createForwardStringReader (str:string) from = seq { 
-    for i in (max 0 from) .. (str.Length - 1) do yield str.[i] }
-
-  /// Returns first result returned by the parser
-  let tryGetFirst p s = match apply p s with h::_ -> Some h | [] -> None
-   
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
