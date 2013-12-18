@@ -212,7 +212,6 @@
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\lib\fsharp\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Editor">
