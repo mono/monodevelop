@@ -8,18 +8,6 @@ namespace MonoDevelop.FSharp
 open MonoDevelop.Projects
 open MonoDevelop.Core.Serialization
 
-/// Serializable type that is used for storing file build order
-type FSharpProjectParameters() =
-  inherit DotNetProjectParameters()
-
-  [<field:ItemProperty("BuildOrder"); DefaultValue>]
-  val mutable private buildOrder : string[]
-
-  member x.BuildOrder 
-    with get() = if x.buildOrder = null then [| |] else x.buildOrder
-    and set(value) = x.buildOrder <- value
-
-
 /// Serializable type respresnting F# compiler parameters
 type FSharpCompilerParameters() as this = 
   inherit ConfigurationParameters()
