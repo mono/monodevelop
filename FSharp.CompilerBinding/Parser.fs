@@ -150,7 +150,13 @@ module Parsing =
       (str.Length > 1 && isFirstOpChar str.[0] && Seq.forall isOpChar str.[1..])
 
   let parseSymOpFragment = some (sat isOpChar)
-  let parseBackSymOpFragment = parseSymOpFragment |> map String.ofReversedSeq
+  let parseBackSymOpFragment = parser {
+    // This is unfortunate, but otherwise cracking at $ in A.$B
+    // causes the backward parse to return a symbol fragment.
+    let! c  = sat (fun c -> c <> '.' && isOpChar c)
+    let! cs = many (sat isOpChar)
+    return String.ofSeq (c :: List.rev cs)
+    }
 
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
   let parseIdent =
