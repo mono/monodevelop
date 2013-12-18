@@ -161,19 +161,6 @@ module CompilerArguments =
     let root = Uri(if root.EndsWith(sep) then root else root + sep + "dummy" )
     root.MakeRelativeUri(file).ToString().Replace("/", sep)
 
-
-  /// Create a list containing same items as the 'items' parameter that preserves
-  /// the order specified by 'ordered' (and new items are at the end)  
-  let getItemsInOrder root items ordered relative =
-    let ordered = [| for f in ordered -> FilePath(Path.Combine(root, f)).CanonicalPath.FullPath.ToString() |]
-    let itemsSet, orderedSet = set items, set ordered
-    let keep = Set.intersect orderedSet itemsSet
-    let ordered = ordered |> Array.filter (fun el -> keep.Contains el)
-    let procf = if relative then makeRelativePath root else id
-    let unorderedItems = items |> List.filter (fun el -> not (orderedSet.Contains el))
-    [ for f in ordered -> procf f
-      for f in unorderedItems -> procf f ]
-
     
   /// Generate inputs for the compiler (excluding source code!); returns list of items 
   /// containing resources (prefixed with the --resource parameter)

@@ -179,10 +179,10 @@ module CompilerService =
           yield! generateCmdArgs(config, reqLangVersion, items, configSel)
           yield! CompilerArguments.generateOtherItems items 
       
-          // Generate source files (sort using current configuration)
-          let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-          let files = CompilerArguments.getSourceFiles items
-          for file in CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false do 
-             yield CompilerArguments.wrapFile file ]
+          // Generate source files
+          let files = items 
+                      |> CompilerArguments.getSourceFiles 
+                      |> List.map CompilerArguments.wrapFile
+          yield! files ]
           
     compile runtime framework monitor root args

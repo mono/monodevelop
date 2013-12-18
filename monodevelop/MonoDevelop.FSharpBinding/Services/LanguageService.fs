@@ -724,18 +724,15 @@ type internal LanguageService private () =
       else
         let projFile = proj.FileName.ToString()
         Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile )
-        let files = CompilerArguments.getSourceFiles(proj.Items) 
+        let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
         
         // Read project configuration (compiler & build)
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        let fsbuild = projConfig.ProjectParameters :?> FSharpProjectParameters
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
         let args = CompilerArguments.generateCompilerOptions (fsconfig, reqLangVersion, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
-        let root = Path.GetDirectoryName(proj.FileName.FullPath.ToString())
-        let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
         {ProjectFileName = projFile
          ProjectFileNames = files
          ProjectOptions = args

@@ -22,21 +22,12 @@ type FSharpSettingsPanel() =
   let fscPathPropName = "FSharpBinding.FscPath"
   let fsiPathPropName = "FSharpBinding.FsiPath"
   let fsiArgumentsPropName = "FSharpBinding.FsiArguments"
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-  let preferFSharp20PropName = "FSharpBinding.PreferFSharp20"
-#endif
   let fsiFontNamePropName = "FSharpBinding.FsiFontName"
   let fsiBaseColorPropName ="FSharpBinding.BaseColorPropName"
   let fsiTextColorPropName ="FSharpBinding.TextColorPropName"
   let fsiMatchWitThemePropName = "FSharpBinding.MatchWitThemePropName"
   
   let mutable widget : FSharpSettingsWidget = null
-  
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-  member internal x.setLanguageDisplay(enable:bool) = 
-   if widget.PreferFSharp20.Active <> enable then
-      widget.PreferFSharp20.Active <- enable
-#endif
 
   // NOTE: This setting is only relevant when xbuild is not being used.
   member internal x.setCompilerDisplay(use_default:bool) = 
@@ -88,20 +79,13 @@ type FSharpSettingsPanel() =
     let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
     let prop_interp_font = PropertyService.Get<string>(fsiFontNamePropName,"")  
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-    let prop_prefer_fsharp20 = PropertyService.Get<string>(preferFSharp20PropName,"")
-#endif
-
     let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
     let default_interp_font = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
 
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-    x.setLanguageDisplay( System.String.Compare (prop_prefer_fsharp20, "true", true) = 0)
-#endif
-    
+
     let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
     
@@ -114,12 +98,10 @@ type FSharpSettingsPanel() =
                                                 widget.ColorsHBox.Show())
     
     let (_, matchWithTheme) = PropertyService.Get<string>(fsiMatchWitThemePropName, "false")
-                            |> System.Boolean.TryParse
+                              |> System.Boolean.TryParse
                             
-    if(matchWithTheme) then
-        widget.ColorsHBox.Hide()
-    else
-        widget.ColorsHBox.Show()                            
+    if matchWithTheme then widget.ColorsHBox.Hide()
+    else widget.ColorsHBox.Show()                            
     
     widget.MatchThemeCheckBox.Active <- matchWithTheme
     
@@ -136,24 +118,11 @@ type FSharpSettingsPanel() =
     // Implement checkbox for F# Compiler options
     widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> 
         x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
-
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-    // Toggling the language version can affect the compiler locations
-    widget.PreferFSharp20.Toggled.Add(fun _ -> 
-        // Apply the property immediately, to reflect changes in default compiler paths 
-        PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
-        x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active)
-        x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
-#endif
     
     widget.Show()
     upcast widget 
   
   override x.ApplyChanges() =
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-    PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
-#endif
-
     PropertyService.Set(fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
 
     PropertyService.Set(fsiPathPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryPath.Text)
@@ -222,90 +191,3 @@ type CodeGenerationPanel() =
     fsconfig.DefineConstants <- widget.EntryDefines.Text
 
 
-// --------------------------------------------------------------------------------------
-// F# project options - build order panel
-// --------------------------------------------------------------------------------------
-
-/// Panel that allows the user to specify build order of F# files in the project
-/// (the order is stored separately from the MSBUILD file, because MonoDevelop
-/// doesn't provide any way to modify the project file itself).
-type BuildOrderPanel() as x = 
-  inherit MultiConfigItemOptionsPanel()
-  
-  let mutable widget : FSharpBuildOrderWidget = null
-  let mutable fileOrder : string[] = [| |]
-
-  /// Initialize tree view component (that shows a list of files)
-  let initializeTreeView() = 
-    let col = new TreeViewColumn(Title = "Item name")
-    widget.ListItems.AppendColumn(col) |> ignore
-    let cell = new Gtk.CellRendererText();
-    col.PackStart(cell, true);
-    col.AddAttribute(cell, "text", 0);    
-
-  // Get the fullbuild order implied by the current config settings of the project
-  let getFullBuildOrder() = 
-    let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
-    let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-    let sources = CompilerArguments.getSourceFiles x.ConfiguredProject.Items
-    let root = x.ConfiguredProject.BaseDirectory.FullPath.ToString()
-    let buildOrder = CompilerArguments.getItemsInOrder root sources fsconfig.BuildOrder true |> Seq.toArray   
-    buildOrder     
-
-  override x.Dispose() =
-    if widget <> null then
-      widget.Dispose()
-      
-  override x.LoadConfigData() =
-    let store = ref null
-    initializeTreeView()    
-    
-    // Get the full build order, drop common prefix (directory) and add them to the list
-    fileOrder <- getFullBuildOrder()
-    
-    // Re-generate items in the tree view list
-    let updateStore () =
-      store := new Gtk.ListStore [| typeof<string> |]
-      widget.ListItems.Model <- !store
-      for file in fileOrder do
-        store.Value.AppendValues [| file |] |> ignore
-
-    // Event handlers for reordering of files      
-    Event.merge
-      (widget.ButtonUp.Clicked |> Event.map (fun _ -> -1))
-      (widget.ButtonDown.Clicked |> Event.map (fun _ -> 1))
-    |> Event.add (fun change ->
-      let succ, _, iter = widget.ListItems.Selection.GetSelected() 
-      if succ then 
-        let fname = store.Value.GetValue(iter, 0) :?> string
-        let index = fileOrder |> Array.findIndex ((=) fname)
-        if index + change >= 0 && index + change < fileOrder.Length then
-          // Swap items and update the store
-          let tmp = fileOrder.[index]
-          fileOrder.[index] <- fileOrder.[index + change]
-          fileOrder.[index + change] <- tmp
-          
-          // Update the store and select the original item
-          updateStore() 
-          let mutable iter = Unchecked.defaultof<_>
-          if store.Value.IterNthChild(&iter, index + change) then
-            widget.ListItems.Selection.SelectIter(iter)
-          )
-  
-    // Update displayed items at the beginning
-    updateStore()
-    
-  override x.ApplyChanges() =
-    let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
-    let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-    let fullBuildOrder = getFullBuildOrder()
- 
-    // Compare the implied full build order with the one from the options panel
-    // If they are different, then update with the full list.
-    if fullBuildOrder <> fileOrder then 
-        fsconfig.BuildOrder <- fileOrder
-    
-  override x.CreatePanelWidget() =
-    widget <- new FSharpBuildOrderWidget()
-    widget.Show()
-    upcast widget 

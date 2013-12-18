@@ -77,7 +77,7 @@ type FSharpLanguageBinding() =
 
 
     override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
-      new FSharpProjectParameters() :> ProjectParameters
+      ProjectParameters()
       
     override x.GetCodeDomProvider() : CodeDomProvider =
         // TODO: Simplify CodeDom provider to generate reasonable template
