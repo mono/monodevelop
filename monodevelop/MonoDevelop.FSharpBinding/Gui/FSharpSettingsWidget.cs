@@ -19,9 +19,7 @@ namespace MonoDevelop.FSharp.Gui
 	    public Gtk.ColorButton BaseColorButton { get { return baseColorButton; } }
 	    public Gtk.ColorButton TextColorButton { get { return textColorButton; } }
 		public Gtk.CheckButton CheckCompilerUseDefault { get { return checkCompilerUseDefault; } }
-#if ALLOW_LANGUAGE_VERSION_PREFERENCE
-    public Gtk.CheckButton PreferFSharp20 { get { return preferFSharp2; } }
-#endif
+
     public Gtk.Button ButtonCompilerBrowse { get { return buttonCompilerBrowse; } }
 		public Gtk.Entry EntryCompilerPath { get { return entryCompilerPath; } }
 		
