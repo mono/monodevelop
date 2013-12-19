@@ -11,7 +11,8 @@ The following features are under development:
 - Intelligent indentation
 - Intellisense support.
 
-Requires Emacs 24+.
+Requires Emacs 24+ and F# 3.0. Without F# 3.0 the background compiler
+process will not function correctly.
 
 ## Installation
 
