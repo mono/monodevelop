@@ -415,8 +415,8 @@ namespace MonoDevelop.Ide.Projects {
 			}
 
 			for (int i = 1; i < name.Length; i++) {
-				if (name[i-1] == '.' &&  char.IsDigit(name[i])) {
-					MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nCannot write '.' followed by a number"));
+				if (name[i-1] == '.' && char.IsDigit(name[i])) {
+					MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nCannot write '.' followed by a number."));
 					return false;
 				}
 			}
