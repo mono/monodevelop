@@ -262,16 +262,16 @@ type internal IntelliSenseAgent() =
 
     match identIsland with
     | [] | [ "" ] -> None
-    | _ -> Some identIsland
+    | _ -> Some (col + nextIdent.Length, identIsland)
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
 
-    Option.bind (fun identIsland ->
+    Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDataTipText(pos, lineStr, identIsland, identToken)
+        info.GetDataTipText((line,col'), lineStr, identIsland, identToken)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 
@@ -279,11 +279,11 @@ type internal IntelliSenseAgent() =
   /// and writes information to the standard output
   member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
 
-    Option.bind (fun identIsland ->
+    Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true)
+        info.GetDeclarationLocation((line,col'), lineStr, identIsland, identToken, true)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 

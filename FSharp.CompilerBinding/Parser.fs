@@ -155,7 +155,7 @@ module Parsing =
     // causes the backward parse to return a symbol fragment.
     let! c  = sat (fun c -> c <> '.' && isOpChar c)
     let! cs = many (sat isOpChar)
-    return String.ofSeq (c :: List.rev cs)
+    return String.ofReversedSeq (c::cs)
     }
 
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns

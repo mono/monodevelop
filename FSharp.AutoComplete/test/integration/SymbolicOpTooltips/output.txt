@@ -1,0 +1,60 @@
+INFO: Background parsing started
+<<EOF>>
+INFO: No tooltip information
+<<EOF>>
+DATA: tooltip
+val ( |<>| ) : x:int -> y:int -> int
+
+Full name: Script.( |<>| )
+<<EOF>>
+DATA: tooltip
+val ( |<>| ) : x:int -> y:int -> int
+
+Full name: Script.( |<>| )
+<<EOF>>
+DATA: tooltip
+val ( |<>| ) : x:int -> y:int -> int
+
+Full name: Script.( |<>| )
+<<EOF>>
+DATA: tooltip
+val ( |<>| ) : x:int -> y:int -> int
+
+Full name: Script.( |<>| )
+<<EOF>>
+DATA: tooltip
+val ( |<>| ) : x:int -> y:int -> int
+
+Full name: Script.( |<>| )
+<<EOF>>
+INFO: No tooltip information
+<<EOF>>
+INFO: No tooltip information
+<<EOF>>
+DATA: tooltip
+val ( |..| ) : x:int -> y:int -> int
+
+Full name: Script.( |..| )
+<<EOF>>
+DATA: tooltip
+val ( |..| ) : x:int -> y:int -> int
+
+Full name: Script.( |..| )
+<<EOF>>
+DATA: tooltip
+val ( |..| ) : x:int -> y:int -> int
+
+Full name: Script.( |..| )
+<<EOF>>
+DATA: tooltip
+val ( |..| ) : x:int -> y:int -> int
+
+Full name: Script.( |..| )
+<<EOF>>
+DATA: tooltip
+val ( |..| ) : x:int -> y:int -> int
+
+Full name: Script.( |..| )
+<<EOF>>
+INFO: No tooltip information
+<<EOF>>
