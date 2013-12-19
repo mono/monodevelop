@@ -318,6 +318,9 @@ module internal CommandInput =
       - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project
+    outputmode {json,text}
+      - switches the output format. json offers richer data
+        for some commands
     "
     
   let outputText = @"
