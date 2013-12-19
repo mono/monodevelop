@@ -184,12 +184,14 @@ Input and output via buffer `*inferior-fsharp*'."
   (save-excursion
     ;; send location to fsi
     (let* (
-          (name (buffer-name (current-buffer)))
+          (name (file-truename (buffer-name (current-buffer))))
+          (dir (file-name-directory name))
           (line (number-to-string (line-number-at-pos start)))
-          (loc (concat "# " line " \"" name "\"\n")))
+          (loc (concat "# " line " \"" name "\"\n"))
+          (movedir (concat "#silentCd @\"" dir "\";;\n")))
+      (comint-send-string inferior-fsharp-buffer-name movedir)
       (comint-send-string inferior-fsharp-buffer-name loc))
     (goto-char end)
-;    (fsharp-skip-comments-backward)
     (comint-send-region inferior-fsharp-buffer-name start (point))
     ;; normally, ";;" are part of the region
     (if (and (>= (point) 2)
