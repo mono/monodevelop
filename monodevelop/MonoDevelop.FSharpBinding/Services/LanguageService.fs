@@ -480,7 +480,7 @@ type internal LanguageServiceMessage =
   
 
 open System.Reflection
-open FSharp.CompilerBinding.Reflection
+//open FSharp.CompilerBinding.Reflection
 open ICSharpCode.NRefactory.TypeSystem
 open MonoDevelop.Ide.TypeSystem
 

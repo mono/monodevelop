@@ -6,7 +6,6 @@ open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
-open FSharp.CompilerBinding.Reflection
 open FSharp.CompilerBinding
 
 type InteractiveSession() =
