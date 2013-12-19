@@ -28,6 +28,9 @@ p.tooltip "Script.fsx" 5 23
 p.tooltip "Script.fsx" 5 24
 p.tooltip "Script.fsx" 5 25
 p.tooltip "Script.fsx" 5 26
+p.tooltip "Script.fsx" 7 6
+p.tooltip "Script.fsx" 7 10
+p.tooltip "Script.fsx" 7 15
 p.send "quit\n"
 let output = p.finalOutput ()
 File.WriteAllText("output.txt", output)

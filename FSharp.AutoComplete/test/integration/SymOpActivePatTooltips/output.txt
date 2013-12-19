@@ -58,3 +58,18 @@ Full name: Script.( |..| )
 <<EOF>>
 INFO: No tooltip information
 <<EOF>>
+DATA: tooltip
+val ( |Zero|Succ| ) : n:int -> Choice<unit,int>
+
+Full name: Script.( |Zero|Succ| )
+<<EOF>>
+DATA: tooltip
+val ( |Zero|Succ| ) : n:int -> Choice<unit,int>
+
+Full name: Script.( |Zero|Succ| )
+<<EOF>>
+DATA: tooltip
+val ( |Zero|Succ| ) : n:int -> Choice<unit,int>
+
+Full name: Script.( |Zero|Succ| )
+<<EOF>>
