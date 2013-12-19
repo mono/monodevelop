@@ -40,7 +40,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="NDesk.Options">
-      <HintPath>..\..\..\..\lib\ndesk-options\NDesk.Options.dll</HintPath>
+      <HintPath>..\..\..\..\..\lib\ndesk-options\NDesk.Options.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

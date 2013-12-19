@@ -11,6 +11,12 @@ open System.Text.RegularExpressions
 
 #nowarn "44" // ConfigurationSettings is obsolete but the new stuff is horribly complicated. 
 
+module Environment = 
+  /// Are we running on the Mono platform?
+  let runningOnMono = 
+    try System.Type.GetType("Mono.Runtime") <> null
+    with _ -> false  
+
 /// Target framework (used to find the right version of F# binaries)
 type FSharpTargetFramework = 
     | NET_2_0

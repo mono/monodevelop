@@ -3,10 +3,18 @@ INFO: Background parsing started
 DATA: completion
 Afval.nl
 Arts and Entertainment
+Author
+Businessperson
 Commons
 DataContext
+Entrepreneur
+Gutter Company Owner
+Marketing
+Online advertising
 Products and Services
 Science and Technology
+Search Engine Optimization
+SoLoMo Consultant
 Society
 Special Interests
 Sports

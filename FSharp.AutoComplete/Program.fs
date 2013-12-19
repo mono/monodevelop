@@ -8,8 +8,7 @@ open System.IO
 
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.InteractiveAutocomplete.Parsing
-open FSharp.CompilerBinding.Reflection
+open FSharp.CompilerBinding
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Converters
@@ -242,14 +241,14 @@ type internal IntelliSenseAgent() =
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let lookBack = createBackStringReader lineStr (col-1)
-    let lookForw = createForwardStringReader lineStr col
+    let lookBack = Parsing.createBackStringReader lineStr (col-1)
+    let lookForw = Parsing.createForwardStringReader lineStr col
     
-    let backIdentOpt = tryGetFirst parseBackLongIdent lookBack
+    let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackLongIdent lookBack
     match backIdentOpt with 
     | None -> None 
     | Some backIdent -> 
-    let nextIdentOpt = tryGetFirst parseIdent lookForw
+    let nextIdentOpt = Parsing.tryGetFirst Parsing.parseIdent lookForw
     match nextIdentOpt with 
     | None -> None 
     | Some nextIdent -> 
@@ -263,16 +262,16 @@ type internal IntelliSenseAgent() =
 
     match identIsland with
     | [] | [ "" ] -> None
-    | _ -> Some identIsland
+    | _ -> Some (col + nextIdent.Length, identIsland)
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
 
-    Option.bind (fun identIsland ->
+    Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDataTipText(pos, lineStr, identIsland, identToken)
+        info.GetDataTipText((line,col'), lineStr, identIsland, identToken)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 
@@ -280,11 +279,11 @@ type internal IntelliSenseAgent() =
   /// and writes information to the standard output
   member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
 
-    Option.bind (fun identIsland ->
+    Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true)
+        info.GetDeclarationLocation((line,col'), lineStr, identIsland, identToken, true)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (x.FindLongIdents(lineStr, column))
 

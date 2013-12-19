@@ -1,9 +1,9 @@
+﻿// --------------------------------------------------------------------------------------
+// Simple monadic parser generator that we use in the IntelliSense
 // --------------------------------------------------------------------------------------
-// (c) Tomas Petricek, http://tomasp.net/blog
-// --------------------------------------------------------------------------------------
-#nowarn "40" // recursive references checked at runtime
 
-namespace FSharp.InteractiveAutocomplete
+#nowarn "40" // recursive references checked at runtime
+namespace FSharp.CompilerBinding
 
 open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -30,11 +30,10 @@ module LazyList =
         Nil
     take()
 
-// --------------------------------------------------------------------------------------
-// Simple monadic parser generator that we use in the IntelliSense
-// --------------------------------------------------------------------------------------
-
 module Parser =
+
+  open System
+
   /// Add some useful methods for creating strings from sequences
   type System.String with
     static member ofSeq s = new String(s |> Seq.toArray)
@@ -134,19 +133,35 @@ module Parser =
     let res = str |> LazyList.ofSeq |> p
     res |> List.map fst
 
-
 // --------------------------------------------------------------------------------------
-// Parsing utilities for IntelliSense
-// --------------------------------------------------------------------------------------
-
 /// Parsing utilities for IntelliSense (e.g. parse identifier on the left-hand side
 /// of the current cursor location etc.)
 module Parsing =
   open Parser
 
+  let inline isFirstOpChar ch =
+      ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
+  let isOpChar ch = ch = '?' || isFirstOpChar ch
+      
+  let private symOpLits = [ "?"; "?<-"; "<@"; "<@@"; "@>"; "@@>" ]
+
+  let isSymbolicOp (str:string) =
+    List.exists ((=) str) symOpLits ||
+      (str.Length > 1 && isFirstOpChar str.[0] && Seq.forall isOpChar str.[1..])
+
+  let parseSymOpFragment = some (sat isOpChar)
+  let parseBackSymOpFragment = parser {
+    // This is unfortunate, but otherwise cracking at $ in A.$B
+    // causes the backward parse to return a symbol fragment.
+    let! c  = sat (fun c -> c <> '.' && isOpChar c)
+    let! cs = many (sat isOpChar)
+    return String.ofReversedSeq (c::cs)
+    }
+
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
   let parseIdent =
-    many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
+    parseSymOpFragment <|> many (sat PrettyNaming.IsIdentifierPartCharacter)
+     |> map String.ofSeq
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
 
@@ -187,7 +202,7 @@ module Parsing =
       let! rest = parseBackLongIdentRest
       return ident::rest }
     return [] } 
-    
+
   /// Parse long identifier with raw residue (backwards) (e.g. "Debug.``A.B Hel")
   /// and returns it as a tuple (reverses the results after parsing)
   let parseBackIdentWithRawResidue = parser {
@@ -201,19 +216,20 @@ module Parsing =
   /// Parse long identifier with residue (backwards) (e.g. "Debug.Wri")
   /// and returns it as a tuple (reverses the results after parsing)
   let parseBackIdentWithResidue = parser {
-    let! residue = many fsharpIdentCharacter
+    let! residue = many fsharpIdentCharacter 
     let residue = String.ofReversedSeq residue
     return! parser {
       let! long = parseBackLongIdentRest
       return residue, long |> List.rev }
-    return residue, [] }
+    return residue, [] }   
 
-  let parseBackIdentWithEitherResidue = parseBackIdentWithResidue <|> parseBackIdentWithRawResidue
+  let parseBackIdentWithEitherResidue =
+    parseBackIdentWithResidue <|> parseBackIdentWithRawResidue
 
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {
     return! parser {
-      let! ident = parseBackIdent
+      let! ident = parseBackSymOpFragment <|> parseBackIdent
       let! rest = parseBackLongIdentRest
       return ident::rest |> List.rev }
     return [] }
@@ -235,3 +251,4 @@ module Parsing =
   /// Returns first result returned by the parser
   let getFirst p s = apply p s |> List.head
   let tryGetFirst p s = match apply p s with h::_ -> Some h | [] -> None
+   
