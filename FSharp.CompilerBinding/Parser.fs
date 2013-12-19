@@ -174,7 +174,7 @@ module Parsing =
 
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
   let parseIdent =
-    parseSymOpFragment <|> parseActivePatternEnd <|> many fsharpIdentCharacter
+    parseActivePatternEnd <|> parseSymOpFragment <|> many fsharpIdentCharacter
      |> map String.ofSeq
 
 
