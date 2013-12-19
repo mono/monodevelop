@@ -158,12 +158,22 @@ module Parsing =
     return String.ofReversedSeq (c::cs)
     }
 
-  /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
-  let parseIdent =
-    parseSymOpFragment <|> many (sat PrettyNaming.IsIdentifierPartCharacter)
-     |> map String.ofSeq
+  let rec parseActivePatternEnd = parser {
+      let! i = some (sat PrettyNaming.IsLongIdentifierPartCharacter)
+      let! p = char '|'
+      let! b = optional (char ')')
+      let! rest = if b.IsNone then parseActivePatternEnd
+                  else parser { return [] }
+      return i@p::rest
+  }
 
   let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
+
+  /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
+  let parseIdent =
+    parseSymOpFragment <|> parseActivePatternEnd <|> many fsharpIdentCharacter
+     |> map String.ofSeq
+
 
   let rawIdChar = sat (fun c -> c <> '\n' && c <> '\t' && c <> '\r' && c <> '`')
 
