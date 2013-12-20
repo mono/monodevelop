@@ -393,30 +393,27 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | [] | [ "" ] -> None
         | _ -> Some (col,identIsland,currentIdent)
         
+    let getCompletions (((line, column) as pos), lineStr, info: TypeCheckResults) =
+        // Get the long identifier before the current location
+        // 'residue' is the part after the last dot and 'longName' is before
+        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+        let results = Parser.apply Parsing.parseBackIdentWithEitherResidue lookBack
+        let residue, longName =
+            List.sortBy (fun (s,ss) -> String.length s + (List.sumBy String.length ss)) results
+            |> List.rev
+            |> List.head
+
+        // Get items & generate output
+        try Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
+                  |> Async.RunSynchronously, residue)
+        with :? TimeoutException as e -> None
 
     /// Get declarations at the current location in the specified document
     /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
     member x.GetDeclarations(doc:Document, context: CodeCompletion.CodeCompletionContext) = 
-        let lineStr = doc.Editor.GetLineText(doc.Editor.Caret.Line)
-    
-        // Get the long identifier before the current location
-        // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Debug.Wri  --> "Wri", [ "System"; "Debug"; ]
-        let lookBack = Parsing.createBackStringReader lineStr (doc.Editor.Caret.Column - 2)
-        match Parsing.tryGetFirst Parsing.parseBackIdentWithResidue lookBack with 
-        | None -> DeclarationSet.Empty
-        | Some (residue, longName) ->
-    
-        Debug.WriteLine(sprintf "Result: GetDeclarations: line: %d, column: %d, ident: %A\n    Line: '%s'" (doc.Editor.Caret.Line - 1) (doc.Editor.Caret.Column - 1) (longName, residue) lineStr)
-
-        //Review: last parameter is a function has changes since last type check, we always return false here.
-        //let longName = if longName = [""] then [] else longName
-        let getDeclarations = info.GetDeclarations(Some(untyped), (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), fun _ -> false)
-                                              
-        let declarations = Async.RunSynchronously(getDeclarations, ServiceSettings.blockingTimeout)
-
-        Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" declarations.Items.Length)
-        declarations
+        let line, col, lineStr = getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
+        getCompletions((line, col), lineStr, info)
 
   /// Get the tool-tip to be displayed at the specified offset (relatively
   /// from the beginning of the current document)
@@ -435,7 +432,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | None -> DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland,currentIdent) ->
             let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
-            Debug.WriteLine( "Result: Got something, returning"  )
+            Debug.WriteLine("Result: Got something, returning"  )
             res 
 
     member x.GetMethods(offset:int, doc:Mono.TextEditor.TextDocument) =
