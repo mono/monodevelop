@@ -39,6 +39,9 @@ namespace MonoDevelop.Core
 	{
 		static Thread mainThread;
 
+		[DllImport ("kernel32.dll", SetLastError = true)]
+		static extern int SetThreadUILanguage (int LangId);
+
 		static GettextCatalog ()
 		{
 			mainThread = Thread.CurrentThread;
@@ -60,8 +63,10 @@ namespace MonoDevelop.Core
 								break;
 							}
 					}
-					if (!ci.IsNeutralCulture)
+					if (!ci.IsNeutralCulture) {
+						SetThreadUILanguage (ci.LCID);
 						mainThread.CurrentUICulture = ci;
+					}
 				}
 				else
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
