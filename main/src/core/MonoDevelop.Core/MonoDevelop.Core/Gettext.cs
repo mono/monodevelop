@@ -36,6 +36,9 @@ namespace MonoDevelop.Core
 {
 	public static class GettextCatalog
 	{
+		[DllImport(@"kernel32.dll", SetLastError = true)]
+		internal static extern int SetThreadUILanguage(int LangId);
+
 		static GettextCatalog ()
 		{
 			//variable can be used to override where Gettext looks for the catalogues
@@ -56,7 +59,7 @@ namespace MonoDevelop.Core
 							}
 					}
 					if (!ci.IsNeutralCulture)
-						System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+						SetThreadUILanguage (ci.LCID);
 				}
 				else
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
