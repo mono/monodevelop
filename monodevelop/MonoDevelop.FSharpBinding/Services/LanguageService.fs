@@ -383,7 +383,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
     let crackSymbolTextAtGetMethodsTrigger (offset:int, doc:Mono.TextEditor.TextDocument) = 
 
         let loc, line, col, currentLine, lineStr = preCrack (offset, doc)
-        let lookBack = Parsing.createBackStringReader lineStr (col-1)
+        let lookBack = Parsing.createBackStringReader lineStr col
         let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackTriggerThenLongIdent lookBack
         match backIdentOpt with 
         | None -> None 
