@@ -338,21 +338,18 @@ module internal TipFormatter =
 type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo) =
     let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
-    let preCrack (offset, doc:Mono.TextEditor.TextDocument) = 
+    let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
         let line, col = max (loc.Line - 1) 0, loc.Column-1
         let currentLine = doc.Lines |> Seq.nth line
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
-        (loc, line, col, currentLine, lineStr)
+        (line, col, lineStr)
 
     // Parsing - find the identifier around the current location
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let crackSymbolText (offset:int, doc:Mono.TextEditor.TextDocument) = 
-    
-        let loc, line, col, currentLine, lineStr = preCrack (offset, doc)
-    
+    let FindLongIdents (col, lineStr) = 
         let lookBack = Parsing.createBackStringReader lineStr (col-1)
         let lookForw = Parsing.createForwardStringReader lineStr col
     
@@ -372,17 +369,15 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
              current, current::prev |> List.rev
           | [] -> "", []
 
-        Debug.WriteLine(sprintf "Result: Crack symbol text at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
-                              line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
+        Debug.WriteLine(sprintf "Result: Crack symbol text at column %d\nIdentifier: %A (Current: %s) \nLine string: %s"  
+                              col identIsland currentIdent lineStr)
         
         match identIsland with
         | [] | [ "" ] -> None
-        | _ -> Some (line,col + nextIdent.Length,lineStr,identIsland,currentIdent,token)
+        | _ -> Some (col + nextIdent.Length,identIsland,currentIdent)
         
-    /// Crack the info prior to a '(' or ',' once the method tip trigger '(' shows
-    let crackSymbolTextAtGetMethodsTrigger (offset:int, doc:Mono.TextEditor.TextDocument) = 
-
-        let loc, line, col, currentLine, lineStr = preCrack (offset, doc)
+    /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
+    let FindLongIdentsAtGetMethodsTrigger (col, lineStr) = 
         let lookBack = Parsing.createBackStringReader lineStr (col-1)
         let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackTriggerThenLongIdent lookBack
         match backIdentOpt with 
@@ -396,7 +391,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
         match identIsland with
         | [] | [ "" ] -> None
-        | _ -> Some (line,col,lineStr,identIsland,currentIdent,token)
+        | _ -> Some (col,identIsland,currentIdent)
         
 
     /// Get declarations at the current location in the specified document
@@ -426,25 +421,28 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
   /// Get the tool-tip to be displayed at the specified offset (relatively
   /// from the beginning of the current document)
     member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
-        match crackSymbolText(offset, doc) with 
+        let line, col, lineStr = getLineInfoFromOffset(offset, doc)
+        match FindLongIdents(col, lineStr) with 
         | None -> DataTipText []
-        | Some(line,col,lineStr,identIsland,currentIdent,token) ->
+        | Some(col,identIsland,currentIdent) ->
           let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
           Debug.WriteLine( "Result: Got something, returning"  )
           res
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
-        match crackSymbolText(offset, doc) with 
+        let line, col, lineStr = getLineInfoFromOffset(offset, doc)
+        match FindLongIdents(col, lineStr) with 
         | None -> DeclNotFound FindDeclFailureReason.Unknown
-        | Some(line,col,lineStr,identIsland,currentIdent,token) ->
+        | Some(col,identIsland,currentIdent) ->
             let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
             Debug.WriteLine( "Result: Got something, returning"  )
             res 
 
     member x.GetMethods(offset:int, doc:Mono.TextEditor.TextDocument) =
-        match crackSymbolTextAtGetMethodsTrigger(offset, doc) with 
+        let line, col, lineStr = getLineInfoFromOffset (offset, doc)
+        match FindLongIdentsAtGetMethodsTrigger(col, lineStr) with 
         | None -> None
-        | Some(line,col,lineStr,identIsland,currentIdent,token) ->
+        | Some(col,identIsland,currentIdent) ->
             let res = info.GetMethods((line, col), lineStr, Some identIsland)
             Debug.WriteLine( "Result: Got something, returning"  )
             Some (res.Name, res.Methods) 
