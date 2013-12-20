@@ -349,7 +349,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let FindLongIdents (col, lineStr) = 
+    let findLongIdents (col, lineStr) = 
         let lookBack = Parsing.createBackStringReader lineStr (col-1)
         let lookForw = Parsing.createForwardStringReader lineStr col
     
@@ -377,8 +377,8 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | _ -> Some (col + nextIdent.Length,identIsland,currentIdent)
         
     /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
-    let FindLongIdentsAtGetMethodsTrigger (col, lineStr) = 
-        let lookBack = Parsing.createBackStringReader lineStr (col-1)
+    let findLongIdentsAtGetMethodsTrigger (col, lineStr) = 
+        let lookBack = Parsing.createBackStringReader lineStr col
         let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackTriggerThenLongIdent lookBack
         match backIdentOpt with 
         | None -> None 
@@ -422,7 +422,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
   /// from the beginning of the current document)
     member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)
-        match FindLongIdents(col, lineStr) with 
+        match findLongIdents(col, lineStr) with 
         | None -> DataTipText []
         | Some(col,identIsland,currentIdent) ->
           let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
@@ -431,7 +431,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)
-        match FindLongIdents(col, lineStr) with 
+        match findLongIdents(col, lineStr) with 
         | None -> DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland,currentIdent) ->
             let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
@@ -440,7 +440,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     member x.GetMethods(offset:int, doc:Mono.TextEditor.TextDocument) =
         let line, col, lineStr = getLineInfoFromOffset (offset, doc)
-        match FindLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+        match findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
         | None -> None
         | Some(col,identIsland,currentIdent) ->
             let res = info.GetMethods((line, col), lineStr, Some identIsland)
