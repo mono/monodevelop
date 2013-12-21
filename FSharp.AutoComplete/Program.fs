@@ -527,16 +527,12 @@ module internal Main =
         let lines = readInput [] |> Array.ofList
         let text = String.concat "\n" lines
         let file = Path.GetFullPath file
-        if File.Exists file then
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text)
-          agent.TriggerParseRequest(opts, full)
-          printMsg "INFO" "Background parsing started"
-          main { state with Files = Map.add file lines state.Files }
-        else
-          printMsg "ERROR" (sprintf "File '%s' does not exist" file)
-          main state
+        let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                  file,
+                                  text)
+        agent.TriggerParseRequest(opts, full)
+        printMsg "INFO" "Background parsing started"
+        main { state with Files = Map.add file lines state.Files }
 
     | Project file ->
         // Load project file and store in state

@@ -2,5 +2,5 @@ DATA: project
 <absolute path removed>/test/integration/RobustCommands/Project/FileTwo.fs
 <absolute path removed>/test/integration/RobustCommands/Project/Program.fs
 <<EOF>>
-ERROR: File '<absolute path removed>/test/integration/RobustCommands/NoSuchFile.fs' does not exist
+INFO: Background parsing started
 <<EOF>>
