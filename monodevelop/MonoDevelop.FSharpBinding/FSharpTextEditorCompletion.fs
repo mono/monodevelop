@@ -292,12 +292,14 @@ type FSharpTextEditorCompletion() =
       let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
       
       // Get declarations and generate list for MonoDevelop
-      let decls = tyRes.GetDeclarations(x.Document, context) 
-      if decls.Items.Length > 0 then
-        let result = CompletionDataList()
-        for mi in decls.Items do result.Add(new FSharpMemberCompletionData(mi))
-        result :> ICompletionDataList
-      else null
+      match tyRes.GetDeclarations(x.Document, context) with
+      | Some(decls, residue) when decls.Items.Any() -> 
+            let items = decls.Items
+                        |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
+            let result = CompletionDataList()
+            result.AddRange(items)
+            result :> ICompletionDataList
+      | _ -> null
 
     with 
     | :? System.TimeoutException -> 
