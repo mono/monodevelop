@@ -219,15 +219,7 @@ type internal IntelliSenseAgent() =
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
     let info = x.GetTypeCheckInfo(opts, time)
     Option.bind (fun (info: TypeCheckResults) ->
-      // Get the long identifier before the current location
-      // 'residue' is the part after the last dot and 'longName' is before
-      // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-      let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-      let results = Parser.apply Parsing.parseBackIdentWithEitherResidue lookBack
-      let residue, longName =
-        List.sortBy (fun (s,ss) -> String.length s + (List.sumBy String.length ss)) results
-        |> List.rev
-        |> List.head
+      let longName, residue = Parsing.findLongIdentsAndResidue (column, lineStr)
 
       // Get items & generate output
       try
@@ -235,34 +227,6 @@ type internal IntelliSenseAgent() =
               |> Async.RunSynchronously, residue)
       with :? System.TimeoutException as e ->
                  None) info
-
-  member private x.FindLongIdents(lineStr, col) =
-    // Parsing - find the identifier around the current location
-    // (we look for full identifier in the backward direction, but only
-    // for a short identifier forward - this means that when you hover
-    // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let lookBack = Parsing.createBackStringReader lineStr (col-1)
-    let lookForw = Parsing.createForwardStringReader lineStr col
-    
-    let backIdentOpt = Parsing.tryGetFirst Parsing.parseBackLongIdent lookBack
-    match backIdentOpt with 
-    | None -> None 
-    | Some backIdent -> 
-    let nextIdentOpt = Parsing.tryGetFirst Parsing.parseIdent lookForw
-    match nextIdentOpt with 
-    | None -> None 
-    | Some nextIdent -> 
-    
-    let currentIdent, identIsland =
-      match List.rev backIdent with
-      | last::prev -> 
-          let current = last + nextIdent
-          current, current::prev |> List.rev
-      | [] -> "", []
-
-    match identIsland with
-    | [] | [ "" ] -> None
-    | _ -> Some (col + nextIdent.Length, identIsland)
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
@@ -273,7 +237,7 @@ type internal IntelliSenseAgent() =
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         info.GetDataTipText((line,col'), lineStr, identIsland, identToken)
         ) (x.GetTypeCheckInfo(opts, time))
-      ) (x.FindLongIdents(lineStr, column))
+      ) (Parsing.findLongIdents(column, lineStr))
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
@@ -285,7 +249,7 @@ type internal IntelliSenseAgent() =
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         info.GetDeclarationLocation((line,col'), lineStr, identIsland, identToken, true)
         ) (x.GetTypeCheckInfo(opts, time))
-      ) (x.FindLongIdents(lineStr, column))
+      ) (Parsing.findLongIdents(column, lineStr))
 
 
 
