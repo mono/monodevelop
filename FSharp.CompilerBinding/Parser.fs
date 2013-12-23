@@ -324,4 +324,12 @@ module Parsing =
         |> List.rev
         |> List.head
 
-    (longName, residue)
+    if String.IsNullOrEmpty residue &&
+       List.isEmpty longName &&
+       col >= 0 && col <= lineStr.Length &&
+       lineStr.[col - 1] = '.'
+    then
+        None
+    else
+        Some (longName, residue)
+

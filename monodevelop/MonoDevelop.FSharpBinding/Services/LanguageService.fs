@@ -349,12 +349,15 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
     /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
     member x.GetDeclarations(doc:Document, context: CodeCompletion.CodeCompletionContext) = 
         let line, col, lineStr = getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
-        let longName, residue = Parsing.findLongIdentsAndResidue(col, lineStr)
 
-        // Get items & generate output
-        try Some (info.GetDeclarations(None, (line,col), lineStr, (longName, residue), fun (_,_) -> false)
-                  |> Async.RunSynchronously, residue)
-        with :? TimeoutException as e -> None
+        match Parsing.findLongIdentsAndResidue(col, lineStr) with
+        | None -> None
+        | Some (longName, residue) ->
+            Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
+            // Get items & generate output
+            try Some (info.GetDeclarations(None, (line,col), lineStr, (longName, residue), fun (_,_) -> false)
+                      |> Async.RunSynchronously, residue)
+            with :? TimeoutException as e -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)

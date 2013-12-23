@@ -218,15 +218,14 @@ type internal IntelliSenseAgent() =
   /// and current residue.
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
     let info = x.GetTypeCheckInfo(opts, time)
-    Option.bind (fun (info: TypeCheckResults) ->
-      let longName, residue = Parsing.findLongIdentsAndResidue (column, lineStr)
-
-      // Get items & generate output
+    Option.bind (fun (longName, residue) ->
+      Option.bind (fun (info: TypeCheckResults) ->
       try
         Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
               |> Async.RunSynchronously, residue)
       with :? System.TimeoutException as e ->
                  None) info
+      ) (Parsing.findLongIdentsAndResidue (column, lineStr))
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
