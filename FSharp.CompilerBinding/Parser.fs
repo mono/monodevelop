@@ -138,6 +138,7 @@ module Parser =
 /// of the current cursor location etc.)
 module Parsing =
   open Parser
+  open System.Diagnostics
 
   let inline isFirstOpChar ch =
       ch = '!' || ch = '%'|| ch = '&' || ch = '*'|| ch = '+'|| ch = '-'|| ch = '.'|| ch = '/'|| ch = '<'|| ch = '='|| ch = '>'|| ch = '@'|| ch = '^'|| ch = '|'|| ch = '~'
@@ -265,3 +266,70 @@ module Parsing =
   let getFirst p s = apply p s |> List.head
   let tryGetFirst p s = match apply p s with h::_ -> Some h | [] -> None
    
+
+  // Parsing - find the identifier around the current location
+  // (we look for full identifier in the backward direction, but only
+  // for a short identifier forward - this means that when you hover
+  // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+  let findLongIdents (col, lineStr) = 
+    let lookBack = createBackStringReader lineStr (col-1)
+    let lookForw = createForwardStringReader lineStr col
+
+    let backIdentOpt = tryGetFirst parseBackLongIdent lookBack
+    match backIdentOpt with 
+    | None -> None 
+    | Some backIdent -> 
+    let nextIdentOpt = tryGetFirst parseIdent lookForw
+    match nextIdentOpt with 
+    | None -> None 
+    | Some nextIdent -> 
+
+    let identIsland =
+      match List.rev backIdent with
+      | last::prev -> 
+         let current = last + nextIdent
+         current::prev |> List.rev
+      | [] -> []
+
+    Debug.WriteLine(sprintf "Result: Crack symbol text at column %d\nIdentifier: %A (Current: %s) \nLine string: %s"  
+                          col identIsland lineStr)
+    
+    match identIsland with
+    | [] | [ "" ] -> None
+    | _ -> Some (col + nextIdent.Length,identIsland)
+    
+  /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
+  let findLongIdentsAtGetMethodsTrigger (col, lineStr) = 
+    let lookBack = createBackStringReader lineStr col
+    let backIdentOpt = tryGetFirst parseBackTriggerThenLongIdent lookBack
+    match backIdentOpt with 
+    | None -> None 
+    | Some backIdent -> 
+
+    let identIsland =
+      match List.rev backIdent with
+      | last::prev -> (last::prev |> List.rev)
+      | [] -> []
+
+    match identIsland with
+    | [] | [ "" ] -> None
+    | _ -> Some (col,identIsland)
+    
+  /// Returns the previous long idents and the current 'residue'
+  let findLongIdentsAndResidue (col, lineStr) =
+    let lookBack = createBackStringReader lineStr (col - 1)
+    let results = apply parseBackIdentWithEitherResidue lookBack
+    let residue, longName =
+        List.sortBy (fun (s,ss) -> String.length s + (List.sumBy String.length ss)) results
+        |> List.rev
+        |> List.head
+
+    if String.IsNullOrEmpty residue &&
+       List.isEmpty longName &&
+       col >= 0 && col <= lineStr.Length &&
+       lineStr.[col - 1] = '.'
+    then
+        None
+    else
+        Some (longName, residue)
+
