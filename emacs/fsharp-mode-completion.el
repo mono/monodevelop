@@ -284,6 +284,10 @@ display in a help buffer instead.")
   (rx (one-or-more (not (any ".` \t\r\n"))))
   "Regexp for normal identifiers")
 
+; Note that this regexp is not 100% correct.
+; Allowable characters are defined using unicode
+; character classes, so this will match some very
+; unusual strings composed of rare unicode chars.
 (defconst fsharp-ac--rawIdent
   (rx (seq
        "``"
