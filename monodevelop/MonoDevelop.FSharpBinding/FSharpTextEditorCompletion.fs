@@ -341,6 +341,18 @@ type FSharpTextEditorCompletion() =
 
 
 open Microsoft.FSharp.Compiler.Range
+
+[<AutoOpen>]
+module Helper = 
+  type UntypedParseInfo with 
+    // GetNavigationItems is not 100% solid and throws occasional exceptions
+    member x.GetNavigationItemsDeclarationsSafe() = 
+        try x.GetNavigationItems().Declarations
+        with _ -> 
+            Debug.Assert(false, "couldn't update navigation items, ignoring")  
+            [| |]
+
+
 type FSharpPathExtension() =
     inherit TextEditorExtension()
 
@@ -387,7 +399,10 @@ type FSharpPathExtension() =
                 let cursor = (docloc.Column, docloc.Line)
                 posGeq cursor start && posGeq finish cursor
 
-            let toplevel = ast.Untyped.GetNavigationItems().Declarations
+            let toplevel = 
+                // GetNavigationItems is not 100% solid and throws occasional exceptions
+                try ast.Untyped.GetNavigationItemsDeclarationsSafe()
+                with _ -> [| |] 
 
             #if DEBUG
             let allthings = [| for tl in  toplevel do yield (tl.Declaration.Name, tl.Nested |> Array.map (fun n -> n.Name)) |]
@@ -454,13 +469,13 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
         memberList.Clear()
         match tag with
         | :? TypedParseResult as tpr ->
-            let navitems = tpr.Untyped.GetNavigationItems()
-            for decl in navitems.Declarations do
+            let navitems = tpr.Untyped.GetNavigationItemsDeclarationsSafe()
+            for decl in navitems do
                 memberList.Add(decl.Declaration)
         | :? (TypedParseResult * string) as typeAndFilter ->
             let tpr, filter = typeAndFilter 
-            let navitems = tpr.Untyped.GetNavigationItems()
-            for decl in navitems.Declarations do
+            let navitems = tpr.Untyped.GetNavigationItemsDeclarationsSafe()
+            for decl in navitems do
                 if decl.Declaration.Name.StartsWith(filter) then
                     memberList.Add(decl.Declaration)
         | :? TopLevelDeclaration as tld ->
