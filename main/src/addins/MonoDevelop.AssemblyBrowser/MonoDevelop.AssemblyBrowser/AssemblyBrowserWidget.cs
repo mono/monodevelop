@@ -550,10 +550,18 @@ namespace MonoDevelop.AssemblyBrowser
 			return false;
 		}
 
+		static bool? shouldAutoSelectReference;
+
 		static bool ShouldAutoSelectReference() 
 		{
-			// TODO Implement ability to select default behavior.
-			return true;
+			if (shouldAutoSelectReference.HasValue) {
+				return shouldAutoSelectReference.Value;
+			} else {
+				// Load and cache the value.
+				return (shouldAutoSelectReference = PropertyService.Get<bool> (
+					typeof(AssemblyBrowserWidget).FullName + ".AutoSelectReference",
+					false)).Value;
+			}
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
@@ -1423,9 +1431,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyLoader AddReferenceByFileName (string fileName, bool? selectReference = null)
 		{
 			// Update the auto select reference to by using the user's preference.
-			if (!selectReference.HasValue) {
-				selectReference = AutoSelectReference ();
-			}
+			if (!selectReference.HasValue)
+				selectReference = ShouldAutoSelectReference ();
 
 			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
 			if (result != null) {
@@ -1463,9 +1470,8 @@ namespace MonoDevelop.AssemblyBrowser
 				throw new ArgumentNullException ("project");
 
 			// Update the auto select reference to by using the user's preference.
-			if (!selectReference.HasValue) {
-				selectReference = AutoSelectReference ();
-			}
+			if (!selectReference.HasValue)
+				selectReference = ShouldAutoSelectReference ();
 
 			if (projects.Contains (project)) {
 				// Select the project.
