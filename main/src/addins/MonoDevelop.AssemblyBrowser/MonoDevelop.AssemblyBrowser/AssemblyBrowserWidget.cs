@@ -549,6 +549,12 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return false;
 		}
+
+		static bool ShouldAutoSelectReference() 
+		{
+			// TODO Implement ability to select default behavior.
+			return true;
+		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
@@ -1393,12 +1399,12 @@ namespace MonoDevelop.AssemblyBrowser
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();
 		
-		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool selectReference = false)
+		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool? selectReference = null)
 		{
 			return AddReferenceByAssemblyName (reference.Name, selectReference);
 		}
 		
-		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool selectReference = false)
+		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool? selectReference = null)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
@@ -1414,11 +1420,23 @@ namespace MonoDevelop.AssemblyBrowser
 			return AddReferenceByFileName (assemblyFile, selectReference);
 		}
 		
-		public AssemblyLoader AddReferenceByFileName (string fileName, bool selectReference = false)
+		public AssemblyLoader AddReferenceByFileName (string fileName, bool? selectReference = null)
 		{
+			// Update the auto select reference to by using the user's preference.
+			if (!selectReference.HasValue) {
+				selectReference = AutoSelectReference ();
+			}
+
 			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
-			if (result != null)
+			if (result != null) {
+				// Select the result.
+				if (selectReference.Value) {
+					ITreeNavigator navigator = TreeView.GetNodeAtObject (result);
+					navigator.Selected = true;
+				}
+
 				return result;
+			}
 			result = new AssemblyLoader (this, fileName);
 			
 			definitions.Add (result);
@@ -1432,19 +1450,32 @@ namespace MonoDevelop.AssemblyBrowser
 					} else {
 						builder = TreeView.AddChild (result);
 					}
-					builder.Selected = builder.Expanded = selectReference;
+					builder.Selected = builder.Expanded = selectReference.Value;
 				});
 			}
 			);
 			return result;
 		}
 		
-		public void AddProject (Project project, bool selectReference = false)
+		public void AddProject (Project project, bool? selectReference = null)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (projects.Contains (project))
+
+			// Update the auto select reference to by using the user's preference.
+			if (!selectReference.HasValue) {
+				selectReference = AutoSelectReference ();
+			}
+
+			if (projects.Contains (project)) {
+				// Select the project.
+				if (selectReference.Value) {
+					ITreeNavigator navigator = TreeView.GetNodeAtObject (project);
+					navigator.Selected = true;
+				}
+
 				return;
+			}
 			projects.Add (project);
 			ITreeBuilder builder;
 			if (definitions.Count + projects.Count == 1) {
@@ -1452,7 +1483,7 @@ namespace MonoDevelop.AssemblyBrowser
 			} else {
 				builder = TreeView.AddChild (project);
 			}
-			builder.Selected = builder.Expanded = selectReference;
+			builder.Selected = builder.Expanded = selectReference.Value;
 		}
 
 		[CommandHandler (SearchCommands.FindNext)]
