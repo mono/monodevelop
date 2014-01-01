@@ -167,6 +167,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		void HighlightTextIfTooLong ()
 		{
+			Gtk.TextIter start, end, unused;
+			textView.Buffer.GetBounds (out start, out end);
+			textView.Buffer.RemoveTag (overflowTextTag, start, end);
+
 			var text = textView.Buffer.Text;
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
@@ -175,7 +179,6 @@ namespace MonoDevelop.VersionControl.Git
 					maxLengthConventionForFirstLineOfCommitMessage);
 				textView.HasTooltip = true;
 
-				Gtk.TextIter start, end, unused;
 				textView.Buffer.GetBounds (out start, out unused);
 				start.ForwardChars (maxLengthConventionForFirstLineOfCommitMessage);
 
