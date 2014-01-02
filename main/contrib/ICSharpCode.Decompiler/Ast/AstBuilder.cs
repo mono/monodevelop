@@ -52,7 +52,7 @@ namespace ICSharpCode.Decompiler.Ast
 	public class AstBuilder
 	{
 		DecompilerContext context;
-		SyntaxTree astCompileUnit = new SyntaxTree();
+		SyntaxTree syntaxTree = new SyntaxTree();
 		Dictionary<string, NamespaceDeclaration> astNamespaces = new Dictionary<string, NamespaceDeclaration>();
 		bool transformationsHaveRun;
 		
@@ -70,7 +70,7 @@ namespace ICSharpCode.Decompiler.Ast
 			if (method != null) {
 				if (method.IsGetter || method.IsSetter || method.IsAddOn || method.IsRemoveOn)
 					return true;
-				if (settings.HideNonPublicMembers && !(method.IsPublic || method.IsFamily))
+				if (settings.AnonymousMethods && method.HasGeneratedName() && method.IsCompilerGenerated())
 					return true;
 			}
 
@@ -155,15 +155,15 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public void RunTransformations(Predicate<IAstTransform> transformAbortCondition)
 		{
-			TransformationPipeline.RunTransformationsUntil(astCompileUnit, transformAbortCondition, context);
+			TransformationPipeline.RunTransformationsUntil(syntaxTree, transformAbortCondition, context);
 			transformationsHaveRun = true;
 		}
 		
 		/// <summary>
 		/// Gets the abstract source tree.
 		/// </summary>
-		public SyntaxTree CompilationUnit {
-			get { return astCompileUnit; }
+		public SyntaxTree SyntaxTree {
+			get { return syntaxTree; }
 		}
 		
 		/// <summary>
@@ -175,16 +175,16 @@ namespace ICSharpCode.Decompiler.Ast
 			if (!transformationsHaveRun)
 				RunTransformations();
 			
-			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = new TextOutputFormatter(output) { FoldBraces = context.Settings.FoldBraces };
+			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
+			var outputFormatter = new TextTokenWriter(output) { FoldBraces = context.Settings.FoldBraces };
 			var formattingPolicy = context.Settings.CSharpFormattingOptions;
-			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
+			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
 		}
 		
 		public void AddAssembly(AssemblyDefinition assemblyDefinition, bool onlyAssemblyLevel = false)
 		{
 			if (assemblyDefinition.Name.Version != null) {
-				astCompileUnit.AddChild(
+				syntaxTree.AddChild(
 					new AttributeSection {
 						AttributeTarget = "assembly",
 						Attributes = {
@@ -201,10 +201,10 @@ namespace ICSharpCode.Decompiler.Ast
 					}, EntityDeclaration.AttributeRole);
 			}
 			
-			ConvertCustomAttributes(astCompileUnit, assemblyDefinition, "assembly");
-			ConvertSecurityAttributes(astCompileUnit, assemblyDefinition, "assembly");
-			ConvertCustomAttributes(astCompileUnit, assemblyDefinition.MainModule, "module");
-			AddTypeForwarderAttributes(astCompileUnit, assemblyDefinition.MainModule, "assembly");
+			ConvertCustomAttributes(syntaxTree, assemblyDefinition, "assembly");
+			ConvertSecurityAttributes(syntaxTree, assemblyDefinition, "assembly");
+			ConvertCustomAttributes(syntaxTree, assemblyDefinition.MainModule, "module");
+			AddTypeForwarderAttributes(syntaxTree, assemblyDefinition.MainModule, "assembly");
 			
 			if (!onlyAssemblyLevel) {
 				foreach (TypeDefinition typeDef in assemblyDefinition.MainModule.Types) {
@@ -253,7 +253,7 @@ namespace ICSharpCode.Decompiler.Ast
 			} else {
 				// Create the namespace
 				NamespaceDeclaration astNamespace = new NamespaceDeclaration { Name = name };
-				astCompileUnit.AddChild(astNamespace, SyntaxTree.MemberRole);
+				syntaxTree.Members.Add(astNamespace);
 				astNamespaces[name] = astNamespace;
 				return astNamespace;
 			}
@@ -264,31 +264,31 @@ namespace ICSharpCode.Decompiler.Ast
 			var astType = CreateType(typeDef);
 			NamespaceDeclaration astNS = GetCodeNamespace(typeDef.Namespace);
 			if (astNS != null) {
-				astNS.AddChild(astType, NamespaceDeclaration.MemberRole);
+				astNS.Members.Add(astType);
 			} else {
-				astCompileUnit.AddChild(astType, SyntaxTree.MemberRole);
+				syntaxTree.Members.Add(astType);
 			}
 		}
 		
 		public void AddMethod(MethodDefinition method)
 		{
 			AstNode node = method.IsConstructor ? (AstNode)CreateConstructor(method) : CreateMethod(method);
-			astCompileUnit.AddChild(node, SyntaxTree.MemberRole);
+			syntaxTree.Members.Add(node);
 		}
 
 		public void AddProperty(PropertyDefinition property)
 		{
-			astCompileUnit.AddChild(CreateProperty(property), SyntaxTree.MemberRole);
+			syntaxTree.Members.Add(CreateProperty(property));
 		}
 		
 		public void AddField(FieldDefinition field)
 		{
-			astCompileUnit.AddChild(CreateField(field), SyntaxTree.MemberRole);
+			syntaxTree.Members.Add(CreateField(field));
 		}
 		
 		public void AddEvent(EventDefinition ev)
 		{
-			astCompileUnit.AddChild(CreateEvent(ev), SyntaxTree.MemberRole);
+			syntaxTree.Members.Add(CreateEvent(ev));
 		}
 		
 		/// <summary>

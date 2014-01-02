@@ -118,7 +118,7 @@ namespace MonoDevelop.Refactoring
 		public string OutputNode (AstNode node)
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {
-				var formatter = new TextWriterOutputFormatter (stringWriter);
+				var formatter = new TextWriterTokenWriter (stringWriter);
 //				formatter.Indentation = indentLevel;
 				stringWriter.NewLine = Document.Editor.EolMarker;
 				

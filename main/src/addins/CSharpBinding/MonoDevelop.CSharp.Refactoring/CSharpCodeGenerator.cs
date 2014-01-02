@@ -282,7 +282,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var def = type.GetDefinition ();
 			if (def != null) {
 				using (var stringWriter = new System.IO.StringWriter ()) {
-					var formatter = new TextWriterOutputFormatter (stringWriter);
+					var formatter = new TextWriterTokenWriter (stringWriter);
 					stringWriter.NewLine = EolMarker; 
 					var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
 					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
@@ -553,9 +553,9 @@ namespace MonoDevelop.CSharp.Refactoring
 										astBuilder.AddMethod (m);
 										
 										astBuilder.RunTransformations (o => false);
-										
+
 										var visitor = new ThrowsExceptionVisitor ();
-										astBuilder.CompilationUnit.AcceptVisitor (visitor);
+										astBuilder.SyntaxTree.AcceptVisitor (visitor);
 										skipBody = visitor.Throws;
 										if (skipBody)
 											break;
@@ -1014,7 +1014,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {
 //				formatter.Indentation = indentLevel;
-				var formatter = new TextWriterOutputFormatter (stringWriter);
+				var formatter = new TextWriterTokenWriter (stringWriter);
 				stringWriter.NewLine = doc.Editor.EolMarker;
 				
 				var visitor = new CSharpOutputVisitor (formatter, doc.GetFormattingOptions ());
