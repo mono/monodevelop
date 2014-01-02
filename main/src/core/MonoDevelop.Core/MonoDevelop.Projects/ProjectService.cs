@@ -123,6 +123,9 @@ namespace MonoDevelop.Projects
 				}
 				ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
 				chain = CreateExtensionChain (extensions);
+
+				// After creating the chain there is no need to keep the reference to the target
+				einfo.ProjectLanguageCondition.TargetProject = null;
 			}
 			else {
 				if (defaultExtensionChain == null) {
