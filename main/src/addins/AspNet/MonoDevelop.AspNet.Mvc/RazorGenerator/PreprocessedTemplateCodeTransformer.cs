@@ -156,7 +156,7 @@ namespace MonoDevelop.RazorGenerator
 
 			//NOTE: a more sophisticated implementation would write safe and pre-escaped values directly to the
 			//instead of double-escaping. See System.Web.IHtmlString in ASP.NET 4.0 for an example of this.
-			System.Net.WebUtility.HtmlEncode (value.ToString (), writer);
+			writer.Write(System.Net.WebUtility.HtmlEncode (value.ToString ()));
 		}
 
 		// This method is REQUIRED, but you may choose to implement it differently
