@@ -571,6 +571,15 @@ module internal Main =
                       printfn "<<EOF>>"
                       main state
                   | Json ->
+                      
+                      let ds = List.sortBy (fun (d: Declaration) -> d.Name)
+                                 [ for d in decls.Items do yield d ]
+                      match List.tryFind (fun (d: Declaration) -> d.Name.StartsWith residue) ds with
+                      | None -> ()
+                      | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
+                                  let helptext = Map.add d.Name tip Map.empty
+                                  prAsJson { Kind = "helptext"; Data = helptext }
+                                  
                       prAsJson { Kind = "completion"
                                  Data = [ for d in decls.Items do yield d.Name ] }
 
