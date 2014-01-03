@@ -35,10 +35,10 @@ using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
-	public class FindDerivedSymbolsHandler 
+	class FindDerivedSymbolsHandler 
 	{
 		//Ide.Gui.Document doc;
-		IMember entity;
+		readonly IMember entity;
 
 		public FindDerivedSymbolsHandler (Ide.Gui.Document doc, IMember entity)
 		{
@@ -46,18 +46,35 @@ namespace MonoDevelop.Refactoring
 			this.entity = entity;
 		}
 
-		public void Run ()
+		static HashSet<IAssembly> GetAllAssemblies ()
 		{
 			var assemblies = new HashSet<IAssembly> ();
 			foreach (var project in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-				var comp = TypeSystemService.GetCompilation (project); 
+				var comp = TypeSystemService.GetCompilation (project);
 				if (comp == null)
 					continue;
-				assemblies.Add (comp.MainAssembly);
+				foreach (var asm in comp.Assemblies)
+					assemblies.Add (asm);
 			}
+			return assemblies;
+		}
 
-			TypeGraph tg = new TypeGraph (assemblies);
+		public bool IsValid {
+			get {
+				var assemblies = GetAllAssemblies ();
+				var tg = new TypeGraph (assemblies);
+				var node = tg.GetNode (entity.DeclaringTypeDefinition); 
+				return node != null;
+			}
+		}
+
+		public void Run ()
+		{
+			var assemblies = GetAllAssemblies ();
+			var tg = new TypeGraph (assemblies);
 			var node = tg.GetNode (entity.DeclaringTypeDefinition); 
+			if (node == null)
+				return;
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 				Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
 				derivedTypes.Push (node.DerivedTypes); 
@@ -79,7 +96,7 @@ namespace MonoDevelop.Refactoring
 						} else {
 							derivedMember = InheritanceHelper.GetDerivedMember (impMember, derived.TypeDefinition);
 						}
-						if (derivedMember == null)
+						if (derivedMember == null || string.IsNullOrEmpty (derivedMember.Region.FileName))
 							continue;
 						var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
 						var start = tf.LocationToOffset (derivedMember.Region.Begin); 

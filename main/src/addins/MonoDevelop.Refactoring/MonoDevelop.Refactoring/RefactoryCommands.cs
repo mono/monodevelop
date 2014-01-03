@@ -347,15 +347,21 @@ namespace MonoDevelop.Refactoring
 			if (item is IMember) {
 				var member = (IMember)item;
 				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-					ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (new FindDerivedSymbolsHandler (doc, member).Run));
-					added = true;
+					var handler = new FindDerivedSymbolsHandler (doc, member);
+					if (handler.IsValid) {
+						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
+						added = true;
+					}
 				}
 			}
 			if (item is IMember) {
 				var member = (IMember)item;
 				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
-					ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (new FindMemberOverloadsHandler (doc, member).Run));
-					added = true;
+					var findMemberOverloadsHandler = new FindMemberOverloadsHandler (doc, member);
+					if (findMemberOverloadsHandler.IsValid) {
+						ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (findMemberOverloadsHandler.Run));
+						added = true;
+					}
 				}
 			}
 
