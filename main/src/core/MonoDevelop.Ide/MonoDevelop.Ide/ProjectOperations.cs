@@ -2109,6 +2109,8 @@ namespace MonoDevelop.Ide
 
 		public TextEditorData GetReadOnlyTextEditorData (FilePath filePath)
 		{
+			if (filePath.IsNullOrEmpty)
+				throw new ArgumentNullException ("filePath");
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
 					return doc.Editor;

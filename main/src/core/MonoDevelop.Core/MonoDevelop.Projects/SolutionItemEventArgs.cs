@@ -77,6 +77,12 @@ namespace MonoDevelop.Projects
 		public bool Reloading {
 			get { return reloading; }
 		}
+
+		/// <summary>
+		/// When Reloading is true, it returns the original solution item that is being reloaded
+		/// </summary>
+		/// <value>The replaced item.</value>
+		public SolutionItem ReplacedItem { get; internal set; }
 	}
 	
 	public delegate void SolutionItemModifiedEventHandler (object sender, SolutionItemModifiedEventArgs e);

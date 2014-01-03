@@ -153,7 +153,7 @@ namespace MonoDevelop.AssemblyBrowser
 				setData (astBuilder);
 				
 				astBuilder.RunTransformations (o => false);
-				GeneratedCodeSettings.Default.Apply (astBuilder.CompilationUnit);
+				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
 				var output = new ColoredCSharpFormatter (data.Document);
 				astBuilder.GenerateCode (output);
 				output.SetDocumentData ();

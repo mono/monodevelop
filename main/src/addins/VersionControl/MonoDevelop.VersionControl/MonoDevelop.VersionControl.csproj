@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+ç<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -152,7 +152,7 @@
     <EmbeddedResource Include="icons\light\removed-overlay-16%402x.png">
       <LogicalName>removed-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="repository.png">
+    <EmbeddedResource Include="icons\repository.png">
       <LogicalName>repository.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\versioned-overlay-16.png">
@@ -185,40 +185,40 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="version-control-16.png">
+    <EmbeddedResource Include="icons\version-control-16.png">
       <LogicalName>version-control-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_log.png">
+    <EmbeddedResource Include="icons\menu_log.png">
       <LogicalName>menu_log.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_diff.png">
+    <EmbeddedResource Include="icons\menu_diff.png">
       <LogicalName>menu_diff.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_update.png">
+    <EmbeddedResource Include="icons\menu_update.png">
       <LogicalName>menu_update.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_status.png">
+    <EmbeddedResource Include="icons\menu_status.png">
       <LogicalName>menu_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_commit.png">
+    <EmbeddedResource Include="icons\menu_commit.png">
       <LogicalName>menu_commit.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_remote_status.png">
+    <EmbeddedResource Include="icons\menu_remote_status.png">
       <LogicalName>menu_remote_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_add.png">
+    <EmbeddedResource Include="icons\menu_add.png">
       <LogicalName>menu_add.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_remove.png">
+    <EmbeddedResource Include="icons\menu_remove.png">
       <LogicalName>menu_remove.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_resolve.png">
+    <EmbeddedResource Include="icons\menu_resolve.png">
       <LogicalName>menu_resolve.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="comment.png">
+    <EmbeddedResource Include="icons\comment.png">
       <LogicalName>comment.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="menu_revert.png">
+    <EmbeddedResource Include="icons\menu_revert.png">
       <LogicalName>menu_revert.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
@@ -305,6 +305,7 @@
     <Compile Include="MonoDevelop.VersionControl\IgnoreCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\ResolveConflictsCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlGeneralOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

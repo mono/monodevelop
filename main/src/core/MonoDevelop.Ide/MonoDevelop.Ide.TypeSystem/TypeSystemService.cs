@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.4";
+		const string CurrentVersion = "1.1.5";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -1749,7 +1749,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			var oldCache = cachedAssemblyContents.Values.ToList ();
-			Parallel.ForEach (oldCache, content => content.Unload ());
 			cachedAssemblyContents.Clear ();
 			lock (parseQueueLock) {
 				parseQueueIndex.Clear ();
@@ -2012,14 +2011,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			#endregion
-			internal void Unload ()
-			{
-				if (CtxLoader != null) {
-					CtxLoader.Unload ();
-					CtxLoader = null;
-				}
-			}
-
 		}
 
 		internal class LazyAssemblyLoader : IUnresolvedAssembly
@@ -2269,12 +2260,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				return result;
-			}
-
-			public void Unload ()
-			{
-				assembly = new DefaultUnresolvedAssembly (fileName);
-				Loaded = null;
 			}
 		}
 

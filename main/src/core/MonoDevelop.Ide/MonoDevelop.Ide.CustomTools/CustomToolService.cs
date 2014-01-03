@@ -62,10 +62,6 @@ namespace MonoDevelop.Ide.CustomTools
 					break;
 				}
 			});
-			IdeApp.Workspace.FileAddedToProject += delegate (object sender, ProjectFileEventArgs args) {
-				foreach (ProjectFileEventInfo e in args)
-					Update (e.ProjectFile, false);
-			};
 			IdeApp.Workspace.FileChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, false);
@@ -73,16 +69,6 @@ namespace MonoDevelop.Ide.CustomTools
 			IdeApp.Workspace.FilePropertyChangedInProject += delegate (object sender, ProjectFileEventArgs args) {
 				foreach (ProjectFileEventInfo e in args)
 					Update (e.ProjectFile, false);
-			};
-			IdeApp.Workspace.SolutionLoaded += delegate (object sender, SolutionEventArgs args) {
-				if (IdeApp.Workspace.IsReloading || !args.Solution.UserProperties.IsEmpty)
-					return;
-
-				foreach (Project p in args.Solution.GetAllProjects ()) {
-					foreach (ProjectFile i in p.Files) {
-						Update (i, false);
-					}
-				}
 			};
 			//FIXME: handle the rename
 			//MonoDevelop.Ide.Gui.IdeApp.Workspace.FileRenamedInProject

@@ -31,6 +31,7 @@ namespace MonoDevelop.RazorGenerator
 			_codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
 			DefaultNamespace = "ASP";
 			EnableLinePragmas = true;
+			StaticHelpers = true;
 
 			GeneratedClassContext = new GeneratedClassContext (
 				GeneratedClassContext.DefaultExecuteMethodName,

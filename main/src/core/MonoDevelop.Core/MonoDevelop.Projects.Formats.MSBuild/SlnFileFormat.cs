@@ -34,13 +34,11 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using System.Reflection;
 using System.Linq;
 
@@ -127,6 +125,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//Write Header
 				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + slnData.VersionString);
 				sw.WriteLine (slnData.HeaderComment);
+				if (slnData.VisualStudioVersion != null)
+					sw.WriteLine ("VisualStudioVersion = {0}");
+				if (slnData.MinimumVisualStudioVersion != null)
+					sw.WriteLine ("MinimumVisualStudioVersion = {0}");
 
 				//Write the projects
 				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
@@ -693,12 +695,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				while (reader.Peek () >= 0) {
 					s = GetNextLine (reader, lines).Trim ();
 
-					if (String.Compare (s, "Global", true) == 0) {
+					if (String.Compare (s, "Global", StringComparison.OrdinalIgnoreCase) == 0) {
 						ParseGlobal (reader, lines, globals);
 						continue;
 					}
 
-					if (s.StartsWith ("Project")) {
+					if (s.StartsWith ("Project", StringComparison.Ordinal)) {
 						Section sec = new Section ();
 						projectSections.Add (sec);
 
@@ -708,6 +710,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						sec.Count = (e < 0) ? 1 : (e - sec.Start + 1);
 
 						continue;
+					}
+
+					if (s.StartsWith ("VisualStudioVersion = ", StringComparison.Ordinal)) {
+						var v = Version.Parse (s.Substring ("VisualStudioVersion = ".Length));
+						data.VisualStudioVersion = v;
+					}
+
+					if (s.StartsWith ("MinimumVisualStudioVersion = ", StringComparison.Ordinal)) {
+						var v = Version.Parse (s.Substring ("MinimumVisualStudioVersion = ".Length));
+						data.MinimumVisualStudioVersion = v;
 					}
 				}
 			}

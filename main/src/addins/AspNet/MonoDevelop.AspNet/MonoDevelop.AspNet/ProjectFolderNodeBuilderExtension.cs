@@ -75,10 +75,15 @@ namespace MonoDevelop.AspNet
 			foreach (string s in dirs)
 				fullPaths.Add (proj.BaseDirectory.Combine (s));
 			RemoveDirsNotInProject (fullPaths, proj);
-			
+
+			if (fullPaths.Count == 0)
+				return;
+
 			foreach (string dir in dirs) {
+				if (!fullPaths.Contains (proj.BaseDirectory.Combine (dir)))
+					continue;
+
 				CommandInfo cmd = info.Add (dir.Replace("_", "__"), dir);
-				cmd.Enabled = fullPaths.Contains (proj.BaseDirectory.Combine (dir));
 			}
 		}
 

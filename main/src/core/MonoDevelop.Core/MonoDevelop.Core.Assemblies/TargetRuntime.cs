@@ -302,6 +302,11 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return new ExecutionEnvironment (GetBackend (fx).GetToolsEnvironmentVariables ());
 		}
+
+		public virtual ExecutionEnvironment GetToolsExecutionEnvironment ()
+		{
+			return new ExecutionEnvironment ();
+		}
 		
 		/// <summary>
 		/// Looks for the specified tool in this runtime. The name can be a script or a .exe.
@@ -322,7 +327,7 @@ namespace MonoDevelop.Core.Assemblies
 		/// <summary>
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>
-		public abstract string GetMSBuildBinPath (TargetFramework fx);
+		public abstract string GetMSBuildBinPath (string toolsVersion);
 		
 		/// <summary>
 		/// Returns the MSBuild extensions path.

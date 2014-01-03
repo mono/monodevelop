@@ -328,6 +328,36 @@ namespace MonoDevelop.MacIntegration
 					e.Handled = true;
 				};
 
+				ApplicationEvents.OpenUrls += delegate (object sender, ApplicationUrlEventArgs e) {
+					GLib.Timeout.Add (10, delegate {
+						// Open files via the monodevelop:// URI scheme, compatible with the
+						// common TextMate scheme: http://blog.macromates.com/2007/the-textmate-url-scheme/
+						IdeApp.OpenFiles (e.Urls.Select (url => {
+							try {
+								var uri = new Uri (url);
+								if (uri.Host != "open")
+									return null;
+
+								var qs = System.Web.HttpUtility.ParseQueryString (uri.Query);
+								var fileUri = new Uri (qs ["file"]);
+
+								int line, column;
+								if (!Int32.TryParse (qs ["line"], out line))
+									line = 1;
+								if (!Int32.TryParse (qs ["column"], out column))
+									column = 1;
+
+								return new FileOpenInformation (fileUri.AbsolutePath,
+									line, column, OpenDocumentOptions.Default);
+							} catch (Exception ex) {
+								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
+								return null;
+							}
+						}).Where (foi => foi != null));
+						return false;
+					});
+				};
+
 				//if not running inside an app bundle (at dev time), need to do some additional setup
 				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
 					SetupWithoutBundle ();

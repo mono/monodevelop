@@ -15,6 +15,7 @@
 
 	<!-- Actions -->
 	<Actions>
+		<Open filename = "Controllers/HomeController.cs"/>
 	</Actions>
 
 	<!-- Template Content -->

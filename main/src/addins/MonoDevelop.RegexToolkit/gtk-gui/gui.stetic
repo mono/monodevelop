@@ -280,6 +280,7 @@
               <widget class="Gtk.HBox" id="hbox4">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
+                <property name="BorderWidth">6</property>
                 <child>
                   <widget class="Gtk.Notebook" id="notebook2">
                     <property name="MemberName" />

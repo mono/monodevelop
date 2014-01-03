@@ -381,12 +381,7 @@ namespace MonoDevelop.Debugger
 				string layout = oldLayout;
 				oldLayout = null;
 
-				// Dispatch synchronously to avoid start/stop races
-				DispatchService.GuiSyncDispatch (delegate {
-					IdeApp.Workbench.HideCommandBar ("Debug");
-					if (IdeApp.Workbench.CurrentLayout == "Debug")
-						IdeApp.Workbench.CurrentLayout = layout;
-				});
+				UnsetDebugLayout (layout);
 			}
 
 			currentSession.BusyStateChanged -= OnBusyStateChanged;
@@ -421,6 +416,26 @@ namespace MonoDevelop.Debugger
 			});
 
 			currentSession.Dispose ();
+		}
+
+		static void UnsetDebugLayout (string layout)
+		{
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				IdeApp.Workbench.HideCommandBar ("Debug");
+				if (IdeApp.Workbench.CurrentLayout == "Debug")
+					IdeApp.Workbench.CurrentLayout = layout;
+			});
+		}
+
+		static void SetDebugLayout ()
+		{
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = "Debug";
+				IdeApp.Workbench.ShowCommandBar ("Debug");
+			});
 		}
 
 		public static bool IsDebugging {
@@ -478,6 +493,7 @@ namespace MonoDevelop.Debugger
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
+			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
 			return monitor.AsyncOperation;
 		}
@@ -551,12 +567,7 @@ namespace MonoDevelop.Debugger
 			
 			SetupSession ();
 			
-			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
-				oldLayout = IdeApp.Workbench.CurrentLayout;
-				IdeApp.Workbench.CurrentLayout = "Debug";
-				IdeApp.Workbench.ShowCommandBar ("Debug");
-			});
+			SetDebugLayout ();
 			
 			try {
 				session.Run (startInfo, GetUserOptions ());
@@ -582,16 +593,22 @@ namespace MonoDevelop.Debugger
 		{
 			// Events may come with a bit of delay, so the debug session
 			// may already have been cleaned up
-			if (console != null)
-				console.Log.Write (text);
+			var logger = console;
+
+			if (logger != null)
+				logger.Log.Write (text);
 		}
 		
 		static void OutputWriter (bool iserr, string text)
 		{
-			if (iserr)
-				console.Error.Write (text);
-			else
-				console.Out.Write (text);
+			var logger = console;
+
+			if (logger != null) {
+				if (iserr)
+					logger.Error.Write (text);
+				else
+					logger.Out.Write (text);
+			}
 		}
 
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)

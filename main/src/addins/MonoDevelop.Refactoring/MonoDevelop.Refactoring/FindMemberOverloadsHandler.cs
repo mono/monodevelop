@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.Analysis;
 
 namespace MonoDevelop.Refactoring
 {
-	public class FindMemberOverloadsHandler
+	class FindMemberOverloadsHandler
 	{
 		//Ide.Gui.Document doc;
 		IMember entity;
@@ -43,11 +43,26 @@ namespace MonoDevelop.Refactoring
 			this.entity = entity;
 		}
 
+		public bool IsValid {
+			get {
+				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
+					var fileName = overloadedMember.Region.FileName;
+					if (string.IsNullOrEmpty (fileName))
+						continue;
+					return true;
+				}
+				return false;
+			}
+		}
+
 		public void Run ()
 		{
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
-					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (overloadedMember.Region.FileName);
+					var fileName = overloadedMember.Region.FileName;
+					if (string.IsNullOrEmpty (fileName))
+						continue;
+					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (fileName);
 					var start = tf.LocationToOffset (overloadedMember.Region.Begin); 
 					tf.SearchRequest.SearchPattern = overloadedMember.Name;
 					var sr = tf.SearchForward (start); 

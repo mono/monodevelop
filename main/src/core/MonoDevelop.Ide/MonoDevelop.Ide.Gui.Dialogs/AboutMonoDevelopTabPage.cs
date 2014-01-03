@@ -55,9 +55,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 
 			Xwt.VBox infoBox = new Xwt.VBox ();
+			Xwt.FrameBox mbox = new Xwt.FrameBox (infoBox);
+
 			infoBox.Spacing = 6;
 			infoBox.Margin = 12;
-			PackStart (infoBox.ToGtkWidget (), false, false, 0);
+			PackStart (mbox.ToGtkWidget (), false, false, 0);
 
 			infoBox.PackStart (new Xwt.Label () {
 				Text = GettextCatalog.GetString ("Version"),
@@ -105,6 +107,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Text = string.Format ("Yusuke Kamiyamane"),
 				Uri = new Uri ("http://p.yusukekamiyamane.com")
 			});
+
 			infoBox.PackStart (cbox);
 
 			cbox = new Xwt.HBox () {

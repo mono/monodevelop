@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl
 			box.Margin = 12;
 
 			disableVersionControl = new Xwt.CheckBox (GettextCatalog.GetString ("Disable Version Control globally")) {
-				Active = VersionControlService.IsGloballyDisabled,
+				Active = VersionControlService.ConfigurationGlobalDisabled,
 			};
 			box.PackStart (disableVersionControl);
 			box.Show ();
@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl
 
 		public override void ApplyChanges ()
 		{
-			VersionControlService.IsGloballyDisabled = disableVersionControl.Active;
+			VersionControlService.ConfigurationGlobalDisabled = disableVersionControl.Active;
 			VersionControlService.SaveConfiguration ();
 		}
 	}
