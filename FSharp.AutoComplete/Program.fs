@@ -435,7 +435,15 @@ module internal Main =
 
   let rec main (state:State) : int =
 
-    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, severityConverter))
+    let prAsJson o =
+      Debug.printTiming "prAsJson convert start"
+      Debug.flush()
+      let s = (JsonConvert.SerializeObject(o, severityConverter))
+      Debug.printTiming "prAsJson convert end"
+      Debug.flush()
+      Console.WriteLine s
+      Debug.printTiming "prAsJson print end"
+      Debug.flush()
 
     let printMsg ty s =
       match state.OutputMode with
@@ -539,7 +547,9 @@ module internal Main =
 
           match cmd with
           | Completion ->
+              Debug.printTiming "About to DoCompletion"
               let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+              Debug.printTiming "Completed DoCompletion"
 
               match decls with
               | Some (decls, residue) ->
@@ -550,6 +560,9 @@ module internal Main =
                       printfn "<<EOF>>"
 
                   | Json ->
+                      
+                      Debug.printTiming "About to format first tip"
+                      Debug.flush()
                       let ds = List.sortBy (fun (d: Declaration) -> d.Name)
                                  [ for d in decls.Items do yield d ]
                       let helptext =
@@ -558,17 +571,24 @@ module internal Main =
                         | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
                                     Map.add d.Name tip Map.empty
 
+                      Debug.printTiming "Completed format of first tip"
+                      Debug.flush()
                       prAsJson { Kind = "helptext"; Data = helptext }
                                   
                       prAsJson { Kind = "completion"
                                  Data = [ for d in ds do yield d.Name ] }
 
+                      Debug.printTiming "Printed first tip"
+                      Debug.flush()
                       prAsJson
                         { Kind = "helptext"
                           Data = [ for d in decls.Items do
                                      yield d.Name, TipFormatter.formatTip d.DescriptionText ]
                                  |> Map.ofList }
                       
+                      Debug.printTiming "Printed rest of tips"
+                      Debug.flush()
+
               | None -> 
                   printMsg "ERROR" "Could not get type information"
 

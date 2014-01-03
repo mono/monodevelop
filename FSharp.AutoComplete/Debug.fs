@@ -37,3 +37,16 @@ module Debug
       fprintfn !output fmt
     else
       Format<_>.Instance
+
+  let private startTime = System.DateTime.Now
+
+  let printTiming (fmt: Printf.TextWriterFormat<'a>) : 'a =
+    if !verbose then
+      fprintf  !output "%f: " (System.DateTime.Now - startTime).TotalMilliseconds
+      fprintfn !output fmt
+    else
+      Format<_>.Instance
+
+  let inline flush () =
+    if !verbose then
+      (!output).Flush()

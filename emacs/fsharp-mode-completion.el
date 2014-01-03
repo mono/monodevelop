@@ -37,12 +37,12 @@
 
 (defvar fsharp-ac-executable "fsautocomplete.exe")
 
-(defvar fsharp-ac-complete-command
+(setq fsharp-ac-complete-command
   (let ((exe (or (executable-find fsharp-ac-executable)
                  (concat (file-name-directory (or load-file-name buffer-file-name))
                          "bin/" fsharp-ac-executable))))
     (case system-type
-      (windows-nt (list exe))
+      (windows-nt (list exe "-v" "-l" "d:/dev/rneatherway-fsharpbinding/fslog.txt"))
       (otherwise (list "mono" exe)))))
 
 (defvar fsharp-ac-use-popup t
@@ -86,7 +86,7 @@ display in a help buffer instead.")
       (let ((pt (point))
             (atend (eq (point-max) (point))))
         (goto-char (point-max))
-        (insert-before-markers str)
+        (insert-before-markers (format "%s: %s" (float-time) str))
         (unless atend
           (goto-char pt))))))
 
@@ -439,6 +439,7 @@ The current buffer must be an F# file that exists on disk."
 
 (defun fsharp-ac-parse-errors (data)
   "Extract the errors from the given process response. Returns a list of fsharp-error."
+  (fsharp-ac--log (format "Error parsing: '%s'\n" data))
   (save-match-data
     (let (parsed)
       (dolist (err data parsed)
@@ -566,8 +567,6 @@ around to the start of the buffer."
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
-  (fsharp-ac--log str)
-
   (with-current-buffer (process-buffer proc)
     (save-excursion
       (goto-char (process-mark proc))
@@ -578,6 +577,9 @@ around to the start of the buffer."
       ;(message "[filter] length(msg) = %d" (length msg))
       (let ((kind (gethash "Kind" msg))
             (data (gethash "Data" msg)))
+        (fsharp-ac--log (format "Received '%s' message of length %d\n"
+                                kind
+                                (hash-table-size msg)))
         (cond
          ((s-equals? "ERROR" kind) (fsharp-ac-handle-process-error data))
          ((s-equals? "INFO" kind) (when fsharp-ac-verbose (fsharp-ac-message-safely data)))
@@ -588,7 +590,7 @@ around to the start of the buffer."
          ((s-equals? "tooltip" kind) (fsharp-ac-handle-tooltip data))
          ((s-equals? "finddecl" kind) (fsharp-ac-visit-definition data))
        (t
-        (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
+        (fsharp-ac-message-safely "Error: unrecognised message: '%s'" msg))))
       
     (setq msg (fsharp-ac--get-msg proc)))))
 
