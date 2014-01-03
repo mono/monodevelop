@@ -37,12 +37,12 @@
 
 (defvar fsharp-ac-executable "fsautocomplete.exe")
 
-(setq fsharp-ac-complete-command
+(defvar fsharp-ac-complete-command
   (let ((exe (or (executable-find fsharp-ac-executable)
                  (concat (file-name-directory (or load-file-name buffer-file-name))
                          "bin/" fsharp-ac-executable))))
     (case system-type
-      (windows-nt (list exe "-v" "-l" "d:/dev/rneatherway-fsharpbinding/fslog.txt"))
+      (windows-nt (list exe))
       (otherwise (list "mono" exe)))))
 
 (defvar fsharp-ac-use-popup t
@@ -74,7 +74,8 @@ display in a help buffer instead.")
 (defvar fsharp-ac-project-files nil)
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
-(defvar fsharp-ac-current-candidate)
+(defvar fsharp-ac-current-candidate nil)
+(defvar fsharp-ac-current-helptext (make-hash-table :test 'equal))
 
 (defconst fsharp-ac--log-buf "*fsharp-debug*")
 
@@ -167,6 +168,7 @@ display in a help buffer instead.")
   (setq fsharp-ac-project-files nil
         fsharp-ac-status 'idle
         fsharp-ac-current-candidate nil)
+  (clrhash fsharp-ac-current-helptext)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -255,9 +257,16 @@ display in a help buffer instead.")
 (defun fsharp-ac-document (item)
   (let* ((ticks (s-match "^``\\(.*\\)``$" item))
          (key (if ticks (cadr ticks) item))
-         (prop (gethash key fsharp-ac-current-helptext))
-         (help (if prop prop "Loading documentation...")))
-    (pos-tip-fill-string help popup-tip-max-width)))
+         (prop (gethash key fsharp-ac-current-helptext)))
+    (let ((help 
+           (if prop prop
+             (log-psendstr fsharp-ac-completion-process
+                           (format "helptext %s\n" key))
+             (with-local-quit
+               (accept-process-output fsharp-ac-completion-process 0 100))
+             (gethash key fsharp-ac-current-helptext
+                      "Loading documentation..."))))
+      (pos-tip-fill-string help popup-tip-max-width))))
 
 (defun fsharp-ac-candidate ()
   (interactive)
@@ -265,7 +274,8 @@ display in a help buffer instead.")
     (idle
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
-
+     (clrhash fsharp-ac-current-helptext)
+     
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
@@ -439,7 +449,6 @@ The current buffer must be an F# file that exists on disk."
 
 (defun fsharp-ac-parse-errors (data)
   "Extract the errors from the given process response. Returns a list of fsharp-error."
-  (fsharp-ac--log (format "Error parsing: '%s'\n" data))
   (save-match-data
     (let (parsed)
       (dolist (err data parsed)
@@ -563,7 +572,11 @@ around to the start of the buffer."
               (json-key-type 'string)
               (msg (buffer-substring-no-properties (point-min) (match-beginning 0))))
           (delete-region (point-min) (match-end 0))
-          (json-read-from-string msg))))))
+          (condition-case nil
+              (json-read-from-string msg)
+            (error
+             (fsharp-ac--log (format "Malformed JSON: %s" msg))
+             (message "Error: F# completion process produced malformed JSON"))))))))
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
@@ -590,7 +603,7 @@ around to the start of the buffer."
          ((s-equals? "tooltip" kind) (fsharp-ac-handle-tooltip data))
          ((s-equals? "finddecl" kind) (fsharp-ac-visit-definition data))
        (t
-        (fsharp-ac-message-safely "Error: unrecognised message: '%s'" msg))))
+        (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
       
     (setq msg (fsharp-ac--get-msg proc)))))
 
@@ -604,7 +617,7 @@ around to the start of the buffer."
   (setq fsharp-ac-status 'idle))
 
 (defun fsharp-ac-handle-doctext (data)
-  (setq fsharp-ac-current-helptext data))
+  (maphash (lambda (k v) (puthash k v fsharp-ac-current-helptext)) data))
 
 (defun fsharp-ac-visit-definition (data)
   (let* ((file (gethash "File" data))

@@ -319,6 +319,7 @@ module internal CommandInput =
   // Command that can be entered on the command-line
   type Command =
     | PosCommand of PosCommand * string * Position * int option
+    | HelpText of string
     | Declarations of string
     | GetErrors
     | Parse of string * bool
@@ -398,6 +399,13 @@ module internal CommandInput =
       (parser { return None })
     return PosCommand(f, filename, (line, col), timeout) }
 
+  let helptext = parser {
+      let! _ = string "helptext"
+      let! _ = some (string " ")
+      let! sym = many (sat (fun _ -> true)) |> Parser.map String.ofSeq
+      return HelpText sym
+    }
+
   // Parses always and returns default error message
   let error = parser { return Error("Unknown command or wrong arguments") }
 
@@ -407,7 +415,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> outputmode <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = errors <|> outputmode <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -420,13 +428,14 @@ type internal State =
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
     OutputMode : OutputMode
+    HelpText : Map<String, DataTipText>
   }
 
 /// Contains main loop of the application
 module internal Main =
   open CommandInput
 
-  let initialState = { Files = Map.empty; Project = None; OutputMode = Text }
+  let initialState = { Files = Map.empty; Project = None; OutputMode = Text; HelpText = Map.empty }
 
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
@@ -435,15 +444,7 @@ module internal Main =
 
   let rec main (state:State) : int =
 
-    let prAsJson o =
-      Debug.printTiming "prAsJson convert start"
-      Debug.flush()
-      let s = (JsonConvert.SerializeObject(o, severityConverter))
-      Debug.printTiming "prAsJson convert end"
-      Debug.flush()
-      Console.WriteLine s
-      Debug.printTiming "prAsJson print end"
-      Debug.flush()
+    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, severityConverter))
 
     let printMsg ty s =
       match state.OutputMode with
@@ -540,6 +541,18 @@ module internal Main =
           | Json -> prAsJson { Kind = "declarations"; Data = decls }
         main state
 
+    | HelpText sym ->
+
+        match Map.tryFind sym state.HelpText with
+        | None -> ()
+        | Some d ->
+         
+          let tip = TipFormatter.formatTip d
+          let helptext = Map.add sym tip Map.empty
+          prAsJson { Kind = "helptext"; Data = helptext }
+
+        main state
+
     | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
         let file = Path.GetFullPath file
         if parsed file && posok file line col then
@@ -547,9 +560,7 @@ module internal Main =
 
           match cmd with
           | Completion ->
-              Debug.printTiming "About to DoCompletion"
               let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
-              Debug.printTiming "Completed DoCompletion"
 
               match decls with
               | Some (decls, residue) ->
@@ -558,39 +569,18 @@ module internal Main =
                       printfn "DATA: completion"
                       for d in decls.Items do Console.WriteLine(d.Name)
                       printfn "<<EOF>>"
-
+                      main state
                   | Json ->
-                      
-                      Debug.printTiming "About to format first tip"
-                      Debug.flush()
-                      let ds = List.sortBy (fun (d: Declaration) -> d.Name)
-                                 [ for d in decls.Items do yield d ]
-                      let helptext =
-                        match List.tryFind (fun (d: Declaration) -> d.Name.StartsWith residue) ds with
-                        | None -> Map.empty
-                        | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
-                                    Map.add d.Name tip Map.empty
-
-                      Debug.printTiming "Completed format of first tip"
-                      Debug.flush()
-                      prAsJson { Kind = "helptext"; Data = helptext }
-                                  
                       prAsJson { Kind = "completion"
-                                 Data = [ for d in ds do yield d.Name ] }
+                                 Data = [ for d in decls.Items do yield d.Name ] }
 
-                      Debug.printTiming "Printed first tip"
-                      Debug.flush()
-                      prAsJson
-                        { Kind = "helptext"
-                          Data = [ for d in decls.Items do
-                                     yield d.Name, TipFormatter.formatTip d.DescriptionText ]
-                                 |> Map.ofList }
-                      
-                      Debug.printTiming "Printed rest of tips"
-                      Debug.flush()
+                      let helptext =
+                        Seq.fold (fun m (d: Declaration) -> Map.add d.Name d.DescriptionText m) Map.empty decls.Items
 
+                      main { state with HelpText = helptext }
               | None -> 
                   printMsg "ERROR" "Could not get type information"
+                  main state
 
           | ToolTip ->
               let tipopt = agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
@@ -598,17 +588,19 @@ module internal Main =
               match tipopt with
               | None -> printMsg "INFO" "No tooltip information"
               | Some tip ->
-              match tip with
-              | DataTipText(elems) when elems |> List.forall (function
-                DataTipElementNone -> true | _ -> false) ->
-                printMsg "INFO" "No tooltip information"
-              | _ ->
-                  match state.OutputMode with
-                  | Text ->
-                    Console.WriteLine("DATA: tooltip")
-                    Console.WriteLine(TipFormatter.formatTip tip)
-                    Console.WriteLine("<<EOF>>")
-                  | Json -> prAsJson { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
+                match tip with
+                | DataTipText(elems) when elems |> List.forall (function
+                  DataTipElementNone -> true | _ -> false) ->
+                  printMsg "INFO" "No tooltip information"
+                | _ ->
+                    match state.OutputMode with
+                    | Text ->
+                      Console.WriteLine("DATA: tooltip")
+                      Console.WriteLine(TipFormatter.formatTip tip)
+                      Console.WriteLine("<<EOF>>")
+                    | Json -> prAsJson { Kind = "tooltip"; Data = TipFormatter.formatTip tip }
+
+              main state
           
           | FindDeclaration ->
 
@@ -623,7 +615,10 @@ module internal Main =
                   let data = { Line = line; Column = col; File = file }
                   prAsJson { Kind = "finddecl"; Data = data }
             
-        main state
+            main state
+
+        else
+          main state
 
     | Help ->
         Console.WriteLine(helpText)
