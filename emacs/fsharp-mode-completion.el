@@ -357,6 +357,7 @@ The current buffer must be an F# file that exists on disk."
     (and file
          (fsharp-ac--process-live-p)
          (not ac-completing)
+         (eq fsharp-ac-status 'idle)
          (or (member (file-truename file) fsharp-ac-project-files)
              (string-match-p (rx (or "fsx" "fsscript"))
                              (file-name-extension file))))))

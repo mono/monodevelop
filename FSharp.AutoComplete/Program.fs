@@ -148,6 +148,9 @@ type internal IntelliSenseAgent() =
           return! loop errors }
     loop [||] )
 
+  do agent.Error.Add(fun exn -> printfn "Background compiler agent died:\n%A\n" exn
+                                exit 1)      
+
   // Copy-paste from monodevelop binding LanguageService.fs and modified
   member x.GetCheckerOptions(fileName, source, proj:Option<ProjectParser.ProjectResolver>) =
     let ext = Path.GetExtension(fileName)
