@@ -195,11 +195,15 @@ type internal IntelliSenseAgent() =
 
   /// Get errors from the last parse request
   member x.GetErrors() =
-    agent.PostAndReply(GetErrors)
+    match agent.TryPostAndReply((fun repl -> GetErrors(repl)), 400) with
+    | Some e -> e
+    | None -> [||]
 
   /// Get declarations from the last parse request
   member x.GetDeclarations(opts) =
-    agent.PostAndReply(fun repl -> GetDeclarationsMessage(opts, repl))
+    match agent.TryPostAndReply((fun repl -> GetDeclarationsMessage(opts, repl)), 400) with
+    | Some ds -> ds
+    | None -> [||]
 
   /// Trigger background parse request
   member x.TriggerParseRequest(opts, full) =
@@ -215,7 +219,10 @@ type internal IntelliSenseAgent() =
       Some typed
     | _ ->
       // Otherwise try to get type information & run the request
-      agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
+      match agent.TryPostAndReply((fun r -> GetTypeCheckInfo(opts, time, r)), 400) with
+      | Some e -> e
+      | None -> None
+
 
   /// Invokes dot-completion request. Returns possible completions
   /// and current residue.

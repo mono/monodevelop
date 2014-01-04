@@ -570,13 +570,15 @@ around to the start of the buffer."
       (when eofloc
         (let ((json-array-type 'list)
               (json-object-type 'hash-table)
-              (json-key-type 'string)
-              (msg (buffer-substring-no-properties (point-min) (match-beginning 0))))
-          (delete-region (point-min) (match-end 0))
+              (json-key-type 'string))
           (condition-case nil
-              (json-read-from-string msg)
+              (progn
+                (goto-char (point-min))
+                (let ((msg (json-read)))
+                  (delete-region (point-min) (+ (point) 1))
+                  msg))
             (error
-             (fsharp-ac--log (format "Malformed JSON: %s" msg))
+             (fsharp-ac--log (format "Malformed JSON: %s" (buffer-substring-no-properties (point-min) (point-max))))
              (message "Error: F# completion process produced malformed JSON"))))))))
 
 (defun fsharp-ac-filter-output (proc str)
