@@ -231,8 +231,7 @@ type FSharpInteractivePad() =
       let sel = String.Format("# {0} \"{1}\"\n{2}\n", line, file.FullPath, text)
       sendCommand sel
       //advance to the next line
-      IdeApp.Workbench.ActiveDocument.Editor.Caret.Line <- IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1
-      IdeApp.Workbench.ActiveDocument.Editor.Caret.Column <- 0
+      IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo(line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
 
   member x.IsSelectionNonEmpty = 
     if IdeApp.Workbench.ActiveDocument = null || 
