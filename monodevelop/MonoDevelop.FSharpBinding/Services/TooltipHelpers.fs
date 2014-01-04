@@ -107,8 +107,10 @@ module Tooltips =
                 | cref -> let fragment = cref.Value 
                                          |> strip "T:"
                                          |> unqualifyName
-                          summary.Append(addStyle <| Exception fragment) |> ignore)         
-            if summary.Length > 0  then summary.ToString()
+                                         |> Exception
+                                         |> addStyle
+                          summary.Append(fragment) |> ignore)         
+            if summary.Length > 0 then summary.ToString() |> GLib.Markup.EscapeText
             //If theres nothing in the StringBuilder then there's either no summary or exception elements,
             //or something went wrong, simply return the str escaped rather than nothing.
             else GLib.Markup.EscapeText str
