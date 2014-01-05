@@ -195,15 +195,11 @@ type internal IntelliSenseAgent() =
 
   /// Get errors from the last parse request
   member x.GetErrors() =
-    match agent.TryPostAndReply((fun repl -> GetErrors(repl)), 400) with
-    | Some e -> e
-    | None -> [||]
+    agent.PostAndReply(GetErrors)
 
   /// Get declarations from the last parse request
   member x.GetDeclarations(opts) =
-    match agent.TryPostAndReply((fun repl -> GetDeclarationsMessage(opts, repl)), 400) with
-    | Some ds -> ds
-    | None -> [||]
+    agent.PostAndReply(fun repl -> GetDeclarationsMessage(opts, repl))
 
   /// Trigger background parse request
   member x.TriggerParseRequest(opts, full) =
@@ -219,22 +215,18 @@ type internal IntelliSenseAgent() =
       Some typed
     | _ ->
       // Otherwise try to get type information & run the request
-      match agent.TryPostAndReply((fun r -> GetTypeCheckInfo(opts, time, r)), 400) with
-      | Some e -> e
-      | None -> None
-
+      agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
   /// Invokes dot-completion request. Returns possible completions
   /// and current residue.
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
-    let info = x.GetTypeCheckInfo(opts, time)
     Option.bind (fun (longName, residue) ->
       Option.bind (fun (info: TypeCheckResults) ->
       try
         Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
               |> Async.RunSynchronously, residue)
       with :? System.TimeoutException as e ->
-                 None) info
+                 None) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdentsAndResidue (column, lineStr))
 
   /// Gets ToolTip for the specified location (and prints it to the output)

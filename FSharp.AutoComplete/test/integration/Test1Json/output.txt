@@ -4,19 +4,14 @@
 {"Kind":"INFO","Data":"Background parsing started"}
 {"Kind":"helptext","Data":{"funky":"val funky : x:int -> int"}}
 {"Kind":"completion","Data":["funky"]}
-{"Kind":"helptext","Data":{"funky":"val funky : x:int -> int"}}
 {"Kind":"helptext","Data":{"Equals":"System.Object.Equals(obj: obj) : bool"}}
 {"Kind":"completion","Data":["Equals","GetHashCode","GetType","Terrific","ToString"]}
-{"Kind":"helptext","Data":{"Equals":"System.Object.Equals(obj: obj) : bool","GetHashCode":"System.Object.GetHashCode() : int","GetType":"System.Object.GetType() : System.Type","Terrific":"member FileTwo.NewObjectType.Terrific : y:int -> int","ToString":"System.Object.ToString() : string"}}
 {"Kind":"helptext","Data":{"Bar":"union case FileTwo.Foo.Bar: FileTwo.Foo"}}
 {"Kind":"completion","Data":["Bar","Foo","NewObjectType","Qux","add","addition"]}
-{"Kind":"helptext","Data":{"Bar":"union case FileTwo.Foo.Bar: FileTwo.Foo","Foo":"type Foo =\n  | Bar\n  | Qux","NewObjectType":"Multiple items\ntype NewObjectType =\n  new : unit -> NewObjectType\n  member Terrific : y:int -> int\n\n--------------------\n\nnew : unit -> FileTwo.NewObjectType","Qux":"union case FileTwo.Foo.Qux: FileTwo.Foo","add":"val add : x:int -> y:int -> int","addition":"val addition : x:int -> y:int -> int"}}
 {"Kind":"helptext","Data":{"func":"val func : x:int -> int"}}
 {"Kind":"completion","Data":["func"]}
-{"Kind":"helptext","Data":{"func":"val func : x:int -> int"}}
 {"Kind":"helptext","Data":{"Bar":"union case FileTwo.Foo.Bar: FileTwo.Foo"}}
 {"Kind":"completion","Data":["Bar","Foo","NewObjectType","Qux","add","addition"]}
-{"Kind":"helptext","Data":{"Bar":"union case FileTwo.Foo.Bar: FileTwo.Foo","Foo":"type Foo =\n  | Bar\n  | Qux","NewObjectType":"Multiple items\ntype NewObjectType =\n  new : unit -> NewObjectType\n  member Terrific : y:int -> int\n\n--------------------\n\nnew : unit -> FileTwo.NewObjectType","Qux":"union case FileTwo.Foo.Qux: FileTwo.Foo","add":"val add : x:int -> y:int -> int","addition":"val addition : x:int -> y:int -> int"}}
 {"Kind":"tooltip","Data":"val add : x:int -> y:int -> int\n\nFull name: FileTwo.add"}
 {"Kind":"tooltip","Data":"val func : x:int -> int\n\nFull name: Program.X.func"}
 {"Kind":"tooltip","Data":"val testval : FileTwo.NewObjectType\n\nFull name: Program.testval"}
