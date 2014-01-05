@@ -116,6 +116,7 @@ Otherwise, request a tooltip from the completion process."
   (interactive)
   (when (and fsharp-doc-mode (thing-at-point 'symbol))
     (unless (or (equal (point) fsharp-doc-prevpoint)
+                (not (eq fsharp-ac-status 'idle))
                 executing-kbd-macro
                 (fsharp-ac/overlay-at (point))
                 (active-minibuffer-window)

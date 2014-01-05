@@ -50,4 +50,4 @@ let private buildFormatTip tip (sb:StringBuilder) =
 
 /// Format tool-tip that we get from the language service as string
 let formatTip tip =
-  (buildFormatTip tip (new StringBuilder())).ToString().Trim('\n', '\r')
+  (buildFormatTip tip (new StringBuilder())).ToString().Trim('\n', '\r').Replace("\r","")
