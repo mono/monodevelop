@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (template == null) {
 				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf ("md-template", IconSize.Menu);
+				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (template.Icon, IconSize.Menu);
 			}
 				
 		}
