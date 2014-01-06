@@ -21,8 +21,10 @@ open ICSharpCode.NRefactory.Completion
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<DataTipText>, glyph) =
-    inherit CompletionData(CompletionText = (if name |> String.forall PrettyNaming.IsIdentifierPartCharacter then name else "``" + name + "``"), 
+type internal FSharpMemberCompletionData(name: string, datatipLazy:Lazy<DataTipText>, glyph) =
+    inherit CompletionData(CompletionText = (if PrettyNaming.IsIdentifierFirstCharacter name.[0] &&
+                                                (name.Length <= 1 || 
+                                                 String.forall PrettyNaming.IsIdentifierPartCharacter name.[1..]) then name else "``" + name + "``"), 
                            DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
 
