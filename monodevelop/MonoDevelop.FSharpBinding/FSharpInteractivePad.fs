@@ -246,14 +246,25 @@ type FSharpInteractivePad() =
     Debug.WriteLine("FSI:  #LoadReferences")
     let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
 
-    let references = project.GetReferencedAssemblies(ConfigurationSelector.Default, true)
-                     |> Seq.filter (fun r ->  not <| (r.Contains "mscorlib.dll" || r.Contains "FSharp.Core.dll") )
-                     |> Seq.toArray
+    let references =
+        let projRefAssemblies =
+            project.References 
+            |> Seq.filter (fun refs -> refs.ReferenceType = ReferenceType.Project)
+            |> Seq.map (fun refs -> IdeApp.Workspace.GetAllProjects() 
+                                    |> Seq.find (fun proj -> proj.Name = refs.Reference && proj :? DotNetProject) :?> DotNetProject)
+            |> Seq.collect (fun dnp -> dnp.GetReferencedAssemblies(ConfigurationSelector.Default, true))
+
+        project.GetReferencedAssemblies(ConfigurationSelector.Default, true)
+        |> Seq.append projRefAssemblies
+        |> Seq.filter (fun ref ->  not <| (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll") )
+        |> Seq.map (ScriptOptions.makeAbsolute <| project.BaseDirectory.ToString())
+        |> Seq.distinct
+        |> Seq.toArray
     
-    let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
-    let references = orderReferences.Order references
+    let orderAssemblyReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
+    let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
-    sendCommand references
+    sendCommand orderedreferences
       
   static member CurrentPad =  
     let existing = 
