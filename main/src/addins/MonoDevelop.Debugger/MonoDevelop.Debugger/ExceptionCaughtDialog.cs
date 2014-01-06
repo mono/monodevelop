@@ -157,7 +157,7 @@ namespace MonoDevelop.Debugger
 			var crt = new CellRendererText ();
 			crt.Ellipsize = Pango.EllipsizeMode.None;
 			crt.WrapMode = Pango.WrapMode.Word;
-			//crt.WidthChars = -1;
+			crt.WidthChars = int.MaxValue;
 
 			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
 			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
