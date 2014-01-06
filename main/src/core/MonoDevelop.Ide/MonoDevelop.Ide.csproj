@@ -554,8 +554,11 @@
     <EmbeddedResource Include="icons\pin-gray-up-16.png">
       <LogicalName>pin-gray-up-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\keyword-16.png">
-      <LogicalName>keyword-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-keyword-16.png">
+      <LogicalName>element-keyword-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-keyword-16%402x.png">
+      <LogicalName>element-keyword-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\markers-rulers-16.png">
       <LogicalName>markers-rulers-16.png</LogicalName>
