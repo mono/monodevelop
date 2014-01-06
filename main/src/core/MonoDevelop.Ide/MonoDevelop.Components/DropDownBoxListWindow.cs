@@ -469,6 +469,7 @@ namespace MonoDevelop.Components
 				newHeight = win.DataProvider.IconCount > MaxVisibleRows ? 
 								(rowHeight * MaxVisibleRows) + margin * 2 :
 								(rowHeight * win.DataProvider.IconCount) + margin * 2;
+				newHeight += 2;
 				listWidth = Math.Min (450, CalcWidth ());
 				SetSizeRequest (listWidth, newHeight);
 			}
