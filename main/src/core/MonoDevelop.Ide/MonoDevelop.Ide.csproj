@@ -380,11 +380,17 @@
     <EmbeddedResource Include="icons\build-solution-22.png">
       <LogicalName>build-solution-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\code-template-16.png">
-      <LogicalName>code-template-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-template-16.png">
+      <LogicalName>element-template-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\code-template-24.png">
-      <LogicalName>code-template-24.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-template-16%402x.png">
+      <LogicalName>element-template-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-template-surroundwith-16.png">
+      <LogicalName>element-template-surroundwith-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-template-surroundwith-16%402x.png">
+      <LogicalName>element-template-surroundwith-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\comment-16.png">
       <LogicalName>comment-16.png</LogicalName>
@@ -676,18 +682,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\system-software-update-22.png">
       <LogicalName>system-software-update-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\file-template-16.png">
-      <LogicalName>file-template-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\file-template-16%402x.png">
-      <LogicalName>file-template-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\file-template-surround-with-16.png">
-      <LogicalName>file-template-surround-with-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\file-template-surround-with-16%402x.png">
-      <LogicalName>file-template-surround-with-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-behavior-16.png">
       <LogicalName>text-editor-behavior-16.png</LogicalName>

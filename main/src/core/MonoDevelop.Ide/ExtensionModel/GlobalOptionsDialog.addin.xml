@@ -30,7 +30,7 @@
 	
 	<Section id = "TextEditor" _label = "Text Editor">
 		<Section id = "Formatting" icon="md-formatting" _label = "Formatting" />
-		<Section id = "CodeTemplates" icon="md-code-template" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+		<Section id = "CodeTemplates" icon="md-template" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
 	</Section>
 
 	<Section id="SourceCode" _label="Source Code">
