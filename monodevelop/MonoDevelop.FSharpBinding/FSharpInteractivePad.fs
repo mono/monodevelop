@@ -247,17 +247,20 @@ type FSharpInteractivePad() =
     let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
 
     let references =
+        let getAbsProjRefs (proj:DotNetProject) = 
+            proj.GetReferencedAssemblies(ConfigurationSelector.Default, true)
+            |> Seq.map (ScriptOptions.makeAbsolute (proj.BaseDirectory.ToString()))
+
         let projRefAssemblies =
             project.References 
             |> Seq.filter (fun refs -> refs.ReferenceType = ReferenceType.Project)
             |> Seq.map (fun refs -> IdeApp.Workspace.GetAllProjects() 
                                     |> Seq.find (fun proj -> proj.Name = refs.Reference && proj :? DotNetProject) :?> DotNetProject)
-            |> Seq.collect (fun dnp -> dnp.GetReferencedAssemblies(ConfigurationSelector.Default, true))
+            |> Seq.collect (fun dnp -> getAbsProjRefs dnp)
 
-        project.GetReferencedAssemblies(ConfigurationSelector.Default, true)
+        getAbsProjRefs project
         |> Seq.append projRefAssemblies
-        |> Seq.filter (fun ref ->  not <| (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll") )
-        |> Seq.map (ScriptOptions.makeAbsolute <| project.BaseDirectory.ToString())
+        |> Seq.filter (fun ref ->  not (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll") )
         |> Seq.distinct
         |> Seq.toArray
     
