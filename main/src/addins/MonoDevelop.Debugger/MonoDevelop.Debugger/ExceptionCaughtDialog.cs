@@ -153,11 +153,7 @@ namespace MonoDevelop.Debugger
 			StackTraceTreeView.Show ();
 
 			var ccr = new ExceptionCaughtLineNumberRenderer ();
-
 			var crt = new CellRendererText ();
-			crt.Ellipsize = Pango.EllipsizeMode.None;
-			crt.WrapMode = Pango.WrapMode.Word;
-			crt.WidthChars = int.MaxValue;
 
 			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
 			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
