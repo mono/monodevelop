@@ -180,11 +180,9 @@ configure_packages ()
 
 create_local_config ()
 {
-	# Get the version from configure.in, if it exists
-	if test -a $path/configure.in; then
-		ver=`grep AC_INIT $path/configure.in | cut -d "," -f 2 | sed "s/ //"`
-	elif test -a $path/configure; then
-		ver=`grep ^VERSION= $path/configure | cut -d "=" -f 2 | sed "s/ //"`
+	# Get the version from the version.txt file, if it exists
+	if test -a $path/version.txt; then
+		ver=`grep ^Version $path/version.txt|cut -d '=' -f 2|tr -d '\n'`
 	else
 		ver=VERSION
 	fi
