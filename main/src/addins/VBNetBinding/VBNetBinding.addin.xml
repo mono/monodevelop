@@ -71,4 +71,4 @@
 		<Parser class = "MonoDevelop.VBNetBinding.DomParser" fileExtensions=".vb" />
 	</Extension>-->
 	
-</<ExtensionModel>
+</ExtensionModel>

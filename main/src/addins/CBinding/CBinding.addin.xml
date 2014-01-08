@@ -241,4 +241,4 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="C/C++" insertbefore="Other" insertafter="Html" language="C/C++" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-</<ExtensionModel>
+</ExtensionModel>
