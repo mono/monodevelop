@@ -35,7 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
-	public class FindExtensionMethodHandler 
+	class FindExtensionMethodHandler 
 	{
 		//Ide.Gui.Document doc;
 		ITypeDefinition entity;

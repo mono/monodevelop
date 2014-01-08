@@ -155,7 +155,7 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append (text);
 		}
 
-		public void AddDebuggerMemberMapping (ICSharpCode.Decompiler.MemberMapping memberMapping)
+		public void AddDebugSymbols (MethodDebugSymbols methodDebugSymbols)
 		{
 		}
 

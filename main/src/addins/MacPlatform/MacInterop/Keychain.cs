@@ -431,7 +431,7 @@ namespace MonoDevelop.MacInterop
 				result = AddInternetPassword (label, desc, auth, user, passwd, protocol, host, port, path);
 			}
 
-			if (result != OSStatus.Ok)
+			if (result != OSStatus.Ok && result != OSStatus.DuplicateItem)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
@@ -471,7 +471,7 @@ namespace MonoDevelop.MacInterop
 				result = AddInternetPassword (label, desc, auth, user, passwd, protocol, host, port, path);
 			}
 
-			if (result != OSStatus.Ok)
+			if (result != OSStatus.Ok && result != OSStatus.DuplicateItem)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
@@ -609,7 +609,13 @@ namespace MonoDevelop.MacInterop
 	enum OSStatus
 	{
 		Ok                   = 0,
+		AuthFailed           = -25293,
+		NoSuchKeychain       = -25294,
+		DuplicateKeychain    = -25296,
+		DuplicateItem        = -25299,
 		ItemNotFound         = -25300,
+		NoDefaultKeychain    = -25307,
+		DecodeError          = -26275,
 	}
 
 	enum SecAuthenticationType : int

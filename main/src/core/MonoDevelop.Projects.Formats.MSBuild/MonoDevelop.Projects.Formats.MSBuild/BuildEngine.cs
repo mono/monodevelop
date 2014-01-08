@@ -26,13 +26,10 @@
 
 using System;
 using System.Threading;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
-using System.Collections;
 using Microsoft.Build.BuildEngine;
-using Microsoft.Build.Framework;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -42,6 +39,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static ThreadStart workDelegate;
 		static object workLock = new object ();
 		static Thread workThread;
+		static CultureInfo uiCulture;
 		static Exception workError;
 
 		ManualResetEvent doneEvent = new ManualResetEvent (false);
@@ -55,6 +53,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		internal WaitHandle WaitHandle {
 			get { return doneEvent; }
+		}
+
+		public void SetUICulture (CultureInfo uiCulture)
+		{
+			BuildEngine.uiCulture = uiCulture;
 		}
 
 		public IProjectBuilder LoadProject (string file, string solutionFile, string binDir)
@@ -130,6 +133,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						workThread = new Thread (STARunner);
 						workThread.SetApartmentState (ApartmentState.STA);
 						workThread.IsBackground = true;
+						workThread.CurrentUICulture = uiCulture;
 						workThread.Start ();
 					}
 					else

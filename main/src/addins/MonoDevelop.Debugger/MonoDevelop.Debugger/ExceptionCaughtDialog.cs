@@ -153,11 +153,8 @@ namespace MonoDevelop.Debugger
 			StackTraceTreeView.Show ();
 
 			var ccr = new ExceptionCaughtLineNumberRenderer ();
-
 			var crt = new CellRendererText ();
-			crt.Ellipsize = Pango.EllipsizeMode.None;
 			crt.WrapMode = Pango.WrapMode.Word;
-			//crt.WidthChars = -1;
 
 			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
 			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
@@ -311,14 +308,21 @@ namespace MonoDevelop.Debugger
 		void ShowStackTrace (ExceptionInfo ex)
 		{
 			var model = (ListStore) StackTraceTreeView.Model;
+			bool external = false;
 
 			model.Clear ();
 
 			foreach (var frame in ex.StackTrace) {
 				bool isUserCode = IsUserCode (frame);
 
-				if (OnlyShowMyCodeCheckbox.Active && !isUserCode)
+				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
+					if (!external) {
+						model.AppendValues (null, GettextCatalog.GetString ("<b>[External Code]</b>"), false);
+						external = true;
+					}
+
 					continue;
+				}
 
 				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
 
@@ -333,6 +337,7 @@ namespace MonoDevelop.Debugger
 				}
 
 				model.AppendValues (frame, markup, isUserCode);
+				external = false;
 			}
 
 			if (ex.StackIsEvaluating)
@@ -366,26 +371,7 @@ namespace MonoDevelop.Debugger
 
 		void OnlyShowMyCodeToggled (object sender, EventArgs e)
 		{
-			var model = (ListStore) StackTraceTreeView.Model;
-			TreeIter iter;
-
-			if (!model.GetIterFirst (out iter))
-				return;
-
-			if (OnlyShowMyCodeCheckbox.Active) {
-				bool next;
-
-				do {
-					bool isUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
-
-					if (isUserCode)
-						next = model.IterNext (ref iter);
-					else
-						next = model.Remove (ref iter);
-				} while (next);
-			} else {
-				ShowStackTrace (selected);
-			}
+			ShowStackTrace (selected);
 		}
 
 		void CloseClicked (object sender, EventArgs e)

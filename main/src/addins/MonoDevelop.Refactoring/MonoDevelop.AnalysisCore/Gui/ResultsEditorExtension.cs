@@ -189,7 +189,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (cancellationToken.IsCancellationRequested)
 						return false;
 					var currentResult = (Result)enumerator.Current;
-					
+
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = editor.LocationToOffset (currentResult.Region.Begin);
 						int end = editor.LocationToOffset (currentResult.Region.End);
@@ -209,8 +209,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 							ext.markers.Enqueue (marker);
 						}
 					}
-					
-					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
+					if (currentResult.Level != Severity.Hint)
+						ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
 				}
 				
 				return true;

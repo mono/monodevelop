@@ -40,6 +40,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using Cecil = Mono.Cecil;
+using System.Threading;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -479,13 +480,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
-				var toolsFx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (toolsVersion));
-				string binDir = runtime.GetMSBuildBinPath (toolsFx);
-				
-				if (!runtime.IsInstalled (toolsFx))
-					throw new InvalidOperationException (string.Format (
-						"Runtime '{0}' does not have the MSBuild '{1}' framework installed",
-						runtime.Id, toolsVersion));
+				string binDir = runtime.GetMSBuildBinPath (toolsVersion);
+				if (binDir == null) {
+					string error = null;
+					if (runtime is MsNetTargetRuntime) {
+						if (toolsVersion == "12.0") {
+							error = "MSBuild 2013 is not installed. Please download and install it from " +
+							        "http://www.microsoft.com/en-us/download/details.aspx?id=40760";
+						}
+					};
+					throw new InvalidOperationException (error ?? string.Format (
+						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
+						runtime.Id, toolsVersion)
+					);
+				}
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
 				RemoteBuildEngine builder;
@@ -504,7 +512,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					RedirectStandardError = true,
 					RedirectStandardInput = true,
 				};
-				runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
+				runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 				
 				Process p = null;
 				try {
@@ -514,7 +522,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					byte[] data = Convert.FromBase64String (sref);
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();
-					builder = new RemoteBuildEngine (p, (IBuildEngine) bf.Deserialize (ms));
+					var engine = (IBuildEngine)bf.Deserialize (ms);
+					engine.SetUICulture (GettextCatalog.UICulture);
+					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
 						try {
