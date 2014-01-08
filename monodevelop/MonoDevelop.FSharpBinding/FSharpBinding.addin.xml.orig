@@ -7,7 +7,7 @@
     <Import assembly="FSharp.CompilerBinding.dll" />
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
-    <Import assembly="FSharp.Compiler.Editor.dll" />
+    <Import assembly="FSharp.Compiler.Service.dll" />
 
     <Import file = "templates.EmptyFSharpSource.xft.xml" />
     <Import file = "templates.EmptyFSharpScript.xft.xml" />
