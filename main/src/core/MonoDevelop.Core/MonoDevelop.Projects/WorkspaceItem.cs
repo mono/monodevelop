@@ -40,6 +40,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -109,6 +110,10 @@ namespace MonoDevelop.Projects
 				if (oldName != Name)
 					OnNameChanged (new WorkspaceItemRenamedEventArgs (this, oldName, Name));
 				NotifyModified ();
+
+				// Load the user properties after the file name has been set.
+				if (Loading)
+					LoadUserProperties ();
 			}
 		}
 
@@ -454,7 +459,6 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnEndLoad ()
 		{
-			LoadUserProperties ();
 		}
 		
 		public virtual void LoadUserProperties ()
@@ -652,12 +656,12 @@ namespace MonoDevelop.Projects
 			}
 			set {
 //				needsReload = value;
-				reloadCheckTime.Clear ();
-				foreach (FilePath file in item.GetItemFiles (false)) {
-					if (value)
+				if (value) {
+					reloadCheckTime.Clear ();
+					foreach (FilePath file in item.GetItemFiles (false))
 						reloadCheckTime [file] = DateTime.MinValue;
-					else
-						reloadCheckTime [file] = GetLastWriteTime (file);
+				} else {
+					ResetLoadTimes ();
 				}
 			}
 		}

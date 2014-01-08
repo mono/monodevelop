@@ -221,7 +221,15 @@ namespace MonoDevelop.Projects
 				
 				SolutionEntityItem newItem;
 				try {
-					newItem = Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
+					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
+						newItem = Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
+					else {
+						UnknownSolutionItem e = new UnknownSolutionItem () {
+							FileName = item.FileName,
+							UnloadedEntry = true
+						};
+						newItem = e;
+					}
 				} catch (Exception ex) {
 					UnknownSolutionItem e = new UnknownSolutionItem ();
 					e.LoadError = ex.Message;
