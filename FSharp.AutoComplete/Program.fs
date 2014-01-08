@@ -219,36 +219,36 @@ type internal IntelliSenseAgent() =
 
   /// Invokes dot-completion request. Returns possible completions
   /// and current residue.
-  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) : Option<DeclarationSet * String> =
+  member x.DoCompletion(opts : RequestOptions, line, column, lineStr, time) : Option<DeclarationSet * String> =
     Option.bind (fun (longName, residue) ->
       Option.bind (fun (info: TypeCheckResults) ->
       try
-        Some (info.GetDeclarations(None, pos, lineStr, (longName, residue), fun (_,_) -> false)
+        Some (info.GetDeclarations(None, line, column, lineStr, longName, residue, fun (_,_) -> false)
               |> Async.RunSynchronously, residue)
       with :? System.TimeoutException as e ->
                  None) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdentsAndResidue (column, lineStr))
 
   /// Gets ToolTip for the specified location (and prints it to the output)
-  member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) : Option<DataTipText> =
+  member x.GetToolTip(opts, line, column, lineStr, time) : Option<DataTipText> =
 
     Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDataTipText((line,col'), lineStr, identIsland, identToken)
+        info.GetDataTipText(line,col', lineStr, identIsland, identToken)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdents(column, lineStr))
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
-  member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+  member x.FindDeclaration(opts : RequestOptions, line, column, lineStr, time) =
 
     Option.bind (fun (col',identIsland) ->
       Option.map (fun (info:TypeCheckResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDeclarationLocation((line,col'), lineStr, identIsland, identToken, true)
+        info.GetDeclarationLocation(line,col', lineStr, identIsland, identToken, true)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdents(column, lineStr))
 
@@ -320,7 +320,7 @@ module internal CommandInput =
 
   // Command that can be entered on the command-line
   type Command =
-    | PosCommand of PosCommand * string * Position * int option
+    | PosCommand of PosCommand * string * int * int * int option
     | HelpText of string
     | Declarations of string
     | GetErrors
@@ -399,7 +399,7 @@ module internal CommandInput =
       (parser { let! _ = some (string " ")
                 return! some digit |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
-    return PosCommand(f, filename, (line, col), timeout) }
+    return PosCommand(f, filename, line, col, timeout) }
 
   let helptext = parser {
       let! _ = string "helptext"
@@ -555,14 +555,14 @@ module internal Main =
 
         main state
 
-    | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
+    | PosCommand(cmd, file, line, col, timeout) ->
         let file = Path.GetFullPath file
         if parsed file && posok file line col then
           let opts = getoptions file
 
           match cmd with
           | Completion ->
-              let decls = agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+              let decls = agent.DoCompletion(opts, line, col, state.Files.[file].[line], timeout)
 
               match decls with
               | Some (decls, residue) ->
@@ -594,7 +594,7 @@ module internal Main =
                   main state
 
           | ToolTip ->
-              let tipopt = agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
+              let tipopt = agent.GetToolTip(opts, line, col, state.Files.[file].[line], timeout)
 
               match tipopt with
               | None -> printMsg "INFO" "No tooltip information"
@@ -615,7 +615,7 @@ module internal Main =
           
           | FindDeclaration ->
 
-            match agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout) with
+            match agent.FindDeclaration(opts, line, col, state.Files.[file].[line], timeout) with
             | None
             | Some (DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
             | Some (DeclFound ((line,col),file)) ->

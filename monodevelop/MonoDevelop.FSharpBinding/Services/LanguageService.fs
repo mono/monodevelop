@@ -355,7 +355,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | Some (longName, residue) ->
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (info.GetDeclarations(None, (line,col), lineStr, (longName, residue), fun (_,_) -> false)
+            try Some (info.GetDeclarations(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
                       |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 
@@ -366,7 +366,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> DataTipText []
         | Some(col,identIsland) ->
-          let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
+          let res = info.GetDataTipText(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
           res
 
@@ -375,7 +375,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland) ->
-            let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
+            let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, token, true)
             Debug.WriteLine("Result: Got something, returning")
             res 
 
@@ -384,7 +384,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-            let res = info.GetMethods((line, col), lineStr, Some identIsland)
+            let res = info.GetMethods(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
             Some (res.Name, res.Methods) 
             
