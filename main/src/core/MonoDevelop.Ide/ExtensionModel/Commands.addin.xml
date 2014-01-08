@@ -320,6 +320,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload"
 			_description = "Reload selected project or solution"
 			_label = "Reload" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Unload"
+			_description = "Unloads selected project"
+			_label = "Unload" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem"
 			_description = "Edit selected item"
 			_label = "Edit File" />			

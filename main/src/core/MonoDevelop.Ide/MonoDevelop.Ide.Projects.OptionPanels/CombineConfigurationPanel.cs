@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			store.Clear ();
 			foreach (SolutionConfigurationEntry ce in configuration.Configurations) {
-				if (ce.Item != null)
+				if (ce.Item != null && !(ce.Item is UnknownSolutionItem))
 					store.AppendValues (ce, ce.Item.Name, ce.Build);
 			}
 		}
