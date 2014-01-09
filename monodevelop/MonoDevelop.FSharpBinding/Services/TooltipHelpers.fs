@@ -76,22 +76,32 @@ module Tooltips =
                                   let fragment = attrib.Value 
                                                  |> strip "T:"
                                                  |> unqualifyName
-                                  acc.Append(addStyle <| Type fragment)
+                                                 |> Type
+                                                 |> addStyle
+                                  acc.Append(fragment)
                                   
                        | "paramref" -> let attrib = element |> attribute "name"
                                        if attrib = null then acc else
                                        let fragment = attrib.Value
-                                       acc.Append(addStyle <| Parameter fragment)
+                                                      |> Parameter
+                                                      |> addStyle
+                                       acc.Append(fragment)
                                           
-                       | "c" -> acc.Append(addStyle <| Code element.Value)
+                       | "c" -> let fragment = element.Value 
+                                               |> GLib.Markup.EscapeText
+                                               |> Code
+                                               |> addStyle
+                                acc.Append(fragment)
 
-                       | _ -> processNodes acc (element.Nodes())
-                | :? XText as xt -> let fragment = xt.Value |> trim
-                                    acc.AppendFormat("{0} ", fragment)
+                       | unknown ->
+#if DEBUG
+                                    acc.Append("Unknown element in summary: " + element.Name.LocalName) |> ignore
+#endif
+                                    processNodes acc (element.Nodes())
+                | :? XText as xt -> acc.AppendFormat("{0} ", xt.Value |> GLib.Markup.EscapeText |> trim)
                 | _ -> acc )
-                
-        processNodes sb <| element.Nodes()
-        
+        processNodes sb (element.Nodes())
+
     let getTooltip (addStyle: Style -> string) (str:string) = 
         try let xdoc = XElement.Parse("<Root>" + str + "</Root>")
             //if no nodes were found then return the string verbatim
@@ -110,7 +120,7 @@ module Tooltips =
                                          |> Exception
                                          |> addStyle
                           summary.Append(fragment) |> ignore)         
-            if summary.Length > 0 then summary.ToString() |> GLib.Markup.EscapeText
+            if summary.Length > 0 then summary.ToString()
             //If theres nothing in the StringBuilder then there's either no summary or exception elements,
             //or something went wrong, simply return the str escaped rather than nothing.
             else GLib.Markup.EscapeText str
