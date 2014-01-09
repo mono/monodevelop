@@ -423,7 +423,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnEditProject ()
 		{
 			Project project = (Project) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (project.FileName, project);
+			if (!string.IsNullOrEmpty (project.FileName) && File.Exists (project.FileName))
+				IdeApp.Workbench.OpenDocument (project.FileName, project);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]

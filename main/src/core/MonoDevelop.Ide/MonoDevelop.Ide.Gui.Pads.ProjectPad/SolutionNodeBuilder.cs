@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -326,6 +327,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var solution = (Solution) CurrentNode.DataItem;
 			if (!string.IsNullOrEmpty (solution.FileName) && File.Exists (solution.FileName))
 				IdeApp.Workbench.OpenDocument (solution.FileName);
+		}
+
+		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
+		public void OnEditSolutionUpdate (CommandInfo info)
+		{
+			var p = (Solution) CurrentNode.DataItem;
+			info.Visible = !IdeApp.Workbench.Documents.Any (d => d.FileName == p.FileName);
 		}
 		
 /*		[CommandHandler (ProjectCommands.AddNewFiles)]
