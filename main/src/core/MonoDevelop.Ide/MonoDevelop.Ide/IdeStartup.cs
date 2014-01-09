@@ -349,6 +349,8 @@ namespace MonoDevelop.Ide
 				return false;
 			}
 
+			LoggingService.LogInfo ("Found GTK# version " + version);
+
 			var path = Path.Combine (location, @"bin");
 			try {
 				if (SetDllDirectory (path)) {

@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide
 				return "unknown";
 			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
 			if (mi == null) {
-				LoggingService.LogError ("No Mono.Runtime.GetDiplayName method found.");
+				LoggingService.LogError ("No Mono.Runtime.GetDisplayName method found.");
 				return "error";
 			}
 			return (string)mi.Invoke (null, null); 
@@ -119,11 +119,14 @@ namespace MonoDevelop.Ide
 				sb.Append (GetRuntimeInfo ());
 				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
-				sb.AppendLine (GetGtkVersion () + " theme: " + Gtk.Settings.Default.ThemeName);
-				sb.Append ("\tGTK# (");
-				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
-				sb.Append (")");
-
+				sb.AppendLine (GetGtkVersion () + " (" + Gtk.Settings.Default.ThemeName + " theme)");
+				if (Platform.IsWindows && !IsMono ()) {
+					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
+						Version ver;
+						if (key != null && Version.TryParse (key.GetValue (null) as string, out ver))
+							sb.Append ("\tGTK# " + ver);
+					}
+				}
 				if (Platform.IsMac && IsMono ()) {
 					var pkgVer = GetMonoUpdateInfo ();
 					if (!string.IsNullOrEmpty (pkgVer)) {
