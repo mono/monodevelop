@@ -70,6 +70,12 @@ namespace MonoDevelop.Ide
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
 		}
+		
+		static string GetGtkTheme ()
+		{
+			var settings = Gtk.Settings.Default;
+			return settings != null ? settings.ThemeName : null;
+		}
 
 		static string GetMonoUpdateInfo ()
 		{
@@ -119,7 +125,12 @@ namespace MonoDevelop.Ide
 				sb.Append (GetRuntimeInfo ());
 				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
-				sb.AppendLine (GetGtkVersion () + " (" + Gtk.Settings.Default.ThemeName + " theme)");
+				sb.Append (GetGtkVersion ());
+				var gtkTheme = GetGtkTheme ();
+				if (!string.IsNullOrEmpty (gtkTheme))
+					sb.AppendLine (" (" + gtkTheme + " theme)");
+				else
+					sb.AppendLine ();
 				if (Platform.IsWindows && !IsMono ()) {
 					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
 						Version ver;
