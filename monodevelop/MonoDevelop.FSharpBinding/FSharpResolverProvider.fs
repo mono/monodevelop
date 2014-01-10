@@ -49,21 +49,41 @@ type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) =
 type FSharpLanguageItemTooltipProvider() = 
     inherit Mono.TextEditor.TooltipProvider()
     
-    override x.GetItem (editor, offset) = 
-            let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
-            let (resolveResult, region) = extEditor.GetLanguageItem (offset)
-            if (resolveResult = null) then null else
-                //we never set the end dom region so use a single character as the end offset for now otherwise it will be negative
-                //let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), region.EndColumn - region.BeginColumn)
-                let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), 1)
-                TooltipItem (resolveResult, segment)
+    override x.GetItem (editor, offset) =
+        let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
+        let docText = editor.Text
+        if docText = null || offset >= docText.Length || offset < 0 then null else
+        let config = IdeApp.Workspace.ActiveConfiguration
+        if config = null then null else
+        let tyRes = 
+            LanguageService.Service.GetTypedParseResult
+                 (new FilePath(editor.FileName), 
+                  docText, 
+                  extEditor.Project, 
+                  config, 
+                  allowRecentTypeCheckResults=true,
+                  timeout = ServiceSettings.blockingTimeout)
+        Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
+        // Get tool-tip from the language service
+        let tip = tyRes.GetToolTip(offset, editor.Document)
+        match tip with
+        | None -> null
+        | Some (DataTipText(elems),_) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
+            Debug.WriteLine (sprintf "TooltipProvider: No data found")
+            null
+        | Some (tiptext,(col1,col2)) -> 
+            Debug.WriteLine(sprintf "TooltipProvider: Got data")
+            let line = editor.Document.OffsetToLineNumber offset
+
+            let segment = new TextSegment(editor.LocationToOffset (line, col1), col2 - col1)
+            TooltipItem (tiptext, segment)
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
-            | :? FSharpLocalResolveResult as titem -> 
-                let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip)               
+            | :? DataTipText as titem -> 
+                let tooltip = TipFormatter.formatTipWithHeader(titem)               
                 let result = new TooltipInformationWindow(ShowArrow = true)
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
                 result.AddOverload(toolTipInfo)
@@ -72,7 +92,6 @@ type FSharpLanguageItemTooltipProvider() =
             | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
     
     override x.ShowTooltipWindow (editor, offset, modifierState, mouseX, mouseY, item) =
-        let titem = item.Item :?> FSharpLocalResolveResult
         let tipWindow = x.CreateTooltipWindow (editor, offset, modifierState, item) :?> TooltipInformationWindow
         if tipWindow = null then null else
 
@@ -116,44 +135,36 @@ type FSharpResolverProvider() =
                   config, 
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
-        Debug.WriteLine (sprintf "Resolver: Getting tool tip")
-        // Get tool-tip from the language service
-        let tip = tyRes.GetToolTip(offset, doc.Editor.Document)
-        match tip with
-        | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
-            Debug.WriteLine (sprintf "Resolver: No data found")
-            null
-        | _ -> 
-            Debug.WriteLine(sprintf "Resolver: Got data")
-            Debug.WriteLine("getting declaration location...")
-           
-            // Get the declaration location from the language service
-            let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
-            let reg = match loc with
-                      | DeclFound((line, col), file) -> 
-                           Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
-                           DomRegion(file,line+1,col+1)
-                      | DeclNotFound(notfound) -> 
-                           match notfound with 
-                           | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
-                           | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
-                           | FindDeclFailureReason.ProvidedType(t)   -> Debug.WriteLine("DeclNotFound: ProvidedType")
-                           | FindDeclFailureReason.ProvidedMember(m) -> Debug.WriteLine("DeclNotFound: ProvidedMember")
-                           DomRegion.Empty
-            region <- reg
-            // This is the NRefactory symbol for the item - the Region is used for goto-definition
-            let ivar = 
-                { new IVariable with 
-                    member x.Name = "item--item"
-                    member x.Region = reg
-                    member x.Type = (SpecialType.UnknownType :> _)
-                    member x.IsConst = false
-                    member x.ConstantValue = Unchecked.defaultof<_>
-                  interface ISymbol with
-                    member x.SymbolKind = SymbolKind.Variable 
-                    member x.Name = "item--item"}
-                    
-            new FSharpLocalResolveResult(tip, ivar) :> ResolveResult
+
+        Debug.WriteLine("getting declaration location...")
+       
+        // Get the declaration location from the language service
+        let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
+        let reg = match loc with
+                  | DeclFound((line, col), file) -> 
+                       Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
+                       DomRegion(file,line+1,col+1)
+                  | DeclNotFound(notfound) -> 
+                       match notfound with 
+                       | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
+                       | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
+                       | FindDeclFailureReason.ProvidedType(t)   -> Debug.WriteLine("DeclNotFound: ProvidedType")
+                       | FindDeclFailureReason.ProvidedMember(m) -> Debug.WriteLine("DeclNotFound: ProvidedMember")
+                       DomRegion.Empty
+        region <- reg
+        // This is the NRefactory symbol for the item - the Region is used for goto-definition
+        let ivar = 
+            { new IVariable with 
+                member x.Name = "item--item"
+                member x.Region = reg
+                member x.Type = (SpecialType.UnknownType :> _)
+                member x.IsConst = false
+                member x.ConstantValue = Unchecked.defaultof<_>
+              interface ISymbol with
+                member x.SymbolKind = SymbolKind.Variable 
+                member x.Name = "item--item"}
+                
+        new LocalResolveResult(ivar) :> ResolveResult
       with exn -> 
         Debug.WriteLine (sprintf "Resolver: Exception: '%s'" (exn.ToString()))
         null
