@@ -107,37 +107,6 @@
 
 (defconst fsharp-font-lock-keywords
   (list
-;stop special comments
-   '("\\(^\\|[^\"]\\)\\((\\*\\*/\\*\\*)\\)"
-     2 font-lock-stop-face)
-;doccomments
-   '("\\(^\\|[^\"]\\)\\((\\*\\*[^*]*\\([^)*][^*]*\\*+\\)*)\\)"
-     2 font-lock-doccomment-face)
-;comments
-   '("\\(^\\|[^\"]\\)\\((\\*[^*]*\\*+\\([^)*][^*]*\\*+\\)*)\\)"
-     2 font-lock-comment-face)
-
-;;  '("(\\*IF-OCAML\\([^)*][^*]*\\*+\\)+ENDIF-OCAML\\*)"
-;;    2 font-lock-comment-face)
-
-;;   '("\\(^\\|[^\"]\\)\\((\\*[^F]\\([^)*][^*]*\\*+\\)+)\\)"
-;;     . font-lock-comment-face)
-;  '("(\\*.*\\*)\\|(\\*.*\n.*\\*)"
-;    . font-lock-comment-face)
-
-
-;character literals
-   (cons (concat "'\\(\\\\\\([ntbr'\\]\\|"
-                 "[0-9][0-9][0-9]\\)\\|.\\)'"
-                 "\\|\"[^\"\\]*\\(\\\\\\(.\\|\n\\)[^\"\\]*\\)*\"")
-         'font-lock-string-face)
-
-  '("//.*" . font-lock-comment-face)
-
-;modules and constructors
-   ;; '("`?\\<[A-Z][A-Za-z0-9_']*\\>" . font-lock-function-name-face)
-;definition
-
    (cons (concat "\\(\\<"
                  (mapconcat 'identity
                             '(
@@ -213,7 +182,7 @@
   '("\\<\\(?:module\\|namespace\\)\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
 
 ;labels (and open)
-   '("\\<\\(assert\\|open\\|include\\|module\\|namespace\\|extern\\|void\\)\\>\\|[~?][ (]*[a-z][a-zA-Z0-9_']*"
+   '("\\<\\(assert\\|open\\|include\\|module\\|namespace\\|extern\\|void\\)\\>\\|[~][ (]*[a-z][a-zA-Z0-9_']*"
      . font-lock-variable-name-face)
    ;; (cons (concat
    ;;        "\\<\\(asr\\|false\\|land\\|lor\\|lsl\\|lsr\\|lxor"
@@ -222,6 +191,50 @@
    ;;       'font-lock-constant-face)
    ))
 
+
+(defun fsharp--syntax-propertize-function (start end)
+;  (message "Called with (%d,%d)" start end)
+  (goto-char start)
+  (fsharp--syntax-string end)
+  (funcall (syntax-propertize-rules
+            ("\\(@\\)\"" (1 (prog1 "|" (fsharp--syntax-string end)))) ; verbatim string
+            ("\\(\"\\)\"\"" (1 (prog1 "|" (fsharp--syntax-string end)))) ; triple-quoted string
+            ("\\('\\)\\(?:[^\n\t\r\b\a\f\v\\\\]\\|\\\\[\"'ntrbafv]\\|\\\\u[0-9A-Fa-f]\\{4\\}\\|\\\\[0-9]\\{3\\}\\)\\('\\)"
+             (1 "|") (2 "|")) ; character literal
+            ("\\((\\)/" (1 "()"))
+            ("\\(/\\)\\*" (1 ".")))
+           start end))
+
+(defun fsharp--syntax-string (end)
+  (let* ((pst (syntax-ppss))
+         (instr (nth 3 pst))
+         (start (nth 8 pst)))
+    (when (eq t instr) ; Then we are in a custom string
+      ;(message "In custom string")
+      (cond
+       ((eq ?@ (char-after start)) ; Then we are in a verbatim string
+        ;(message "verbatim")
+        (while
+            (when (re-search-forward "\"\"?" end 'move)
+              (if (> (- (match-end 0) (match-beginning 0)) 1)
+                  t ;; Skip this "" and keep looking further.
+                (put-text-property (- (match-beginning 0) 1) (- (match-end 0) 1)
+                                   'syntax-table (string-to-syntax "."))
+                (put-text-property (match-beginning 0) (match-end 0)
+                                   'syntax-table (string-to-syntax "|"))
+                nil)))
+        )
+       
+       (t ; Then we are in a triple-quoted string
+        ;(message "triple-quoted")
+        (when (re-search-forward "\"\"\"" end 'move)
+          (put-text-property (- (match-beginning 0) 1) (match-beginning 0)
+                             'syntax-table (string-to-syntax "."))
+          (put-text-property (match-beginning 0) (match-end 0)
+                             'syntax-table (string-to-syntax "|")))
+          )))))
+
+
 (defconst inferior-fsharp-font-lock-keywords
   (append
    (list
@@ -229,23 +242,6 @@
     '("^[#-]" . font-lock-comment-face)
    '("^>" . font-lock-variable-name-face))
    fsharp-font-lock-keywords))
-
-;; font-lock commands are similar for fsharp-mode and inferior-fsharp-mode
-(add-hook 'fsharp-mode-hook
-      '(lambda ()
-         (cond
-          ((fboundp 'global-font-lock-mode)
-           (make-local-variable 'font-lock-defaults)
-           (setq font-lock-defaults
-                 '(fsharp-font-lock-keywords nil nil ((?' . "w") (?_ . "w")))))
-          (t
-           (setq font-lock-keywords fsharp-font-lock-keywords)))
-         (make-local-variable 'font-lock-keywords-only)
-         (setq font-lock-keywords-only t)
-         (font-lock-mode 1)
-         (set (make-local-variable 'imenu-generic-expression)
-              fsharp-imenu-generic-expression)
-         ))
 
 (defun inferior-fsharp-mode-font-hook ()
   (cond
