@@ -41,9 +41,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 // or to return complete IEntity data.
 //
 // Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and renaming.
-type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) = 
-  inherit LocalResolveResult(ivar)
-  member x.DataTip = tip
 
 //TODO: Implement windows caching so we only rebuild a TooltipInformationWindow if it differs from the last shown one.
 type FSharpLanguageItemTooltipProvider() = 
@@ -175,12 +172,6 @@ type FSharpResolverProvider() =
       result
 
     /// Returns string with tool-tip from 'FSharpLocalResolveResult'
-    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) = 
-      //I dont think this is used any longer, prior to MD4.0 it was called.
-      do Debug.WriteLine (sprintf "Resolver: in CreateTooltip")
-      match result with
-      | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
-      | _ -> null
-
+    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) = null
 
 
