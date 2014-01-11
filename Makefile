@@ -8,7 +8,7 @@ all: $(TARGETS)
 
 $(FSHARP_COMPILER_SERVICE):
 	mozroots --import --sync --quiet
-	cd FSharp.AutoComplete && mono ../lib/nuget/NuGet.exe install -OutputDirectory packages
+	cd FSharp.AutoComplete && mono ../lib/nuget/NuGet.exe install -OutputDirectory ../packages
 
 bin/fsautocomplete.exe: $(FSHARP_COMPILER_SERVICE)
 	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj)
