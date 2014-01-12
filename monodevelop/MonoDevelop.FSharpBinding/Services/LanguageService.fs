@@ -361,14 +361,14 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
-    member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
+    member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) : Option<DataTipText * (int * int)> =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> DataTipText []
+        | None -> None
         | Some(col,identIsland) ->
           let res = info.GetDataTipText(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
-          res
+          Some (res, (col - identIsland.Head.Length, col))
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)

@@ -631,10 +631,12 @@ around to the start of the buffer."
 
 (defun fsharp-ac-handle-errors (data)
   "Display error overlays and set buffer-local error variables for error navigation."
-  (fsharp-ac-clear-errors)
-  (let ((errs (fsharp-ac-parse-errors data)))
-    (setq fsharp-ac-errors errs)
-    (mapc 'fsharp-ac/show-error-overlay errs)))
+  (when (equal major-mode 'fsharp-mode)
+    (unless (or (active-minibuffer-window) cursor-in-echo-area)
+      (fsharp-ac-clear-errors)
+      (let ((errs (fsharp-ac-parse-errors data)))
+        (setq fsharp-ac-errors errs)
+        (mapc 'fsharp-ac/show-error-overlay errs)))))
 
 (defun fsharp-ac-handle-tooltip (data)
   "Display information from the background process. If the user
