@@ -135,15 +135,13 @@ and whether it is in a project directory.")
   (modify-syntax-entry ?\) ")(4n" fsharp-mode-syntax-table)
 
   ; // is the beginning of a comment "b"
-  (modify-syntax-entry ?\/ ". 12b" fsharp-mode-syntax-table)
-  ; // \nis the beginning of a comment "b"
+  (modify-syntax-entry ?/ ". 12b" fsharp-mode-syntax-table)
+  ; // \n is the end of a comment "b"
   (modify-syntax-entry ?\n "> b" fsharp-mode-syntax-table)
 
-  ; backquote was a string-like delimiter (for character literals)
-  ; (modify-syntax-entry ?` "\"" fsharp-mode-syntax-table)
-  ; quote and underscore are part of words
-  (modify-syntax-entry ?' "w" fsharp-mode-syntax-table)
-  (modify-syntax-entry ?_ "w" fsharp-mode-syntax-table)
+  ; quote and underscore are part of symbols
+  (modify-syntax-entry ?' "_" fsharp-mode-syntax-table)
+  (modify-syntax-entry ?_ "_" fsharp-mode-syntax-table)
   ; ISO-latin accented letters and EUC kanjis are part of words
   (let ((i 160))
     (while (< i 256)
@@ -174,6 +172,7 @@ and whether it is in a project directory.")
 
 ;;;###autoload
 (define-derived-mode fsharp-mode prog-mode "fsharp"
+  :syntax-table fsharp-mode-syntax-table
   "Major mode for editing fsharp code.
 
 \\{fsharp-mode-map}"
@@ -183,9 +182,9 @@ and whether it is in a project directory.")
   (require 'fsharp-doc)
   (require 'fsharp-mode-completion)
 
-  (kill-all-local-variables)
+  ;(kill-all-local-variables)
   (use-local-map fsharp-mode-map)
-  (set-syntax-table fsharp-mode-syntax-table)
+  ;(set-syntax-table fsharp-mode-syntax-table)
 
   (mapc 'make-local-variable
         '(paragraph-start
@@ -201,6 +200,7 @@ and whether it is in a project directory.")
           add-log-current-defun-function
           underline-minimum-offset
           compile-command
+          syntax-propertize-function
 
           ac-sources
           ac-auto-start
@@ -233,6 +233,9 @@ and whether it is in a project directory.")
 
         )
 
+  ; Syntax highlighting
+  (setq font-lock-defaults '(fsharp-font-lock-keywords nil t))
+  (setq syntax-propertize-function 'fsharp--syntax-propertize-function)
   ;; Error navigation
   (setq next-error-function 'fsharp-ac/next-error)
   (add-hook 'next-error-hook 'fsharp-ac/show-error-at-point nil t)
