@@ -103,11 +103,11 @@ namespace MonoDevelop.Debugger
 				busyDialog.DestroyWithParent = true;
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
-				// Regresh the engine list
+				// Refresh the engines list
 				engines = null;
 			});
 			AddinManager.AddExtensionNodeHandler (EvaluatorsPath, delegate {
-				// Regresh the engine list
+				// Refresh the evaluators list
 				evaluators = null;
 			});
         }
