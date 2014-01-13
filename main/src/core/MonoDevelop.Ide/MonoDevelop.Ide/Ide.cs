@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -57,6 +58,7 @@ namespace MonoDevelop.Ide
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
 		static IdePreferences preferences;
+		static IdeCustomizer customizer;
 
 		public const int CurrentRevision = 5;
 		
@@ -77,7 +79,9 @@ namespace MonoDevelop.Ide
 				initializedEvent -= value;
 			}
 		}
-		
+
+		internal static IdeCustomizer Customizer { get; set; }
+
 		/// <summary>
 		/// Fired when the IDE gets the focus
 		/// </summary>
@@ -231,6 +235,7 @@ namespace MonoDevelop.Ide
 			TypeSystemService.TrackFileChanges = true;
 			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
+			Customizer.Initialize ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
