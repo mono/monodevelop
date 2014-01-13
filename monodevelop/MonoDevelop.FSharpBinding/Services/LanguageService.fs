@@ -213,15 +213,15 @@ module internal TipFormatter =
   //  "Multiple overloads" because MD prints first int in bold (so that no overload is highlighted)
   let private buildFormatElement canAddHeader el (sb:StringBuilder) =
     match el with 
-    | DataTipElementNone -> ()
-    | DataTipElement(it, comment) -> 
+    | ToolTipElementNone -> ()
+    | ToolTipElement(it, comment) -> 
         Debug.WriteLine("DataTipElement: " + it)
         sb.AppendLine(GLib.Markup.EscapeText it) |> ignore
         let html = buildFormatComment comment 
         if not (String.IsNullOrWhiteSpace html) then 
             sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
             sb.AppendLine(html) |> ignore
-    | DataTipElementGroup(items) -> 
+    | ToolTipElementGroup(items) -> 
         let items, msg = 
           if items.Length > 10 then 
             (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
@@ -237,16 +237,16 @@ module internal TipFormatter =
                   sb.AppendLine(html) |> ignore
                   sb.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then sb.Append(msg) |> ignore
-    | DataTipElementCompositionError(err) -> 
+    | ToolTipElementCompositionError(err) -> 
         sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
       
     
   /// Format some of the data returned by the F# compiler
   let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
     match tip with
-    | DataTipText([single]) -> sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+    | ToolTipText([single]) -> sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
                                buildFormatElement true single sb
-    | DataTipText(its) -> 
+    | ToolTipText(its) -> 
         if canAddHeader then 
             sb.AppendLine("Multiple items") |> ignore
         its |> Seq.iteri (fun i item ->
@@ -315,13 +315,13 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromElement paramName element = 
       match element with 
-      | DataTipElementNone -> None
-      | DataTipElement(it, comment) -> extractParamTipFromComment paramName comment 
-      | DataTipElementGroup(items) -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | DataTipElementCompositionError(err) -> None
+      | ToolTipElementNone -> None
+      | ToolTipElement(it, comment) -> extractParamTipFromComment paramName comment 
+      | ToolTipElementGroup(items) -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | ToolTipElementCompositionError(err) -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
-  let extractParamTip paramName (DataTipText elements) = 
+  let extractParamTip paramName (ToolTipText elements) = 
       List.tryPick (extractParamTipFromElement paramName) elements
 
   ///Formats tool-tip and turns the first line into heading.  MonoDevelop does this automatically 
@@ -335,7 +335,7 @@ module internal TipFormatter =
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
-type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo) =
+type internal TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
     let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
     let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
@@ -361,19 +361,19 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
-    member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) : Option<DataTipText * (int * int)> =
+    member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) : Option<ToolTipText * (int * int)> =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-          let res = info.GetDataTipText(line, col, lineStr, identIsland, token)
+          let res = info.GetToolTipText(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
           Some (res, (col - identIsland.Head.Length, col))
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
         let line, col, lineStr = getLineInfoFromOffset(offset, doc)
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> DeclNotFound FindDeclFailureReason.Unknown
+        | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland) ->
             let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, token, true)
             Debug.WriteLine("Result: Got something, returning")
@@ -386,7 +386,7 @@ type internal TypedParseResult(info:TypeCheckResults, untyped : UntypedParseInfo
         | Some(col,identIsland) ->
             let res = info.GetMethods(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
-            Some (res.Name, res.Methods) 
+            Some (res.MethodName, res.Methods) 
             
     member x.Untyped with get() = untyped 
 
@@ -396,7 +396,7 @@ type internal AfterCompleteTypeCheckCallback = (FilePath * Error list -> unit) o
 
 /// Represents request send to the background worker
 /// We need information about the current file and project (options)
-type internal ParseRequest (file:FilePath, source:string, options:CheckOptions, fullCompile:bool, afterCompleteTypeCheckCallback: AfterCompleteTypeCheckCallback) =
+type internal ParseRequest (file:FilePath, source:string, options:ProjectOptions, fullCompile:bool, afterCompleteTypeCheckCallback: AfterCompleteTypeCheckCallback) =
   member x.File  = file
   member x.Source = source
   member x.Options = options
@@ -464,7 +464,9 @@ type internal LanguageService private () =
                 doc.ReparseDocument()
         with exn  -> () )
                                             
-    InteractiveChecker.Create(NotifyFileTypeCheckStateIsDirty dispatch)
+    let checker = InteractiveChecker.Create()
+    checker.FileTypeCheckStateIsDirty.Add dispatch
+    checker
 
   // Mailbox of this 'LanguageService'
   let mbox = MailboxProcessor.Start(fun mbox ->
@@ -483,14 +485,14 @@ type internal LanguageService private () =
             Debug.WriteLine("Worker: Request parse received")
             // Run the untyped parsing of the file and report result...
             Debug.WriteLine("Worker: Untyped parse...")
-            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) 
+            let untypedInfo = try checker.ParseFileInProject(fileName, info.Source, info.Options) 
                               with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString()))
                                         reraise ()
               
             // Now run the type-checking
             let fileName = CompilerArguments.fixFileName(fileName)
             Debug.WriteLine("Worker: Typecheck source...")
-            let updatedTyped = try checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false), null )
+            let updatedTyped = try checker.CheckFileInProjectIfReady( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false), null )
                                with e -> Debug.WriteLine(sprintf "Worker: Error in TypeCheckSource: %s" (e.ToString()))
                                          reraise ()
               
@@ -505,7 +507,7 @@ type internal LanguageService private () =
             // Construct new typed parse result if the task succeeded
             let newTypedInfo =
               match updatedTyped with
-              | TypeCheckSucceeded(results) ->
+              | CheckFileAnswer.Succeeded(results) ->
                   // Handle errors on the GUI thread
                   Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" results.HasFullTypeCheckInfo)
                   match info.AfterCompleteTypeCheckCallback with 
@@ -561,7 +563,7 @@ type internal LanguageService private () =
         try 
           let fileName = CompilerArguments.fixFileName(fileName)
           Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
-          let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
+          let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
           
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
@@ -618,7 +620,7 @@ type internal LanguageService private () =
         let opts = x.GetCheckerOptions(fileName, src, proj, config)
         Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
         let req = ParseRequest(file, src, opts, false, None)
-        checker.UntypedParse(fileName, src, opts)
+        checker.ParseFileInProject(fileName, src, opts)
 
   member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()

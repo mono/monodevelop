@@ -65,7 +65,7 @@ type FSharpLanguageItemTooltipProvider() =
         let tip = tyRes.GetToolTip(offset, editor.Document)
         match tip with
         | None -> null
-        | Some (DataTipText(elems),_) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
+        | Some (ToolTipText(elems),_) when elems |> List.forall (function ToolTipElementNone -> true | _ -> false) -> 
             Debug.WriteLine (sprintf "TooltipProvider: No data found")
             null
         | Some (tiptext,(col1,col2)) -> 
@@ -79,7 +79,7 @@ type FSharpLanguageItemTooltipProvider() =
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
-            | :? DataTipText as titem -> 
+            | :? ToolTipText as titem -> 
                 let tooltip = TipFormatter.formatTipWithHeader(titem)               
                 let result = new TooltipInformationWindow(ShowArrow = true)
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
@@ -138,10 +138,10 @@ type FSharpResolverProvider() =
         // Get the declaration location from the language service
         let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
         let reg = match loc with
-                  | DeclFound((line, col), file) -> 
+                  | FindDeclResult.DeclFound((line, col), file) -> 
                        Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
                        DomRegion(file,line+1,col+1)
-                  | DeclNotFound(notfound) -> 
+                  | FindDeclResult.DeclNotFound(notfound) -> 
                        match notfound with 
                        | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
                        | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
