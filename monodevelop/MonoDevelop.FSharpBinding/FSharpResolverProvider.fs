@@ -93,11 +93,13 @@ type FSharpLanguageItemTooltipProvider() =
         if tipWindow = null then null else
 
         let positionWidget = editor.TextArea
-
-        let p1 = offset |> editor.OffsetToLocation |> editor.LocationToPoint
-  
-        //we never set the end dom region so use a single character '1' as the end offset for now otherwise it will be negative
-        let caret = new Gdk.Rectangle (p1.X - positionWidget.Allocation.X, p1.Y - positionWidget.Allocation.Y, 1, int editor.LineHeight)
+        let region = item.ItemSegment.GetRegion(editor.Document)
+        let p1, p2 = editor.LocationToPoint(region.Begin), editor.LocationToPoint(region.End)
+        let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X, 
+                                   int p2.Y - positionWidget.Allocation.Y, 
+                                   int (p2.X - p1.X), 
+                                   int editor.LineHeight)
+        editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
         tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
         tipWindow :> Gtk.Window
 
