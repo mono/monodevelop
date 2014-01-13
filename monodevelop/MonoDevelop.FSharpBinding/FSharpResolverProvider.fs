@@ -72,7 +72,7 @@ type FSharpLanguageItemTooltipProvider() =
             Debug.WriteLine(sprintf "TooltipProvider: Got data")
             let line = editor.Document.OffsetToLineNumber offset
 
-            let segment = new TextSegment(editor.LocationToOffset (line, col1), col2 - col1)
+            let segment = new TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
             TooltipItem (tiptext, segment)
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
