@@ -29,7 +29,7 @@ type OutputMode =
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
 type internal RequestOptions(opts, file, src) =
-  member x.Options : CheckOptions = opts
+  member x.Options : ProjectOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
   member x.WithSource(source) =
@@ -45,7 +45,7 @@ type internal RequestOptions(opts, file, src) =
 /// Message type that is used by 'IntelliSenseAgent'
 type internal IntelliSenseAgentMessage =
   | TriggerParseRequest of RequestOptions * bool
-  | GetTypeCheckInfo of RequestOptions * int option * AsyncReplyChannel<TypeCheckResults option>
+  | GetTypeCheckInfo of RequestOptions * int option * AsyncReplyChannel<CheckFileResults option>
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
@@ -82,7 +82,7 @@ type SeverityConverter() =
 type internal IntelliSenseAgent() =
 
   /// Create an F# IntelliSense service
-  let checker = InteractiveChecker.Create(NotifyFileTypeCheckStateIsDirty ignore)
+  let checker = InteractiveChecker.Create()
 
   /// Creates an empty "Identifier" token (we need it when getting ToolTip)
   let identToken = FsParser.tagOfToken(FsParser.token.IDENT(""))
@@ -91,11 +91,11 @@ type internal IntelliSenseAgent() =
   /// until the type check request succeeds
   let rec waitForTypeCheck(opts:RequestOptions, untypedInfo) = async {
     let info =
-      checker.TypeCheckSource
+      checker.CheckFileInProjectIfReady
         ( untypedInfo, opts.FileName, identToken, opts.Source,
           opts.Options, IsResultObsolete(fun () -> false), null)
     match info with
-    | TypeCheckSucceeded(res) when res.HasFullTypeCheckInfo ->
+    | CheckFileAnswer.Succeeded(res) when res.HasFullTypeCheckInfo ->
         return res, res.Errors
     | _ ->
         do! Async.Sleep(200)
@@ -109,27 +109,27 @@ type internal IntelliSenseAgent() =
       match msg with
       | TriggerParseRequest(opts, full) ->
           // Start parsing and update errors with the new ones
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
+          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           let res =
-            checker.TypeCheckSource
+            checker.CheckFileInProjectIfReady
               ( untypedInfo, opts.FileName, 0, opts.Source,
                 opts.Options, IsResultObsolete(fun () -> false), null)
           let errors =
             match res with
-            | TypeCheckSucceeded(res) -> res.Errors
+            | CheckFileAnswer.Succeeded(res) -> res.Errors
             | _ -> errors
           // Start full background parsing if requested..
           if full then checker.StartBackgroundCompile(opts.Options)
           return! loop errors
 
       | GetDeclarationsMessage(opts, repl) ->
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
+          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           repl.Reply(untypedInfo.GetNavigationItems().Declarations)
           return! loop errors
 
       | GetTypeCheckInfo(opts, timeout, reply) ->
           // Try to get information for the IntelliSense (in the specified time)
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
+          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           try
             let res, errors =
               Async.RunSynchronously
@@ -162,7 +162,7 @@ type internal IntelliSenseAgent() =
 
         // We are in a stand-alone file or we are in a project,
         // but currently editing a script file
-        checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
+        checker.GetProjectOptionsFromScript(fileName, source, System.DateTime.Now)
 
           // The InteractiveChecker resolution sometimes doesn't
           // include FSharp.Core and other essential assemblies, so we may
@@ -206,7 +206,7 @@ type internal IntelliSenseAgent() =
     agent.Post(TriggerParseRequest(opts, full))
 
   /// Fetch latest type check information, possibly with a background check if needed
-  member x.GetTypeCheckInfo(opts : RequestOptions, time) : Option<TypeCheckResults> =
+  member x.GetTypeCheckInfo(opts : RequestOptions, time) : Option<CheckFileResults> =
     // First check if cached results are available
     let checkres = checker.TryGetRecentTypeCheckResultsForFile(opts.FileName, opts.Options)
     match checkres with
@@ -221,7 +221,7 @@ type internal IntelliSenseAgent() =
   /// and current residue.
   member x.DoCompletion(opts : RequestOptions, line, column, lineStr, time) : Option<DeclarationSet * String> =
     Option.bind (fun (longName, residue) ->
-      Option.bind (fun (info: TypeCheckResults) ->
+      Option.bind (fun (info: CheckFileResults) ->
       try
         Some (info.GetDeclarations(None, line, column, lineStr, longName, residue, fun (_,_) -> false)
               |> Async.RunSynchronously, residue)
@@ -230,13 +230,13 @@ type internal IntelliSenseAgent() =
       ) (Parsing.findLongIdentsAndResidue (column, lineStr))
 
   /// Gets ToolTip for the specified location (and prints it to the output)
-  member x.GetToolTip(opts, line, column, lineStr, time) : Option<DataTipText> =
+  member x.GetToolTip(opts, line, column, lineStr, time) : Option<ToolTipText> =
 
     Option.bind (fun (col',identIsland) ->
-      Option.map (fun (info:TypeCheckResults) ->
+      Option.map (fun (info:CheckFileResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDataTipText(line,col', lineStr, identIsland, identToken)
+        info.GetToolTipText(line,col', lineStr, identIsland, identToken)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdents(column, lineStr))
 
@@ -245,7 +245,7 @@ type internal IntelliSenseAgent() =
   member x.FindDeclaration(opts : RequestOptions, line, column, lineStr, time) =
 
     Option.bind (fun (col',identIsland) ->
-      Option.map (fun (info:TypeCheckResults) ->
+      Option.map (fun (info:CheckFileResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         info.GetDeclarationLocation(line,col', lineStr, identIsland, identToken, true)
@@ -430,7 +430,7 @@ type internal State =
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
     OutputMode : OutputMode
-    HelpText : Map<String, DataTipText>
+    HelpText : Map<String, ToolTipText>
   }
 
 /// Contains main loop of the application
@@ -600,8 +600,8 @@ module internal Main =
               | None -> printMsg "INFO" "No tooltip information"
               | Some tip ->
                 match tip with
-                | DataTipText(elems) when elems |> List.forall (function
-                  DataTipElementNone -> true | _ -> false) ->
+                | ToolTipText(elems) when elems |> List.forall (function
+                  ToolTipElementNone -> true | _ -> false) ->
                   printMsg "INFO" "No tooltip information"
                 | _ ->
                     match state.OutputMode with
@@ -617,8 +617,8 @@ module internal Main =
 
             match agent.FindDeclaration(opts, line, col, state.Files.[file].[line], timeout) with
             | None
-            | Some (DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
-            | Some (DeclFound ((line,col),file)) ->
+            | Some (FindDeclResult.DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
+            | Some (FindDeclResult.DeclFound ((line,col),file)) ->
               
               match state.OutputMode with
               | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
