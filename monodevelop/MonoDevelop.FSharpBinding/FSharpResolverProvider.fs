@@ -99,7 +99,8 @@ type FSharpLanguageItemTooltipProvider() =
                                    int p2.Y - positionWidget.Allocation.Y, 
                                    int (p2.X - p1.X), 
                                    int editor.LineHeight)
-        editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
+        //For debug this is usful for visualising the tooltip location
+        // editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
         tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
         tipWindow :> Gtk.Window
 
