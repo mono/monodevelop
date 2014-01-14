@@ -148,16 +148,18 @@ namespace MonoDevelop.Debugger
 		{
 			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool), typeof (int), typeof (int));
 			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
 			StackTraceTreeView.RulesHint = true;
 			StackTraceTreeView.Show ();
 
 			var renderer = new StackFrameCellRenderer (StackTraceTreeView.PangoContext);
+			renderer.Width = DefaultWidth;
 
 			StackTraceTreeView.AppendColumn ("", renderer, (CellLayoutDataFunc) StackFrameLayout);
 
-			StackTraceTreeView.SizeAllocated += (o, args) => renderer.Width = args.Allocation.Width - 4;
+			StackTraceTreeView.SizeAllocated += (o, args) => renderer.Width = args.Allocation.Width;
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 180 };
@@ -307,7 +309,6 @@ namespace MonoDevelop.Debugger
 		{
 			var model = (ListStore) StackTraceTreeView.Model;
 			bool external = false;
-			int yOffset;
 
 			model.Clear ();
 
@@ -439,7 +440,7 @@ namespace MonoDevelop.Debugger
 			using (var layout = new Pango.Layout (Context)) {
 				Pango.Rectangle ink, logical;
 
-				layout.Width = (int)(MaxMarkupWidth * Pango.Scale.PangoScale);
+				layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
 				layout.SetMarkup (Markup);
 
 				layout.GetPixelExtents (out ink, out logical);
@@ -514,7 +515,7 @@ namespace MonoDevelop.Debugger
 				using (var layout = new Pango.Layout (Context)) {
 					Pango.Rectangle ink, logical;
 
-					layout.Width = -1;//(int)(MaxMarkupWidth * Pango.Scale.PangoScale);
+					layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
 					layout.SetMarkup (Markup);
 
 					layout.GetPixelExtents (out ink, out logical);
