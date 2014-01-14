@@ -368,7 +368,6 @@ type internal TypedParseResult(info:CheckFileResults, untyped : ParseFileResults
         | Some(col,identIsland) ->
           let res = info.GetToolTipText(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
-          Some (res, (col - identIsland.Head.Length, col))
           Some (res, (col - (Seq.last identIsland).Length, col))
 
     member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
