@@ -325,15 +325,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnEditSolution ()
 		{
 			var solution = (Solution) CurrentNode.DataItem;
-			if (!string.IsNullOrEmpty (solution.FileName) && File.Exists (solution.FileName))
-				IdeApp.Workbench.OpenDocument (solution.FileName);
+			IdeApp.Workbench.OpenDocument (solution.FileName);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
 		public void OnEditSolutionUpdate (CommandInfo info)
 		{
-			var p = (Solution) CurrentNode.DataItem;
-			info.Visible = !IdeApp.Workbench.Documents.Any (d => d.FileName == p.FileName);
+			var solution = (Solution) CurrentNode.DataItem;
+			info.Visible = info.Enabled = !string.IsNullOrEmpty (solution.FileName) && File.Exists (solution.FileName);
 		}
 		
 /*		[CommandHandler (ProjectCommands.AddNewFiles)]
