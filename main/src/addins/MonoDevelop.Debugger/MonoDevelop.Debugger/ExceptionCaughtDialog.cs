@@ -57,7 +57,8 @@ namespace MonoDevelop.Debugger
 			StackFrame,
 			Markup,
 			IsUserCode,
-			MarkupHeight
+			MarkupHeight,
+			YOffset
 		}
 
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
@@ -142,12 +143,13 @@ namespace MonoDevelop.Debugger
 
 			renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
 			renderer.MarkupHeight = (int) model.GetValue (iter, (int) ModelColumn.MarkupHeight);
+			renderer.YOffset = (int) model.GetValue (iter, (int) ModelColumn.YOffset);
 			renderer.LineNumber = !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
 		}
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool), typeof (int));
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool), typeof (int), typeof (int));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
@@ -173,17 +175,19 @@ namespace MonoDevelop.Debugger
 			return scrolled;
 		}
 
-		int MeasureHeight (string markup)
+		int MeasureHeight (string markup, out int yOffset)
 		{
-			int w, h;
 			var context = StackTraceTreeView.PangoContext;
 			var layout = new Pango.Layout (context);
+			Pango.Rectangle ink, logical;
 
 			layout.Width = (int)(550 * Pango.Scale.PangoScale);
 			layout.SetMarkup (markup);
-			layout.GetPixelSize (out w, out h);
 
-			return h;
+			layout.GetPixelExtents (out ink, out logical);
+			yOffset = ink.Y;
+
+			return logical.Height;
 		}
 
 		Widget CreateButtonBox ()
@@ -325,6 +329,7 @@ namespace MonoDevelop.Debugger
 		{
 			var model = (ListStore) StackTraceTreeView.Model;
 			bool external = false;
+			int yOffset;
 
 			model.Clear ();
 
@@ -334,7 +339,7 @@ namespace MonoDevelop.Debugger
 				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
 					if (!external) {
 						var str = GettextCatalog.GetString ("<b>[External Code]</b>");
-						model.AppendValues (null, str, false, MeasureHeight (str));
+						model.AppendValues (null, str, false, MeasureHeight (str, out yOffset), yOffset);
 						external = true;
 					}
 
@@ -353,13 +358,13 @@ namespace MonoDevelop.Debugger
 					markup += "</span>";
 				}
 
-				model.AppendValues (frame, markup, isUserCode, MeasureHeight (markup));
+				model.AppendValues (frame, markup, isUserCode, MeasureHeight (markup, out yOffset), yOffset);
 				external = false;
 			}
 
 			if (ex.StackIsEvaluating) {
 				var str = GettextCatalog.GetString ("Loading...");
-				model.AppendValues (null, str, false, MeasureHeight (str));
+				model.AppendValues (null, str, false, MeasureHeight (str, out yOffset), yOffset);
 			}
 		}
 
@@ -435,6 +440,7 @@ namespace MonoDevelop.Debugger
 		public bool IsUserCode;
 		public int LineNumber;
 		public int MarkupHeight;
+		public int YOffset;
 
 		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
@@ -453,7 +459,7 @@ namespace MonoDevelop.Debugger
 				#if CENTER_ROUNDED_RECTANGLE
 				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
 				#else
-				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), cell_area.Y + 4);
+				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), cell_area.Y + (cell_area.Height - MarkupHeight) / 2.0 + YOffset);
 				#endif
 
 				cr.Antialias = Cairo.Antialias.Subpixel;
