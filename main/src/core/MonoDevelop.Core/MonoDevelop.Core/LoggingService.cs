@@ -183,7 +183,7 @@ namespace MonoDevelop.Core
 
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
-						raygunClient.Send (ex, tags, customData, BuildInfo.Version);
+						raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
 					});
 				}
 

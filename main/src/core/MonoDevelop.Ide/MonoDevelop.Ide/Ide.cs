@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide
 		
 		public static Version Version {
 			get {
-				return IdeVersionInfo.GetVersion ();
+				return Runtime.Version;
 			}
 		}
 		

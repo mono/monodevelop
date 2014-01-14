@@ -158,32 +158,16 @@ namespace MonoDevelop.Ide
 				if (BuildInfo.Version != BuildInfo.VersionLabel)
 					v += BuildInfo.Version;
 #pragma warning restore 162
-				if (GetVersion ().Revision >= 0) {
+				if (Runtime.Version.Revision >= 0) {
 					if (v.Length > 0)
 						v += " ";
-					v += "build " + GetVersion ().Revision;
+					v += "build " + Runtime.Version.Revision;
 				}
 				if (v.Length == 0)
 					return BuildInfo.VersionLabel;
 				else
 					return BuildInfo.VersionLabel + " (" + v + ")";
 			}
-		}
-
-		static Version version;
-
-		internal static Version GetVersion ()
-		{
-			if (version == null) {
-				version = new Version (BuildInfo.Version);
-				var relId = SystemInformation.GetReleaseId ();
-				if (relId != null && relId.Length >= 9) {
-					int rev;
-					int.TryParse (relId.Substring (relId.Length - 4), out rev);
-					version = new Version (Math.Max (version.Major, 0), Math.Max (version.Minor, 0), Math.Max (version.Build, 0), Math.Max (rev, 0));
-				}
-			}
-			return version;
 		}
 	}
 }
