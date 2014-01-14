@@ -115,8 +115,13 @@ namespace MonoDevelop.Core.Execution
 				endEventErr.Close ();
 				endEventOut = endEventErr = null;
 			}
-			
-			base.Dispose (disposing);
+
+			try {
+				base.Dispose (disposing);
+			} catch (Exception ex) {
+				if (disposing)
+					throw;
+			}
 		}
 		
 		void CheckDisposed ()
