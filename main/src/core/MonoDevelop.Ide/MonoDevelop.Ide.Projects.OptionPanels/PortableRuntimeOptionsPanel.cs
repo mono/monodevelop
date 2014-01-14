@@ -59,11 +59,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
 	{
-		static TargetFramework NetPortableProfile1;
-		static TargetFramework NetPortableProfile2;
-		static TargetFramework NetPortableProfile3;
-		static TargetFramework NetPortableProfile4;
-
 		readonly TargetFramework missingFramework;
 		readonly List<TargetFramework> targetFrameworks;
 		readonly SortedDictionary<string, List<SupportedFramework>> supportedFrameworks;
@@ -79,47 +74,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		bool disableEvents;
 
 		const bool UseShortDescriptionInSelector = false;
-
-		static void InitProfiles ()
-		{
-			// Profile 1 (.NETFramework + Silverlight + WindowsPhone + Xbox)
-			NetPortableProfile1 = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile1"));
-			SupportedFramework NetFramework = new SupportedFramework (NetPortableProfile1, ".NETFramework", ".NET Framework", "*", new Version (4, 0), "4");
-			SupportedFramework Silverlight = new SupportedFramework (NetPortableProfile1, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
-			SupportedFramework WindowsPhone = new SupportedFramework (NetPortableProfile1, "Silverlight", "Windows Phone", "WindowsPhone*", new Version (4, 0), "7");
-			SupportedFramework Xbox = new SupportedFramework (NetPortableProfile1, "Xbox", "Xbox 360", "*", new Version (4, 0), "");
-			
-			NetPortableProfile1.SupportedFrameworks.Add (NetFramework);
-			NetPortableProfile1.SupportedFrameworks.Add (Silverlight);
-			NetPortableProfile1.SupportedFrameworks.Add (WindowsPhone);
-			NetPortableProfile1.SupportedFrameworks.Add (Xbox);
-
-			// Profile 2 (.NETFramework + Silverlight + WindowsPhone)
-			NetPortableProfile2 = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile2"));
-			NetFramework = new SupportedFramework (NetPortableProfile2, ".NETFramework", ".NET Framework", "*", new Version (4, 0), "4");
-			Silverlight = new SupportedFramework (NetPortableProfile2, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
-			WindowsPhone = new SupportedFramework (NetPortableProfile2, "Silverlight", "Windows Phone", "WindowsPhone*", new Version (4, 0), "7");
-			
-			NetPortableProfile2.SupportedFrameworks.Add (NetFramework);
-			NetPortableProfile2.SupportedFrameworks.Add (Silverlight);
-			NetPortableProfile2.SupportedFrameworks.Add (WindowsPhone);
-
-			// Profile 3 (.NETFramework + Silverlight)
-			NetPortableProfile3 = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile3"));
-			NetFramework = new SupportedFramework (NetPortableProfile3, ".NETFramework", ".NET Framework", "*", new Version (4, 0), "4");
-			Silverlight = new SupportedFramework (NetPortableProfile3, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
-			
-			NetPortableProfile3.SupportedFrameworks.Add (NetFramework);
-			NetPortableProfile3.SupportedFrameworks.Add (Silverlight);
-
-			// Profile 4 (Silverlight + WindowsPhone)
-			NetPortableProfile4 = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile4"));
-			Silverlight = new SupportedFramework (NetPortableProfile4, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
-			WindowsPhone = new SupportedFramework (NetPortableProfile4, "Silverlight", "Windows Phone", "WindowsPhone*", new Version (4, 0), "7");
-
-			NetPortableProfile4.SupportedFrameworks.Add (Silverlight);
-			NetPortableProfile4.SupportedFrameworks.Add (WindowsPhone);
-		}
 
 		class OptionComboItem {
 			public readonly string Name;
@@ -271,26 +225,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
 		{
-			int count = 0;
-
-			foreach (var fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-				if (fx.Hidden || fx.Id.Identifier != ".NETPortable" || !project.TargetRuntime.IsInstalled (fx))
-					continue;
-
-				yield return fx;
-				count++;
-			}
-
-			if (count > 0)
-				yield break;
-
-			if (NetPortableProfile1 == null)
-				InitProfiles ();
-
-			yield return NetPortableProfile1;
-			yield return NetPortableProfile2;
-			yield return NetPortableProfile3;
-			yield return NetPortableProfile4;
+			return Runtime.SystemAssemblyService.GetTargetFrameworks ().Where (fx =>
+				!fx.Hidden &&
+				fx.Id.Identifier == ".NETPortable" &&
+				project.TargetRuntime.IsInstalled (fx)
+			);
 		}
 
 		void CreateUI ()
