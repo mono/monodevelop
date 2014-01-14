@@ -181,10 +181,6 @@ namespace MonoDevelop.Core
 				foreach (var cd in SystemInformation.GetDescription ())
 					customData[cd.Title ?? ""] = cd.Description;
 
-				if (ex.Data != null)
-					foreach (var key in ex.Data.Keys)
-						customData[key] = ex.Data[key];
-
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
