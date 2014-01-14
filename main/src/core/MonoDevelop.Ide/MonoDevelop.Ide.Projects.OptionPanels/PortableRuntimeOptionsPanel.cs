@@ -117,6 +117,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			// Aggregate all SupportedFrameworks from .NETPortable TargetFrameworks
 			targetFrameworks = GetPortableTargetFrameworks ().ToList ();
+			targetFrameworks.Sort (CompareFrameworks);
 			supportedFrameworks = new SortedDictionary<string, List<SupportedFramework>> ();
 
 			if (!targetFrameworks.Contains (project.TargetFramework)) {
@@ -163,6 +164,35 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			CreateUI ();
 
 			CurrentProfileChanged (project.TargetFramework);
+		}
+
+		static int CompareFrameworks (TargetFramework x, TargetFramework y)
+		{
+			var p = CompareProfiles (x.Id.Profile, y.Id.Profile);
+			if (p != 0)
+				return p;
+			return string.Compare (x.Id.Version, y.Id.Version, StringComparison.Ordinal);
+		}
+
+		static int CompareProfiles (string x, string y)
+		{
+			int xn, yn;
+			if (TryParseProfileID (x, out xn)) {
+				if (TryParseProfileID (y, out yn))
+					return xn.CompareTo (yn);
+				return 1;
+			}
+			if (TryParseProfileID (y, out yn))
+				return -1;
+			return string.Compare (x, y, StringComparison.Ordinal);
+		}
+
+		static bool TryParseProfileID (string profile, out int id)
+		{
+			if (profile.StartsWith ("Profile", StringComparison.Ordinal))
+				return int.TryParse (profile.Substring ("Profile".Length), out id);
+			id = -1;
+			return false;
 		}
 
 		static string GetDisplayName (SupportedFramework sfx)
@@ -220,7 +250,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				description = string.Empty;
 
 			return string.Format (
-				"{0} - {1}{2}", fx.Id.Version, fx.Id.Profile, description);
+				"PCL {0} - {1}{2}", fx.Id.Version, fx.Id.Profile, description);
 		}
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
