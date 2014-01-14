@@ -861,7 +861,10 @@ namespace MonoDevelop.SourceEditor
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
 			get {
-				if (Document.HasLineEndingMismatchOnTextSet)
+				var document = Document;
+				if (document == null)
+					return false;
+				if (document.HasLineEndingMismatchOnTextSet)
 					return true;
 				string eol = DetectedEolMarker;
 				if (eol == null)

@@ -74,7 +74,7 @@ namespace MonoDevelop.SourceEditor
 
 		static bool SkipView (SourceEditorView view)
 		{
-			return !view.IsFile || view.IsUntitled;
+			return view.Document == null || !view.IsFile || view.IsUntitled;
 		}
 
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
