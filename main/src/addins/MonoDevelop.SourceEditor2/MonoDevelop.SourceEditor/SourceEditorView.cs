@@ -1310,6 +1310,10 @@ namespace MonoDevelop.SourceEditor
 
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
+				if (bp.Line <= 0 || bp.Line > widget.TextEditor.Document.LineCount) {
+					LoggingService.LogWarning ("Invalid breakpoint :" + bp +" in line " + bp.Line); 
+					return;
+				}
 				DocumentLine line = widget.TextEditor.Document.GetLine (bp.Line);
 				var status = bp.GetStatus (DebuggingService.DebuggerSession);
 				bool tracepoint = bp.HitAction != HitAction.Break;
