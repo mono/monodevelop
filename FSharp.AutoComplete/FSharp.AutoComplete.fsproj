@@ -45,7 +45,6 @@
     <Compile Include="TipFormatter.fs" />
     <Compile Include="ProjectParser.fs" />
     <Compile Include="Program.fs" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -78,4 +77,7 @@
        Name="BeforeBuild"> </Target> <Target Name="AfterBuild">
        </Target>
 	-->
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
