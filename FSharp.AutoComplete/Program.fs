@@ -95,7 +95,7 @@ type internal IntelliSenseAgent() =
         ( untypedInfo, opts.FileName, identToken, opts.Source,
           opts.Options, IsResultObsolete(fun () -> false), null)
     match info with
-    | CheckFileAnswer.Succeeded(res) when res.HasFullTypeCheckInfo ->
+    | Some(CheckFileAnswer.Succeeded(res)) when res.HasFullTypeCheckInfo ->
         return res, res.Errors
     | _ ->
         do! Async.Sleep(200)
@@ -116,7 +116,7 @@ type internal IntelliSenseAgent() =
                 opts.Options, IsResultObsolete(fun () -> false), null)
           let errors =
             match res with
-            | CheckFileAnswer.Succeeded(res) -> res.Errors
+            | Some(CheckFileAnswer.Succeeded(res)) -> res.Errors
             | _ -> errors
           // Start full background parsing if requested..
           if full then checker.StartBackgroundCompile(opts.Options)
@@ -248,7 +248,7 @@ type internal IntelliSenseAgent() =
       Option.map (fun (info:CheckFileResults) ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        info.GetDeclarationLocation(line,col', lineStr, identIsland, identToken, true)
+        info.GetDeclarationLocation(line,col', lineStr, identIsland, true)
         ) (x.GetTypeCheckInfo(opts, time))
       ) (Parsing.findLongIdents(column, lineStr))
 
