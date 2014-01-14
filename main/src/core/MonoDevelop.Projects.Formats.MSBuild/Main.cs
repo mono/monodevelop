@@ -39,7 +39,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		static ManualResetEvent exitEvent = new ManualResetEvent (false);
 		
-		[STAThread]
 		public static void Main (string[] args)
 		{
 			try {
