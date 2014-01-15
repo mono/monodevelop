@@ -310,13 +310,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
-			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
-			return provider != null ? provider.Parser : null;
+			var n = GetTypeSystemParserNode (mimeType, buildAction);
+			return n != null ? n.Parser : null;
 		}
 
 		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
-			return Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
+			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
+				if (provider != null)
+					return provider;
+			}
+			return null;
 		}
 
 		static List<MimeTypeExtensionNode> foldingParsers;
@@ -342,8 +347,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static IFoldingParser GetFoldingParser (string mimeType)
 		{
-			var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mimeType);
-			return node == null ? null : node.CreateInstance () as IFoldingParser;
+			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+				var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mt);
+				if (node != null)
+					return node.CreateInstance () as IFoldingParser;
+			}
+			return null;
 		}
 
 		public static ParsedDocument ParseFile (Project project, string fileName)
@@ -2595,7 +2604,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (filesSkippedInParseThread.Any (f => f == fileName))
 							continue;
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-							node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							node = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 							parser = node != null ? node.Parser : null;
 						}
 						if (parser == null)
