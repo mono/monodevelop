@@ -284,6 +284,9 @@ namespace MonoDevelop.Xml.StateEngine
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
 			Name = copyFromEl.Name; //XName is immutable value type
+			//include attributes
+			foreach (var a in copyFromEl.Attributes)
+				Attributes.AddAttribute ((XAttribute) a.ShallowCopy ());
 		}
 
 		public override string ToString ()
