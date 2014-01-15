@@ -84,20 +84,17 @@ namespace MonoDevelop.XmlEditor
 			SetDefaultSchema ();
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			Document.UpdateParseDocument ();
 			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
-				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (view.Document, ApplicationXmlMimeType);
-				if (mode != null)
-					view.Document.SyntaxMode = mode;
-				else
-					LoggingService.LogWarning ("XmlTextEditorExtension could not get SyntaxMode for mimetype '" 
-					    + ApplicationXmlMimeType + "'.");
+				view.Document.MimeType = ApplicationXmlMimeType;
+				Document.ReparseDocument ();
 			}
 		}
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
 			var filename = document.FileName;
-			if (filename != null && filename.ToString ().EndsWith (e.Extension))
+			if (filename != null && filename.ToString ().EndsWith (e.Extension, StringComparison.Ordinal))
 				SetDefaultSchema ();
 		}
 		
