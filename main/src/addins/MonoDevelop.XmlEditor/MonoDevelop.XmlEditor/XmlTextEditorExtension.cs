@@ -435,7 +435,7 @@ namespace MonoDevelop.XmlEditor
 			get {
 				string extension = System.IO.Path.GetExtension (FileName);
 				if (extension != null)
-					return String.Compare (extension, ".xsd", true) == 0;
+					return String.Compare (extension, ".xsd", StringComparison.OrdinalIgnoreCase) == 0;
 				return false;
 			}
 		}
