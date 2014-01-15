@@ -906,7 +906,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+			var wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
 			if (logicalRulerColumn < 0)
 				logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
@@ -1238,7 +1238,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public Pango.Layout Layout {
+			public LayoutCache.LayoutProxy Layout {
 				get;
 				private set;
 			}
@@ -1300,7 +1300,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public LayoutWrapper (Pango.Layout layout)
+			public LayoutWrapper (LayoutCache.LayoutProxy layout)
 			{
 				this.Layout = layout;
 				this.IsUncached = false;
@@ -1537,7 +1537,7 @@ namespace Mono.TextEditor
 			// predit layout already contains virtual space.
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
-			LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+			LayoutWrapper wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
 			wrapper.LineChars = virtualSpace.ToCharArray ();
 			wrapper.Layout.SetText (virtualSpace);
 			wrapper.Layout.Tabs = tabArray;

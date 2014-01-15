@@ -236,6 +236,7 @@
     <Compile Include="Mono.TextEditor.Utils\CompressingTreeList.cs" />
     <Compile Include="Mono.TextEditor.Utils\AvlTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\FileSettingsStore.cs" />
+    <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
