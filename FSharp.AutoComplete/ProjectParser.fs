@@ -57,7 +57,8 @@ module ProjectParser =
   let getOptions (p: ProjectResolver) : string array =
     let getprop s = p.project.GetEvaluatedProperty s
     let split (s: string) (cs: char[]) =
-      s.Split(cs, StringSplitOptions.RemoveEmptyEntries)
+      if s = null then [||]
+      else s.Split(cs, StringSplitOptions.RemoveEmptyEntries)
     let getbool (s: string) =
       match (Boolean.TryParse s) with
       | (true, result) -> result
@@ -67,7 +68,7 @@ module ProjectParser =
     let debugsymbols = getprop "DebugSymbols" |> getbool
     let defines = split (getprop "DefineConstants") [|';';',';' '|]
     let otherflags = getprop "OtherFlags" 
-    let otherflags = if otherflags  = null
+    let otherflags = if otherflags = null
                      then [||]
                      else split otherflags [|' '|]
     [|
