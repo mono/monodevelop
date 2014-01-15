@@ -58,13 +58,12 @@ namespace MonoDevelop.Debugger
 		
 		const string EvaluatorsPath = "/MonoDevelop/Debugging/Evaluators";
 		static Dictionary<string, ExpressionEvaluatorExtensionNode> evaluators;
-		
-		static BreakpointStore breakpoints = new BreakpointStore ();
-		static PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
+
+		static readonly PinnedWatchStore pinnedWatches = new PinnedWatchStore ();
+		static readonly BreakpointStore breakpoints = new BreakpointStore ();
+		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 		
 		static IConsole console;
-		static DebugExecutionHandlerFactory executionHandlerFactory;
-		
 		static string oldLayout;
 		
 		static DebuggerEngine currentEngine;
@@ -104,11 +103,11 @@ namespace MonoDevelop.Debugger
 				busyDialog.DestroyWithParent = true;
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
-				// Regresh the engine list
+				// Refresh the engines list
 				engines = null;
 			});
 			AddinManager.AddExtensionNodeHandler (EvaluatorsPath, delegate {
-				// Regresh the engine list
+				// Refresh the evaluators list
 				evaluators = null;
 			});
         }
@@ -357,7 +356,7 @@ namespace MonoDevelop.Debugger
 
 		}
 
-		static object cleanup_lock = new object ();
+		static readonly object cleanup_lock = new object ();
 		static void Cleanup ()
 		{
 			DebuggerSession currentSession;
@@ -382,12 +381,7 @@ namespace MonoDevelop.Debugger
 				string layout = oldLayout;
 				oldLayout = null;
 
-				// Dispatch synchronously to avoid start/stop races
-				DispatchService.GuiSyncDispatch (delegate {
-					IdeApp.Workbench.HideCommandBar ("Debug");
-					if (IdeApp.Workbench.CurrentLayout == "Debug")
-						IdeApp.Workbench.CurrentLayout = layout;
-				});
+				UnsetDebugLayout (layout);
 			}
 
 			currentSession.BusyStateChanged -= OnBusyStateChanged;
@@ -422,6 +416,26 @@ namespace MonoDevelop.Debugger
 			});
 
 			currentSession.Dispose ();
+		}
+
+		static void UnsetDebugLayout (string layout)
+		{
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				IdeApp.Workbench.HideCommandBar ("Debug");
+				if (IdeApp.Workbench.CurrentLayout == "Debug")
+					IdeApp.Workbench.CurrentLayout = layout;
+			});
+		}
+
+		static void SetDebugLayout ()
+		{
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = "Debug";
+				IdeApp.Workbench.ShowCommandBar ("Debug");
+			});
 		}
 
 		public static bool IsDebugging {
@@ -479,6 +493,7 @@ namespace MonoDevelop.Debugger
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
+			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
 			return monitor.AsyncOperation;
 		}
@@ -552,12 +567,7 @@ namespace MonoDevelop.Debugger
 			
 			SetupSession ();
 			
-			// Dispatch synchronously to avoid start/stop races
-			DispatchService.GuiSyncDispatch (delegate {
-				oldLayout = IdeApp.Workbench.CurrentLayout;
-				IdeApp.Workbench.CurrentLayout = "Debug";
-				IdeApp.Workbench.ShowCommandBar ("Debug");
-			});
+			SetDebugLayout ();
 			
 			try {
 				session.Run (startInfo, GetUserOptions ());
@@ -583,16 +593,22 @@ namespace MonoDevelop.Debugger
 		{
 			// Events may come with a bit of delay, so the debug session
 			// may already have been cleaned up
-			if (console != null)
-				console.Log.Write (text);
+			var logger = console;
+
+			if (logger != null)
+				logger.Log.Write (text);
 		}
 		
 		static void OutputWriter (bool iserr, string text)
 		{
-			if (iserr)
-				console.Error.Write (text);
-			else
-				console.Out.Write (text);
+			var logger = console;
+
+			if (logger != null) {
+				if (iserr)
+					logger.Error.Write (text);
+				else
+					logger.Out.Write (text);
+			}
 		}
 
 		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
@@ -654,8 +670,6 @@ namespace MonoDevelop.Debugger
 						SetCurrentBacktrace (args.Backtrace);
 						NotifyPaused ();
 						NotifyException (args);
-						break;
-					default:
 						break;
 				}
 			} catch (Exception ex) {
@@ -760,8 +774,8 @@ namespace MonoDevelop.Debugger
 			get {
 				if (currentBacktrace != null && currentFrame != -1)
 					return currentBacktrace.GetFrame (currentFrame);
-				else
-					return null;
+
+				return null;
 			}
 		}
 		
@@ -839,25 +853,27 @@ namespace MonoDevelop.Debugger
 		public static DebuggerEngine[] GetDebuggerEngines ()
 		{
 			if (engines == null) {
-				List<DebuggerEngine> engs = new List<DebuggerEngine> ();
+				var engs = new List<DebuggerEngine> ();
 				foreach (DebuggerEngineExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath))
 					engs.Add (new DebuggerEngine (node));
 				
 				string[] priorities = EnginePriority;
+				var count = engs.Count;
+
 				engs.Sort (delegate (DebuggerEngine d1, DebuggerEngine d2) {
 					int i1 = Array.IndexOf (priorities, d1.Id);
 					int i2 = Array.IndexOf (priorities, d2.Id);
 					
 					//ensure that soft debugger is prioritised over newly installed debuggers
-					if (i1 < 0 )
-						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : engs.Count;
+					if (i1 < 0)
+						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : count;
 					if (i2 < 0)
-						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : engs.Count;
+						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : count;
 					
 					if (i1 == i2)
-						return d1.Name.CompareTo (d2.Name);
-					else
-						return i1.CompareTo (i2);
+						return string.Compare (d1.Name, d2.Name, StringComparison.InvariantCulture);
+
+					return i1.CompareTo (i2);
 				});
 				engines = engs.ToArray ();
 			}
@@ -970,7 +986,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class FeatureCheckerHandlerFactory: IExecutionHandler
+	class FeatureCheckerHandlerFactory: IExecutionHandler
 	{
 		public DebuggerFeatures SupportedFeatures { get; set; }
 		
@@ -983,13 +999,13 @@ namespace MonoDevelop.Debugger
 		public IProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
 		{
 			// Never called
-			throw new System.NotImplementedException();
+			throw new NotImplementedException ();
 		}
 	}
 	
-	internal class InternalDebugExecutionHandler: IExecutionHandler
+	class InternalDebugExecutionHandler: IExecutionHandler
 	{
-		DebuggerEngine engine;
+		readonly DebuggerEngine engine;
 		
 		public InternalDebugExecutionHandler (DebuggerEngine engine)
 		{
@@ -1008,14 +1024,14 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	internal class StatusBarConnectionDialog : IConnectionDialog
+	class StatusBarConnectionDialog : IConnectionDialog
 	{
 		public event EventHandler UserCancelled;
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusConnecting, message);
+				IdeApp.Workbench.StatusBar.ShowMessage (Stock.StatusConnecting, message);
 			});
 		}
 
@@ -1027,7 +1043,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	internal class GtkConnectionDialog : IConnectionDialog
+	class GtkConnectionDialog : IConnectionDialog
 	{
 		bool disposed;
 		System.Threading.CancellationTokenSource cts;

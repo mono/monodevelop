@@ -57,8 +57,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;
-			var context = (MDRefactoringContext)_context;
-			if (context.IsInvalid || context.RootNode == null)
+			var context = _context as MDRefactoringContext;
+			if (context == null || context.IsInvalid || context.RootNode == null)
 				yield break;
 			var actions = provider.GetActions (context);
 			if (actions == null) {

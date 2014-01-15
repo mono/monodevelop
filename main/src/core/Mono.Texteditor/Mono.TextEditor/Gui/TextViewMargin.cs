@@ -1051,12 +1051,13 @@ namespace Mono.TextEditor
 			wrapper.LineChars = lineChars;
 			wrapper.Layout.SetText (lineText);
 			wrapper.IndentSize = 0;
+			var tabSize = textEditor.Options != null ? textEditor.Options.TabSize : 4;
 			for (int i = 0; i < lineChars.Length; i++) {
 				char ch = lineChars [i];
 				if (ch == ' ') {
 					wrapper.IndentSize ++;
 				} else if (ch == '\t') {
-					wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize);
+					wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize, tabSize);
 				} else {
 					break;
 				}
@@ -2391,6 +2392,11 @@ namespace Mono.TextEditor
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
 			int tabSize = textEditor != null && textEditor.Options != null ? textEditor.Options.TabSize : 4;
+			return GetNextTabstop (textEditor, currentColumn, tabSize);
+		}
+
+		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn, int tabSize)
+		{
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}

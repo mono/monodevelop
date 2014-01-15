@@ -313,6 +313,36 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test()]
+		public void ReloadingKeepsBuildConfigurationAndStartupProject ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
+			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
+
+			Assert.AreSame (sol.StartupItem, p);
+
+			var be = sol.Configurations ["Debug"].GetEntryForItem (lib2);
+			be.Build = false;
+			be.ItemConfiguration = "FooConfig";
+			sol.Save (Util.GetMonitor ());
+
+			// Test that build configuration info is not lost when reloading a project
+
+			lib2 = (DotNetProject) lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2);
+
+			be = sol.Configurations ["Debug"].GetEntryForItem (lib2);
+			Assert.IsFalse (be.Build);
+			Assert.AreEqual ("FooConfig", be.ItemConfiguration);
+
+			// Test that startup project is the reloaded project
+
+			p = (DotNetProject) p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+			Assert.AreSame (sol.StartupItem, p);
+		}
+
+		[Test()]
 		public void GetItemFiles ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("item-files");

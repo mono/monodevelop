@@ -37,11 +37,10 @@ namespace Mono.TextEditor.PopupWindow
 {
 	public class TooltipWindow : Gtk.Window
 	{
-		bool nudgeVertical = false;
-		bool nudgeHorizontal = false;
 		WindowTransparencyDecorator decorator;
-		Label label;
+		readonly Label label;
 		string markup;
+
 		public string Markup {
 			get {
 				return markup;
@@ -84,13 +83,11 @@ namespace Mono.TextEditor.PopupWindow
 		}
 		
 		public bool NudgeVertical {
-			get { return nudgeVertical; }
-			set { nudgeVertical = value; }
+			get; set;
 		}
 		
 		public bool NudgeHorizontal {
-			get { return nudgeHorizontal; }
-			set { nudgeHorizontal = value; }
+			get; set;
 		}
 		
 		public bool EnableTransparencyControl {
@@ -115,7 +112,7 @@ namespace Mono.TextEditor.PopupWindow
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			if (nudgeHorizontal || nudgeVertical) {
+			if (NudgeHorizontal || NudgeVertical) {
 				int x, y;
 				this.GetPosition (out x, out y);
 				int oldY = y, oldX = x;
@@ -133,14 +130,14 @@ namespace Mono.TextEditor.PopupWindow
 //				}
 				
 				Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
-				if (nudgeHorizontal) {
+				if (NudgeHorizontal) {
 					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Left + geometry.Width - edgeGap)
 						x = geometry.Left + (geometry.Width - allocation.Width - edgeGap);
 					if (x <= geometry.Left + edgeGap)
 						x = geometry.Left + edgeGap;
 				}
 				
-				if (nudgeVertical) {
+				if (NudgeVertical) {
 					if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Top + geometry.Height - edgeGap)
 						y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
 					if (y <= geometry.Top + edgeGap)

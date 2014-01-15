@@ -29,6 +29,7 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
 {
+	[TestFixture]
 	public abstract class EvaluationTests: DebugTests
 	{
 		DebuggerSession ds;
@@ -37,17 +38,19 @@ namespace MonoDevelop.Debugger.Tests
 		protected EvaluationTests (string de): base (de)
 		{
 		}
-		
-		public override void Setup ()
+
+		[TestFixtureSetUp]
+		public override void SetUp ()
 		{
-			base.Setup ();
+			base.SetUp ();
 			ds = Start ("TestEvaluation");
 			if (ds == null)
 				Assert.Ignore ("Engine not found: {0}", EngineId);
 
 			frame = ds.ActiveThread.Backtrace.GetFrame (0);
 		}
-		
+
+		[TestFixtureTearDown]
 		public override void TearDown ()
 		{
 			base.TearDown ();

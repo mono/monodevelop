@@ -35,6 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
+using Mono.CSharp;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -372,6 +374,49 @@ namespace MonoDevelop.Projects
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
 			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
+		}
+
+		void LoadBuildVSConsoleProject (string vsVersion)
+		{
+			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
+			var monitor = new NullProgressMonitor ();
+			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			var r = sol.Build (monitor, "Debug");
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+			Assert.IsFalse (r.Failed);
+			Assert.IsTrue (r.ErrorCount == 0);
+
+			//there may be a single warning about not being able to find Client profile
+			var f = r.Errors.FirstOrDefault ();
+			var clientProfileError =
+				"Unable to find framework corresponding to the target framework moniker " +
+				"'.NETFramework,Version=v4.0,Profile=Client'";
+
+			if (f != null)
+				Assert.IsTrue (f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
+		}
+
+		[Test]
+		public void LoadBuildVS2010ConsoleProject ()
+		{
+			LoadBuildVSConsoleProject ("2010");
+		}
+
+		[Test]
+		public void LoadBuildVS2012ConsoleProject ()
+		{
+			LoadBuildVSConsoleProject ("2012");
+		}
+
+		[Ignore ("ToolsVersion 12.0 does not yet work w/ xbuild")]
+		[Test]
+		public void LoadBuildVS2013ConsoleProject ()
+		{
+			LoadBuildVSConsoleProject ("2013");
 		}
 	}
 }

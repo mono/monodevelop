@@ -247,6 +247,7 @@ namespace MonoDevelop.RegexToolkit
 			this.hbox4 = new global::Gtk.HBox ();
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
+			this.hbox4.BorderWidth = ((uint)(6));
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.notebook2 = new global::Gtk.Notebook ();
 			this.notebook2.CanFocus = true;

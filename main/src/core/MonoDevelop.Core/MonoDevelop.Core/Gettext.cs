@@ -31,15 +31,24 @@ using System.IO;
 
 using Mono.Unix;
 using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace MonoDevelop.Core
 {
 	public static class GettextCatalog
 	{
+		static Thread mainThread;
+
+		[DllImport ("kernel32.dll", SetLastError = true)]
+		static extern int SetThreadUILanguage (int LangId);
+
 		static GettextCatalog ()
 		{
+			mainThread = Thread.CurrentThread;
+
 			//variable can be used to override where Gettext looks for the catalogues
-			string catalog = System.Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
+			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
 			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
@@ -48,21 +57,23 @@ namespace MonoDevelop.Core
 					lang = lang.Replace("_", "-");
 					CultureInfo ci = CultureInfo.GetCultureInfo(lang);
 					if (ci.IsNeutralCulture) {
-						// We need a neutral culture
+						// We need a non-neutral culture
 						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
 							if (c.Parent != null && c.Parent.Name == ci.Name) {
 								ci = c;
 								break;
 							}
 					}
-					if (!ci.IsNeutralCulture)
-						System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+					if (!ci.IsNeutralCulture) {
+						SetThreadUILanguage (ci.LCID);
+						mainThread.CurrentUICulture = ci;
+					}
 				}
 				else
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
 			}
 			
-			if (string.IsNullOrEmpty (catalog)) {
+			if (string.IsNullOrEmpty (catalog) || !Directory.Exists (catalog)) {
 				string location = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				location = Path.GetDirectoryName (location);
 				if (Platform.IsWindows) {
@@ -85,6 +96,10 @@ namespace MonoDevelop.Core
 			catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
+		}
+
+		public static CultureInfo UICulture {
+			get { return mainThread.CurrentUICulture; }
 		}
 		
 		#region GetString

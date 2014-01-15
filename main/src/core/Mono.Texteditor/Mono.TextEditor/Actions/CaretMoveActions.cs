@@ -42,120 +42,134 @@ namespace Mono.TextEditor
 	{
 		public static void Left (TextEditorData data)
 		{
-			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				data.Caret.Offset = System.Math.Min (data.SelectionAnchor, data.Caret.Offset);
-				data.ClearSelection ();
-				return;
-			}
-			
-			if (data.Caret.Column > DocumentLocation.MinColumn) {
-				DocumentLine line = data.Document.GetLine (data.Caret.Line);
-				if (data.Caret.Column > line.Length + 1) {
-					if (data.Caret.AllowCaretBehindLineEnd) {
-						data.Caret.Column--;
-					} else {
-						data.Caret.Column = line.Length + 1;
-					}
-				} else {
-					int offset = data.Caret.Offset - 1;
-					foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset)) {
-						offset = System.Math.Min (offset, folding.Offset);
-					}
-					data.Caret.Offset = offset;
+			using (var undo = data.OpenUndoGroup ()) {
+				if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+					data.Caret.Offset = System.Math.Min (data.SelectionAnchor, data.Caret.Offset);
+					data.ClearSelection ();
+					return;
 				}
-			} else if (data.Caret.Line > DocumentLocation.MinLine) {
-				DocumentLine prevLine = data.Document.GetLine (data.Caret.Line - 1);
-				var nextLocation = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
-				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && nextLocation.Column == DocumentLocation.MinColumn)
-					nextLocation = new DocumentLocation (data.Caret.Line - 1, data.GetVirtualIndentationColumn (nextLocation));
-				data.Caret.Location = nextLocation;
+				
+				if (data.Caret.Column > DocumentLocation.MinColumn) {
+					DocumentLine line = data.Document.GetLine (data.Caret.Line);
+					if (data.Caret.Column > line.Length + 1) {
+						if (data.Caret.AllowCaretBehindLineEnd) {
+							data.Caret.Column--;
+						} else {
+							data.Caret.Column = line.Length + 1;
+						}
+					} else {
+						int offset = data.Caret.Offset - 1;
+						foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset)) {
+							offset = System.Math.Min (offset, folding.Offset);
+						}
+						data.Caret.Offset = offset;
+					}
+				} else if (data.Caret.Line > DocumentLocation.MinLine) {
+					DocumentLine prevLine = data.Document.GetLine (data.Caret.Line - 1);
+					var nextLocation = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
+					if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && nextLocation.Column == DocumentLocation.MinColumn)
+						nextLocation = new DocumentLocation (data.Caret.Line - 1, data.GetVirtualIndentationColumn (nextLocation));
+					data.Caret.Location = nextLocation;
+				}
 			}
 		}
 		
 		public static void PreviousWord (TextEditorData data)
 		{
-			data.Caret.Offset = data.FindPrevWordOffset (data.Caret.Offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				data.Caret.Offset = data.FindPrevWordOffset (data.Caret.Offset);
+			}
 		}
 		
 		public static void PreviousSubword (TextEditorData data)
 		{
-			data.Caret.Offset = data.FindPrevSubwordOffset (data.Caret.Offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				data.Caret.Offset = data.FindPrevSubwordOffset (data.Caret.Offset);
+			}
 		}
 		
 		public static void Right (TextEditorData data)
 		{
-			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				data.Caret.Offset = System.Math.Max (data.SelectionAnchor, data.Caret.Offset);
-				data.ClearSelection ();
-				return;
-			}
-			
-			DocumentLine line = data.Document.GetLine (data.Caret.Line);
-			IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
-			FoldSegment segment = null;
-			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.Column == data.Caret.Column) {
-					segment = folding;
-					break;
+			using (var undo = data.OpenUndoGroup ()) {
+				if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+					data.Caret.Offset = System.Math.Max (data.SelectionAnchor, data.Caret.Offset);
+					data.ClearSelection ();
+					return;
 				}
-			}
-			if (segment != null) {
-				data.Caret.Offset = segment.EndOffset; 
-				return;
-			}
-
-			if (data.Caret.Column >= line.Length + 1) {
-				int nextColumn;
-				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && data.Caret.Column == DocumentLocation.MinColumn) {
-					nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
-				} else if (data.Caret.AllowCaretBehindLineEnd) {
-					nextColumn = data.Caret.Column + 1;
-				} else {
-					nextColumn = line.Length + 1;
+				
+				DocumentLine line = data.Document.GetLine (data.Caret.Line);
+				IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
+				FoldSegment segment = null;
+				foreach (FoldSegment folding in foldings) {
+					if (folding.IsFolded && folding.Column == data.Caret.Column) {
+						segment = folding;
+						break;
+					}
+				}
+				if (segment != null) {
+					data.Caret.Offset = segment.EndOffset; 
+					return;
 				}
 
-				if (data.Caret.Column < nextColumn) {
-					data.Caret.Column = nextColumn;
+				if (data.Caret.Column >= line.Length + 1) {
+					int nextColumn;
+					if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && data.Caret.Column == DocumentLocation.MinColumn) {
+						nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
+					} else if (data.Caret.AllowCaretBehindLineEnd) {
+						nextColumn = data.Caret.Column + 1;
+					} else {
+						nextColumn = line.Length + 1;
+					}
+
+					if (data.Caret.Column < nextColumn) {
+						data.Caret.Column = nextColumn;
+					} else {
+						if (data.Caret.Line < data.LineCount)
+							data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
+					}
 				} else {
-					if (data.Caret.Line < data.LineCount)
-						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
+					data.Caret.Column++;
 				}
-			} else {
-				data.Caret.Column++;
 			}
 		}
 		
 		public static void NextWord (TextEditorData data)
 		{
-			data.Caret.Offset = data.FindNextWordOffset (data.Caret.Offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				data.Caret.Offset = data.FindNextWordOffset (data.Caret.Offset);
+			}
 		}
 		
 		public static void NextSubword (TextEditorData data)
 		{
-			data.Caret.Offset = data.FindNextSubwordOffset (data.Caret.Offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				data.Caret.Offset = data.FindNextSubwordOffset (data.Caret.Offset);
+			}
 		}
 		
 		public static void Up (TextEditorData data)
 		{
-			int desiredColumn = data.Caret.DesiredColumn;
+			using (var undo = data.OpenUndoGroup ()) {
+				int desiredColumn = data.Caret.DesiredColumn;
 
-			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
-			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
-				int line = data.MainSelection.MinLine - 1;
-				data.ClearSelection ();
-				data.Caret.Location = (line >= DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
-				data.Caret.SetToDesiredColumn (desiredColumn);
-				return;
-			}
+				//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
+				if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+					int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
+					int line = data.MainSelection.MinLine - 1;
+					data.ClearSelection ();
+					data.Caret.Location = (line >= DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
+					data.Caret.SetToDesiredColumn (desiredColumn);
+					return;
+				}
 
-			if (data.Caret.Line > DocumentLocation.MinLine) {
-				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
-				int line = data.VisualToLogicalLine (visualLine - 1);
-				int offset = MoveCaretOutOfFolding (data, data.Document.LocationToOffset (line, data.Caret.Column), false);
-				data.Caret.SetToOffsetWithDesiredColumn (offset);
-			} else {
-				ToDocumentStart (data);
+				if (data.Caret.Line > DocumentLocation.MinLine) {
+					int visualLine = data.LogicalToVisualLine (data.Caret.Line);
+					int line = data.VisualToLogicalLine (visualLine - 1);
+					int offset = MoveCaretOutOfFolding (data, data.Document.LocationToOffset (line, data.Caret.Column), false);
+					data.Caret.SetToOffsetWithDesiredColumn (offset);
+				} else {
+					ToDocumentStart (data);
+				}
 			}
 		}
 
@@ -185,27 +199,29 @@ namespace Mono.TextEditor
 		
 		public static void Down (TextEditorData data)
 		{
-			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
-			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
-				int line = data.MainSelection.MaxLine + 1;
-				data.ClearSelection ();
-				if (line <= data.Document.LineCount) {
-					int offset = data.Document.LocationToOffset (line, col);
-					data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
-				} else {
-					data.Caret.Offset = data.Document.TextLength;
+			using (var undo = data.OpenUndoGroup ()) {
+				//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
+				if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
+					int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
+					int line = data.MainSelection.MaxLine + 1;
+					data.ClearSelection ();
+					if (line <= data.Document.LineCount) {
+						int offset = data.Document.LocationToOffset (line, col);
+						data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
+					} else {
+						data.Caret.Offset = data.Document.TextLength;
+					}
+					return;
 				}
-				return;
-			}
-			
-			if (data.Caret.Line < data.Document.LineCount) {
-				int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
-				int line = data.VisualToLogicalLine (nextLine);
-				int offset = MoveCaretOutOfFolding (data, data.LocationToOffset (line, data.Caret.Column), true);
-				data.Caret.SetToOffsetWithDesiredColumn (offset);
-			} else {
-				ToDocumentEnd (data);
+				
+				if (data.Caret.Line < data.Document.LineCount) {
+					int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
+					int line = data.VisualToLogicalLine (nextLine);
+					int offset = MoveCaretOutOfFolding (data, data.LocationToOffset (line, data.Caret.Column), true);
+					data.Caret.SetToOffsetWithDesiredColumn (offset);
+				} else {
+					ToDocumentEnd (data);
+				}
 			}
 		}
 		
@@ -220,40 +236,39 @@ namespace Mono.TextEditor
 		
 		internal static void InternalCaretMoveHome (TextEditorData data, bool firstNonWhitespace, bool hop)
 		{
-			if (!data.Caret.PreserveSelection)
-				data.ClearSelection ();
+			using (var undo = data.OpenUndoGroup ()) {
+				if (!data.Caret.PreserveSelection)
+					data.ClearSelection ();
 
-			DocumentLine line = data.Document.GetLine (data.Caret.Line);
-			int newColumn;
-			if (firstNonWhitespace) {
+				DocumentLine line = data.Document.GetLine (data.Caret.Line);
+				int newColumn;
+				if (firstNonWhitespace) {
 
-				int homeMark = GetHomeMark (data.Document, line);
-				if (hop) {
-					newColumn = data.Caret.Column == homeMark ? DocumentLocation.MinColumn : homeMark;
+					int homeMark = GetHomeMark (data.Document, line);
+					if (hop) {
+						newColumn = data.Caret.Column == homeMark ? DocumentLocation.MinColumn : homeMark;
+					} else {
+						newColumn = homeMark;
+					}
 				} else {
-					newColumn = homeMark;
+					newColumn = DocumentLocation.MinColumn;
 				}
-			} else {
-				newColumn = DocumentLocation.MinColumn;
-			}
-			var newLocation = new DocumentLocation (data.Caret.Line, newColumn);
-			// handle folding
-			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
-			FoldSegment segment = null;
-			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
-					segment = folding;
-					break;
+				var newLocation = new DocumentLocation (data.Caret.Line, newColumn);
+				// handle folding
+				IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
+				FoldSegment segment = null;
+				foreach (FoldSegment folding in foldings) {
+					if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+						segment = folding;
+						break;
+					}
 				}
+				if (segment != null)
+					newLocation = data.Document.OffsetToLocation (segment.StartLine.Offset); 
+
+				if (newLocation != data.Caret.Location)
+					data.Caret.Location = newLocation;
 			}
-			if (segment != null) 
-				newLocation = data.Document.OffsetToLocation (segment.StartLine.Offset); 
-			
-
-			if (newLocation != data.Caret.Location) 
-
-				data.Caret.Location = newLocation;
-
 		}
 		
 		public static void LineHome (TextEditorData data)
@@ -273,79 +288,92 @@ namespace Mono.TextEditor
 
 		public static void LineEnd (TextEditorData data)
 		{
-			if (!data.Caret.PreserveSelection)
-				data.ClearSelection ();
-			var line = data.Document.GetLine (data.Caret.Line);
-			var newLocation = new DocumentLocation (data.Caret.Line, line.Length + 1);
+			using (var undo = data.OpenUndoGroup ()) {
+				if (!data.Caret.PreserveSelection)
+					data.ClearSelection ();
+				var line = data.Document.GetLine (data.Caret.Line);
+				var newLocation = new DocumentLocation (data.Caret.Line, line.Length + 1);
 
-			// handle folding
-			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
-			FoldSegment segment = null;
-			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
-					segment = folding;
-					break;
+				// handle folding
+				IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
+				FoldSegment segment = null;
+				foreach (FoldSegment folding in foldings) {
+					if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+						segment = folding;
+						break;
+					}
+				}
+				if (segment != null)
+					newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
+				if (newLocation != data.Caret.Location)
+					data.Caret.Location = newLocation;
+			
+				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
+					int virtualIndentColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
+					if (virtualIndentColumn > data.Caret.Column)
+						data.Caret.Column = virtualIndentColumn;
 				}
 			}
-			if (segment != null) 
-				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
-			if (newLocation != data.Caret.Location)
-				data.Caret.Location = newLocation;
-			
-			if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
-				int virtualIndentColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
-				if (virtualIndentColumn > data.Caret.Column)
-					data.Caret.Column = virtualIndentColumn;
-			}
-			
 		}
 		
 		public static void ToDocumentStart (TextEditorData data)
 		{
-			if (!data.Caret.PreserveSelection)
-				data.ClearSelection ();
-			data.Caret.Location = new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
+			using (var undo = data.OpenUndoGroup ()) {
+				if (!data.Caret.PreserveSelection)
+					data.ClearSelection ();
+				data.Caret.Location = new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
+			}
 		}
 		
 		public static void ToDocumentEnd (TextEditorData data)
 		{
-			if (!data.Caret.PreserveSelection)
-				data.ClearSelection ();
-			data.Caret.Offset = data.Document.TextLength;
+			using (var undo = data.OpenUndoGroup ()) {
+				if (!data.Caret.PreserveSelection)
+					data.ClearSelection ();
+				data.Caret.Offset = data.Document.TextLength;
+			}
 		}
 				
 		public static void PageUp (TextEditorData data)
 		{
-			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
-			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
-			visualLine -= pageLines;
-			int line = System.Math.Max (data.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
-			int offset = data.LocationToOffset (line, data.Caret.Column);
-			ScrollActions.PageUp (data);
-			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
+				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
+				visualLine -= pageLines;
+				int line = System.Math.Max (data.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
+				int offset = data.LocationToOffset (line, data.Caret.Column);
+				ScrollActions.PageUp (data);
+				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+			}
 		}
 		
 		public static void PageDown (TextEditorData data)
 		{
-			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
-			int visualLine = data.LogicalToVisualLine (data.Caret.Line);
-			visualLine += pageLines;
-			int line = System.Math.Min (data.VisualToLogicalLine (visualLine), data.Document.LineCount);
-			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
-			ScrollActions.PageDown (data);
-			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % data.LineHeight)) / data.LineHeight);
+				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
+				visualLine += pageLines;
+				int line = System.Math.Min (data.VisualToLogicalLine (visualLine), data.Document.LineCount);
+				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
+				ScrollActions.PageDown (data);
+				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
+			}
 		}
 		
 		public static void UpLineStart (TextEditorData data)
 		{
-			Up (data);
-			LineStart (data);
+			using (var undo = data.OpenUndoGroup ()) {
+				Up (data);
+				LineStart (data);
+			}
 		}
 		
 		public static void DownLineEnd (TextEditorData data)
 		{
-			Down (data);
-			LineEnd (data);
+			using (var undo = data.OpenUndoGroup ()) {
+				Down (data);
+				LineEnd (data);
+			}
 		}
 	}
 }

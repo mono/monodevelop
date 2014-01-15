@@ -36,8 +36,8 @@ namespace Mono.TextTemplating
 	{
 		ITextTemplatingEngineHost host;
 		TextTransformation tt;
-		CultureInfo culture;
-		string[] assemblyFiles;
+		readonly CultureInfo culture;
+		readonly string[] assemblyFiles;
 		
 		public CompiledTemplate (ITextTemplatingEngineHost host, CompilerResults results, string fullName, CultureInfo culture,
 			string[] assemblyFiles)
@@ -83,7 +83,7 @@ namespace Mono.TextTemplating
 			try {
 				output = tt.TransformText ();
 			} catch (Exception ex) {
-				tt.Error ("Error running transform: " + ex.ToString ());
+				tt.Error ("Error running transform: " + ex);
 			}
 			host.LogErrors (tt.Errors);
 			
@@ -91,13 +91,13 @@ namespace Mono.TextTemplating
 			return output;
 		}
 		
-		System.Reflection.Assembly ResolveReferencedAssemblies (object sender, ResolveEventArgs args)
+		Assembly ResolveReferencedAssemblies (object sender, ResolveEventArgs args)
 		{
-			System.Reflection.Assembly asm = null;
+			Assembly asm = null;
 			foreach (var asmFile in assemblyFiles) {
 				var name = System.IO.Path.GetFileNameWithoutExtension (asmFile);
-				if (args.Name.StartsWith (name))
-					asm = System.Reflection.Assembly.LoadFrom (asmFile);
+				if (args.Name.StartsWith (name, StringComparison.Ordinal))
+					asm = Assembly.LoadFrom (asmFile);
 			}
 			return asm;
 		}

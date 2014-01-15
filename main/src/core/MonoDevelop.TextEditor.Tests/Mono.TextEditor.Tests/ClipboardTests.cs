@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = Create (
 				@"$");
-
+			data.Options.GenerateFormattingUndoStep = true;
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
@@ -80,6 +80,24 @@ namespace Mono.TextEditor.Tests
 			Check (data, @"Hello World$");
 			MiscActions.Undo (data);
 			Check (data, @"hello$");
+			MiscActions.Undo (data);
+			Check (data, @"$");
+		}
+
+		[Test]
+		public void TestUndoSteps_WithoutFormattingStep ()
+		{
+			var data = Create (
+				@"$");
+			data.Options.GenerateFormattingUndoStep = false;
+			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			clipboard.Text = "hello";
+
+			data.TextPasteHandler = this;
+
+			ClipboardActions.Paste (data);
+
+			Check (data, @"Hello World$");
 			MiscActions.Undo (data);
 			Check (data, @"$");
 		}

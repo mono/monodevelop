@@ -20,6 +20,7 @@ namespace MonoDevelop.Core.Execution
 		public ProcessWrapper ()
 		{
 		}
+		public bool CancelRequested { get; private set; }
 		
 		public new void Start ()
 		{
@@ -114,8 +115,13 @@ namespace MonoDevelop.Core.Execution
 				endEventErr.Close ();
 				endEventOut = endEventErr = null;
 			}
-			
-			base.Dispose (disposing);
+
+			try {
+				base.Dispose (disposing);
+			} catch (Exception ex) {
+				if (disposing)
+					throw;
+			}
 		}
 		
 		void CheckDisposed ()
@@ -137,6 +143,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (!done) {
 					try {
+						CancelRequested = true;
 						this.KillProcessTree ();
 					} catch {
 						// Ignore

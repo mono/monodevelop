@@ -9,30 +9,29 @@
 //
 
 using System.CodeDom;
-using System.Collections.Generic;
 using System.Linq;
 using System;
 
 namespace MonoDevelop.RazorGenerator
 {
-	class PreprocessedTemplateCodeTransformers
+	static class PreprocessedTemplateCodeTransformers
 	{
-		public static void MakePartialAndRemoveCtor (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void MakePartialAndRemoveCtor (CodeTypeDeclaration generatedClass)
 		{
 			generatedClass.IsPartial = true;
 			// The generated class has a constructor in there by default.
 			generatedClass.Members.Remove (generatedClass.Members.OfType<CodeConstructor> ().Single ());
 		}
 
-		public static void AddGeneratedTemplateClassAttribute (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void AddGeneratedTemplateClassAttribute (CodeTypeDeclaration generatedClass)
 		{
 			string tool = "RazorTemplatePreprocessor";
-			Version version = typeof (PreprocessedTemplateCodeTransformers).Assembly.GetName().Version;
-			generatedClass.CustomAttributes.Add(
-				new CodeAttributeDeclaration(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
-					new CodeAttributeArgument(new CodePrimitiveExpression(tool)),
-					new CodeAttributeArgument(new CodePrimitiveExpression(version.ToString()))
-			));
+			Version version = typeof(PreprocessedTemplateCodeTransformers).Assembly.GetName ().Version;
+			generatedClass.CustomAttributes.Add (
+				new CodeAttributeDeclaration (typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
+					new CodeAttributeArgument (new CodePrimitiveExpression (tool)),
+					new CodeAttributeArgument (new CodePrimitiveExpression (version.ToString ()))
+				));
 		}
 
 		static void AddComments (CodeTypeMember member, bool docComment, params string[] comments)
@@ -42,7 +41,7 @@ namespace MonoDevelop.RazorGenerator
 			}
 		}
 
-		public static void InjectBaseClass (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void InjectBaseClass (CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			bool generateBaseClass = generatedClass.BaseTypes.Count == 0;
 			bool integrateHelpers = !generateBaseClass && generatedClass.BaseTypes [0].BaseType == "object";
@@ -68,73 +67,8 @@ namespace MonoDevelop.RazorGenerator
 			} else {
 				generatedClass.BaseTypes [0].BaseType = "System.Object";
 				executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
-					| MemberAttributes.Private | MemberAttributes.Final;
+				| MemberAttributes.Private | MemberAttributes.Final;
 				generatedClass.Members.Add (new CodeSnippetTypeMember (baseMembersString));
-			}
-		}
-
-		/* rewrite:
-		public System.Web.WebPages.HelperResult foo (int i)
-		{
-			return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-				WriteLiteralTo(__razor_helper_writer, "<p>");
-				WriteTo(__razor_helper_writer, i);
-				WriteLiteralTo(__razor_helper_writer, "</p>\n");
-			});
-		}
-		to:
-		public static Action<TextWriter> foo (int i)
-		{
-			return __razor_helper_writer => {
-				__razor_helper_writer.Write("<p>");
-				WriteTo(__razor_helper_writer, i);
-				__razor_helper_writer.Write("</p>\n");
-			};
-		}
-		*/
-		static string[,] replacements = new string [,] {
-			{ "public System.Web.WebPages.HelperResult " , "public static Action<System.IO.TextWriter> " },
-			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer" , "return __razor_helper_writer" },
-			{ "WriteLiteralTo(__razor_helper_writer," , "__razor_helper_writer.Write(" },
-		};
-
-		public static void SimplifyHelpers (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
-		{
-			foreach (var method in generatedClass.Members.OfType<CodeSnippetTypeMember> ()) {
-				using (var writer = new System.IO.StringWriter (new System.Text.StringBuilder (method.Text.Length))) {
-					bool foundStart = false;
-					using (var reader = new System.IO.StringReader (method.Text)) {
-						bool lineHidden = false;
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							if (!foundStart) {
-								if (line.StartsWith ("public System.Web.WebPages.HelperResult")) {
-									foundStart = true;
-								} else if (!string.IsNullOrWhiteSpace (line) && !line.StartsWith ("#line")) {
-									break;
-								}
-							}
-							if (line.StartsWith ("#line")) {
-								lineHidden = line == "#line hidden";
-							}
-							if (lineHidden && line == "});") {
-								writer.WriteLine ("};");
-								continue;
-							}
-							var len = replacements.GetLength (0);
-							for (int i = 0; i < len; i++) {
-								var bad = replacements[i,0];
-								if (line.StartsWith (bad)) {
-									line = replacements[i,1] + line.Substring (bad.Length);
-								}
-							}
-							writer.WriteLine (line);
-						}
-					}
-					if (foundStart) {
-						method.Text = writer.ToString ();
-					}
-				}
 			}
 		}
 
@@ -145,27 +79,28 @@ namespace MonoDevelop.RazorGenerator
 		///<remarks>Not intended to be called directly. Call the Generate method instead.</remarks>
 		public abstract void Execute ();
 ";
-
 		const string baseMembersString =
-@"		// This field is OPTIONAL, but used by the default implementation of Generate, Write and WriteLiteral
+@"		// This field is OPTIONAL, but used by the default implementation of Generate, Write, WriteAttribute and WriteLiteral
 		//
 		System.IO.TextWriter __razor_writer;
 
 		// This method is OPTIONAL
 		//
-		///<summary>Executes the template and returns the output as a string.</summary>
+		/// <summary>Executes the template and returns the output as a string.</summary>
+		/// <returns>The template output.</returns>
 		public string GenerateString ()
 		{
 			using (var sw = new System.IO.StringWriter ()) {
 				Generate (sw);
-				return sw.ToString();
+				return sw.ToString ();
 			}
 		}
 
 		// This method is OPTIONAL, you may choose to implement Write and WriteLiteral without use of __razor_writer
 		// and provide another means of invoking Execute.
 		//
-		///<summary>Executes the template, writing to the provided text writer.</summary>
+		/// <summary>Executes the template, writing to the provided text writer.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the template output.</param>
 		public void Generate (System.IO.TextWriter writer)
 		{
 			__razor_writer = writer;
@@ -175,40 +110,138 @@ namespace MonoDevelop.RazorGenerator
 
 		// This method is REQUIRED, but you may choose to implement it differently
 		//
-		///<summary>Writes literal values to the template output without HTML escaping them.</summary>
+		/// <summary>Writes a literal value to the template output without HTML escaping it.</summary>
+		/// <param name=""value"">The literal value.</param>
 		protected void WriteLiteral (string value)
 		{
 			__razor_writer.Write (value);
 		}
 
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
+		//
+		/// <summary>Writes a literal value to the TextWriter without HTML escaping it.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the literal.</param>
+		/// <param name=""value"">The literal value.</param>
+		protected static void WriteLiteralTo (System.IO.TextWriter writer, string value)
+		{
+			writer.Write (value);
+		}
+
 		// This method is REQUIRED, but you may choose to implement it differently
 		//
-		///<summary>Writes values to the template output, HTML escaping them if necessary.</summary>
+		/// <summary>Writes a value to the template output, HTML escaping it if necessary.</summary>
+		/// <param name=""value"">The value.</param>
+		/// <remarks>The value may be a Action<System.IO.TextWriter>, as returned by Razor helpers.</remarks>
 		protected void Write (object value)
 		{
 			WriteTo (__razor_writer, value);
 		}
 
-		// This method is REQUIRED if the template uses any Razor helpers, but you may choose to implement it differently
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
 		//
-		///<summary>Invokes the action to write directly to the template output.</summary>
-		///<remarks>This is used for Razor helpers, which already perform any necessary HTML escaping.</remarks>
-		protected void Write (Action<System.IO.TextWriter> write)
-		{
-			write (__razor_writer);
-		}
-
-		// This method is REQUIRED if the template has any Razor helpers, but you may choose to implement it differently
-		//
-		///<remarks>Used by Razor helpers to HTML escape values.</remarks>
+		/// <summary>Writes an object value to the TextWriter, HTML escaping it if necessary.</summary>
+		/// <param name=""writer"">The TextWriter to which to write the value.</param>
+		/// <param name=""value"">The value.</param>
+		/// <remarks>The value may be a Action<System.IO.TextWriter>, as returned by Razor helpers.</remarks>
 		protected static void WriteTo (System.IO.TextWriter writer, object value)
 		{
-			if (value != null) {
-				writer.Write (System.Web.HttpUtility.HtmlEncode (value.ToString ()));
-				// NOTE: better version for .NET 4+, handles pre-escape HTML (IHtmlString)
-				// writer.Write (System.Web.HttpUtility.HtmlEncode (value));
+			if (value == null)
+				return;
+
+			var write = value as Action<System.IO.TextWriter>;
+			if (write != null) {
+				write (writer);
+				return;
 			}
+
+			//NOTE: a more sophisticated implementation would write safe and pre-escaped values directly to the
+			//instead of double-escaping. See System.Web.IHtmlString in ASP.NET 4.0 for an example of this.
+			writer.Write(System.Net.WebUtility.HtmlEncode (value.ToString ()));
 		}
-";
+
+		// This method is REQUIRED, but you may choose to implement it differently
+		//
+		/// <summary>
+		/// Conditionally writes an attribute to the template output.
+		/// </summary>
+		/// <param name=""name"">The name of the attribute.</param>
+		/// <param name=""prefix"">The prefix of the attribute.</param>
+		/// <param name=""suffix"">The suffix of the attribute.</param>
+		/// <param name=""values"">Attribute values, each specifying a prefix, value and whether it's a literal.</param>
+		protected void WriteAttribute (string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
+		{
+			WriteAttributeTo (__razor_writer, name, prefix, suffix, values);
+		}
+
+		// This method is REQUIRED if the template contains any Razor helpers, but you may choose to implement it differently
+		//
+		/// <summary>
+		/// Conditionally writes an attribute to a TextWriter.
+		/// </summary>
+		/// <param name=""writer"">The TextWriter to which to write the attribute.</param>
+		/// <param name=""name"">The name of the attribute.</param>
+		/// <param name=""prefix"">The prefix of the attribute.</param>
+		/// <param name=""suffix"">The suffix of the attribute.</param>
+		/// <param name=""values"">Attribute values, each specifying a prefix, value and whether it's a literal.</param>
+		///<remarks>Used by Razor helpers to write attributes.</remarks>
+		protected static void WriteAttributeTo (System.IO.TextWriter writer, string name, string prefix, string suffix, params Tuple<string,object,bool>[] values)
+		{
+			// this is based on System.Web.WebPages.WebPageExecutingBase
+			// Copyright (c) Microsoft Open Technologies, Inc.
+			// Licensed under the Apache License, Version 2.0
+			if (values.Length == 0) {
+				// Explicitly empty attribute, so write the prefix and suffix
+				writer.Write (prefix);
+				writer.Write (suffix);
+				return;
+			}
+
+			bool first = true;
+			bool wroteSomething = false;
+
+			for (int i = 0; i < values.Length; i++) {
+				Tuple<string,object,bool> attrVal = values [i];
+				string attPrefix = attrVal.Item1;
+				object value = attrVal.Item2;
+				bool isLiteral = attrVal.Item3;
+
+				if (value == null) {
+					// Nothing to write
+					continue;
+				}
+
+				// The special cases here are that the value we're writing might already be a string, or that the 
+				// value might be a bool. If the value is the bool 'true' we want to write the attribute name instead
+				// of the string 'true'. If the value is the bool 'false' we don't want to write anything.
+				//
+				// Otherwise the value is another object (perhaps an IHtmlString), and we'll ask it to format itself.
+				string stringValue;
+				bool? boolValue = value as bool?;
+				if (boolValue == true) {
+					stringValue = name;
+				} else if (boolValue == false) {
+					continue;
+				} else {
+					stringValue = value as string;
+				}
+
+				if (first) {
+					writer.Write (prefix);
+					first = false;
+				} else {
+					writer.Write (attPrefix);
+				}
+
+				if (isLiteral) {
+					writer.Write (stringValue ?? value);
+				} else {
+					WriteTo (writer, stringValue ?? value);
+				}
+				wroteSomething = true;
+			}
+			if (wroteSomething) {
+				writer.Write (suffix);
+			}
+		}";
 	}
 }

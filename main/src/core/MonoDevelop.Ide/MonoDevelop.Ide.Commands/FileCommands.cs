@@ -122,11 +122,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			bool hasdirty = false;
-			for(int i = 0; i < IdeApp.Workbench.Documents.Count; i++) {
-				hasdirty |= IdeApp.Workbench.Documents [i].IsDirty;
-			}
-			info.Enabled = hasdirty;
+			info.Enabled = IdeApp.Workbench.Documents.Any (v => v.IsDirty);
 		}
 	}
 	//MonoDevelop.Ide.Commands.FileCommands.NewProject

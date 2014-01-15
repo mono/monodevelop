@@ -413,7 +413,7 @@ namespace Mono.TextEditor
 				return "";
 			StringBuilder sb = new StringBuilder ();
 			bool convertTabs = TabsToSpaces;
-			
+			var tabSize = Options.TabSize;
 			for (int i = 0; i < str.Length; i++) {
 				char ch = str [i];
 				switch (ch) {
@@ -422,7 +422,7 @@ namespace Mono.TextEditor
 					break;
 				case '\t':
 					if (convertTabs) {
-						int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;
+						int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column, tabSize) - loc.Column;
 						sb.Append (new string (' ', tabWidth));
 						loc = new DocumentLocation (loc.Line, loc.Column + tabWidth);
 					} else 
@@ -1231,8 +1231,10 @@ namespace Mono.TextEditor
 				}
 				if (newText != text) {
 					var inserted = Insert (offset, text);
-					undoGroup.Dispose ();
-					undoGroup = OpenUndoGroup ();
+					if (options.GenerateFormattingUndoStep) {
+						undoGroup.Dispose ();
+						undoGroup = OpenUndoGroup ();
+					}
 					var result = Replace (offset, inserted, newText);
 					if (Paste != null)
 						Paste (offset, text, result);

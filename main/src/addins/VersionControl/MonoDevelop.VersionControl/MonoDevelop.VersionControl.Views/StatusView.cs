@@ -106,6 +106,9 @@ namespace MonoDevelop.VersionControl.Views
 			FilePath path = items.FindMostSpecificParent ();
 			bool isSingleDirectory = false;
 
+			if (!Directory.Exists (path) && !File.Exists (path))
+				return false;
+
 			if (!path.IsDirectory)
 				path = path.ParentDirectory;
 			else if (items.Count == 1)
@@ -736,7 +739,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
-			CommitCommand.Commit (vc, changeSet.Clone (), false);
+			CommitCommand.Commit (vc, changeSet.Clone ());
 			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 

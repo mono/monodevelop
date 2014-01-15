@@ -43,23 +43,18 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="GuiUnit">
@@ -257,7 +252,6 @@
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />

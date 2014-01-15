@@ -136,6 +136,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return 1;
 				if (aIsImport && bIsImport)
 					return StringComparer.Ordinal.Compare (a.Description, b.Description);
+				var ca = a as CompletionData;
+				var cb = b as CompletionData;
+				if (ca != null && cb != null && !ca.Icon.IsNull && !cb.Icon.IsNull) {
+					return ca.Icon.Name.CompareTo (cb.Icon.Name);
+				}
 			}
 			return result;
 		}

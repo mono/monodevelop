@@ -38,46 +38,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public abstract class MSBuildFileFormat: IFileFormat
 	{
-		SlnFileFormat slnFileFormat = new SlnFileFormat ();
-		string productVersion;
-		string toolsVersion;
-		string slnVersion;
-		string productDescription;
-		TargetFrameworkMoniker[] frameworkVersions;
-		bool supportsMonikers;
-		
-		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription,
-			TargetFrameworkMoniker[] frameworkVersions, bool supportsMonikers)
-		{
-			this.productVersion = productVersion;
-			this.toolsVersion = toolsVersion;
-			this.slnVersion = slnVersion;
-			this.productDescription = productDescription;
-			this.frameworkVersions = frameworkVersions;
-			this.supportsMonikers = supportsMonikers;
-		}
+		readonly SlnFileFormat slnFileFormat = new SlnFileFormat ();
 		
 		public string Name {
-			get {
-				return "MSBuild";
-			}
+			get { return "MSBuild"; }
 		}
 		
 		public SlnFileFormat SlnFileFormat {
-			get { return this.slnFileFormat; }
+			get { return slnFileFormat; }
 		}
 		
-		public bool SupportsMonikers { get { return supportsMonikers; } }
+		public bool SupportsMonikers { get { return SupportedFrameworks == null; } }
 		
 		public bool SupportsFramework (TargetFramework fx)
 		{
-			IList<TargetFrameworkMoniker> frameworkVersions = this.frameworkVersions;
-			return frameworkVersions.Contains (fx.Id) || supportsMonikers;
+			return SupportsMonikers || ((IList<TargetFrameworkMoniker>)SupportedFrameworks).Contains (fx.Id);
 		}
 
 		internal virtual bool SupportsSlnVersion (string version)
 		{
-			return version == slnVersion;
+			return version == SlnVersion;
+		}
+
+		internal virtual bool SupportsToolsVersion (string version)
+		{
+			return version == ToolsVersion;
 		}
 
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
@@ -101,7 +86,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ItemTypeNode node = MSBuildProjectService.FindHandlerForFile (file);
 				if (node == null)
 					return false;
-				return toolsVersion == ReadToolsVersion (file);
+				//TODO: check ProductVersion first
+				return SupportsToolsVersion (ReadToolsVersion (file));
 			}
 			return false;
 		}
@@ -140,13 +126,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				return msg;
 			}
-			DotNetProject prj = obj as DotNetProject;
-			if (prj != null && !((IList)frameworkVersions).Contains (prj.TargetFramework.Id))
-				return new string[] { GettextCatalog.GetString ("The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio does not support the framework that the project is targetting ({2})", prj.Name, productDescription, prj.TargetFramework.Name) };
+			var prj = obj as DotNetProject;
+			if (prj != null && !SupportsMonikers && !((IList)SupportedFrameworks).Contains (prj.TargetFramework.Id))
+				return new [] { GettextCatalog.GetString (
+					"The project '{0}' is being saved using the file format '{1}', but this version of Visual Studio " +
+					"does not support the framework that the project is targetting ({2})",
+					prj.Name, ProductDescription, prj.TargetFramework.Name)
+				};
 			return null;
 		}
 
-		public void WriteFile (FilePath file, object obj, MonoDevelop.Core.IProgressMonitor monitor)
+		public void WriteFile (FilePath file, object obj, IProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
 				slnFileFormat.WriteFile (file, obj, this, true, monitor);
@@ -201,37 +191,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return false; }
 		}
 
-		public string ToolsVersion {
-			get {
-				return toolsVersion;
-			}
+		public abstract string ToolsVersion { get; }
+
+		public abstract string SlnVersion { get; }
+
+		public abstract string ProductVersion { get; }
+
+		public abstract string ProductDescription { get; }
+
+		public virtual TargetFrameworkMoniker[] SupportedFrameworks {
+			get { return null; }
 		}
 
-		public string SlnVersion {
-			get {
-				return slnVersion;
-			}
-		}
-
-		public string ProductVersion {
-			get {
-				return productVersion;
-			}
-		}
-
-		public string ProductDescription {
-			get {
-				return productDescription;
-			}
-		}
-
-		public TargetFrameworkMoniker[] FrameworkVersions {
-			get {
-				return frameworkVersions;
-			}
-		}
-
-		string ReadToolsVersion (FilePath file)
+		static string ReadToolsVersion (FilePath file)
 		{
 			try {
 				using (XmlTextReader tr = new XmlTextReader (new StreamReader (file))) {
@@ -252,7 +224,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		public abstract string Id { get; }
-		
+
+		// Used to load projects independently of a solution
 		public static MSBuildFileFormat GetFormatForToolsVersion (string toolsVersion)
 		{
 			switch (toolsVersion) {
@@ -260,9 +233,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return new MSBuildFileFormatVS05 ();
 			case "3.5":
 				return new MSBuildFileFormatVS08 ();
+				// since both VS2010 and 2012 support ToolVersion 4.0, just use the newer format
 			case "4.0":
-				return new MSBuildFileFormatVS10 ();
-			case "4.5":
+			case "12.0":
 				return new MSBuildFileFormatVS12 ();
 			}
 			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
@@ -271,31 +244,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat
 	{
-		public const string Version = "8.0.50727";
-		const string toolsVersion = "2.0";
-		const string slnVersion = "9.00";
-		const string productComment = "Visual Studio 2005";
-		static TargetFrameworkMoniker[] frameworkVersions = {
+		static readonly TargetFrameworkMoniker[] supportedFrameworks = {
 			TargetFrameworkMoniker.NET_2_0,
 		};
-		const bool supportsMonikers = false;
-		
-		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
-		{
-		}
-		
+
 		public override string Id {
 			get { return "MSBuild05"; }
+		}
+
+		public override string ProductVersion {
+			get { return "8.0.50727"; }
+		}
+
+		public override string ToolsVersion {
+			get { return "2.0"; }
+		}
+
+		public override string SlnVersion {
+			get { return "9.00"; }
+		}
+
+		public override string ProductDescription {
+			get { return "Visual Studio 2005"; }
+		}
+
+		public override TargetFrameworkMoniker[] SupportedFrameworks {
+			get { return supportedFrameworks; }
 		}
 	}
 	
 	class MSBuildFileFormatVS08: MSBuildFileFormat
 	{
-		public const string Version = "9.0.21022";
-		const string toolsVersion = "3.5";
-		const string slnVersion = "10.00";
-		const string productComment = "Visual Studio 2008";
-		static TargetFrameworkMoniker[] frameworkVersions = {
+		static readonly TargetFrameworkMoniker[] supportedFrameworks = {
 			TargetFrameworkMoniker.NET_2_0,
 			TargetFrameworkMoniker.NET_3_0,
 			TargetFrameworkMoniker.NET_3_5,
@@ -303,77 +283,81 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			TargetFrameworkMoniker.SL_3_0,
 			TargetFrameworkMoniker.MONOTOUCH_1_0,
 		};
-		const bool supportsMonikers = false;
-		
-		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
-		{
-		}
-		
+
 		public override string Id {
 			get { return "MSBuild08"; }
+		}
+
+		public override string ProductVersion {
+			get { return "9.0.21022"; }
+		}
+
+		public override string ToolsVersion {
+			get { return "3.5"; }
+		}
+
+		public override string SlnVersion {
+			get { return "10.00"; }
+		}
+
+		public override string ProductDescription {
+			get { return "Visual Studio 2008"; }
+		}
+
+		public override TargetFrameworkMoniker[] SupportedFrameworks {
+			get { return supportedFrameworks; }
 		}
 	}
 	
 	class MSBuildFileFormatVS10: MSBuildFileFormat
 	{
-		public const string Version = "10.0.0";
-		const string toolsVersion = "4.0";
-		const string slnVersion = "11.00";
-		const string productComment = "Visual Studio 2010";
-		static TargetFrameworkMoniker[] frameworkVersions = {
-			TargetFrameworkMoniker.NET_2_0,
-			TargetFrameworkMoniker.NET_3_0,
-			TargetFrameworkMoniker.NET_3_5,
-			TargetFrameworkMoniker.NET_4_0,
-			TargetFrameworkMoniker.SL_2_0,
-			TargetFrameworkMoniker.SL_3_0,
-			TargetFrameworkMoniker.SL_4_0,
-			TargetFrameworkMoniker.MONOTOUCH_1_0,
-			TargetFrameworkMoniker.PORTABLE_4_0
-		};
-		const bool supportsMonikers = true;
-		
-		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
-		{
-		}
-		
 		public override string Id {
 			get { return "MSBuild10"; }
 		}
+
+		public override string ProductVersion {
+			get { return "10.0.0"; }
+		}
+
+		public override string ToolsVersion {
+			get { return "4.0"; }
+		}
+
+		public override string SlnVersion {
+			get { return "11.00"; }
+		}
+
+		public override string ProductDescription {
+			get { return "Visual Studio 2010"; }
+		}
 	}
 
+	// this is actually VS2010 SP1 and later
 	class MSBuildFileFormatVS12: MSBuildFileFormat
 	{
-		public const string Version = "12.0.0";
-		const string toolsVersion = "4.0";
-		const string slnVersion = "12.00";
-		const string productComment = "Visual Studio 2012";
-		static TargetFrameworkMoniker[] frameworkVersions = {
-			TargetFrameworkMoniker.NET_2_0,
-			TargetFrameworkMoniker.NET_3_0,
-			TargetFrameworkMoniker.NET_3_5,
-			TargetFrameworkMoniker.NET_4_0,
-			TargetFrameworkMoniker.NET_4_5,
-			TargetFrameworkMoniker.SL_2_0,
-			TargetFrameworkMoniker.SL_3_0,
-			TargetFrameworkMoniker.SL_4_0,
-			TargetFrameworkMoniker.MONOTOUCH_1_0,
-			TargetFrameworkMoniker.PORTABLE_4_0
-		};
-		const bool supportsMonikers = true;
-		
-		public MSBuildFileFormatVS12 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
-		{
-		}
-		
 		public override string Id {
 			get { return "MSBuild12"; }
 		}
 
-		internal override bool SupportsSlnVersion (string version)
+		public override string ProductVersion {
+			get { return "12.0.0"; }
+		}
+
+		public override string ToolsVersion {
+			get { return "4.0"; }
+		}
+
+		public override string SlnVersion {
+			get { return "12.00"; }
+		}
+
+		public override string ProductDescription {
+			get { return "Visual Studio 2012"; }
+		}
+
+		internal override bool SupportsToolsVersion (string version)
 		{
-			return version == "11.00" || version == "12.00";
+			return version == "4.0" || version == ToolsVersion;
 		}
 	}
-
 }

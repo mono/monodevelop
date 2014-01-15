@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using Mono.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -163,16 +164,14 @@ namespace MonoDevelop.CSharp.Project
 		
 		public override void AddDefineSymbol (string symbol)
 		{
-			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
-
+			var symbols = new List<string>(AllDefineSymbols);
 			symbols.Add (symbol);
-
 			definesymbols = string.Join (";", symbols) + ";";
 		}
 
 		public override bool HasDefineSymbol (string symbol)
 		{
-			var symbols = definesymbols.Split (new char[] { ';' });
+			var symbols = new List<string> (AllDefineSymbols);
 
 			foreach (var sym in symbols) {
 				if (sym == symbol)
@@ -184,8 +183,7 @@ namespace MonoDevelop.CSharp.Project
 
 		public override void RemoveDefineSymbol (string symbol)
 		{
-			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
-
+			var symbols = new List<string> (AllDefineSymbols);
 			symbols.Remove (symbol);
 
 			if (symbols.Count > 0)
@@ -195,6 +193,13 @@ namespace MonoDevelop.CSharp.Project
 		}
 		
 #region Code Generation
+
+		public ReadOnlyCollection<string> AllDefineSymbols
+		{ 
+			get { 
+				return new ReadOnlyCollection<string> (definesymbols.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)); 
+			} 
+		}
 		
 		public string DefineSymbols {
 			get {

@@ -9,15 +9,13 @@
 //     Licensed under the Microsoft Public License (MS-PL)
 //
 
-using System.Globalization;
-using System.Web.Razor.Generator;
-using System.Web.Razor.Parser;
-using System.Web.Razor.Text;
-using System.Collections.Generic;
-using System.Web.Razor.Parser.SyntaxTree;
-using System.Web.Razor.Tokenizer.Symbols;
 using System;
 using System.CodeDom;
+using System.Collections.Generic;
+using System.Web.Razor.Generator;
+using System.Web.Razor.Parser;
+using System.Web.Razor.Parser.SyntaxTree;
+using System.Web.Razor.Text;
 
 namespace MonoDevelop.RazorGenerator
 {
@@ -27,7 +25,7 @@ namespace MonoDevelop.RazorGenerator
 		public const string PropertyKeyword = "__property";
 		public const string ClassKeyword = "__class";
 
-		HashSet<string> directives = new HashSet<string> ();
+		readonly HashSet<string> directives = new HashSet<string> ();
 
 		public PreprocessedCSharpRazorCodeParser()
 		{
@@ -86,7 +84,7 @@ namespace MonoDevelop.RazorGenerator
 			});
 		}
 
-		static char[] wordSplitChars = new[] { ' ', '\t'};
+		static readonly char[] wordSplitChars = { ' ', '\t'};
 		static string[] GetArgumentWords (string value)
 		{
 			return value.Split (wordSplitChars, StringSplitOptions.RemoveEmptyEntries);
@@ -105,11 +103,7 @@ namespace MonoDevelop.RazorGenerator
 			SourceLocation location = CurrentLocation;
 			BaseTypeDirective (
 				string.Format ("The '{0}' directive must have a value", keyword),
-				s => {
-					if (s != null)
-						return valueParsed (s, location);
-					return null;
-				}
+				s => s != null ? valueParsed (s, location) : null
 			);
 		}
 

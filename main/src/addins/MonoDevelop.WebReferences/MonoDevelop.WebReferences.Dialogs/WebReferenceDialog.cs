@@ -94,6 +94,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		static string MakeValidId (string name)
 		{
 			bool isWordStart = true;
+			name = name.Replace ('-', '_'); 
 			for (int n=0; n<name.Length; n++) {
 				char c = name [n];
 				if (char.IsNumber (c) && isWordStart) {

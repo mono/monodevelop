@@ -179,9 +179,15 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public override string GetMSBuildBinPath (TargetFramework fx)
+		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			return Path.Combine (monoDir, "2.0");
+			var path = Path.Combine (monoDir, toolsVersion);
+			if (File.Exists (Path.Combine (path, "xbuild.exe")))
+				return path;
+			//HACK: Mono puts xbuild 4.0 in 4.5 directory, even though there is no such thing as ToolsVersion 4.5
+			if (toolsVersion == "4.0")
+				return GetMSBuildBinPath ("4.5");
+			return null;
 		}
 		
 		public override string GetMSBuildExtensionsPath ()
@@ -271,6 +277,11 @@ namespace MonoDevelop.Core.Assemblies
 		public static void UnregisterRuntime (MonoTargetRuntime runtime)
 		{
 			MonoTargetRuntimeFactory.UnregisterRuntime (runtime);
+		}
+
+		public override ExecutionEnvironment GetToolsExecutionEnvironment ()
+		{
+			return new ExecutionEnvironment (EnvironmentVariables);
 		}
 	}
 	

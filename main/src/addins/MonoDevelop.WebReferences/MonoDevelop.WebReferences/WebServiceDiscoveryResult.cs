@@ -95,17 +95,27 @@ namespace MonoDevelop.WebReferences
 			// Generate the proxy class
 			string proxySpec = CreateProxyFile (project, basePath, namspace + "." + referenceName, "Reference");
 			
-			var mapFile = new ProjectFile (mapSpec);
-			mapFile.BuildAction = BuildAction.None;
-			mapFile.Subtype = Subtype.Code;
-			mapFile.Generator = ProxyGenerator;
-			project.Files.Add (mapFile);
-			
-			var proxyFile = new ProjectFile (proxySpec);
-			proxyFile.BuildAction = BuildAction.Compile;
-			proxyFile.Subtype = Subtype.Code;
-			proxyFile.DependsOn = mapFile.FilePath;
-			project.Files.Add (proxyFile);
+			ProjectFile mapFile = project.Files.GetFile (mapSpec);
+			if (mapFile == null) {
+				mapFile = new ProjectFile (mapSpec) {
+					BuildAction = BuildAction.None,
+					Subtype = Subtype.Code,
+					Generator = ProxyGenerator
+				};
+				project.Files.Add (mapFile);
+			} else
+				FileService.NotifyFileChanged (mapSpec);
+
+			ProjectFile proxyFile = project.Files.GetFile (proxySpec);
+			if (proxyFile == null) {
+				proxyFile = new ProjectFile (proxySpec) {
+					BuildAction = BuildAction.Compile,
+					Subtype = Subtype.Code,
+					DependsOn = mapFile.FilePath
+				};
+				project.Files.Add (proxyFile);
+			} else
+				FileService.NotifyFileChanged (proxySpec);
 			
 			mapFile.LastGenOutput = proxyFile.FilePath.FileName;
 			
