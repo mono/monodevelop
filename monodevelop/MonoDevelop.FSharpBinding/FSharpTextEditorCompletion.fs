@@ -21,7 +21,7 @@ open ICSharpCode.NRefactory.Completion
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<DataTipText>, glyph) =
+type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, glyph) =
     inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 
                            DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
@@ -29,20 +29,20 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<DataTipText>, gl
     let description = lazy (TipFormatter.formatTip false datatipLazy.Value)
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
 
-    new (name, datatip:DataTipText, glyph) =  new FSharpMemberCompletionData(name, lazy datatip, glyph)
+    new (name, datatip:ToolTipText, glyph) =  new FSharpMemberCompletionData(name, lazy datatip, glyph)
     new (mi:Declaration) =  new FSharpMemberCompletionData(mi.Name, lazy mi.DescriptionText, mi.Glyph)
 
     override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
 
     /// Check if the datatip has multiple overloads
-    override x.HasOverloads = match datatipLazy.Value with DataTipText xs -> xs.Length > 1
+    override x.HasOverloads = match datatipLazy.Value with ToolTipText xs -> xs.Length > 1
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
         match datatipLazy.Value with 
-        | DataTipText xs -> 
-            xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, DataTipText[x], glyph)) 
+        | ToolTipText xs -> 
+            xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, ToolTipText[x], glyph)) 
                |> Seq.cast
 
     override x.AddOverload (data: ICompletionData) = ()//not currently called
@@ -108,7 +108,7 @@ type internal FSharpErrorCompletionData(exn:exn) =
     override x.Icon =  new MonoDevelop.Core.IconId("md-event")
 
 /// Provide information to the 'method overloads' windows that comes up when you type '('
-type ParameterDataProvider(nameStart: int, name, meths : Method array) = 
+type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) = 
     inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
     override x.Count = meths.Length
         /// Returns the markup to use to represent the specified method overload
@@ -124,10 +124,10 @@ type ParameterDataProvider(nameStart: int, name, meths : Method array) =
                 meth.Parameters |> Array.mapi (fun i param -> 
                     let paramDesc = 
                         // Sometimes the parameter decription is hidden in the XML docs
-                        match TipFormatter.extractParamTip param.Name meth.Description  with 
+                        match TipFormatter.extractParamTip param.ParameterName meth.Description  with 
                         | Some tip -> tip
                         | None -> param.Description
-                    let name = if i = currentParameter then  "<b>" + param.Name + "</b>" else param.Name
+                    let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
                     let text = name + ": " + GLib.Markup.EscapeText paramDesc
                     text )
             match body with
@@ -140,7 +140,7 @@ type ParameterDataProvider(nameStart: int, name, meths : Method array) =
             let meth = meths.[overload]
             if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
             let param = meth.Parameters.[currentParameter]
-            param.Name 
+            param.ParameterName 
 
         let heading = 
             let meth = meths.[overload]
@@ -183,7 +183,7 @@ type ParameterDataProvider(nameStart: int, name, meths : Method array) =
     override x.GetParameterName (overload:int, paramIndex:int) =
         let meth = meths.[overload]
         let prm = meth.Parameters.[paramIndex]
-        prm.Name
+        prm.ParameterName
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
 type FSharpTextEditorCompletion() =
@@ -344,7 +344,7 @@ open Microsoft.FSharp.Compiler.Range
 
 [<AutoOpen>]
 module Helper = 
-  type UntypedParseInfo with 
+  type ParseFileResults with 
     // GetNavigationItems is not 100% solid and throws occasional exceptions
     member x.GetNavigationItemsDeclarationsSafe() = 
         try x.GetNavigationItems().Declarations

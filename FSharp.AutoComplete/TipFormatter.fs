@@ -22,10 +22,10 @@ let private buildFormatComment cmt (sb:StringBuilder) =
 // int in bold (so that no overload is highlighted)
 let private buildFormatElement isSingle el (sb:StringBuilder) =
   match el with
-  | DataTipElementNone -> sb
-  | DataTipElement(it, comment) ->
+  | ToolTipElementNone -> sb
+  | ToolTipElement(it, comment) ->
       sb.AppendLine(it) |> buildFormatComment comment
-  | DataTipElementGroup(items) ->
+  | ToolTipElementGroup(items) ->
       let items, msg =
         if items.Length > 10 then
           (items |> Seq.take 10 |> List.ofSeq),
@@ -36,13 +36,13 @@ let private buildFormatElement isSingle el (sb:StringBuilder) =
       for (it, comment) in items do
         sb.AppendLine(it) |> buildFormatComment comment |> ignore
       if msg <> null then sb.AppendFormat(msg) else sb
-  | DataTipElementCompositionError(err) ->
+  | ToolTipElementCompositionError(err) ->
       sb.Append("Composition error: " + err)
 
 let private buildFormatTip tip (sb:StringBuilder) =
   match tip with
-  | DataTipText([single]) -> sb |> buildFormatElement true single
-  | DataTipText(its) ->
+  | ToolTipText([single]) -> sb |> buildFormatElement true single
+  | ToolTipText(its) ->
       sb.AppendLine("Multiple items") |> ignore
       its |> Seq.mapi (fun i it -> i = 0, it) |> Seq.fold (fun sb (first, item) ->
         if not first then sb.AppendLine("\n--------------------\n") |> ignore
