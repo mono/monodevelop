@@ -85,8 +85,13 @@ namespace Mono.TextEditor
 
 			public void Dispose ()
 			{
+				var attributes = layout.Attributes;
+				if (attributes != null)
+					attributes.Dispose ();
 				layout.Attributes = null;
 				layout.Tabs = null;
+				layout.Width = -1;
+				layout.Alignment = Pango.Alignment.Left;
 				layoutCache.layoutQueue.Enqueue (this);
 			}
 
@@ -170,6 +175,11 @@ namespace Mono.TextEditor
 			public void GetPixelSize (out int width, out int height)
 			{
 				layout.GetPixelSize (out width, out height); 
+			}
+
+			public void GetExtents (out Pango.Rectangle ink_rect, out Pango.Rectangle logical_rect)
+			{
+				layout.GetExtents (out ink_rect, out logical_rect); 
 			}
 		}
 	}

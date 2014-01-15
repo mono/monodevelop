@@ -746,7 +746,7 @@ namespace Mono.TextEditor
 					cr.Fill ();
 					char caretChar = GetCaretChar ();
 					if (!char.IsWhiteSpace (caretChar) && caretChar != '\0') {
-						using (var layout = PangoUtil.CreateLayout (textEditor)) {
+						using (var layout = textEditor.LayoutCache.RequestLayout ()) {
 							layout.FontDescription = textEditor.Options.Font;
 							layout.SetText (caretChar.ToString ());
 							cr.MoveTo (caretRectangle.X, caretRectangle.Y);
@@ -2484,8 +2484,8 @@ namespace Mono.TextEditor
 			int offset = line.Offset;
 			double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
 			restart:
-			using (var calcTextLayout = PangoUtil.CreateLayout (textEditor))
-			using (var calcFoldingLayout = PangoUtil.CreateLayout (textEditor)) {
+			using (var calcTextLayout = textEditor.LayoutCache.RequestLayout ())
+			using (var calcFoldingLayout = textEditor.LayoutCache.RequestLayout ()) {
 				calcTextLayout.FontDescription = textEditor.Options.Font;
 				calcTextLayout.Tabs = this.tabArray;
 
@@ -2966,7 +2966,8 @@ namespace Mono.TextEditor
 						layoutWrapper.Layout.GetPixelSize (out width, out height);
 						xPos += width * (int)Pango.Scale.PangoScale;
 						if (measueLayout == null) {
-							measueLayout = PangoUtil.CreateLayout (margin.textEditor, folding.Description);
+							measueLayout = margin.textEditor.LayoutCache.RequestLayout ();
+							measueLayout.SetText (folding.Description);
 							measueLayout.FontDescription = margin.textEditor.Options.Font;
 						}
 
@@ -3062,7 +3063,8 @@ namespace Mono.TextEditor
 			column--;
 			// calculate virtual indentation
 			if (column > 0 && line.Length == 0 && textEditor.GetTextEditorData ().HasIndentationTracker) {
-				using (var l = PangoUtil.CreateLayout (textEditor, textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset))) {
+				using (var l = textEditor.LayoutCache.RequestLayout ()) {
+					l.SetText (textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset)); 
 					l.Alignment = Pango.Alignment.Left;
 					l.FontDescription = textEditor.Options.Font;
 					l.Tabs = tabArray;
