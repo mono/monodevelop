@@ -375,7 +375,7 @@ type internal TypedParseResult(info:CheckFileResults, untyped : ParseFileResults
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland) ->
-            let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, token, true)
+            let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, true)
             Debug.WriteLine("Result: Got something, returning")
             res 
 
