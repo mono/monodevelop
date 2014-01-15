@@ -507,7 +507,7 @@ type internal LanguageService private () =
             // Construct new typed parse result if the task succeeded
             let newTypedInfo =
               match updatedTyped with
-              | CheckFileAnswer.Succeeded(results) ->
+              | Some(CheckFileAnswer.Succeeded(results)) ->
                   // Handle errors on the GUI thread
                   Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" results.HasFullTypeCheckInfo)
                   match info.AfterCompleteTypeCheckCallback with 
