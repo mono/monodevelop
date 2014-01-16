@@ -596,6 +596,10 @@ around to the start of the buffer."
         (fsharp-ac--log (format "Received '%s' message of length %d\n"
                                 kind
                                 (hash-table-size msg)))
+        (when (and (numberp fsharp-ac-debug)
+                   (< 1 fsharp-ac-debug))
+          (fsharp-ac--log (format "%s\n" (json-encode msg))))
+
         (cond
          ((s-equals? "ERROR" kind) (fsharp-ac-handle-process-error data))
          ((s-equals? "INFO" kind) (when fsharp-ac-verbose (fsharp-ac-message-safely data)))
