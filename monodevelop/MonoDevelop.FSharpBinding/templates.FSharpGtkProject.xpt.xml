@@ -39,21 +39,7 @@
 			<!-- A window template -->
 
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-				<Widget>
-					<SteticTemplate>
-					  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
-					    <property name="Title" translatable="yes">${Name}</property>
-					    <property name="WindowPosition">CenterOnParent</property>
-					    <signal name="DeleteEvent" handler="OnDeleteEvent" />
-				            <child>
-				              <placeholder />
-				            </child>
-					  </widget>			
-					</SteticTemplate>
-
-					<!-- Class bound to the window -->
-
-			                <File name="MainWindow.fs">
+                <File name="MainWindow.fs">
 <![CDATA[
 // NOTE: If warnings appear, you may need to retarget this project to .NET 4.0. Show the Solution
 // Pad, right-click on the project node, choose 'Options --> Build --> General' and change the target
@@ -78,7 +64,6 @@ namespace ${ProjectName}
                 e.RetVal <- true]]>
 				</File>
              
-                            </Widget>
              <File name="Main.fs">
                 <![CDATA[namespace ${ProjectName}
     module Main =
