@@ -8,7 +8,7 @@
 		<_Name>Web Application</_Name>
 		<_Category>ASP.NET</_Category>
 		<Icon>md-project-web</Icon>
-		<LanguageName>*</LanguageName>
+		<LanguageName>C#,VBNet</LanguageName>
 		<_Description>Creates a new ASP.NET Web Application project.</_Description>
 	</TemplateConfiguration>
 	
