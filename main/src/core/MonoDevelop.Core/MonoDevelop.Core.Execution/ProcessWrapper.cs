@@ -116,6 +116,8 @@ namespace MonoDevelop.Core.Execution
 				endEventOut = endEventErr = null;
 			}
 
+			// HACK: try/catch is a workaround for broken Process.Dispose implementation in Mono < 3.2.7
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=10883
 			try {
 				base.Dispose (disposing);
 			} catch (Exception ex) {
