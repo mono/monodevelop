@@ -545,7 +545,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return GetCacheDirectory (project.FileName, forceCreation);
 		}
 
-		static readonly object cacheLocker = new object ();
+		static readonly Dictionary<string, object> cacheLocker = new Dictionary<string, object> ();
 
 		/// <summary>
 		/// Gets the cache directory for arbitrary file names.
@@ -558,9 +558,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
+			object locker;
+			bool newLock;
 			lock (cacheLocker) {
+				if (!cacheLocker.TryGetValue (fileName, out locker)) {
+					cacheLocker [fileName] = locker = new object ();
+					newLock = true;
+				} else {
+					newLock = false;
+				}
+			}
+			lock (locker) {
 				var result = InternalGetCacheDirectory (fileName);
-				if (result != null)
+				if (newLock && result != null)
 					TouchCache (result);
 				if (forceCreation && result == null)
 					result = CreateCacheDirectory (fileName);
