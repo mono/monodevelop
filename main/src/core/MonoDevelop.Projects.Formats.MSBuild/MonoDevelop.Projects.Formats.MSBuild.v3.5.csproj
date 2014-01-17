@@ -60,7 +60,7 @@
     <Folder Include="MonoDevelop.Projects.Formats.MSBuild\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoDevelop.Projects.Formats.MSBuild.v3.5.exe.config">
+    <None Include="app.v3.5.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
     </None>
