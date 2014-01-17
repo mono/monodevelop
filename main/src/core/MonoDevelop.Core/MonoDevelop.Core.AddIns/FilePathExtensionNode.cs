@@ -30,9 +30,13 @@ namespace MonoDevelop.Core.AddIns
 {
 	class FilePathExtensionNode : ExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute (Required=true)]
 		string path;
-		
+
+		#pragma warning restore 649
+
 		public FilePath FilePath { get { return Addin.GetFilePath (path); } }
 	}
 }

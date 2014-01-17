@@ -120,7 +120,7 @@ namespace MonoDevelop.Core.Execution
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=10883
 			try {
 				base.Dispose (disposing);
-			} catch (Exception ex) {
+			} catch {
 				if (disposing)
 					throw;
 			}

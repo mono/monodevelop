@@ -32,11 +32,15 @@ namespace MonoDevelop.Projects.Extensions
 {
 	class FileFormatNode: TypeExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string name;
 		
 		[NodeAttribute]
 		bool canDefault;
+
+		#pragma warning restore 649
 		
 		public string Name {
 			get {

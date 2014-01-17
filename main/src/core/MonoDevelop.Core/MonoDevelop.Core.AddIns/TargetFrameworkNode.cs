@@ -35,12 +35,16 @@ namespace MonoDevelop.Core.AddIns
 {
 	class TargetFrameworkNode: ExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		protected string resource;
 		
 		[NodeAttribute]
 		protected string file;
-		
+
+		#pragma warning restore 649
+
 		public TargetFramework CreateFramework ()
 		{
 			Stream s;

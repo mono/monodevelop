@@ -32,6 +32,8 @@ namespace MonoDevelop.Core.AddIns
 {
 	class UserDataMigrationNode: ExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute (Required=true, Description="The version of the source profile for this migration applies.")]
 		string sourceVersion;
 		
@@ -49,6 +51,8 @@ namespace MonoDevelop.Core.AddIns
 		
 		[NodeAttribute (Name="handler")]
 		string handlerTypeName;
+
+		#pragma warning restore 649
 		
 		public string SourceVersion {
 			get { return sourceVersion; }
