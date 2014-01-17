@@ -182,11 +182,6 @@
       <Name>MonoDevelop.Deployment.Linux</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj">
-      <Project>{40A31ADE-6F26-4D99-A3C7-87BB8236151D}</Project>
-      <Name>MonoDevelop.Projects.Formats.MSBuild.v3.5</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
       <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
       <Name>Sharpen.Unix</Name>

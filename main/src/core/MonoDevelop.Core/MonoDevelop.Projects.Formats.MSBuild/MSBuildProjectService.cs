@@ -480,19 +480,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
-				string binDir = runtime.GetMSBuildBinPath (toolsVersion);
-				if (binDir == null) {
+				//attempt to use 12.0 builder first if available
+				string binDir = runtime.GetMSBuildBinPath ("12.0");
+				if (binDir != null) {
+					toolsVersion = "12.0";
+				} else if (toolsVersion == "12.0") {
+					//else if 12 was required but not available
 					string error = null;
-					if (runtime is MsNetTargetRuntime) {
-						if (toolsVersion == "12.0") {
-							error = "MSBuild 2013 is not installed. Please download and install it from " +
-							        "http://www.microsoft.com/en-us/download/details.aspx?id=40760";
-						}
-					};
+					if (runtime is MsNetTargetRuntime)
+						error = "MSBuild 2013 is not installed. Please download and install it from " +
+						"http://www.microsoft.com/en-us/download/details.aspx?id=40760";
 					throw new InvalidOperationException (error ?? string.Format (
 						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
 						runtime.Id, toolsVersion)
 					);
+				} else {
+					//fall back to 4.0, we know it's always available
+					toolsVersion = "4.0";
+					binDir = runtime.GetMSBuildBinPath ("12.0");
 				}
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
