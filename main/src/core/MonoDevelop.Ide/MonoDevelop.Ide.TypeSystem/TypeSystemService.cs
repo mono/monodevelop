@@ -1553,7 +1553,23 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					UnresolvedAssemblyProxy ctx;
 					// Add mscorlib reference
-					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
+
+					// hack: find the NoStdLib flag
+					var config = netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+					bool noStdLib = false;
+					if (config != null) {
+						var parameters = config.CompilationParameters;
+						if (parameters != null) {
+							var prop = parameters.GetType ().GetProperty ("NoStdLib");
+							if (prop != null) {
+								var val = prop.GetValue (parameters, null);
+								if (val is bool)
+									noStdLib = (bool)val;
+							}
+						}
+					}
+
+					if (!noStdLib && netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
 						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
 							typeof(object).Assembly.FullName,
 							null,
@@ -1572,6 +1588,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
 						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+
+							// HACK: core reference get added automatically, even if no std lib is set.
+							if (noStdLib && file.Contains ("System.Core.dll"))
+								continue;
+
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
@@ -2605,6 +2626,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
+				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
@@ -2617,9 +2639,16 @@ namespace MonoDevelop.Ide.TypeSystem
 							node = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 							parser = node != null ? node.Parser : null;
 						}
-						if (parser == null)
+
+						if (parser == null || !File.Exists (fileName))
 							continue;
-						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						ParsedDocument parsedDocument;
+						try {
+							parsedDocument = parser.Parse (false, fileName, Context.Project);
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while parsing " + fileName, e);
+							continue;
+						} 
 						if (token.IsCancellationRequested)
 							return;
 						if (tags != null)
