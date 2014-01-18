@@ -43,6 +43,7 @@ If you're not already using MELPA, add the following to your init.el:
     ```
     git clone git://github.com/fsharp/fsharpbinding.git
     cd fsharpbinding/emacs
+    make test-all # optional
     make install
     ```
 
@@ -67,27 +68,38 @@ Emacs 24 will not add it to your PATH. One option is:
 ## Usage
 
 fsharp-mode should launch automatically whenever you open an F#
-buffer. If the current file is part of an F# project, and the
-intellisense process is not running, it will be launched, and
-the current project loaded.
+buffer. When the intellisense process is running, the following features will be available:
 
-Currently intellisense features can be offered for just one project at
-a time. To load a new F# project, use <kbd>C-c C-p</kbd>.
-
-While a project is loaded, the following features will be available:
-
-1. Type information for symbol at point will be displayed in the minibuffer
+1. Type information for symbol at point will be displayed in the minibuffer.
 2. Errors and warnings will be automatically highlighted, with mouseover
-   text.
+   text. Jump to the next and previous error using <kbd>M-n</kbd> and <kbd>M-p</kbd>.
 3. To display a tooltip, move the cursor to a symbol and press
    <kbd>C-c C-t</kbd> (default).
 4. To jump to the definition of a symbol at point, use <kbd>C-c C-d</kbd>.
 5. Completion will be invoked automatically on dot, as in Visual Studio.
-   It may be invoked manually using `completion-at-point`, often bound to
-   <kbd>M-TAB</kbd> and <kbd>C-M-i</kbd>.
+   It may be invoked manually using `fsharp-ac/complete-at-point`,
+   bound by default to <kbd>C-c C-.</kbd>.
 6. To stop the intellisense process for any reason, use <kbd>C-c C-q</kbd>.
 
-In the event of any trouble, please open an issue on [Github](https://github.com/fsharp/fsharpbinding/) with the label `Emacs`.
+### Projects
+
+fsharp-mode offers intellisense for projects using the MSBuild/`.fsproj`
+format. This allows project files to be shared with other developers using
+Visual Studio and Xamarin Studio/Monodevelop. To create a new project file,
+it is recommended that you take an existing project file and modify the list
+of source files. One such project file can be found in the fsharp-mode repository [here](https://github.com/fsharp/fsharpbinding/blob/master/emacs/test/Test1/Test1.fsproj).
+
+If, on loading a new `.fs` file, the intellisense process is not running and
+a `.fsproj` file is found in the current or an enclosing directory, the
+intellisense process will be launched, and the project loaded.
+
+Currently intellisense features can be offered for just one project at
+a time. To load a new F# project, use <kbd>C-c C-p</kbd>.
+
+### Scripts
+
+F# scripts (`.fsx` files) are standalone, and require no project file. As a
+result, intellisense can be offered for many script files concurrently with a project. If you wish open a script file and the intellisense process is not yet running, it will be launched automatically.
 
 ## Configuration
 
@@ -169,6 +181,27 @@ the following to your `init.el` may be a good start:
    (define-key fsharp-mode-map (kbd "M-RET") 'fsharp-eval-region)
    (define-key fsharp-mode-map (kbd "C-SPC") 'fsharp-ac/complete-at-point)))
 ```
+
+
+## Troubleshooting
+
+`fsharp-mode` is still under development, so you may encounter some issues. Please report them so we can improve things! Either open an issue on [Github](https://github.com/fsharp/fsharpbinding/) with the label `Emacs`, or email the [mailing list](http://groups.google.com/group/fsharp-opensource).
+
+### `*fsharp-complete*`
+
+The buffer `*fsharp-complete*` contains partial messages received from the background process, before they form complete JSON objects.
+
+### `fsharp-ac-debug`
+
+If you set the variable `fsharp-ac-debug` to a non-`nil` value, e.g. `(setq fsharp-ac-debug 0)`, then some debug output will be seen in the buffer `*fsharp-debug*`. Setting `fsharp-ac-debug` to an 1 or 2 will cause a truncated or complete copy of communication between Emacs and the background intellisense process to be logged in `*fsharp-debug*`. This can make things rather slow, but would be useful for bug reports.
+
+### `Error: F# completion process produced malformed JSON`
+
+This is probably the result of the background intellisense process crashing and printing a stacktrace in plain text. Please report the crash, preferably with how to reproduce, and the contents of the `*fsharp-complete*` buffer.
+
+### Installing from Git
+
+If you installed by cloning the git repository and you are having problem, please sanity check by running `make test-all` in the `emacs` folder.
 
 ## Contributing
 
