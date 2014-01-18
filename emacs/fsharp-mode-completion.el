@@ -568,6 +568,14 @@ around to the start of the buffer."
     (goto-char (point-min))
     (let ((eofloc (search-forward "\n" nil t)))
       (when eofloc
+        (when (numberp fsharp-ac-debug)
+          (cond
+           ((eq 1 fsharp-ac-debug)
+            (fsharp-ac--log (format "%s ...\n" (buffer-substring (point-min) (min 100 eofloc)))))
+
+           ((>= 2 fsharp-ac-debug)
+            (fsharp-ac--log (format "%s\n" (buffer-substring (point-min) eofloc))))))
+
         (let ((json-array-type 'list)
               (json-object-type 'hash-table)
               (json-key-type 'string))
@@ -590,16 +598,11 @@ around to the start of the buffer."
 
   (let ((msg (fsharp-ac--get-msg proc)))
     (while msg
-      ;(message "[filter] length(msg) = %d" (length msg))
       (let ((kind (gethash "Kind" msg))
             (data (gethash "Data" msg)))
         (fsharp-ac--log (format "Received '%s' message of length %d\n"
                                 kind
                                 (hash-table-size msg)))
-        (when (and (numberp fsharp-ac-debug)
-                   (< 1 fsharp-ac-debug))
-          (fsharp-ac--log (format "%s\n" (json-encode msg))))
-
         (cond
          ((s-equals? "ERROR" kind) (fsharp-ac-handle-process-error data))
          ((s-equals? "INFO" kind) (when fsharp-ac-verbose (fsharp-ac-message-safely data)))
