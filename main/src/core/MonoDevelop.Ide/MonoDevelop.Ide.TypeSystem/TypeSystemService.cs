@@ -1555,7 +1555,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// Add mscorlib reference
 
 					// hack: find the NoStdLib flag
-					var config = netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+					var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration : null;
 					bool noStdLib = false;
 					if (config != null) {
 						var parameters = config.CompilationParameters;
