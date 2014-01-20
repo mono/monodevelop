@@ -458,6 +458,7 @@
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
     <Compile Include="MonoDevelop.Projects\SharedProject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SharedProjectMSBuildHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
