@@ -722,7 +722,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 			}
-			
+
+			foreach (var ext in GetMSBuildExtensions ())
+				ext.LoadProject (EntityItem, msproject);
+
 			Item.NeedsReload = false;
 		}
 
@@ -1265,6 +1268,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 
+			foreach (var ext in GetMSBuildExtensions ())
+				ext.SaveProject (EntityItem, msproject);
+
 			return msproject;
 		}
 
@@ -1539,6 +1545,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
 				ip.UpdateImports (EntityItem, imports);
 			}
+		}
+
+		IEnumerable<MSBuildExtension> GetMSBuildExtensions ()
+		{
+			return AddinManager.GetExtensionObjects<MSBuildExtension> ("/MonoDevelop/ProjectModel/MSBuildExtensions");
 		}
 
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)

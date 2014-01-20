@@ -145,6 +145,10 @@
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
+		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
 		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
 	</ExtensionPoint>
