@@ -497,7 +497,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				} else {
 					//fall back to 4.0, we know it's always available
 					toolsVersion = "4.0";
-					binDir = runtime.GetMSBuildBinPath ("12.0");
+					binDir = runtime.GetMSBuildBinPath ("4.0");
 				}
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
