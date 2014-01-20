@@ -350,6 +350,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		[Ignore ("This test is broken because env var is only propagated to child if this is first test to use that builder")]
 		public void EvaluateProperties ()
 		{
 			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
