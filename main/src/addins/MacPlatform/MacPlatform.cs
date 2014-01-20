@@ -505,14 +505,13 @@ namespace MonoDevelop.MacIntegration
 				return true;
 			}
 		}
-		
-		public override void OpenInTerminal (FilePath directory)
+
+		public override void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
 		{
-			AppleScript.Run (string.Format (
-@"tell application ""Terminal""
-activate
-do script with command ""cd {0}""
-end tell", directory.ToString ().Replace ("\"", "\\\"")));
+			string tabId, windowId;
+			MacExternalConsoleProcess.RunTerminal (
+				null, null, directory, environmentVariables, null, false, out tabId, out windowId
+			);
 		}
 		
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)
