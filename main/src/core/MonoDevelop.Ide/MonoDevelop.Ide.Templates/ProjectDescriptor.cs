@@ -117,12 +117,12 @@ namespace MonoDevelop.Ide.Templates
 			return projectDescriptor;
 		}
 
-		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
-			if (!Services.ProjectService.CanCreateProject (type)) {
+			if (!Services.ProjectService.CanCreateProject (type, projectCreateInformation, projectOptions)) {
 				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
 				return null;
 			}
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Templates
 			return project;
 		}
 
-		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		public void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
 			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 

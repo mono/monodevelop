@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Templates
 
 					var solutionItemDesc = entryDescriptors[i];
 
-					SolutionEntityItem info = solutionItemDesc.CreateItem (entryProjectCI, defaultLanguage);
+					SolutionItem info = solutionItemDesc.CreateItem (entryProjectCI, defaultLanguage);
 					if (info == null)
 						continue;
 

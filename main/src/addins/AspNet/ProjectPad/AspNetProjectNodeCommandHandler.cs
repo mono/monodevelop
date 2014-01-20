@@ -42,21 +42,25 @@ namespace MonoDevelop.AspNet.ProjectPad
 		[CommandHandler (AspNetCommands.AddAspNetDirectory)]
 		public void OnAddSpecialDirectory (object ob)
 		{
-			AspNetAppProject proj = CurrentNode.DataItem as AspNetAppProject;
+			var proj = CurrentNode.DataItem as DotNetProject;
 			if (proj == null)
 				return;
 			proj.AddDirectory ((string) ob);
-			IdeApp.ProjectOperations.Save (proj);
+			IdeApp.ProjectOperations.SaveAsync (proj);
 		}
 		
 		[CommandUpdateHandler (AspNetCommands.AddAspNetDirectory)]
 		public void OnAddSpecialDirectoryUpdate (CommandArrayInfo info)
 		{
-			AspNetAppProject proj = CurrentNode.DataItem as AspNetAppProject;
+			var proj = CurrentNode.DataItem as DotNetProject;
 			if (proj == null)
 				return;
-			
-			List<string> dirs = new List<string> (proj.GetSpecialDirectories ());
+
+			var asp = proj.GetFlavor<AspNetFlavor> ();
+			if (asp == null)
+				return;
+
+			List<string> dirs = new List<string> (asp.GetSpecialDirectories ());
 			dirs.Sort ();
 			List<FilePath> fullPaths = new List<FilePath> (dirs.Count);
 			foreach (string s in dirs)

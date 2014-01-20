@@ -268,7 +268,7 @@ namespace MonoDevelop.Autotools
 				//FIXME: Do this only if there are changes b/w tmpData and Data
 				project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] = tmpData;
 
-				using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Updating project"), "gtk-run", true)) {
 
 					tmpData.UpdateProject (monitor, oldData == null || (!oldData.IntegrationEnabled && tmpData.IntegrationEnabled));

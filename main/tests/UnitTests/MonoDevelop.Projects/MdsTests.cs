@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects
 			sol.FileName = Path.Combine (dir, "thesolution");
 			ws.Items.Add (sol);
 			
-			DotNetAssemblyProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.FileName = Path.Combine (dir, "theproject");
 			sol.RootFolder.Items.Add (p);
 			

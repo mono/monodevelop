@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 		public abstract string Name { get; }
 		
 		public abstract void Load (XmlElement filenode, FilePath baseDirectory);
-		public abstract bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name);
+		public abstract bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string name);
 		public abstract void Show ();
 		
 		public virtual bool IsValidName (string name, string language)

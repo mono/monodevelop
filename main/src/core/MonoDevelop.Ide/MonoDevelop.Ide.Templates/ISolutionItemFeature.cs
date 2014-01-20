@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
 		/// have, they may not be saved to disk. parentFolder can be null.
 		/// </remarks>
-		FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionItem item);
+		FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionFolderItem item);
 		
 		/// <summary>
 		/// Short title of the feature
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Templates
 		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
 		/// have, they may not be saved to disk.
 		/// </remarks>
-		Gtk.Widget CreateFeatureEditor (SolutionFolder parentFolder, SolutionItem entry);
+		Gtk.Widget CreateFeatureEditor (SolutionFolder parentFolder, SolutionFolderItem entry);
 		
 		/// <summary>
 		/// Validates the configuration of the feature
@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Templates
 		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
 		/// have, they may not be saved to disk.
 		/// </remarks>
-		string Validate (SolutionFolder parentFolder, SolutionItem entry, Gtk.Widget editor);
+		string Validate (SolutionFolder parentFolder, SolutionFolderItem entry, Gtk.Widget editor);
 		
 		/// <summary>
 		/// Applies the feature to a project
@@ -146,12 +146,12 @@ namespace MonoDevelop.Ide.Templates
 		/// The provided item, parent folder and parent solution may or may not have a file name, and even if they
 		/// have, they may not be saved to disk.
 		/// </remarks>
-		void ApplyFeature (SolutionFolder parentFolder, SolutionItem entry, Gtk.Widget editor);
+		void ApplyFeature (SolutionFolder parentFolder, SolutionFolderItem entry, Gtk.Widget editor);
 	}
 	
 	internal class SolutionItemFeatures
 	{
-		public static ISolutionItemFeature[] GetFeatures (SolutionFolder parentCombine, SolutionItem entry)
+		public static ISolutionItemFeature[] GetFeatures (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			List<ISolutionItemFeature> list = new List<ISolutionItemFeature> ();
 			foreach (ISolutionItemFeature e in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFeatures", typeof(ISolutionItemFeature), true)) {

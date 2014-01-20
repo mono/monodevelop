@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return name;}
 		}
 		
-		public override bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string entryName)
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project, string language, string directory, string entryName)
 		{
 			string[,] customTags = new string[,] {
 				{"ProjectName", project.Name},

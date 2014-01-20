@@ -98,7 +98,7 @@ namespace MonoDevelop.Debugger.Soft
 		
 		class CustomSoftDebuggerSession : SoftDebuggerSession
 		{
-			IProcessAsyncOperation process;
+			ProcessAsyncOperation process;
 			bool usingExternalConsole;
 			
 			protected override void OnRun (DebuggerStartInfo startInfo)
@@ -138,7 +138,7 @@ namespace MonoDevelop.Debugger.Soft
 					foreach (KeyValuePair<string,string> kvp in info.EnvironmentVariables)
 						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
 					
-					process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null);
+					process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null).ProcessAsyncOperation;
 				}
 			}
 			

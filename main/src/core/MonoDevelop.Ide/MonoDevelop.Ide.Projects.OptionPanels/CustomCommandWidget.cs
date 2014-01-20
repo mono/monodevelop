@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CustomCommandWidget : Gtk.Bin
 	{
 		CustomCommand cmd;
-		IWorkspaceObject entry;
+		WorkspaceObject entry;
 		bool updating;
 		CustomCommandType[] supportedTypes;
 		
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			GettextCatalog.GetString ("Custom Command")
 		};
 		
-		public CustomCommandWidget (IWorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
+		public CustomCommandWidget (WorkspaceObject entry, CustomCommand cmd, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)
 		{
 			this.Build();
 			this.supportedTypes = supportedTypes;
@@ -77,8 +77,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.WidgetFlags |= Gtk.WidgetFlags.NoShowAll;
 			
 			StringTagModelDescription tagModel;
-			if (entry is SolutionItem)
-				tagModel = ((SolutionItem)entry).GetStringTagModelDescription (configSelector);
+			if (entry is SolutionFolderItem)
+				tagModel = ((SolutionFolderItem)entry).GetStringTagModelDescription (configSelector);
 			else if (entry is WorkspaceItem)
 				tagModel = ((WorkspaceItem)entry).GetStringTagModelDescription ();
 			else

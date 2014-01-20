@@ -29,14 +29,15 @@ using System.IO;
 using System.Text;
 using MonoDevelop.Core;
 using NUnit.Framework;
+using System.Threading;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProgressMonitor : IProgressMonitor
+	public class FakeProgressMonitor : ProgressMonitor
 	{
 		public event MonitorHandler CancelRequested;
 
-		protected virtual void OnCancelRequested (IProgressMonitor monitor)
+		protected virtual void OnCancelRequested (ProgressMonitor monitor)
 		{
 			var handler = CancelRequested;
 			if (handler != null)
@@ -48,7 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			Log = new StringWriter (LoggedMessages);
 		}
 
-		public void BeginTask (string name, int totalWork)
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			BeginTaskTotalWork = totalWork;
 		}
@@ -59,14 +60,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public void EndTask ()
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			IsTaskEnded = true;
 		}
 
 		public bool IsTaskEnded;
 
-		public void Step (int work)
+		protected override void OnStep (string message, int work)
 		{
 			StepCalledCount++;
 			TotalStepWork += work;
@@ -75,21 +76,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public int StepCalledCount;
 		public int TotalStepWork;
 
-		public void ReportWarning (string message)
+		protected override void OnWarningReported (string message)
 		{
 			ReportedWarningMessage = message;
 		}
 
 		public string ReportedWarningMessage;
 
-		public void ReportSuccess (string message)
+		protected override void OnSuccessReported (string message)
 		{
 			ReportedSuccessMessage = message;
 		}
 
 		public string ReportedSuccessMessage;
 
-		public void ReportError (string message, Exception exception)
+		protected override void OnErrorReported (string message, Exception exception)
 		{
 			ReportedErrorMessage = message;
 		}
@@ -110,13 +111,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			Assert.IsFalse (log.Contains (message), log);
 		}
 
-		public TextWriter Log { get; set; }
 		public bool IsCancelRequested { get; set; }
-		public IAsyncOperation AsyncOperation { get; set; }
+		public AsyncOperation AsyncOperation { get; set; }
 		public object SyncRoot { get; set; }
 
-		public void Dispose ()
+		public override void Dispose ()
 		{
+			base.Dispose ();
 			IsDisposed = true;
 		}
 

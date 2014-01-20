@@ -33,14 +33,14 @@ namespace MonoDevelop.Projects
 	
 	public class CleanEventArgs : EventArgs
 	{
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		
-		public CleanEventArgs (IProgressMonitor monitor)
+		public CleanEventArgs (ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
 		}
 		
-		public IProgressMonitor Monitor {
+		public ProgressMonitor Monitor {
 			get {
 				return monitor;
 			}

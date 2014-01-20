@@ -29,6 +29,12 @@
 		</Condition>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Condition id="Platform" value="!windows">
+			<ProjectExtension class = "MonoDevelop.Autotools.MakefileProjectExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+		</Condition>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Condition id="Platform" value="!windows">
 			<Category _name = "Autotools" id = "Autotools">

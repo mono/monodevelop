@@ -30,6 +30,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Extensions
 {
@@ -48,10 +49,10 @@ namespace MonoDevelop.Projects.Extensions
 		
 		// Makes the required changes in the object to support this file format.
 		// It usually means setting the ISolutionItemHandler of the item.
-		void ConvertToFormat (object obj);
+		Task ConvertToFormat (object obj);
 
-		void WriteFile (FilePath file, object obj, IProgressMonitor monitor);
-		object ReadFile (FilePath file, Type expectedType, IProgressMonitor monitor);
+		Task WriteFile (FilePath file, object obj, ProgressMonitor monitor);
+		Task<object> ReadFile (FilePath file, Type expectedType, ProgressMonitor monitor);
 		
 		// Returns the list of files where the object is stored
 		List<FilePath> GetItemFiles (object obj);

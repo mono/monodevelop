@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNet.Execution
 			return cmd != null && !string.IsNullOrEmpty (GetXspName (cmd));
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (AspNetExecutionCommand) command;
 			var xspPath = GetXspPath (cmd);

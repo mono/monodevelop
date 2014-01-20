@@ -46,9 +46,9 @@ namespace MonoDevelop.CodeIssues
 	{
 		readonly IActionMatcher matcher;
 
-		readonly IProgressMonitor monitor;
+		readonly ProgressMonitor monitor;
 
-		public BatchFixer (IActionMatcher matcher, IProgressMonitor monitor)
+		public BatchFixer (IActionMatcher matcher, ProgressMonitor monitor)
 		{
 			this.matcher = matcher;
 			this.monitor = monitor;

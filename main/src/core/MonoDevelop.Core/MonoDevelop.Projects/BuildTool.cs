@@ -34,6 +34,7 @@ using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -47,6 +48,13 @@ namespace MonoDevelop.Projects
 		string runtime;
 		
 		public int Run (string[] arguments)
+		{
+			var t = RunAsync (arguments);
+			t.Wait ();
+			return t.Result;
+		}
+
+		public async Task<int> RunAsync (string[] arguments)
 		{
 			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Build Tool"));
 			foreach (string s in arguments)
@@ -93,7 +101,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 			
-			IProgressMonitor monitor = new ConsoleProjectLoadProgressMonitor (new ConsoleProgressMonitor ());
+			ProgressMonitor monitor = new ConsoleProjectLoadProgressMonitor (new ConsoleProgressMonitor ());
 
 			TargetRuntime targetRuntime = null;
 			TargetRuntime defaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -106,11 +114,16 @@ namespace MonoDevelop.Projects
 
 			IBuildTarget item;
 			if (solFile != null)
-				item = Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+				item = await Services.ProjectService.ReadWorkspaceItem (monitor, solFile) as IBuildTarget;
 			else
-				item = Services.ProjectService.ReadSolutionItem (monitor, itemFile);
+				item = await Services.ProjectService.ReadSolutionItem (monitor, itemFile);
 
-			using (var readItem = item) {
+			if (item == null) {
+				Console.WriteLine ("The file '" + file + "' can't be built");
+				return 1;
+			}
+
+			using (var readItem = (WorkspaceObject)item) {
 				if (project != null) {
 					Solution solution = item as Solution;
 					item = null;
@@ -130,21 +143,25 @@ namespace MonoDevelop.Projects
 				
 				monitor = new ConsoleProgressMonitor ();
 				BuildResult res = null;
-				if (item is SolutionEntityItem && ((SolutionEntityItem)item).ParentSolution == null) {
+				if (item is SolutionItem && ((SolutionItem)item).ParentSolution == null) {
 					ConfigurationSelector configuration = new ItemConfigurationSelector (config);
-					res = item.RunTarget (monitor, command, configuration);
+					if (command == ProjectService.BuildTarget)
+						res = await item.Build (monitor, configuration);
+					else if (command == ProjectService.CleanTarget)
+						res = await item.Clean (monitor, configuration);
 				} else {
 					ConfigurationSelector configuration = new SolutionConfigurationSelector (config);
-					SolutionEntityItem solutionEntityItem = item as SolutionEntityItem;
+					SolutionItem solutionEntityItem = item as SolutionItem;
 					if (solutionEntityItem != null) {
 						if (command == ProjectService.BuildTarget)
-							res = solutionEntityItem.Build (monitor, configuration, true);
+							res = await solutionEntityItem.Build (monitor, configuration, true);
 						else if (command == ProjectService.CleanTarget)
-							solutionEntityItem.Clean (monitor, configuration);
-						else
-							res = item.RunTarget (monitor, command, configuration);
+							await solutionEntityItem.Clean (monitor, configuration);
+						else if (solutionEntityItem is Project)
+							res = await ((Project)item).RunTarget (monitor, command, configuration);
 					} else {
-						res = item.RunTarget (monitor, command, configuration);
+						Console.WriteLine ("The project '" + project + "' can't be built");
+						return 1;
 					}
 				}
 				

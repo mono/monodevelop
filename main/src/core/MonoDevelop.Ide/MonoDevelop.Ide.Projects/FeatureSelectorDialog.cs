@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Projects
 	
 	public partial class FeatureSelectorDialog : Gtk.Dialog
 	{
-		public FeatureSelectorDialog (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSelectorDialog (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			this.Build();
 			featureList.Fill (parentCombine, entry, SolutionItemFeatures.GetFeatures (parentCombine, entry));

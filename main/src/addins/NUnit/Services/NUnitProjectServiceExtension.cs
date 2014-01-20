@@ -28,44 +28,32 @@
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.NUnit
 {
-	public class NUnitProjectServiceExtension: ProjectServiceExtension
+	public class NUnitProjectServiceExtension: ProjectExtension
 	{
-		public override void Execute (MonoDevelop.Core.IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
+		protected override Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (base.CanExecute (item, context, configuration)) {
+			if (base.OnGetCanExecute (context, configuration)) {
 				// It is executable by default
-				base.Execute(monitor, item, context, configuration);
-				return;
-			} else if (item is IWorkspaceObject) {
-				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				if (test != null) {
-					IAsyncOperation oper = null;
-					DispatchService.GuiSyncDispatch (delegate {
-						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
-					});
-//					if (oper != null) {
-//						monitor.CancelRequested += delegate {
-//							oper.Cancel ();
-//						};
-//						oper.WaitForCompleted ();
-//					}
-				}
+				return base.OnExecute (monitor, context, configuration);
 			}
+			UnitTest test = NUnitService.Instance.FindRootTest (Project);
+			if (test != null)
+				return NUnitService.Instance.RunTest (test, context.ExecutionHandler, false).Task;
+			else
+				return Task.FromResult (0);
 		}
 		
-		public override bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
-			bool res = base.CanExecute (item, context, configuration);
-			if (!res && (item is IWorkspaceObject)) {
-				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
-				return (test != null) && test.CanRun (context.ExecutionHandler);
-			} else
-				return res;
+			bool res = base.OnGetCanExecute (context, configuration);
+			UnitTest test = NUnitService.Instance.FindRootTest (Project);
+			return (test != null) && test.CanRun (context.ExecutionHandler);
 		}
 	}
 }

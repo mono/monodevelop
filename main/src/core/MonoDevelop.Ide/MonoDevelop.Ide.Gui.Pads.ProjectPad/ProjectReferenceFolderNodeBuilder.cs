@@ -85,15 +85,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				ctx.AddChild (pref);
 
 			// For portable libraries, add node that represents all framework assemblies
-			var project = ctx.GetParentDataItem (typeof(DotNetProject), false) as PortableDotNetProject;
-			if (project != null)
+			var project = (DotNetProject) ctx.GetParentDataItem (typeof(DotNetProject), false);
+			if (project != null && project.IsPortableLibrary)
 				ctx.AddChild (new PortableFrameworkSubset (project));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ((ProjectReferenceCollection) dataObject).Count > 0
-				|| builder.GetParentDataItem (typeof(DotNetProject), false) is PortableDotNetProject;
+			if (((ProjectReferenceCollection) dataObject).Count > 0)
+				return true;
+
+			var p = (DotNetProject) builder.GetParentDataItem (typeof(DotNetProject), false);
+			return p != null && p.IsPortableLibrary;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
@@ -129,7 +132,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return dataObject is ProjectReference || dataObject is Project;
 		}
 		
-		public override void OnNodeDrop (object dataObject, DragOperation operation)
+		public async override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			// It allows dropping either project references or projects.
 			// Dropping a project creates a new project reference to that project
@@ -146,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (ProjectReferencesProject (p, project.Name))
 					return;
 				p.References.Add (pr);
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 				return;
 			}
 			
@@ -175,8 +178,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				
 				p2.References.Add (pref);
-				IdeApp.ProjectOperations.Save (p);
-				IdeApp.ProjectOperations.Save (p2);
+				await IdeApp.ProjectOperations.SaveAsync (p);
+				await IdeApp.ProjectOperations.SaveAsync (p2);
 			} else {
 				nav.MoveToParent (typeof(DotNetProject));
 				DotNetProject p = nav.DataItem as DotNetProject;
@@ -194,7 +197,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						return;
 				}
 				p.References.Add ((ProjectReference) pref.Clone ());
-				IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 			}
 		}
 		
@@ -204,12 +207,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddReference)]
-		public void AddReferenceToProject ()
+		public async void AddReferenceToProject ()
 		{
 			DotNetProject p = (DotNetProject) CurrentNode.GetParentDataItem (typeof(DotNetProject), false);
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p)) {
-				IdeApp.ProjectOperations.Save (p);
 				CurrentNode.Expanded = true;
+				await IdeApp.ProjectOperations.SaveAsync (p);
 			}
 		}
 

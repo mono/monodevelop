@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					toSave.Add (ws);
 				}
 			}
-			IdeApp.ProjectOperations.Save (toSave);
+			IdeApp.ProjectOperations.SaveAsync (toSave);
 		}
 			
 		public override void ActivateItem ()
@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					ws.Dispose ();
 				}
 			}
-			IdeApp.Workspace.Save();
+			IdeApp.Workspace.SaveAsync ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -225,37 +225,42 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void AddNewSolutionToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddNewWorkspaceItem (ws);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			IdeApp.ProjectOperations.AddNewWorkspaceItem (ws).ContinueWith (t => {
+				if (t.Result == null)
+					return;
+				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
+				CurrentNode.Expanded = true;
+			});
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewWorkspace)]
 		public void AddNewWorkspaceToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace");
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace").ContinueWith (t => {
+				if (t.Result == null) return;
+				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
+				CurrentNode.Expanded = true;
+			});
 		}
 		
 		[CommandHandler (ProjectCommands.AddItem)]
 		public void AddProjectToCombine()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			WorkspaceItem ce = IdeApp.ProjectOperations.AddWorkspaceItem (ws);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			IdeApp.ProjectOperations.AddWorkspaceItem (ws).ContinueWith (t => {
+				if (t.Result == null)
+					return;
+				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
+				CurrentNode.Expanded = true;
+			});
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
 		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
 					Workspace ws = (Workspace) node.DataItem;

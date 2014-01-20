@@ -30,6 +30,7 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.TextTemplating;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.Razor.Generator
 {
@@ -46,18 +47,18 @@ namespace MonoDevelop.AspNet.Razor.Generator
 			return ns;
 		}
 
-		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (delegate {
+			return Task.Factory.StartNew (delegate {
 				try {
 					GenerateInternal (monitor, file, result);
 				} catch (Exception ex) {
 					result.UnhandledException = ex;
 				}
-			}, result);
+			});
 		}
 
-		void GenerateInternal (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		void GenerateInternal (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			var dnp = file.Project as DotNetProject;
 			if (dnp == null || dnp.LanguageName != "C#") {

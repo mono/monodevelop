@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Serialization
 		string file;
 		IPropertyFilter propertyFilter;
 		DataSerializer serializer;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		char directorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		HashSet<ItemProperty> forcedSerializationProps;
 		
@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Serialization
 			}
 		}
 
-		public IProgressMonitor ProgressMonitor {
+		public ProgressMonitor ProgressMonitor {
 			get {
 				return monitor;
 			}

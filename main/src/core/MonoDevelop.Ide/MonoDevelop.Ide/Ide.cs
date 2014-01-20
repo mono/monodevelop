@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public static void Initialize (IProgressMonitor monitor)
+		public static void Initialize (ProgressMonitor monitor)
 		{
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide
 			TypeSystemService.TrackFileChanges = true;
 			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
-			Customizer.Initialize ();
+			Customizer.OnIdeInitialized ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
 				var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
 				if (proj != null) { 
-					IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+					IdeApp.Workspace.OpenWorkspaceItem (proj.FileName);
 				}
 			}
 			

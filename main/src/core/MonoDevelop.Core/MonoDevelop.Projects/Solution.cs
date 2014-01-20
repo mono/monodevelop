@@ -36,18 +36,21 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core.Execution;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		
-		SolutionEntityItem startupItem;
-		List<SolutionEntityItem> startupItems; 
+		SolutionItem startupItem;
+		List<SolutionItem> startupItems; 
 		bool singleStartup = true;
 
 		// Used for serialization only
@@ -70,8 +73,24 @@ namespace MonoDevelop.Projects
 		{
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
+			Initialize (this);
 		}
-		
+
+		internal HashSet<string> LoadedProjects {
+			get;
+			set;
+		}
+
+		SolutionExtension itemExtension;
+
+		SolutionExtension SolutionExtension {
+			get {
+				if (itemExtension == null)
+					itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
+				return itemExtension;
+			}
+		}
+
 		public SolutionFolder RootFolder {
 			get {
 				if (rootFolder == null) {
@@ -103,18 +122,13 @@ namespace MonoDevelop.Projects
 		// Does not include solution folders
 		public ReadOnlyCollection<SolutionItem> Items {
 			get {
-				if (solutionItems == null) {
-					List<SolutionItem> list = new List<SolutionItem> ();
-					foreach (SolutionItem item in GetAllSolutionItems ())
-						if (!(item is SolutionFolder))
-							list.Add (item);
-					solutionItems = list.AsReadOnly ();
-				}
+				if (solutionItems == null)
+					solutionItems = GetAllSolutionItems ().ToList().AsReadOnly ();
 				return solutionItems;
 			}
 		}
 		
-		public SolutionEntityItem StartupItem {
+		public SolutionItem StartupItem {
 			get {
 				if (startItemFileName != null) {
 					startupItem = FindSolutionItem (startItemFileName);
@@ -122,8 +136,8 @@ namespace MonoDevelop.Projects
 					singleStartup = true;
 				}
 				if (startupItem == null && singleStartup) {
-					ReadOnlyCollection<SolutionEntityItem> its = GetAllSolutionItems<SolutionEntityItem> ();
-					if (its.Count > 0)
+					var its = GetAllItems<SolutionItem> ();
+					if (its.Any ())
 						startupItem = its.FirstOrDefault (it => it.SupportsExecute ());
 				}
 				return startupItem;
@@ -161,12 +175,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public List<SolutionEntityItem> MultiStartupItems {
+		public List<SolutionItem> MultiStartupItems {
 			get {
 				if (multiStartupItems != null) {
-					startupItems = new List<SolutionEntityItem> ();
+					startupItems = new List<SolutionItem> ();
 					foreach (string file in multiStartupItems) {
-						SolutionEntityItem it = FindSolutionItem (file);
+						SolutionItem it = FindSolutionItem (file);
 						if (it != null)
 							startupItems.Add (it);
 					}
@@ -174,7 +188,7 @@ namespace MonoDevelop.Projects
 					singleStartup = false;
 				}
 				else if (startupItems == null)
-					startupItems = new List<SolutionEntityItem> ();
+					startupItems = new List<SolutionItem> ();
 				return startupItems;
 			}
 		}
@@ -200,7 +214,7 @@ namespace MonoDevelop.Projects
 				if (multiStartupItems != null)
 					return multiStartupItems;
 				List<string> files = new List<string> ();
-				foreach (SolutionEntityItem item in MultiStartupItems)
+				foreach (SolutionItem item in MultiStartupItems)
 					files.Add (item.FileName);
 				return files;
 			}
@@ -248,30 +262,30 @@ namespace MonoDevelop.Projects
 			CleanItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 		
-		void CollectItemProperties (PropertyBag props, SolutionItem item, string path)
+		void CollectItemProperties (PropertyBag props, SolutionFolderItem item, string path)
 		{
 			if (!item.UserProperties.IsEmpty && item.ParentFolder != null)
 				props.SetValue (path, item.UserProperties);
 			
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
+				foreach (SolutionFolderItem ci in sf.Items)
 					CollectItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
-		void CleanItemProperties (PropertyBag props, SolutionItem item, string path)
+		void CleanItemProperties (PropertyBag props, SolutionFolderItem item, string path)
 		{
 			props.RemoveValue (path);
 			
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
+				foreach (SolutionFolderItem ci in sf.Items)
 					CleanItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
-		void LoadItemProperties (PropertyBag props, SolutionItem item, string path)
+		void LoadItemProperties (PropertyBag props, SolutionFolderItem item, string path)
 		{
 			PropertyBag info = props.GetValue<PropertyBag> (path);
 			if (info != null) {
@@ -281,14 +295,14 @@ namespace MonoDevelop.Projects
 			
 			SolutionFolder sf = item as SolutionFolder;
 			if (sf != null) {
-				foreach (SolutionItem ci in sf.Items)
+				foreach (SolutionFolderItem ci in sf.Items)
 					LoadItemProperties (props, ci, path + "." + ci.Name);
 			}
 		}
 		
 		public void CreateDefaultConfigurations ()
 		{
-			foreach (SolutionEntityItem item in Items.Where (it => it.SupportsBuild ())) {
+			foreach (SolutionItem item in Items.Where (it => it.SupportsBuild ())) {
 				foreach (ItemConfiguration conf in item.Configurations) {
 					SolutionConfiguration sc = Configurations [conf.Id];
 					if (sc == null) {
@@ -308,7 +322,7 @@ namespace MonoDevelop.Projects
 		public SolutionConfiguration AddConfiguration (string name, bool createConfigForItems)
 		{
 			SolutionConfiguration conf = new SolutionConfiguration (name);
-			foreach (SolutionEntityItem item in Items.Where (it => it.SupportsBuild())) {
+			foreach (SolutionItem item in Items.Where (it => it.SupportsBuild())) {
 				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (name)) == null) {
 					SolutionItemConfiguration newc = item.CreateConfiguration (name);
 					if (item.DefaultConfiguration != null)
@@ -334,15 +348,15 @@ namespace MonoDevelop.Projects
 			return (SolutionConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
 		
-		public SolutionItem GetSolutionItem (string itemId)
+		public SolutionFolderItem GetSolutionItem (string itemId)
 		{
-			foreach (SolutionItem item in Items)
+			foreach (SolutionFolderItem item in Items)
 				if (item.ItemId == itemId)
 					return item;
 			return null;
 		}
 		
-		public override SolutionEntityItem FindSolutionItem (string fileName)
+		public SolutionItem FindSolutionItem (string fileName)
 		{
 			return RootFolder.FindSolutionItem (fileName);
 		}
@@ -352,11 +366,16 @@ namespace MonoDevelop.Projects
 			return RootFolder.FindProjectByName (name);
 		}
 		
-		public override ReadOnlyCollection<T> GetAllSolutionItems<T> ()
+		public IEnumerable<SolutionItem> GetAllSolutionItems ()
 		{
-			return RootFolder.GetAllItems<T> ();
+			return GetAllItems<SolutionItem> ();
 		}
-		
+
+		public IEnumerable<Project> GetAllProjects ()
+		{
+			return GetAllItems<Project> ();
+		}
+
 		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);
@@ -378,16 +397,21 @@ namespace MonoDevelop.Projects
 			return RootFolder.GetProjectsContainingFile (fileName);
 		}
 		
-		public override bool ContainsItem (IWorkspaceObject obj)
+		public override bool ContainsItem (WorkspaceObject obj)
 		{
 			if (base.ContainsItem (obj))
 				return true;
 			
-			foreach (SolutionItem it in GetAllSolutionItems<SolutionItem> ()) {
+			foreach (SolutionFolderItem it in GetAllItems<SolutionFolderItem> ()) {
 				if (it == obj)
 					return true;
 			}
 			return false;
+		}
+
+		protected override IEnumerable<WorkspaceObject> OnGetChildren ()
+		{
+			yield return RootFolder;
 		}
 		
 		public string Description {
@@ -494,7 +518,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				version = value;
-				foreach (SolutionEntityItem item in GetAllSolutionItems<SolutionEntityItem> ()) {
+				foreach (SolutionItem item in GetAllItems<SolutionItem> ()) {
 					if (item.SyncVersionWithSolution)
 						item.Version = value;
 				}
@@ -515,7 +539,7 @@ namespace MonoDevelop.Projects
 			return list == null || !list.Contains (solutionItemPath);
 		}
 
-		public void SetSolutionItemEnabled (string solutionItemPath, bool enabled)
+		internal void SetSolutionItemEnabled (string solutionItemPath, bool enabled)
 		{
 			solutionItemPath = GetRelativeChildPath (Path.GetFullPath (solutionItemPath));
 			var list = UserProperties.GetValue<List<string>> ("DisabledProjects");
@@ -543,25 +567,91 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}	 
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+
+
+		public Task<BuildResult> Clean (ProgressMonitor monitor, string configuration)
+		{
+			return Clean (monitor, (SolutionConfigurationSelector) configuration);
+		}
+
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return SolutionExtension.Clean (monitor, configuration);
+		}
+
+		public Task<BuildResult> Build (ProgressMonitor monitor, string configuration)
+		{
+			return SolutionExtension.Build (monitor, (SolutionConfigurationSelector) configuration);
+		}
+
+		Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets)
+		{
+			return Build (monitor, configuration);
+		}
+
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return SolutionExtension.Build (monitor, configuration);
+		}
+
+		public bool NeedsBuilding (ConfigurationSelector configuration)
+		{
+			return SolutionExtension.NeedsBuilding (configuration);
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, string configuration)
+		{
+			return Execute (monitor, context, (SolutionConfigurationSelector) configuration);
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return SolutionExtension.Execute (monitor, context, configuration);
+		}
+
+		public bool CanExecute (ExecutionContext context, string configuration)
+		{
+			return CanExecute (context, (SolutionConfigurationSelector) configuration);
+		}
+
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return SolutionExtension.CanExecute (context, configuration);
+		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
+		{
+			return GetExecutionTargets ((SolutionConfigurationSelector) configuration);
+		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		{
+			return SolutionExtension.GetExecutionTargets (this, configuration);
+		}
+
+		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return RootFolder.Build (monitor, configuration);
 		}
-		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{	
-			RootFolder.Clean (monitor, configuration);
+
+		protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			return RootFolder.NeedsBuilding (configuration);
 		}
 
-		protected internal override bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{	
+			return RootFolder.Clean (monitor, configuration);
+		}
+
+		protected virtual bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null)
 					return false;
 				return StartupItem.CanExecute (context, configuration);
 			} else {
-				foreach (SolutionEntityItem it in MultiStartupItems) {
+				foreach (SolutionItem it in MultiStartupItems) {
 					if (it.CanExecute (context, configuration))
 						return true;
 				}
@@ -569,44 +659,36 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null) {
 					monitor.ReportError (GettextCatalog.GetString ("Startup item not set"), null);
 					return;
 				}
-				StartupItem.Execute (monitor, context, configuration);
+				await StartupItem.Execute (monitor, context, configuration);
 			} else {
-				List<IAsyncOperation> list = new List<IAsyncOperation> ();
+				var tasks = new List<Task> ();
+				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
 				
-				SynchronizedProgressMonitor syncMonitor = new SynchronizedProgressMonitor (monitor);
-				
-				foreach (SolutionEntityItem it in MultiStartupItems) {
+				foreach (SolutionItem it in MultiStartupItems) {
 					if (!it.CanExecute (context, configuration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
-					mon.AddSlaveMonitor (syncMonitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.SlaveCancel);
-					list.Add (mon.AsyncOperation);
-					SolutionEntityItem cit = it;
-					
-					Thread t = new Thread (delegate () {
-						try {
-							using (mon) {
-								cit.Execute (mon, context, configuration);
-							}
-						} catch (Exception ex) {
-							LoggingService.LogError ("Project execution failed", ex);
-						}
-					});
-					t.Name = "Project execution";
-					t.IsBackground = true;
-					t.Start ();
+					mon.AddSlaveMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.SlaveCancel);
+					monitors.Add (mon);
+					tasks.Add (it.Execute (mon, context, configuration));
 				}
-				foreach (IAsyncOperation op in list)
-					op.WaitForCompleted ();
-				
+				try {
+					await Task.WhenAll (tasks);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Project execution failed", ex);
+				} finally {
+					foreach (var m in monitors)
+						m.Dispose ();
+				}
+
 				monitor.EndTask ();
 			}
 		}
@@ -617,25 +699,25 @@ namespace MonoDevelop.Projects
 				StartupItemChanged (this, e);
 		}
 		
-		public override void ConvertToFormat (FileFormat format, bool convertChildren)
+		public async override Task ConvertToFormat (FileFormat format, bool convertChildren)
 		{
-			base.ConvertToFormat (format, convertChildren);
-			foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
-				ConvertToSolutionFormat (item, convertChildren);
+			await base.ConvertToFormat (format, convertChildren);
+			foreach (SolutionFolderItem item in GetAllItems<SolutionFolderItem> ())
+				await ConvertToSolutionFormat (item, convertChildren);
 		}
 		
 		public override bool SupportsFormat (FileFormat format)
 		{
 			if (!base.SupportsFormat (format))
 				return false;
-			return GetAllSolutionItems<SolutionEntityItem> ().All (p => p.SupportsFormat (format));
+			return GetAllItems<SolutionItem> ().All (p => p.SupportsFormat (format));
 		}
 
-		public override List<FilePath> GetItemFiles (bool includeReferencedFiles)
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> files = base.GetItemFiles (includeReferencedFiles);
+			List<FilePath> files = base.OnGetItemFiles (includeReferencedFiles).ToList ();
 			if (includeReferencedFiles) {
-				foreach (SolutionEntityItem item in GetAllSolutionItems<SolutionEntityItem> ())
+				foreach (SolutionItem item in GetAllItems<SolutionItem> ())
 					files.AddRange (item.GetItemFiles (true));
 			}
 			return files;
@@ -649,7 +731,7 @@ namespace MonoDevelop.Projects
 
 			SolutionFolder sf = args.SolutionItem as SolutionFolder;
 			if (sf != null) {
-				foreach (SolutionItem eitem in sf.GetAllItems<SolutionItem> ())
+				foreach (SolutionFolderItem eitem in sf.GetAllItems<SolutionFolderItem> ())
 					SetupNewItem (eitem, null);
 			}
 			else {
@@ -660,14 +742,14 @@ namespace MonoDevelop.Projects
 				SolutionItemAdded (this, args);
 		}
 		
-		void SetupNewItem (SolutionItem item, SolutionItem replacedItem)
+		void SetupNewItem (SolutionFolderItem item, SolutionFolderItem replacedItem)
 		{
-			ConvertToSolutionFormat (item, false);
+			ConvertToSolutionFormat (item, false).Wait ();
 			
-			SolutionEntityItem eitem = item as SolutionEntityItem;
+			SolutionItem eitem = item as SolutionItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
-				if (eitem.SupportsBuild () || replacedItem != null) {
+				if (eitem.SupportsConfigurations () || replacedItem != null) {
 					if (replacedItem == null) {
 						// Register the new entry in every solution configuration
 						foreach (SolutionConfiguration conf in Configurations)
@@ -678,11 +760,11 @@ namespace MonoDevelop.Projects
 					} else {
 						// Reuse the configuration information of the replaced item
 						foreach (SolutionConfiguration conf in Configurations)
-							conf.ReplaceItem ((SolutionEntityItem)replacedItem, eitem);
+							conf.ReplaceItem ((SolutionItem)replacedItem, eitem);
 						if (StartupItem == replacedItem)
 							StartupItem = eitem;
 						else {
-							int i = MultiStartupItems.IndexOf ((SolutionEntityItem)replacedItem);
+							int i = MultiStartupItems.IndexOf ((SolutionItem)replacedItem);
 							if (i != -1)
 								MultiStartupItems [i] = eitem;
 						}
@@ -691,11 +773,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		void ConvertToSolutionFormat (SolutionItem item, bool force)
+		async Task ConvertToSolutionFormat (SolutionFolderItem item, bool force)
 		{
-			SolutionEntityItem eitem = item as SolutionEntityItem;
+			SolutionItem eitem = item as SolutionItem;
 			if (force || !FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
-				this.FileFormat.Format.ConvertToFormat (item);
+				await this.FileFormat.Format.ConvertToFormat (item);
 				if (eitem != null)
 					eitem.InstallFormat (this.FileFormat);
 			}
@@ -707,11 +789,11 @@ namespace MonoDevelop.Projects
 			
 			SolutionFolder sf = args.SolutionItem as SolutionFolder;
 			if (sf != null) {
-				foreach (SolutionEntityItem eitem in sf.GetAllItems<SolutionEntityItem> ())
+				foreach (SolutionItem eitem in sf.GetAllItems<SolutionItem> ())
 					DetachItem (eitem, args.Reloading);
 			}
 			else {
-				SolutionEntityItem item = args.SolutionItem as SolutionEntityItem;
+				SolutionItem item = args.SolutionItem as SolutionItem;
 				if (item != null)
 					DetachItem (item, args.Reloading);
 			}
@@ -720,7 +802,7 @@ namespace MonoDevelop.Projects
 				SolutionItemRemoved (this, args);
 		}
 		
-		void DetachItem (SolutionEntityItem item, bool reloading)
+		void DetachItem (SolutionItem item, bool reloading)
 		{
 			item.NeedsReload = false;
 			if (!reloading) {
@@ -744,7 +826,7 @@ namespace MonoDevelop.Projects
 			if (projectToRemove == null)
 				return;
 
-			foreach (DotNetProject project in GetAllSolutionItems <DotNetProject>()) {
+			foreach (DotNetProject project in GetAllItems <DotNetProject>()) {
 				if (project == projectToRemove)
 					continue;
 				
@@ -760,7 +842,27 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
+
+		internal void ReadSolution (ProgressMonitor monitor, SlnFile file)
+		{
+			SolutionExtension.OnReadSolution (monitor, file);
+		}
+
+		protected virtual void OnReadSolution (ProgressMonitor monitor, SlnFile file)
+		{
+			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor);
+		}
+
+		internal void WriteSolution (ProgressMonitor monitor, SlnFile file)
+		{
+			SolutionExtension.OnWriteSolution (monitor, file);
+		}
 		
+		protected virtual void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
+		{
+			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.WriteFileInternal (file, this, monitor);
+		}
+
 		internal void NotifyConfigurationsChanged ()
 		{
 			OnConfigurationsChanged ();
@@ -843,6 +945,54 @@ namespace MonoDevelop.Projects
 		public event SolutionItemModifiedEventHandler EntryModified;
 		public event SolutionItemEventHandler EntrySaved;
 		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
+
+		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
+		{
+			return base.CreateDefaultExtensions ().Concat (Enumerable.Repeat (new DefaultSolutionExtension (), 1));
+		}
+
+		internal class DefaultSolutionExtension: SolutionExtension
+		{
+			internal protected override IEnumerable<FilePath> GetItemFiles (bool includeReferencedFiles)
+			{
+				return Solution.OnGetItemFiles (includeReferencedFiles);
+			}
+
+			internal protected override Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Solution.OnBuild (monitor, configuration);
+			}
+
+			internal protected override bool NeedsBuilding (ConfigurationSelector configuration)
+			{
+				return Solution.OnGetNeedsBuilding (configuration);
+			}
+
+			internal protected override Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Solution.OnClean (monitor, configuration);
+			}
+
+			internal protected override Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Solution.OnExecute (monitor, context, configuration);
+			}
+
+			internal protected override bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Solution.OnGetCanExecute (context, configuration);
+			}
+
+			internal protected override void OnReadSolution (ProgressMonitor monitor, SlnFile file)
+			{
+				Solution.OnReadSolution (monitor, file);
+			}
+
+			internal protected override void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
+			{
+				Solution.OnWriteSolution (monitor, file);
+			}
+		}
 	}
 
 	[Mono.Addins.Extension]

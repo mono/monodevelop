@@ -212,7 +212,23 @@ namespace MonoDevelop.AssemblyBrowser
 				builder.AddType (type);
 			}, settings);
 		}
-		
+
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			if (type == null)
+				return null;
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
+			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
+				builder.AddType (type);
+			}, settings);
+		}
+
+
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var type = (IUnresolvedTypeDefinition)navigator.DataItem;

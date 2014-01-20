@@ -50,7 +50,7 @@ namespace MonoDevelop.Core.Execution
 		DateTime lastReleaseTime;
 		bool starting;
 		bool stopping;
-		IProcessAsyncOperation process;
+		ProcessAsyncOperation process;
 		Timer timer;
 		string id;
 		IExecutionHandler executionHandlerFactory;
@@ -130,10 +130,10 @@ namespace MonoDevelop.Core.Execution
 						cmd.UserAssemblyPaths = userAssemblyPaths;
 					cmd.DebugMode = isDebugMode;
 					ProcessHostConsole cons = new ProcessHostConsole ();
-					process = executionHandlerFactory.Execute (cmd, cons);
+					var p = process = executionHandlerFactory.Execute (cmd, cons);
 					Counters.ExternalHostProcesses++;
 
-					process.Completed += ProcessExited;
+					process.Task.ContinueWith ((t) => ProcessExited (p));
 
 				} catch (Exception ex) {
 					if (tmpFile != null) {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		void ProcessExited (IAsyncOperation oper)
+		void ProcessExited (ProcessAsyncOperation oper)
 		{
 			lock (this) {
 
@@ -307,7 +307,7 @@ namespace MonoDevelop.Core.Execution
 		void WaitTimeout (object sender, System.Timers.ElapsedEventArgs args)
 		{
 			try {
-				IProcessAsyncOperation oldProcess;
+				ProcessAsyncOperation oldProcess;
 				
 				lock (this) {
 					if (references > 0) {
@@ -393,77 +393,6 @@ namespace MonoDevelop.Core.Execution
 		
 		public void Dispose ()
 		{
-		}
-	}
-	
-	class InernalProcessHost: Process, IProcessAsyncOperation
-	{
-		object doneLock = new object ();
-		bool finished;
-		OperationHandler completed;
-		
-		public InernalProcessHost ()
-		{
-			Exited += delegate {
-				lock (doneLock) {
-					finished = true;
-					Monitor.PulseAll (doneLock);
-					if (completed != null)
-						completed (this);
-				}
-			};
-		}
-		
-		public int ProcessId {
-			get { return Id; }
-		}
-		
-		public event OperationHandler Completed {
-			add {
-				lock (doneLock) {
-					completed += value; 
-					if (finished)
-						value (this);
-				}
-			}
-			remove {
-				lock (doneLock) {
-					completed -= value;
-				}
-			}
-		}
-		
-		public void Cancel ()
-		{
-			Kill ();
-		}
-		
-		public void WaitForCompleted ()
-		{
-			lock (doneLock) {
-				while (!finished)
-					Monitor.Wait (doneLock);
-			}
-		}
-		
-		public bool IsCompleted {
-			get {
-				lock (doneLock) {
-					return finished;
-				}
-			}
-		}
-		
-		public bool Success {
-			get {
-				return true;
-			}
-		}
-		
-		public bool SuccessWithWarnings {
-			get {
-				return true;
-			}
 		}
 	}
 }

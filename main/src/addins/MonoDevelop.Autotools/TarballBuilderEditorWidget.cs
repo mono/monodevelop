@@ -17,7 +17,7 @@ namespace MonoDevelop.Autotools
 			alignment1.Xscale = 0.04f;
 			
 			this.target = target;
-			SolutionItem targetCombine = target.RootSolutionItem;
+			SolutionFolderItem targetCombine = target.RootSolutionItem;
 			folderEntry.Path = target.TargetDir;
 			
 			if (string.IsNullOrEmpty (target.DefaultConfiguration)) {

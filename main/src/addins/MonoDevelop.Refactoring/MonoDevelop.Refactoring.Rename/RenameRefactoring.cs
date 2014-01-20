@@ -89,7 +89,7 @@ namespace MonoDevelop.Refactoring.Rename
 				new RenameRefactoring ().Run (options);
 				return;
 			}
-			using (var monitor = new NullProgressMonitor ()) {
+			using (var monitor = new ProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (entity, true, monitor);
 				
 				List<Change> result = new List<Change> ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public static void RenameVariable (IVariable variable, string newName)
 		{
-			using (var monitor = new NullProgressMonitor ()) {
+			using (var monitor = new ProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (variable, true, monitor);
 				
 				List<Change> result = new List<Change> ();
@@ -139,7 +139,7 @@ namespace MonoDevelop.Refactoring.Rename
 				return;
 			}
 
-			using (var monitor = new NullProgressMonitor ()) {
+			using (var monitor = new ProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (typeParameter, true, monitor);
 				
 				List<Change> result = new List<Change> ();
@@ -160,7 +160,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public static void RenameNamespace (INamespace ns, string newName)
 		{
-			using (var monitor = new NullProgressMonitor ()) {
+			using (var monitor = new ProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (ns, true, monitor);
 
 				List<Change> result = new List<Change> ();

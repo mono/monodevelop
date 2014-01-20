@@ -219,7 +219,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 				
 			if (GtkDesignInfo.FromProject (project).UpdateGtkFolder () && saveMdProject)
-				IdeApp.ProjectOperations.Save (project);
+				IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		public string File {

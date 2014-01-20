@@ -42,6 +42,8 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using System.Threading;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.NUnit
 {
@@ -475,7 +477,34 @@ namespace MonoDevelop.NUnit
 				}
 			}
 		}
-		
+
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test != null) {
+				var last = test.GetLastResult ();
+				if (last == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = last.StackTrace;
+			}
+		}
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test != null) {
+				var result = test.GetLastResult ();
+				if (result != null) {
+					info.Enabled = !string.IsNullOrEmpty (result.StackTrace);
+					return;
+				}
+			}
+			info.Enabled = false;
+		}
+
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
 		{
@@ -704,11 +733,14 @@ namespace MonoDevelop.NUnit
 	{
 		ITestProgressMonitor monitor;
 		TestResultsPad pad;
+		CancellationTokenSource cs;
 		
-		public TestMonitor (TestResultsPad pad)
+		public TestMonitor (TestResultsPad pad, CancellationTokenSource cs)
 		{
 			this.pad = pad;
 			this.monitor = pad;
+			this.cs = cs;
+			cs.Token.Register (Cancel);
 		}
 		public void InitializeTestRun (UnitTest test)
 		{

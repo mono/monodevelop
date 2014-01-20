@@ -503,7 +503,7 @@ namespace MonoDevelop.Xml.Editor
 			try {
 				TaskService.Errors.Clear ();
 				string xml = Editor.Text;
-				using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
+				using (ProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
 					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
 					if (doc == null)
 						return;
@@ -570,7 +570,7 @@ namespace MonoDevelop.Xml.Editor
 		public void ValidateCommand ()
 		{
 			TaskService.Errors.Clear ();
-			using (IProgressMonitor monitor = XmlEditorService.GetMonitor()) {
+			using (ProgressMonitor monitor = XmlEditorService.GetMonitor()) {
 				if (IsSchema)
 					XmlEditorService.ValidateSchema (monitor, Editor.Text, FileName);
 				else
@@ -596,7 +596,7 @@ namespace MonoDevelop.Xml.Editor
 					return;
 			}
 			
-			using (IProgressMonitor monitor = XmlEditorService.GetMonitor()) {
+			using (ProgressMonitor monitor = XmlEditorService.GetMonitor()) {
 				try {
 					string xsltContent;
 					try {

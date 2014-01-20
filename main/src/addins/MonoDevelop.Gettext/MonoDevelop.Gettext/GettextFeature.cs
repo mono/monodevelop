@@ -46,7 +46,7 @@ namespace MonoDevelop.Gettext
 			get { return GettextCatalog.GetString ("Add a Translation Project to the solution that will use gettext to generate a set of PO files for the new project."); }
 		}
 		
-		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			if (entry is TranslationProject && parentCombine != null)
 				return FeatureSupportLevel.Enabled;
@@ -56,22 +56,22 @@ namespace MonoDevelop.Gettext
 				return FeatureSupportLevel.NotSupported;
 		}
 		
-		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			return new GettextFeatureWidget ();
 		}
 
-		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionFolderItem entry, Widget editor)
 		{
 			((GettextFeatureWidget)editor).ApplyFeature (parentCombine, entry);
 		}
 		
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}
 		
-		public bool IsEnabled (SolutionFolder parentCombine, SolutionItem entry) 
+		public bool IsEnabled (SolutionFolder parentCombine, SolutionFolderItem entry) 
 		{
 			return entry is TranslationProject;
 		}

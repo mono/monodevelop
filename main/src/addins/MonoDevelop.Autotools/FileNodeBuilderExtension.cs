@@ -44,7 +44,7 @@ namespace MonoDevelop.Autotools
 				}
 			}
 			
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
@@ -57,7 +57,7 @@ namespace MonoDevelop.Autotools
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (Commands.SynchWithMakefile)]

@@ -30,6 +30,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
@@ -48,179 +50,145 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		All =  0xff
 	}
 	
-	public class AggregatedProgressMonitor: IProgressMonitor, IAsyncOperation
+	public class AggregatedProgressMonitor: ProgressMonitor
 	{
-		IProgressMonitor masterMonitor;
+		ProgressMonitor masterMonitor;
 		List<MonitorInfo> monitors = new List<MonitorInfo> ();
-		LogTextWriter logger;
+		CancellationTokenSource cancelSource;
 		
 		class MonitorInfo {
 			public MonitorAction ActionMask;
-			public IProgressMonitor Monitor;
+			public ProgressMonitor Monitor;
+			public CancellationTokenRegistration CancellationTokenRegistration;
 		}
 		
-		public IProgressMonitor MasterMonitor {
+		public ProgressMonitor MasterMonitor {
 			get { return this.masterMonitor; }
 		}
 		
 		
-		public AggregatedProgressMonitor (): this (new NullProgressMonitor ())
+		public AggregatedProgressMonitor (): this (new ProgressMonitor ())
 		{
 		}
 		
-		public AggregatedProgressMonitor (IProgressMonitor masterMonitor, params IProgressMonitor[] slaveMonitors)
+		public AggregatedProgressMonitor (ProgressMonitor masterMonitor, params ProgressMonitor[] slaveMonitors): this (masterMonitor, null, slaveMonitors)
 		{
+		}
+
+		internal AggregatedProgressMonitor (ProgressMonitor masterMonitor, CancellationTokenSource cancelSource, params ProgressMonitor[] slaveMonitors)
+		{
+			this.cancelSource = cancelSource ?? new CancellationTokenSource ();
 			this.masterMonitor = masterMonitor;
 			AddSlaveMonitor (masterMonitor, MonitorAction.All);
-			logger = new LogTextWriter ();
-			logger.TextWritten += new LogTextEventHandler (OnWriteLog);
-			foreach (IProgressMonitor mon in slaveMonitors)
+			foreach (ProgressMonitor mon in slaveMonitors)
 				AddSlaveMonitor (mon);
 		}
 		
-		public void AddSlaveMonitor (IProgressMonitor slaveMonitor)
+		public new void AddSlaveMonitor (ProgressMonitor slaveMonitor)
 		{
 			AddSlaveMonitor (slaveMonitor, MonitorAction.All);
 		}
 		
-		public void AddSlaveMonitor (IProgressMonitor slaveMonitor, MonitorAction actionMask)
+		public void AddSlaveMonitor (ProgressMonitor slaveMonitor, MonitorAction actionMask)
 		{
 			MonitorInfo smon = new MonitorInfo ();
 			smon.ActionMask = actionMask;
 			smon.Monitor = slaveMonitor;
 			monitors.Add (smon);
 			if ((actionMask & MonitorAction.SlaveCancel) != 0)
-				slaveMonitor.CancelRequested += new MonitorHandler (OnSlaveCancelRequested);
+				smon.CancellationTokenRegistration = slaveMonitor.CancellationToken.Register (OnSlaveCancelRequested);
 		}
-		
-		public void BeginTask (string name, int totalWork)
+
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
-			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Tasks) != 0)
-					info.Monitor.BeginTask (name, totalWork);
+			if (stepWork == -1) {
+				foreach (MonitorInfo info in monitors)
+					if ((info.ActionMask & MonitorAction.Tasks) != 0)
+						info.Monitor.BeginTask (name, totalWork);
+			} else {
+				foreach (MonitorInfo info in monitors)
+					if ((info.ActionMask & MonitorAction.Tasks) != 0) {
+						info.Monitor.BeginStep (stepWork);
+						info.Monitor.BeginTask (name, totalWork);
+					}
+			}
 		}
-		
-		public void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Tasks) != 0)
-					info.Monitor.BeginStepTask (name, totalWork, stepSize);
-		}
-		
-		public void EndTask ()
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.Tasks) != 0)
 					info.Monitor.EndTask ();
 		}
-		
-		public void Step (int work)
+
+		protected override void OnStep (string message, int work)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.Tasks) != 0)
-					info.Monitor.Step (work);
+					info.Monitor.Step (message, work);
 		}
-		
-		public TextWriter Log
+
+		protected override ProgressMonitor CreateAsyncStepMonitor ()
 		{
-			get { return logger; }
+			return new AggregatedProgressMonitor ();
 		}
-		
-		void OnWriteLog (string text)
+
+		protected override void OnBeginAsyncStep (string message, int work, ProgressMonitor stepMonitor)
+		{
+			var am = (AggregatedProgressMonitor) stepMonitor;
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.Tasks) != 0)
+					am.AddSlaveMonitor (info.Monitor.BeginAsyncStep (message, work));
+		}
+
+		protected override void OnWriteLog (string message)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.WriteLog) != 0)
-					info.Monitor.Log.Write (text);
+					info.Monitor.Log.Write (message);
 		}
-		
-		public void ReportSuccess (string message)
+
+		protected override void OnWriteErrorLog (string message)
+		{
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.WriteLog) != 0)
+					info.Monitor.ErrorLog.Write (message);
+		}
+
+		protected override void OnSuccessReported (string message)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.ReportSuccess) != 0)
 					info.Monitor.ReportSuccess (message);
 		}
-		
-		public void ReportWarning (string message)
+
+		protected override void OnWarningReported (string message)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.ReportWarning) != 0)
 					info.Monitor.ReportWarning (message);
 		}
-		
-		public void ReportError (string message, Exception ex)
+
+		protected override void OnErrorReported (string message, Exception exception)
 		{
 			foreach (MonitorInfo info in monitors)
 				if ((info.ActionMask & MonitorAction.ReportError) != 0)
-					info.Monitor.ReportError (message, ex);
+					info.Monitor.ReportError (message, exception);
 		}
-		
-		public void Dispose ()
+
+		public override void Dispose ()
 		{
 			foreach (MonitorInfo info in monitors) {
 				if ((info.ActionMask & MonitorAction.Dispose) != 0)
 					info.Monitor.Dispose ();
 				if ((info.ActionMask & MonitorAction.SlaveCancel) != 0)
-					info.Monitor.CancelRequested -= new MonitorHandler (OnSlaveCancelRequested);
+					info.CancellationTokenRegistration.Dispose ();
 			}
 		}
-		
-		public bool IsCancelRequested
+
+		void OnSlaveCancelRequested ()
 		{
-			get {
-				foreach (MonitorInfo info in monitors)
-					if ((info.ActionMask & MonitorAction.SlaveCancel) != 0) {
-						if (info.Monitor.IsCancelRequested) return true;
-					}
-				return false;
-			}
-		}
-		
-		public object SyncRoot {
-			get { return this; }
-		}
-		
-		void OnSlaveCancelRequested (IProgressMonitor sender)
-		{
-			AsyncOperation.Cancel ();
-		}
-		
-		public IAsyncOperation AsyncOperation
-		{
-			get { return this; }
-		}
-		
-		void IAsyncOperation.Cancel ()
-		{
-			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Cancel) != 0 && !info.Monitor.IsCancelRequested)
-					info.Monitor.AsyncOperation.Cancel ();
-		}
-		
-		void IAsyncOperation.WaitForCompleted ()
-		{
-			masterMonitor.AsyncOperation.WaitForCompleted ();
-		}
-		
-		public bool IsCompleted {
-			get { return masterMonitor.AsyncOperation.IsCompleted; }
-		}
-		
-		bool IAsyncOperation.Success { 
-			get { return masterMonitor.AsyncOperation.Success; }
-		}
-		
-		bool IAsyncOperation.SuccessWithWarnings { 
-			get { return masterMonitor.AsyncOperation.SuccessWithWarnings; }
-		}
-		
-		public event MonitorHandler CancelRequested {
-			add { masterMonitor.CancelRequested += value; }
-			remove { masterMonitor.CancelRequested -= value; }
-		}
-			
-		public event OperationHandler Completed {
-			add { masterMonitor.AsyncOperation.Completed += value; }
-			remove { masterMonitor.AsyncOperation.Completed -= value; }
+			cancelSource.Cancel ();
 		}
 	}
 }

@@ -63,10 +63,10 @@ namespace MonoDevelop.Ide.Projects {
 		bool newSolution;
 		string lastName = "";
 		ProjectTemplate selectedItem;
-		SolutionItem currentEntry;
+		SolutionFolderItem currentEntry;
 		SolutionFolder parentFolder;
 		CombineEntryFeatureSelector featureList;
-		IWorkspaceFileObject newItem;
+		WorkspaceObject newItem;
 		Category recentCategory;
 		List<string> recentTemplates = new List<string> ();
 		bool disposeNewItem = true;
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Projects {
 			}
 		}
 
-		public IWorkspaceObject NewItem {
+		public WorkspaceObject NewItem {
 			get {
 				return newItem;
 			}
@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide.Projects {
 			lbl_will_save_in.Text = GettextCatalog.GetString("Project will be saved at") + " " + ProjectLocation;
 		}
 		
-		void OpenEvent (object sender, EventArgs e)
+		async void OpenEvent (object sender, EventArgs e)
 		{
 			if (!btn_new.Sensitive)
 				return;
@@ -334,11 +334,11 @@ namespace MonoDevelop.Ide.Projects {
 					parentSolution = item as Solution;
 					if (parentSolution != null) {
 						if (parentSolution.RootFolder.Items.Count > 0)
-							currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
+							currentEntry = parentSolution.RootFolder.Items [0] as SolutionFolderItem;
 						parentFolder = parentSolution.RootFolder;
 					}
 				} else {
-					SolutionItem item = (SolutionItem) newItem;
+					SolutionFolderItem item = (SolutionFolderItem) newItem;
 					parentSolution = parentFolder.ParentSolution;
 					currentEntry = item;
 				}
@@ -369,11 +369,11 @@ namespace MonoDevelop.Ide.Projects {
 			if (!newSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				if (currentEntry is SolutionEntityItem) {
+				if (currentEntry is SolutionItem) {
 					// Inherit the file format from the solution
-					SolutionEntityItem eitem = (SolutionEntityItem) currentEntry;
+					SolutionItem eitem = (SolutionItem) currentEntry;
 					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
-					IdeApp.ProjectOperations.Save (eitem);
+					await IdeApp.ProjectOperations.SaveAsync (eitem);
 				}
 				parentFolder.AddItem (currentEntry, true);
 			}
@@ -382,19 +382,16 @@ namespace MonoDevelop.Ide.Projects {
 				featureList.ApplyFeatures ();
 			
 			if (parentFolder != null)
-				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
+				await IdeApp.ProjectOperations.SaveAsync (parentFolder.ParentSolution);
 			else
-				IdeApp.ProjectOperations.Save (newItem);
+				await IdeApp.ProjectOperations.SaveAsync (newItem);
 
 			if (openSolution) {
-				var op = selectedItem.OpenCreatedSolution ();
-				op.Completed += delegate {
-					if (op.Success) {
-						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-						if (sol != null)
-							InstallProjectTemplatePackages (sol);
-					}
-				};
+				if (await selectedItem.OpenCreatedSolution ()) {
+					var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
+					if (sol != null)
+						InstallProjectTemplatePackages (sol);
+				}
 			}
 			else {
 				// The item is not a solution being opened, so it is going to be added to
@@ -487,6 +484,8 @@ namespace MonoDevelop.Ide.Projects {
 					newItem = item.CreateWorkspaceItem (cinfo);
 				else
 					newItem = item.CreateProject (parentFolder, cinfo);
+				if (newItem == null)
+					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
 				return false;

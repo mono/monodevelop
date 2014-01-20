@@ -33,18 +33,24 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public abstract class MSBuildFileFormat: IFileFormat
 	{
-		readonly SlnFileFormat slnFileFormat = new SlnFileFormat ();
+		readonly SlnFileFormat slnFileFormat;
+
+		protected MSBuildFileFormat ()
+		{
+			slnFileFormat = new SlnFileFormat (this);
+		}
 		
 		public string Name {
 			get { return "MSBuild"; }
 		}
 		
-		public SlnFileFormat SlnFileFormat {
+		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
 		}
 		
@@ -70,7 +76,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (slnFileFormat.CanWriteFile (obj, this))
 				return slnFileFormat.GetValidFormatName (obj, fileName, this);
 			else {
-				string ext = MSBuildProjectService.GetExtensionForItem ((SolutionEntityItem)obj);
+				string ext = MSBuildProjectService.GetExtensionForItem ((SolutionItem)obj);
 				if (!string.IsNullOrEmpty (ext))
 					return fileName.ChangeExtension ("." + ext);
 				else
@@ -82,7 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
-			else if (expectedType.IsAssignableFrom (typeof(SolutionEntityItem))) {
+			else if (expectedType.IsAssignableFrom (typeof(SolutionItem))) {
 				if (!MSBuildProjectService.CanReadFile (file))
 					return false;
 				//TODO: check ProductVersion first
@@ -95,12 +101,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
 				Solution sol = (Solution) obj;
-				foreach (SolutionEntityItem si in sol.GetAllSolutionItems<SolutionEntityItem> ())
+				foreach (SolutionItem si in sol.GetAllItems<SolutionItem> ())
 					if (!CanWriteFile (si))
 						return false;
 				return true;
 			}
-			else if (obj is SolutionEntityItem) {
+			else if (obj is SolutionItem) {
 				DotNetProject p = obj as DotNetProject;
 				// Check the framework only if the project is not loading, since otherwise the
 				// project may not yet have the framework info set.
@@ -118,7 +124,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (obj is Solution) {
 				List<string> msg = new List<string> ();
-				foreach (SolutionEntityItem si in ((Solution)obj).GetAllSolutionItems<SolutionEntityItem> ()) {
+				foreach (SolutionItem si in ((Solution)obj).GetAllItems<SolutionItem> ()) {
 					IEnumerable<string> ws = GetCompatibilityWarnings (si);
 					if (ws != null)
 						msg.AddRange (ws);
@@ -135,26 +141,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		public void WriteFile (FilePath file, object obj, IProgressMonitor monitor)
+		public async Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
-				slnFileFormat.WriteFile (file, obj, this, true, monitor);
+				await slnFileFormat.WriteFile (file, obj, true, monitor);
 			} else {
-				SolutionEntityItem item = (SolutionEntityItem) obj;
-				if (!(item.ItemHandler is MSBuildProjectHandler))
-					MSBuildProjectService.InitializeItemHandler (item);
-				MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
-				handler.SetSolutionFormat (this, false);
-				handler.Save (monitor);
+				throw new NotSupportedException ();
 			}
 		}
 
-		public object ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.IProgressMonitor monitor)
+		public async Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanReadFile (file, this))
-				return slnFileFormat.ReadFile (file, this, monitor);
+				return await slnFileFormat.ReadFile (file, monitor);
 			else
-				return MSBuildProjectService.LoadItem (monitor, file, null, null, null);
+				return await MSBuildProjectService.LoadItem (monitor, file, null, null, null);
 		}
 
 		public List<FilePath> GetItemFiles (object obj)
@@ -162,24 +163,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new List<FilePath> ();
 		}
 
-		public void ConvertToFormat (object obj)
+		public Task ConvertToFormat (object obj)
 		{
 			if (obj == null)
-				return;
+				return Task.FromResult(0);
 			
-			MSBuildHandler handler;
-			SolutionItem item = obj as SolutionItem;
+			SolutionFolderItem item = obj as SolutionFolderItem;
 			if (item != null) {
-				handler = item.GetItemHandler() as MSBuildHandler;
-				if (handler != null) {
-					handler.SetSolutionFormat (this, true);
-					return;
-				}
+				item.SetSolutionFormat (this, true);
+				return Task.FromResult(0);
 			}
-
-			MSBuildProjectService.InitializeItemHandler (item);
-			handler = (MSBuildHandler) item.ItemHandler;
-			handler.SetSolutionFormat (this, true);
+			return Task.FromResult (0);
 		}
 		
 		public bool SupportsMixedFormats {

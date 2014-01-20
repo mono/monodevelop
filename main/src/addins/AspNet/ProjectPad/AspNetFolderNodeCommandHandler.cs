@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.Commands;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.ProjectPad
 {
@@ -40,8 +41,9 @@ namespace MonoDevelop.AspNet.ProjectPad
 		[CommandUpdateHandler (AspNetCommands.AddController)]
 		public void AddControllerUpdate (CommandInfo info)
 		{
-			var project = CurrentNode.GetParentDataItem (typeof (AspNetAppProject), true) as AspNetAppProject;
-			if (project == null || !project.IsAspMvcProject) {
+			var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
+			var aspFlavor = project != null ? project.GetService<AspNetFlavor> () : null;
+			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
@@ -54,7 +56,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 		[CommandHandler (AspNetCommands.AddController)]
 		public void AddController ()
 		{
-			var project = (AspNetAppProject) CurrentNode.GetParentDataItem (typeof (AspNetAppProject), true);
+			var project = (DotNetProject) CurrentNode.GetParentDataItem (typeof (DotNetProject), true);
 
 			object currentItem = CurrentNode.DataItem;
 
@@ -68,7 +70,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 				nav.Expanded = true;
 		}
 
-		public static void AddController (AspNetAppProject project, string path, string name)
+		public static void AddController (DotNetProject project, string path, string name)
 		{
 			var provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
@@ -119,15 +121,15 @@ namespace MonoDevelop.AspNet.ProjectPad
 
 			if (System.IO.File.Exists (outputFile)) {
 				project.AddFile (outputFile);
-				IdeApp.ProjectOperations.Save (project);
+				IdeApp.ProjectOperations.SaveAsync (project);
 			}
 		}
 		
 		[CommandUpdateHandler (AspNetCommands.AddView)]
 		public void AddViewUpdate (CommandInfo info)
 		{
-			var project = CurrentNode.GetParentDataItem (typeof (AspNetAppProject), true) as AspNetAppProject;
-			if (project == null || !project.IsAspMvcProject) {
+			var project = CurrentNode.GetParentDataItem<DotNetProject> (true);
+			if (project == null || !project.HasFlavor<AspNetFlavor>() || !project.GetFlavor<AspNetFlavor>().IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
@@ -140,7 +142,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 		[CommandHandler (AspNetCommands.AddView)]
 		public void AddView ()
 		{
-			var project = (AspNetAppProject) CurrentNode.GetParentDataItem (typeof (AspNetAppProject), true);
+			var project = CurrentNode.GetParentDataItem<DotNetProject> (true);
 
 			object currentItem = CurrentNode.DataItem;
 				

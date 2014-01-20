@@ -50,16 +50,6 @@
 
 	<!-- Extensions -->
 
-	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<Condition id="PackageNotInstalled" name="mono-nunit" version="2.7">
-			<Package name="nunit" version="2.4" clrVersion="Default">
-				<Assembly file="nunit.core.dll" />
-				<Assembly file="nunit.core.interfaces.dll" />
-				<Assembly file="nunit.framework.dll" />
-			</Package>
-		</Condition>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "MonoDevelop.NUnit.TestPad" defaultLayout="*" defaultPlacement = "Right" defaultStatus="AutoHide" _label = "Unit Tests" icon = "nunit-pad-icon" class = "MonoDevelop.NUnit.TestPad">
 			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
@@ -146,6 +136,8 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" />
+		<SeparatorItem id = "s1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
@@ -190,8 +182,8 @@
 		<StockIcon stockid = "nunit-run" resource = "unit-run-light-16.png" size="Menu" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<ProjectExtension class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

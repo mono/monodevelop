@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		public static void Save(this Solution solution)
 		{
-			solution.Save(new NullProgressMonitor());
+			solution.Save(new ProgressMonitor());
 		}
 
 		public static IEnumerable<DotNetProject> GetAllDotNetProjects (this Solution solution)

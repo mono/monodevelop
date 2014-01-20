@@ -118,6 +118,23 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectModelExtensions" name = "Project model extensions">
+		<Description>Project model extensions</Description>
+		<ExtensionNode name="ObjectExtension" type="MonoDevelop.Projects.Extensions.ProjectModelExtensionNode">
+			<Description>A subclass of WorkspaceObjectmExtension.</Description>
+		</ExtensionNode>
+		<ExtensionNode name="ProjectFlavor" type="MonoDevelop.Projects.Extensions.SolutionItemExtensionNode">
+			<Description>A subclass of ProjectExtension.</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildProjectExtensions" name = "MSBuild project extensions">
+		<Description>MSBuild project extensions. Specified classes must be a subclass of MSBuildProjectExtension</Description>
+		<ExtensionNode name="Class">
+			<Description>A subclass of MSBuildProjectExtension.</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
+
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/LanguageBindings" name = "Language bindings">
 		<Description>Language bindings.</Description>
 		<ExtensionNode name="LanguageBinding" type="MonoDevelop.Projects.Extensions.LanguageBindingCodon"/>
@@ -125,9 +142,9 @@
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildItemTypes" name = "MSBuild item types">
 		<Description>Item types supported by MSBuild</Description>
-		<ExtensionNode name="SolutionItem" type="MonoDevelop.Projects.Extensions.SolutionItemNode"/>
-		<ExtensionNode name="DotNetProject" type="MonoDevelop.Projects.Extensions.DotNetProjectNode"/>
-		<ExtensionNode name="DotNetProjectSubtype" type="MonoDevelop.Projects.Extensions.DotNetProjectSubtypeNode"/>
+		<ExtensionNode name="SolutionItemType" type="MonoDevelop.Projects.Extensions.SolutionItemTypeNode"/>
+		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.ProjectTypeNode"/>
+		<ExtensionNode name="DotNetProjectType" type="MonoDevelop.Projects.Extensions.DotNetProjectTypeNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/PolicyTypes" name = "Policy types">
@@ -147,10 +164,6 @@
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders" name = "MSBuild Global Property Providers">
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildGlobalPropertyProvider"/>
-	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
-		<ExtensionNode name="Class" objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
@@ -222,7 +235,6 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
 		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
-		<ProjectBinding id = "PortableDotNet" class = "MonoDevelop.Projects.PortableDotNetProjectBinding" />
 		<ProjectBinding id = "SharedAssetsProject" class = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectBinding" />
 	</Extension>
 	  
@@ -275,17 +287,16 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<SolutionItem guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
+		<MSBuildProject guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
 			type = "MonoDevelop.Projects.CompiledAssemblyProject"
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
-		<SolutionItem guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
+		<MSBuildProject guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
 			type = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject"
-			extension = "shproj"
-			handlerType = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildHandler" />
+			extension = "shproj" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
-		<Class class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<ProjectExtension class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
 	</Extension>
 
 

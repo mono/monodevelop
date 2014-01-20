@@ -29,6 +29,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Execution
 {
@@ -42,12 +43,12 @@ namespace MonoDevelop.Ide.Execution
 	{
 		public abstract bool CanExecute (ExecutionCommand command);
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			return InternalExecute (new CommandExecutionContext (null, command), new ExecutionMode ("", "", this), command, console);
 		}
 		
-		internal IProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, IConsole console)
+		internal ProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, IConsole console)
 		{
 			CustomExecutionMode cmode = ExecutionModeCommandService.ShowParamtersDialog (ctx, mode, null);
 			if (cmode == null)
@@ -71,7 +72,7 @@ namespace MonoDevelop.Ide.Execution
 		/// <param name="configurationData">
 		/// Configuration information. Created by the IExecutionConfigurationEditor object.
 		/// </param>
-		public abstract IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData);
+		public abstract ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData);
 		
 		/// <summary>
 		/// Creates an editor to be used to edit the execution handler arguments.
@@ -83,50 +84,11 @@ namespace MonoDevelop.Ide.Execution
 	}
 	
 	
-	class CancelledProcessAsyncOperation: IProcessAsyncOperation
+	class CancelledProcessAsyncOperation: ProcessAsyncOperation
 	{
-		public int ExitCode {
-			get {
-				return 1;
-			}
-		}
-		
-		public int ProcessId {
-			get {
-				return 0;
-			}
-		}
-
-		#region IAsyncOperation implementation
-		public event OperationHandler Completed {
-			add {
-				value (this);
-			}
-			remove { }
-		}
-		
-		public void Cancel ()
+		public CancelledProcessAsyncOperation ()
 		{
+			ExitCode = 1;
 		}
-		
-		public void WaitForCompleted ()
-		{
-		}
-		
-		public bool IsCompleted {
-			get { return true; }
-		}
-		
-		public bool Success {
-			get { return false; }
-		}
-		
-		public bool SuccessWithWarnings {
-			get { return false; }
-		}
-		
-		#endregion
-		
-		void IDisposable.Dispose () {}
 	}
 }

@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -37,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		FilePath BaseDirectory { get; }
 		ISolution ParentSolution { get; }
 		IDictionary ExtendedProperties { get; }
+		IEnumerable<string> FlavorGuids { get; }
 
 		void Save ();
 	}

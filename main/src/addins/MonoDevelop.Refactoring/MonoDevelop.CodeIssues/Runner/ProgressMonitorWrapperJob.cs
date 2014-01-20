@@ -36,7 +36,7 @@ namespace MonoDevelop.CodeIssues
 	{
 		readonly IAnalysisJob wrappedJob;
 
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 
 		int reportingThinningFactor = 100;
 

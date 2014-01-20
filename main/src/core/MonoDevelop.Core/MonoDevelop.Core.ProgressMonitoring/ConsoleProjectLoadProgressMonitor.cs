@@ -27,17 +27,14 @@ using System;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
-	public class ConsoleProjectLoadProgressMonitor : WrappedProgressMonitor, IProjectLoadProgressMonitor
+	public class ConsoleProjectLoadProgressMonitor : ProjectLoadProgressMonitor
 	{
-		public MonoDevelop.Projects.Solution CurrentSolution { get; set; }
-
-		public ConsoleProjectLoadProgressMonitor (IProgressMonitor monitor)
-			: base (monitor)
+		public ConsoleProjectLoadProgressMonitor (ConsoleProgressMonitor monitor)
 		{
-			
+			AddSlaveMonitor (monitor);
 		}
 
-		public MonoDevelop.Projects.Extensions.MigrationType ShouldMigrateProject ()
+		public override MonoDevelop.Projects.Extensions.MigrationType ShouldMigrateProject ()
 		{
 			Console.WriteLine ("Warning: One or more projects in this solution cannot be ");
 			Console.WriteLine ("compiled unless they are migrated to a newer format. Please ");

@@ -60,7 +60,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{

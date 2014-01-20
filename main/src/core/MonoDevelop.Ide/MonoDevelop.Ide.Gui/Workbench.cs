@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler GuiLocked;
 		public event EventHandler GuiUnlocked;
 		
-		internal void Initialize (IProgressMonitor monitor)
+		internal void Initialize (ProgressMonitor monitor)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 4);
 			try {
@@ -95,6 +95,15 @@ namespace MonoDevelop.Ide.Gui
 					SaveFileStatus ();
 				};
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
+					CheckFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
 					CheckFileStatus ();
 				};
 
@@ -279,16 +288,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LockGui ()
 		{
-			IdeApp.CommandService.LockAll ();
-			if (GuiLocked != null)
-				GuiLocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.LockAll ()) {
+				if (GuiLocked != null)
+					GuiLocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void UnlockGui ()
 		{
-			IdeApp.CommandService.UnlockAll ();
-			if (GuiUnlocked != null)
-				GuiUnlocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.UnlockAll ()) {
+				if (GuiUnlocked != null)
+					GuiUnlocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void SaveAll ()
@@ -495,7 +506,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
-				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
+				ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", info.Project != null ?
 						info.FileName.ToRelative (info.Project.ParentSolution.BaseDirectory) :
 						info.FileName),
@@ -521,7 +532,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
+		IViewContent BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -818,7 +829,7 @@ namespace MonoDevelop.Ide.Gui
 			return project;
 		}
 		
-		void RealOpenFile (IProgressMonitor monitor, FileOpenInformation openFileInfo)
+		void RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
 		{
 			FilePath fileName;
 			
@@ -1009,7 +1020,7 @@ namespace MonoDevelop.Ide.Gui
 				FilePath baseDir = args.Item.BaseDirectory;
 				var floatingWindows = new List<DockWindow> ();
 
-				using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
+				using (ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 
 					var docList = prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
 					OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
@@ -1063,14 +1074,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OpenDocumentsInContainer (IProgressMonitor pm, FilePath baseDir, List<Tuple<IViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
+		void OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<IViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
 		{
 			int currentNotebook = -1;
 			DockNotebook nb = container.GetFirstNotebook ();
 
 			foreach (var doc in list) {
 				string fileName = baseDir.Combine (doc.FileName).FullPath;
-				if (File.Exists (fileName)) {
+				if (GetDocument(fileName) == null && File.Exists (fileName)) {
 					if (doc.NotebookId != currentNotebook) {
 						if (currentNotebook != -1 || nb == null)
 							nb = container.InsertRight (null);
@@ -1276,7 +1287,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = value.CanonicalPath;
+				fileName = ResolveSymbolicLink (value.CanonicalPath);
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
@@ -1328,6 +1339,36 @@ namespace MonoDevelop.Ide.Gui
 				this.Options &= ~OpenDocumentOptions.BringToFront;
 			}
 		}
+
+		static FilePath ResolveSymbolicLink (FilePath fileName)
+		{
+			if (fileName.IsEmpty)
+				return fileName;
+			try {
+				var alreadyVisted = new HashSet<FilePath> ();
+				while (true) {
+					if (alreadyVisted.Contains (fileName)) {
+						LoggingService.LogError ("Cyclic links detected: " + fileName);
+						return FilePath.Empty;
+					}
+					alreadyVisted.Add (fileName);
+					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
+					if (linkInfo.IsSymbolicLink && linkInfo.HasContents) {
+						FilePath contentsPath = linkInfo.ContentsPath;
+						if (contentsPath.IsAbsolute) {
+							fileName = linkInfo.ContentsPath;
+						} else {
+							fileName = fileName.ParentDirectory.Combine (contentsPath);
+						}
+						fileName = fileName.CanonicalPath;
+						continue;
+					}
+					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
+				}
+			} catch (Exception) {
+				return fileName;
+			}
+		}
 	}
 	
 	class LoadFileWrapper
@@ -1336,10 +1377,10 @@ namespace MonoDevelop.Ide.Gui
 		Project project;
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		IViewContent newContent;
 		
-		public LoadFileWrapper (IProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
+		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
 		{
 			this.monitor = monitor;
 			this.workbench = workbench;
@@ -1347,7 +1388,7 @@ namespace MonoDevelop.Ide.Gui
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (IProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
+		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
 			: this (monitor, workbench, binding, fileInfo)
 		{
 			this.project = project;

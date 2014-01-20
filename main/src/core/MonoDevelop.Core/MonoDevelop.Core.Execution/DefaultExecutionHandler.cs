@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Execution
 			return Runtime.ProcessService.GetDefaultExecutionHandler (command) != null;
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			IExecutionHandler handler = Runtime.ProcessService.GetDefaultExecutionHandler (command);
 			return handler.Execute (command, console);

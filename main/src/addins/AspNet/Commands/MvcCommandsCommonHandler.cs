@@ -38,8 +38,12 @@ namespace MonoDevelop.AspNet.Commands
 		public static void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			AspNetAppProject project;
-			if (doc == null || (project = doc.Project as AspNetAppProject) == null || !project.IsAspMvcProject || doc.ParsedDocument == null) {
+			if (doc == null || doc.Project == null || doc.ParsedDocument == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+			var aspFlavor = doc.Project.GetService<AspNetFlavor> ();
+			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}

@@ -57,7 +57,7 @@ namespace MonoDevelop.Xml.Editor
 			error.IsWarning = false;
 			
 			//Task task = new Task(fileName, message, column, line);
-			Task task = new Task (error);
+			UserTask task = new UserTask (error);
 			TaskService.Errors.Add(task);
 		}
 		#endregion
@@ -100,7 +100,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}*/
 		
-		public static IProgressMonitor GetMonitor ()
+		public static ProgressMonitor GetMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file-icon", true, true);
 		}
@@ -198,7 +198,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Checks that the xml in this view is well-formed.
 		/// </summary>
-		public static XmlDocument ValidateWellFormedness (IProgressMonitor monitor, string xml, string fileName)
+		public static XmlDocument ValidateWellFormedness (ProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
 			bool error = false;
@@ -227,7 +227,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Validates the xml against known schemas.
 		/// </summary>		
-		public static XmlDocument ValidateXml (IProgressMonitor monitor, string xml, string fileName)
+		public static XmlDocument ValidateXml (ProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
 			bool error = false;
@@ -293,7 +293,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Validates the schema.
 		/// </summary>		
-		public static XmlSchema ValidateSchema (IProgressMonitor monitor, string xml, string fileName)
+		public static XmlSchema ValidateSchema (ProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating schema..."), 1);
 			bool error = false;
@@ -341,7 +341,7 @@ namespace MonoDevelop.Xml.Editor
 			return error? null: schema;
 		}
 		
-		public static XslCompiledTransform ValidateStylesheet (IProgressMonitor monitor, string xml, string fileName)
+		public static XslCompiledTransform ValidateStylesheet (ProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating stylesheet..."), 1);
 			bool error = true;

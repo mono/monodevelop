@@ -76,18 +76,18 @@ namespace MonoDevelop.Autotools
 			set { defaultConfig = value; }
 		}
 
-		public override bool CanBuild (SolutionItem entry)
+		public override bool CanBuild (SolutionFolderItem entry)
 		{
 			SolutionDeployer deployer = new SolutionDeployer (generateAutotools);
 			return deployer.CanDeploy ( entry );
 		}
 		
-		public override void InitializeSettings (SolutionItem entry)
+		public override void InitializeSettings (SolutionFolderItem entry)
 		{
 			if (string.IsNullOrEmpty (targetDir))
 				targetDir = entry.BaseDirectory;
 			if (string.IsNullOrEmpty (defaultConfig)) {
-				SolutionEntityItem se = entry as SolutionEntityItem;
+				SolutionItem se = entry as SolutionItem;
 				defaultConfig = se != null ? se.GetConfigurations () [0] : null;
 			}
 			if (File.Exists (Path.Combine (entry.BaseDirectory, "autogen.sh")) ||
@@ -99,18 +99,18 @@ namespace MonoDevelop.Autotools
 		}
 
 		
-		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = FileService.CreateTempDirectory ();
 			Solution solution = null;
-			SolutionItem entry = RootSolutionItem;
+			SolutionFolderItem entry = RootSolutionItem;
 			
 			try {
 				if (generateFiles) {
 					List<string> childEntries = new List<string> ();
 					if (entry is SolutionFolder) {
-						SolutionItem[] ents = GetChildEntries ();
-						foreach (SolutionItem it in ents)
+						SolutionFolderItem[] ents = GetChildEntries ();
+						foreach (SolutionFolderItem it in ents)
 							childEntries.Add (it.ItemId);
 					}
 					else {
@@ -123,22 +123,21 @@ namespace MonoDevelop.Autotools
 					if (entry is SolutionFolder)
 						sourceFile = entry.ParentSolution.FileName;
 					else
-						sourceFile = ((SolutionEntityItem)entry).FileName;
+						sourceFile = ((SolutionItem)entry).FileName;
 					
-					string efile = Services.ProjectService.Export (new FilteredProgressMonitor (monitor), sourceFile, childEntries.ToArray (), tmpFolder, null);
+					string efile = Services.ProjectService.Export (new FilteredProgressMonitor (monitor), sourceFile, childEntries.ToArray (), tmpFolder, null).Result;
 					if (efile == null) {
 						monitor.ReportError (GettextCatalog.GetString ("The project could not be exported."), null);
 						return false;
 					}
-					solution = Services.ProjectService.ReadWorkspaceItem (new NullProgressMonitor (), efile) as Solution;
+					solution = Services.ProjectService.ReadWorkspaceItem (new ProgressMonitor (), efile).Result as Solution;
 				}
 				else {
 					solution = entry.ParentSolution;
 				}
 				
-				solution.Build (monitor, (SolutionConfigurationSelector) defaultConfig);
-			
-				if (monitor.IsCancelRequested || !monitor.AsyncOperation.Success)
+				var res = solution.Build (monitor, (SolutionConfigurationSelector) defaultConfig).Result;
+				if (res.HasErrors || monitor.CancellationToken.IsCancellationRequested)
 					return false;
 			
 				SolutionDeployer deployer = new SolutionDeployer (generateAutotools);

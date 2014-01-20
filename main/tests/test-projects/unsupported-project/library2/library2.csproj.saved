@@ -19,7 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
-      <Execution clr-version="Net_2_0"/>
+      <Execution clr-version="Net_2_0" xmlns="" />
     </Execution>
     <ConsolePause>false</ConsolePause>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
@@ -30,7 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
-      <Execution clr-version="Net_2_0" />
+      <Execution clr-version="Net_2_0" xmlns="" />
     </Execution>
     <ConsolePause>false</ConsolePause>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>

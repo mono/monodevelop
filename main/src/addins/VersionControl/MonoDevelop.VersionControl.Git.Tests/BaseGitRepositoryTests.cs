@@ -155,7 +155,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		protected override void PostCommit (Repository repo)
 		{
 			var repo2 = (GitRepository)repo;
-			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
+			repo2.Push (new MonoDevelop.Core.ProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
 		}
 
 		protected override void BlameExtraInternals (Annotation [] annotations)
@@ -193,19 +193,19 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			AddFile ("file1", "text", true, true);
 			repo2.CreateBranch ("branch1", null);
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch1");
 			Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
 			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
 			AddFile ("file2", "text", true, false);
 			repo2.CreateBranch ("branch2", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch2");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch2");
 			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
 			repo2.GetStashes ().Pop (new NullProgressMonitor ());
 
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "master");
 			repo2.RemoveBranch ("branch1");
 			Assert.IsFalse (repo2.GetBranches ().Any (b => b.Name == "branch1"), "Failed to delete branch");
 
@@ -224,14 +224,14 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			PostCommit (repo2);
 
 			repo2.CreateBranch ("branch3", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch3");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch3");
 			AddFile ("file2", "asdf", true, true);
-			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "origin", "branch3");
+			repo2.Push (new MonoDevelop.Core.ProgressMonitor (), "origin", "branch3");
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "master");
 
 			repo2.CreateBranch ("branch4", "origin/branch3");
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch4");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch4");
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Tracking remote is not grabbing correct commits");
 		}
 
@@ -306,7 +306,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			AddFile ("file1", "text", true, true);
 			PostCommit (repo2);
 			repo2.CreateBranch ("branch1", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 			PostCommit (repo2);
 			Assert.AreEqual (2, repo2.GetBranches ().Count ());
@@ -329,12 +329,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.IsTrue (repo2.IsBranchMerged ("master"));
 
 			repo2.CreateBranch ("branch1", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitor (), "master");
 			Assert.IsFalse (repo2.IsBranchMerged ("branch1"));
-			repo2.Merge ("branch1", GitUpdateOptions.NormalUpdate, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo2.Merge ("branch1", GitUpdateOptions.NormalUpdate, new MonoDevelop.Core.ProgressMonitor ());
 			Assert.IsTrue (repo2.IsBranchMerged ("branch1"));
 		}
 

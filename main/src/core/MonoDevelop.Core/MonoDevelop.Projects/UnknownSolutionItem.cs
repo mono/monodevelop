@@ -28,10 +28,11 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	public class UnknownSolutionItem: SolutionEntityItem
+	public class UnknownSolutionItem: SolutionItem
 	{
 		string loadError = string.Empty;
 		bool unloaded;
@@ -41,7 +42,15 @@ namespace MonoDevelop.Projects
 		
 		public UnknownSolutionItem ()
 		{
+			Initialize (this);
 			NeedsReload = false;
+			IsUnsupportedProject = true;
+		}
+
+		public override bool SupportsConfigurations ()
+		{
+			// The item is unknown, but we still want to read/write its configurations
+			return true;
 		}
 		
 		public override FilePath FileName {
@@ -70,48 +79,30 @@ namespace MonoDevelop.Projects
 					loadError = GettextCatalog.GetString ("Unavailable");
 			}
 		}
-		
-		public override string Name {
-			get {
-				if (!FileName.IsNullOrEmpty)
-					return FileName.FileNameWithoutExtension;
-				else
-					return GettextCatalog.GetString ("Unknown entry");
-			}
-			set { }
+
+		protected override string OnGetName ()
+		{
+			if (!FileName.IsNullOrEmpty)
+				return FileName.FileNameWithoutExtension;
+			else
+				return GettextCatalog.GetString ("Unknown entry");
 		}
 
-		internal protected override bool OnGetSupportsTarget (string target)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return false;
+			return Task.FromResult (BuildResult.Success);
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var r = new BuildResult ();
 			r.AddError ("Project unavailable");
-			return r;
+			return Task.FromResult (r);
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected internal override Task OnSave (ProgressMonitor monitor)
 		{
-		}
-		
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected internal override void OnSave (IProgressMonitor monitor)
-		{
+			return Task.FromResult (0);
 		}
 	}
 
@@ -119,6 +110,7 @@ namespace MonoDevelop.Projects
 	{
 		public UnloadedSolutionItem ()
 		{
+			Initialize (this);
 			UnloadedEntry = true;
 		}
 	}

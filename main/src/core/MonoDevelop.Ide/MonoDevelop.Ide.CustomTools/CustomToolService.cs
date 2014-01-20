@@ -31,20 +31,28 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using MonoDevelop.Projects;
 using System.IO;
-using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Linq;
 using System.Threading;
+using Task = System.Threading.Tasks.Task;
+using IdeTask = MonoDevelop.Ide.Tasks.UserTask;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.CustomTools
 {
 	public static class CustomToolService
 	{
 		static readonly Dictionary<string,CustomToolExtensionNode> nodes = new Dictionary<string,CustomToolExtensionNode> ();
-		
-		static readonly Dictionary<string,IAsyncOperation> runningTasks = new Dictionary<string, IAsyncOperation> ();
+
+		class TaskInfo {
+			public Task Task;
+			public CancellationTokenSource CancellationTokenSource;
+			public SingleFileCustomToolResult Result;
+		}
+
+		static readonly Dictionary<string,TaskInfo> runningTasks = new Dictionary<string, TaskInfo> ();
 		
 		static CustomToolService ()
 		{
@@ -103,7 +111,7 @@ namespace MonoDevelop.Ide.CustomTools
 			return null;
 		}
 		
-		public static void Update (ProjectFile file, bool force)
+		public async static void Update (ProjectFile file, bool force)
 		{
 			var tool = GetGenerator (file.Generator);
 			if (tool == null)
@@ -122,49 +130,50 @@ namespace MonoDevelop.Ide.CustomTools
 			
 			//if this file is already being run, cancel it
 			lock (runningTasks) {
-				IAsyncOperation runningTask;
+				TaskInfo runningTask;
 				if (runningTasks.TryGetValue (file.FilePath, out runningTask)) {
-					runningTask.Cancel ();
+					runningTask.CancellationTokenSource.Cancel ();
 					runningTasks.Remove (file.FilePath);
 				}
 			}
-			
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
+
+			CancellationTokenSource cs = new CancellationTokenSource ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false).WithCancellationSource (cs);
 			var result = new SingleFileCustomToolResult ();
-			var aggOp = new AggregatedOperationMonitor (monitor);
+			Task op;
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
-				IAsyncOperation op = tool.Generate (monitor, file, result);
-				runningTasks.Add (file.FilePath, op);
-				aggOp.AddOperation (op);
-				op.Completed += delegate {
-					lock (runningTasks) {
-						IAsyncOperation runningTask;
-						if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask == op) {
-							runningTasks.Remove (file.FilePath);
-							UpdateCompleted (monitor, aggOp, file, genFile, result);
-						} else {
-							//it was cancelled because another was run for the same file, so just clean up
-							aggOp.Dispose ();
-							monitor.EndTask ();
-							monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator ran again for the same file"));
-							monitor.Dispose ();
-						}
-					}
-				};
+				op = tool.Generate (monitor, file, result);
+				runningTasks.Add (file.FilePath, new TaskInfo {
+					Task = op,
+					CancellationTokenSource = cs,
+					Result = result
+				});
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
-				UpdateCompleted (monitor, aggOp, file, genFile, result);
+				UpdateCompleted (monitor, file, genFile, result);
+				return;
+			}
+			await op;
+			lock (runningTasks) {
+				TaskInfo runningTask;
+				if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask.Task == op) {
+					runningTasks.Remove (file.FilePath);
+					UpdateCompleted (monitor, file, genFile, result);
+				} else {
+					//it was cancelled because another was run for the same file, so just clean up
+					monitor.EndTask ();
+					monitor.ReportWarning (GettextCatalog.GetString ("Cancelled because generator ran again for the same file"));
+					monitor.Dispose ();
+				}
 			}
 		}
 		
-		static void UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
-		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result)
+		static void UpdateCompleted (ProgressMonitor monitor, ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result)
 		{
 			monitor.EndTask ();
-			aggOp.Dispose ();
-			
-			if (monitor.IsCancelRequested) {
+
+			if (monitor.CancellationToken.IsCancellationRequested) {
 				monitor.ReportError (GettextCatalog.GetString ("Cancelled"), null);
 				monitor.Dispose ();
 				return;
@@ -200,19 +209,23 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 				
 				if (result.Errors.Count > 0) {
-					foreach (CompilerError err in result.Errors)
-						TaskService.Errors.Add (new Task (file.FilePath, err.ErrorText, err.Column, err.Line,
-							                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
-							                                  TaskPriority.Normal, file.Project.ParentSolution, file));
+					DispatchService.GuiDispatch (delegate {
+						foreach (CompilerError err in result.Errors)
+							TaskService.Errors.Add (new UserTask (file.FilePath, err.ErrorText, err.Column, err.Line,
+								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
+								TaskPriority.Normal, file.Project.ParentSolution, file));
+					});
 				}
 				
 				if (broken)
 					return;
-				
+
 				if (result.Success)
 					monitor.ReportSuccess ("Generated file successfully.");
+				else if (result.SuccessWithWarnings)
+					monitor.ReportSuccess ("Warnings in file generation.");
 				else
-					monitor.ReportError ("Failed to generate file. See error pad for details.", null);
+					monitor.ReportError ("Errors in file generation.", null);
 				
 			} finally {
 				monitor.Dispose ();
@@ -246,7 +259,7 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 
 				if (projectChanged)
-					IdeApp.ProjectOperations.Save (file.Project);
+					IdeApp.ProjectOperations.SaveAsync (file.Project);
 			});
 		}
 		
@@ -271,9 +284,9 @@ namespace MonoDevelop.Ide.CustomTools
 			return ns;
 		}
 
-		public static bool WaitForRunningTools (IProgressMonitor monitor)
+		public static bool WaitForRunningTools (ProgressMonitor monitor)
 		{
-			IAsyncOperation[] operations;
+			TaskInfo[] operations;
 			lock (runningTasks) {
 				operations = runningTasks.Values.ToArray ();
 			}
@@ -285,27 +298,24 @@ namespace MonoDevelop.Ide.CustomTools
 
 			var evt = new AutoResetEvent (false);
 
-			monitor.CancelRequested += delegate {
+			foreach (var t in operations) {
+				t.Task.ContinueWith (ta => {
+					monitor.Step (1);
+					if (operations.All (op => op.Task.IsCompleted))
+						evt.Set ();
+				});
+			}
+
+			monitor.CancellationToken.Register (delegate {
 				evt.Set ();
-			};
-
-			OperationHandler checkOp = delegate {
-				monitor.Step (1);
-				if (operations.All (op => op.IsCompleted))
-					evt.Set ();
-			};
-
-			foreach (var o in operations)
-				o.Completed += checkOp;
+			});
 
 			evt.WaitOne ();
-			bool success = operations.All (op => op.Success);
-
-			if (!success)
-				monitor.ReportError ("Error in custom tool", null);
 
 			monitor.EndTask ();
-			return success;
+
+			//the tool operations display warnings themselves
+			return operations.Any (op => !op.Result.SuccessWithWarnings);
 		}
 	}
 }

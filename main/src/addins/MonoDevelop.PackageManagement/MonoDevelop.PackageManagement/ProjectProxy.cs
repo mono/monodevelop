@@ -29,6 +29,7 @@ using System.Collections;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -59,6 +60,10 @@ namespace MonoDevelop.PackageManagement
 
 		public IDictionary ExtendedProperties {
 			get { return project.ExtendedProperties; }
+		}
+
+		public IEnumerable<string> FlavorGuids {
+			get { return project.FlavorGuids; }
 		}
 
 		public void Save ()

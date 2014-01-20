@@ -29,19 +29,20 @@ using System;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
 	internal class MD1SolutionEntityItemHandler: MD1SolutionItemHandler
 	{
-		public MD1SolutionEntityItemHandler (SolutionEntityItem item): base (item)
+		public MD1SolutionEntityItemHandler (SolutionItem item): base (item)
 		{
 		}
 
-		public override void Save (IProgressMonitor monitor)
+		public override Task Save (ProgressMonitor monitor)
 		{
-			SolutionEntityItem it = (SolutionEntityItem) Item;
-			it.FileFormat.Format.WriteFile (it.FileName, it, monitor);
+			SolutionItem it = (SolutionItem) Item;
+			return it.FileFormat.Format.WriteFile (it.FileName, it, monitor);
 		}
 	}
 }

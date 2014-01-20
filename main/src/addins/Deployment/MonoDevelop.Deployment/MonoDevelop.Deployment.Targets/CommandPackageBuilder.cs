@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using System.Threading;
 
 namespace MonoDevelop.Deployment.Targets
 {
@@ -88,7 +89,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 		}
 		
-		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string consMsg;
 			IConsole cons;
@@ -101,7 +102,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
-			IProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
+			ProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
 			
 			process.WaitForCompleted ();
 			
@@ -115,20 +116,21 @@ namespace MonoDevelop.Deployment.Targets
 	class MonitorConsole: IConsole
 	{
 		StringReader nullReader;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
+		CancellationTokenRegistration tr;
 		
-		public MonitorConsole (IProgressMonitor monitor)
+		public MonitorConsole (ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
-			monitor.CancelRequested += OnCancel;
+			tr = monitor.CancellationToken.Register (OnCancel);
 		}
 		
 		public void Dispose ()
 		{
-			monitor.CancelRequested -= OnCancel;
+			tr.Dispose ();
 		}
 		
-		void OnCancel (IProgressMonitor monitor)
+		void OnCancel ()
 		{
 			if (CancelRequested != null)
 				CancelRequested (this, EventArgs.Empty);

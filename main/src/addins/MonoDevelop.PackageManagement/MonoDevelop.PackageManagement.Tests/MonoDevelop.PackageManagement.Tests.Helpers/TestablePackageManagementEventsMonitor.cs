@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	public class TestablePackageManagementEventsMonitor : PackageManagementEventsMonitor
 	{
 		public TestablePackageManagementEventsMonitor (
-			IProgressMonitor progressMonitor,
+			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 			: base (progressMonitor, packageManagementEvents, progressProvider)
@@ -55,14 +55,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			handler.Invoke ();
 		}
 
-		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected override void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			IsPackageConsoleShown = true;
 			ProgressMonitorPassedToShowPackageConsole = progressMonitor;
 		}
 
 		public bool IsPackageConsoleShown;
-		public IProgressMonitor ProgressMonitorPassedToShowPackageConsole;
+		public ProgressMonitor ProgressMonitorPassedToShowPackageConsole;
 	}
 }
 

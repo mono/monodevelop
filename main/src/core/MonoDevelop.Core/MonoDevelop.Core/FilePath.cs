@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core
 {
@@ -156,6 +157,11 @@ namespace MonoDevelop.Core
 			return new FilePath (path);
 		}
 		
+		public Task DeleteAsync ()
+		{
+			return Task.Factory.StartNew (Delete);
+		}
+
 		public void Delete ()
 		{
 			// Ensure that this file/directory and all children are writable

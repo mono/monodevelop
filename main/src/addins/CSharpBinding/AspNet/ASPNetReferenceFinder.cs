@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //				yield return new DomRegion (fileName, loc.Line, loc.Column, loc.Line, loc.Column + result.Name.Lenhth);
 //			}
 		}
-		public override IEnumerable<MemberReference> FindReferences (MonoDevelop.Projects.Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers)
+		public override IEnumerable<MemberReference> FindReferences (MonoDevelop.Projects.Project project, IProjectContent content, IEnumerable<FilePath> files, ProgressMonitor monitor, IEnumerable<object> searchedMembers)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);

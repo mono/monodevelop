@@ -17,7 +17,7 @@ namespace MonoDevelop.Deployment.Gui
 			get { return GettextCatalog.GetString ("Add a Packaging Project to the solution for generating different kinds of packages for the new project."); }
 		}
 
-		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			if (parentCombine == null)
 				return FeatureSupportLevel.NotSupported;
@@ -30,17 +30,17 @@ namespace MonoDevelop.Deployment.Gui
 				return FeatureSupportLevel.NotSupported;
 		}
 		
-		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			return new PackagingFeatureWidget (parentCombine, entry);
 		}
 
-		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionFolderItem entry, Widget editor)
 		{
 			((PackagingFeatureWidget)editor).ApplyFeature ();
 		}
 		
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}

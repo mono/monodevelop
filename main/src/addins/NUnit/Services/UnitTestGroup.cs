@@ -31,6 +31,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.NUnit
 {
@@ -42,7 +44,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		protected UnitTestGroup (string name, IWorkspaceObject ownerSolutionItem): base (name, ownerSolutionItem)
+		protected UnitTestGroup (string name, WorkspaceObject ownerSolutionItem): base (name, ownerSolutionItem)
 		{
 		}
 		
@@ -121,13 +123,10 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
-		public override IAsyncOperation Refresh ()
+		public async override Task Refresh (CancellationToken ct)
 		{
-			AggregatedAsyncOperation oper = new AggregatedAsyncOperation ();
 			foreach (UnitTest t in Tests)
-				oper.Add (t.Refresh ());
-			oper.StartMonitoring ();
-			return oper;
+				await t.Refresh (ct);
 		}
 		
 		protected override UnitTestResult OnRun (TestContext testContext)

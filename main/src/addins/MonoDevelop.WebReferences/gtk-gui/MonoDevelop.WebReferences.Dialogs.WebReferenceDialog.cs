@@ -5,29 +5,53 @@ namespace MonoDevelop.WebReferences.Dialogs
 	internal partial class WebReferenceDialog
 	{
 		private global::Gtk.UIManager UIManager;
+		
 		private global::Gtk.Action btnNavBack;
+		
 		private global::Gtk.Action btnNavNext;
+		
 		private global::Gtk.Action btnRefresh;
+		
 		private global::Gtk.Action btnStop;
+		
 		private global::Gtk.Action btnHome;
+		
 		private global::Gtk.VBox vbxContainer;
+		
 		private global::Gtk.Toolbar tlbNavigate;
+		
 		private global::Gtk.Table tblWebReferenceUrl;
+		
 		private global::Gtk.Button btnGO;
+		
 		private global::Gtk.Label lblWebServiceUrl;
+		
 		private global::Gtk.Entry tbxReferenceURL;
+		
 		private global::Gtk.Frame frmBrowser;
+		
 		private global::Gtk.Table tblReferenceName;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.ComboBox comboModel;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Label lblNamespace;
+		
 		private global::Gtk.Label lblReference;
+		
 		private global::Gtk.Entry tbxNamespace;
+		
 		private global::Gtk.Entry tbxReferenceName;
+		
 		private global::Gtk.Button btnCancel;
+		
 		private global::Gtk.Button btnBack;
+		
 		private global::Gtk.Button btnOK;
+		
 		private global::Gtk.Button btnConfig;
 
 		protected virtual void Build ()
@@ -61,7 +85,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.vbxContainer = new global::Gtk.VBox ();
 			this.vbxContainer.Name = "vbxContainer";
 			// Container child vbxContainer.Gtk.Box+BoxChild
-			this.UIManager.AddUiFromString (@"<ui><toolbar name='tlbNavigate'><toolitem name='btnNavBack' action='btnNavBack'/><toolitem name='btnNavNext' action='btnNavNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
+			this.UIManager.AddUiFromString ("<ui><toolbar name='tlbNavigate'><toolitem name='btnNavBack' action='btnNavBack'/><toolitem name='btnNavNext' action='btnNavNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
 			this.tlbNavigate = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/tlbNavigate")));
 			this.tlbNavigate.Name = "tlbNavigate";
 			this.tlbNavigate.ShowArrow = false;

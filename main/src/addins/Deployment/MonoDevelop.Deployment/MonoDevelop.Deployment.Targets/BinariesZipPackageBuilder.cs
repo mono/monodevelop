@@ -39,7 +39,7 @@ namespace MonoDevelop.Deployment.Targets
 			get { return "Archive of Binaries"; }
 		}
 		
-		public override void InitializeSettings (SolutionItem entry)
+		public override void InitializeSettings (SolutionFolderItem entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
 			if (entry.ParentSolution != null)
@@ -51,7 +51,7 @@ namespace MonoDevelop.Deployment.Targets
 			return configuration != null ? new string [] { configuration } : new string [0];
 		}
 		
-		public override bool CanBuild (SolutionItem entry)
+		public override bool CanBuild (SolutionFolderItem entry)
 		{
 			// Can build anything but PackagingProject
 			return !(entry is PackagingProject);
@@ -62,18 +62,21 @@ namespace MonoDevelop.Deployment.Targets
 			return new DeployContext (this, platform, null);
 		}
 		
-		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string tmpFolder = null;
-			
+
 			try {
 				SolutionConfigurationSelector conf = (SolutionConfigurationSelector) configuration;
-				BuildResult res = RootSolutionItem.Build (monitor, conf);
-				if (res.ErrorCount > 0) {
-					foreach (BuildError e in res.Errors)
-						monitor.ReportError (e.ToString (), null);
-					monitor.ReportError (GettextCatalog.GetString ("The source project failed to build."), null);
-					return false;
+				var bt = RootSolutionItem as IBuildTarget;
+				if (bt != null) {
+					BuildResult res = bt.Build (monitor, conf).Result;
+					if (res.ErrorCount > 0) {
+						foreach (BuildError e in res.Errors)
+							monitor.ReportError (e.ToString (), null);
+						monitor.ReportError (GettextCatalog.GetString ("The source project failed to build."), null);
+						return false;
+					}
 				}
 				
 				tmpFolder = FileService.CreateTempDirectory ();
@@ -107,8 +110,7 @@ namespace MonoDevelop.Deployment.Targets
 				if (tmpFolder != null)
 					Directory.Delete (tmpFolder, true);
 			}
-			if (monitor.AsyncOperation.Success)
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
 			return true;
 		}
 		

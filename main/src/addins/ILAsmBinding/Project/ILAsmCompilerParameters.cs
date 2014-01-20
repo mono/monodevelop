@@ -26,7 +26,7 @@
 
 namespace ILAsmBinding
 {
-	class ILAsmCompilerParameters : MonoDevelop.Projects.ConfigurationParameters
+	class ILAsmCompilerParameters : MonoDevelop.Projects.DotNetCompilerParameters
 	{
 	}
 }

@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -48,19 +49,20 @@ namespace MonoDevelop.Projects
 				Add (cmd.Clone ());
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, IWorkspaceObject entry, CustomCommandType type, ConfigurationSelector configuration)
+		public Task<bool> ExecuteCommand (ProgressMonitor monitor, WorkspaceObject entry, CustomCommandType type, ConfigurationSelector configuration)
 		{
-			ExecuteCommand (monitor, entry, type, null, configuration);
+			return ExecuteCommand (monitor, entry, type, null, configuration);
 		}
 		
-		public void ExecuteCommand (IProgressMonitor monitor, IWorkspaceObject entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
+		public async Task<bool> ExecuteCommand (ProgressMonitor monitor, WorkspaceObject entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			foreach (CustomCommand cmd in this) {
-				if (cmd.Type == type)
-					cmd.Execute (monitor, entry, context, configuration);
-				if (monitor.IsCancelRequested)
-					break;
+				if (cmd.Type == type) {
+					if (!await cmd.Execute (monitor, entry, context, configuration))
+						return false;
+				}
 			}
+			return true;
 		}
 		
 		public bool HasCommands (CustomCommandType type)
@@ -71,7 +73,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public bool CanExecute (IWorkspaceObject entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
+		public bool CanExecute (WorkspaceObject entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// Note: if this gets changed to return true if *any* of the commands can execute, then
 			// ExecuteCommand() needs to be fixed to only execute commands that can be executed.

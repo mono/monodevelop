@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Extensions
 {
@@ -50,7 +51,7 @@ namespace MonoDevelop.Projects.Extensions
 		/// <param name='configuration'>
 		/// Selector to be used to get the target configuration
 		/// </param>
-		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
+		Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration);
 		
 		/// <summary>
 		/// Saves the solution item
@@ -58,7 +59,7 @@ namespace MonoDevelop.Projects.Extensions
 		/// <param name='monitor'>
 		/// A progress monitor
 		/// </param>
-		void Save (IProgressMonitor monitor);
+		Task Save (ProgressMonitor monitor);
 		
 		/// <summary>
 		/// Gets a value indicating whether the name of the solution item should be the same as the name of the file

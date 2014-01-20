@@ -17,7 +17,7 @@ namespace MonoDevelop.Autotools
 			get { return string.Empty; }
 		}
 
-		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			if (entry is Project)
 				return FeatureSupportLevel.SupportedByDefault;
@@ -25,17 +25,17 @@ namespace MonoDevelop.Autotools
 				return FeatureSupportLevel.NotSupported;
 		}
 		
-		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			return new MakefileIntegrationFeatureWidget ((Project)entry);
 		}
 
-		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionFolderItem entry, Widget editor)
 		{
 			((MakefileIntegrationFeatureWidget)editor).Store ();
 		}
 		
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}

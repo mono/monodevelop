@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 		Action<MessageHandler> guiDispatcher;
 
 		public PackageManagementProgressProvider (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
-			: this (repositoryFactoryEvents, DispatchService.GuiDispatch)
+			: this (repositoryFactoryEvents, h => DispatchService.GuiDispatch (h))
 		{
 		}
 

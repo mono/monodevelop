@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -204,14 +205,14 @@ namespace MonoDevelop.Projects
 			Solution sol1 = new Solution ();
 			cws.Items.Add (sol1);
 			sol1.RootFolder.Items.Add (it1 = new DummySolutionItem ());
-			sol1.RootFolder.Items.Add (it2 = new DotNetAssemblyProject ("C#"));
+			sol1.RootFolder.Items.Add (it2 = Services.ProjectService.CreateDotNetProject ("C#"));
 			
 			Solution sol2 = new Solution ();
 			cws.Items.Add (sol2);
 			SolutionFolder f = new SolutionFolder ();
 			sol2.RootFolder.Items.Add (f);
-			f.Items.Add (it3 = new DotNetAssemblyProject ("C#"));
-			f.Items.Add (it4 = new DotNetAssemblyProject ("C#"));
+			f.Items.Add (it3 = Services.ProjectService.CreateDotNetProject ("C#"));
+			f.Items.Add (it4 = Services.ProjectService.CreateDotNetProject ("C#"));
 			
 			it3.Name = "it3";
 			it4.FileName = "/test/it4";
@@ -227,7 +228,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (sol2.Items.Contains (it3));
 			Assert.IsTrue (sol2.Items.Contains (it4));
 			
-			ReadOnlyCollection<SolutionItem> its = ws.GetAllSolutionItems ();
+			var its = ws.GetAllItems<SolutionFolderItem> ().ToList();
 			Assert.AreEqual (7, its.Count);
 			Assert.IsTrue (its.Contains (it1));
 			Assert.IsTrue (its.Contains (it2));
@@ -237,45 +238,39 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (its.Contains (sol2.RootFolder));
 			Assert.IsTrue (its.Contains (f));
 			
-			ReadOnlyCollection<DotNetProject> its2 = ws.GetAllSolutionItems<DotNetProject> ();
+			var its2 = ws.GetAllItems<DotNetProject> ().ToList();
 			Assert.AreEqual (3, its2.Count);
 			Assert.IsTrue (its2.Contains (it2));
 			Assert.IsTrue (its2.Contains (it3));
 			Assert.IsTrue (its2.Contains (it4));
 			
-			ReadOnlyCollection<Project> its3 = ws.GetAllProjects ();
+			var its3 = ws.GetAllItems<Project> ().ToList();
 			Assert.AreEqual (3, its3.Count);
 			Assert.IsTrue (its3.Contains (it2));
 			Assert.IsTrue (its3.Contains (it3));
 			Assert.IsTrue (its3.Contains (it4));
 			
-			ReadOnlyCollection<Solution> its4 = ws.GetAllSolutions ();
+			var its4 = ws.GetAllItems<Solution> ().ToList();
 			Assert.AreEqual (2, its4.Count);
 			Assert.IsTrue (its4.Contains (sol1));
 			Assert.IsTrue (its4.Contains (sol2));
 			
-			ReadOnlyCollection<WorkspaceItem> its5= ws.GetAllItems ();
+			var its5 = ws.GetAllItems<WorkspaceItem> ().ToList();
 			Assert.AreEqual (4, its5.Count);
 			Assert.IsTrue (its5.Contains (ws));
 			Assert.IsTrue (its5.Contains (cws));
 			Assert.IsTrue (its5.Contains (sol2));
 			Assert.IsTrue (its5.Contains (sol2));
 			
-			ReadOnlyCollection<Workspace> its6 = ws.GetAllItems<Workspace> ();
+			var its6 = ws.GetAllItems<Workspace> ().ToList();
 			Assert.AreEqual (2, its6.Count);
 			Assert.IsTrue (its6.Contains (ws));
 			Assert.IsTrue (its6.Contains (cws));
 			
-			SolutionEntityItem fi = ws.FindSolutionItem (someFile);
-			Assert.AreEqual (it4, fi);
-			
-			fi = ws.FindSolutionItem (someFile + ".wrong");
-			Assert.IsNull (fi);
-			
-			SolutionItem si = sol2.GetSolutionItem (someId);
+			SolutionFolderItem si = sol2.GetSolutionItem (someId);
 			Assert.AreEqual (it3, si);
 			
-			fi = sol2.FindSolutionItem (someFile);
+			SolutionItem fi = sol2.FindSolutionItem (someFile);
 			Assert.AreEqual (it4, fi);
 			
 			fi = sol2.FindProjectByName ("it3");
@@ -305,14 +300,14 @@ namespace MonoDevelop.Projects
 			Solution sol1 = new Solution ();
 			cws.Items.Add (sol1);
 			sol1.RootFolder.Items.Add (it1 = new DummySolutionItem ());
-			sol1.RootFolder.Items.Add (it2 = new DotNetAssemblyProject ("C#"));
+			sol1.RootFolder.Items.Add (it2 = Services.ProjectService.CreateDotNetProject ("C#"));
 			
 			Solution sol2 = new Solution ();
 			cws.Items.Add (sol2);
 			SolutionFolder f = new SolutionFolder ();
 			sol2.RootFolder.Items.Add (f);
-			f.Items.Add (it3 = new DotNetAssemblyProject ("C#"));
-			f.Items.Add (it4 = new DotNetAssemblyProject ("C#"));
+			f.Items.Add (it3 = Services.ProjectService.CreateDotNetProject ("C#"));
+			f.Items.Add (it4 = Services.ProjectService.CreateDotNetProject ("C#"));
 			
 			ws.ExtendedProperties ["data"] = d[0];
 			cws.ExtendedProperties ["data"] = d[1];
@@ -340,33 +335,11 @@ namespace MonoDevelop.Projects
 
 	}
 	
-	class DummySolutionItem: SolutionEntityItem
+	class DummySolutionItem: SolutionItem
 	{
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public DummySolutionItem ()
 		{
-		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
+			Initialize (this);
 		}
 	}
 }

@@ -36,7 +36,7 @@ using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration
 {
-	internal class MacExternalConsoleProcess : IProcessAsyncOperation
+	internal class MacExternalConsoleProcess : ProcessAsyncOperation
 	{
 /*
 NOTES ON CONTROLLING A TERMINAL WITH APPLESCRIPT	 
@@ -80,11 +80,16 @@ bash pause on exit trick
 */ 
 		string tabId, windowId;
 		bool cancelled;
-		
+
 		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
 			string title, bool pauseWhenFinished)
 		{
+			CancellationTokenSource = new CancellationTokenSource ();
+			CancellationTokenSource.Token.Register (CloseTerminal);
+
+			// FIXME set value of ExitCode and ProcessId, if possible
+
 			RunTerminal (
 				command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished,
 				out tabId, out windowId
@@ -168,67 +173,15 @@ end tell", tabId, windowId);
 
 		#endregion
 
-		#region IProcessAsyncOperation implementation
-
-		public void Dispose ()
-		{
-		}
-		
-		public int ExitCode {
-			get {
-				//FIXME: implement. is it possible?
-				return 0;
-			}
-		}
-		
-		public int ProcessId {
-			get {
-				//FIXME: implement. is it possible?
-				return 0;
-			}
-		}
-		
-		#endregion
-		
 		#region IAsyncOperation implementation
 		
-		public event OperationHandler Completed;
-		
-		public void Cancel ()
+		void CloseTerminal ()
 		{
 			cancelled = true;
 			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
 			CloseTerminalWindow (tabId, windowId);
 		}
-		
-		public void WaitForCompleted ()
-		{
-			while (!IsCompleted) {
-				Thread.Sleep (1000);
-			}
-		}
-		
-		public bool IsCompleted {
-			get {
-				//FIXME: get the status of the process, not the whole script
-				return !TabExists (tabId, windowId);
-			}
-		}
-		
-		public bool Success {
-			get {
-				//FIXME: any way to get the real result?
-				return !cancelled;
-			}
-		}
-		
-		
-		public bool SuccessWithWarnings {
-			get {
-				return Success;
-			}
-		}
-		
+
 		#endregion
 	}
 }

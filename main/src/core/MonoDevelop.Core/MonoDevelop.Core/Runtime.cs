@@ -54,6 +54,7 @@ namespace MonoDevelop.Core
 		static ApplicationService applicationService;
 		static bool initialized;
 		static SynchronizationContext mainSynchronizationContext;
+		static SynchronizationContext defaultSynchronizationContext;
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -80,10 +81,12 @@ namespace MonoDevelop.Core
 			SetupInstrumentation ();
 
 			Platform.Initialize ();
+
+			defaultSynchronizationContext = new SynchronizationContext ();
 			
 			// Set a default sync context
 			if (SynchronizationContext.Current == null)
-				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
+				SynchronizationContext.SetSynchronizationContext (defaultSynchronizationContext);
 
 			// Hook up the SSL certificate validation codepath
 			ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
@@ -281,7 +284,7 @@ namespace MonoDevelop.Core
 
 		public static SynchronizationContext MainSynchronizationContext {
 			get {
-				return mainSynchronizationContext ?? SynchronizationContext.Current;
+				return mainSynchronizationContext ?? defaultSynchronizationContext;
 			}
 			set {
 				if (mainSynchronizationContext != null && value != null)
@@ -327,10 +330,10 @@ namespace MonoDevelop.Core
 	
 	internal static class Counters
 	{
-		public static TimerCounter RuntimeInitialization = InstrumentationService.CreateTimerCounter ("Runtime initialization", "Runtime");
+		public static TimerCounter RuntimeInitialization = InstrumentationService.CreateTimerCounter ("Runtime initialization", "Runtime", id:"Core.RuntimeInitialization");
 		public static TimerCounter PropertyServiceInitialization = InstrumentationService.CreateTimerCounter ("Property Service initialization", "Runtime");
 		
-		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine", true);
+		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine", true, id:"Core.AddinsLoaded");
 		
 		public static Counter ProcessesStarted = InstrumentationService.CreateCounter ("Processes started", "Process Service");
 		public static Counter ExternalObjects = InstrumentationService.CreateCounter ("External objects", "Process Service");

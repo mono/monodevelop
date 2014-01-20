@@ -670,7 +670,8 @@ namespace MonoDevelop.Ide.Gui
 		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
 		{
 			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
-			pathBar.SetPath (pathDoc.CurrentPath);
+			if (pathBar != null)
+				pathBar.SetPath (pathDoc.CurrentPath);
 //			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
 		

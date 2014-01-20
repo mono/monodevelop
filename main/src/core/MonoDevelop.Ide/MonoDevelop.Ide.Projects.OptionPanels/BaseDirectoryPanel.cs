@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	public class BaseDirectoryPanel: IOptionsPanel
 	{
 		BaseDirectoryPanelWidget widget;
-		IWorkspaceObject obj;
+		WorkspaceObject obj;
 		
 		public BaseDirectoryPanel()
 		{
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
 		{
-			obj = dataObject as IWorkspaceObject;
+			obj = dataObject as WorkspaceObject;
 		}
 
 		public Gtk.Widget CreatePanelWidget ()
@@ -69,7 +69,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public void ApplyChanges ()
 		{
-			obj.BaseDirectory = widget.BaseDirectory;
+			if (obj is WorkspaceItem)
+				((WorkspaceItem)obj).BaseDirectory = widget.BaseDirectory;
+			else if (obj is SolutionFolderItem)
+				((SolutionFolderItem)obj).BaseDirectory = widget.BaseDirectory;
 		}
 	}
 }

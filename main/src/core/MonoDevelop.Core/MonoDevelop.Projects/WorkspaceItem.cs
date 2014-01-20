@@ -41,15 +41,17 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
+using Mono.Addins;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class WorkspaceItem : IBuildTarget, IWorkspaceFileObject, ILoadController
+	public abstract class WorkspaceItem : WorkspaceObject, IWorkspaceFileObject, ILoadController
 	{
 		Workspace parentWorkspace;
 		FileFormat format;
 		internal bool FormatSet;
-		Hashtable extendedProperties;
 		FilePath fileName;
 		int loading;
 		PropertyBag userProperties;
@@ -57,17 +59,12 @@ namespace MonoDevelop.Projects
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		FilePath baseDirectory;
-		
+
 		public Workspace ParentWorkspace {
 			get { return parentWorkspace; }
-			internal set { parentWorkspace = value; }
-		}
-		
-		public IDictionary ExtendedProperties {
-			get {
-				if (extendedProperties == null)
-					extendedProperties = new Hashtable ();
-				return extendedProperties;
+			internal set {
+				parentWorkspace = value; 
+				ParentObject = value;
 			}
 		}
 		
@@ -80,12 +77,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual string Name {
+		public new string Name {
 			get {
-				if (fileName.IsNullOrEmpty)
-					return string.Empty;
-				else
-					return fileName.FileNameWithoutExtension;
+				return base.Name;
 			}
 			set {
 				if (fileName.IsNullOrEmpty)
@@ -96,6 +90,14 @@ namespace MonoDevelop.Projects
 					FileName = dir.Combine (value) + ext;
 				}
 			}
+		}
+
+		protected override string OnGetName ()
+		{
+			if (fileName.IsNullOrEmpty)
+				return string.Empty;
+			else
+				return fileName.FileNameWithoutExtension;
 		}
 		
 		public virtual FilePath FileName {
@@ -124,12 +126,9 @@ namespace MonoDevelop.Projects
 			FileName = baseDirectory.Combine (name) + ".x";
 		}
 		
-		public FilePath BaseDirectory {
+		public new FilePath BaseDirectory {
 			get {
-				if (baseDirectory.IsNull)
-					return FileName.ParentDirectory.FullPath;
-				else
-					return baseDirectory;
+				return base.BaseDirectory;
 			}
 			set {
 				if (!value.IsNull && !FileName.IsNull && FileName.ParentDirectory.FullPath == value.FullPath)
@@ -141,82 +140,64 @@ namespace MonoDevelop.Projects
 				NotifyModified ();
 			}
 		}
+
+		protected override string OnGetBaseDirectory ()
+		{
+			if (baseDirectory.IsNull)
+				return FileName.ParentDirectory.FullPath;
+			else
+				return baseDirectory;
+		}
 		
-		public FilePath ItemDirectory {
-			get { return FileName.ParentDirectory.FullPath; }
+		protected override string OnGetItemDirectory ()
+		{
+			return FileName.ParentDirectory.FullPath;
 		}
 		
 		protected bool Loading {
 			get { return loading > 0; }
 		}
 		
-		public WorkspaceItem ()
+		protected WorkspaceItem ()
 		{
-			MonoDevelop.Projects.Extensions.ProjectExtensionUtil.LoadControl (this);
+			ProjectExtensionUtil.LoadControl (this);
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
+			Initialize (this);
 		}
 
-		public T GetService<T> () where T: class
+		WorkspaceItemExtension itemExtension;
+
+		WorkspaceItemExtension ItemExtension {
+			get {
+				if (itemExtension == null)
+					itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
+				return itemExtension;
+			}
+		}
+
+		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
 		{
-			return (T) GetService (typeof(T));
+			yield return new DefaultWorkspaceItemExtension ();
+		}
+
+		public IEnumerable<FilePath> GetItemFiles (bool includeReferencedFiles)
+		{
+			return ItemExtension.GetItemFiles (includeReferencedFiles);
 		}
 		
-		public virtual object GetService (Type t)
-		{
-			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
-		}
-		
-		public virtual List<FilePath> GetItemFiles (bool includeReferencedFiles)
+		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
 			if (!string.IsNullOrEmpty (FileName) && !col.Contains (FileName))
 				col.Add (FileName);
 			return col;
 		}
-		
-		public virtual SolutionEntityItem FindSolutionItem (string fileName)
-		{
-			return null;
-		}
-		
-		public virtual bool ContainsItem (IWorkspaceObject obj)
+
+		public virtual bool ContainsItem (WorkspaceObject obj)
 		{
 			return this == obj;
 		}
 		
-		public ReadOnlyCollection<SolutionItem> GetAllSolutionItems ()
-		{
-			return GetAllSolutionItems<SolutionItem> ();
-		}
-		
-		public virtual ReadOnlyCollection<T> GetAllSolutionItems<T> () where T: SolutionItem
-		{
-			return new List<T> ().AsReadOnly ();
-		}
-		
-		public ReadOnlyCollection<Project> GetAllProjects ()
-		{
-			return GetAllSolutionItems<Project> ();
-		}
-		
-		public virtual ReadOnlyCollection<Solution> GetAllSolutions ()
-		{
-			return GetAllItems<Solution> ();
-		}
-		
-		public ReadOnlyCollection<WorkspaceItem> GetAllItems ()
-		{
-			return GetAllItems<WorkspaceItem> ();
-		}
-		
-		public virtual ReadOnlyCollection<T> GetAllItems<T> () where T: WorkspaceItem
-		{
-			List<T> list = new List<T> ();
-			if (this is T)
-				list.Add ((T)this);
-			return list.AsReadOnly ();
-		}
-
 		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public virtual Project GetProjectContainingFile (FilePath fileName)
 		{
@@ -232,119 +213,12 @@ namespace MonoDevelop.Projects
 		{
 			return new ReadOnlyCollection<string> (new string [0]);
 		}
-		
-		protected internal virtual void OnSave (IProgressMonitor monitor)
-		{
-			Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
-		}
-		
+
 		internal void SetParentWorkspace (Workspace workspace)
 		{
 			parentWorkspace = workspace;
 		}
-		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, string configuration)
-		{
-			return RunTarget (monitor, target, (SolutionConfigurationSelector) configuration);
-		}
-		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
-		}
-		
-		public bool SupportsBuild ()
-		{
-			return SupportsTarget (ProjectService.BuildTarget);
-		}
 
-		public void Clean (IProgressMonitor monitor, string configuration)
-		{
-			Clean (monitor, (SolutionConfigurationSelector) configuration);
-		}
-		
-		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
-		}
-		
-		public bool SupportsTarget (string target)
-		{
-			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
-		}
-
-		public bool SupportsExecute ()
-		{
-			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
-		}
-
-		public BuildResult Build (IProgressMonitor monitor, string configuration)
-		{
-			return InternalBuild (monitor, (SolutionConfigurationSelector) configuration);
-		}
-		
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return InternalBuild (monitor, configuration);
-		}
-		
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration)
-		{
-			Execute (monitor, context, (SolutionConfigurationSelector) configuration);
-		}
-		
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			Services.ProjectService.GetExtensionChain (this).Execute (monitor, this, context, configuration);
-		}
-		
-		public bool CanExecute (ExecutionContext context, string configuration)
-		{
-			return CanExecute (context, (SolutionConfigurationSelector) configuration);
-		}
-		
-		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
-		}
-
-		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
-		{
-			return GetExecutionTargets ((SolutionConfigurationSelector) configuration);
-		}
-
-		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
-		}
-
-		[Obsolete ("This method will be removed in future releases")]
-		public bool NeedsBuilding (string configuration)
-		{
-			return true;
-		}
-		
-		[Obsolete ("This method will be removed in future releases")]
-		public bool NeedsBuilding (ConfigurationSelector configuration)
-		{
-			return true;
-		}
-		
-		[Obsolete ("This method will be removed in future releases")]
-		public void SetNeedsBuilding (bool value)
-		{
-		}
-		
-		[Obsolete ("This method will be removed in future releases")]
-		public void SetNeedsBuilding (bool needsBuilding, string configuration)
-		{
-		}
-		
-		[Obsolete ("This method will be removed in future releases")]
-		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
-		{
-		}
-		
 		public virtual FileFormat FileFormat {
 			get {
 				if (format == null) {
@@ -359,17 +233,13 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public virtual void ConvertToFormat (FileFormat format, bool convertChildren)
+		public virtual Task ConvertToFormat (FileFormat format, bool convertChildren)
 		{
 			FormatSet = true;
 			this.format = format;
 			if (!string.IsNullOrEmpty (FileName))
 				FileName = format.GetValidFileName (this, FileName);
-		}
-		
-		internal virtual BuildResult InternalBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.BuildTarget, configuration);
+			return Task.FromResult (0);
 		}
 		
 		protected virtual void OnConfigurationsChanged ()
@@ -380,17 +250,27 @@ namespace MonoDevelop.Projects
 				ParentWorkspace.OnConfigurationsChanged ();
 		}
 
-		public void Save (FilePath fileName, IProgressMonitor monitor)
+		public void Save (FilePath fileName, ProgressMonitor monitor)
 		{
-			FileName = fileName;
-			Save (monitor);
+			SaveAsync (fileName, monitor).Wait ();
 		}
 		
-		public void Save (IProgressMonitor monitor)
+		public Task SaveAsync (FilePath fileName, ProgressMonitor monitor)
+		{
+			FileName = fileName;
+			return SaveAsync (monitor);
+		}
+
+		public void Save (ProgressMonitor monitor)
+		{
+			SaveAsync (monitor).Wait ();
+		}
+
+		public async Task SaveAsync (ProgressMonitor monitor)
 		{
 			try {
 				fileStatusTracker.BeginSave ();
-				Services.ProjectService.GetExtensionChain (this).Save (monitor, this);
+				await ItemExtension.Save (monitor);
 				SaveUserProperties ();
 				OnSaved (new WorkspaceItemEventArgs (this));
 				
@@ -400,7 +280,12 @@ namespace MonoDevelop.Projects
 			}
 			FileService.NotifyFileChanged (FileName);
 		}
-		
+
+		protected internal virtual Task OnSave (ProgressMonitor monitor)
+		{
+			return Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
+		}
+
 		public virtual bool NeedsReload {
 			get {
 				return fileStatusTracker.NeedsReload;
@@ -416,59 +301,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			if (target == ProjectService.BuildTarget)
-				return OnBuild (monitor, configuration);
-			else if (target == ProjectService.CleanTarget) {
-				OnClean (monitor, configuration);
-				return null;
-			}
-			return null;
-		}
-		
-		internal protected virtual bool OnGetSupportsTarget (string target)
-		{
-			return true;
-		}
-
 		internal protected virtual bool OnGetSupportsExecute ()
 		{
 			return true;
 		}
 
-		protected virtual void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected virtual BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		internal protected virtual void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return true;
-		}
-
-		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
-		{
-			yield break;
-		}
-
-		internal protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return true;
-		}
-		
-		internal protected virtual void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-		}
-		
 		void ILoadController.BeginLoad ()
 		{
 			loading++;
@@ -571,15 +408,9 @@ namespace MonoDevelop.Projects
 			return absPath.ToRelative (BaseDirectory);
 		}
 		
-		public virtual void Dispose()
+		public override void Dispose()
 		{
-			if (extendedProperties != null) {
-				foreach (object ob in extendedProperties.Values) {
-					IDisposable disp = ob as IDisposable;
-					if (disp != null)
-						disp.Dispose ();
-				}
-			}
+			base.Dispose ();
 			if (userProperties != null)
 				userProperties.Dispose ();
 		}
@@ -590,11 +421,6 @@ namespace MonoDevelop.Projects
 			NotifyModified ();
 			if (NameChanged != null)
 				NameChanged (this, e);
-		}
-
-		internal protected virtual object OnGetService (Type t)
-		{
-			return null;
 		}
 
 		protected void NotifyModified ()
@@ -632,6 +458,19 @@ namespace MonoDevelop.Projects
 				fileStatusTracker.ReloadRequired -= value;
 			}
 		}*/
+
+		internal class DefaultWorkspaceItemExtension: WorkspaceItemExtension
+		{
+			internal protected override IEnumerable<FilePath> GetItemFiles (bool includeReferencedFiles)
+			{
+				return Item.OnGetItemFiles (includeReferencedFiles);
+			}
+
+			internal protected override Task Save (ProgressMonitor monitor)
+			{
+				return Item.OnSave (monitor);
+			}
+		}
 	}
 	
 	class FileStatusTracker<TEventArgs> where TEventArgs:EventArgs

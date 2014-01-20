@@ -76,12 +76,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			return codon != null ? codon.CreateFinder () : null;
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, ProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, searchForAllOverloads, RefactoryScope.Unknown, monitor);
 		}
 
-		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, RefactoryScope scope, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, RefactoryScope scope, ProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, searchForAllOverloads, scope, monitor);
 		}
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
-		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
+		                                                           ProgressMonitor monitor, IEnumerable<object> searchNodes)
 		{
 			if (!(node is IField) && !(node is IParameter) && node is IVariable || scope == RefactoryScope.File) {
 				string fileName;
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), files.Count);
 				foreach (var file in files) {
-					if (monitor != null && monitor.IsCancelRequested)
+					if (monitor != null && monitor.CancellationToken.IsCancellationRequested)
 						yield break;
 					yield return file;
 					if (monitor != null)
@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return projects;
 		}
 
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, ProgressMonitor monitor = null)
 		{
 			if (member == null)
 				yield break;
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
 				string oldMime = null;
 				foreach (var file in info.Files) {
-					if (monitor != null && monitor.IsCancelRequested)
+					if (monitor != null && monitor.CancellationToken.IsCancellationRequested)
 						yield break;
 					
 					string mime = DesktopService.GetMimeTypeForUri (file);
@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			foreach (var tuple in preparedFinders) {
 				var finder = tuple.Item1;
 				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, monitor, searchNodes)) {
-					if (monitor != null && monitor.IsCancelRequested)
+					if (monitor != null && monitor.CancellationToken.IsCancellationRequested)
 						yield break;
 					var tag = Tuple.Create (foundReference.FileName, foundReference.Region);
 					if (foundOccurrences.Contains (tag))
@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.EndTask ();
 		}
 
-		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers);
+		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, ProgressMonitor monitor, IEnumerable<object> searchedMembers);
 
 		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope, bool includeOverloads = true)
 		{
@@ -252,8 +252,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
 		{
-			yield return (IEntity)type;
-			foreach (var c in type.GetDefinition ().GetMembers (m => m.SymbolKind == SymbolKind.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
+			var typeDefinition = type.GetDefinition ();
+			if (typeDefinition == null)
+				yield break;
+			yield return (IEntity)typeDefinition;
+			foreach (var c in typeDefinition.GetMembers (m => m.SymbolKind == SymbolKind.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
 				if (!c.IsSynthetic)
 					yield return c;
 			}

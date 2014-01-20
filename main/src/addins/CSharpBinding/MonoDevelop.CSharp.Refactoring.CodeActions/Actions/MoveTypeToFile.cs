@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (IsSingleType (ctx)) {
 					FileService.RenameFile (ctx.TextEditor.FileName, correctFileName);
 					if (ctx.FileContainerProject != null)
-						ctx.FileContainerProject.Save (new NullProgressMonitor ());
+						ctx.FileContainerProject.Save (new ProgressMonitor ());
 					return;
 				}
 				
@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			
 			File.WriteAllText (correctFileName, content);
 			context.FileContainerProject.AddFile (correctFileName);
-			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.FileContainerProject);
+			MonoDevelop.Ide.IdeApp.ProjectOperations.SaveAsync (context.FileContainerProject);
 		}
 
 		static bool IsBlankLine (TextDocument doc, int i)

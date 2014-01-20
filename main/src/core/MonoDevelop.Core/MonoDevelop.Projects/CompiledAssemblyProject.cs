@@ -34,6 +34,9 @@ using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections.Generic;
 using Mono.Cecil.Mdb;
 using Mono.Cecil.Cil;
+using System.Threading.Tasks;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -46,9 +49,9 @@ namespace MonoDevelop.Projects
 			AddNewConfiguration ("Default");
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetProjectTypes (HashSet<string> types)
 		{
-			yield return "CompiledAssembly";
+			types.Add ("CompiledAssembly");
 		}
 		
 		public override IconId StockIcon {
@@ -137,17 +140,12 @@ namespace MonoDevelop.Projects
 			return string.Join (Path.DirectorySeparatorChar.ToString (), s1, 0, n);
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return new BuildResult ();
+			return Task.FromResult (BuildResult.Success);
 		}
 		
-		internal protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		internal protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration conf = (ProjectConfiguration) GetConfiguration (configuration);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", FileName));
@@ -156,8 +154,6 @@ namespace MonoDevelop.Projects
 				? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput)
 				: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
 			
-			AggregatedOperationMonitor aggregatedOperationMonitor = new AggregatedOperationMonitor (monitor);
-
 			try {
 				try {
 					ExecutionCommand executionCommand = CreateExecutionCommand (configuration, conf);
@@ -167,14 +163,16 @@ namespace MonoDevelop.Projects
 						return;
 					}
 
-					IProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
-					aggregatedOperationMonitor.AddOperation (asyncOp);
-					asyncOp.WaitForCompleted ();
+					ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
+					var stopper = monitor.CancellationToken.Register (asyncOp.Cancel);
+
+					await asyncOp.Task;
+
+					stopper.Dispose ();
 
 					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
 				} finally {
 					console.Dispose ();
-					aggregatedOperationMonitor.Dispose ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", FileName), ex);
@@ -182,7 +180,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 			if (config == null)
@@ -201,6 +199,32 @@ namespace MonoDevelop.Projects
 			cmd.EnvironmentVariables = new Dictionary<string, string> (configuration.EnvironmentVariables);
 			return cmd;
 		}
+
+		public override bool HasSlnData {
+			get {
+				return true;
+			}
+		}
+
+		public override DataItem WriteSlnData ()
+		{
+			DataSerializer ser = new DataSerializer (MSBuildProjectService.DataContext);
+			ser.SerializationContext.BaseFile = FileName;
+			ser.SerializationContext.DirectorySeparatorChar = '\\';
+			DataItem data = (DataItem) ser.Serialize (this, typeof(CompiledAssemblyProject));
+			return data;
+		}
+
+		public override void ReadSlnData (DataItem item)
+		{
+			// Remove the default configuration, since new ones will be loaded
+			Configurations.Clear ();
+
+			DataSerializer ser = new DataSerializer (MSBuildProjectService.DataContext);
+			ser.SerializationContext.BaseFile = FileName;
+			ser.SerializationContext.DirectorySeparatorChar = '\\';
+			ser.Deserialize (this, item);
+		}
 	}
 	
 	public class CompiledAssemblyExtension: ProjectServiceExtension
@@ -212,21 +236,16 @@ namespace MonoDevelop.Projects
 			return base.IsSolutionItemFile (fileName);
 		}
 		
-		protected override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
+		protected override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName)
 		{
 			if (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll")) {
-				CompiledAssemblyProject p = new CompiledAssemblyProject ();
-				p.LoadFrom (fileName);
-				return p;
+				return Task<SolutionItem>.Factory.StartNew (delegate {
+					CompiledAssemblyProject p = new CompiledAssemblyProject ();
+					p.LoadFrom (fileName);
+					return p;
+				});
 			}
 			return base.LoadSolutionItem (monitor, fileName);
-		}
-		
-		public override void Save (IProgressMonitor monitor, SolutionEntityItem item)
-		{
-//			if (item is CompiledAssemblyProject)
-//				return;
-			base.Save (monitor, item);
 		}
 	}
 }

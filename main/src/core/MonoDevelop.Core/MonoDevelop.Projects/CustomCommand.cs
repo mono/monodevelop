@@ -35,6 +35,8 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.StringParsing;
 using System.Collections.Generic;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Projects
 {
@@ -98,7 +100,7 @@ namespace MonoDevelop.Projects
 			set { pauseExternalConsole = value; }
 		}
 		
-		public string GetCommandFile (IWorkspaceObject entry, ConfigurationSelector configuration)
+		public string GetCommandFile (WorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
@@ -106,7 +108,7 @@ namespace MonoDevelop.Projects
 			return exe;
 		}
 		
-		public string GetCommandArgs (IWorkspaceObject entry, ConfigurationSelector configuration)
+		public string GetCommandArgs (WorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
@@ -114,7 +116,7 @@ namespace MonoDevelop.Projects
 			return args;
 		}
 		
-		public FilePath GetCommandWorkingDir (IWorkspaceObject entry, ConfigurationSelector configuration)
+		public FilePath GetCommandWorkingDir (WorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			if (string.IsNullOrEmpty (workingdir))
@@ -135,10 +137,10 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
-		StringTagModel GetTagModel (IWorkspaceObject entry, ConfigurationSelector configuration)
+		StringTagModel GetTagModel (WorkspaceObject entry, ConfigurationSelector configuration)
 		{
-			if (entry is SolutionItem)
-				return ((SolutionItem)entry).GetStringTagModel (configuration);
+			if (entry is SolutionFolderItem)
+				return ((SolutionFolderItem)entry).GetStringTagModel (configuration);
 			else if (entry is WorkspaceItem)
 				return ((WorkspaceItem)entry).GetStringTagModel ();
 			else
@@ -172,7 +174,7 @@ namespace MonoDevelop.Projects
 			args = StringParserService.Parse (args, tagSource);
 		}
 		
-		public ProcessExecutionCommand CreateExecutionCommand (IWorkspaceObject entry, ConfigurationSelector configuration)
+		public ProcessExecutionCommand CreateExecutionCommand (WorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			string exe, args;
 			StringTagModel tagSource = GetTagModel (entry, configuration);
@@ -207,12 +209,12 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
-		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ConfigurationSelector configuration)
+		public Task<bool> Execute (ProgressMonitor monitor, WorkspaceObject entry, ConfigurationSelector configuration)
 		{
-			Execute (monitor, entry, null, configuration);
+			return Execute (monitor, entry, null, configuration);
 		}
 		
-		public bool CanExecute (IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
+		public bool CanExecute (WorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (string.IsNullOrEmpty (command))
 				return false;
@@ -224,7 +226,7 @@ namespace MonoDevelop.Projects
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context,
+		public async Task<bool> Execute (ProgressMonitor monitor, WorkspaceObject entry, ExecutionContext context,
 			ConfigurationSelector configuration)
 		{
 			ProcessExecutionCommand cmd = CreateExecutionCommand (entry, configuration);
@@ -233,12 +235,12 @@ namespace MonoDevelop.Projects
 			
 			if (!Directory.Exists (cmd.WorkingDirectory)) {
 				monitor.ReportError (GettextCatalog.GetString ("Custom command working directory does not exist"), null);
-				return;
+				return false;
 			}
 			
-			AggregatedOperationMonitor aggMon = null;
-			IProcessAsyncOperation oper = null;
+			ProcessAsyncOperation oper = null;
 			IConsole console = null;
+			var result = true;
 			
 			try {
 				if (context != null) {
@@ -254,35 +256,33 @@ namespace MonoDevelop.Projects
 							cmd.WorkingDirectory, console, null);
 					} else {
 						oper = Runtime.ProcessService.StartProcess (cmd.Command, cmd.Arguments,
-							cmd.WorkingDirectory, monitor.Log, monitor.Log, null, false);
+							cmd.WorkingDirectory, monitor.Log, monitor.Log, null, false).ProcessAsyncOperation;
 					}
 				}
-				aggMon = new AggregatedOperationMonitor (monitor, oper);
-				oper.WaitForCompleted ();
-				if (!oper.Success) {
+
+				var stopper = monitor.CancellationToken.Register (oper.Cancel);
+
+				await oper.Task;
+
+				stopper.Dispose ();
+
+				if (oper.ExitCode != 0) {
 					monitor.ReportError ("Custom command failed (exit code: " + oper.ExitCode + ")", null);
 				}
 			} catch (Win32Exception w32ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Failed to execute custom command '{0}': {1}",
 					cmd.Command, w32ex.Message), null);
-				return;
+				return false;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Command execution failed", ex);
 				throw new UserException (GettextCatalog.GetString ("Command execution failed: {0}", ex.Message));
 			} finally {
-				if (oper == null || !oper.Success) {
-					monitor.AsyncOperation.Cancel ();
-				}
-				if (oper != null) {
-					oper.Dispose ();
-				}
+				result = oper != null && oper.ExitCode == 0;
 				if (console != null) {
 					console.Dispose ();
 				}
-				if (aggMon != null) {
-					aggMon.Dispose ();
-				}
 			}
+			return result;
 		}
 	}
 }

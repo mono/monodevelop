@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 	[DataItem (FallbackType=typeof(UnknownConfiguration))]
 	public class SolutionItemConfiguration : ItemConfiguration
 	{
-		SolutionEntityItem parentItem;
+		SolutionItem parentItem;
 		
 		public SolutionItemConfiguration ()
 		{
@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		public SolutionEntityItem ParentItem {
+		public SolutionItem ParentItem {
 			get { return parentItem; }
 		}
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects
 				?? configs.FirstOrDefault (c => Name == c.Name && (c.Platform == "" || c.Platform == "Any CPU"));
 		}
 
-		internal void SetParentItem (SolutionEntityItem item)
+		internal void SetParentItem (SolutionItem item)
 		{
 			parentItem = item;
 		}

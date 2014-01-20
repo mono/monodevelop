@@ -97,7 +97,7 @@ namespace project1 {
 	{ }
 }";
 			var project1 = new UnknownProject { FileName = "projectc1.csproj" };
-			var project2 = new DotNetAssemblyProject { FileName = "projectc2.csproj" };
+			var project2 = new MonoDevelop.CSharp.Project.CSharpProject { FileName = "projectc2.csproj" };
 			project2.References.Add (new MonoDevelop.Projects.ProjectReference (project1));
 
 			var solution = new Solution ();
@@ -148,7 +148,7 @@ namespace project1 {
 	}
 }";
 			var project1 = new UnknownProject { FileName = "project1.csproj" };
-			var project2 = new DotNetAssemblyProject { FileName = "project2.csproj" };
+			var project2 = new MonoDevelop.CSharp.Project.CSharpProject { FileName = "project2.csproj" };
 			var solution = new Solution ();
 			solution.RootFolder.AddItem (project1);
 			solution.RootFolder.AddItem (project2);
@@ -183,7 +183,7 @@ namespace project1 {
 			var projects = new List<Project> ();
 			var solution = new Solution ();
 			for (int i = 0; i < 3; i++) {
-				var project = new DotNetAssemblyProject { FileName = String.Format ("projectx{0}.csproj", i) };
+				var project = new MonoDevelop.CSharp.Project.CSharpProject { FileName = String.Format ("projectx{0}.csproj", i) };
 				projects.Add (project);
 				solution.RootFolder.AddItem (project);
 				project.AddFile (new ProjectFile (String.Format ("dummy{0}.cs", i)));

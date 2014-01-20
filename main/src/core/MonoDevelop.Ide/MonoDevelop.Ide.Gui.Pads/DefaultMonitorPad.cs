@@ -51,7 +51,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ToggleButton buttonPin;
 		Button buttonClear;
 		bool progressStarted;
-		IAsyncOperation asyncOperation;
 		LogViewProgressMonitor monitor;
 		Pad statusSourcePad;
 		
@@ -114,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			set { this.statusSourcePad = value; }
 		}
 		
-		internal IProgressMonitor CurrentMonitor {
+		internal ProgressMonitor CurrentMonitor {
 			get { return monitor; }
 		}
 		
@@ -125,7 +124,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnButtonStopClick (object sender, EventArgs e)
 		{
-			asyncOperation.Cancel ();
+			monitor.Cancel ();
 		}
 
 		void OnCombineOpen (object sender, EventArgs e)
@@ -150,14 +149,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return !progressStarted && !buttonPin.Active; }
 		}
 		
-		public IProgressMonitor BeginProgress (string title)
+		public ProgressMonitor BeginProgress (string title)
 		{
 			progressStarted = true;
 			
 			logView.Clear ();
 			monitor = logView.GetProgressMonitor ();
-			asyncOperation = monitor.AsyncOperation;
-			
+
 			DispatchService.GuiDispatch (delegate {
 				window.HasNewData = false;
 				window.HasErrors = false;
@@ -165,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				buttonStop.Sensitive = true;
 			});
 			
-			monitor.AsyncOperation.Completed += delegate {
+			monitor.Completed += delegate {
 				EndProgress ();
 			};
 			
@@ -177,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			DispatchService.GuiDispatch (delegate {
 				if (window != null) {
 					window.IsWorking = false;
-					if (!asyncOperation.Success)
+					if (monitor.Errors.Length > 0)
 						window.HasErrors = true;
 					else
 						window.HasNewData = true;
@@ -190,8 +188,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (monitor.Errors.Length > 0) {
 					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, monitor.Errors [monitor.Errors.Length - 1].Message);
 					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
-				} else if (monitor.Messages.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (monitor.Messages [monitor.Messages.Length - 1]);
+				} else if (monitor.SuccessMessages.Length > 0) {
+					IdeApp.Workbench.StatusBar.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
 					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 				} else if (monitor.Warnings.Length > 0) {
 					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Warning, monitor.Warnings [monitor.Warnings.Length - 1]);

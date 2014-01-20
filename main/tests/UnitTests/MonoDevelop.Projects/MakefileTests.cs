@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects
 				Assert.Ignore ();
 
 			string solFile = Util.GetSampleProject ("console-project-with-makefile", "ConsoleProject.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			

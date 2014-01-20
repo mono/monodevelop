@@ -149,8 +149,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void IncludeFileToProject ()
 		{
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
-			Set<Solution> solutions = new Set<Solution> ();
+			Set<IWorkspaceFileObject> projects = new Set<IWorkspaceFileObject> ();
 			var nodesByProject = CurrentNodes.GroupBy (n => n.GetParentDataItem (typeof(Project), true) as Project);
 			
 			foreach (var projectGroup in nodesByProject) {
@@ -166,21 +165,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						SolutionFolder folder = node.GetParentDataItem (typeof(SolutionFolder), true) as SolutionFolder;
 						if (folder != null) {
 							folder.Files.Add (file.Path);
-							solutions.Add (folder.ParentSolution);
+							projects.Add (folder.ParentSolution);
 						}
 						else {
 							Solution sol = node.GetParentDataItem (typeof(Solution), true) as Solution;
 							sol.RootFolder.Files.Add (file.Path);
-							solutions.Add (sol);
+							projects.Add (sol);
 						}
 					}
 				}
 				if (newFiles.Count > 0)
 					project.AddFiles (newFiles);
 			}
-			IdeApp.ProjectOperations.Save (projects);
-			foreach (Solution sol in solutions)
-				IdeApp.ProjectOperations.Save (sol);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.IncludeToProject)]

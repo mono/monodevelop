@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 		string compilerOutput;
 		List<BuildError> errors = new List<BuildError> ();
 		IBuildTarget sourceTarget;
+		static BuildResult success = new BuildResult ();
 		
 		public BuildResult()
 		{
@@ -64,6 +65,18 @@ namespace MonoDevelop.Projects
 					Append (new BuildError (err));
 				}
 			}
+		}
+
+		public bool HasErrors {
+			get { return ErrorCount > 0; }
+		}
+
+		public bool HasWarnings {
+			get { return WarningCount > 0; }
+		}
+
+		public static BuildResult Success {
+			get { return success; }
 		}
 		
 		public ReadOnlyCollection<BuildError> Errors {

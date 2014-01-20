@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.Execution
 			return command is DotNetExecutionCommand;
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			DotNetExecutionCommand cmd = (DotNetExecutionCommand) command;
 			if (cmd.TargetRuntime == null)

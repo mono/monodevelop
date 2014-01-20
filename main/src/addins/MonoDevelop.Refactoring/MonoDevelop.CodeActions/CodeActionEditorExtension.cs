@@ -607,12 +607,12 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag.Popup ();
 		}
 
+		static readonly List<CodeAction> emptyList = new List<CodeAction> ();
 		internal List<CodeAction> GetCurrentFixes ()
 		{
-			if (currentSmartTag == null)
+			if (QuickTaskStrip.EnableFancyFeatures && currentSmartTag == null)
 				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
-			return currentSmartTag.fixes;
+			return currentSmartTag == null ? emptyList : currentSmartTag.fixes;
 		}
 	}
 }
-

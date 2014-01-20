@@ -29,16 +29,17 @@ using System;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
 	internal class MD1SolutionItemHandler: SolutionItemHandler
 	{
-		public MD1SolutionItemHandler (SolutionItem item): base (item)
+		public MD1SolutionItemHandler (SolutionFolderItem item): base (item)
 		{
 		}
 
-		public override void Save (IProgressMonitor monitor)
+		public override Task Save (ProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
 		}

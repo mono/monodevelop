@@ -46,6 +46,7 @@ using MonoDevelop.Deployment;
 using MonoDevelop.Deployment.Linux;
 using CBinding.Parser;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace CBinding
 {
@@ -62,8 +63,8 @@ namespace CBinding
 		ShowPackageDetails,
 		GotoDeclaration,
 	}
-	
-	[DataInclude(typeof(CProjectConfiguration))]
+
+	[RegisterProjectType ("{2857B73E-F847-4B02-9238-064979017E93}", Extension="cproj", Alias="C/C++")]
 	public class CProject : Project, IDeployable
 	{
 		[ItemProperty ("Compiler", ValueType = typeof(CCompiler))]
@@ -177,9 +178,9 @@ namespace CBinding
 			}			
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetProjectTypes (HashSet<string> types)
 		{
-			yield return "Native";
+			types.Add ("Native");
 		}
 
 		public override string[] SupportedLanguages {
@@ -202,7 +203,7 @@ namespace CBinding
 			}
 		}
 		
-		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
+		protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 		{
 			foreach (var p in base.GetReferencedItems (configuration))
 				yield return p;
@@ -302,15 +303,33 @@ namespace CBinding
 			return pkgfile;
 		}
 		
-		protected override BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			CProjectConfiguration pc = (CProjectConfiguration) GetConfiguration (configuration);
 			pc.SourceDirectory = BaseDirectory;
-			
-			return compiler_manager.Compile (this,
-				Files, packages,
-				pc,
-			    monitor);
+
+			return Task<BuildResult>.Factory.StartNew (delegate {
+				if (pc.CompileTarget != CompileTarget.Bin)
+					WriteMDPkgPackage (configuration);
+
+				return compiler_manager.Compile (this,
+					Files, packages,
+					pc,
+					monitor);
+			});
+		}
+
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
+
+			var res = await base.OnClean (monitor, configuration);
+			if (res.HasErrors)
+				return res;
+
+			await Task.Factory.StartNew (() => Compiler.Clean (Files, conf, monitor));
+
+			return res;
 		}
 		
 		protected virtual ExecutionCommand CreateExecutionCommand (CProjectConfiguration conf)
@@ -330,7 +349,7 @@ namespace CBinding
 			return (target == CBinding.CompileTarget.Bin) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			bool pause = conf.PauseConsoleOutput;
@@ -348,26 +367,22 @@ namespace CBinding
 			else
 				console = context.ConsoleFactory.CreateConsole (!pause);
 			
-			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
-			
 			try {
 				ExecutionCommand cmd = CreateExecutionCommand (conf);
 				if (!context.ExecutionHandler.CanExecute (cmd)) {
 					monitor.ReportError ("Cannot execute \"" + conf.Output + "\". The selected execution mode is not supported for C projects.", null);
 					return;
 				}
-				
-				IProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
-				
-				operationMonitor.AddOperation (op);
-				op.WaitForCompleted ();
+
+				ProcessAsyncOperation op = context.ExecutionHandler.Execute (cmd, console);
+				using (var t = monitor.CancellationToken.Register (op.Cancel))
+					await op.Task;
 				
 				monitor.Log.WriteLine ("The operation exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", conf.Output), ex);
 				monitor.ReportError ("Cannot execute \"" + conf.Output + "\"", ex);
 			} finally {			
-				operationMonitor.Dispose ();			
 				console.Dispose ();
 			}
 		}

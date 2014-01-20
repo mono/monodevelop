@@ -30,7 +30,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionFolderItemCollection: ItemCollection<SolutionItem>
+	public class SolutionFolderItemCollection: ItemCollection<SolutionFolderItem>
 	{
 		SolutionFolder parentFolder;
 		
@@ -43,14 +43,14 @@ namespace MonoDevelop.Projects
 			this.parentFolder = parentFolder;
 		}
 		
-		internal void Replace (SolutionItem item, SolutionItem newItem)
+		internal void Replace (SolutionFolderItem item, SolutionFolderItem newItem)
 		{
 			int i = IndexOf (item);
 			Items [i] = newItem;
 			newItem.ParentFolder = parentFolder;
 		}
 		
-		protected override void OnItemAdded (SolutionItem item)
+		protected override void OnItemAdded (SolutionFolderItem item)
 		{
 			if (parentFolder != null) {
 				// If the item belongs to another solution, remove it from there.
@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected override void OnItemRemoved (SolutionItem item)
+		protected override void OnItemRemoved (SolutionFolderItem item)
 		{
 			if (parentFolder != null) {
 				item.ParentFolder = null;
@@ -82,12 +82,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal void InternalAdd (SolutionItem item)
+		internal void InternalAdd (SolutionFolderItem item)
 		{
 			Items.Add (item);
 		}
 		
-		internal void InternalRemove (SolutionItem item)
+		internal void InternalRemove (SolutionFolderItem item)
 		{
 			Items.Remove (item);
 		}

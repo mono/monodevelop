@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			Solution solution = dataObject as Solution;
 			int count = 0;
-			foreach (SolutionItem e in solution.GetAllSolutionItems ())
+			foreach (SolutionFolderItem e in solution.GetAllSolutionItems ())
 				if (!(e is SolutionFolder))
 					count++;
 			
@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			foreach (SolutionItem entry in solution.RootFolder.Items)
+			foreach (SolutionFolderItem entry in solution.RootFolder.Items)
 				ctx.AddChild (entry);
 		}
 
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			
 			Solution sol = (Solution) CurrentNode.DataItem;
 			sol.Name = newName;
-			IdeApp.Workspace.Save();
+			IdeApp.Workspace.SaveAsync();
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			return dataObject is SolutionItem;
+			return dataObject is SolutionFolderItem;
 		}
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (res == AlertButton.Remove) {
 				parent.Items.Remove (solution);
 				solution.Dispose ();
-				IdeApp.Workspace.Save();
+				IdeApp.Workspace.SaveAsync();
 			}
 		}
 		
@@ -226,17 +226,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void AddNewProjectToSolution ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (solution.RootFolder);
+			SolutionFolderItem ce = IdeApp.ProjectOperations.CreateProject (solution.RootFolder);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddProject)]
-		public void AddProjectToCombine()
+		public async void AddProjectToCombine()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (solution.RootFolder);
+			SolutionFolderItem ce = await IdeApp.ProjectOperations.AddSolutionItem (solution.RootFolder);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void AddFolder()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			SolutionItem ce = new SolutionFolder ();
+			var ce = new SolutionFolder ();
 			ce.Name = GettextCatalog.GetString ("New Folder");
 			solution.RootFolder.Items.Add (ce);
 			Tree.AddNodeInsertCallback (ce, OnFolderInserted);
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnReload ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				solution.ParentWorkspace.ReloadItem (m, solution);
 			}
 		}

@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
-		internal ProjectItemCollection (SolutionEntityItem parent): base (parent)
+		internal ProjectItemCollection (SolutionItem parent): base (parent)
 		{
 		}
 	}
@@ -51,11 +51,11 @@ namespace MonoDevelop.Projects
 	
 	public class ProjectItemCollection<T>: ItemCollection<T>, IItemListHandler where T: ProjectItem
 	{
-		SolutionEntityItem parent;
+		SolutionItem parent;
 		IItemListHandler parentCollection;
 		List<IItemListHandler> subCollections;
 		
-		internal ProjectItemCollection (SolutionEntityItem parent)
+		internal ProjectItemCollection (SolutionItem parent)
 		{
 			this.parent = parent;
 		}

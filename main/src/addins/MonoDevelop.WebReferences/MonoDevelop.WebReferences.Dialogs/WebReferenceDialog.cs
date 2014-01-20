@@ -169,7 +169,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			tbxReferenceURL.Text = homeUrl;
 
 			wcfOptions = WebReferencesService.WcfEngine.DefaultClientOptions;
-			if (project is PortableDotNetProject) {
+			if (project.IsPortableLibrary) {
 				wcfOptions.GenerateAsynchronousMethods = false;
 				wcfOptions.GenerateEventBasedAsynchronousMethods = true;
 			}
@@ -491,7 +491,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				btnOK.Sensitive = isWebService;
 				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
 				tbxReferenceName.Sensitive = isWebService;
-				comboModel.Sensitive = !(project is PortableDotNetProject);
+				comboModel.Sensitive = !project.IsPortableLibrary;
 				break;
 
 			case DialogState.CreateConfig:

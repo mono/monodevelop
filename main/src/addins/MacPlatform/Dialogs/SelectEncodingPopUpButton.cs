@@ -25,12 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Foundation;
 using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
+using System.Linq;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -94,9 +96,7 @@ namespace MonoDevelop.MacIntegration
 			if (clear)
 				Menu.RemoveAllItems ();
 				
-			encodings = SelectedEncodings.ConversionEncodings;
-			if (encodings == null || encodings.Length == 0)
-				encodings = SelectedEncodings.DefaultEncodings;
+			encodings = TextEncoding.ConversionEncodings.Select ((e) => e.CodePage).ToArray ();
 			
 			if (autoDetectedItem != null) {
 				Menu.AddItem (autoDetectedItem);

@@ -42,8 +42,8 @@ namespace MonoDevelop.Ide.Projects
 			this.policyProvider = policyProvider;
 			
 			fileEntry.DefaultPath = DefaultFileDialogPolicyDir;
-			if (policyProvider is SolutionItem)
-				fileEntry.Path = ((SolutionItem)policyProvider).Name + ".mdpolicy";
+			if (policyProvider is SolutionFolderItem)
+				fileEntry.Path = ((SolutionFolderItem)policyProvider).Name + ".mdpolicy";
 			else if (policyProvider is Solution)
 				fileEntry.Path = ((Solution)policyProvider).Name + ".mdpolicy";
 			

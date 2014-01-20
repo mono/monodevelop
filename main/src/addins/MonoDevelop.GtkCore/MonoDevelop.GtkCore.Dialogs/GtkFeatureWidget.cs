@@ -48,7 +48,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			get { return GettextCatalog.GetString ("Enables support for GTK# in the project. Allows the visual design of GTK# windows, and the creation of a GTK# widget library."); }
 		}
 
-		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			if (!(entry is DotNetProject) || !GtkDesignInfo.SupportsRefactoring (entry as DotNetProject))
 				return FeatureSupportLevel.NotSupported;
@@ -59,18 +59,18 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			if (GtkDesignInfo.SupportsDesigner ((Project)entry))
 				return FeatureSupportLevel.Enabled;
-			else if (entry is DotNetAssemblyProject)
+			else if (entry is DotNetProject)
 				return FeatureSupportLevel.SupportedByDefault;
 			else
 				return FeatureSupportLevel.Supported;
 		}
 		
-		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			return new GtkFeatureWidget ((DotNetProject) entry);
 		}
 
-		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry, Widget editor)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionFolderItem entry, Widget editor)
 		{
 			GtkFeatureWidget fw = (GtkFeatureWidget) editor;
 			ReferenceManager refmgr = new ReferenceManager ((DotNetProject) entry);
@@ -78,7 +78,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			refmgr.Dispose ();
 		}
 		
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}

@@ -31,6 +31,9 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
 using Gtk;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -71,7 +74,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return true;
 		}
 		
-		public IEnumerable<SearchResult> FindAll (Scope scope, IProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter)
+		public async Task FindAll (Scope scope, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, ResultQueue<SearchResult> results)
 		{
 			if (filter.RegexSearch) {
 				RegexOptions regexOptions = RegexOptions.Compiled;
@@ -84,42 +87,49 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
 			try {
-				int totalWork = scope.GetTotalWork (filter);
+				int totalWork = await scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 				string content;
-				
-				foreach (FileProvider provider in scope.GetFiles (monitor, filter)) {
-					if (monitor.IsCancelRequested)
-						yield break;
-					SearchedFilesCount++;
-					try {
-						content = provider.ReadString ();
+
+				var files = new ResultQueue<FileProvider> ();
+				scope.GetFiles (monitor, filter, files);
+
+				await Task.Factory.StartNew (delegate {
+					FileProvider provider;
+					while (files.TryDequeue (out provider)) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							break;
+						SearchedFilesCount++;
+						try {
+							content = provider.ReadString ();
+							if (replacePattern != null)
+								provider.BeginReplace (content);
+						} catch (System.IO.FileNotFoundException) {
+							Application.Invoke (delegate {
+								MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
+							});
+							continue;
+						}
+						foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								break;
+							FoundMatchesCount++;
+							results.Enqueue (result);
+						}
 						if (replacePattern != null)
-							provider.BeginReplace (content);
-					} catch (System.IO.FileNotFoundException) {
-						Application.Invoke (delegate {
-							MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
-						});
-						continue;
+							provider.EndReplace ();
+						if (SearchedFilesCount % step == 0)
+							monitor.Step (1); 
 					}
-					foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
-						if (monitor.IsCancelRequested)
-							yield break;
-						FoundMatchesCount++;
-						yield return result;
-					}
-					if (replacePattern != null)
-						provider.EndReplace ();
-					if (SearchedFilesCount % step == 0)
-						monitor.Step (1); 
-				}
+					results.SetComplete ();
+				});
 			} finally {
 				monitor.EndTask ();
 				IsRunning = false;
 			}
 		}
 		
-		IEnumerable<SearchResult> FindAll (IProgressMonitor monitor, FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (pattern))
 				return Enumerable.Empty<SearchResult> ();
@@ -130,12 +140,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Search (provider, content, pattern, replacePattern, filter);
 		}
 		
-		IEnumerable<SearchResult> RegexSearch (IProgressMonitor monitor, FileProvider provider, string content, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, string content, string replacePattern, FilterOptions filter)
 		{
 			var results = new List<SearchResult> ();
 			if (replacePattern == null) {
 				foreach (Match match in regex.Matches (content)) {
-					if (monitor.IsCancelRequested)
+					if (monitor.CancellationToken.IsCancellationRequested)
 						break;
 					if (provider.SelectionStartPosition > -1 && match.Index < provider.SelectionStartPosition)
 						continue;
@@ -156,7 +166,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 				provider.BeginReplace (content);
 				int delta = 0;
-				for (int i = 0; !monitor.IsCancelRequested && i < matches.Count; i++) {
+				for (int i = 0; !monitor.CancellationToken.IsCancellationRequested && i < matches.Count; i++) {
 					Match match = matches[i];
 					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, match.Index, match.Length)) {
 						string replacement = match.Result (replacePattern);
@@ -189,6 +199,68 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				}
 				idx += pattern.Length;
+			}
+		}
+	}
+
+	public class ResultQueue<T>
+	{
+		Queue<T> queue = new Queue<T>();
+		bool complete;
+
+		public void Enqueue (T v)
+		{
+			lock (queue) {
+				queue.Enqueue (v);
+				Monitor.PulseAll (queue);
+			}
+		}
+
+		public bool TryDequeue (out T value)
+		{
+			lock (queue) {
+				if (queue.Count == 0)
+					WaitForValues ();
+				if (complete) {
+					value = default(T);
+					return false;
+				}
+				value = queue.Dequeue ();
+				return true;
+			}
+		}
+
+		public async Task<T[]> DequeueMany ()
+		{
+			lock (queue) {
+				if (queue.Count > 0 || complete) {
+					var res = queue.ToArray ();
+					queue.Clear ();
+					return res;
+				}
+			}
+			return await Task<T[]>.Factory.StartNew (() => {
+				WaitForValues ();
+				var res = queue.ToArray ();
+				queue.Clear ();
+				return res;
+			});
+		}
+
+		void WaitForValues ()
+		{
+			lock (queue) {
+				while (queue.Count == 0 && !complete) {
+					Monitor.Wait (queue);
+				}
+			}
+		}
+
+		public void SetComplete ()
+		{
+			lock (queue) {
+				complete = true;
+				Monitor.PulseAll (queue);
 			}
 		}
 	}

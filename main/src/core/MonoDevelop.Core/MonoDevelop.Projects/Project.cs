@@ -37,6 +37,14 @@ using MonoDevelop;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Xml;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects.Extensions;
+using System.Threading;
+using Mono.Addins;
 
 
 namespace MonoDevelop.Projects
@@ -48,27 +56,200 @@ namespace MonoDevelop.Projects
 	/// This is the base class for MonoDevelop projects. A project is a solution item which has a list of
 	/// source code files and which can be built to generate an output.
 	/// </remarks>
-	[DataInclude(typeof(ProjectFile))]
-	[ProjectModelDataItem(FallbackType = typeof(UnknownProject))]
-	public abstract class Project : SolutionEntityItem
+	public class Project : SolutionItem
 	{
+		string[] flavorGuids = new string[0];
 		string[] buildActions;
+		MSBuildProject sourceProject;
+
+		string productVersion;
+		string schemaVersion;
+		bool modifiedInMemory;
+
+		List<string> defaultImports = new List<string> ();
 
 		protected Project ()
 		{
 			FileService.FileChanged += OnFileChanged;
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
 		}
-		
+
+		protected Project (params string[] flavorGuids): this()
+		{
+			this.flavorGuids = flavorGuids;
+		}
+
+		protected Project (string[] flavorIds, MSBuildProject sourceProject): this(flavorIds)
+		{
+		}
+
+		protected Project (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions): this()
+		{
+			var ids = projectOptions != null ? projectOptions.GetAttribute ("flavorIds") : null;
+			if (!string.IsNullOrEmpty (ids)) {
+				this.flavorGuids = ids.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			}
+		}
+
+		internal class CreationContext
+		{
+			static object theLock = new object ();
+			public MSBuildProject Project { get; set; }
+			public string TypeGuid { get; set; }
+
+			internal static void LockContext (MSBuildProject p, string typeGuid)
+			{
+				Monitor.Enter (theLock);
+				Current = new CreationContext ();
+				Current.Project = p;
+				Current.TypeGuid = typeGuid;
+			}
+
+			internal static void UnlockContext ()
+			{
+				Current = null;
+				Monitor.Exit (theLock);
+			}
+
+			public static CreationContext Current { get; private set; }
+		}
+
+		protected override void OnInitialize ()
+		{
+			base.OnInitialize ();
+
+			if (CreationContext.Current != null) {
+
+				if (IsExtensionChainCreated)
+					throw new InvalidOperationException ("Extension chain already created for this object");
+
+				TypeGuid = CreationContext.Current.TypeGuid;
+				this.sourceProject = CreationContext.Current.Project;
+
+				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
+				string projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
+
+				if (projectTypeGuids != null) {
+					var subtypeGuids = new List<string> ();
+					foreach (string guid in projectTypeGuids.Split (';')) {
+						string sguid = guid.Trim ();
+						if (sguid.Length > 0 && string.Compare (sguid, CreationContext.Current.TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
+							subtypeGuids.Add (guid);
+					}
+					flavorGuids = subtypeGuids.ToArray ();
+				}
+			}
+		}
+
+		protected override void OnExtensionChainInitialized ()
+		{
+			base.OnExtensionChainInitialized ();
+			if (CreationContext.Current != null)
+				FileName = CreationContext.Current.Project.FileName;
+		}
+
+		void OnDefaultRuntimeChanged (object o, EventArgs args)
+		{
+			// If the default runtime changes, the project builder for this project may change
+			// so it has to be created again.
+			CleanupProjectBuilder ();
+		}
+
+		public IEnumerable<string> FlavorGuids {
+			get { return flavorGuids; }
+		}
+
+		public List<string> DefaultImports {
+			get { return defaultImports; }
+		}
+
+		public string ToolsVersion { get; private set; }
+
+		internal bool CheckAllFlavorsSupported ()
+		{
+			return FlavorGuids.All (g => ProjectExtension.SupportsFlavor (g));
+		}
+
+		ProjectExtension projectExtension;
+		ProjectExtension ProjectExtension {
+			get {
+				if (projectExtension == null)
+					projectExtension = ExtensionChain.GetExtension<ProjectExtension> ();
+				return projectExtension;
+			}
+		}
+
+		/// <summary>Whether to use the MSBuild engine by default.</summary>
+		internal bool UseMSBuildEngineByDefault { get; set; }
+
+		/// <summary>Forces the MSBuild engine to be used.</summary>
+		internal bool RequireMSBuildEngine { get; set; }
+
+		protected override void OnModified (SolutionItemModifiedEventArgs args)
+		{
+			if (!Loading)
+				modifiedInMemory = true;
+			base.OnModified (args);
+		}
+
+		protected override Task OnLoad (ProgressMonitor monitor)
+		{
+			MSBuildProject p = sourceProject;
+			sourceProject = null;
+
+			return Task.Factory.StartNew (delegate {
+				if (p == null)
+					p = MSBuildProject.LoadAsync (FileName).Result;
+				IMSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
+				// Avoid crash if there is not global group
+				if (globalGroup == null)
+					p.AddNewPropertyGroup (false);
+
+				try {
+					ProjectExtensionUtil.BeginLoadOperation ();
+					ReadProject (monitor, p);
+				} finally {
+					ProjectExtensionUtil.EndLoadOperation ();
+				}
+			});
+		}
+
+		internal protected override Task OnSave (ProgressMonitor monitor)
+		{
+			modifiedInMemory = false;
+
+			return Task.Factory.StartNew (delegate {
+				var msproject = WriteProject (monitor);
+				if (msproject == null)
+					return;
+
+				// Don't save the file to disk if the content did not change
+				msproject.Save (FileName);
+
+				if (projectBuilder != null)
+					projectBuilder.Refresh ();
+			});
+		}
+
+		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
+		{
+			return base.CreateDefaultExtensions ().Concat (Enumerable.Repeat (new DefaultMSBuildProjectExtension (), 1));
+		}
+
+		internal protected override IEnumerable<string> GetItemTypeGuids ()
+		{
+			return base.GetItemTypeGuids ().Concat (flavorGuids);
+		}
+
 		/// <summary>
 		/// Description of the project.
 		/// </summary>
-		[ItemProperty("Description", DefaultValue = "")]
 		private string description = "";
 		public string Description {
-			get { return description; }
+			get { return description ?? ""; }
 			set {
 				description = value;
 				NotifyModified ("Description");
@@ -86,7 +267,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public virtual bool IsCompileable (string fileName)
 		{
-			return false;
+			return ProjectExtension.OnGetIsCompileable (fileName);
 		}
 
 		/// <summary>
@@ -97,7 +278,6 @@ namespace MonoDevelop.Projects
 		}
 		private ProjectFileCollection files;
 
-		[ProjectPathItemProperty ("BaseIntermediateOutputPath")]
 		FilePath baseIntermediateOutputPath;
 
 		public virtual FilePath BaseIntermediateOutputPath {
@@ -129,7 +309,31 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the project type and its base types.
 		/// </summary>
-		public abstract IEnumerable<string> GetProjectTypes ();
+		public IEnumerable<string> GetProjectTypes ()
+		{
+			var types = new HashSet<string> ();
+			ProjectExtension.OnGetProjectTypes (types);
+			return types;
+		}
+
+		protected virtual void OnGetProjectTypes (HashSet<string> types)
+		{
+		}
+
+		public bool HasFlavor<T> ()
+		{
+			return GetService (typeof(T)) != null;
+		}
+
+		public T GetFlavor<T> () where T:ProjectExtension
+		{
+			return (T) GetService (typeof(T));
+		}
+
+		internal IEnumerable<ProjectExtension> GetFlavors ()
+		{
+			return ExtensionChain.GetAllExtensions ().OfType<ProjectExtension> ();
+		}
 
 		/// <summary>
 		/// Gets or sets the icon of the project.
@@ -138,10 +342,15 @@ namespace MonoDevelop.Projects
 		/// The stock icon.
 		/// </value>
 		public virtual IconId StockIcon {
-			get { return stockIcon; }
+			get {
+				if (stockIcon != null)
+					return stockIcon.Value;
+				else
+					return ProjectExtension.StockIcon;
+			}
 			set { this.stockIcon = value; NotifyModified ("StockIcon"); }
 		}
-		IconId stockIcon = "md-project";
+		IconId? stockIcon;
 		
 		/// <summary>
 		/// List of languages that this project supports
@@ -150,7 +359,7 @@ namespace MonoDevelop.Projects
 		/// The identifiers of the supported languages.
 		/// </value>
 		public virtual string[] SupportedLanguages {
-			get { return new String[] { "" }; }
+			get { return ProjectExtension.SupportedLanguages; }
 		}
 
 		/// <summary>
@@ -164,9 +373,60 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public virtual string GetDefaultBuildAction (string fileName)
 		{
-			return IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
+			return ProjectExtension.OnGetDefaultBuildAction (fileName);
 		}
-		
+
+		public string GetDefaultResourceId (ProjectFile projectFile)
+		{
+			return ProjectExtension.OnGetDefaultResourceId (projectFile);
+		}
+
+		protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
+		{
+			return MSBuildResourceHandler.Instance.GetDefaultResourceId (projectFile);
+		}
+
+		internal ProjectItem CreateProjectItem (IMSBuildItemEvaluated item)
+		{
+			return ProjectExtension.OnCreateProjectItem (item);
+		}
+
+		protected virtual ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)
+		{
+			if (item.Name == "Folder")
+				return new ProjectFile ();
+
+			// Unknown item. Must be a file.
+			if (!string.IsNullOrEmpty (item.Include) && !UnsupportedItems.Contains (item.Name) && IsValidFile (item.Include))
+				return new ProjectFile ();
+
+			return new UnknownProjectItem (item.Name, item.Include);
+		}
+
+		bool IsValidFile (string path)
+		{
+			// If it is an absolute uri, it's not a valid file
+			try {
+				if (Uri.IsWellFormedUriString (path, UriKind.Absolute)) {
+					var f = new Uri (path);
+					return f.Scheme == "file";
+				}
+			} catch {
+				// Old mono versions may crash in IsWellFormedUriString if the path
+				// is not an uri.
+			}
+			return true;
+		}
+
+		// Items generated by VS but which MD is not using and should be ignored
+
+		internal static readonly IList<string> UnsupportedItems = new string[] {
+			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service",
+			"ProjectReference", "Reference", // Reference elements are included here because they are special-cased for DotNetProject, and they are unsupported in other types of projects
+			"InternalsVisibleTo",
+			"InternalsVisibleToTest"
+		};
+
 		/// <summary>
 		/// Gets a project file.
 		/// </summary>
@@ -255,7 +515,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual IEnumerable<string> GetStandardBuildActions ()
 		{
-			return BuildAction.StandardActions;
+			return ProjectExtension.OnGetStandardBuildActions ();
 		}
 
 		/// <summary>
@@ -263,25 +523,244 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual IList<string> GetCommonBuildActions ()
 		{
-			return BuildAction.StandardActions;
+			return ProjectExtension.OnGetCommonBuildActions ();
 		}
-
-		public static Project LoadProject (string filename, IProgressMonitor monitor)
-		{
-			Project prj = Services.ProjectService.ReadSolutionItem (monitor, filename) as Project;
-			if (prj == null)
-				throw new InvalidOperationException ("Invalid project file: " + filename);
-
-			return prj;
-		}
-
 
 		public override void Dispose ()
 		{
 			FileService.FileChanged -= OnFileChanged;
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
+			CleanupProjectBuilder ();
 			base.Dispose ();
 		}
-		
+
+		/// <summary>
+		/// Runs a build or execution target.
+		/// </summary>
+		/// <returns>
+		/// The result of the operation
+		/// </returns>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
+		/// <param name='target'>
+		/// Name of the target
+		/// </param>
+		/// <param name='configuration'>
+		/// Configuration to use to run the target
+		/// </param>
+		public Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnRunTarget (monitor, target, configuration);
+		}
+
+		public bool SupportsTarget (string target)
+		{
+			return !IsUnsupportedProject && ProjectExtension.OnGetSupportsTarget (target);
+		}
+
+		protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return target == "Build" || target == "Clean";
+		}
+
+		/// <summary>
+		/// Runs a build or execution target.
+		/// </summary>
+		/// <returns>
+		/// The result of the operation
+		/// </returns>
+		/// <param name='monitor'>
+		/// A progress monitor
+		/// </param>
+		/// <param name='target'>
+		/// Name of the target
+		/// </param>
+		/// <param name='configuration'>
+		/// Configuration to use to run the target
+		/// </param>
+		/// <remarks>
+		/// Subclasses can override this method to provide a custom implementation of project operations such as
+		/// build or clean. The default implementation delegates the execution to the more specific OnBuild
+		/// and OnClean methods, or to the item handler for other targets.
+		/// </remarks>
+		internal async protected virtual Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			if (target == ProjectService.BuildTarget)
+				return await RunBuildTarget (monitor, configuration);
+			else if (target == ProjectService.CleanTarget)
+				return await RunCleanTarget (monitor, configuration);
+			return await RunMSBuildTarget (monitor, target, configuration) ?? new BuildResult ();
+		}
+
+
+		async Task<BuildResult> DoRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			if (target == ProjectService.BuildTarget) {
+				SolutionItemConfiguration conf = GetConfiguration (configuration);
+				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
+					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build, configuration)) {
+						var r = new BuildResult ();
+						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+						return r;
+					}
+					return BuildResult.Success;
+				}
+			} else if (target == ProjectService.CleanTarget) {
+				SolutionItemConfiguration config = GetConfiguration (configuration);
+				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+					if (!await config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration)) {
+						var r = new BuildResult ();
+						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
+						return r;
+					}
+					return BuildResult.Success;
+				}
+			}
+			return await OnRunTarget (monitor, target, configuration);
+		}
+
+		async Task<BuildResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			if (CheckUseMSBuildEngine (configuration)) {
+				LogWriter logWriter = new LogWriter (monitor.Log);
+				RemoteProjectBuilder builder = GetProjectBuilder ();
+				var configs = GetConfigurations (configuration);
+
+				MSBuildResult result = null;
+				await Task.Factory.StartNew (delegate {
+					result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
+				});
+
+				var br = new BuildResult ();
+				foreach (var err in result.Errors) {
+					FilePath file = null;
+					if (err.File != null)
+						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
+
+					if (err.IsWarning)
+						br.AddWarning (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
+					else
+						br.AddError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
+				}
+				return br;
+			}
+			else {
+				CleanupProjectBuilder ();
+				if (this is DotNetProject) {
+					var handler = new MonoDevelop.Projects.Formats.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
+					return await handler.RunTarget (monitor, target, configuration);
+				}
+			}
+			return null;
+		}
+
+		internal ProjectConfigurationInfo[] GetConfigurations (ConfigurationSelector configuration)
+		{
+			// Returns a list of project/configuration information for the provided item and all its references
+			List<ProjectConfigurationInfo> configs = new List<ProjectConfigurationInfo> ();
+			var c = GetConfiguration (configuration);
+			configs.Add (new ProjectConfigurationInfo () {
+				ProjectFile = FileName,
+				Configuration = c.Name,
+				Platform = GetExplicitPlatform (c)
+			});
+			foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
+				var refConfig = refProject.GetConfiguration (configuration);
+				if (refConfig != null) {
+					configs.Add (new ProjectConfigurationInfo () {
+						ProjectFile = refProject.FileName,
+						Configuration = refConfig.Name,
+						Platform = GetExplicitPlatform (refConfig)
+					});
+				}
+			}
+			return configs.ToArray ();
+		}
+
+		//for some reason, MD internally handles "AnyCPU" as "", but we need to be explicit when
+		//passing it to the build engine
+		static string GetExplicitPlatform (SolutionItemConfiguration configObject)
+		{
+			if (string.IsNullOrEmpty (configObject.Platform)) {
+				return "AnyCPU";
+			}
+			return configObject.Platform;
+		}
+
+		#region Project builder management
+
+		RemoteProjectBuilder projectBuilder;
+		string lastBuildToolsVersion;
+		string lastBuildRuntime;
+		string lastFileName;
+		string lastSlnFileName;
+		object builderLock = new object ();
+
+		internal RemoteProjectBuilder GetProjectBuilder ()
+		{
+			//FIXME: we can't really have per-project runtimes, has to be per-solution
+			TargetRuntime runtime = null;
+			var ap = this as IAssemblyProject;
+			runtime = ap != null ? ap.TargetRuntime : Runtime.SystemAssemblyService.CurrentRuntime;
+
+			var sln = ParentSolution;
+			var slnFile = sln != null ? sln.FileName : null;
+
+			lock (builderLock) {
+				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
+					if (projectBuilder != null) {
+						projectBuilder.Dispose ();
+						projectBuilder = null;
+					}
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile);
+					projectBuilder.Disconnected += delegate {
+						CleanupProjectBuilder ();
+					};
+					lastBuildToolsVersion = ToolsVersion;
+					lastBuildRuntime = runtime.Id;
+					lastFileName = FileName;
+					lastSlnFileName = slnFile;
+				} else if (modifiedInMemory) {
+					modifiedInMemory = false;
+					// TODO NPM
+//				var p = SaveProject (new NullProgressMonitor ());
+//				projectBuilder.RefreshWithContent (p.SaveToString ());
+				}
+			}
+			return projectBuilder;
+		}
+
+		void CleanupProjectBuilder ()
+		{
+			if (projectBuilder != null) {
+				projectBuilder.Dispose ();
+				projectBuilder = null;
+			}
+		}
+
+		#endregion
+
+		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>
+		internal bool CheckUseMSBuildEngine (ConfigurationSelector sel, bool checkReferences = true)
+		{
+			// if the item mandates MSBuild, always use it
+			if (RequireMSBuildEngine)
+				return true;
+			// if the user has set the option, use the setting
+			if (UseMSBuildEngine.HasValue)
+				return UseMSBuildEngine.Value;
+
+			// If the item type defaults to using MSBuild, only use MSBuild if its direct references also use MSBuild.
+			// This prevents a not-uncommon common error referencing non-MSBuild projects from MSBuild projects
+			// NOTE: This adds about 11ms to the load/build/etc times of the MonoDevelop solution. Doing it recursively
+			// adds well over a second.
+			return UseMSBuildEngineByDefault && (
+				!checkReferences || GetReferencedItems (sel).OfType<Project>().All (i => i.CheckUseMSBuildEngine (sel, false))
+			);
+		}
+
 		/// <summary>
 		/// Adds a file to the project
 		/// </summary>
@@ -394,11 +873,15 @@ namespace MonoDevelop.Projects
 		//so in order to avoid doing them twice when using the msbuild engine, we special-case them
 		bool UsingMSBuildEngine (ConfigurationSelector sel)
 		{
-			var msbuildHandler = ItemHandler as MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectHandler;
-			return msbuildHandler != null && msbuildHandler.UseMSBuildEngineForItem (this, sel);
+			return CheckUseMSBuildEngine (sel);
 		}
 
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return RunTarget (monitor, "Build", configuration);
+		}
+
+		async Task<BuildResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// create output directory, if not exists
 			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
@@ -411,7 +894,7 @@ namespace MonoDevelop.Projects
 			StringParserService.Properties["Project"] = Name;
 			
 			if (UsingMSBuildEngine (configuration)) {
-				return DoBuild (monitor, configuration);
+				return await DoBuild (monitor, configuration);
 			}
 			
 			string outputDir = conf.OutputDirectory;
@@ -429,7 +912,7 @@ namespace MonoDevelop.Projects
 		
 			monitor.Log.WriteLine ("Performing main compilation...");
 			
-			BuildResult res = DoBuild (monitor, configuration);
+			BuildResult res = await DoBuild (monitor, configuration);
 
 			if (res != null) {
 				string errorString = GettextCatalog.GetPluralString ("{0} error", "{0} errors", res.ErrorCount, res.ErrorCount);
@@ -454,7 +937,7 @@ namespace MonoDevelop.Projects
 		/// Copies all support files to the output directory of the given configuration. Support files
 		/// include: assembly references with the Local Copy flag, data files with the Copy to Output option, etc.
 		/// </remarks>
-		public void CopySupportFiles (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public void CopySupportFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
@@ -505,7 +988,7 @@ namespace MonoDevelop.Projects
 		/// Deletes all support files from the output directory of the given configuration. Support files
 		/// include: assembly references with the Local Copy flag, data files with the Copy to Output option, etc.
 		/// </remarks>
-		public void DeleteSupportFiles (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task DeleteSupportFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
@@ -517,7 +1000,7 @@ namespace MonoDevelop.Projects
 					continue;
 
 				try {
-					dest.Delete ();
+					await dest.DeleteAsync ();
 				} catch (IOException ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Error deleting support file '{0}'.", dest), ex);
 				}
@@ -559,13 +1042,17 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		internal protected virtual void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
+			ProjectExtension.OnPopulateSupportFileList (list, configuration);
+		}
+		void DoPopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
+		{
 			foreach (ProjectFile pf in Files) {
 				if (pf.CopyToOutputDirectory == FileCopyMode.None)
 					continue;
 				list.Add (pf.FilePath, pf.CopyToOutputDirectory == FileCopyMode.PreserveNewest, pf.ProjectVirtualPath);
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets a list of files generated when building this project
 		/// </summary>
@@ -601,6 +1088,10 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		internal protected virtual void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
+			ProjectExtension.OnPopulateOutputFileList (list, configuration);
+		}		
+		void DoPopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
+		{
 			string file = GetOutputFileName (configuration);
 			if (file != null)
 				list.Add (file);
@@ -622,55 +1113,64 @@ namespace MonoDevelop.Projects
 		/// This method is invoked to build the project. Support files such as files with the Copy to Output flag will
 		/// be copied before calling this method.
 		/// </remarks>
-		protected virtual BuildResult DoBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async virtual Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			BuildResult res = ItemHandler.RunTarget (monitor, "Build", configuration);
+			BuildResult res = await RunMSBuildTarget (monitor, "Build", configuration);
 			return res ?? new BuildResult ();
 		}
 
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return RunTarget (monitor, "Clean", configuration);
+		}
+
+		async Task<BuildResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
-				return;
+				return BuildResult.Success;
 			}
 			
 			if (UsingMSBuildEngine (configuration)) {
-				DoClean (monitor, config.Selector);
-				return;
+				return await DoClean (monitor, config.Selector);
 			}
 			
 			monitor.Log.WriteLine ("Removing output files...");
-			
-			// Delete generated files
-			foreach (FilePath file in GetOutputFiles (configuration)) {
-				if (File.Exists (file)) {
-					file.Delete ();
-					if (file.ParentDirectory.CanonicalPath != config.OutputDirectory.CanonicalPath && Directory.GetFiles (file.ParentDirectory).Length == 0)
-						file.ParentDirectory.Delete ();
+
+			var filesToDelete = GetOutputFiles (configuration).ToArray ();
+
+			await Task.Factory.StartNew (delegate {
+				// Delete generated files
+				foreach (FilePath file in filesToDelete) {
+					if (File.Exists (file)) {
+						file.Delete ();
+						if (file.ParentDirectory.CanonicalPath != config.OutputDirectory.CanonicalPath && Directory.GetFiles (file.ParentDirectory).Length == 0)
+							file.ParentDirectory.Delete ();
+					}
 				}
-			}
+			});
 	
-			DeleteSupportFiles (monitor, configuration);
+			await DeleteSupportFiles (monitor, configuration);
 			
-			DoClean (monitor, config.Selector);
+			var res = await DoClean (monitor, config.Selector);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));
+			return res;
 		}
 
-		protected virtual void DoClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ItemHandler.RunTarget (monitor, "Clean", configuration);
+			return RunMSBuildTarget (monitor, "Clean", configuration);
 		}
 
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
 				return;
 			}
-			DoExecute (monitor, context, configuration);
+			await DoExecute (monitor, context, configuration);
 		}
 		
 		/// <summary>
@@ -685,8 +1185,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to execute.
 		/// </param>
-		protected virtual void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected virtual Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
+			return new Task (delegate {});
 		}
 
 		/// <summary>
@@ -700,12 +1201,19 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public virtual FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
-			return FilePath.Null;
+			return ProjectExtension.OnGetOutputFileName (configuration);
 		}
 
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		internal protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return CheckNeedsBuild (configuration);
+		}
+
+		protected override void OnSetNeedsBuilding (ConfigurationSelector configuration)
+		{
+			var of = GetOutputFileName (configuration);
+			if (File.Exists (of))
+				File.Delete (of);
 		}
 
 		/// <summary>
@@ -734,7 +1242,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			foreach (SolutionItem pref in GetReferencedItems (configuration)) {
+			foreach (SolutionFolderItem pref in GetReferencedItems (configuration)) {
 				if (pref.GetLastBuildTime (configuration) > tim)
 					return true;
 			}
@@ -778,16 +1286,19 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
+			var baseFiles = base.OnGetItemFiles (includeReferencedFiles);
+
 			if (includeReferencedFiles) {
+				List<FilePath> col = new List<FilePath> ();
 				foreach (ProjectFile pf in Files) {
 					if (pf.Subtype != Subtype.Directory)
 						col.Add (pf.FilePath);
 				}
+				baseFiles = baseFiles.Concat (col);
 			}
-			return col;
+			return baseFiles;
 		}
 
 		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
@@ -908,6 +1419,775 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		internal void ReadProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			OnReadProjectHeader (monitor, msproject);
+			ProjectExtension.OnReadProject (monitor, msproject);
+			NeedsReload = false;
+		}
+
+		bool newProject;
+
+		internal MSBuildProject WriteProject (ProgressMonitor monitor)
+		{
+			MSBuildProject msproject = new MSBuildProject ();
+			newProject = FileName == null || !File.Exists (FileName);
+			if (newProject) {
+				if (SupportsBuild ())
+					msproject.DefaultTargets = "Build";
+				msproject.FileName = FileName;
+			} else {
+				msproject.Load (FileName);
+			}
+
+			OnWriteProjectHeader (monitor, msproject);
+			ProjectExtension.OnWriteProject (monitor, msproject);
+
+			return msproject;
+		}
+
+		class ConfigData
+		{
+			public ConfigData (string conf, string plt, IMSBuildPropertySet grp)
+			{
+				Config = conf;
+				Platform = plt;
+				Group = grp;
+			}
+
+			public bool FullySpecified {
+				get { return Config != Unspecified && Platform != Unspecified; }
+			}
+
+			public string Config;
+			public string Platform;
+			public IMSBuildPropertySet Group;
+			public bool Exists;
+			public bool IsNew; // The group did not exist in the original file
+		}
+
+		const string Unspecified = null;
+		ITimeTracker timer;
+
+		protected virtual void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			timer = Counters.ReadMSBuildProject.BeginTiming ();
+
+			ToolsVersion = msproject.ToolsVersion;
+			if (string.IsNullOrEmpty (ToolsVersion))
+				ToolsVersion = "2.0";
+
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+			// Avoid crash if there is not global group
+			if (globalGroup == null)
+				globalGroup = msproject.AddNewPropertyGroup (false);
+
+			productVersion = globalGroup.GetValue ("ProductVersion");
+			schemaVersion = globalGroup.GetValue ("SchemaVersion");
+
+			// Get the project ID
+
+			string itemGuid = globalGroup.GetValue ("ProjectGuid");
+			if (itemGuid == null)
+				throw new UserException ("Project file doesn't have a valid ProjectGuid");
+
+			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
+			// of shared projects.
+			if (!itemGuid.StartsWith ("{", StringComparison.Ordinal))
+				itemGuid = "{" + itemGuid + "}";
+
+			ItemId = itemGuid.ToUpper ();
+
+			// Get the project GUIDs
+
+			string projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
+
+			var subtypeGuids = new List<string> ();
+			if (projectTypeGuids != null) {
+				foreach (string guid in projectTypeGuids.Split (';')) {
+					string sguid = guid.Trim ();
+					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
+						subtypeGuids.Add (guid);
+				}
+			}
+			flavorGuids = subtypeGuids.ToArray ();
+
+			if (!CheckAllFlavorsSupported ()) {
+				var guids = new [] { TypeGuid };
+				var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids.Concat (flavorGuids).ToArray (), FileName);
+				IsUnsupportedProject = true;
+				if (projectInfo != null)
+					UnsupportedProjectMessage = projectInfo.GetInstructions ();
+			}
+
+			// Common properties
+
+			Description = msproject.EvaluatedProperties.GetValue ("Description", "");
+			baseIntermediateOutputPath = msproject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
+
+			RemoveDuplicateItems (msproject);
+		}
+
+		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			timer.Trace ("Read project items");
+			LoadProjectItems (msproject, ProjectItemFlags.None);
+
+			timer.Trace ("Read configurations");
+
+			List<ConfigData> configData = GetConfigData (msproject, false);
+			List<ConfigData> partialConfigurations = new List<ConfigData> ();
+			HashSet<string> handledConfigurations = new HashSet<string> ();
+			var configurations = new HashSet<string> ();
+			var platforms = new HashSet<string> ();
+
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+			configData.Insert (0, new ConfigData (Unspecified, Unspecified, globalGroup));
+
+			// Load configurations, skipping the dummy config at index 0.
+			for (int i = 1; i < configData.Count; i++) {
+				ConfigData cgrp = configData[i];
+				string platform = cgrp.Platform;
+				string conf = cgrp.Config;
+
+				if (platform != Unspecified)
+					platforms.Add (platform);
+
+				if (conf != Unspecified)
+					configurations.Add (conf);
+
+				if (conf == Unspecified || platform == Unspecified) {
+					// skip partial configurations for now...
+					partialConfigurations.Add (cgrp);
+					continue;
+				}
+
+				string key = conf + "|" + platform;
+				if (handledConfigurations.Contains (key))
+					continue;
+
+				LoadConfiguration (monitor, configData, conf, platform);
+
+				handledConfigurations.Add (key);
+			}
+
+			// Now we can load any partial configurations by combining them with known configs or platforms.
+			if (partialConfigurations.Count > 0) {
+				if (platforms.Count == 0)
+					platforms.Add (string.Empty); // AnyCpu
+
+				foreach (ConfigData cgrp in partialConfigurations) {
+					if (cgrp.Config != Unspecified && cgrp.Platform == Unspecified) {
+						string conf = cgrp.Config;
+
+						foreach (var platform in platforms) {
+							string key = conf + "|" + platform;
+
+							if (handledConfigurations.Contains (key))
+								continue;
+
+							LoadConfiguration (monitor, configData, conf, platform);
+
+							handledConfigurations.Add (key);
+						}
+					} else if (cgrp.Config == Unspecified && cgrp.Platform != Unspecified) {
+						string platform = cgrp.Platform;
+
+						foreach (var conf in configurations) {
+							string key = conf + "|" + platform;
+
+							if (handledConfigurations.Contains (key))
+								continue;
+
+							LoadConfiguration (monitor, configData, conf, platform);
+
+							handledConfigurations.Add (key);
+						}
+					}
+				}
+			}
+
+			// Read extended properties
+
+			timer.Trace ("Read extended properties");
+		}
+
+		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeGlobalGroups)
+		{
+			List<ConfigData> configData = new List<ConfigData> ();
+			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
+				string conf, platform;
+				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) || includeGlobalGroups)
+					configData.Add (new ConfigData (conf, platform, cgrp));
+			}
+			return configData;
+		}
+
+		bool ParseConfigCondition (string cond, out string config, out string platform)
+		{
+			config = platform = Unspecified;
+			int i = cond.IndexOf ("==", StringComparison.Ordinal);
+			if (i == -1)
+				return false;
+			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
+				if (!ExtractConfigName (cond.Substring (i + 2), out cond))
+					return false;
+				i = cond.IndexOf ('|');
+				if (i != -1) {
+					config = cond.Substring (0, i);
+					platform = cond.Substring (i+1);
+				} else {
+					// Invalid configuration
+					return false;
+				}
+				if (platform == "AnyCPU")
+					platform = string.Empty;
+				return true;
+			}
+			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
+				if (!ExtractConfigName (cond.Substring (i + 2), out config))
+					return false;
+				platform = Unspecified;
+				return true;
+			}
+			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
+				config = Unspecified;
+				if (!ExtractConfigName (cond.Substring (i + 2), out platform))
+					return false;
+				if (platform == "AnyCPU")
+					platform = string.Empty;
+				return true;
+			}
+			return false;
+		}
+
+		bool ExtractConfigName (string name, out string config)
+		{
+			config = name.Trim (' ');
+			if (config.Length <= 2)
+				return false;
+			if (config [0] != '\'' || config [config.Length - 1] != '\'')
+				return false;
+			config = config.Substring (1, config.Length - 2);
+			return config.IndexOf ('\'') == -1;
+		}
+
+		void LoadConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)
+		{
+			IMSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
+			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
+
+			config.Platform = platform;
+			projectExtension.OnReadConfiguration (monitor, config, grp);
+			Configurations.Add (config);
+		}
+
+		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
+		{
+			config.Read (grp, GetToolsFormat ());
+		}
+
+		void RemoveDuplicateItems (MSBuildProject msproject)
+		{
+			timer.Trace ("Checking for duplicate items");
+
+			var uniqueIncludes = new Dictionary<string,object> ();
+			var toRemove = new List<MSBuildItem> ();
+			foreach (MSBuildItem bi in msproject.GetAllItems ()) {
+				object existing;
+				string key = bi.Name + "<" + bi.Include;
+				if (!uniqueIncludes.TryGetValue (key, out existing)) {
+					uniqueIncludes[key] = bi;
+					continue;
+				}
+				var exBi = existing as MSBuildItem;
+				if (exBi != null) {
+					if (exBi.Condition != bi.Condition || exBi.Element.InnerXml != bi.Element.InnerXml) {
+						uniqueIncludes[key] = new List<MSBuildItem> { exBi, bi };
+					} else {
+						toRemove.Add (bi);
+					}
+					continue;
+				}
+
+				var exList = (List<MSBuildItem>)existing;
+				bool found = false;
+				foreach (var m in (exList)) {
+					if (m.Condition == bi.Condition && m.Element.InnerXml == bi.Element.InnerXml) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					exList.Add (bi);
+				} else {
+					toRemove.Add (bi);
+				}
+			}
+			if (toRemove.Count == 0)
+				return;
+
+			timer.Trace ("Removing duplicate items");
+
+			foreach (var t in toRemove)
+				msproject.RemoveItem (t);
+		}
+
+		IMSBuildPropertySet GetMergedConfiguration (List<ConfigData> configData, string conf, string platform, IMSBuildPropertySet propGroupLimit)
+		{
+			IMSBuildPropertySet merged = null;
+
+			foreach (ConfigData grp in configData) {
+				if (grp.Group == propGroupLimit)
+					break;
+				if ((grp.Config == conf || grp.Config == Unspecified || conf == Unspecified) && (grp.Platform == platform || grp.Platform == Unspecified || platform == Unspecified)) {
+					if (merged == null)
+						merged = grp.Group;
+					else if (merged is MSBuildPropertyGroupMerged)
+						((MSBuildPropertyGroupMerged)merged).Add (grp.Group);
+					else {
+						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged (merged.Project, GetToolsFormat());
+						m.Add (merged);
+						m.Add (grp.Group);
+						merged = m;
+					}
+				}
+			}
+			return merged;
+		}
+
+		//HACK: the solution's format is irrelevant to MSBuild projects, what matters is the ToolsVersion
+		// but other parts of the MD API expect a FileFormat
+		internal MSBuildFileFormat GetToolsFormat ()
+		{
+			switch (ToolsVersion) {
+			case "2.0":
+				return new MSBuildFileFormatVS05 ();
+			case "3.5":
+				return new MSBuildFileFormatVS08 ();
+			case "4.0":
+				if (SolutionFormat != null && SolutionFormat.Id == "MSBuild10")
+					return SolutionFormat;
+				return new MSBuildFileFormatVS12 ();
+			case "12.0":
+				return new MSBuildFileFormatVS12 ();
+			default:
+				throw new Exception ("Unknown ToolsVersion '" + ToolsVersion + "'");
+			}
+		}
+
+		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags)
+		{
+			foreach (var buildItem in msproject.GetAllItems ()) {
+				ProjectItem it = ReadItem (buildItem);
+				if (it == null)
+					continue;
+				it.Flags = flags;
+				if (it is ProjectFile) {
+					var file = (ProjectFile)it;
+					if (file.Name.IndexOf ('*') > -1) {
+						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
+						foreach (var expandedItem in ResolveWildcardItems (file))
+							Items.Add (expandedItem);
+						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
+						// try to compile and display these nonstandard items
+						WildcardItems.Add (it);
+						continue;
+					}
+				}
+				Items.Add (it);
+			}
+		}
+
+		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
+		{
+			base.SetSolutionFormat (format, converting);
+
+			// when converting formats, set ToolsVersion, ProductVersion, SchemaVersion to default values written by VS 
+			// this happens on creation too
+			// else we leave them alone and just roundtrip them
+			if (converting) {
+				ToolsVersion = format.DefaultToolsVersion;
+				productVersion = format.DefaultProductVersion;
+				schemaVersion = format.DefaultSchemaVersion;
+			}
+		}
+
+		internal ProjectItem ReadItem (IMSBuildItemEvaluated buildItem)
+		{
+			var item = CreateProjectItem (buildItem);
+			item.Read (this, buildItem);
+			return item;
+		}
+
+		const string RecursiveDirectoryWildcard = "**";
+		static readonly char[] directorySeparators = new [] {
+			Path.DirectorySeparatorChar,
+			Path.AltDirectorySeparatorChar
+		};
+
+		static string GetWildcardDirectoryName (string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (directorySeparators);
+			if (indexOfLast < 0)
+				return String.Empty;
+			return path.Substring (0, indexOfLast);
+		}
+
+		static string GetWildcardFileName (string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (directorySeparators);
+			if (indexOfLast < 0)
+				return path;
+			if (indexOfLast == path.Length)
+				return String.Empty;
+			return path.Substring (indexOfLast + 1, path.Length - (indexOfLast + 1));
+		}
+
+
+		static IEnumerable<string> ExpandWildcardFilePath (string filePath)
+		{
+			if (String.IsNullOrWhiteSpace (filePath))
+				throw new ArgumentException ("Not a wildcard path");
+
+			string dir = GetWildcardDirectoryName (filePath);
+			string file = GetWildcardFileName (filePath);
+
+			if (String.IsNullOrEmpty (dir) || String.IsNullOrEmpty (file))
+				return null;
+
+			SearchOption searchOption = SearchOption.TopDirectoryOnly;
+			if (dir.EndsWith (RecursiveDirectoryWildcard, StringComparison.Ordinal)) {
+				dir = dir.Substring (0, dir.Length - RecursiveDirectoryWildcard.Length);
+				searchOption = SearchOption.AllDirectories;
+			}
+
+			if (!Directory.Exists (dir))
+				return null;
+
+			return Directory.GetFiles (dir, file, searchOption);
+		}
+
+		static IEnumerable<ProjectFile> ResolveWildcardItems (ProjectFile wildcardFile)
+		{
+			var paths = ExpandWildcardFilePath (wildcardFile.Name);
+			if (paths == null)
+				yield break;
+			foreach (var resolvedFilePath in paths) {
+				var projectFile = (ProjectFile)wildcardFile.Clone ();
+				projectFile.Name = resolvedFilePath;
+				projectFile.Flags |= ProjectItemFlags.DontPersist;
+				yield return projectFile;
+			}
+		}
+
+		struct MergedPropertyValue
+		{
+			public readonly string XmlValue;
+			public readonly bool PreserveExistingCase;
+			public readonly bool IsDefault;
+
+			public MergedPropertyValue (string xmlValue, bool preserveExistingCase, bool isDefault)
+			{
+				this.XmlValue = xmlValue;
+				this.PreserveExistingCase = preserveExistingCase;
+				this.IsDefault = isDefault;
+			}
+		}
+
+		protected virtual void OnWriteProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+			if (globalGroup == null)
+				globalGroup = msproject.AddNewPropertyGroup (false);
+
+			if (Configurations.Count > 0) {
+				ItemConfiguration conf = Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == "Debug");
+				if (conf == null) conf = Configurations [0];
+				globalGroup.SetValue ("Configuration", conf.Name, condition:" '$(Configuration)' == '' ");
+
+				string platform = conf.Platform.Length == 0 ? "AnyCPU" : conf.Platform;
+				globalGroup.SetValue ("Platform", platform, condition:" '$(Platform)' == '' ");
+			}
+
+			if (TypeGuid == MSBuildProjectService.GenericItemGuid) {
+				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (GetType ());
+				globalGroup.SetValue ("ItemType", dt.Name);
+			}
+
+			globalGroup.SetValue ("ProductVersion", productVersion);
+			globalGroup.SetValue ("SchemaVersion", schemaVersion);
+
+			globalGroup.SetValue ("ProjectGuid", ItemId);
+
+			if (flavorGuids.Length > 0) {
+				string gg = string.Join (";", flavorGuids);
+				gg += ";" + TypeGuid;
+				globalGroup.SetValue ("ProjectTypeGuids", gg.ToUpper (), preserveExistingCase:true);
+			} else {
+				globalGroup.RemoveProperty ("ProjectTypeGuids");
+			}
+
+			// having no ToolsVersion is equivalent to 2.0, roundtrip that correctly
+			if (ToolsVersion != "2.0")
+				msproject.ToolsVersion = ToolsVersion;
+			else if (string.IsNullOrEmpty (msproject.ToolsVersion))
+				msproject.ToolsVersion = null;
+			else
+				msproject.ToolsVersion = "2.0";
+
+			msproject.GetGlobalPropertyGroup ().SetValue ("Description", Description, "");
+			msproject.GetGlobalPropertyGroup ().SetValue ("BaseIntermediateOutputPath", BaseIntermediateOutputPath, defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
+		}
+
+		protected virtual void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		{
+			var toolsFormat = GetToolsFormat ();
+
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+
+			// Configurations
+
+			if (Configurations.Count > 0) {
+				List<ConfigData> configData = GetConfigData (msproject, true);
+
+				// Write configuration data, creating new property groups if necessary
+
+				foreach (ProjectConfiguration conf in Configurations) {
+					ConfigData cdata = FindPropertyGroup (configData, conf);
+					if (cdata == null) {
+						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (true);
+						pg.IgnoreDefaultValues = true;
+						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
+						cdata = new ConfigData (conf.Name, conf.Platform, pg);
+						cdata.IsNew = true;
+						configData.Add (cdata);
+					}
+					((MSBuildPropertyGroup)cdata.Group).IgnoreDefaultValues = true;
+					cdata.Exists = true;
+					ProjectExtension.OnWriteConfiguration (monitor, conf, cdata.Group);
+				}
+
+				// Find the properties in all configurations that have the MergeToProject flag set
+				var mergeToProjectProperties = new HashSet<MergedProperty> (GetMergeToProjectProperties (configData));
+				var mergeToProjectPropertyNames = new HashSet<string> (mergeToProjectProperties.Select (p => p.Name));
+				var mergeToProjectPropertyValues = new Dictionary<string,MergedPropertyValue> ();
+
+				foreach (ProjectConfiguration conf in Configurations) {
+					ConfigData cdata = FindPropertyGroup (configData, conf);
+					var propGroup = (MSBuildPropertyGroup) cdata.Group;
+
+					IMSBuildPropertySet baseGroup = GetMergedConfiguration (configData, conf.Name, conf.Platform, propGroup);
+
+					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
+
+					propGroup.UnMerge (baseGroup, mergeToProjectPropertyNames);
+					propGroup.IgnoreDefaultValues = false;
+				}
+
+				// Move properties with common values from configurations to the main
+				// property group
+				foreach (KeyValuePair<string,MergedPropertyValue> prop in mergeToProjectPropertyValues) {
+					if (!prop.Value.IsDefault)
+						globalGroup.SetValue (prop.Key, prop.Value.XmlValue, preserveExistingCase: prop.Value.PreserveExistingCase);
+					else
+						globalGroup.RemoveProperty (prop.Key);
+				}
+				foreach (string prop in mergeToProjectPropertyNames) {
+					if (!mergeToProjectPropertyValues.ContainsKey (prop))
+						globalGroup.RemoveProperty (prop);
+				}
+				foreach (SolutionItemConfiguration conf in Configurations) {
+					var propGroup = FindPropertyGroup (configData, conf).Group;
+					foreach (string mp in mergeToProjectPropertyValues.Keys)
+						propGroup.RemoveProperty (mp);
+				}
+
+				// Remove groups corresponding to configurations that have been removed
+				// or groups which don't have any property and did not already exist
+				foreach (ConfigData cd in configData) {
+					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.Properties.Any ()))
+						msproject.RemoveGroup ((MSBuildPropertyGroup)cd.Group);
+				}
+			}
+			SaveProjectItems (monitor, toolsFormat, msproject);
+
+			if (msproject.IsNewProject) {
+				foreach (var im in DefaultImports)
+					msproject.AddNewImport (im);
+			}
+
+			foreach (var im in importsAdded) {
+				if (msproject.GetImport (im.Name, im.Condition) == null)
+					msproject.AddNewImport (im.Name, im.Condition);
+			}
+			foreach (var im in importsRemoved) {
+				var i = msproject.GetImport (im.Name, im.Condition);
+				if (i != null)
+					msproject.RemoveImport (i);
+			}
+		}
+
+		void WriteConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)
+		{
+			IMSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
+			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
+
+			config.Platform = platform;
+			config.Read (grp, GetToolsFormat ());
+			Configurations.Add (config);
+			projectExtension.OnReadConfiguration (monitor, config, grp);
+		}
+
+		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		{
+			config.Write (pset, SolutionFormat);
+		}
+
+		IEnumerable<MergedProperty> GetMergeToProjectProperties (List<ConfigData> configData)
+		{
+			Dictionary<string,MergedProperty> mergeProps = new Dictionary<string, MergedProperty> ();
+			foreach (var cd in configData.Where (d => d.FullySpecified)) {
+				foreach (var prop in cd.Group.Properties) {
+					if (!prop.MergeToMainGroup) {
+						mergeProps [prop.Name] = null;
+					} else if (!mergeProps.ContainsKey (prop.Name))
+						mergeProps [prop.Name] = prop.CreateMergedProperty ();
+				}
+			}
+			return mergeProps.Values.Where (p => p != null);
+		}
+
+		void CollectMergetoprojectProperties (IMSBuildPropertySet pgroup, HashSet<MergedProperty> properties, Dictionary<string,MergedPropertyValue> mergeToProjectProperties)
+		{
+			// This method checks every property in pgroup which has the MergeToProject flag.
+			// If the value of this property is the same as the one stored in mergeToProjectProperties
+			// it means that the property can be merged to the main project property group (so far).
+
+			foreach (var pinfo in new List<MergedProperty> (properties)) {
+				MSBuildProperty prop = pgroup.GetProperty (pinfo.Name);
+
+				MergedPropertyValue mvalue;
+				if (!mergeToProjectProperties.TryGetValue (pinfo.Name, out mvalue)) {
+					if (prop != null) {
+						// This is the first time the value is checked. Just assign it.
+						mergeToProjectProperties.Add (pinfo.Name, new MergedPropertyValue (prop.Value, pinfo.PreserveExistingCase, pinfo.IsDefault));
+						continue;
+					}
+					// If there is no value, it can't be merged
+				}
+				else if (prop != null && string.Equals (prop.Value, mvalue.XmlValue, mvalue.PreserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+					// Same value. It can be merged.
+					continue;
+
+				// The property can't be merged because different configurations have different
+				// values for it. Remove it from the list.
+				properties.Remove (pinfo);
+				mergeToProjectProperties.Remove (pinfo.Name);
+			}
+		}
+
+		struct ItemInfo {
+			public MSBuildItem Item;
+			public bool Added;
+		}
+
+		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildFileFormat toolsFormat, MSBuildProject msproject, string pathPrefix = null)
+		{
+			// Remove old items
+			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
+			foreach (MSBuildItem item in msproject.GetAllItems ())
+				oldItems [item.Name + "<" + item.UnevaluatedInclude + "<" + item.Condition] = new ItemInfo () {
+				Item = item
+			};
+			// Add the new items
+			foreach (ProjectItem ob in Items.Concat (WildcardItems).Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
+				SaveProjectItem (monitor, toolsFormat, msproject, ob, oldItems, pathPrefix);
+			foreach (ItemInfo itemInfo in oldItems.Values) {
+				if (!itemInfo.Added)
+					msproject.RemoveItem (itemInfo.Item);
+			}
+		}
+
+		void SaveProjectItem (ProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildProject msproject, ProjectItem item, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
+		{
+			var include = item.UnevaluatedInclude ?? item.Include;
+			if (pathPrefix != null && !include.StartsWith (pathPrefix))
+				include = pathPrefix + include;
+
+			MSBuildItem buildItem = AddOrGetBuildItem (msproject, oldItems, item.ItemName, include, item.Condition);
+			item.Write (fmt, buildItem);
+			if (pathPrefix != null)
+				buildItem.Include = include;
+		}
+
+		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,ItemInfo> oldItems, string name, string include, string condition)
+		{
+			ItemInfo itemInfo;
+			string key = name + "<" + include + "<" + condition;
+			if (oldItems.TryGetValue (key, out itemInfo)) {
+				if (!itemInfo.Added) {
+					itemInfo.Added = true;
+					oldItems [key] = itemInfo;
+				}
+				return itemInfo.Item;
+			} else {
+				return msproject.AddNewItem (name, include);
+			}
+		}
+
+		ConfigData FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)
+		{
+			foreach (ConfigData data in configData) {
+				if (data.Config == config.Name && data.Platform == config.Platform)
+					return data;
+			}
+			return null;
+		}
+
+		string BuildConfigCondition (string config, string platform)
+		{
+			if (platform.Length == 0)
+				platform = "AnyCPU";
+			return " '$(Configuration)|$(Platform)' == '" + config + "|" + platform + "' ";
+		}
+
+		bool IsMergeToProjectProperty (ItemProperty prop)
+		{
+			foreach (object at in prop.CustomAttributes) {
+				if (at is MergeToProjectAttribute)
+					return true;
+			}
+			return false;
+		}
+
+		public void AddImportIfMissing (string name, string condition)
+		{
+			importsAdded.Add (new DotNetProjectImport (name, condition));
+		}
+
+		public void RemoveImport (string name)
+		{
+			importsRemoved.Add (new DotNetProjectImport (name));
+		}
+
+		List <DotNetProjectImport> importsAdded = new List<DotNetProjectImport> ();
+
+		internal IList<DotNetProjectImport> ImportsAdded {
+			get { return importsAdded; }
+		}
+
+		List <DotNetProjectImport> importsRemoved = new List<DotNetProjectImport> ();
+
+		internal IList<DotNetProjectImport> ImportsRemoved {
+			get { return importsRemoved; }
+		}
+
+		void ImportsSaved ()
+		{
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
+		}
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			NotifyModified ("Files");
@@ -918,6 +2198,10 @@ namespace MonoDevelop.Projects
 		/// Raises the FileRemovedFromProject event.
 		/// </summary>
 		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		{
+			ProjectExtension.OnFileRemovedFromProject (e);
+		}
+		void DoOnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			buildActions = null;
 			if (FileRemovedFromProject != null) {
@@ -930,37 +2214,53 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
+			ProjectExtension.OnFileAddedToProject (e);
+		}
+		void DoOnFileAddedToProject (ProjectFileEventArgs e)
+		{
 			buildActions = null;
 			if (FileAddedToProject != null) {
 				FileAddedToProject (this, e);
 			}
 		}
-		
+
 		/// <summary>
 		/// Raises the FileChangedInProject event.
 		/// </summary>
 		protected virtual void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
+			ProjectExtension.OnFileChangedInProject (e);
+		}
+		void DoOnFileChangedInProject (ProjectFileEventArgs e)
+		{
 			if (FileChangedInProject != null) {
 				FileChangedInProject (this, e);
 			}
 		}
-		
+
 		/// <summary>
 		/// Raises the FilePropertyChangedInProject event.
 		/// </summary>
 		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			ProjectExtension.OnFilePropertyChangedInProject (e);
+		}
+		void DoOnFilePropertyChangedInProject (ProjectFileEventArgs e)
 		{
 			buildActions = null;
 			if (FilePropertyChangedInProject != null) {
 				FilePropertyChangedInProject (this, e);
 			}
 		}
-		
+
 		/// <summary>
 		/// Raises the FileRenamedInProject event.
 		/// </summary>
 		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+		{
+			ProjectExtension.OnFileRenamedInProject (e);
+		}
+		void DoOnFileRenamedInProject (ProjectFileRenamedEventArgs e)
 		{
 			if (FileRenamedInProject != null) {
 				FileRenamedInProject (this, e);
@@ -991,6 +2291,126 @@ namespace MonoDevelop.Projects
 		/// Occurs when a file of this project has been renamed
 		/// </summary>
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
+
+
+		class DefaultMSBuildProjectExtension: ProjectExtension
+		{
+			internal protected override bool SupportsFlavor (string guid)
+			{
+				return false;
+			}
+
+			internal protected override bool OnGetIsCompileable (string fileName)
+			{
+				return false;
+			}
+
+			internal protected override void OnGetProjectTypes (HashSet<string> types)
+			{
+				Project.OnGetProjectTypes (types);
+			}
+
+			internal protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+			{
+				return Project.DoRunTarget (monitor, target, configuration);
+			}
+
+			internal protected override bool OnGetSupportsTarget (string target)
+			{
+				return Project.OnGetSupportsTarget (target);
+			}
+
+			internal protected override string OnGetDefaultBuildAction (string fileName)
+			{
+				return Project.IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
+			}
+
+			internal protected override string OnGetDefaultResourceId (ProjectFile projectFile)
+			{
+				return Project.OnGetDefaultResourceId (projectFile);
+			}
+
+			internal protected override IEnumerable<string> OnGetStandardBuildActions ()
+			{
+				return BuildAction.StandardActions;
+			}
+
+			internal protected override IList<string> OnGetCommonBuildActions ()
+			{
+				return BuildAction.StandardActions;
+			}
+
+			internal protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)
+			{
+				return Project.OnCreateProjectItem (item);
+			}
+
+			internal protected override void OnPopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
+			{
+				Project.DoPopulateSupportFileList (list, configuration);
+			}
+
+			internal protected override void OnPopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
+			{
+				Project.DoPopulateOutputFileList (list, configuration);
+			}
+
+			internal protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
+			{
+				return FilePath.Null;
+			}
+
+			internal protected override string[] SupportedLanguages {
+				get {
+					return new String[] { "" };
+				}
+			}
+
+			internal protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+			{
+				Project.DoOnFileRemovedFromProject (e);
+			}
+
+			internal protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+			{
+				Project.DoOnFileAddedToProject (e);
+			}
+
+			internal protected override void OnFileChangedInProject (ProjectFileEventArgs e)
+			{
+				Project.DoOnFileChangedInProject (e);
+			}
+
+			internal protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+			{
+				Project.DoOnFilePropertyChangedInProject (e);
+			}
+
+			internal protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+			{
+				Project.DoOnFileRenamedInProject (e);
+			}
+
+			internal protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
+			{
+				Project.OnReadProject (monitor, msproject);
+			}
+
+			internal protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+			{
+				Project.OnWriteProject (monitor, msproject);
+			}
+
+			internal protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
+			{
+				Project.OnReadConfiguration (monitor, config, grp);
+			}
+
+			internal protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
+			{
+				Project.OnWriteConfiguration (monitor, config, grp);
+			}
+		}
 	}
 
 	public delegate void ProjectEventHandler (Object sender, ProjectEventArgs e);

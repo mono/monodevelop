@@ -200,7 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project\CProject.cs" />
-    <Compile Include="Project\CProjectBinding.cs" />
     <Compile Include="Project\CProjectConfiguration.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\CodeGenerationPanel.cs" />
@@ -220,7 +219,6 @@
     <Compile Include="Project\ProjectPackageEventArgs.cs" />
     <Compile Include="Gui\OutputOptionsPanel.cs" />
     <Compile Include="gtk-gui\CBinding.OutputOptionsPanel.cs" />
-    <Compile Include="Project\CProjectServiceExtension.cs" />
     <Compile Include="Navigation\ProjectNodeBuilderExtension.cs" />
     <Compile Include="Navigation\NamespaceNodeBuilder.cs" />
     <Compile Include="ProjectPad\ProjectReferencesExtension.cs" />

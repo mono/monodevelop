@@ -37,9 +37,9 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		TreeStore store;
 		bool showCheckboxes;
-		IBuildTarget rootItem;
-		IBuildTarget currentSelection;
-		HashSet<IBuildTarget> activeItems = new HashSet<IBuildTarget> ();
+		WorkspaceObject rootItem;
+		WorkspaceObject currentSelection;
+		HashSet<WorkspaceObject> activeItems = new HashSet<WorkspaceObject> ();
 		HashSet<Type> selectableTypes = new HashSet<Type> ();
 		
 		public event EventHandler SelectionChanged;
@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			TreeIter it;
 			if (tree.Selection.GetSelected (out it))
-				currentSelection = (IBuildTarget) store.GetValue (it, 2);
+				currentSelection = (WorkspaceObject) store.GetValue (it, 2);
 			else
 				currentSelection = null;
 			
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				SelectionChanged (this, EventArgs.Empty);
 		}
 		
-		public IBuildTarget SelectedItem {
+		public WorkspaceObject SelectedItem {
 			get {
 				if (currentSelection != null && selectableTypes.Count > 0 && !selectableTypes.Any (t => t.IsAssignableFrom (currentSelection.GetType ())))
 					return null;
@@ -96,12 +96,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		public IEnumerable<IBuildTarget> ActiveItems {
+		public IEnumerable<WorkspaceObject> ActiveItems {
 			get {
 				return activeItems;
 			}
 			set {
-				activeItems = new HashSet<IBuildTarget> ();
+				activeItems = new HashSet<WorkspaceObject> ();
 				activeItems.UnionWith (value);
 				SetSelection (currentSelection, activeItems);
 			}
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public bool CascadeCheckboxSelection { get; set; }
 		
-		public IBuildTarget RootItem {
+		public WorkspaceObject RootItem {
 			get {
 				return this.rootItem;
 			}
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void Fill ()
 		{
-			IBuildTarget sel = SelectedItem;
+			WorkspaceObject sel = SelectedItem;
 			store.Clear ();
 			if (rootItem is RootWorkspace) {
 				foreach (var item in ((RootWorkspace)rootItem).Items)
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		void AddEntry (TreeIter iter, IBuildTarget item)
+		void AddEntry (TreeIter iter, WorkspaceObject item)
 		{
 			if (!IsVisible (item))
 				return;
@@ -178,21 +178,21 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (selected)
 				tree.ExpandToPath (store.GetPath (iter));
 			
-			foreach (IBuildTarget ce in GetChildren (item))
+			foreach (WorkspaceObject ce in GetChildren (item))
 				AddEntry (iter, ce);
 		}
 		
-		void SetSelection (IBuildTarget selected, HashSet<IBuildTarget> active)
+		void SetSelection (WorkspaceObject selected, HashSet<WorkspaceObject> active)
 		{
 			TreeIter it;
 			if (store.GetIterFirst (out it))
 				SetSelection (it, selected, active);
 		}
 		
-		bool SetSelection (TreeIter it, IBuildTarget selected, HashSet<IBuildTarget> active)
+		bool SetSelection (TreeIter it, WorkspaceObject selected, HashSet<WorkspaceObject> active)
 		{
 			do {
-				IBuildTarget item = (IBuildTarget) store.GetValue (it, 2);
+				WorkspaceObject item = (WorkspaceObject) store.GetValue (it, 2);
 				if (selected != null && item == selected) {
 					tree.Selection.SelectIter (it);
 					tree.ExpandToPath (store.GetPath (it));
@@ -220,13 +220,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			TreeIter iter;
 			store.GetIterFromString (out iter, args.Path);
-			IBuildTarget ob = (IBuildTarget) store.GetValue (iter, 2);
+			var ob = (WorkspaceObject) store.GetValue (iter, 2);
 			if (activeItems.Contains (ob)) {
 				activeItems.Remove (ob);
 				if (CascadeCheckboxSelection) {
 					foreach (var i in GetAllChildren (ob))
 						activeItems.Remove (i);
-					SetSelection (iter, null, new HashSet<IBuildTarget> ());
+					SetSelection (iter, null, new HashSet<WorkspaceObject> ());
 				} else {
 					store.SetValue (iter, 3, false);
 				}
@@ -245,13 +245,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				ActiveChanged (this, EventArgs.Empty);
 		}
 		
-		IEnumerable<IBuildTarget> GetAllChildren (IBuildTarget item)
+		IEnumerable<WorkspaceObject> GetAllChildren (WorkspaceObject item)
 		{
-			IEnumerable<IBuildTarget> res = GetChildren (item);
+			var res = GetChildren (item);
 			return res.Concat (res.SelectMany (i => GetAllChildren (i)));
 		}
 		
-		IEnumerable<IBuildTarget> GetChildren (IBuildTarget item)
+		IEnumerable<WorkspaceObject> GetChildren (WorkspaceObject item)
 		{
 			if (item is SolutionFolder) {
 				return ((SolutionFolder)item).Items;
@@ -260,20 +260,20 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else if (item is Workspace) {
 				return ((Workspace)item).Items;
 			} else
-				return new IBuildTarget [0];
+				return new WorkspaceObject [0];
 		}
 		
-		protected bool IsVisible (IBuildTarget item)
+		protected bool IsVisible (WorkspaceObject item)
 		{
 			return true;
 		}
 		
-		protected bool IsCheckboxVisible (IBuildTarget item)
+		protected bool IsCheckboxVisible (WorkspaceObject item)
 		{
 			if (!ShowCheckboxes)
 				return false;
 			if (selectableTypes.Count > 0)
-				return selectableTypes.Any (t => t.IsAssignableFrom (item.GetType ()));
+				return selectableTypes.Any (t => t.IsInstanceOfType (item));
 			return true;
 		}
 	}

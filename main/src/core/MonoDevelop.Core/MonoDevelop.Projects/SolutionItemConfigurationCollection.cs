@@ -38,13 +38,13 @@ namespace MonoDevelop.Projects
 {
 	public class SolutionItemConfigurationCollection : ItemConfigurationCollection<SolutionItemConfiguration>
 	{
-		SolutionEntityItem parentItem;
+		SolutionItem parentItem;
 
 		public SolutionItemConfigurationCollection ()
 		{
 		}
 		
-		internal SolutionItemConfigurationCollection (SolutionEntityItem parentItem)
+		internal SolutionItemConfigurationCollection (SolutionItem parentItem)
 		{
 			this.parentItem = parentItem;
 		}

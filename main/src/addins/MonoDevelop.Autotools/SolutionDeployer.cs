@@ -71,14 +71,14 @@ namespace MonoDevelop.Autotools
 			}
 		}
 		
-		public bool CanDeploy (SolutionItem entry)
+		public bool CanDeploy (SolutionFolderItem entry)
 		{
 			MakefileType mt = generateAutotools ? MakefileType.AutotoolsMakefile : MakefileType.SimpleMakefile;
 			IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (entry, mt);
 			return handler != null;
 		}
 
-		public bool GenerateFiles (DeployContext ctx, Solution solution, string defaultConf, IProgressMonitor monitor )
+		public bool GenerateFiles (DeployContext ctx, Solution solution, string defaultConf, ProgressMonitor monitor )
 		{
 			string filesString = generateAutotools ? "Autotools files" : "Makefiles";
 			monitor.BeginTask ( GettextCatalog.GetString ("Generating {0} for Solution {1}", filesString, solution.Name), 1 );
@@ -153,7 +153,7 @@ namespace MonoDevelop.Autotools
 			return true;
 		}
 
-		public bool Deploy ( DeployContext ctx, Solution solution, string defaultConf, string targetDir, bool generateFiles, IProgressMonitor monitor  )
+		public bool Deploy ( DeployContext ctx, Solution solution, string defaultConf, string targetDir, bool generateFiles, ProgressMonitor monitor  )
 		{
 			if (generateFiles) {
 				if ( !GenerateFiles ( ctx, solution, defaultConf, monitor ) ) 
@@ -231,7 +231,7 @@ namespace MonoDevelop.Autotools
 				if ( File.Exists ( file ) ) FileService.DeleteFile ( file );
 		}
 
-		void AddTopLevelMakefileVars ( Makefile makefile, IProgressMonitor monitor)
+		void AddTopLevelMakefileVars ( Makefile makefile, ProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Adding variables to top-level Makefile") );
 
@@ -251,7 +251,7 @@ namespace MonoDevelop.Autotools
 //			makefile.AppendToVariable ( "pkglib_DATA", "$(DLL_REFERENCES)" );
 		}
 
-		void CreateAutoGenDotSH (AutotoolsContext context, IProgressMonitor monitor)
+		void CreateAutoGenDotSH (AutotoolsContext context, ProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating autogen.sh") );
 
@@ -278,7 +278,7 @@ namespace MonoDevelop.Autotools
 				Syscall.chmod ( fileName , FilePermissions.S_IXOTH | FilePermissions.S_IROTH | FilePermissions.S_IRWXU | FilePermissions.S_IRWXG );
 		}
 
-		void CreateConfigureDotAC (Solution solution, string defaultConf, IProgressMonitor monitor, AutotoolsContext context)
+		void CreateConfigureDotAC (Solution solution, string defaultConf, ProgressMonitor monitor, AutotoolsContext context)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure.ac") );
 			TemplateEngine templateEngine = new TemplateEngine();			
@@ -394,7 +394,7 @@ AM_CONDITIONAL(ENABLE_{3}, test x$enable_{2} = xyes)",
 			context.AddGeneratedFile (configureFileName);
 		}
 
-		void CreateConfigureScript (Solution solution, string defaultConf, AutotoolsContext ctx, IProgressMonitor monitor)
+		void CreateConfigureScript (Solution solution, string defaultConf, AutotoolsContext ctx, ProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating configure script") );
 
@@ -469,7 +469,7 @@ AM_CONDITIONAL(ENABLE_{3}, test x$enable_{2} = xyes)",
 			return builder.ToString ();
 		}
 
-		void CreateMakefileInclude (AutotoolsContext context, IProgressMonitor monitor)
+		void CreateMakefileInclude (AutotoolsContext context, ProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ( GettextCatalog.GetString ("Creating Makefile.include") );
 			

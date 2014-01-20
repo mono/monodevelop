@@ -56,12 +56,12 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public IBuildTarget SelectedItem {
+		public WorkspaceObject SelectedItem {
 			get { return selector.SelectedItem; }
 			set { selector.SelectedItem = value; }
 		}
 		
-		public IEnumerable<IBuildTarget> ActiveItems {
+		public IEnumerable<WorkspaceObject> ActiveItems {
 			get { return selector.ActiveItems; }
 			set { selector.ActiveItems = value; }
 		}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Projects
 			set { selector.CascadeCheckboxSelection = value; }
 		}
 		
-		public IBuildTarget RootItem {
+		public WorkspaceObject RootItem {
 			get { return selector.RootItem; }
 			set { selector.RootItem = value; }
 		}

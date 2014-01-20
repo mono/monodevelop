@@ -62,13 +62,13 @@ namespace MonoDevelop.VBNetBinding
 			return Path.GetExtension(fileName) == ".vb";
 		}
 		
-		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			Debug.Assert(compilerServices != null);
 			return compilerServices.Compile (items, configuration, configSelector, monitor);
 		}
 		
-		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
+		public DotNetCompilerParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new VBCompilerParameters ();
 		}
@@ -92,11 +92,6 @@ namespace MonoDevelop.VBNetBinding
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
 			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0 };
-		}
-	
-		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
-		{
-			return new VBProjectParameters ();
 		}
 	
 		class ImprovedCodeDomProvider : Microsoft.VisualBasic.VBCodeProvider

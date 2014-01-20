@@ -72,12 +72,12 @@ namespace UnitTests
 			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild12"); }
 		}
 		
-		public static IProgressMonitor GetMonitor ()
+		public static ProgressMonitor GetMonitor ()
 		{
 			return GetMonitor (true);
 		}
 		
-		public static IProgressMonitor GetMonitor (bool ignoreLogMessages)
+		public static ProgressMonitor GetMonitor (bool ignoreLogMessages)
 		{
 			ConsoleProgressMonitor m = new ConsoleProgressMonitor ();
 			m.IgnoreLogMessages = ignoreLogMessages;

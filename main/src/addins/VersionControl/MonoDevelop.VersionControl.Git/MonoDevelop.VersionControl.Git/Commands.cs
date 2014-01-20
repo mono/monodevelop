@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		public GitRepository Repository {
 			get {
-				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+				WorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 				if (wob == null)
 					wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 				if (wob != null)
@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (repo == null)
 				return;
 
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
+			WorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as WorkspaceObject;
 			if (wob == null)
 				return;
 			if (((wob is WorkspaceItem) && ((WorkspaceItem)wob).ParentWorkspace == null) ||

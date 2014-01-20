@@ -43,7 +43,7 @@ namespace CSharpBinding.Autotools
 			if ( config == null ) return "";
 			
 			CSharpCompilerParameters parameters = (CSharpCompilerParameters) config.CompilationParameters;
-			CSharpProjectParameters projectParameters = (CSharpProjectParameters) config.ProjectParameters;
+			ICSharpProject projectParameters = config.ParentItem.GetService<ICSharpProject> ();
 			
 			StringWriter writer = new StringWriter();
 			

@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Execution
 			this.defaultEnvironmentVariables = defaultEnvironmentVariables;
 		}
 		
-		public virtual IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public virtual ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			ProcessExecutionCommand cmd = (ProcessExecutionCommand) command;
 			IDictionary<string, string> vars;

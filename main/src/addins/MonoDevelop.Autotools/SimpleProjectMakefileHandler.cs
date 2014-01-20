@@ -71,7 +71,7 @@ namespace MonoDevelop.Autotools
 		// store all refs for easy access
 		Set<SystemPackage> pkgs;
 
-		public bool CanDeploy (SolutionItem entry, MakefileType type)
+		public bool CanDeploy (SolutionFolderItem entry, MakefileType type)
 		{
 			Project project = entry as Project;
 			if ( project == null ) return false;
@@ -89,7 +89,7 @@ namespace MonoDevelop.Autotools
 			return null;
 		}
 
-		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
+		public Makefile Deploy (AutotoolsContext ctx, SolutionFolderItem entry, ProgressMonitor monitor)
 		{
 			generateAutotools = ctx.MakefileType == MakefileType.AutotoolsMakefile;
 			
@@ -324,7 +324,7 @@ namespace MonoDevelop.Autotools
 						ctx.AddBuiltFile (Path.Combine (config.OutputDirectory, bfile));
 
 					DeployFileCollection deployFiles = DeployService.GetDeployFiles (
-							ctx.DeployContext, new SolutionItem[] { project }, config.Selector);
+							ctx.DeployContext, new SolutionFolderItem[] { project }, config.Selector);
 
 					ProcessDeployFilesForConfig (deployFiles, project, configSection, ctx, config);
 					configSections.Add (configSection);
@@ -677,7 +677,7 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 			return dir;
 		}
 
-		void EmitCustomCommandTargets (CustomCommandCollection commands, Project project, StringBuilder builder, string configName, CustomCommandType[] types, IProgressMonitor monitor)
+		void EmitCustomCommandTargets (CustomCommandCollection commands, Project project, StringBuilder builder, string configName, CustomCommandType[] types, ProgressMonitor monitor)
 		{
 			bool warned = false;
 			configName = configName.ToUpper ();
@@ -735,7 +735,7 @@ endif", s.SwitchName.Replace ('-', '_').ToUpperInvariant (), s.Define));
 		}
 
 		// Get the Project config corresponding to its @parentConfig
-		internal static SolutionItemConfiguration GetProjectConfig (string parentConfig, SolutionEntityItem entry, out bool enabled)
+		internal static SolutionItemConfiguration GetProjectConfig (string parentConfig, SolutionItem entry, out bool enabled)
 		{
 			enabled = false;
 			SolutionConfiguration solutionConfig = entry.ParentSolution.Configurations [parentConfig] as SolutionConfiguration;

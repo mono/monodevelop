@@ -42,7 +42,7 @@ namespace MonoDevelop.Deployment.Targets
 			get { return "SSH (FUSE)"; }
 		}
 		
-		public override void MountTempDirectory (IProgressMonitor monitor, FileCopyConfiguration copyConfig, string tempPath)
+		public override void MountTempDirectory (ProgressMonitor monitor, FileCopyConfiguration copyConfig, string tempPath)
 		{
 			SshFuseFileCopyConfiguration config = (SshFuseFileCopyConfiguration) copyConfig;
 			string fuseArgs = string.Format ("{0} {1} {2}", config.TargetDirectory, tempPath, config.ExtraMountArguments);

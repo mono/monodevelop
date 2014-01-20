@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport
 		List<KeyValuePair<FilePath,string>> filesToWrite = new List<KeyValuePair<FilePath,string>> ();
 		CodeDomProvider provider;
 		CodeGeneratorOptions options;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		
 		public CodeDomProvider Provider { get { return provider; } }
 		public CodeGeneratorOptions GeneratorOptions { get { return options; } }
@@ -59,14 +59,14 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 		
-		CodeBehindWriter (IProgressMonitor monitor, CodeDomProvider provider, CodeGeneratorOptions options)
+		CodeBehindWriter (ProgressMonitor monitor, CodeDomProvider provider, CodeGeneratorOptions options)
 		{
 			this.provider = provider;
 			this.options = options;
 			this.monitor = monitor;
 		}
 		
-		public static CodeBehindWriter CreateForProject (IProgressMonitor monitor, DotNetProject project)
+		public static CodeBehindWriter CreateForProject (ProgressMonitor monitor, DotNetProject project)
 		{
 			var pol = project.Policies.Get<TextStylePolicy> ();
 			var options = new CodeGeneratorOptions () {

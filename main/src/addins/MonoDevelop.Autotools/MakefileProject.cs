@@ -17,10 +17,10 @@ namespace MonoDevelop.Autotools
 			conf.Name = name;
 			return conf;
 		}
-		
-		public override IEnumerable<string> GetProjectTypes ()
+
+		protected override void OnGetProjectTypes (HashSet<string> types)
 		{
-			yield return "MakefileProject";
+			types.Add ("MakefileProject");
 		}
 	}
 	

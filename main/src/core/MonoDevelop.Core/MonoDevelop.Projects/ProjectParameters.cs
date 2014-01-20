@@ -27,11 +27,12 @@
 using System;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	[DataItem (FallbackType=typeof(UnknownProjectParameters))]
-	public class ProjectParameters: ILoadController
+	public class ProjectParameters: ILoadController, IMSBuildDataObject
 	{
 		DotNetProject parentProject;
 		
@@ -67,6 +68,24 @@ namespace MonoDevelop.Projects
 		}
 		
 		protected virtual void OnEndLoad ()
+		{
+		}
+
+		void IMSBuildDataObject.Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			Read (pset, format);
+		}
+
+		void IMSBuildDataObject.Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			Write (pset, format);
+		}
+
+		protected virtual void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+		}
+
+		protected virtual void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
 		{
 		}
 	}

@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Deployment
 {
@@ -50,8 +51,8 @@ namespace MonoDevelop.Deployment
 		[ItemProperty ("RootEntry")]
 		SolutionItemReference rootEntry;
 		
-		List<SolutionItem> childCombineEntries;
-		SolutionItem rootSolutionItem;
+		List<SolutionFolderItem> childCombineEntries;
+		SolutionFolderItem rootSolutionItem;
 		
 		public PackageBuilder ()
 		{
@@ -76,7 +77,7 @@ namespace MonoDevelop.Deployment
 			return null;
 		}
 		
-		internal bool Build (IProgressMonitor monitor)
+		internal bool Build (ProgressMonitor monitor)
 		{
 			monitor.BeginTask ("Package: " + Description, 1);
 			DeployContext ctx = null;
@@ -85,13 +86,11 @@ namespace MonoDevelop.Deployment
 				if (ctx != null)
 					ctx.FileFilter = this;
 				if (!OnBuild (monitor, ctx)) {
-					monitor.AsyncOperation.Cancel ();
 					return false;
 				}
 			} catch (Exception ex) {
 				monitor.ReportError ("Package creation failed", ex);
 				LoggingService.LogError ("Package creation failed", ex);
-				monitor.AsyncOperation.Cancel ();
 				return false;
 			} finally {
 				monitor.EndTask ();
@@ -101,12 +100,12 @@ namespace MonoDevelop.Deployment
 			return true;
 		}
 		
-		public virtual bool CanBuild (SolutionItem entry)
+		public virtual bool CanBuild (SolutionFolderItem entry)
 		{
 			return true;
 		}
 		
-		public virtual void InitializeSettings (SolutionItem entry)
+		public virtual void InitializeSettings (SolutionFolderItem entry)
 		{
 		}
 		
@@ -123,7 +122,7 @@ namespace MonoDevelop.Deployment
 			rootEntry = other.rootEntry;
 
 			if (other.childCombineEntries != null)
-				childCombineEntries = new List<SolutionItem> (other.childCombineEntries);
+				childCombineEntries = new List<SolutionFolderItem> (other.childCombineEntries);
 			else
 				childCombineEntries = null;
 			if (other.excludedFiles != null)
@@ -138,7 +137,7 @@ namespace MonoDevelop.Deployment
 			return new PackageBuilder [0];
 		}
 		
-		protected virtual bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected virtual bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			return true;
 		}
@@ -158,15 +157,15 @@ namespace MonoDevelop.Deployment
 			return new DeployContext (this, DeployService.CurrentPlatform, null);
 		}
 		
-		public void SetSolutionItem (SolutionItem entry)
+		public void SetSolutionItem (SolutionFolderItem entry)
 		{
 			SetSolutionItem (entry, null);
 		}
 		
-		public void SetSolutionItem (SolutionItem rootSolutionItem, IEnumerable<SolutionItem> childEntries)
+		public void SetSolutionItem (SolutionFolderItem rootSolutionItem, IEnumerable<SolutionFolderItem> childEntries)
 		{
 			this.rootSolutionItem = rootSolutionItem;
-			childCombineEntries = new List<SolutionItem> ();
+			childCombineEntries = new List<SolutionFolderItem> ();
 			
 			if (childEntries != null)
 			    childCombineEntries.AddRange (childEntries);
@@ -187,11 +186,11 @@ namespace MonoDevelop.Deployment
 		{
 			this.rootEntry = new SolutionItemReference (rootSolutionItem);
 			this.childEntries.Clear ();
-			foreach (SolutionItem e in childCombineEntries)
+			foreach (SolutionFolderItem e in childCombineEntries)
 				childEntries.Add (new SolutionItemReference (e));
 		}
 		
-		public SolutionItem RootSolutionItem {
+		public SolutionFolderItem RootSolutionItem {
 			get {
 				if (rootSolutionItem == null && rootEntry != null)
 					rootSolutionItem = GetEntry (rootEntry);
@@ -205,7 +204,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		public void AddEntry (SolutionItem entry)
+		public void AddEntry (SolutionFolderItem entry)
 		{
 			SolutionItemReference fp = new SolutionItemReference (entry);
 			foreach (SolutionItemReference s in childEntries)
@@ -215,7 +214,7 @@ namespace MonoDevelop.Deployment
 			if (rootEntry == fp)
 				return;
 			
-			List<SolutionItem> list = new List<SolutionItem> ();
+			List<SolutionFolderItem> list = new List<SolutionFolderItem> ();
 			if (RootSolutionItem != null)
 				list.Add (RootSolutionItem);
 			list.AddRange (GetChildEntries());
@@ -224,8 +223,8 @@ namespace MonoDevelop.Deployment
 			rootSolutionItem = GetCommonSolutionItem (list);
 			list.Remove (rootSolutionItem);
 			
-			foreach (SolutionItem e in list.ToArray ()) {
-				SolutionItem ce = e.ParentFolder;
+			foreach (SolutionFolderItem e in list.ToArray ()) {
+				SolutionFolderItem ce = e.ParentFolder;
 				while (ce != rootSolutionItem) {
 					if (!list.Contains (ce))
 						list.Add (ce);
@@ -236,36 +235,36 @@ namespace MonoDevelop.Deployment
 			UpdateEntryNames ();
 		}
 		
-		public SolutionItem[] GetChildEntries ()
+		public SolutionFolderItem[] GetChildEntries ()
 		{
 			if (childCombineEntries != null)
 				return childCombineEntries.ToArray ();
 			
-			childCombineEntries = new List<SolutionItem> ();
+			childCombineEntries = new List<SolutionFolderItem> ();
 			
 			foreach (SolutionItemReference en in childEntries) {
-				SolutionItem re = GetEntry (en);
+				SolutionFolderItem re = GetEntry (en);
 				if (re != null && !(re is UnknownSolutionItem))
 					childCombineEntries.Add (re);
 			}
 			return childCombineEntries.ToArray ();
 		}
 		
-		public SolutionItem[] GetAllEntries ()
+		public SolutionFolderItem[] GetAllEntries ()
 		{
-			List<SolutionItem> list = new List<SolutionItem> ();
+			List<SolutionFolderItem> list = new List<SolutionFolderItem> ();
 			if (RootSolutionItem != null)
 				list.Add (RootSolutionItem);
 			list.AddRange (GetChildEntries ());
 			return list.ToArray ();
 		}
 		
-		SolutionItem GetEntry (SolutionItemReference reference)
+		SolutionFolderItem GetEntry (SolutionItemReference reference)
 		{
 			if (IdeApp.IsInitialized)
-				return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference, IdeApp.Workspace.Items.ToArray ());
+				return Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), reference, IdeApp.Workspace.Items.ToArray ()).Result;
 			else
-				return Services.ProjectService.ReadSolutionItem (new NullProgressMonitor (), reference);
+				return Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), reference).Result;
 		}
 		
 		public virtual DeployFileCollection GetDeployFiles (DeployContext ctx, ConfigurationSelector configuration)
@@ -307,10 +306,10 @@ namespace MonoDevelop.Deployment
 		}
 		
 		
-		internal static SolutionItem GetCommonSolutionItem (IEnumerable<SolutionItem> entries)
+		internal static SolutionFolderItem GetCommonSolutionItem (IEnumerable<SolutionFolderItem> entries)
 		{
-			SolutionItem common = null;
-			foreach (SolutionItem it in entries) {
+			SolutionFolderItem common = null;
+			foreach (SolutionFolderItem it in entries) {
 				if (common == null)
 					common = it;
 				else

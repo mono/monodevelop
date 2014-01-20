@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl
 		{
 			string path;
 			bool isDir;
-			IWorkspaceObject pentry;
+			WorkspaceObject pentry;
 			Repository repo;
 			VersionInfo versionInfo = null;
 
@@ -105,8 +105,8 @@ namespace MonoDevelop.VersionControl
 				path = item.FileName;
 				isDir = false;
 				pentry = item;
-			} else if (obj is IWorkspaceObject) {
-				pentry = ((IWorkspaceObject)obj);
+			} else if (obj is WorkspaceObject) {
+				pentry = ((WorkspaceObject)obj);
 				path = pentry.BaseDirectory;
 				isDir = true;
 			} else

@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Projects
         {
             store.Clear ();
 
-			bool isPcl = configureProject is PortableDotNetProject;
+			bool isPcl = configureProject.IsPortableLibrary;
 
             foreach (SystemAssembly systemAssembly in targetContext.GetAssemblies (targetVersion)) {
 				if (systemAssembly.Package.IsFrameworkPackage && (isPcl || systemAssembly.Name == "mscorlib"))
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Projects
 				
 				Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 				
-				foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
+				foreach (Project projectEntry in openSolution.GetAllItems<Project>()) {
 	
 					if (projectEntry == configureProject)
 						continue;

@@ -89,14 +89,14 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, countSolutionItemAdded);
 			Assert.AreEqual (0, sol.Items.Count);
 			
-			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "project1";
 			sol.RootFolder.Items.Add (project);
 			
 			Assert.AreEqual (2, countSolutionItemAdded);
 			Assert.AreEqual (1, sol.Items.Count);
 			
-			DotNetAssemblyProject project2 = new DotNetAssemblyProject ("C#");
+			var project2 = Services.ProjectService.CreateDotNetProject ("C#");
 			project2.Name = "project2";
 			folder.Items.Add (project2);
 			
@@ -197,7 +197,7 @@ namespace MonoDevelop.Projects
 		{
 			int nameChanges = 0;
 			
-			DotNetAssemblyProject prj = new DotNetAssemblyProject ("C#");
+			var prj = Services.ProjectService.CreateDotNetProject ("C#");
 			prj.FileFormat = Util.FileFormatMSBuild05;
 			prj.NameChanged += delegate {
 				nameChanges++;
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (p.NeedsReload);
 
 			string solFile2 = Util.GetSampleProject ("csharp-console", "csharp-console.sln");
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile2);
+			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile2).Result;
 			Project p2 = sol2.Items [0] as Project;
 			Assert.IsFalse (sol2.NeedsReload);
 			Assert.IsFalse (p2.NeedsReload);
@@ -287,7 +287,7 @@ namespace MonoDevelop.Projects
 			// Check reloading flag in another solution
 			
 			string solFile = sol.FileName;
-			Solution sol3 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol3 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			Assert.IsFalse (sol3.NeedsReload);
 			
 			Project p3 = sol3.Items [0] as Project;
@@ -304,7 +304,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
 			
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
 			
@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
 
@@ -333,7 +333,7 @@ namespace MonoDevelop.Projects
 
 			// Test that build configuration info is not lost when reloading a project
 
-			lib2 = (DotNetProject) lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2);
+			lib2 = (DotNetProject) lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2).Result;
 
 			be = sol.Configurations ["Debug"].GetEntryForItem (lib2);
 			Assert.IsFalse (be.Build);
@@ -341,7 +341,7 @@ namespace MonoDevelop.Projects
 
 			// Test that startup project is the reloaded project
 
-			p = (DotNetProject) p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+			p = (DotNetProject) p.ParentFolder.ReloadItem (Util.GetMonitor (), p).Result;
 			Assert.AreSame (sol.StartupItem, p);
 		}
 
@@ -350,22 +350,22 @@ namespace MonoDevelop.Projects
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("item-files");
 			
-			List<FilePath> files = sol.GetItemFiles (false);
+			List<FilePath> files = sol.GetItemFiles (false).ToList ();
 			Assert.AreEqual (1, files.Count);
 			Assert.AreEqual (sol.FileName, files [0]);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
-			files = p.GetItemFiles (false);
+			files = p.GetItemFiles (false).ToList ();
 			Assert.AreEqual (1, files.Count);
 			Assert.AreEqual (p.FileName, files [0]);
 			
-			files = p.GetItemFiles (true);
+			files = p.GetItemFiles (true).ToList ();
 			Assert.AreEqual (6, files.Count);
 			Assert.IsTrue (files.Contains (p.FileName));
 			foreach (ProjectFile pf in p.Files)
 				Assert.IsTrue (files.Contains (pf.FilePath), "Contains " + pf.FilePath);
 			
-			files = sol.GetItemFiles (true);
+			files = sol.GetItemFiles (true).ToList ();
 			Assert.AreEqual (7, files.Count);
 			Assert.IsTrue (files.Contains (sol.FileName));
 			Assert.IsTrue (files.Contains (p.FileName));
@@ -378,7 +378,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
 			
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
 			Assert.IsNotNull (p);
 			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("library1");
@@ -394,7 +394,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the project and the references
 			
-			BuildResult res = p.Build (Util.GetMonitor (), config, true);
+			BuildResult res = p.Build (Util.GetMonitor (), config, true).Result;
 			foreach (BuildError er in res.Errors)
 				Console.WriteLine (er);
 			Assert.AreEqual (0, res.ErrorCount);
@@ -410,7 +410,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the project, but not the references
 			
-			res = p.Build (Util.GetMonitor (), config, false);
+			res = p.Build (Util.GetMonitor (), config, false).Result;
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
@@ -421,7 +421,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
 			
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			DotNetProject p = (DotNetProject) sol.FindProjectByName ("console-with-libs");
 			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("library1");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("library2");
@@ -439,7 +439,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the project and the references
 			
-			BuildResult res = ws.Build (Util.GetMonitor (), "Debug");
+			BuildResult res = ws.Build (Util.GetMonitor (), ConfigurationSelector.Default).Result;
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
@@ -453,7 +453,7 @@ namespace MonoDevelop.Projects
 			
 			// Clean the workspace
 			
-			ws.Clean (Util.GetMonitor (), "Debug");
+			ws.Clean (Util.GetMonitor (), ConfigurationSelector.Default).Wait ();
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
@@ -463,7 +463,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the solution
 			
-			res = ws.Build (Util.GetMonitor (), "Debug");
+			res = ws.Build (Util.GetMonitor (), ConfigurationSelector.Default).Result;
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
@@ -477,7 +477,7 @@ namespace MonoDevelop.Projects
 			
 			// Clean the solution
 			
-			sol.Clean (Util.GetMonitor (), "Debug");
+			sol.Clean (Util.GetMonitor (), "Debug").Wait ();
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs.exe")));
 			Assert.IsFalse (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs.exe"))));
 			Assert.IsFalse (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));
@@ -487,7 +487,7 @@ namespace MonoDevelop.Projects
 			
 			// Build the solution folder
 			
-			res = folder.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
+			res = folder.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug").Result;
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
@@ -501,7 +501,7 @@ namespace MonoDevelop.Projects
 			
 			// Clean the solution folder
 			
-			folder.Clean (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug");
+			folder.Clean (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug").Wait ();
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", "library2.dll")));
 			Assert.IsFalse (File.Exists (Util.Combine (lib2.BaseDirectory, "bin", "Debug", GetMdb ("library2.dll"))));
 		}
@@ -514,7 +514,7 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, sol.FileFormat.Id);
 			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, p.FileFormat.Id);
-			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
+			Assert.AreEqual ("4.0", p.ToolsVersion);
 			
 			// Change solution format of unsaved solution
 			
@@ -522,38 +522,38 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual ("MSBuild08", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild08", p.FileFormat.Id);
-			Assert.AreEqual ("3.5", MSBuildProjectService.GetHandler (p).ToolsVersion);
+			Assert.AreEqual ("3.5", p.ToolsVersion);
 
 			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
 			
 			Assert.AreEqual ("MSBuild10", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild10", p.FileFormat.Id);
-			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
+			Assert.AreEqual ("4.0", p.ToolsVersion);
 
 			// Change solution format of saved solution
 			
 			sol.Save (Util.GetMonitor ());
 
 			sol.ConvertToFormat (Util.FileFormatMSBuild05, false);
-			
+
 			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
-			Assert.AreEqual ("2.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
+			Assert.AreEqual ("2.0", p.ToolsVersion);
 
 			// Add new project
 			
-			Project newp = new DotNetAssemblyProject ("C#");
+			Project newp = Services.ProjectService.CreateDotNetProject ("C#");
 			Assert.AreEqual ("MSBuild12", newp.FileFormat.Id);
-			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+			Assert.AreEqual ("4.0", newp.ToolsVersion);
 
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
-			Assert.AreEqual ("2.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+			Assert.AreEqual ("2.0", newp.ToolsVersion);
 
 			// Add saved project
 			
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			Solution msol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution msol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			
 			Project mp = (Project) msol.Items [0];
 			Assert.AreEqual ("MSBuild05", mp.FileFormat.Id);
@@ -567,7 +567,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("test-build-configs", "test-build-configs.sln");
 			
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			DotNetProject lib1 = (DotNetProject) sol.FindProjectByName ("Lib1");
 			DotNetProject lib2 = (DotNetProject) sol.FindProjectByName ("Lib2");
 			DotNetProject lib3 = (DotNetProject) sol.FindProjectByName ("Lib3");
@@ -616,7 +616,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (File.Exists (lib3.GetOutputFileName (config)), tag);
 			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
 			
-			BuildResult res = sol.Build (Util.GetMonitor (), config);
+			BuildResult res = sol.Build (Util.GetMonitor (), config).Result;
 			Assert.AreEqual (0, res.WarningCount, tag);
 			Assert.AreEqual (0, res.ErrorCount, tag);
 			
@@ -625,7 +625,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (File.Exists (lib3.GetOutputFileName (config)), tag);
 			Assert.IsTrue (File.Exists (lib4.GetOutputFileName (config)), tag);
 			
-			sol.Clean (Util.GetMonitor (), config);
+			sol.Clean (Util.GetMonitor (), config).Wait ();
 			
 			Assert.IsFalse (File.Exists (lib1.GetOutputFileName (config)), tag);
 			Assert.IsFalse (File.Exists (lib2.GetOutputFileName (config)), tag);
@@ -647,7 +647,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (File.Exists (lib3.GetOutputFileName (config)), tag);
 			Assert.IsFalse (File.Exists (lib4.GetOutputFileName (config)), tag);
 			
-			BuildResult res = lib1.Build (Util.GetMonitor (), config, true);
+			BuildResult res = lib1.Build (Util.GetMonitor (), config, true).Result;
 			Assert.AreEqual (0, res.WarningCount, tag);
 			Assert.AreEqual (0, res.ErrorCount, tag + " " + res.CompilerOutput);
 			
@@ -666,13 +666,13 @@ namespace MonoDevelop.Projects
 			
 			Assert.IsFalse (File.Exists (lib.GetOutputFileName (config)), tag);
 			
-			BuildResult res = lib.Build (Util.GetMonitor (), config, false);
+			BuildResult res = lib.Build (Util.GetMonitor (), config, false).Result;
 			Assert.AreEqual (0, res.WarningCount, tag);
 			Assert.AreEqual (0, res.ErrorCount, tag);
 			
 			Assert.IsTrue (File.Exists (lib.GetOutputFileName (config)), tag);
 			
-			lib.Clean (Util.GetMonitor (), config);
+			lib.Clean (Util.GetMonitor (), config).Wait ();
 			Assert.IsFalse (File.Exists (lib.GetOutputFileName (config)), tag);
 		}
 		
@@ -686,23 +686,27 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("unsupported-project", "console-with-libs.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var app = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
-			var lib1 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "library1.csproj");
-			var lib2 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "library2.csproj");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			var app = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
+			var lib1 = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.FileName.FileName == "library1.csproj");
+			var lib2 = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.FileName.FileName == "library2.csproj");
 
-			Assert.IsInstanceOf<DotNetAssemblyProject> (app);
-			Assert.IsInstanceOf<UnknownSolutionItem> (lib1);
-			Assert.IsInstanceOf<UnknownProject> (lib2);
+			Assert.IsInstanceOf<DotNetProject> (app);
+			Assert.IsTrue (lib1.IsUnsupportedProject);
+			Assert.IsTrue (lib2.IsUnsupportedProject);
 
-			var p = (UnknownProject)lib2;
+			var p = (Project)lib2;
 
 			Assert.AreEqual (2, p.Files.Count);
 
 			p.AddFile (p.BaseDirectory.Combine ("Test.cs"), BuildAction.Compile);
-			sol.Save (new NullProgressMonitor ());
+
+			var solText = File.ReadAllLines (solFile);
+
+			sol.Save (new ProgressMonitor ());
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (solText, File.ReadAllLines (solFile));
 		}
 
 		[Test]
@@ -710,26 +714,26 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("unsupported-project", "console-with-libs.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			var res = sol.Build (Util.GetMonitor (), "Debug");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			var res = sol.Build (Util.GetMonitor (), "Debug").Result;
 
 			// The solution has a console app that references an unsupported library. The build of the solution should fail.
-			Assert.IsTrue (res.ErrorCount == 1);
+			Assert.AreEqual (1, res.ErrorCount);
 
-			var app = (DotNetAssemblyProject) sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
+			var app = sol.GetAllItems<DotNetProject> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
 
 			// The console app references an unsupported library. The build of the project should fail.
-			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
+			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true).Result;
 			Assert.IsTrue (res.ErrorCount == 1);
 
 			// A solution build should succeed if it has unbuildable projects but those projects are not referenced by buildable projects
 			app.References.Clear ();
 			sol.Save (Util.GetMonitor ());
-			res = sol.Build (Util.GetMonitor (), "Debug");
+			res = sol.Build (Util.GetMonitor (), "Debug").Result;
 			Assert.IsTrue (res.ErrorCount == 0);
 
 			// Regular project not referencing anything else. Should build.
-			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
+			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true).Result;
 			Assert.IsTrue (res.ErrorCount == 0);
 		}
 
@@ -738,10 +742,10 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			SolutionEntityItem p = sol.FindProjectByName ("console-with-libs");
-			SolutionEntityItem lib1 = sol.FindProjectByName ("library1");
-			SolutionEntityItem lib2 = sol.FindProjectByName ("library2");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			SolutionItem p = sol.FindProjectByName ("console-with-libs");
+			SolutionItem lib1 = sol.FindProjectByName ("library1");
+			SolutionItem lib2 = sol.FindProjectByName ("library2");
 
 			Assert.IsTrue (p.Enabled);
 			Assert.IsTrue (lib1.Enabled);
@@ -749,16 +753,16 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (p));
 
 			p.Enabled = false;
-			p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+			p.ParentFolder.ReloadItem (Util.GetMonitor (), p).Wait ();
 
-			p = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.Name == "console-with-libs");
+			p = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.Name == "console-with-libs");
 			Assert.IsNotNull (p);
 			Assert.IsFalse (p.Enabled);
 			Assert.IsTrue (lib1.Enabled);
 			Assert.IsTrue (lib2.Enabled);
 
 			p.Enabled = true;
-			p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+			p.ParentFolder.ReloadItem (Util.GetMonitor (), p).Wait ();
 
 			p = sol.FindProjectByName ("console-with-libs");
 			Assert.IsNotNull (p);
@@ -771,8 +775,8 @@ namespace MonoDevelop.Projects
 			sol.Save (Util.GetMonitor ());
 			sol.Dispose ();
 
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			lib1 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.Name == "library1");
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			lib1 = sol.GetAllItems<SolutionItem> ().FirstOrDefault (it => it.Name == "library1");
 			Assert.IsNotNull (lib1);
 			lib1.Enabled = true;
 			lib1.ParentFolder.ReloadItem (Util.GetMonitor (), lib1);
@@ -780,6 +784,148 @@ namespace MonoDevelop.Projects
 			lib1 = sol.FindProjectByName ("library1");
 			Assert.IsNotNull (lib1);
 			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+		}
+
+		[Test]
+		public void SolutionBoundUnbound ()
+		{
+			Solution sol = new Solution ();
+
+			var e = new SomeItem ();
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+
+			sol.RootFolder.AddItem (e);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.AddItem (e);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			var f = new SolutionFolder ();
+			f.AddItem (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			sol.RootFolder.AddItem (f);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (f);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			f.Dispose ();
+			sol.Dispose ();
+		}
+
+		[Test]
+		public void SolutionBuildOrder ()
+		{
+			string solFile = Util.GetSampleProject ("solution-build-order", "ConsoleApplication3.sln");
+
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
+			var p = sol.FindProjectByName ("ConsoleApplication3");
+			var lib1 = sol.FindProjectByName ("ClassLibrary1");
+			var lib2 = sol.FindProjectByName ("ClassLibrary2");
+
+			Assert.IsTrue (p.ItemDependencies.Contains (lib1));
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2));
+			Assert.AreEqual (2, p.ItemDependencies.Count);
+
+			Assert.IsTrue (lib2.ItemDependencies.Contains (lib1));
+			Assert.AreEqual (1, lib2.ItemDependencies.Count);
+			Assert.AreEqual (0, lib1.ItemDependencies.Count);
+
+			// Check that dependencies are saved
+
+			var solContent1 = File.ReadAllLines (solFile);
+
+			sol.Save (new ProgressMonitor ());
+
+			var solContent2 = File.ReadAllLines (solFile);
+			Assert.AreEqual (solContent1, solContent2);
+
+			// Check that when an item is removed, it is removed from the dependencies list
+
+			lib1.ParentFolder.Items.Remove (lib1);
+			lib1.Dispose ();
+
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2));
+			Assert.AreEqual (1, p.ItemDependencies.Count);
+			Assert.AreEqual (0, lib2.ItemDependencies.Count);
+
+			// Check that when an item is reloaded, it is kept from the dependencies list
+
+			var lib2Reloaded = lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2).Result;
+
+			Assert.AreNotEqual (lib2, lib2Reloaded);
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2Reloaded));
+			Assert.AreEqual (1, p.ItemDependencies.Count);
+		}
+	}
+
+	class SomeItem: SolutionItem
+	{
+		public int BoundEvents;
+		public int UnboundEvents;
+
+		public SomeItem InternalItem;
+
+		public SomeItem (bool createInternal = true)
+		{
+			Initialize (this);
+			if (createInternal) {
+				InternalItem = new SomeItem (false);
+				RegisterInternalChild (InternalItem);
+			}
+		}
+
+		public void Reset ()
+		{
+			BoundEvents = UnboundEvents = 0;
+			if (InternalItem != null)
+				InternalItem.Reset ();
+		}
+
+		protected override void OnBoundToSolution ()
+		{
+			base.OnBoundToSolution ();
+			BoundEvents++;
+		}
+
+		protected override void OnUnboundFromSolution ()
+		{
+			base.OnUnboundFromSolution ();
+			UnboundEvents++;
 		}
 	}
 }

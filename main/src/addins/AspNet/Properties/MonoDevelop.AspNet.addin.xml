@@ -178,32 +178,23 @@
 		            extensions = "*.htm,*.html"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "AspNetApp" class = "MonoDevelop.AspNet.Projects.AspNetAppProjectBinding" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProjectSubtype
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<ProjectExtension
 			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
-			type="MonoDevelop.AspNet.Projects.AspMvc1Project"
-			useXBuild="true" />
-		<DotNetProjectSubtype
+			type="MonoDevelop.AspNet.Projects.AspMvc1ProjectExtension" />
+		<ProjectExtension
 			guid="{F85E285D-A4E0-4152-9332-AB1D724D3325}"
-			type="MonoDevelop.AspNet.Projects.AspMvc2Project"
-			useXBuild="true" />
-		<DotNetProjectSubtype
+			type="MonoDevelop.AspNet.Projects.AspMvc2ProjectExtension" />
+		<ProjectExtension
 			guid="{E53F8FEA-EAE0-44A6-8774-FFD645390401}"
-			type="MonoDevelop.AspNet.Projects.AspMvc3Project"
-			useXBuild="true" />
-		<DotNetProjectSubtype
+			type="MonoDevelop.AspNet.Projects.AspMvc3ProjectExtension" />
+		<ProjectExtension
 			guid="{E3E379DF-F4C6-4180-9B81-6769533ABE47}"
-			type="MonoDevelop.AspNet.Projects.AspMvc4Project"
-			useXBuild="true" />
-		<DotNetProjectSubtype
-			id="MonoDevelop.AspNet.Projects.AspNetAppProject"
+			type="MonoDevelop.AspNet.Projects.AspMvc4ProjectExtension" />
+		<ProjectExtension
+			id="MonoDevelop.AspNet.Projects.AspNetAppProjectExtension"
 			guid="{349C5851-65DF-11DA-9384-00065B846F21}"
-			type="MonoDevelop.AspNet.Projects.AspNetAppProject"
-			useXBuild="true" />
+			type="MonoDevelop.AspNet.Projects.AspNetAppProjectExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
@@ -217,7 +208,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Run">
-		<Condition id="ItemType" value="MonoDevelop.AspNet.Projects.AspNetAppProject">
+		<Condition id="FlavorType" value="MonoDevelop.AspNet.Projects.AspNetFlavor">
 			<Section id = "XspOptions"
 			             _label = "XSP Web Server"
 			             class = "MonoDevelop.AspNet.Execution.XspOptionsPanel"/>
@@ -262,11 +253,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
-		<Condition id="ItemType" value="MonoDevelop.AspNet.Projects.AspNetAppProject">
-			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide = "true">
-				<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddAspNetDirectory" />
-			</ItemSet>
-		</Condition>
+		<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide = "true">
+			<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddAspNetDirectory" />
+		</ItemSet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">

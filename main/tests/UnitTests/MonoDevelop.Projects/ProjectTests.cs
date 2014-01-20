@@ -31,6 +31,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Xml;
 
 namespace MonoDevelop.Projects
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void ProjectFilePaths ()
 		{
-			DotNetProject project = new DotNetAssemblyProject ("C#");
+			DotNetProject project = Services.ProjectService.CreateDotNetProject ("C#");
 			string dir = Environment.CurrentDirectory;
 			
 			ProjectFile file1 = project.AddFile (Util.Combine (dir, "test1.cs"), BuildAction.Compile);
@@ -67,10 +68,10 @@ namespace MonoDevelop.Projects
 		public void Resources ()
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			CheckResourcesSolution (sol);
 
-			BuildResult res = sol.Build (Util.GetMonitor (), "Debug");
+			BuildResult res = sol.Build (Util.GetMonitor (), "Debug").Result;
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
@@ -78,7 +79,7 @@ namespace MonoDevelop.Projects
 			string spath = Util.Combine (sol.BaseDirectory, "ResourcesTester", "bin", "Debug", "ca", "ResourcesTesterApp.resources.dll");
 			Assert.IsTrue (File.Exists (spath), "Satellite assembly not generated");
 
-			sol.Clean (Util.GetMonitor (), "Debug");
+			sol.Clean (Util.GetMonitor (), "Debug").Wait ();
 			Assert.IsFalse (File.Exists (spath), "Satellite assembly not removed");
 
 			// msbuild doesn't delete this directory
@@ -173,7 +174,10 @@ namespace MonoDevelop.Projects
 			ProjectCreateInformation info = new ProjectCreateInformation ();
 			info.ProjectName = "Some.Test";
 			info.ProjectBasePath = "/tmp/test";
-			DotNetProject p = new DotNetAssemblyProject ("C#", info, null);
+			var doc = new XmlDocument ();
+			var projectOptions = doc.CreateElement ("Options");
+			projectOptions.SetAttribute ("language", "C#");
+			DotNetProject p = (DotNetProject) Services.ProjectService.CreateProject ("DotNet", info, projectOptions);
 
 			Assert.AreEqual (2, p.Configurations.Count);
 			Assert.AreEqual ("Debug", p.Configurations [0].Name);
@@ -186,7 +190,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void NewConfigurationsHaveAnAssemblyName ()
 		{
-			DotNetProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.Name = "HiThere";
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			Assert.AreEqual ("HiThere", c.OutputAssembly);
@@ -195,7 +199,7 @@ namespace MonoDevelop.Projects
 		[Test()]
 		public void CustomCommands ()
 		{
-			DotNetProject p = new DotNetAssemblyProject ("C#");
+			DotNetProject p = Services.ProjectService.CreateDotNetProject ("C#");
 			p.Name = "SomeProject";
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			
@@ -220,7 +224,7 @@ namespace MonoDevelop.Projects
 		public void FileDependencies ()
 		{
 			string solFile = Util.GetSampleProject ("file-dependencies", "ConsoleProject.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 
 			Project p = (Project) sol.Items [0];
 			var dir = p.BaseDirectory;
@@ -288,8 +292,8 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("reference-refresh", "ConsoleProject.sln");
 
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			DotNetProject project = sol.GetAllSolutionItems<DotNetProject> ().FirstOrDefault ();
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			DotNetProject project = sol.GetAllItems<DotNetProject> ().FirstOrDefault ();
 
 			Assert.AreEqual (4, project.References.Count);
 
@@ -435,7 +439,7 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void AssemblyReferenceHintPath ()
 		{
-			var file = GetType ().Assembly.Location;
+			var file = (FilePath) GetType ().Assembly.Location;
 			var asmName = Path.GetFileNameWithoutExtension (file);
 
 			var r = new ProjectReference (ReferenceType.Assembly, file);
@@ -446,6 +450,38 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Foo", r.Reference);
 			Assert.AreEqual (file, r.HintPath);
 
+		}
+
+		[Test]
+		public void LoadPortableLibrary ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			var p = sol.FindProjectByName ("PortableLibrary");
+
+			Assert.IsInstanceOf<DotNetProject> (p);
+
+			var pl = (DotNetProject)p;
+			Assert.AreEqual (".NETPortable", pl.GetDefaultTargetFrameworkId ().Identifier);
+		}
+
+		[Test]
+		public void BuildPortableLibrary ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			var res = sol.Build (Util.GetMonitor (), "Debug").Result;
+			Assert.AreEqual (0, res.Errors.Count);
+		}
+
+		[Test]
+		public void PortableLibraryImplicitReferences ()
+		{
+			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			var p = (DotNetProject) sol.FindProjectByName ("PortableLibrary");
+			var refs = p.GetReferencedAssemblies (p.Configurations [0].Selector).Select (r => Path.GetFileName (r)).ToArray ();
 		}
 	}
 }

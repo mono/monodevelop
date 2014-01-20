@@ -24,9 +24,9 @@ namespace MonoDevelop.Deployment.Targets
 			get { return "Archive of Sources"; }
 		}
 		
-		public override bool CanBuild (SolutionItem entry)
+		public override bool CanBuild (SolutionFolderItem entry)
 		{
-			return entry is SolutionFolder || entry is SolutionEntityItem;
+			return entry is SolutionFolder || entry is SolutionItem;
 		}
 
 		
@@ -58,14 +58,14 @@ namespace MonoDevelop.Deployment.Targets
 			set { targetFile = value; }
 		}
 		
-		protected override bool OnBuild (IProgressMonitor monitor, DeployContext ctx)
+		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string sourceFile;
-			SolutionItem entry = RootSolutionItem;
+			SolutionFolderItem entry = RootSolutionItem;
 			if (entry is SolutionFolder)
 				sourceFile = entry.ParentSolution.FileName;
 			else
-				sourceFile = ((SolutionEntityItem)entry).FileName;
+				sourceFile = ((SolutionItem)entry).FileName;
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
 			mon.AddSlaveMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
@@ -81,13 +81,13 @@ namespace MonoDevelop.Deployment.Targets
 				
 				// Export the project
 				
-				SolutionItem[] ents = GetChildEntries ();
+				SolutionFolderItem[] ents = GetChildEntries ();
 				string[] epaths = new string [ents.Length];
 				for (int n=0; n<ents.Length; n++)
 					epaths [n] = ents [n].ItemId;
 				
-				Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat);
-				if (!mon.AsyncOperation.Success)
+				var r = Services.ProjectService.Export (mon, sourceFile, epaths, folder, FileFormat).Result;
+				if (string.IsNullOrEmpty (r))
 					return false;
 				
 				// Create the archive
@@ -99,12 +99,11 @@ namespace MonoDevelop.Deployment.Targets
 			finally {
 				Directory.Delete (tmpFolder, true);
 			}
-			if (monitor.AsyncOperation.Success)
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Created file: {0}", targetFile));
 			return true;
 		}
 		
-		public override void InitializeSettings (SolutionItem entry)
+		public override void InitializeSettings (SolutionFolderItem entry)
 		{
 			targetFile = Path.Combine (entry.BaseDirectory, entry.Name) + ".tar.gz";
 			if (entry.ParentSolution != null)

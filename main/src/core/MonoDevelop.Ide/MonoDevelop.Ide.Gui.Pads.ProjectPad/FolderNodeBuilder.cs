@@ -184,9 +184,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return false;
 		}
 		
-		public override void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
+		public override async void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
 		{
-			var projectsToSave = new HashSet<SolutionEntityItem> ();
+			var projectsToSave = new HashSet<SolutionItem> ();
 			var groupedFiles = new HashSet<ProjectFile> ();
 
 			foreach (var pf in dataObjects.OfType<ProjectFile> ()) {
@@ -197,10 +197,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (object dataObject in dataObjects)
 				DropNode (projectsToSave, dataObject, groupedFiles, operation);
 
-			IdeApp.ProjectOperations.Save (projectsToSave);
+			await IdeApp.ProjectOperations.SaveAsync (projectsToSave);
 		}
 		
-		void DropNode (HashSet<SolutionEntityItem> projectsToSave, object dataObject, HashSet<ProjectFile> groupedFiles, DragOperation operation)
+		void DropNode (HashSet<SolutionItem> projectsToSave, object dataObject, HashSet<ProjectFile> groupedFiles, DragOperation operation)
 		{
 			FilePath targetDirectory = GetFolderPath (CurrentNode.DataItem);
 			FilePath source;
@@ -373,7 +373,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
-		public void AddFilesToProject()
+		public async void AddFilesToProject()
 		{
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
@@ -398,18 +398,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory, overrideAction);
 			
-			IdeApp.ProjectOperations.Save (project);
+			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewFiles)]
-		public void AddNewFileToProject()
+		public async void AddNewFileToProject()
 		{
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
-			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
+			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		void OnFileInserted (ITreeNavigator nav)
@@ -420,7 +420,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		///<summary>Imports files and folders from a target folder into the current folder</summary>
 		[CommandHandler (ProjectCommands.AddFilesFromFolder)]
-		public void AddFilesFromFolder ()
+		public async void AddFilesFromFolder ()
 		{
 			var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
@@ -447,12 +447,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
 			if (added)
-				IdeApp.ProjectOperations.Save (project);
+				await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 
 		///<summary>Adds an existing folder to the current folder</summary>
 		[CommandHandler (ProjectCommands.AddExistingFolder)]
-		public void AddExistingFolder ()
+		public async void AddExistingFolder ()
 		{
 			var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			var selectedFolder = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
@@ -504,11 +504,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			
 			if (changedProject)
-				IdeApp.ProjectOperations.Save (project);
+				await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 		
 		[CommandHandler (ProjectCommands.NewFolder)]
-		public void AddNewFolder ()
+		public async void AddNewFolder ()
 		{
 			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
 			
@@ -529,10 +529,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile newFolder = new ProjectFile (directoryName);
 			newFolder.Subtype = Subtype.Directory;
 			project.Files.Add (newFolder);
-			IdeApp.ProjectOperations.Save (project);
 
 			CurrentNode.Expanded = true;
 			Tree.AddNodeInsertCallback (new ProjectFolder (directoryName, project), new TreeNodeCallback (OnFileInserted));
+
+			await IdeApp.ProjectOperations.SaveAsync (project);
 		}
 	}	
 }

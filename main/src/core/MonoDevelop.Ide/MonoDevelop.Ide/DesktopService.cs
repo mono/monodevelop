@@ -33,6 +33,7 @@ using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide.Fonts;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -101,10 +102,7 @@ namespace MonoDevelop.Ide
 			get { return PlatformService.Name; }
 		}
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public static string DefaultControlLeftRightBehavior {
 			get {
 				return PlatformService.DefaultControlLeftRightBehavior;
@@ -162,6 +160,31 @@ namespace MonoDevelop.Ide
 						return false;
 			}
 			return true;
+		}
+
+		public async static Task<bool> GetFileIsTextAsync (string file, string mimeType = null)
+		{
+			if (mimeType == null) {
+				mimeType = GetMimeTypeForUri (file);
+			}
+
+			if (mimeType != "application/octet-stream") {
+				return GetMimeTypeIsText (mimeType);
+			}
+
+			return await Task<bool>.Factory.StartNew (delegate {
+				if (!File.Exists (file))
+					return false;
+
+				using (var f = File.OpenRead (file)) {
+					var buf = new byte[8192];
+					var read = f.Read (buf, 0, buf.Length);
+					for (int i = 0; i < read; i++)
+						if (buf [i] == 0)
+							return false;
+				}
+				return true;
+			});
 		}
 
 		public static bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
@@ -318,6 +341,21 @@ namespace MonoDevelop.Ide
 		public static bool IsModalDialogRunning ()
 		{
 			return PlatformService.IsModalDialogRunning ();
+		}
+
+		internal static void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.AddChildWindow (parent, child);
+		}
+
+		internal static void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.RemoveChildWindow (parent, child);
+		}
+
+		internal static void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			PlatformService.PlaceWindow (window, x, y, width, height);
 		}
 	}
 }

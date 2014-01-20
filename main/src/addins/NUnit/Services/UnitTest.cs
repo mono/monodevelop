@@ -34,6 +34,9 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.NUnit
 {
@@ -45,8 +48,8 @@ namespace MonoDevelop.NUnit
 		UnitTest parent;
 		TestStatus status;
 		Hashtable options;
-		IWorkspaceObject ownerSolutionItem;
-		SolutionEntityItem ownerSolutionEntityItem;
+		WorkspaceObject ownerSolutionItem;
+		SolutionItem ownerSolutionEntityItem;
 		UnitTestResultsStore results;
 		bool historicResult;
 		bool resultLoaded;
@@ -71,11 +74,11 @@ namespace MonoDevelop.NUnit
 			this.name = name;
 		}
 		
-		protected UnitTest (string name, IWorkspaceObject ownerSolutionItem)
+		protected UnitTest (string name, WorkspaceObject ownerSolutionItem)
 		{
 			this.name = name;
 			this.ownerSolutionItem = ownerSolutionItem;
-			ownerSolutionEntityItem = ownerSolutionItem as SolutionEntityItem;
+			ownerSolutionEntityItem = ownerSolutionItem as SolutionItem;
 			if (ownerSolutionEntityItem != null)
 				ownerSolutionEntityItem.DefaultConfigurationChanged += OnConfugurationChanged;
 		}
@@ -363,11 +366,11 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		protected IWorkspaceObject OwnerSolutionItem {
+		protected WorkspaceObject OwnerSolutionItem {
 			get { return ownerSolutionItem; }
 		}
 		
-		public IWorkspaceObject OwnerObject {
+		public WorkspaceObject OwnerObject {
 			get {
 				if (ownerSolutionItem != null)
 					return ownerSolutionItem;
@@ -390,11 +393,9 @@ namespace MonoDevelop.NUnit
 		}
 		
 		// Forces the reloading of tests, if they have changed
-		public virtual IAsyncOperation Refresh ()
+		public virtual Task Refresh (CancellationToken ct)
 		{
-			AsyncOperation op = new AsyncOperation ();
-			op.SetCompleted (true);
-			return op;
+			return Task.FromResult (0);
 		}
 		
 		public UnitTestResult Run (TestContext testContext)
@@ -521,8 +522,8 @@ namespace MonoDevelop.NUnit
 					oset.Tests.Remove (te);
 				}
 			}
-			
-			ce.Save (new NullProgressMonitor ());
+
+			IdeApp.ProjectOperations.SaveAsync ((WorkspaceObject)ce);
 		}
 		
 		protected virtual ICollection OnLoadOptions (string configuration)
@@ -552,8 +553,8 @@ namespace MonoDevelop.NUnit
 		
 		void GetOwnerSolutionItem (UnitTest t, out IConfigurationTarget c, out string path)
 		{
-			if (OwnerSolutionItem is SolutionEntityItem) {
-				c = OwnerSolutionItem as SolutionEntityItem;
+			if (OwnerSolutionItem is SolutionItem) {
+				c = OwnerSolutionItem as SolutionItem;
 				path = "";
 			} else if (parent != null) {
 				parent.GetOwnerSolutionItem (t, out c, out path);

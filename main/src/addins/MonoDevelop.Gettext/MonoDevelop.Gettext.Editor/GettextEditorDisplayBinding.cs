@@ -49,7 +49,7 @@ namespace MonoDevelop.Gettext
 		
 		public IViewContent CreateContent (FilePath filePath, string mimeType, Project project)
 		{
-			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
+			foreach (TranslationProject tp in IdeApp.Workspace.GetAllItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (filePath))
 					return new Editor.CatalogEditorView (tp, filePath);
 			

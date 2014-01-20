@@ -39,7 +39,7 @@ namespace MonoDevelop.VBNetBinding
 	public partial class ProjectOptionsPanelWidget : Gtk.Bin
 	{
 		DotNetProject project;
-		VBProjectParameters parameters;
+		VBProjectExtension parameters;
 		
 		public ProjectOptionsPanelWidget (MonoDevelop.Projects.Project project)
 		{
@@ -49,7 +49,7 @@ namespace MonoDevelop.VBNetBinding
 			this.Build();
 
 			this.project = (DotNetProject) project;
-			parameters = (VBProjectParameters) this.project.LanguageParameters;
+			parameters = this.project.GetService<VBProjectExtension> ();
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));

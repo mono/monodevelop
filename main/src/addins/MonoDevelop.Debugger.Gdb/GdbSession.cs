@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger.Gdb
 		Process proc;
 		StreamReader sout;
 		StreamWriter sin;
-		IProcessAsyncOperation console;
+		ProcessAsyncOperation console;
 		GdbCommandResult lastResult;
 		bool running;
 		Thread thread;

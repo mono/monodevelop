@@ -35,10 +35,10 @@ namespace MonoDevelop.Projects
 	
 	public class BuildEventArgs: EventArgs
 	{
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		bool success;
 		
-		public BuildEventArgs (IProgressMonitor monitor, bool success)
+		public BuildEventArgs (ProgressMonitor monitor, bool success)
 		{
 			this.monitor = monitor;
 			this.success = success;
@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects
 			this.FailedBuildCount = -1;
 		}
 		
-		public IProgressMonitor ProgressMonitor {
+		public ProgressMonitor ProgressMonitor {
 			get { return monitor; }
 		}
 		
@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 			get; set;
 		}
 		
-		public SolutionItem SolutionItem {
+		public SolutionFolderItem SolutionItem {
 			get; set;
 		}
 	}

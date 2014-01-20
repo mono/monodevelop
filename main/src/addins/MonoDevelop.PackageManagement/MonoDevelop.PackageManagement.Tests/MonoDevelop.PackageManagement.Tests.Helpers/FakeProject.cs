@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -60,6 +61,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public virtual void Save ()
 		{
 			IsSaved = true;
+		}
+
+		public IEnumerable<string> FlavorGuids {
+			get { yield break; }
 		}
 	}
 }

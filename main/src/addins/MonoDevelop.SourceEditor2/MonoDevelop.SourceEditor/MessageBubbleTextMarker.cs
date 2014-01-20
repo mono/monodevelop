@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 			get { return errors; }
 		}
 
-		Task task;
+		UserTask task;
 		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
@@ -143,7 +143,7 @@ namespace MonoDevelop.SourceEditor
 
 		string initialText;
 		bool isError;
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, UserTask task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			if (cache == null)
 				throw new ArgumentNullException ("cache");
@@ -158,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		static System.Text.RegularExpressions.Regex mcsErrorFormat = new System.Text.RegularExpressions.Regex ("(.+)\\(CS\\d+\\)\\Z");
-		public void AddError (Task task, bool isError, string errorMessage)
+		public void AddError (UserTask task, bool isError, string errorMessage)
 		{
 			var match = mcsErrorFormat.Match (errorMessage);
 			if (match.Success)

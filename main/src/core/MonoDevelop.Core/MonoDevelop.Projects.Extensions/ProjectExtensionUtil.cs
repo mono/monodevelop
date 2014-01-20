@@ -30,6 +30,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Extensions
 {
@@ -43,28 +44,13 @@ namespace MonoDevelop.Projects.Extensions
 			loadControlSlot = Thread.AllocateDataSlot ();
 		}
 		
-		public static ISolutionItemHandler GetItemHandler (SolutionItem item)
-		{
-			return item.GetItemHandler ();
-		}
-		
-		public static void InstallHandler (ISolutionItemHandler handler, SolutionItem item)
-		{
-			item.SetItemHandler (handler);
-		}
-		
-		public static SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
+		public async static Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName, ItemLoadCallback callback)
 		{
 			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + fileName)) {
-				return Services.ProjectService.GetExtensionChain (null).LoadSolutionItem (monitor, fileName, callback);
+				return await Services.ProjectService.GetExtensionChain (null).LoadSolutionItem (monitor, fileName, callback);
 			}
 		}
-		
-		public static BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
-		{
-			return Services.ProjectService.GetExtensionChain (item).Compile (monitor, item, buildData, callback);
-		}
-		
+
 		public static void BeginLoadOperation ()
 		{
 			Interlocked.Increment (ref loading);
@@ -94,28 +80,6 @@ namespace MonoDevelop.Projects.Extensions
 			if (op != null)
 				op.Add (rc);
 		}
-		
-		public static string EncodePath (SolutionEntityItem item, string path, string oldPath)
-		{
-			IPathHandler ph = item.GetItemHandler () as IPathHandler;
-			if (ph != null)
-				return ph.EncodePath (path, oldPath);
-			else {
-				string basePath = Path.GetDirectoryName (item.FileName);
-				return FileService.RelativeToAbsolutePath (basePath, path);
-			}
-		}
-		
-		public static string DecodePath (SolutionEntityItem item, string path)
-		{
-			IPathHandler ph = item.GetItemHandler () as IPathHandler;
-			if (ph != null)
-				return ph.DecodePath (path);
-			else {
-				string basePath = Path.GetDirectoryName (item.FileName);
-				return FileService.AbsoluteToRelativePath (basePath, path);
-			}
-		}
 	}
 	
 	class LoadOperation
@@ -141,7 +105,7 @@ namespace MonoDevelop.Projects.Extensions
 	
 
 	
-	public delegate SolutionEntityItem ItemLoadCallback (IProgressMonitor monitor, string fileName);
+	public delegate Task<SolutionItem> ItemLoadCallback (ProgressMonitor monitor, string fileName);
 	
-	public delegate BuildResult ItemCompileCallback (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData);
+	public delegate BuildResult ItemCompileCallback (ProgressMonitor monitor, SolutionItem item, BuildData buildData);
 }

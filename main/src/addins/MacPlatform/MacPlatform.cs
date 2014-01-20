@@ -349,7 +349,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (fileUri.AbsolutePath,
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
@@ -519,7 +519,7 @@ namespace MonoDevelop.MacIntegration
 			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{
@@ -735,6 +735,43 @@ namespace MonoDevelop.MacIntegration
 
 			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal)
 				&& !t.Key.DebugDescription.StartsWith ("<NSStatusBarWindow", StringComparison.Ordinal));
+		}
+
+		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			NSWindow w = GtkQuartz.GetWindow (parent);
+			child.Realize ();
+			NSWindow overlay = GtkQuartz.GetWindow (child);
+			overlay.SetExcludedFromWindowsMenu (true);
+			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
+		}
+
+		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			NSWindow w = GtkQuartz.GetWindow (window);
+			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
+			var r = w.FrameRectFor (dr);
+			w.SetFrame (r, true);
+			base.PlaceWindow (window, x, y, width, height);
+		}
+
+		static CGRect FromDesktopRect (Gdk.Rectangle r)
+		{
+			var desktopBounds = CalcDesktopBounds ();
+			r.Y = desktopBounds.Height - r.Y - r.Height;
+			if (desktopBounds.Y < 0)
+				r.Y += desktopBounds.Y;
+			return new CGRect (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
+		}
+
+		static Gdk.Rectangle CalcDesktopBounds ()
+		{
+			var desktopBounds = new Gdk.Rectangle ();
+			foreach (var s in NSScreen.Screens) {
+				var r = s.Frame;
+				desktopBounds = desktopBounds.Union (new Gdk.Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
+			}
+			return desktopBounds;
 		}
 	}
 }

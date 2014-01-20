@@ -222,7 +222,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
-    <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CodeGenerationPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CompilerOptionsPanelWidget.cs" />
@@ -313,6 +312,8 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

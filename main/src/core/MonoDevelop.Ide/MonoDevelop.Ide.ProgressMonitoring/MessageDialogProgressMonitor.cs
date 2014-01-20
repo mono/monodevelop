@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 {
 	// Progress monitor that reports errors and warnings in message dialogs.
 	
-	public class MessageDialogProgressMonitor: BaseProgressMonitor
+	public class MessageDialogProgressMonitor: ProgressMonitor
 	{
 		ProgressDialog dialog;
 		bool hideWhenDone;
@@ -64,77 +64,64 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				dialog.Message = "";
 				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
 				dialog.Show ();
-				dialog.AsyncOperation = AsyncOperation;
-				dialog.OperationCancelled += delegate {
-					OnCancelRequested ();
-				};
-				RunPendingEvents ();
+				dialog.CancellationTokenSource = CancellationTokenSource;
+				DispatchService.RunPendingEvents ();
 				this.hideWhenDone = hideWhenDone;
 				this.showDetails = showDetails;
 			}
 		}
-		
+
 		protected override void OnWriteLog (string text)
 		{
 			if (dialog != null) {
 				dialog.WriteText (text);
-				RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
 		}
 		
 		protected override void OnProgressChanged ()
 		{
 			if (dialog != null) {
-				dialog.Message = CurrentTask;
-				dialog.Progress = GlobalWork;
-				RunPendingEvents ();
+				dialog.Message = CurrentTaskName;
+				dialog.Progress = Progress;
+				DispatchService.RunPendingEvents ();
 			}
 		}
 		
-		public override void BeginTask (string name, int totalWork)
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			if (dialog != null) {
 				dialog.BeginTask (name);
 			}
-			base.BeginTask (name, totalWork);
 		}
-		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			if (dialog != null) {
-				dialog.BeginTask (name);
-			}
-			base.BeginStepTask (name, totalWork, stepSize);
-		}
-		
-		public override void EndTask ()
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (dialog != null) {
 				dialog.EndTask ();
 			}
-			base.EndTask ();
-			RunPendingEvents ();
+			base.OnEndTask (name, totalWork, stepWork);
+			DispatchService.RunPendingEvents ();
 		}
-						
-		public override void ReportWarning (string message)
+
+		protected override void OnWarningReported (string message)
 		{
-			base.ReportWarning (message);
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
-				RunPendingEvents ();
+				DispatchService.RunPendingEvents ();
 			}
+			base.OnWarningReported (message);
 		}
-		
-		public override void ReportError (string message, Exception ex)
+
+		protected override void OnErrorReported (string message, Exception exception)
 		{
-			base.ReportError (message, ex);
-			
 			if (dialog != null) {
-				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + Errors [Errors.Count - 1] + "\n");
-				RunPendingEvents ();
+				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + Errors [Errors.Length - 1] + "\n");
+				DispatchService.RunPendingEvents ();
 			}
+			base.OnErrorReported (message, exception);
 		}
-		
+
 		protected override void OnCompleted ()
 		{
 			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
@@ -144,7 +131,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		void ShowDialogs ()
 		{
 			if (dialog != null) {
-				dialog.ShowDone (Warnings.Count > 0, Errors.Count > 0);
+				dialog.ShowDone (Warnings.Length > 0, Errors.Length > 0);
 				if (hideWhenDone)
 					dialog.Destroy ();
 			}
@@ -152,7 +139,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			if (showDetails)
 				return;
 			
-			ShowResultDialog ();
+			this.ShowResultDialog ();
 		}
 	}
 }

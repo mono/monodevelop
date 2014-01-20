@@ -6,6 +6,9 @@
 	<ConditionType id="ItemType" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
 		<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 	</ConditionType>
+	<ConditionType id="FlavorType" type="MonoDevelop.Projects.Extensions.FlavorTypeCondition">
+		<Description>Type of a flavor that a project must have. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+	</ConditionType>
 	<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
 		<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
 	</ConditionType>

@@ -32,10 +32,12 @@ using System.IO;
 using MonoDevelop.Core.Serialization;
 using System.Collections.Generic;
 using MonoDevelop.Core.StringParsing;
+using System.Xml.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectConfiguration : SolutionItemConfiguration
+	public class ProjectConfiguration : SolutionItemConfiguration, IMSBuildDataObject
 	{
 
 		public ProjectConfiguration ()
@@ -46,8 +48,64 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		[ProjectPathItemProperty("IntermediateOutputPath")]
-		private FilePath intermediateOutputDirectory;
+		#region IProjectConfigurationData implementation
+
+		void IMSBuildDataObject.Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			Read (pset, format);
+		}
+
+		void IMSBuildDataObject.Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			Write (pset, format);
+		}
+
+		#endregion
+
+		internal protected virtual void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
+			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
+			debugMode = pset.GetValue<bool> ("DebugSymbols");
+			pauseConsoleOutput = pset.GetValue ("ConsolePause", true);
+			externalConsole = pset.GetValue<bool> ("ExternalConsole");
+			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
+			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
+
+			var svars = pset.GetValue ("EnvironmentVariables");
+			if (svars != null) {
+				XElement vars = XElement.Parse (svars);
+				foreach (var val in vars.Elements ("Variable")) {
+					var name = (string)val.Attribute ("name");
+					if (name != null)
+						environmentVariables [name] = (string)val.Attribute ("value");
+				}
+			}
+		}
+
+		internal protected virtual void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			pset.SetValue ("IntermediateOutputPath", intermediateOutputDirectory, defaultValue:FilePath.Null);
+			pset.SetValue ("DebugSymbols", debugMode, false);
+			pset.SetValue ("OutputPath", outputDirectory);
+			pset.SetValue ("ConsolePause", pauseConsoleOutput, true);
+			pset.SetValue ("ExternalConsole", externalConsole, false);
+			pset.SetValue ("Commandlineparameters", commandLineParameters, "");
+			pset.SetValue ("RunWithWarnings", runWithWarnings, true);
+
+			if (environmentVariables.Count > 0) {
+				XElement e = new XElement ("EnvironmentVariables");
+				foreach (var v in environmentVariables) {
+					var val = new XElement ("Variable");
+					val.SetAttributeValue ("name", v.Key);
+					val.SetAttributeValue ("value", v.Value);
+					e.Add (val);
+				}
+				pset.SetValue ("EnvironmentVariables", e.ToString ());
+			}
+		}
+
+		FilePath intermediateOutputDirectory = FilePath.Empty;
 
 		public virtual FilePath IntermediateOutputDirectory {
 			get {
@@ -66,46 +124,37 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[ProjectPathItemProperty("OutputPath")]
-		private FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
+		FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
 		public virtual FilePath OutputDirectory {
 			get { return outputDirectory; }
 			set { outputDirectory = value; }
 		}
 
-		[ItemProperty("DebugSymbols", DefaultValue = false)]
-		private bool debugMode = false;
+		bool debugMode = false;
 		public bool DebugMode {
 			get { return debugMode; }
 			set { debugMode = value; }
 		}
 
-		[ItemProperty("ConsolePause", DefaultValue = true)]
-		private bool pauseConsoleOutput = true;
+		bool pauseConsoleOutput = true;
 		public bool PauseConsoleOutput {
 			get { return pauseConsoleOutput; }
 			set { pauseConsoleOutput = value; }
 		}
 
-		[ItemProperty("Externalconsole", DefaultValue = false)]
-		private bool externalConsole = false;
+		bool externalConsole = false;
 		public bool ExternalConsole {
 			get { return externalConsole; }
 			set { externalConsole = value; }
 		}
 
-		[ItemProperty("Commandlineparameters", DefaultValue = "")]
-		private string commandLineParameters = "";
+		string commandLineParameters = "";
 		public string CommandLineParameters {
 			get { return commandLineParameters; }
 			set { commandLineParameters = value; }
 		}
 
-		[ItemProperty("EnvironmentVariables", SkipEmpty = true)]
-		[ItemProperty("Variable", Scope = "item")]
-		[ItemProperty("name", Scope = "key")]
-		[ItemProperty("value", Scope = "value")]
-		private Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
+		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
 		public Dictionary<string, string> EnvironmentVariables {
 			get { return environmentVariables; }
 		}
@@ -122,8 +171,7 @@ namespace MonoDevelop.Projects
 			return vars;
 		}
 
-		[ItemProperty("RunWithWarnings", DefaultValue = true)]
-		private bool runWithWarnings = true;
+		bool runWithWarnings = true;
 		public virtual bool RunWithWarnings {
 			get { return runWithWarnings; }
 			set { runWithWarnings = value; }

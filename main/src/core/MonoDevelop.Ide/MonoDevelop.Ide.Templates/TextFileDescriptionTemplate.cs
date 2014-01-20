@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Templates
 			contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
 		}
 		
-		public override Stream CreateFileContent (SolutionItem policyParent, Project project, string language,
+		public override Stream CreateFileContent (SolutionFolderItem policyParent, Project project, string language,
 			string fileName, string identifier)
 		{
 			return File.OpenRead (contentSrcFile);

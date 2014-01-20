@@ -124,6 +124,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 	
+			public T GetParentDataItem<T> (bool includeCurrent)
+			{
+				return (T)GetParentDataItem (typeof(T), includeCurrent);
+			}
+
 			public object GetParentDataItem (Type type, bool includeCurrent)
 			{
 				if (includeCurrent && type.IsInstanceOfType (DataItem))
@@ -659,7 +664,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			void UpdateNode (TreeNode n, NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
-				n.NodeInfo = TreeBuilder.GetNodeInfo (tree, this, chain, dataObject);
+				var ni = new NodeInfo ();
+				n.NodeInfo = TreeBuilder.GetNodeInfo (ni, tree, this, chain, dataObject);
 
 				if (chain != null && chain.Length > 0)
 					n.Name = ((TypeNodeBuilder)chain[0]).GetNodeName (this, n.DataItem);
@@ -834,17 +840,11 @@ namespace MonoDevelop.Ide.Gui.Components
 						LoggingService.LogError ("Found invalid iter for node. " + node.DataItem);
 						return;
 					}
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.TextColumn, node.NodeInfo.Label);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OpenIconColumn, node.NodeInfo.Icon ?? CellRendererImage.NullImage);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.ClosedIconColumn, node.NodeInfo.ClosedIcon ?? CellRendererImage.NullImage);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayBottomRightColumn, node.NodeInfo.OverlayBottomRight ?? CellRendererImage.NullImage);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayBottomLeftColumn, node.NodeInfo.OverlayBottomLeft ?? CellRendererImage.NullImage);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayTopLeftColumn, node.NodeInfo.OverlayTopLeft ?? CellRendererImage.NullImage);
-					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.OverlayTopRightColumn, node.NodeInfo.OverlayTopRight ?? CellRendererImage.NullImage);
+					tree.Store.SetValue (node.NodeIter, ExtensibleTreeView.NodeInfoColumn, node.NodeInfo);
 				}
 				if (node.Children != null) {
 					foreach (TreeNode cn in node.Children) {
-						Gtk.TreeIter it = tree.Store.AppendValues (node.NodeIter, cn.NodeInfo.Label, cn.NodeInfo.Icon, cn.NodeInfo.ClosedIcon, cn.DataItem, cn.BuilderChain, cn.Filled, false, cn.NodeInfo.OverlayBottomRight, cn.NodeInfo.OverlayBottomLeft, cn.NodeInfo.OverlayTopLeft, cn.NodeInfo.OverlayTopRight);
+						Gtk.TreeIter it = tree.Store.AppendValues (node.NodeIter, cn.NodeInfo, cn.DataItem, cn.BuilderChain, cn.Filled, false);
 						if (!cn.Filled)
 							tree.Store.AppendNode (it);	// Dummy node
 						// The OnNodeAdded event was already fired when the node was added. There is no need to fire it again.

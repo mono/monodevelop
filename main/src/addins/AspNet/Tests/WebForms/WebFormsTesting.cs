@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 				cursorPosition = endPos - 1;
 			}
 
-			var project = new AspNetAppProject ("C#");
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Web"));
 			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");

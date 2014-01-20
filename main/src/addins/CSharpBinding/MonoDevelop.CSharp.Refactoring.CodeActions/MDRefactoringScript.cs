@@ -269,7 +269,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (operationsRunning-- == 0) {
 				isDisposed = true;
 				undoGroup.Dispose ();
-				base.Dispose ();
+				try {
+					base.Dispose ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while disposing refactoring script", e);
+				}
 			}
 			foreach (var script in startedScripts)
 				script.Dispose ();
@@ -363,7 +367,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 			if (project != null) {
 				project.AddFile (correctFileName);
-				IdeApp.ProjectOperations.Save (project);
+				IdeApp.ProjectOperations.SaveAsync (project);
 			}
 			IdeApp.Workbench.OpenDocument (correctFileName, project);
 		}

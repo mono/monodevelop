@@ -103,6 +103,9 @@ namespace MonoDevelop.Components
 		public bool RoundedShape {
 			get { return roundedShape; }
 			set {
+				if (!Platform.IsMac)
+					return;
+
 				roundedShape = value;
 				if (value)
 					entry.Name = "search-entry";

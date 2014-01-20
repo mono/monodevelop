@@ -52,12 +52,12 @@ namespace ILAsmBinding
 			return String.Compare (Path.GetExtension (fileName), ".il", StringComparison.OrdinalIgnoreCase) == 0;
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			return ILAsmCompilerManager.Compile (projectItems, configuration, configSelector, monitor);
 		}
 		
-		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
+		public DotNetCompilerParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			return new ILAsmCompilerParameters();
 		}

@@ -7,6 +7,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -16,11 +17,11 @@ namespace MonoDevelop.Deployment.Gui
 		List<PackageBuilder> builders = new List<PackageBuilder> ();
 		PackageBuilder currentBuilder;
 		Gtk.Widget currentEditor;
-		ReadOnlyCollection<SolutionFolder> combineList;
-		ReadOnlyCollection<PackagingProject> projectsList;
-		SolutionItem defaultEntry;
+		List<SolutionFolder> combineList;
+		List<PackagingProject> projectsList;
+		SolutionFolderItem defaultEntry;
 		
-		public DeployDialog (SolutionItem defaultEntry, bool createBuilderOnly)
+		public DeployDialog (SolutionFolderItem defaultEntry, bool createBuilderOnly)
 		{
 			this.Build();
 			notebook.ShowTabs = false;
@@ -104,7 +105,7 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			// Fill the combine list
 			int n=0, sel=-1;
-			combineList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllSolutionItems<SolutionFolder> ();
+			combineList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllItems<SolutionFolder> ().ToList ();
 			foreach (SolutionFolder c in combineList) {
 				string name = c.Name;
 				SolutionFolder co = c;
@@ -121,7 +122,7 @@ namespace MonoDevelop.Deployment.Gui
 				comboCreateProject.Active = 0;
 			
 			// Fill the packaging project list
-			projectsList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllSolutionItems<PackagingProject> ();
+			projectsList = IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllItems<PackagingProject> ().ToList();
 			if (projectsList.Count == 0) {
 				radioAddProject.Sensitive = false;
 			}

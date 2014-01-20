@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.ProgressMonitoring
 {
-	public class ConsoleProgressMonitor: NullProgressMonitor
+	public class ConsoleProgressMonitor: ProgressMonitor
 	{
 		int columns = 0;
 		bool leaveOpen;
@@ -40,7 +40,6 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		int ilevel = 0;
 		int isize = 3;
 		int col = -1;
-		LogTextWriter logger;
 		bool ignoreLogMessages;
 		TextWriter writer;
 		
@@ -67,8 +66,6 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			this.writer = writer;
 			this.leaveOpen = leaveOpen;
-			logger = new LogTextWriter ();
-			logger.TextWritten += WriteLog;
 		}
 
 		public ConsoleProgressMonitor (TextWriter writer) : this (writer, false)
@@ -77,9 +74,6 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		public override void Dispose ()
 		{
-			logger.TextWritten -= WriteLog;
-			logger.Dispose ();
-
 			if (!leaveOpen)
 				writer.Dispose ();
 
@@ -110,7 +104,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			set { indent = value; }
 		}
 		
-		public override void BeginTask (string name, int totalWork)
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			if (!ignoreLogMessages) {
 				WriteText (name);
@@ -118,38 +112,29 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			}
 		}
 		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			BeginTask (name, totalWork);
-		}
-		
-		public override void EndTask ()
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (!ignoreLogMessages)
 				Unindent ();
 		}
-		
-		void WriteLog (string text)
+
+		protected override void OnWriteLog (string message)
 		{
 			if (!ignoreLogMessages)
-				WriteText (text);
+				WriteText (message);
 		}
-		
-		public override TextWriter Log {
-			get { return logger; }
-		}
-		
-		public override void ReportSuccess (string message)
+
+		protected override void OnSuccessReported (string message)
 		{
 			WriteText (message + "\n");
 		}
-		
-		public override void ReportWarning (string message)
+
+		protected override void OnWarningReported (string message)
 		{
 			WriteText ("WARNING: " + message + "\n");
 		}
-		
-		public override void ReportError (string message, Exception ex)
+
+		protected override void OnErrorReported (string message, Exception ex)
 		{
 			if (message == null && ex != null)
 				message = ex.Message;

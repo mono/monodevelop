@@ -51,8 +51,9 @@ namespace MonoDevelop.AspNet.WebForms
 	public class WebFormsTypeContext
 	{
 		ICompilation compilation;
-		AspNetAppProject project;
+		DotNetProject project;
 		WebFormsParsedDocument doc;
+		AspNetFlavor aspFlavor;
 
 		public WebFormsParsedDocument Doc {
 			get {
@@ -66,7 +67,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		public AspNetAppProject Project {
+		public DotNetProject Project {
 			get {
 				return project;
 			}
@@ -75,6 +76,7 @@ namespace MonoDevelop.AspNet.WebForms
 					return;
 				project = value;
 				compilation = null;
+				aspFlavor = project.GetFlavor<AspNetFlavor> ();
 			}
 		}
 
@@ -336,7 +338,7 @@ namespace MonoDevelop.AspNet.WebForms
 		IList<RegistrationInfo> GetRegistrationInfos ()
 		{
 			if (project != null && doc != null)
-				return project.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
+				return aspFlavor.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
 			return new[] { WebFormsRegistrationCache.MachineRegistrationInfo };
 		}
 
@@ -570,7 +572,10 @@ namespace MonoDevelop.AspNet.WebForms
 		IType AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
-			return ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
+			var type = ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
+			if (type.Kind == TypeKind.Unknown)
+				return null;
+			return type;
 		}
 
 		public string GetControlPrefix (IType control)
@@ -595,8 +600,8 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			string typeName = null;
 			if (project != null && doc != null) {
-				string absolute = project.VirtualToLocalPath (virtualPath, doc.FileName);
-				typeName = project.GetCodebehindTypeName (absolute);
+				string absolute = aspFlavor.VirtualToLocalPath (virtualPath, doc.FileName);
+				typeName = aspFlavor.GetCodebehindTypeName (absolute);
 			}
 			return typeName ?? "System.Web.UI.UserControl";
 		}
@@ -604,7 +609,10 @@ namespace MonoDevelop.AspNet.WebForms
 		IType GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
-			return ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
+			var type = ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
+			if (type.Kind == TypeKind.Unknown)
+				return null;
+			return type;
 		}
 	}
 

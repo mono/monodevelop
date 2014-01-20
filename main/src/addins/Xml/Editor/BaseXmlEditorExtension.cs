@@ -61,7 +61,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
-		List<DotNetProject> ownerProjects;
+		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 
 		#region Setup and teardown
 
@@ -80,7 +80,12 @@ namespace MonoDevelop.Xml.Editor
 		{
 			base.Initialize ();
 
-			UpdateOwnerProjects ();
+			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// which shouldn't be called while the extension chain is being initialized.
+			// TODO: Move handling of owner projects to Document
+			Application.Invoke (delegate {
+				UpdateOwnerProjects ();
+			});
 
 			var parser = new XmlParser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<XmlParser> (parser, Editor);
@@ -110,7 +115,7 @@ namespace MonoDevelop.Xml.Editor
 				ownerProjects = new List<DotNetProject> ();
 				return;
 			}
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
 				var dnp = Document.Project as DotNetProject;
@@ -827,8 +832,11 @@ namespace MonoDevelop.Xml.Editor
 		
 		void UpdatePath ()
 		{
-			List<XObject> l = GetCurrentPath ();
+			//update timeout could get called after disposed
+			if (tracker == null)
+				return;
 
+			List<XObject> l = GetCurrentPath ();
 			
 			//build the list
 			var path = new List<PathEntry> ();

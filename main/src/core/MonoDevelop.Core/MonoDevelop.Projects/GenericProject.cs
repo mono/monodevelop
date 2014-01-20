@@ -49,9 +49,9 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetProjectTypes (HashSet<string> types)
 		{
-			yield return "GenericProject";
+			types.Add ("GenericProject");
 		}
 	}
 	

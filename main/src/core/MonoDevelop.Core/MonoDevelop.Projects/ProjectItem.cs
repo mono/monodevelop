@@ -26,14 +26,16 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public class ProjectItem: IExtendedDataItem
 	{
 		Hashtable extendedProperties;
-		
+
 		public IDictionary ExtendedProperties {
 			get {
 				if (extendedProperties == null)
@@ -41,19 +43,42 @@ namespace MonoDevelop.Projects
 				return extendedProperties;
 			}
 		}
+
+		public void SetMetadata (string name, string value, bool isXml = false)
+		{
+		}
+
+		public string GetMetadata (string name, string defaultValue = null)
+		{
+			return null;
+		}
 		
 		internal string Condition { get; set; }
 
+		public string ItemName { get; protected set; }
+
+		public virtual string Include { get; protected set; }
+
+		public string UnevaluatedInclude { get; protected set; }
+
 		public ProjectItemFlags Flags { get; set; }
+
+		internal protected virtual void Read (Project project, IMSBuildItemEvaluated buildItem)
+		{
+			ItemName = buildItem.Name;
+			Include = buildItem.Include;
+			UnevaluatedInclude = buildItem.UnevaluatedInclude;
+			Condition = buildItem.Condition;
+		}
+
+		internal protected virtual void Write (MSBuildFileFormat fmt, MSBuildItem buildItem)
+		{
+			buildItem.Condition = Condition;
+		}
 	}
 	
 	public class UnknownProjectItem: ProjectItem
 	{
-		public string ItemName { get; private set; }
-		
-		[ItemProperty ("Include")]
-		public string Include { get; private set; }
-		
 		public UnknownProjectItem (string name, string include)
 		{
 			this.ItemName = name;

@@ -562,7 +562,7 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateTasks (object sender, TaskEventArgs e)
 		{
-			Task[] tasks = TaskService.Errors.GetFileTasks (ContentName);
+			UserTask[] tasks = TaskService.Errors.GetFileTasks (ContentName);
 			if (tasks == null)
 				return;
 			DisposeErrorMarkers (); // disposes messageBubbleCache as well.
@@ -573,7 +573,7 @@ namespace MonoDevelop.SourceEditor
 					messageBubbleCache.Dispose ();
 				messageBubbleCache = new MessageBubbleCache (widget.TextEditor);
 				
-				foreach (Task task in tasks) {
+				foreach (UserTask task in tasks) {
 					if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 						if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 							continue;

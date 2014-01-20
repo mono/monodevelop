@@ -26,6 +26,7 @@
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Projects;
 using System.IO;
+using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.Refactoring
 {
@@ -43,13 +44,13 @@ namespace MonoDevelop.Refactoring
 			return new [] {
 				new IssueSummary {
 					File = new ProjectFile (Path.Combine ("Directory1", "File1")),
-					Project = new DotNetAssemblyProject {
+					Project = new CSharpProject {
 						BaseDirectory = "Directory1"
 					}
 				},
 				new IssueSummary {
 					File = new ProjectFile (Path.Combine ("Directory2", "File2")),
-					Project = new DotNetAssemblyProject {
+					Project = new CSharpProject {
 						BaseDirectory = "Directory1"
 					}
 				}

@@ -26,33 +26,39 @@
 //
 
 using System;
-using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Utility;
-using MonoDevelop.Projects.Text;
 using Microsoft.Build.BuildEngine;
+using MSProject = Microsoft.Build.BuildEngine.Project;
+using System.Linq;
+using MonoDevelop.Projects.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProject
 	{
 		XmlDocument doc;
-		string file;
+		FilePath file;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
-		
+		List<MSBuildItemEvaluated> evaluatedItems = new List<MSBuildItemEvaluated> ();
+		List<MSBuildItemEvaluated> evaluatedItemsIgnoringCondition;
+		MSBuildEvaluatedPropertyCollection evaluatedProperties;
+
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
 		
 		bool endsWithEmptyLine;
 		string newLine = Environment.NewLine;
 		ByteOrderMark bom;
-		
-		internal static XmlNamespaceManager XmlNamespaceManager {
+
+		public static XmlNamespaceManager XmlNamespaceManager {
 			get {
 				if (manager == null) {
 					manager = new XmlNamespaceManager (new NameTable ());
@@ -62,9 +68,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public string FileName {
+		public FilePath FileName {
 			get { return file; }
+			set { file = value; }
 		}
+
+		public FilePath BaseDirectory {
+			get { return file.ParentDirectory; }
+		}
+
+		public MSBuildFileFormat Format {
+			get;
+			set;
+		}
+
+		public bool IsNewProject { get; private set; }
 		
 		public XmlDocument Document {
 			get { return doc; }
@@ -72,14 +90,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProject ()
 		{
+			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (this);
+			evaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
+			IsNewProject = true;
+		}
+
+		public static Task<MSBuildProject> LoadAsync (string file)
+		{
+			return Task<MSBuildProject>.Factory.StartNew (delegate {
+				var p = new MSBuildProject ();
+				p.Load (file);
+				return p;
+			});
 		}
 
 		public void Load (string file)
 		{
 			this.file = file;
+			IsNewProject = false;
 			using (FileStream fs = File.OpenRead (file)) {
 				byte[] buf = new byte [1024];
 				int nread, i;
@@ -172,18 +203,87 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return content;
 		}
 
-		public void Evaluate ()
+		void WriteDataObjects ()
 		{
-			Evaluate (new MSBuildEvaluationContext ());
+			foreach (var ob in elemCache.Values) {
+				if (ob is MSBuildPropertyGroup)
+					((MSBuildPropertyGroup)ob).WriteDataObjects ();
+				else if (ob is MSBuildItem)
+					((MSBuildItem)ob).WriteDataObjects ();
+			}
 		}
 
-		public void Evaluate (MSBuildEvaluationContext context)
+		public void Evaluate ()
 		{
-			context.InitEvaluation (this);
-			foreach (var pg in PropertyGroups)
-				pg.Evaluate (context);
-			foreach (var pg in ItemGroups)
-				pg.Evaluate (context);
+			try {
+				Engine e = new Engine ();
+				MSProject project = new MSProject (e);
+				project.Load (FileName);
+				SyncBuildProject (project);
+			} catch (Exception ex) {
+				// If the project can't be evaluated don't crash
+				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
+			}
+		}
+
+		void SyncBuildProject (MSProject project)
+		{
+			var xmlGroups = PropertyGroups.ToArray ();
+			var buildGroups = project.PropertyGroups.Cast<BuildPropertyGroup> ().ToArray ();
+			for (int n=0; n<xmlGroups.Length && n<buildGroups.Length; n++)
+				SyncBuildPropertyGroup (xmlGroups [n], buildGroups [n]);
+
+			var xmlItems = ItemGroups.ToArray ();
+			var buildItems = project.ItemGroups.Cast<BuildItemGroup> ().Where (g => !g.IsImported).ToArray ();
+			for (int n=0; n<xmlItems.Length && n<buildItems.Length; n++)
+				SyncBuildItemGroup (xmlItems [n], buildItems [n]);
+
+			var xmlImports = Imports.ToArray ();
+			var buildImports = project.Imports.Cast<Import> ().ToArray ();
+			for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
+				xmlImports [n].SetEvalResult (buildImports [n].EvaluatedProjectPath);
+
+			foreach (BuildItem it in project.EvaluatedItems) {
+				var xit = new MSBuildItemEvaluated (this, it.Name, it.Include, it.FinalItemSpec);
+				xit.IsImported = it.IsImported;
+				((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (it);
+				evaluatedItems.Add (xit);
+			}
+
+			foreach (BuildItem it in project.EvaluatedItemsIgnoringCondition) {
+				var xit = new MSBuildItemEvaluated (this, it.Name, it.Include, it.FinalItemSpec);
+				xit.IsImported = it.IsImported;
+				((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (it);
+				evaluatedItemsIgnoringCondition.Add (xit);
+			}
+
+			evaluatedProperties.Sync (project.EvaluatedProperties);
+		}
+
+		void SyncBuildPropertyGroup (MSBuildPropertyGroup xmlGroup, BuildPropertyGroup buildGroup)
+		{
+			var xmlProps = xmlGroup.Properties.ToArray ();
+			var buildProps = buildGroup.Cast<BuildProperty> ().ToArray ();
+			for (int n = 0; n < xmlProps.Length && n < buildProps.Length; n++)
+				SyncBuildProperty (xmlProps [n], buildProps [n]);
+		}
+
+		void SyncBuildProperty (MSBuildProperty xmlProp, BuildProperty buildProp)
+		{
+		}
+
+		void SyncBuildItemGroup (MSBuildItemGroup xmlGroup, BuildItemGroup buildGroup)
+		{
+			var xmlItems = xmlGroup.Items.ToArray ();
+			var buildItems = buildGroup.Cast<BuildItem> ().ToArray ();
+			for (int n = 0; n < xmlItems.Length && n < buildItems.Length; n++)
+				SyncBuildItem (xmlItems [n], buildItems [n]);
+		}
+
+		void SyncBuildItem (MSBuildItem xmlItem, BuildItem buildItem)
+		{
+			xmlItem.SetEvalResult (buildItem.FinalItemSpec);
+			((MSBuildPropertyGroupEvaluated)xmlItem.EvaluatedMetadata).Sync (buildItem);
 		}
 
 		public string DefaultTargets {
@@ -200,11 +300,43 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.RemoveAttribute ("ToolsVersion");
 			}
 		}
+
+		public string[] ProjectTypeGuids {
+			get { return GetGlobalPropertyGroup ().GetValue ("ProjectTypeGuids", "").Split (new []{';'}, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim()).ToArray (); }
+			set { GetGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", string.Join (";", value), preserveExistingCase:true); }
+		}
+
+		public bool AddProjectTypeGuid (string guid)
+		{
+			var guids = GetGlobalPropertyGroup ().GetValue ("ProjectTypeGuids", "").Trim ();
+			if (guids.IndexOf (guid, StringComparison.OrdinalIgnoreCase) == -1) {
+				if (!string.IsNullOrEmpty (guids))
+					guids += ";" + guid;
+				else
+					guids = guid;
+				GetGlobalPropertyGroup ().SetValue ("ProjectTypeGuids", guids, preserveExistingCase: true);
+				return true;
+			}
+			return false;
+		}
 		
-		public MSBuildImport AddNewImport (string name, MSBuildImport beforeImport = null)
+		public bool RemoveProjectTypeGuid (string guid)
+		{
+			var guids = ProjectTypeGuids;
+			var newGuids = guids.Where (g => !g.Equals (guid, StringComparison.OrdinalIgnoreCase)).ToArray ();
+			if (newGuids.Length != guids.Length) {
+				ProjectTypeGuids = newGuids;
+				return true;
+			} else
+				return false;
+		}
+
+		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildImport beforeImport = null)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);
 			elem.SetAttribute ("Project", name);
+			if (condition != null)
+				elem.SetAttribute ("Condition", condition);
 
 			if (beforeImport != null) {
 				doc.DocumentElement.InsertBefore (elem, beforeImport.Element);
@@ -215,7 +347,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					doc.DocumentElement.AppendChild (elem);
 			}
-			return new MSBuildImport (elem);
+			return GetImport (elem);
+		}
+
+		public MSBuildImport GetImport (string name, string condition = null)
+		{
+			return Imports.FirstOrDefault (i => i.Project == name && i.Condition == condition);
 		}
 		
 		public void RemoveImport (string name)
@@ -228,21 +365,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Console.WriteLine ("ppnf:");
 		}
 		
+		public void RemoveImport (MSBuildImport import)
+		{
+			import.Element.ParentNode.RemoveChild (import.Element);
+		}
+
 		public IEnumerable<MSBuildImport> Imports {
 			get {
 				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager))
-					yield return new MSBuildImport (elem);
+					yield return GetImport (elem);
 			}
 		}
-		
-		public MSBuildPropertySet GetGlobalPropertyGroup ()
+
+		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
+			get { return evaluatedProperties; }
+		}
+
+		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems {
+			get { return evaluatedItems; }
+		}
+
+		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItemsIgnoringCondition {
+			get { return evaluatedItemsIgnoringCondition; }
+		}
+
+		public IMSBuildPropertySet GetGlobalPropertyGroup ()
 		{
-			MSBuildPropertyGroupMerged res = new MSBuildPropertyGroupMerged ();
 			foreach (MSBuildPropertyGroup grp in PropertyGroups) {
 				if (grp.Condition.Length == 0)
-					res.Add (grp);
+					return grp;
 			}
-			return res.GroupCount > 0 ? res : null;
+			return null;
 		}
 		
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd)
@@ -336,31 +489,67 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return group;
 		}
 		
-		public string GetProjectExtensions (string section)
+		public XmlElement GetProjectExtension (string section)
 		{
-			XmlElement elem = doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:" + section, XmlNamespaceManager) as XmlElement;
-			if (elem != null)
-				return elem.InnerXml;
-			else
-				return string.Empty;
+			return doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:" + section, XmlNamespaceManager) as XmlElement;
 		}
 		
-		public void SetProjectExtensions (string section, string value)
+		public XmlElement GetMonoDevelopProjectExtension (string section)
 		{
+			return doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:MonoDevelop/tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+		}
+
+		public void SetProjectExtension (string section, XmlElement value)
+		{
+			if (value.OwnerDocument != doc)
+				value = (XmlElement)doc.ImportNode (value, true);
+
 			XmlElement elem = doc.DocumentElement ["ProjectExtensions", MSBuildProject.Schema];
 			if (elem == null) {
 				elem = doc.CreateElement (null, "ProjectExtensions", MSBuildProject.Schema);
 				doc.DocumentElement.AppendChild (elem);
 			}
 			XmlElement sec = elem [section];
-			if (sec == null) {
-				sec = doc.CreateElement (null, section, MSBuildProject.Schema);
-				elem.AppendChild (sec);
+			if (sec == null)
+				elem.AppendChild (value);
+			else {
+				elem.InsertAfter (value, sec);
+				elem.RemoveChild (sec);
 			}
-			sec.InnerXml = value;
 		}
 
-		public void RemoveProjectExtensions (string section)
+		public void SetMonoDevelopProjectExtension (string section, XmlElement value)
+		{
+			if (value.OwnerDocument != doc)
+				value = (XmlElement)doc.ImportNode (value, true);
+
+			XmlElement elem = doc.DocumentElement ["ProjectExtensions", MSBuildProject.Schema];
+			if (elem == null) {
+				elem = doc.CreateElement (null, "ProjectExtensions", MSBuildProject.Schema);
+				doc.DocumentElement.AppendChild (elem);
+			}
+			var parent = elem;
+			elem = parent ["MonoDevelop", MSBuildProject.Schema];
+			if (elem == null) {
+				elem = doc.CreateElement (null, "MonoDevelop", MSBuildProject.Schema);
+				parent.AppendChild (elem);
+			}
+			parent = elem;
+			elem = parent ["Properties", MSBuildProject.Schema];
+			if (elem == null) {
+				elem = doc.CreateElement (null, "Properties", MSBuildProject.Schema);
+				parent.AppendChild (elem);
+			}
+			XmlElement sec = elem [section];
+			if (sec == null)
+				elem.AppendChild (value);
+			else {
+				elem.InsertAfter (value, sec);
+				elem.RemoveChild (sec);
+			}
+		}
+
+		public void RemoveProjectExtension (string section)
 		{
 			XmlElement elem = doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:" + section, XmlNamespaceManager) as XmlElement;
 			if (elem != null) {
@@ -371,6 +560,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		public void RemoveMonoDevelopProjectExtension (string section)
+		{
+			XmlElement elem = doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:MonoDevelop/tns:Properties/tns:" + section, XmlNamespaceManager) as XmlElement;
+			if (elem != null) {
+				do {
+					XmlElement parent = (XmlElement) elem.ParentNode;
+					parent.RemoveChild (elem);
+					elem = parent;
+				}
+				while (!elem.HasChildNodes);
+			}
+		}
+
 		public void RemoveItem (MSBuildItem item)
 		{
 			elemCache.Remove (item.Element);
@@ -383,12 +585,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		internal MSBuildImport GetImport (XmlElement elem)
+		{
+			MSBuildObject ob;
+			if (elemCache.TryGetValue (elem, out ob))
+				return (MSBuildImport) ob;
+			MSBuildImport it = new MSBuildImport (elem);
+			elemCache [elem] = it;
+			return it;
+		}
+
 		internal MSBuildItem GetItem (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
 				return (MSBuildItem) ob;
-			MSBuildItem it = new MSBuildItem (elem);
+			MSBuildItem it = new MSBuildItem (this, elem);
 			elemCache [elem] = it;
 			return it;
 		}
@@ -420,628 +632,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	public class MSBuildObject
-	{
-		XmlElement elem;
-		XmlElement evaluatedElem;
 
-		public MSBuildObject (XmlElement elem)
-		{
-			this.elem = elem;
-		}
-		
-		public XmlElement Element {
-			get { return elem; }
-		}
-
-		public XmlElement EvaluatedElement {
-			get { return evaluatedElem ?? elem; }
-			protected set { evaluatedElem = value; }
-		}
-
-		public bool IsEvaluated {
-			get { return evaluatedElem != null; }
-		}
-		
-		protected XmlElement AddChildElement (string name)
-		{
-			XmlElement e = elem.OwnerDocument.CreateElement (null, name, MSBuildProject.Schema);
-			elem.AppendChild (e);
-			return e;
-		}
-
-		public string Label {
-			get { return EvaluatedElement.GetAttribute ("Label"); }
-			set { Element.SetAttribute ("Label", value); }
-		}
-
-		public string Condition {
-			get {
-				return Element.GetAttribute ("Condition");
-			}
-			set {
-				if (string.IsNullOrEmpty (value))
-					Element.RemoveAttribute ("Condition");
-				else
-					Element.SetAttribute ("Condition", value);
-			}
-		}
-
-		internal virtual void Evaluate (MSBuildEvaluationContext context)
-		{
-		}
-	}
-
-	public class MSBuildImport: MSBuildObject
-	{
-		public MSBuildImport (XmlElement elem): base (elem)
-		{
-		}
-
-		public string Project {
-			get { return EvaluatedElement.GetAttribute ("Project"); }
-			set { Element.SetAttribute ("Project", value); }
-		}
-
-		public string Condition {
-			get { return EvaluatedElement.GetAttribute ("Condition"); }
-			set { Element.SetAttribute ("Condition", value); }
-		}
-	}
 	
-	public class MSBuildProperty: MSBuildObject
-	{
-		public MSBuildProperty (XmlElement elem): base (elem)
-		{
-		}
-		
-		public string Name {
-			get { return Element.Name; }
-		}
-
-		internal bool Overwritten { get; set; }
-
-		public string GetValue (bool isXml = false)
-		{
-			if (isXml)
-				return EvaluatedElement.InnerXml;
-			return EvaluatedElement.InnerText;
-		}
-
-		public void SetValue (string value, bool isXml = false)
-		{
-			if (isXml)
-				Element.InnerXml = value;
-			else
-				Element.InnerText = value;
-		}
-
-		internal override void Evaluate (MSBuildEvaluationContext context)
-		{
-			EvaluatedElement = null;
-
-			if (!string.IsNullOrEmpty (Condition)) {
-				string cond;
-				if (!context.Evaluate (Condition, out cond)) {
-					// The value could not be evaluated, so if there is an existing value, it is not valid anymore
-					context.ClearPropertyValue (Name);
-					return;
-				}
-				if (!ConditionParser.ParseAndEvaluate (cond, context))
-					return;
-			}
-
-			XmlElement elem;
-
-			if (context.Evaluate (Element, out elem)) {
-				EvaluatedElement = elem;
-				context.SetPropertyValue (Name, GetValue ());
-			} else {
-				// The value could not be evaluated, so if there is an existing value, it is not valid anymore
-				context.ClearPropertyValue (Name);
-			}
-		}
-	}
 	
-	public interface MSBuildPropertySet
-	{
-		MSBuildProperty GetProperty (string name);
-		IEnumerable<MSBuildProperty> Properties { get; }
-		MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false);
-		string GetPropertyValue (string name, bool isXml = false);
-		bool RemoveProperty (string name);
-		void RemoveAllProperties ();
-		void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propertiesToExclude);
-	}
 	
-	class MSBuildPropertyGroupMerged: MSBuildPropertySet
-	{
-		List<MSBuildPropertyGroup> groups = new List<MSBuildPropertyGroup> ();
-		
-		public void Add (MSBuildPropertyGroup g)
-		{
-			groups.Add (g);
-		}
-		
-		public int GroupCount {
-			get { return groups.Count; }
-		}
-		
-		public MSBuildProperty GetProperty (string name)
-		{
-			// Find property in reverse order, since the last set
-			// value is the good one
-			for (int n=groups.Count - 1; n >= 0; n--) {
-				var g = groups [n];
-				MSBuildProperty p = g.GetProperty (name);
-				if (p != null)
-					return p;
-			}
-			return null;
-		}
-
-		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false)
-		{
-			MSBuildProperty p = GetProperty (name);
-			if (p != null) {
-				if (!preserveExistingCase || !string.Equals (value, p.GetValue (isXml), StringComparison.OrdinalIgnoreCase)) {
-					p.SetValue (value, isXml);
-				}
-				return p;
-			}
-			return groups [0].SetPropertyValue (name, value, preserveExistingCase, isXml);
-		}
-
-		public string GetPropertyValue (string name, bool isXml = false)
-		{
-			MSBuildProperty prop = GetProperty (name);
-			return prop != null ? prop.GetValue (isXml) : null;
-		}
-
-		public bool RemoveProperty (string name)
-		{
-			bool found = false;
-			foreach (var g in groups) {
-				if (g.RemoveProperty (name)) {
-					Prune (g);
-					found = true;
-				}
-			}
-			return found;
-		}
-
-		public void RemoveAllProperties ()
-		{
-			foreach (var g in groups) {
-				g.RemoveAllProperties ();
-				Prune (g);
-			}
-		}
-
-		public void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propertiesToExclude)
-		{
-			foreach (var g in groups) {
-				g.UnMerge (baseGrp, propertiesToExclude);
-			}
-		}
-
-		public IEnumerable<MSBuildProperty> Properties {
-			get {
-				foreach (var g in groups) {
-					foreach (var p in g.Properties)
-						yield return p;
-				}
-			}
-		}
-		
-		void Prune (MSBuildPropertyGroup g)
-		{
-			if (g != groups [0] && !g.Properties.Any()) {
-				// Remove this group since it's now empty
-				g.Parent.RemoveGroup (g);
-			}
-		}
-	}
 	
-	public class MSBuildPropertyGroup: MSBuildObject, MSBuildPropertySet
-	{
-		Dictionary<string,MSBuildProperty> properties = new Dictionary<string,MSBuildProperty> ();
-		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		MSBuildProject parent;
-		
-		public MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
-		{
-			this.parent = parent;
-
-			foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
-				MSBuildProperty prevSameName;
-				if (properties.TryGetValue (pelem.Name, out prevSameName))
-					prevSameName.Overwritten = true;
-
-				var prop = new MSBuildProperty (pelem);
-				propertyList.Add (prop);
-				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
-			}
-		}
-		
-		public MSBuildProject Parent {
-			get {
-				return this.parent;
-			}
-		}
-		
-		public MSBuildProperty GetProperty (string name)
-		{
-			MSBuildProperty prop;
-			properties.TryGetValue (name, out prop);
-			return prop;
-		}
-		
-		public IEnumerable<MSBuildProperty> Properties {
-			get {
-				return propertyList.Where (p => !p.Overwritten);
-			}
-		}
-		
-		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase, bool isXml = false)
-		{
-			MSBuildProperty prop = GetProperty (name);
-			if (prop == null) {
-				XmlElement pelem = AddChildElement (name);
-				prop = new MSBuildProperty (pelem);
-				properties [name] = prop;
-				propertyList.Add (prop);
-				prop.SetValue (value, isXml);
-			} else if (!preserveExistingCase || !string.Equals (value, prop.GetValue (isXml), StringComparison.OrdinalIgnoreCase)) {
-				prop.SetValue (value, isXml);
-			}
-			return prop;
-		}
-		
-		public string GetPropertyValue (string name, bool isXml = false)
-		{
-			MSBuildProperty prop = GetProperty (name);
-			if (prop == null)
-				return null;
-			else
-				return prop.GetValue (isXml);
-		}
-		
-		public bool RemoveProperty (string name)
-		{
-			MSBuildProperty prop = GetProperty (name);
-			if (prop != null) {
-				properties.Remove (name);
-				propertyList.Remove (prop);
-				Element.RemoveChild (prop.Element);
-				return true;
-			}
-			return false;
-		}
-
-		public void RemoveAllProperties ()
-		{
-			List<XmlNode> toDelete = new List<XmlNode> ();
-			foreach (XmlNode node in Element.ChildNodes) {
-				if (node is XmlElement)
-					toDelete.Add (node);
-			}
-			foreach (XmlNode node in toDelete)
-				Element.RemoveChild (node);
-			properties.Clear ();
-			propertyList.Clear ();
-		}
-
-		public void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propsToExclude)
-		{
-			foreach (MSBuildProperty prop in baseGrp.Properties) {
-				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
-					continue;
-				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && prop.GetValue (true).Equals (thisProp.GetValue (true), StringComparison.OrdinalIgnoreCase))
-					RemoveProperty (prop.Name);
-			}
-		}
-
-		internal override void Evaluate (MSBuildEvaluationContext context)
-		{
-			if (!string.IsNullOrEmpty (Condition)) {
-				string cond;
-				if (!context.Evaluate (Condition, out cond)) {
-					// The condition could not be evaluated. Clear all properties that this group defines
-					// since we don't know if they will have a value or not
-					foreach (var prop in Properties)
-						context.ClearPropertyValue (prop.Name);
-					return;
-				}
-				if (!ConditionParser.ParseAndEvaluate (cond, context))
-					return;
-			}
-
-			foreach (var prop in propertyList)
-				prop.Evaluate (context);
-		}
-
-		public override string ToString()
-		{
-			string s = "[MSBuildPropertyGroup:";
-			foreach (MSBuildProperty prop in Properties)
-				s += " " + prop.Name + "=" + prop.GetValue (true);
-			return s + "]";
-		}
-
-	}
 	
-	public class MSBuildItem: MSBuildObject
-	{
-		public MSBuildItem (XmlElement elem): base (elem)
-		{
-		}
-		
-		public string Include {
-			get { return EvaluatedElement.GetAttribute ("Include"); }
-			set { Element.SetAttribute ("Include", value); }
-		}
-		
-		public string UnevaluatedInclude {
-			get { return Element.GetAttribute ("Include"); }
-			set { Element.SetAttribute ("Include", value); }
-		}
-
-		public string Name {
-			get { return Element.Name; }
-		}
-		
-		public bool HasMetadata (string name)
-		{
-			return EvaluatedElement [name, MSBuildProject.Schema] != null;
-		}
-		
-		public void SetMetadata (string name, bool value)
-		{
-			SetMetadata (name, value ? "True" : "False");
-		}
-
-		public void SetMetadata (string name, string value, bool isXml = false)
-		{
-			// Don't overwrite the metadata value if the new value is the same as the old
-			// This will keep the old metadata string, which can contain property references
-			if (GetMetadata (name, isXml) == value)
-				return;
-
-			XmlElement elem = Element [name, MSBuildProject.Schema];
-			if (elem == null) {
-				elem = AddChildElement (name);
-				Element.AppendChild (elem);
-			}
-			if (isXml)
-				elem.InnerXml = value;
-			else
-				elem.InnerText = value;
-		}
-
-		public void UnsetMetadata (string name)
-		{
-			XmlElement elem = Element [name, MSBuildProject.Schema];
-			if (elem != null) {
-				Element.RemoveChild (elem);
-				if (!Element.HasChildNodes)
-					Element.IsEmpty = true;
-			}
-		}
-		
-		public string GetMetadata (string name, bool isXml = false)
-		{
-			XmlElement elem = EvaluatedElement [name, MSBuildProject.Schema];
-			if (elem != null)
-				return isXml ? elem.InnerXml : elem.InnerText;
-			else
-				return null;
-		}
-
-		public bool? GetBoolMetadata (string name)
-		{
-			var val = GetMetadata (name);
-			if (String.Equals (val, "False", StringComparison.OrdinalIgnoreCase))
-				return false;
-			if (String.Equals (val, "True", StringComparison.OrdinalIgnoreCase))
-				return true;
-			return null;
-		}
-
-		public bool GetMetadataIsFalse (string name)
-		{
-			return String.Compare (GetMetadata (name), "False", StringComparison.OrdinalIgnoreCase) == 0;
-		}
-		
-		public void MergeFrom (MSBuildItem other)
-		{
-			foreach (XmlNode node in Element.ChildNodes) {
-				if (node is XmlElement)
-					SetMetadata (node.LocalName, node.InnerXml, true);
-			}
-		}
-
-		internal override void Evaluate (MSBuildEvaluationContext context)
-		{
-			XmlElement elem;
-			if (context.Evaluate (Element, out elem))
-				EvaluatedElement = elem;
-			else
-				EvaluatedElement = null;
-		}
-	}
 	
-	public class MSBuildItemGroup: MSBuildObject
-	{
-		MSBuildProject parent;
-		
-		internal MSBuildItemGroup (MSBuildProject parent, XmlElement elem): base (elem)
-		{
-			this.parent = parent;
-		}
-		
-		public MSBuildItem AddNewItem (string name, string include)
-		{
-			XmlElement elem = AddChildElement (name);
-			MSBuildItem it = parent.GetItem (elem);
-			it.Include = include;
-			return it;
-		}
-		
-		public IEnumerable<MSBuildItem> Items {
-			get {
-				foreach (XmlNode node in Element.ChildNodes) {
-					XmlElement elem = node as XmlElement;
-					if (elem != null)
-						yield return parent.GetItem (elem);
-				}
-			}
-		}
 
-		internal override void Evaluate (MSBuildEvaluationContext context)
-		{
-			foreach (var item in Items)
-				item.Evaluate (context);
-		}
-	}
-
-	public class MSBuildEvaluationContext: IExpressionContext
-	{
-		Dictionary<string,string> properties = new Dictionary<string, string> ();
-		bool allResolved;
-		MSBuildProject project;
-
-		public MSBuildEvaluationContext ()
-		{
-		}
-
-		internal void InitEvaluation (MSBuildProject project)
-		{
-			this.project = project;
-			SetPropertyValue ("MSBuildThisFile", Path.GetFileName (project.FileName));
-			SetPropertyValue ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
-			SetPropertyValue ("MSBuildThisFileDirectory", Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar);
-			SetPropertyValue ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
-			SetPropertyValue ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
-			SetPropertyValue ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
-		}
-
-		public string GetPropertyValue (string name)
-		{
-			string val;
-			if (properties.TryGetValue (name, out val))
-				return val;
-			else
-				return Environment.GetEnvironmentVariable (name);
-		}
-
-		public void SetPropertyValue (string name, string value)
-		{
-			properties [name] = value;
-		}
-
-		public void ClearPropertyValue (string name)
-		{
-			properties.Remove (name);
-		}
-
-		public bool Evaluate (XmlElement source, out XmlElement result)
-		{
-			allResolved = true;
-			result = (XmlElement) EvaluateNode (source);
-			return allResolved;
-		}
-
-		XmlNode EvaluateNode (XmlNode source)
-		{
-			var elemSource = source as XmlElement;
-			if (elemSource != null) {
-				var elem = source.OwnerDocument.CreateElement (elemSource.Prefix, elemSource.LocalName, elemSource.NamespaceURI);
-				foreach (XmlAttribute attr in elemSource.Attributes)
-					elem.Attributes.Append ((XmlAttribute)EvaluateNode (attr));
-				foreach (XmlNode child in elemSource.ChildNodes)
-					elem.AppendChild (EvaluateNode (child));
-				return elem;
-			}
-
-			var attSource = source as XmlAttribute;
-			if (attSource != null) {
-				bool oldResolved = allResolved;
-				var att = source.OwnerDocument.CreateAttribute (attSource.Prefix, attSource.LocalName, attSource.NamespaceURI);
-				att.Value = Evaluate (attSource.Value);
-
-				// Condition attributes don't change the resolution status. Conditions are handled in the property and item objects
-				if (attSource.Name == "Condition")
-					allResolved = oldResolved;
-
-				return att;
-			}
-			var textSource = source as XmlText;
-			if (textSource != null) {
-				return source.OwnerDocument.CreateTextNode (Evaluate (textSource.InnerText));
-			}
-			return source.Clone ();
-		}
-
-		public bool Evaluate (string str, out string result)
-		{
-			allResolved = true;
-			result = Evaluate (str);
-			return allResolved;
-		}
-
-		string Evaluate (string str)
-		{
-			int i = str.IndexOf ("$(");
-			if (i == -1)
-				return str;
-
-			int last = 0;
-
-			StringBuilder sb = new StringBuilder ();
-			do {
-				sb.Append (str, last, i - last);
-				i += 2;
-				int j = str.IndexOf (")", i);
-				if (j == -1) {
-					allResolved = false;
-					return "";
-				}
-
-				string prop = str.Substring (i, j - i);
-				string val = GetPropertyValue (prop);
-				if (val == null) {
-					allResolved = false;
-					return "";
-				}
-
-				sb.Append (val);
-				last = j + 1;
-				i = str.IndexOf ("$(", last);
-			}
-			while (i != -1);
-
-			sb.Append (str, last, str.Length - last);
-			return sb.ToString ();
-		}
-
-		#region IExpressionContext implementation
-
-		public string EvaluateString (string value)
-		{
-			if (value.StartsWith ("$(") && value.EndsWith (")"))
-				return GetPropertyValue (value.Substring (2, value.Length - 3)) ?? value;
-			else
-				return value;
-		}
-
-		public string FullFileName {
-			get {
-				return project.FileName;
-			}
-		}
-
-		#endregion
-	}
 }

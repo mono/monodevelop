@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects
 	/// </summary>
 	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionEntityItem project) : base (parentWindow, project)
+		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
 		}

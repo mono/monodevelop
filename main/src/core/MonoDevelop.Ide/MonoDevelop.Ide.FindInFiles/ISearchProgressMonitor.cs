@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public interface ISearchProgressMonitor: IProgressMonitor
+	public interface ISearchProgressMonitor
 	{
 		void SetBasePath (string path);
 		void ReportResult (SearchResult result);

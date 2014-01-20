@@ -39,12 +39,12 @@ namespace MonoDevelop.Gettext
 {
 	class MakefileHandler: IMakefileHandler
 	{
-		public bool CanDeploy (SolutionItem entry, MakefileType type)
+		public bool CanDeploy (SolutionFolderItem entry, MakefileType type)
 		{
 			return entry is TranslationProject;
 		}
 
-		public Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor)
+		public Makefile Deploy (AutotoolsContext ctx, SolutionFolderItem entry, ProgressMonitor monitor)
 		{
 			Makefile mkfile = new Makefile ();
 			TranslationProject project = (TranslationProject) entry;

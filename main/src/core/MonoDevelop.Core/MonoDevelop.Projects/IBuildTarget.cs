@@ -29,19 +29,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	public interface IBuildTarget: IWorkspaceObject
+	public interface IBuildTarget
 	{
-		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
-		bool SupportsTarget (string target);
-		void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
+		Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false);
+		Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration);
+		Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
 		bool NeedsBuilding (ConfigurationSelector configuration);
-		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
-		
-//		ReadOnlyCollection<string> GetConfigurations ();
-//		event EventHandler ConfigurationsChanged;
+		string Name { get; }
 	}
 }

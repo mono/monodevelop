@@ -1964,6 +1964,24 @@
     <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
       <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16.png">
+      <LogicalName>project-status-information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16%402x.png">
+      <LogicalName>project-status-information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16.png">
+      <LogicalName>project-status-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16%402x.png">
+      <LogicalName>project-status-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16.png">
+      <LogicalName>project-status-error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
+      <LogicalName>project-status-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1978,7 +1996,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\DisplayBindingService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\BackgroundProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Tasks\Task.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskService.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ContextPadCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\WorkbenchContextCodon.cs" />
@@ -2567,8 +2584,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ProjectSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ImportProjectPolicyDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.ProgressMonitoring\ProgressBarMonitor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddExternalFileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddExternalFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
@@ -2724,7 +2739,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectContent.cs" />
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererImage.cs" />
     <Compile Include="MonoDevelop.Components\ImageView.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\IdeFileSystemExtensionExtension.cs" />
@@ -2773,6 +2787,7 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\UserTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

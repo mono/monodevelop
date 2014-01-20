@@ -36,6 +36,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDeveloper
 {
@@ -73,8 +74,9 @@ namespace MonoDeveloper
 			}
 		}
 
-		public void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		public Task Save (MonoDevelop.Core.ProgressMonitor monitor)
 		{
+			return Task.FromResult (0);
 		}
 		
 		internal void Read (MonoMakefile mkfile)
@@ -171,7 +173,7 @@ namespace MonoDeveloper
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 				
-		public BuildResult RunTarget (MonoDevelop.Core.IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public Task<BuildResult> RunTarget (MonoDevelop.Core.ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				target = "all";
@@ -180,28 +182,30 @@ namespace MonoDeveloper
 			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
 
-			using (var output = new StringWriter ()) {
-				using (var tw = new LogTextWriter ()) {
-					tw.ChainWriter (output);
-					tw.ChainWriter (monitor.Log);
+			return Task<BuildResult>.Factory.StartNew (delegate {
+				using (var output = new StringWriter ()) {
+					using (var tw = new LogTextWriter ()) {
+						tw.ChainWriter (output);
+						tw.ChainWriter (monitor.Log);
 
-					using (ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Id + " " + target, conf.OutputDirectory, monitor.Log, tw, null))
-						proc.WaitForOutput ();
+						using (ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Id + " " + target, conf.OutputDirectory, monitor.Log, tw, null))
+							proc.WaitForOutput ();
 
-					tw.UnchainWriter (output);
-					tw.UnchainWriter (monitor.Log);
+						tw.UnchainWriter (output);
+						tw.UnchainWriter (monitor.Log);
 
-					CompilerResults cr = new CompilerResults (null);
-					string[] lines = output.ToString().Split ('\n');
-					foreach (string line in lines) {
-						CompilerError err = CreateErrorFromString (line);
-						if (err != null) cr.Errors.Add (err);
+						CompilerResults cr = new CompilerResults (null);
+						string[] lines = output.ToString ().Split ('\n');
+						foreach (string line in lines) {
+							CompilerError err = CreateErrorFromString (line);
+							if (err != null)
+								cr.Errors.Add (err);
+						}
+
+						return new BuildResult (cr, output.ToString ());
 					}
-
-					return new BuildResult (cr, output.ToString());
 				}
-			}
-
+			});
 		}
 		
 		private CompilerError CreateErrorFromString (string error_string)

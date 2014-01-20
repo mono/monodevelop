@@ -38,9 +38,7 @@ namespace MonoDevelop.Projects
 		public void LoadSharedProject ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-
-			Assert.AreEqual (4, sol.GetAllProjects ().Count);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 
 			var pc1 = sol.FindProjectByName ("Console1");
 			Assert.IsNotNull (pc1);
@@ -53,6 +51,8 @@ namespace MonoDevelop.Projects
 
 			var pcs = (SharedAssetsProject) sol.FindProjectByName ("Shared");
 			Assert.IsNotNull (pcs);
+
+			Assert.AreEqual (4, sol.GetAllProjects ().Count ());
 
 			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
 
@@ -68,7 +68,7 @@ namespace MonoDevelop.Projects
 		public void PropagateFileChanges ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			var pc1 = sol.FindProjectByName ("Console1");
 			var pc2 = sol.FindProjectByName ("Console2");
 			var pc3 = sol.FindProjectByName ("Console3");
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects
 		public void AddReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 
 			var pcs = sol.FindProjectByName ("Shared");
 			var pc3 = (DotNetProject) sol.FindProjectByName ("Console3");
@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects
 		public void RemoveReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 
 			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
 			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
@@ -173,7 +173,7 @@ namespace MonoDevelop.Projects
 			};
 
 			sp.AddFile (sol.ItemDirectory.Combine ("Test.cs"));
-			sp.Save (sol.ItemDirectory.Combine ("Shared"), Util.GetMonitor ());
+			sp.Save (Util.GetMonitor (), sol.ItemDirectory.Combine ("Shared"));
 
 			sol.RootFolder.AddItem (sp);
 			sol.Save (Util.GetMonitor ());
@@ -282,7 +282,7 @@ namespace MonoDevelop.Projects
 			Assert.IsNull (sol.StartupItem);
 
 			// An executable project is set as startup by default when there is no startup project
-			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			sol.RootFolder.AddItem (project);
 			Assert.IsTrue (sol.StartupItem == project);
 		}
@@ -297,7 +297,7 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.AddItem (shared);
 
 			// Reference to shared is added before adding project to solution
-			var main = new DotNetAssemblyProject ("C#");
+			var main = Services.ProjectService.CreateDotNetProject ("C#");
 			main.References.Add (new ProjectReference (shared));
 			sol.RootFolder.AddItem (main);
 
@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects
 			shared.AddFile ("Foo.cs");
 
 			// Reference to shared is added before adding project to solution
-			var main = new DotNetAssemblyProject ("C#");
+			var main = Services.ProjectService.CreateDotNetProject ("C#");
 			main.References.Add (new ProjectReference (shared));
 			sol.RootFolder.AddItem (main);
 
@@ -329,7 +329,7 @@ namespace MonoDevelop.Projects
 			var shared = new SharedAssetsProject ("C#");
 			shared.AddFile ("Foo.cs");
 
-			var main = new DotNetAssemblyProject ("C#");
+			var main = Services.ProjectService.CreateDotNetProject ("C#");
 			var pref = new ProjectReference (shared);
 			main.References.Add (pref);
 
@@ -345,6 +345,49 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNull (main.Files.GetFile ("Foo.cs"));
 			Assert.IsFalse (main.References.Contains (pref));
+		}
+
+		[Test]
+		public void ProjItemsFileNameNotMatchingShproj_Bug20571 ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTestBug20571", "SharedProjectTest.sln");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+
+			Assert.AreEqual (3, sol.GetAllProjects ().Count());
+
+			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
+			Assert.IsNotNull (pc1);
+
+			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
+			Assert.IsNotNull (pc2);
+
+			var pcs = (SharedAssetsProject) sol.FindProjectByName ("Shared");
+			Assert.IsNotNull (pcs);
+
+			Assert.IsTrue (pc1.References.Any (r => r.Reference == "Shared"));
+
+			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
+
+			Assert.IsTrue (pc1.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) == null);
+			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
+
+			pc2.References.Add (new ProjectReference (pcs));
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
+
+			pc2.Save (Util.GetMonitor ());
+
+			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
+			sol.Dispose ();
+
+			pc2 = (DotNetProject) sol2.FindProjectByName ("Console2");
+			Assert.IsNotNull (pc2);
+
+			Assert.IsTrue (pc2.References.Any (r => r.Reference == "Shared"));
+
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
+
+			sol2.Dispose ();
 		}
 	}
 }

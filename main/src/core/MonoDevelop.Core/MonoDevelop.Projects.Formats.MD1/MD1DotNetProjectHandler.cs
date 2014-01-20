@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
 using Microsoft.Build.BuildEngine;
+using System.Threading.Tasks;
 	
 namespace MonoDevelop.Projects.Formats.MD1
 {
@@ -48,9 +49,9 @@ namespace MonoDevelop.Projects.Formats.MD1
 			get { return (DotNetProject) Item; }
 		}
 
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			if (!Project.InternalCheckNeedsBuild (configuration)) {
+			if (!Project.OnGetNeedsBuilding (configuration)) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Skipping project since output files are up to date"));
 				return new BuildResult ();
 			}
@@ -150,25 +151,36 @@ namespace MonoDevelop.Projects.Formats.MD1
 			buildData.Configuration.SetParentItem (project);
 			buildData.ConfigurationSelector = configuration;
 
-			return ProjectExtensionUtil.Compile (monitor, project, buildData, delegate {
+			return await Task<BuildResult>.Factory.StartNew (delegate {
 				ProjectItemCollection items = buildData.Items;
-				BuildResult res = BuildResources (buildData.Configuration, ref items, monitor);
-				if (res != null)
-					return res;
-	
-				res = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
+				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
+				if (br != null)
+					return br;
+
+				br = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
 				if (refres != null) {
-					refres.Append (res);
+					refres.Append (br);
 					return refres;
-				}
-				else
-					return res;
+				} else
+					return br;
 			});
-		}		
+			
+		}
+
+		internal static Task<BuildResult> Compile (ProgressMonitor monitor, DotNetProject project, BuildData buildData)
+		{
+			return Task<BuildResult>.Factory.StartNew (delegate {
+				ProjectItemCollection items = buildData.Items;
+				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
+				if (br != null)
+					return br;
+				return project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
+			});
+		}
 
 		// Builds the EmbedAsResource files. If any localized resources are found then builds the satellite assemblies
 		// and sets @projectItems to a cloned collection minus such resource files.
-		private BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, IProgressMonitor monitor)
+		internal static BuildResult BuildResources (DotNetProjectConfiguration configuration, ref ProjectItemCollection projectItems, ProgressMonitor monitor)
 		{
 			string resgen = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "resgen");
 			ExecutionEnvironment env = configuration.TargetRuntime.GetToolsExecutionEnvironment (configuration.TargetFramework);
@@ -220,7 +232,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return null;
 		}
 		
-		CompilerError GetResourceId (FilePath outputFile, ExecutionEnvironment env, ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
+		static CompilerError GetResourceId (FilePath outputFile, ExecutionEnvironment env, ProjectFile finfo, ref string fname, string resgen, out string resourceId, ProgressMonitor monitor)
 		{
 			resourceId = finfo.ResourceId;
 			if (resourceId == null) {
@@ -326,7 +338,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return finfo_first.LastWriteTime > finfo_second.LastWriteTime;
 		}
 
-		CompilerError GenerateSatelliteAssemblies (Dictionary<string, string> resourcesByCulture, string outputDir, string al, string defaultns, IProgressMonitor monitor)
+		static CompilerError GenerateSatelliteAssemblies (Dictionary<string, string> resourcesByCulture, string outputDir, string al, string defaultns, ProgressMonitor monitor)
 		{
 			foreach (KeyValuePair<string, string> pair in resourcesByCulture) {
 				string culture = pair.Key;

@@ -36,6 +36,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Components.Commands;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -430,14 +431,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 
-	public class LogViewProgressMonitor : NullProgressMonitor, IDebugConsole
+	public class LogViewProgressMonitor : ProgressMonitor, IDebugConsole
 	{
 		LogView outputPad;
 		event EventHandler stopRequested;
 		
-		LogTextWriter logger = new LogTextWriter ();
 		LogTextWriter internalLogger = new LogTextWriter ();
-		LogTextWriter errorLogger = new LogTextWriter();
 		NotSupportedTextReader inputReader = new NotSupportedTextReader ();
 		
 		public LogView LogView {
@@ -448,31 +447,47 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			outputPad = pad;
 			outputPad.Clear ();
-			logger.TextWritten += outputPad.WriteText;
 			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
-			errorLogger.TextWritten += outputPad.WriteError;
+			CancellationToken.Register (OnCancelRequested);
 		}
-		
-		public override void BeginTask (string name, int totalWork)
+
+		public void Cancel ()
+		{
+			CancellationTokenSource.Cancel ();
+		}
+
+		protected override void OnWriteLog (string message)
+		{
+			outputPad.WriteText (message);
+			base.OnWriteLog (message);
+		}
+
+		protected override void OnWriteErrorLog (string message)
+		{
+			outputPad.WriteText (message);
+			base.OnWriteErrorLog (message);
+		}
+
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.BeginTask (name, totalWork);
-			base.BeginTask (name, totalWork);
+			base.OnBeginTask (name, totalWork, stepWork);
 		}
-		
-		public override void EndTask ()
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.EndTask ();
-			base.EndTask ();
+			base.OnEndTask (name, totalWork, stepWork);
 		}
-		
-		protected override void OnCompleted ()
+
+		public override void Dispose ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.WriteText ("\n");
 			
-			foreach (string msg in Messages)
+			foreach (string msg in SuccessMessages)
 				outputPad.WriteText (msg + "\n");
 			
 			foreach (string msg in Warnings)
@@ -481,9 +496,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (ProgressError msg in Errors)
 				outputPad.WriteError (msg.Message + "\n");
 			
-			base.OnCompleted ();
-			
 			outputPad = null;
+			base.Dispose ();
 		}
 		
 		Exception GetDisposedException ()
@@ -491,15 +505,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			return new InvalidOperationException ("Output progress monitor already disposed.");
 		}
 		
-		protected override void OnCancelRequested ()
+		void OnCancelRequested ()
 		{
-			base.OnCancelRequested ();
 			if (stopRequested != null)
 				stopRequested (this, null);
-		}
-		
-		public override TextWriter Log {
-			get { return logger; }
 		}
 		
 		TextWriter IConsole.Log {
@@ -511,11 +520,11 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		TextWriter IConsole.Out {
-			get { return logger; }
+			get { return base.Log; }
 		}
 		
 		TextWriter IConsole.Error {
-			get { return errorLogger; }
+			get { return base.ErrorLog; }
 		} 
 
 		void IDebugConsole.Debug (int level, string category, string message)
@@ -531,6 +540,15 @@ namespace MonoDevelop.Ide.Gui.Components
 			add { stopRequested += value; }
 			remove { stopRequested -= value; }
 		}
+
+		protected override void OnCompleted ()
+		{
+			base.OnCompleted ();
+			if (Completed != null)
+				Completed (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Completed;
 	}
 
 	

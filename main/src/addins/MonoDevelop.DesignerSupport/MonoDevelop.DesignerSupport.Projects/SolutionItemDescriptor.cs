@@ -33,9 +33,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 {
 	class SolutionItemDescriptor: CustomDescriptor
 	{
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		
-		public SolutionItemDescriptor (SolutionItem entry)
+		public SolutionItemDescriptor (SolutionFolderItem entry)
 		{
 			this.entry = entry;
 		}
@@ -58,8 +58,8 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDescription ("File path of the solution item.")]
 		public string FilePath {
 			get {
-				if (entry is SolutionEntityItem)
-					return ((SolutionEntityItem) entry).FileName; 
+				if (entry is SolutionItem)
+					return ((SolutionItem) entry).FileName; 
 				else
 					return "";
 			}

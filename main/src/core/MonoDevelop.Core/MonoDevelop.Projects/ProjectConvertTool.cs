@@ -177,7 +177,10 @@ namespace MonoDevelop.Projects
 				destPath = Path.GetDirectoryName (projectFile);
 			destPath = FileService.GetFullPath (destPath);
 			
-			string ofile = Services.ProjectService.Export (monitor, projectFile, itemsToExport, destPath, format);
+			var t = Services.ProjectService.Export (monitor, projectFile, itemsToExport, destPath, format);
+			t.Wait ();
+			string ofile = t.Result;
+
 			if (ofile != null) {
 				Console.WriteLine ("Saved file: " + ofile);
 				return 0;

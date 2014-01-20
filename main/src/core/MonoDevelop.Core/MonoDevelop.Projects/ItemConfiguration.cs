@@ -32,6 +32,7 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -107,7 +108,7 @@ namespace MonoDevelop.Projects
 		public CustomCommandCollection CustomCommands {
 			get { return customCommands; }
 		}
-		
+
 		public object Clone()
 		{
 			ItemConfiguration conf = (ItemConfiguration) Activator.CreateInstance (GetType ());

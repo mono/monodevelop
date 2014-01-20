@@ -87,7 +87,7 @@ namespace MonoDevelop.Platform
 				return type ?? base.OnGetMimeTypeForUri (uri);
 			}
 			finally {
-				typeKey.Close ();
+				typeKey.Dispose ();
 			}
 		}
 		
@@ -103,10 +103,11 @@ namespace MonoDevelop.Platform
 		
 		public Gdk.Pixbuf CreateFromResource (Bitmap bitmap)
 		{
-			MemoryStream ms = new MemoryStream ();
-			bitmap.Save (ms, ImageFormat.Png);
-			ms.Position = 0;
-			return new Gdk.Pixbuf (ms);
+			using (var ms = new MemoryStream ()) {
+				bitmap.Save (ms, ImageFormat.Png);
+				ms.Position = 0;
+				return new Gdk.Pixbuf (ms);
+			}
 		}
 
 		// Note: we can't reuse RectangleF because the layout is different...
@@ -208,7 +209,7 @@ namespace MonoDevelop.Platform
 			return psi;
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (
+		public override ProcessAsyncOperation StartConsoleProcess (
 			string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
 			string title, bool pauseWhenFinished)

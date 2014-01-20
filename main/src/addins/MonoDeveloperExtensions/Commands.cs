@@ -50,13 +50,13 @@ namespace MonoDeveloper
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = MonoMakefileFormat.IsMonoProject (IdeApp.ProjectOperations.CurrentSelectedProject);
+			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MakefileProject;
 		}
 		
 		void Install (object prj)
 		{
 			DotNetProject p = prj as DotNetProject;
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
+			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ()) {
 				p.RunTarget (monitor, "install", IdeApp.Workspace.ActiveConfiguration);
 			}
 		}

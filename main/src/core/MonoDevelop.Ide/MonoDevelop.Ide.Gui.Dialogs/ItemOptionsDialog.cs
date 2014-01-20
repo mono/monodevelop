@@ -29,6 +29,7 @@ using System;
 using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -48,6 +49,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			base.InitializeContext (extensionContext);
 			extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (DataObject.GetType ()));
 			extensionContext.RegisterCondition ("ActiveLanguage", new ProjectLanguageCondition (DataObject));
+			if (DataObject is Project)
+				extensionContext.RegisterCondition ("ItemType", new FlavorTypeCondition ((Project)DataObject));
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace MonoDevelop.WebReferences.Commands
 					return;
 
 				dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
-				IdeApp.ProjectOperations.Save(project);
+				IdeApp.ProjectOperations.SaveAsync(project);
 			} catch (Exception exception) {
 				MessageService.ShowException (exception);
 			} finally {
@@ -105,7 +105,7 @@ namespace MonoDevelop.WebReferences.Commands
 					DispatchService.GuiDispatch (() => {
 						// Make sure that we save all relevant projects, there should only be 1 though
 						foreach (var project in items.Select (i =>i.Project).Distinct ())
-							IdeApp.ProjectOperations.Save (project);
+							IdeApp.ProjectOperations.SaveAsync (project);
 						
 						IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetPluralString ("Updated Web Reference {0}", "Updated Web References", items.Count, items[0].Name));
 						DisposeUpdateContext ();
@@ -133,7 +133,7 @@ namespace MonoDevelop.WebReferences.Commands
 			if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the web service reference '{0}'?", item.Name), AlertButton.Delete))
 				return;
 			item.Delete();
-			IdeApp.ProjectOperations.Save (item.Project);
+			IdeApp.ProjectOperations.SaveAsync (item.Project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
 		}
 		
@@ -153,7 +153,7 @@ namespace MonoDevelop.WebReferences.Commands
 			foreach (var item in items.ToList ())
 				item.Delete();
 
-			IdeApp.ProjectOperations.Save(project);
+			IdeApp.ProjectOperations.SaveAsync(project);
 			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
 		}
 

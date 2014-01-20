@@ -67,7 +67,7 @@ namespace MonoDevelop.AspNet.WebForms
 			XDocument xDoc = parser.Nodes.GetRoot ();
 			info.Populate (xDoc, errors);
 			
-			var type = AspNetAppProject.DetermineWebSubtype (fileName);
+			var type = AspNetFlavor.DetermineWebSubtype (fileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
 					errors.Add (new Error (ErrorType.Error, "File directive is missing", 1, 1));

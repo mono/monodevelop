@@ -36,6 +36,7 @@ using System.Web.UI;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.AspNet.Projects;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 
-		public static CompletionDataList GetAttributeValues (AspNetAppProject project, FilePath fromFile, string directiveName, string attribute)
+		public static CompletionDataList GetAttributeValues (DotNetProject project, FilePath fromFile, string directiveName, string attribute)
 		{
 			switch (directiveName.ToLowerInvariant ()) {
 			case "page":
@@ -105,7 +106,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 		
-		public static CompletionDataList GetAttributes (AspNetAppProject project, string directiveName,
+		public static CompletionDataList GetAttributes (DotNetProject project, string directiveName,
 			Dictionary<string, string> existingAtts)
 		{
 			var list = new CompletionDataList ();
@@ -199,7 +200,7 @@ namespace MonoDevelop.AspNet.WebForms
 				list.Add (s);
 		}
 		
-		static CompletionDataList GetPageAttributeValues (AspNetAppProject project, FilePath fromFile, string attribute)
+		static CompletionDataList GetPageAttributeValues (Project project, FilePath fromFile, string attribute)
 		{
 			var list = new CompletionDataList ();
 			switch (attribute.ToLowerInvariant ()) {
@@ -346,7 +347,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return list.Count > 0? list : null;
 		}
 		
-		static CompletionDataList GetRegisterAttributeValues (AspNetAppProject project, FilePath fromFile, string attribute)
+		static CompletionDataList GetRegisterAttributeValues (Project project, FilePath fromFile, string attribute)
 		{
 			switch (attribute.ToLowerInvariant ()) {
 			case "src":

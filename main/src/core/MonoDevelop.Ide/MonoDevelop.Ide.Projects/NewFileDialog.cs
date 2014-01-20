@@ -481,7 +481,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				if (project != null)
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project).RunSynchronously ();
 
 				if (OnOked != null)
 					OnOked (null, null);
@@ -595,19 +595,19 @@ namespace MonoDevelop.Ide.Projects
 			infoLabel.Text = string.Empty;
 			labelTemplateTitle.Text = string.Empty;
 			
-			ReadOnlyCollection<Project> projects = null;
+			Project[] projects = null;
 			if (parentProject == null)
-				projects = IdeApp.Workspace.GetAllProjects ();
+				projects = IdeApp.Workspace.GetAllProjects ().ToArray ();
 
-			if (projects != null && projects.Count > 0) {
+			if (projects != null && projects.Length > 0) {
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 
 				boxProject.Visible = true;
 				projectAddCheckbox.Active = curProject != null;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 
-				projectNames = new string[projects.Count];
-				projectRefs = new Project[projects.Count];
+				projectNames = new string[projects.Length];
+				projectRefs = new Project[projects.Length];
 				int i = 0;
 
 				bool singleSolution = IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items[0] is Solution;

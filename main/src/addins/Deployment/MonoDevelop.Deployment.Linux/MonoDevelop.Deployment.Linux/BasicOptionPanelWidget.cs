@@ -10,9 +10,9 @@ namespace MonoDevelop.Deployment.Linux
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class BasicOptionPanelWidget : Gtk.Bin
 	{
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		
-		public BasicOptionPanelWidget (SolutionItem entry, bool creatingProject)
+		public BasicOptionPanelWidget (SolutionFolderItem entry, bool creatingProject)
 		{
 			this.Build();
 			

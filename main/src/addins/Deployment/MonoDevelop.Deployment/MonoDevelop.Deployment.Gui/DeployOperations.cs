@@ -3,14 +3,15 @@ using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Deployment.Gui
 {
 	public static class DeployOperations
 	{
-		public static void Install (SolutionItem entry, ConfigurationSelector configuration)
+		public static void Install (SolutionFolderItem entry, ConfigurationSelector configuration)
 		{
-			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
+			using (ProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ()) {
 				InstallDialog dlg = new InstallDialog (entry);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
@@ -21,36 +22,29 @@ namespace MonoDevelop.Deployment.Gui
 			}
 		}
 		
-		public static IAsyncOperation BuildPackages (PackagingProject project)
+		public static Task BuildPackages (PackagingProject project)
 		{
 			return BuildPackages (project.Packages);
 		}
 		
-		static IAsyncOperation BuildPackages (ICollection packages)
+		static async Task BuildPackages (ICollection packages)
 		{
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true);
+			ProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true);
 
 			// Run the deploy command in a background thread to avoid
 			// deadlocks with the gui thread
 			
-			System.Threading.Thread t = new System.Threading.Thread (
-				delegate () {
-				using (mon) {
-					mon.BeginTask ("Creating packages", packages.Count);
-					foreach (Package p in packages) {
-						DeployService.BuildPackage (mon, p);
-						mon.Step (1);
-					}
-					mon.EndTask ();
+			using (mon) {
+				mon.BeginTask ("Creating packages", packages.Count);
+				foreach (Package p in packages) {
+					await DeployService.BuildPackage (mon, p);
+					mon.Step (1);
 				}
-			});
-			t.IsBackground = true;
-			t.Start ();
-
-			return mon.AsyncOperation;
+				mon.EndTask ();
+			}
 		}
 		
-		public static IAsyncOperation BuildPackage (Package package)
+		public static Task BuildPackage (Package package)
 		{
 			return BuildPackages (new object[] { package });
 		}
@@ -59,7 +53,7 @@ namespace MonoDevelop.Deployment.Gui
 		{
 			EditPackageDialog dlg = new EditPackageDialog (package);
 			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
-				IdeApp.ProjectOperations.Save (package.ParentProject);
+				IdeApp.ProjectOperations.SaveAsync (package.ParentProject);
 		}
 	}
 }

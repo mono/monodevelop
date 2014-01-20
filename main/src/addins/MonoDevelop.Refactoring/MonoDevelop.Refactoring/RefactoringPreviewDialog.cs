@@ -87,7 +87,7 @@ namespace MonoDevelop.Refactoring
 			};
 			
 			buttonOk.Clicked += delegate {
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
+				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 				RefactoringService.AcceptChanges (monitor, changes);
 				
 				Destroy ();

@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl
 		
 		public override void MoveFile (FilePath source, FilePath dest)
 		{
-			IProgressMonitor monitor = new NullProgressMonitor ();
+			ProgressMonitor monitor = new ProgressMonitor ();
 
 			Repository srcRepo = GetRepository (source);
 			Repository dstRepo = GetRepository (dest);
@@ -78,7 +78,7 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
-			repo.DeleteFile (file, true, new NullProgressMonitor (), false);
+			repo.DeleteFile (file, true, new ProgressMonitor (), false);
 		}
 		
 		public override void CreateDirectory (FilePath path)
@@ -86,12 +86,12 @@ namespace MonoDevelop.VersionControl
 			Repository repo = GetRepository (path);
 			repo.ClearCachedVersionInfo (path);
 			System.IO.Directory.CreateDirectory (path);
-			repo.Add (path, false, new NullProgressMonitor ());
+			repo.Add (path, false, new ProgressMonitor ());
 		}
 		
 		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
-			IProgressMonitor monitor = new NullProgressMonitor ();
+			ProgressMonitor monitor = new ProgressMonitor ();
 			
 			Repository srcRepo = GetRepository (sourcePath);
 			Repository dstRepo = GetRepository (destPath);
@@ -107,7 +107,7 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
-			repo.DeleteDirectory (path, true, new NullProgressMonitor (), false);
+			repo.DeleteDirectory (path, true, new ProgressMonitor (), false);
 		}
 
 		public override void RequestFileEdit (IEnumerable<FilePath> files)

@@ -22,10 +22,10 @@ namespace MonoDevelop.Deployment.Linux
 		[ItemProperty (DefaultValue=true)]
 		bool generatePcFile = true;
 		
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		bool connected;
 		
-		internal LinuxDeployData (SolutionItem entry)
+		internal LinuxDeployData (SolutionFolderItem entry)
 		{
 			this.entry = entry;
 		}
@@ -34,7 +34,7 @@ namespace MonoDevelop.Deployment.Linux
 		{
 		}
 		
-		public static LinuxDeployData GetLinuxDeployData (SolutionItem entry)
+		public static LinuxDeployData GetLinuxDeployData (SolutionFolderItem entry)
 		{
 			LinuxDeployData data = (LinuxDeployData) entry.ExtendedProperties ["Deployment.LinuxDeployData"];
 			if (data != null) {
@@ -55,12 +55,12 @@ namespace MonoDevelop.Deployment.Linux
 			return data;
 		}
 		
-		internal static LinuxDeployData CreateDefault (SolutionItem entry)
+		internal static LinuxDeployData CreateDefault (SolutionFolderItem entry)
 		{
 			return new LinuxDeployData (entry);
 		}
 		
-		void Bind (SolutionItem entry)
+		void Bind (SolutionFolderItem entry)
 		{
 			this.entry = entry;
 		}

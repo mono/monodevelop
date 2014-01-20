@@ -33,14 +33,15 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.TextTemplating
 {
 	public class TextTemplatingFilePreprocessor : ISingleFileCustomTool
 	{
-		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (delegate {
+			return Task.Factory.StartNew (delegate {
 				var host = new ProjectFileTemplatingHost (file);
 				
 				var dnp = file.Project as DotNetProject;
@@ -74,7 +75,7 @@ namespace MonoDevelop.TextTemplating
 				result.Errors.AddRange (host.Errors);
 				foreach (var err in host.Errors)
 					monitor.Log.WriteLine (err);
-			}, result);
+			});
 		}
 		
 		static bool warningLogged;

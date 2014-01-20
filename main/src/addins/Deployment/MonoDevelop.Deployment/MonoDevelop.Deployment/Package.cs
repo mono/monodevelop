@@ -6,6 +6,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Deployment
 {
@@ -46,11 +47,11 @@ namespace MonoDevelop.Deployment
 			set { builder = value; NotifyChanged (); }
 		}
 		
-		public bool Build (IProgressMonitor monitor)
+		public async Task<bool> Build (ProgressMonitor monitor)
 		{
-			DeployService.BuildPackage (monitor, this);
+			var res = await DeployService.BuildPackage (monitor, this);
 			needsBuilding = false;
-			return true;
+			return res;
 		}
 		
 		public bool NeedsBuilding {
@@ -62,7 +63,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		public void Clean (IProgressMonitor monitor)
+		public void Clean (ProgressMonitor monitor)
 		{
 			needsBuilding = true;
 		}

@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		private class LockWorker : Task 
+		private class LockWorker : VersionControlTask 
 		{
 			VersionControlItemList items;
 						

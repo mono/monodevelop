@@ -57,7 +57,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public ComponentSelectorDialog (IToolboxConsumer currentConsumer)
 		{
-			using (IProgressMonitor monitor = new MessageDialogProgressMonitor (true, true, false, true)) {
+			using (ProgressMonitor monitor = new MessageDialogProgressMonitor (true, true, false, true)) {
 				index = DesignerSupport.Service.ToolboxService.GetComponentIndex (monitor);
 			}
 			

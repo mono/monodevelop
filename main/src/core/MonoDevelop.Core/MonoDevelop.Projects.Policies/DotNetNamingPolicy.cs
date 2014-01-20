@@ -62,10 +62,10 @@ namespace MonoDevelop.Projects.Policies
 		internal static ResourceNamePolicy GetDefaultResourceNamePolicy (object ob)
 		{
 			FileFormat format = null;
-			if (ob is SolutionEntityItem)
-				format = ((SolutionEntityItem)ob).FileFormat;
-			else if (ob is SolutionItem)
-				format = ((SolutionItem)ob).ParentSolution.FileFormat;
+			if (ob is SolutionItem)
+				format = ((SolutionItem)ob).FileFormat;
+			else if (ob is SolutionFolderItem)
+				format = ((SolutionFolderItem)ob).ParentSolution.FileFormat;
 			else if (ob is Solution)
 				format = ((Solution)ob).FileFormat;
 			

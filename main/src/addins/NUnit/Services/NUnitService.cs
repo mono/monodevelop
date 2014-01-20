@@ -38,6 +38,8 @@ using MonoDevelop.Projects;
 using NUnit.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.NUnit
 {
@@ -99,14 +101,20 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
+		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
-			result.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (OnTestSessionCompleted));
+			result.Task.ContinueWith (t => OnTestSessionCompleted ());
 			return result;
 		}
 		
-		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
+		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
+		{
+			var cs = new CancellationTokenSource ();
+			return new AsyncOperation (RunTestAsync (test, context, buildOwnerObject, cs), cs);
+		}
+
+		async Task RunTestAsync (UnitTest test, IExecutionHandler context, bool buildOwnerObject, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -115,39 +123,23 @@ namespace MonoDevelop.NUnit
 				if (bt != null && bt.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration)) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
-						IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
 					}
 	
-					AsyncOperation retOper = new AsyncOperation ();
-					
-					IAsyncOperation op = IdeApp.ProjectOperations.Build (bt);
-					retOper.TrackOperation (op, false);
-						
-					op.Completed += delegate {
-						// The completed event of the build operation is run in the gui thread,
-						// so we need a new thread, because refreshing must be async
-						System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-							if (op.Success) {
-								RefreshTests ();
-								test = SearchTest (testName);
-								if (test != null) {
-									Gtk.Application.Invoke (delegate {
-										// RunTest must run in the gui thread
-										retOper.TrackOperation (RunTest (test, context, false), true);
-									});
-								}
-								else
-									retOper.SetCompleted (false);
-							}
-						});
-					};
-					
-					return retOper;
+					var res = await IdeApp.ProjectOperations.Build (bt, cs.Token).Task;
+					if (res.HasErrors)
+						return;
+
+					await RefreshTests (cs.Token);
+					test = SearchTest (testName);
+					if (test != null)
+						await RunTestAsync (test, context, false, cs);
+					return;
 				}
 			}
 			
 			if (!IdeApp.ProjectOperations.ConfirmExecutionOperation ())
-				return NullProcessAsyncOperation.Failure;
+				return;
 			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
 			if (resultsPad == null) {
@@ -160,25 +152,17 @@ namespace MonoDevelop.NUnit
 			resultsPad.Sticky = true;
 			resultsPad.BringToFront ();
 			
-			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content);
-			
-			session.Completed += delegate {
-				Gtk.Application.Invoke (delegate {
-					resultsPad.Sticky = false;
-				});
-			};
-			
-			session.Start ();
-			
+			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content, cs);
 			IdeApp.ProjectOperations.CurrentRunOperation = session;
-			
-			return session;
+
+			await session.Start ();
+
+			resultsPad.Sticky = false;
 		}
 		
-		public void RefreshTests ()
+		public Task RefreshTests (CancellationToken ct)
 		{
-			foreach (UnitTest t in RootTests)
-				t.Refresh ().WaitForCompleted ();
+			return Task.WhenAll (RootTests.Select (t => t.Refresh (ct)));
 		}
 		
 		public UnitTest SearchTest (string fullName)
@@ -238,12 +222,12 @@ namespace MonoDevelop.NUnit
 			return null;
 		}
 
-		public UnitTest FindRootTest (IWorkspaceObject item)
+		public UnitTest FindRootTest (WorkspaceObject item)
 		{
 			return FindRootTest (RootTests, item);
 		}
 		
-		public UnitTest FindRootTest (IEnumerable<UnitTest> tests, IWorkspaceObject item)
+		public UnitTest FindRootTest (IEnumerable<UnitTest> tests, WorkspaceObject item)
 		{
 			foreach (UnitTest t in tests) {
 				if (t.OwnerObject == item)
@@ -281,7 +265,7 @@ namespace MonoDevelop.NUnit
 			NotifyTestSuiteChanged ();
 		}
 		
-		public UnitTest BuildTest (IWorkspaceObject entry)
+		public UnitTest BuildTest (WorkspaceObject entry)
 		{
 			foreach (ITestProvider p in providers) {
 				try {
@@ -325,7 +309,7 @@ namespace MonoDevelop.NUnit
 
 		public event EventHandler TestSuiteChanged;
 
-		void OnTestSessionCompleted (IAsyncOperation op)
+		void OnTestSessionCompleted ()
 		{
 			var handler = TestSessionCompleted;
 			if (handler != null)
@@ -337,31 +321,28 @@ namespace MonoDevelop.NUnit
 	
 
 
-	class TestSession: IAsyncOperation, ITestProgressMonitor
+	class TestSession: AsyncOperation, ITestProgressMonitor
 	{
 		UnitTest test;
 		TestMonitor monitor;
 		Thread runThread;
 		bool success;
-		ManualResetEvent waitEvent;
 		IExecutionHandler context;
 		TestResultsPad resultsPad;
 
-		public TestSession (UnitTest test, IExecutionHandler context, TestResultsPad resultsPad)
+		public TestSession (UnitTest test, IExecutionHandler context, TestResultsPad resultsPad, CancellationTokenSource cs)
 		{
 			this.test = test;
 			this.context = context;
-			this.monitor = new TestMonitor (resultsPad);
+			CancellationTokenSource = cs;
+			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
 			resultsPad.InitializeTestRun (test);
 		}
 		
-		public void Start ()
+		public Task Start ()
 		{
-			runThread = new Thread (new ThreadStart (RunTests));
-			runThread.Name = "NUnit test runner";
-			runThread.IsBackground = true;
-			runThread.Start ();
+			return Task = Task.Factory.StartNew (RunTests);
 		}
 		
 		void RunTests ()
@@ -381,12 +362,6 @@ namespace MonoDevelop.NUnit
 				monitor.FinishTestRun ();
 				runThread = null;
 			}
-			lock (this) {
-				if (waitEvent != null)
-					waitEvent.Set ();
-			}
-			if (Completed != null)
-				Completed (this);
 		}
 		
 		void ITestProgressMonitor.BeginTest (UnitTest test)
@@ -412,45 +387,7 @@ namespace MonoDevelop.NUnit
 		bool ITestProgressMonitor.IsCancelRequested {
 			get { return monitor.IsCancelRequested; }
 		}
-		
-		void IAsyncOperation.Cancel ()
-		{
-			monitor.Cancel ();
-		}
-		
-		public void WaitForCompleted ()
-		{
-			if (IsCompleted) return;
-			
-			if (DispatchService.IsGuiThread) {
-				while (!IsCompleted) {
-					while (Gtk.Application.EventsPending ())
-						Gtk.Application.RunIteration ();
-					Thread.Sleep (100);
-				}
-			} else {
-				lock (this) {
-					if (waitEvent == null)
-						waitEvent = new ManualResetEvent (false);
-				}
-				waitEvent.WaitOne ();
-			}
-		}
-		
-		public bool IsCompleted {
-			get { return runThread == null; }
-		}
-		
-		public bool Success {
-			get { return success; }
-		}
 
-		public bool SuccessWithWarnings {
-			get { return false; }
-		}
-
-		public event OperationHandler Completed;
-		
 		public event TestHandler CancelRequested {
 			add { monitor.CancelRequested += value; }
 			remove { monitor.CancelRequested -= value; }

@@ -35,6 +35,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.StringParsing;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -47,14 +48,10 @@ namespace MonoDevelop.Projects
 	
 	public class DotNetProjectConfiguration: ProjectConfiguration
 	{
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty ("AssemblyName")]
 		string assembly;
-		
-		ConfigurationParameters compilationParameters;
-		
 		string sourcePath;
-		
+		DotNetCompilerParameters compilationParameters;
+
 		public DotNetProjectConfiguration ()
 		{
 		}
@@ -63,32 +60,49 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty("SignAssembly", DefaultValue = false)]
+		internal protected override void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			base.Read (pset, format);
+
+			assembly = pset.GetValue ("AssemblyName");
+			signAssembly = pset.GetValue<bool> ("SignAssembly");
+			delaySign = pset.GetValue<bool> ("DelaySign");
+			assemblyKeyFile = pset.GetPathValue ("AssemblyOriginatorKeyFile");
+			if (string.IsNullOrEmpty (assemblyKeyFile))
+				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile");
+			if (compilationParameters != null)
+				((IMSBuildDataObject)compilationParameters).Read (pset, format);
+		}
+
+		internal protected override void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			base.Write (pset, format);
+			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);
+			pset.SetValue ("SignAssembly", signAssembly, defaultValue:false, mergeToMainGroup: true);
+			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
+			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, mergeToMainGroup:true);
+			if (compilationParameters != null)
+				((IMSBuildDataObject)compilationParameters).Write (pset, format);
+		}
+
 		private bool signAssembly = false;
 		public bool SignAssembly {
 			get { return signAssembly; }
 			set { signAssembly = value; }
 		}
 		
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty("DelaySign", DefaultValue = false)]
 		private bool delaySign = false;
 		public bool DelaySign {
 			get { return delaySign; }
 			set { delaySign = value; }
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ProjectPathItemProperty("AssemblyKeyFile", ReadOnly=true)]
 		internal string OldAssemblyKeyFile {
 			set { assemblyKeyFile = value; }
 		}
 
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ProjectPathItemProperty("AssemblyOriginatorKeyFile", DefaultValue = "")]
-		private string assemblyKeyFile = "";
-		public string AssemblyKeyFile {
+		private FilePath assemblyKeyFile = FilePath.Empty;
+		public FilePath AssemblyKeyFile {
 			get { return assemblyKeyFile; }
 			set { assemblyKeyFile = value; }
 		}
@@ -149,23 +163,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		[ItemProperty ("CodeGeneration")]
-		public ConfigurationParameters CompilationParameters {
+		public DotNetCompilerParameters CompilationParameters {
 			get { return compilationParameters; }
 			set {
 				compilationParameters = value; 
 				if (compilationParameters != null)
 					compilationParameters.ParentConfiguration = this;
-			}
-		}
-		
-		public ProjectParameters ProjectParameters {
-			get {
-				DotNetProject dnp = ParentItem as DotNetProject;
-				if (dnp != null)
-					return dnp.LanguageParameters;
-				else
-					return null;
 			}
 		}
 		
@@ -206,7 +209,7 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class UnknownCompilationParameters: ConfigurationParameters, IExtendedDataItem
+	public class UnknownCompilationParameters: DotNetCompilerParameters, IExtendedDataItem
 	{
 		readonly Hashtable table = new Hashtable ();
 		

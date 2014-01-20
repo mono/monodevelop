@@ -35,6 +35,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace CBinding.ProjectPad
 {	
@@ -132,7 +134,7 @@ namespace CBinding.ProjectPad
 			
 			MessageService.ShowCustomDialog (new EditPackagesDialog (project));
 			
-			IdeApp.ProjectOperations.Save (project);
+			IdeApp.ProjectOperations.SaveAsync (project);
 			CurrentNode.Expanded = true;
 		}
 		
@@ -164,6 +166,7 @@ namespace CBinding.ProjectPad
 		
 		public override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
+			List<IWorkspaceFileObject> toSave = new List<IWorkspaceFileObject> ();
 			if (dataObject is Package) {
 				Package package = (Package)dataObject;
 				ITreeNavigator nav = CurrentNode;
@@ -173,11 +176,11 @@ namespace CBinding.ProjectPad
 				CProject source = nav.GetParentDataItem (typeof(CProject), true) as CProject;
 				
 				dest.Packages.Add (package);
-				IdeApp.ProjectOperations.Save (dest);
-				
+				toSave.Add (dest);
+
 				if (operation == DragOperation.Move) {
 					source.Packages.Remove (package);
-					IdeApp.ProjectOperations.Save (source);
+					toSave.Add (source);
 				}
 			} else if (dataObject is CProject) {
 				CProject draggedProject = (CProject)dataObject;
@@ -189,9 +192,10 @@ namespace CBinding.ProjectPad
 				
 				if (!destProject.Packages.Contains (package)) {				
 					destProject.Packages.Add (package);
-					IdeApp.ProjectOperations.Save (destProject);
+					toSave.Add (destProject);
 				}
 			}
+			IdeApp.ProjectOperations.SaveAsync (toSave);
 		}
 	}
 }

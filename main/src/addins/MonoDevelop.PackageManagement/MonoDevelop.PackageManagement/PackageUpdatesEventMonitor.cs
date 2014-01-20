@@ -27,15 +27,16 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	public class PackageUpdatesEventMonitor : IDisposable
 	{
 		IPackageManagementEvents packageEvents;
-		IProgressMonitor progressMonitor;
+		ProgressMonitor progressMonitor;
 
-		public PackageUpdatesEventMonitor (IProgressMonitor progressMonitor)
+		public PackageUpdatesEventMonitor (ProgressMonitor progressMonitor)
 			: this (
 				progressMonitor,
 				PackageManagementServices.PackageManagementEvents)
@@ -43,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public PackageUpdatesEventMonitor (
-			IProgressMonitor progressMonitor,
+			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageEvents)
 		{
 			this.progressMonitor = progressMonitor;
@@ -55,13 +56,18 @@ namespace MonoDevelop.PackageManagement
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
 			progressMonitor.Log.WriteLine (e.Message.ToString ());
+
+			if (e.Message.Level == MessageLevel.Warning) {
+				WarningReported = true;
+			}
 		}
 
 		public void Dispose ()
 		{
 			packageEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 		}
-	}
 
+		public bool WarningReported { get; private set; }
+	}
 }
 

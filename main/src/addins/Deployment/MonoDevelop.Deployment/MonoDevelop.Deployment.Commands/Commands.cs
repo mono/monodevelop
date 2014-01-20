@@ -18,7 +18,7 @@ namespace MonoDevelop.Deployment
 	{
 		protected override void Run ()
 		{
-			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+			SolutionFolderItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 			DeployDialog dlg = new DeployDialog (entry, false);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
@@ -33,11 +33,11 @@ namespace MonoDevelop.Deployment
 							project.FileName = Path.Combine (dlg.NewProjectSolution.BaseDirectory, project.Name + ".mdse");
 							project.Packages.Add (p);
 							dlg.NewProjectSolution.Items.Add (project);
-							IdeApp.ProjectOperations.Save (dlg.NewProjectSolution.ParentSolution);
+							IdeApp.ProjectOperations.SaveAsync (dlg.NewProjectSolution.ParentSolution);
 						}
 						else {
 							dlg.ExistingPackagingProject.Packages.Add (p);
-							IdeApp.ProjectOperations.Save (dlg.ExistingPackagingProject);
+							IdeApp.ProjectOperations.SaveAsync (dlg.ExistingPackagingProject);
 						}
 					}
 					Package pkg = new Package (dlg.PackageBuilder);
@@ -63,7 +63,7 @@ namespace MonoDevelop.Deployment
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					project.AddPackage (dlg.NewPackageName, dlg.PackageBuilder);
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project);
 				}
 			} finally {
 				dlg.Destroy ();
@@ -80,7 +80,7 @@ namespace MonoDevelop.Deployment
 	{
 		protected override void Run ()
 		{
-			SolutionItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+			SolutionFolderItem entry = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
 			DeployOperations.Install (entry, IdeApp.Workspace.ActiveConfiguration);
 		}
 		

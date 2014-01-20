@@ -10,21 +10,18 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject
+		<DotNetProjectType
 			language="C#"
 			extension="csproj"
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
 			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
-			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
+			type="MonoDevelop.CSharp.Project.CSharpProject"
 			/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
-			<DotNetProjectSubtype
-				guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
-				type="MonoDevelop.Projects.PortableDotNetProject"
-				useXBuild="true">
-				<AddImport language="C#" projects="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-			</DotNetProjectSubtype>
+			<ProjectFlavor guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}" type="MonoDevelop.CSharp.Project.PortableCSharpProjectFlavor" />
 		</Condition>
 	</Extension>
 

@@ -42,6 +42,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 		
-		public IAsyncOperation AsyncOperation {
+		public CancellationTokenSource CancellationTokenSource {
 			get;
 			set;
 		}
@@ -225,8 +226,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void ButtonStopClicked (object sender, EventArgs e)
 		{
-			if (AsyncOperation != null)
-				AsyncOperation.Cancel ();
+			if (CancellationTokenSource != null)
+				CancellationTokenSource.Cancel ();
 		}
 
 		void TreeviewSearchResultsRowActivated(object o, RowActivatedArgs args)

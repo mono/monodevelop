@@ -1,4 +1,4 @@
-﻿//
+//
 // UnknownProject.cs
 //
 // Author:
@@ -26,33 +26,31 @@
 using System;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
 	public class UnknownProject: Project
 	{
-		string loadError = string.Empty;
-		bool unloaded;
-
 		// Store the file name locally to avoid the file format to change it
 		FilePath fileName;
 
 		public UnknownProject ()
 		{
+			IsUnsupportedProject = true;
 			NeedsReload = false;
-			loadError = GettextCatalog.GetString ("Unknown project type");
 		}
 
 		public UnknownProject (FilePath file, string loadError): this ()
 		{
 			NeedsReload = false;
 			FileName = file;
-			this.loadError = loadError;
+			UnsupportedProjectMessage = loadError;
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		public override bool SupportsConfigurations ()
 		{
-			yield return "";
+			return true;
 		}
 
 		public override FilePath FileName {
@@ -67,55 +65,36 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-
-		public string LoadError {
-			get { return unloaded ? GettextCatalog.GetString ("Unavailable") : loadError; }
-			set { loadError = value; }
+		protected override string OnGetName ()
+		{
+			if (!FileName.IsNullOrEmpty)
+				return FileName.FileNameWithoutExtension;
+			else
+				return GettextCatalog.GetString ("Unknown entry");
 		}
 
-		public bool UnloadedEntry {
-			get { return unloaded; }
-			set { unloaded = value; }
-		}
-
-		public override string Name {
-			get {
-				if (!FileName.IsNullOrEmpty)
-					return FileName.FileNameWithoutExtension;
-				else
-					return GettextCatalog.GetString ("Unknown entry");
-			}
-			set { }
-		}
-
-		internal protected override bool OnGetSupportsTarget (string target)
+		protected override bool OnGetSupportsTarget (string target)
 		{
 			// We can't do anything with unsupported projects, other than display them in the solution pad
 			return false;
 		}
 
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
+			return Task.FromResult (BuildResult.Success);
 		}
 
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var r = new BuildResult ();
-			r.AddError (loadError);
-			return r;
+			r.AddError (UnsupportedProjectMessage);
+			return Task.FromResult (r);
 		}
 
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-		}
-
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-
-		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
-		{
+			return new Task (delegate {
+			});
 		}
 
 		public override SolutionItemConfiguration CreateConfiguration (string name)

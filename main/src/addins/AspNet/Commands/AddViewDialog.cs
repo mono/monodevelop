@@ -37,12 +37,14 @@ using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms;
 using Gtk;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Commands
 {
 	class AddViewDialog : Dialog
 	{
-		readonly AspNetAppProject project;
+		readonly DotNetProject project;
+		readonly AspNetFlavor aspFlavor;
 		IDictionary<string, IList<string>> loadedTemplateList;
 		IDictionary<string, ListStore> templateStore;
 		ListStore dataClassStore;
@@ -61,9 +63,10 @@ namespace MonoDevelop.AspNet.Commands
 		CheckButton partialCheck, stronglyTypedCheck, masterCheck;
 		Alignment typePanel, masterPanel;
 
-		public AddViewDialog (AspNetAppProject project)
+		public AddViewDialog (DotNetProject project)
 		{
 			this.project = project;
+			aspFlavor = project.GetService<AspNetFlavor> ();
 
 			Build ();
 			
@@ -73,14 +76,14 @@ namespace MonoDevelop.AspNet.Commands
 			loadedTemplateList = new Dictionary<string, IList<string>> ();
 			foreach (var engine in viewEngines) {
 				viewEngineCombo.AppendText (engine);
-				loadedTemplateList[engine] = project.GetCodeTemplates ("AddView", engine);
+				loadedTemplateList[engine] = aspFlavor.GetCodeTemplates ("AddView", engine);
 			}
 
 			viewEngineCombo.Active = 0;
 			InitializeTemplateStore (loadedTemplateList);
 
 			ContentPlaceHolders = new List<string> ();
-			string siteMaster = project.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
+			string siteMaster = aspFlavor.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
 			if (project.Files.GetFile (siteMaster) != null)
 				masterEntry.Text = "~/Views/Shared/Site.master";
 			
@@ -221,7 +224,7 @@ namespace MonoDevelop.AspNet.Commands
 		IEnumerable<string> GetProperViewEngines ()
 		{
 			yield return "Aspx";
-			if (project.SupportsRazorViewEngine)
+			if (aspFlavor.SupportsRazorViewEngine)
 				yield return "Razor";
 		}
 
@@ -307,7 +310,7 @@ namespace MonoDevelop.AspNet.Commands
 				return false;
 
 			if (!IsPartialView && HasMaster && ActiveViewEngine != "Razor") {
-				if (String.IsNullOrEmpty (MasterFile) || !File.Exists (project.VirtualToLocalPath (oldMaster, null)))
+				if (String.IsNullOrEmpty (MasterFile) || !File.Exists (aspFlavor.VirtualToLocalPath (oldMaster, null)))
 					return false;
 				//PrimaryPlaceHolder can be empty
 				//Layout Page can be empty in Razor Views - it's usually set in _ViewStart.cshtml file
@@ -341,7 +344,7 @@ namespace MonoDevelop.AspNet.Commands
 			};
 			try {
 				if (MessageService.RunCustomDialog (dialog) == (int) ResponseType.Ok)
-					masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
+					masterEntry.Text = aspFlavor.LocalToVirtualPath (dialog.SelectedFile.FilePath);
 			} finally {
 				dialog.Destroy ();
 			}
@@ -359,7 +362,7 @@ namespace MonoDevelop.AspNet.Commands
 			primaryPlaceholderStore.Clear ();
 			ContentPlaceHolders.Clear ();
 			
-			string realPath = project.VirtualToLocalPath (oldMaster, null);
+			string realPath = aspFlavor.VirtualToLocalPath (oldMaster, null);
 			if (!File.Exists (realPath))
 				return;
 			

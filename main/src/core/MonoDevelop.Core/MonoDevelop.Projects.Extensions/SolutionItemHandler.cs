@@ -29,14 +29,15 @@ using System;
 using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Extensions
 {
 	public abstract class SolutionItemHandler: ISolutionItemHandler
 	{
-		SolutionItem item;
+		SolutionFolderItem item;
 		
-		public SolutionItemHandler (SolutionItem item)
+		public SolutionItemHandler (SolutionFolderItem item)
 		{
 			this.item = item;
 		}
@@ -45,30 +46,30 @@ namespace MonoDevelop.Projects.Extensions
 			get { return true; }
 		}
 
-		public SolutionItem Item {
+		public SolutionFolderItem Item {
 			get { return item; }
 		}
 		
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public async virtual Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			switch (target)
 			{
 			case "Build":
-				return OnBuild (monitor, configuration);
+				return await OnBuild (monitor, configuration);
 			case "Clean":
-				return OnClean (monitor, configuration);
+				return await OnClean (monitor, configuration);
 			}
 			return new BuildResult (new CompilerResults (null), "");
 		}
 		
-		protected virtual BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return null;
+			return Task.FromResult (BuildResult.Success);
 		}
 		
-		protected virtual BuildResult OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return null;
+			return Task.FromResult (BuildResult.Success);
 		}
 		
 		public virtual void Dispose ()
@@ -77,7 +78,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public abstract string ItemId { get; }
 		
-		public abstract void Save (IProgressMonitor monitor);
+		public abstract Task Save (ProgressMonitor monitor);
 
 		public virtual void OnModified (string hint)
 		{

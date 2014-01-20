@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Templates
             return null;
         }
 
-		public virtual bool Create (SolutionItem policyParent, Project project, string directory, string language, string name)
+		public virtual bool Create (SolutionFolderItem policyParent, Project project, string directory, string language, string name)
         {
             if (!String.IsNullOrEmpty(WizardPath)) {
                 //Properties customizer = new Properties();
@@ -342,7 +342,7 @@ namespace MonoDevelop.Ide.Templates
 			return mimeType;
 		}
 		
-		public virtual bool CanCreateUnsavedFiles (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
+		public virtual bool CanCreateUnsavedFiles (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
 		{
 			if (project != null) {
 				return true;
@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
+		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionFolderItem policyParent, Project project, string directory, string language, string name)
         {
             if (project != null) {
                 if (newfile.AddToProject (policyParent, project, language, directory, name)) {

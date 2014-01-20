@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.WebForms
 	{
 		public static string GetCodeBehindClassName (ProjectFile file)
 		{
-			AspNetAppProject proj = file.Project as AspNetAppProject;
+			var proj = file.Project.GetService<AspNetFlavor> ();
 			if (proj == null)
 				return null;
 			return proj.GetCodebehindTypeName (file.Name);
@@ -55,19 +55,19 @@ namespace MonoDevelop.AspNet.WebForms
 
 		public static ProjectFile GetDesignerFile (ProjectFile file)
 		{
-			var project = file.Project as AspNetAppProject;
+			var ext = file.Project.GetService<AspNetFlavor> ();
 
-			var type = AspNetAppProject.DetermineWebSubtype (file.FilePath);
+			var type = AspNetFlavor.DetermineWebSubtype (file.FilePath);
 			if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
 				return null;
 
-			var dfName = project.LanguageBinding.GetFileName (file.FilePath + ".designer");
-			return project.Files.GetFile (dfName);
+			var dfName = ext.Project.LanguageBinding.GetFileName (file.FilePath + ".designer");
+			return ext.Project.Files.GetFile (dfName);
 		}
 
 		public static BuildResult UpdateDesignerFile (
 			CodeBehindWriter writer,
-			AspNetAppProject project,
+			DotNetProject project,
 			ProjectFile file, ProjectFile designerFile
 		)
 		{
@@ -102,7 +102,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		public static BuildResult GenerateCodeBehind (
-			AspNetAppProject project,
+			DotNetProject project,
 			string filename,
 			WebFormsParsedDocument document,
 			out CodeCompileUnit ccu)
@@ -149,7 +149,8 @@ namespace MonoDevelop.AspNet.WebForms
 				masterTypeName = document.Info.MasterPageTypeName;
 			} else if (!String.IsNullOrEmpty (document.Info.MasterPageTypeVPath)) {
 				try {
-					ProjectFile resolvedMaster = project.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
+					var ext = project.GetService<AspNetFlavor> ();
+					ProjectFile resolvedMaster = ext.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					WebFormsParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
 						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath) as WebFormsParsedDocument;

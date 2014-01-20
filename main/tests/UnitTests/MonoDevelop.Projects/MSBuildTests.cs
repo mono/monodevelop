@@ -50,14 +50,14 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 			
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution item = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			Assert.IsTrue (item is Solution);
 			
 			Solution sol = (Solution) item;
 			TestProjectsChecks.CheckBasicVsConsoleProject (sol);
 			string projectFile = ((Project)sol.Items [0]).FileName;
 			
-			BuildResult cr = item.Build (Util.GetMonitor (), "Debug");
+			BuildResult cr = item.Build (Util.GetMonitor (), "Debug").Result;
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
 			Assert.AreEqual (0, cr.WarningCount);
@@ -78,12 +78,12 @@ namespace MonoDevelop.Projects
 			sol.Save (Util.GetMonitor ());
 
 			// Ensure the project is buildable
-			var result = sol.Build (Util.GetMonitor (), "Debug");
+			var result = sol.Build (Util.GetMonitor (), "Debug").Result;
 			Assert.AreEqual (0, result.ErrorCount, "#1");
 
 			// Ensure the project is still buildable with xbuild after a rename
-			ProjectOptionsDialog.RenameItem (sol.GetAllProjects () [0], "Test");
-			result = sol.Build (Util.GetMonitor (), "Release");
+			ProjectOptionsDialog.RenameItem (sol.GetAllProjects ().First (), "Test");
+			result = sol.Build (Util.GetMonitor (), "Release").Result;
 			Assert.AreEqual (0, result.ErrorCount, "#2");
 		}
 
@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects
 			// msbuild format
 
 			string solXml = File.ReadAllText (sol.FileName);
-			string projectXml = Util.GetXmlFileInfoset (((SolutionEntityItem)sol.Items [0]).FileName);
+			string projectXml = Util.GetXmlFileInfoset (((SolutionItem)sol.Items [0]).FileName);
 			
 			// Make sure we compare using the same guid
 			Project p = sol.Items [0] as Project;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMerging ()
 		{
 			string solFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging.sln");
-			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
 			Assert.IsNotNull (sol);
 			Assert.AreEqual (1, sol.Items.Count);
 
@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingConfigPlatformCombinations ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging2.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			Assert.IsNotNull (p.Configurations ["Debug|x86"]);
@@ -209,7 +209,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingDefaultValues ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging3.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			DotNetProjectConfiguration conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
@@ -229,7 +229,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingKeepOldConfig ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging4.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
@@ -255,7 +255,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingChangeNoMergeToParent ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging5.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
@@ -276,7 +276,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingChangeMergeToParent ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging6.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
@@ -298,7 +298,7 @@ namespace MonoDevelop.Projects
 		public void TestConfigurationMergingChangeMergeToParent2 ()
 		{
 			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging7.csproj");
-			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile).Result as DotNetProject;
 			Assert.IsNotNull (p);
 
 			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects
 		public void ProjectReferenceWithSpace ()
 		{
 			string solFile = Util.GetSampleProject ("project-ref-with-spaces", "project-ref-with-spaces.sln");
-			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
 			Assert.IsNotNull (sol);
 			Assert.AreEqual (2, sol.Items.Count);
 
@@ -344,7 +344,7 @@ namespace MonoDevelop.Projects
 			conf.OutputAssembly = value;
 			sol.Save (Util.GetMonitor ());
 
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
 			p = (DotNetProject) sol.GetAllProjects ().First ();
 			conf = ((DotNetProjectConfiguration)p.Configurations [0]);
 
@@ -359,35 +359,48 @@ namespace MonoDevelop.Projects
 			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
 
 			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
-			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
 			Assert.AreEqual ("Program1_test1.cs", p.Files[0].FilePath.FileName, "Basic replacement");
 			Assert.AreEqual ("Program2_test1_test2.cs", p.Files[1].FilePath.FileName, "Property referencing same property");
-			Assert.AreEqual ("Program3_$(DebugType).cs", p.Files[2].FilePath.FileName, "Property inside group with non-evaluable condition");
+			Assert.AreEqual ("Program3_full.cs", p.Files[2].FilePath.FileName, "Property inside group with non-evaluable condition");
 			Assert.AreEqual ("Program4_yes_value.cs", p.Files[3].FilePath.FileName, "Evaluation of group condition");
 			Assert.AreEqual ("Program5_yes_value.cs", p.Files[4].FilePath.FileName, "Evaluation of property condition");
-			Assert.AreEqual ("Program6_$(FFF).cs", p.Files[5].FilePath.FileName, "Evaluation of property with non-evaluable condition");
+			Assert.AreEqual ("Program6_unknown.cs", p.Files[5].FilePath.FileName, "Evaluation of property with non-evaluable condition");
 			Assert.AreEqual ("Program7_test1.cs", p.Files[6].FilePath.FileName, "Item conditions are ignored");
-			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are ignored");
-			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
-			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
-			Assert.AreEqual ("Program11_EnvTest.cs", p.Files[10].FilePath.FileName, "Environment variable");
 
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
 			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
+		[Ignore ("xbuild bug. It is not returning correct values for evaluated items without condition list")]
+		[Test]
+		public void EvaluatePropertiesWithConditionalGroup ()
+		{
+			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
+			Environment.SetEnvironmentVariable ("HHH", "EnvTest");
+			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
+
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are not ignored");
+			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
+			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
+			Assert.AreEqual ("Program11_EnvTest.cs", p.Files[10].FilePath.FileName, "Environment variable");
+		}
+
 		void LoadBuildVSConsoleProject (string vsVersion, string toolsVersion)
 		{
 			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
-			var monitor = new NullProgressMonitor ();
-			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
+			var monitor = new ProgressMonitor ();
+			var sol = (Solution)Services.ProjectService.ReadWorkspaceItem (monitor, solFile).Result;
 			Assert.IsTrue (monitor.Errors.Length == 0);
 			Assert.IsTrue (monitor.Warnings.Length == 0);
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
-			Assert.AreEqual (toolsVersion, MSBuildProjectService.GetHandler (p).ToolsVersion);
-			var r = sol.Build (monitor, "Debug");
+			Assert.AreEqual (toolsVersion, p.ToolsVersion);
+			var r = sol.Build (monitor, "Debug").Result;
 			Assert.IsTrue (monitor.Errors.Length == 0);
 			Assert.IsTrue (monitor.Warnings.Length == 0);
 			Assert.IsFalse (r.Failed);
@@ -436,12 +449,12 @@ namespace MonoDevelop.Projects
 		public void SaveReferenceWithCondition ()
 		{
 			string solFile = Util.GetSampleProject ("console-project-conditional-reference", "ConsoleProject.sln");
-			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
 
 			string proj = sol.GetAllProjects ().First ().FileName;
 
 			string projectXml1 = Util.GetXmlFileInfoset (proj);
-			sol.Save (new NullProgressMonitor ());
+			sol.Save (new ProgressMonitor ());
 
 			string projectXml2 = Util.GetXmlFileInfoset (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
@@ -481,6 +494,21 @@ namespace MonoDevelop.Projects
 			XmlElement import = (XmlElement)doc.SelectSingleNode (@"//ms:Import[@Project='packages\Xamarin.Forms\build\Xamarin.Forms.targets']", manager);
 
 			Assert.AreEqual (condition, import.GetAttribute ("Condition"));
+		}
+
+		[Test]
+		public void ProjectWithCustomConfigPropertyGroupBug20554 ()
+		{
+			string solFile = Util.GetSampleProject ("console-project-custom-configs", "ConsoleProject.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result as Solution;
+
+			string proj = sol.GetAllProjects ().First ().FileName;
+
+			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			sol.Save (new ProgressMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			Assert.AreEqual (projectXml1, projectXml2);
 		}
 	}
 }

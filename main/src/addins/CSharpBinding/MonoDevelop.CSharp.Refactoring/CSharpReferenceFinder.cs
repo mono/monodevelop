@@ -285,7 +285,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 		
-		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IProgressMonitor monitor, IEnumerable<object> members)
+		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, ProgressMonitor monitor, IEnumerable<object> members)
 		{
 			if (content == null)
 				throw new ArgumentNullException ("content", "Project content not set.");

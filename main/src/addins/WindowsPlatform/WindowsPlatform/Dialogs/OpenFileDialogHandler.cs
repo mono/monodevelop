@@ -47,8 +47,6 @@ namespace MonoDevelop.Platform
 {
 	public class OpenFileDialogHandler : IOpenFileDialogHandler
 	{
-		static int[] encodings;
-
 		public bool Run (OpenFileDialogData data)
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
@@ -96,6 +94,7 @@ namespace MonoDevelop.Platform
 				dialog.Controls.Add (group);
 
 				if (IdeApp.Workspace.IsOpen) {
+					viewerCombo.SelectedIndexChanged += (o, e) => closeSolution.Visible = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer == null;
 					var group2 = new CommonFileDialogGroupBox ();
 
 					// "Close current workspace" is too long and splits the text on 2 lines.
@@ -130,7 +129,9 @@ namespace MonoDevelop.Platform
 			if (viewerCombo != null) {
 				if (closeSolution != null)
 					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
-				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer;
+				int index = viewerCombo.SelectedIndex;
+				if (index != -1)
+					data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [index]).Viewer;
 			}
 
 			return true;
@@ -173,39 +174,35 @@ namespace MonoDevelop.Platform
 			int i = 0;
 
 			if (showAutoDetected) {
-				combo.Items.Add (new EncodingComboItem (-1, GettextCatalog.GetString ("Auto Detected")));
+				combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Auto Detected")));
 				combo.SelectedIndex = 0;
 				i = 1;
 			}
 
-			encodings = SelectedEncodings.ConversionEncodings;
-			if (encodings == null || encodings.Length == 0)
-				encodings = SelectedEncodings.DefaultEncodings;
-
 			int j = 1;
 			foreach (var e in TextEncoding.ConversionEncodings) {
-				combo.Items.Add (new EncodingComboItem (j++, string.Format ("{0} ({1})", e.Name, e.Id)));
+				combo.Items.Add (new EncodingComboItem (Encoding.GetEncoding (e.CodePage), string.Format ("{0} ({1})", e.Name, e.Id)));
 				if (selectedEncoding != null && e.CodePage == selectedEncoding.WindowsCodePage)
 					combo.SelectedIndex = i;
 				i++;
 			}
 			if (combo.SelectedIndex == -1)
 				combo.SelectedIndex = 0;
-			combo.Items.Add (new EncodingComboItem (-1, GettextCatalog.GetString ("Add or Remove...")));
+			combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Add or Remove...")));
 		}
 
 		class EncodingComboItem : CommonFileDialogComboBoxItem
 		{
-			int tag;
+			Encoding encoding;
 
-			public EncodingComboItem (int tag, string label) : base (label)
+			public EncodingComboItem (Encoding encoding, string label) : base (label)
 			{
-				this.tag = tag;
+				this.encoding = encoding;
 			}
 
 			public Encoding Encoding {
 				get {
-					return tag <= 0 ? null : Encoding.GetEncoding (encodings [tag - 1]);
+					return encoding;
 				}
 			}
 		}

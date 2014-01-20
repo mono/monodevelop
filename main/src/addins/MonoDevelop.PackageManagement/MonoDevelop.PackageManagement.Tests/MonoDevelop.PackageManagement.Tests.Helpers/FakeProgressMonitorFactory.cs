@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeProgressMonitor ProgressMonitor = new FakeProgressMonitor ();
 		public string StatusText;
 
-		public IProgressMonitor CreateProgressMonitor (string statusText)
+		public ProgressMonitor CreateProgressMonitor (string statusText)
 		{
 			StatusText = statusText;
 			return ProgressMonitor;

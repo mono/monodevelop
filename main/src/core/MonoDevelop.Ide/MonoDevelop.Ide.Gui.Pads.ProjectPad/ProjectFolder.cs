@@ -39,15 +39,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	public class ProjectFolder: IDisposable, IFolderItem
 	{
 		FilePath absolutePath;
-		IWorkspaceObject parentWorkspaceObject;
+		WorkspaceObject parentWorkspaceObject;
 		object parent;
 		bool trackChanges;
 		
-		public ProjectFolder (FilePath absolutePath, IWorkspaceObject parentWorkspaceObject): this (absolutePath, parentWorkspaceObject, null)
+		public ProjectFolder (FilePath absolutePath, WorkspaceObject parentWorkspaceObject): this (absolutePath, parentWorkspaceObject, null)
 		{
 		}
 
-		public ProjectFolder (FilePath absolutePath, IWorkspaceObject parentWorkspaceObject, object parent)
+		public ProjectFolder (FilePath absolutePath, WorkspaceObject parentWorkspaceObject, object parent)
 		{
 			this.parent = parent;
 			this.parentWorkspaceObject = parentWorkspaceObject;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get { return absolutePath.FileName; }
 		}
 		
-		public IWorkspaceObject ParentWorkspaceObject {
+		public WorkspaceObject ParentWorkspaceObject {
 			get { return parentWorkspaceObject; }
 		}
 		

@@ -33,6 +33,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.CSharp.Project
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
-	public class CSharpCompilerParameters: DotNetConfigurationParameters
+	public class CSharpCompilerParameters: DotNetCompilerParameters
 	{
 		// Configuration parameters
 		
@@ -91,60 +92,26 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("DebugType", DefaultValue="")]
 		string debugType = "";
 		
-		#region Members required for backwards compatibility. Not used for anything else.
-		
-		[ItemProperty ("StartupObject", DefaultValue = null)]
-		internal string mainclass;
-		
-		[ProjectPathItemProperty ("ApplicationIcon", DefaultValue = null)]
-		internal string win32Icon;
-
-		[ProjectPathItemProperty ("Win32Resource", DefaultValue = null)]
-		internal string win32Resource;
-	
-		[ItemProperty ("CodePage", DefaultValue = null)]
-		internal string codePage;
-
-		[ItemProperty ("GenerateDocumentation", DefaultValue = null)]
-		bool? generateXmlDocumentation = null;
-		
-		#endregion
-		
-		
-		protected override void OnEndLoad ()
+		protected override void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
 		{
-			base.OnEndLoad ();
-			
-			// Backwards compatibility. Move parameters to the project parameters object
-			if (ParentConfiguration != null && ParentConfiguration.ProjectParameters != null) {
-				CSharpProjectParameters cparams = (CSharpProjectParameters) ParentConfiguration.ProjectParameters;
-				if (win32Icon != null) {
-					cparams.Win32Icon = win32Icon;
-					win32Icon = null;
-				}
-				if (win32Resource != null) {
-					cparams.Win32Resource = win32Resource;
-					win32Resource = null;
-				}
-				if (mainclass != null) {
-					cparams.MainClass = mainclass;
-					mainclass = null;
-				}
-				if (!string.IsNullOrEmpty (codePage)) {
-					cparams.CodePage = int.Parse (codePage);
-					codePage = null;
-				}
-			}
+			base.Write (pset, format);
+			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
+			pset.WriteObjectProperties (this, typeof(CSharpCompilerParameters));
+		}
 
-			if (generateXmlDocumentation.HasValue && ParentConfiguration != null) {
-				if (generateXmlDocumentation.Value)
+		protected override void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		{
+			base.Read (pset, format);
+			pset.ReadObjectProperties (this, typeof(CSharpCompilerParameters));
+
+			var prop = pset.GetProperty ("GenerateDocumentation");
+			if (prop != null && documentationFile != null) {
+				if (prop.GetValue<bool> ())
 					documentationFile = ParentConfiguration.CompiledOutputName.ChangeExtension (".xml");
 				else
 					documentationFile = null;
-				generateXmlDocumentation = null;
 			}
 		}
-	
 
 		public LangVersion LangVersion {
 			get {

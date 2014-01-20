@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("vs-local-copy", "VSLocalCopyTest.sln");
 			
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			Assert.IsTrue (item is Solution);
 			Solution sol = (Solution) item;
 			
@@ -188,7 +188,7 @@ namespace MonoDevelop.Projects
 		
 		static void AssertCleanBuild (Solution sol, string configuration)
 		{
-			BuildResult cr = sol.Build (Util.GetMonitor (), configuration);
+			BuildResult cr = sol.Build (Util.GetMonitor (), configuration).Result;
 			Assert.IsNotNull (cr);
 			Assert.AreEqual (0, cr.ErrorCount);
 
@@ -209,11 +209,15 @@ namespace MonoDevelop.Projects
 		{
 			string solFile = Util.GetSampleProject ("local-copy-package", "ConsoleProject.sln");
 
-			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			WorkspaceItem item = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			Solution sol = (Solution) item;
 			var p = (DotNetProject)sol.Items [0];
 
 			var ar = p.References.First (r => r.Reference.Contains ("gtk"));
+			
+			if (!ar.Package.IsGacPackage)
+				Assert.Ignore ("This test only works with gtk-sharp as a GAC package.");
+
 			Assert.AreEqual (false, ar.LocalCopy);
 			ar.LocalCopy = true;
 			Assert.AreEqual (true, ar.LocalCopy);
@@ -233,8 +237,8 @@ namespace MonoDevelop.Projects
 			ar.LocalCopy = false;
 			Assert.AreEqual (false, ar.LocalCopy);
 
-			sol.Save (new NullProgressMonitor ());
-			sol.Build (new NullProgressMonitor (), "Debug");
+			sol.Save (new ProgressMonitor ());
+			sol.Build (new ProgressMonitor (), "Debug").Wait ();
 
 			string exeDebug = Platform.IsWindows ? ".pdb" : ".exe.mdb";
 

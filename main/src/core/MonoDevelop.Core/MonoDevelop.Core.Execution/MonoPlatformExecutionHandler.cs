@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.Execution
 			this.monoPath = monoPath;
 		}
 		
-		public override IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public override ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
 			

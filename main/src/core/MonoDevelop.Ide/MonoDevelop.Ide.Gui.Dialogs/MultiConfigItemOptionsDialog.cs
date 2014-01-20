@@ -136,9 +136,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				data.Configurations.Add (copy);
 			}
 			if (entry is Solution) {
-				foreach (SolutionItem e in ((Solution)entry).Items) {
-					if (e is SolutionEntityItem)
-						data.children.Add (ConfigurationData.Build ((SolutionEntityItem) e));
+				foreach (SolutionFolderItem e in ((Solution)entry).Items) {
+					if (e is SolutionItem)
+						data.children.Add (ConfigurationData.Build ((SolutionItem) e));
 				}
 			}
 			return data;
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				data.Update (modifiedObjects);
 
 			// If configurations have been renamed, update the references in the solution
-			SolutionEntityItem item = entry as SolutionEntityItem;
+			SolutionItem item = entry as SolutionItem;
 			if (item != null && renameData.Count > 0) {
 				Solution sol = item.ParentSolution;
 				if (sol != null) {
@@ -211,9 +211,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				foreach (ConfigurationData data in children) {
 					SolutionConfigurationEntry ce;
 					if (sourceName != null)
-						ce = cc.GetEntryForItem ((SolutionEntityItem)data.Entry);
+						ce = cc.GetEntryForItem ((SolutionItem)data.Entry);
 					else
-						ce = cc.AddItem ((SolutionEntityItem) data.Entry);
+						ce = cc.AddItem ((SolutionItem) data.Entry);
 					if (createChildConfigurations) {
 						ce.ItemConfiguration = name;
 						if (data.Configurations [name] == null)

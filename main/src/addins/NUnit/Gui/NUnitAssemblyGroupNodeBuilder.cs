@@ -117,7 +117,7 @@ namespace MonoDevelop.NUnit
 			NUnitAssemblyGroupProject project = CurrentNode.DataItem as NUnitAssemblyGroupProject;
 			project.ParentFolder.Items.Remove (project);
 			project.Dispose ();
-			IdeApp.Workspace.Save ();
+			IdeApp.Workspace.SaveAsync ();
 		}
 	}
 }

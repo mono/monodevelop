@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
 using NGit.Api;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 				string remote = dlg.SelectedRemote;
 				string branch = dlg.SelectedRemoteBranch ?? repo.GetCurrentBranch ();
 				
-				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
+				ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						repo.Push (monitor, remote, branch);
@@ -91,13 +92,13 @@ namespace MonoDevelop.VersionControl.Git
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
 					if (rebasing) {
-						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
+						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
 								repo.Fetch (monitor);
 							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					} else {
-						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
+						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
 								repo.Fetch (monitor);
 							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
@@ -115,13 +116,13 @@ namespace MonoDevelop.VersionControl.Git
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
-		public static void SwitchToBranch (GitRepository repo, string branch)
+		public async static void SwitchToBranch (GitRepository repo, string branch)
 		{
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				ThreadPool.QueueUserWorkItem (delegate {
+				await Task.Factory.StartNew (delegate {
 					try {
 						repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
@@ -130,18 +131,17 @@ namespace MonoDevelop.VersionControl.Git
 						monitor.Dispose ();
 					}
 				});
-				monitor.AsyncOperation.WaitForCompleted ();
 			} finally {
 				IdeApp.Workbench.AutoReloadDocuments = false;
 				IdeApp.Workbench.UnlockGui ();
 			}
 		}
 		
-		public static IAsyncOperation ApplyStash (Stash s)
+		public static Task ApplyStash (Stash s)
 		{
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
-			ThreadPool.QueueUserWorkItem (delegate {
+			var t = Task.Factory.StartNew (delegate {
 				try {
 					MergeCommandResult result;
 					using (var gm = new GitMonitor (monitor))
@@ -156,10 +156,10 @@ namespace MonoDevelop.VersionControl.Git
 					statusTracker.NotifyChanges ();
 				}
 			});
-			return monitor.AsyncOperation;
+			return t;
 		}
 		
-		public static void ReportStashResult (IProgressMonitor monitor, MergeCommandResult result)
+		public static void ReportStashResult (ProgressMonitor monitor, MergeCommandResult result)
 		{
 			if (result.GetMergeStatus () == MergeStatus.FAILED) {
 				string msg = GettextCatalog.GetString ("Stash operation failed.");

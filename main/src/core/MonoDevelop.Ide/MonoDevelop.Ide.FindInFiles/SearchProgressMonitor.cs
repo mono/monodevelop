@@ -34,55 +34,52 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	class SearchProgressMonitor : BaseProgressMonitor, ISearchProgressMonitor
+	public class SearchProgressMonitor : ProgressMonitor, ISearchProgressMonitor
 	{
 		SearchResultPad outputPad;
-		readonly IProgressMonitor statusMonitor;
 
-		public SearchProgressMonitor (Pad pad)
+		public SearchProgressMonitor (Pad pad): base (Runtime.MainSynchronizationContext)
 		{
+			AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad));
+
 			outputPad = (SearchResultPad) pad.Content;
-			outputPad.AsyncOperation = AsyncOperation;
+			outputPad.CancellationTokenSource = CancellationTokenSource;
 			outputPad.BeginProgress (pad.Title);
-			statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad);
 		}
 		
-		[FreeDispatch]
-		public bool AllowReuse {
-			get { return outputPad.AllowReuse; }
-		}
-		
-		[FreeDispatch]
 		public void SetBasePath (string path)
 		{
 			outputPad.BasePath = path;
 		}
 		
-		[AsyncDispatch]
 		public void ReportResult (SearchResult result)
 		{
-			try {
-				outputPad.ReportResult (result);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error adding search result for file {0}:{1} to result pad:\n{2}",
-				                         result.FileName, result.Offset, ex.ToString ());
-			}
+			DispatchService.GuiDispatch (delegate {
+				try {
+					outputPad.ReportResult (result);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error adding search result for file {0}:{1} to result pad:\n{2}",
+						result.FileName, result.Offset, ex.ToString ());
+				}
+			});
 		}
 		
-		[AsyncDispatch]
 		public void ReportResults (IEnumerable<SearchResult> results)
 		{
-			try {
-				outputPad.ReportResults (results);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error adding search results.", ex.ToString ());
-			}
+			DispatchService.GuiDispatch (delegate {
+				try {
+					outputPad.ReportResults (results);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error adding search results.", ex.ToString ());
+				}
+			});
 		}
 		
-		[AsyncDispatch]
 		public void ReportStatus (string resultMessage)
 		{
-			outputPad.ReportStatus (resultMessage);
+			DispatchService.GuiDispatch (delegate {
+				outputPad.ReportStatus (resultMessage);
+			});
 		}
 		
 		protected override void OnWriteLog (string text)
@@ -93,8 +90,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		protected override void OnCompleted ()
 		{
-			statusMonitor.Dispose ();
-			
 			if (outputPad == null) throw GetDisposedException ();
 			outputPad.WriteText ("\n");
 			
@@ -104,8 +99,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			foreach (string msg in Warnings)
 				outputPad.WriteText (msg + "\n");
 			
-			foreach (string msg in Errors)
-				outputPad.WriteText (msg + "\n");
+			foreach (var msg in Errors)
+				outputPad.WriteText (msg.Message + "\n");
 			
 			outputPad.EndProgress ();
 			base.OnCompleted ();
@@ -116,48 +111,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		static Exception GetDisposedException ()
 		{
 			return new InvalidOperationException ("Search progress monitor already disposed.");
-		}
-
-		public override void ReportError (string message, Exception ex)
-		{
-			base.ReportError (message, ex);
-			statusMonitor.ReportError (message, ex);
-		}
-		
-		public override void ReportSuccess (string message)
-		{
-			base.ReportSuccess (message);
-			statusMonitor.ReportSuccess (message);
-		}
-		
-		public override void ReportWarning (string message)
-		{
-			base.ReportWarning (message);
-			statusMonitor.ReportWarning (message);
-		}
-		
-		public override void Step (int work)
-		{
-			base.Step (work);
-			statusMonitor.Step (work);
-		}
-		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			base.BeginStepTask (name, totalWork, stepSize);
-			statusMonitor.BeginStepTask (name, totalWork, stepSize);
-		}
-		
-		public override void BeginTask (string name, int totalWork)
-		{
-			base.BeginTask (name, totalWork);
-			statusMonitor.BeginTask (name, totalWork);
-		}
-		
-		public override void EndTask ()
-		{
-			base.EndTask ();
-			statusMonitor.EndTask ();
 		}
 	}
 }

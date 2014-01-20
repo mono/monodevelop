@@ -38,7 +38,7 @@ using MonoDevelop.Ide.TypeSystem;
 namespace MonoDevelop.NUnit
 {
 	[DataInclude (typeof(NUnitAssemblyGroupProjectConfiguration))]
-	public class NUnitAssemblyGroupProject: SolutionEntityItem
+	public class NUnitAssemblyGroupProject: SolutionItem
 	{
 		RootTest rootTest;
 		
@@ -53,7 +53,7 @@ namespace MonoDevelop.NUnit
 				Configurations.Add (CreateConfiguration ("Default"));
 		}
 
-		public override void InitializeFromTemplate (XmlElement element)
+		protected override void OnInitializeFromTemplate (XmlElement element)
 		{
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
@@ -72,28 +72,6 @@ namespace MonoDevelop.NUnit
 			NUnitAssemblyGroupProjectConfiguration conf = new NUnitAssemblyGroupProjectConfiguration ();
 			conf.Name = name;
 			return conf;
-		}
-		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
-		{
 		}
 	}
 	

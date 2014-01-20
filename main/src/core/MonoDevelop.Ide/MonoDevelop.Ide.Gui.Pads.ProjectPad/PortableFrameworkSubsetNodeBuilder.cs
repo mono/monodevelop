@@ -34,9 +34,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class PortableFrameworkSubset
 	{
-		public PortableDotNetProject Project { get; private set; }
+		public DotNetProject Project { get; private set; }
 
-		public PortableFrameworkSubset (PortableDotNetProject project)
+		public PortableFrameworkSubset (DotNetProject project)
 		{
 			this.Project = project;
 		}

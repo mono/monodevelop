@@ -45,11 +45,12 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(SolutionConfiguration))]
-	public class SolutionFolder : SolutionItem
+	public class SolutionFolder : SolutionFolderItem
 	{
 		SolutionFolderItemCollection items;
 		SolutionFolderFileCollection files;
@@ -65,6 +66,11 @@ namespace MonoDevelop.Projects
 					items = new SolutionFolderItemCollection (this);
 				return items;
 			}
+		}
+
+		protected override IEnumerable<WorkspaceObject> OnGetChildren ()
+		{
+			return Items;
 		}
 
 		internal SolutionFolderItemCollection GetItemsWithoutCreating ()
@@ -86,20 +92,17 @@ namespace MonoDevelop.Projects
 			get { return ParentFolder == null; }
 		}
 
-		public override string Name {
-			get {
-				if (ParentFolder == null && ParentSolution != null)
-					return ParentSolution.Name;
-				else
-					return name;
-			}
-			set {
-				if (value != name) {
-					string oldName = name;
-					name = value;
-					OnNameChanged (new SolutionItemRenamedEventArgs (this, oldName, name));
-				}
-			}
+		protected override string OnGetName ()
+		{
+			if (ParentFolder == null && ParentSolution != null)
+				return ParentSolution.Name;
+			else
+				return name;
+		}
+
+		protected override void OnSetName (string value)
+		{
+			name = value;
 		}
 
 		protected override FilePath GetDefaultBaseDirectory ( )
@@ -136,7 +139,7 @@ namespace MonoDevelop.Projects
 		{
 			FilePath path = null;
 
-			foreach (SolutionItem it in Items) {
+			foreach (SolutionFolderItem it in Items) {
 				FilePath subdir;
 				if (it is SolutionFolder) {
 					SolutionFolder sf = (SolutionFolder) it;
@@ -184,25 +187,19 @@ namespace MonoDevelop.Projects
 			else
 				return null;
 		}
-		
-		internal override IDictionary InternalGetExtendedProperties {
-			get {
-				if (ParentSolution != null && ParentFolder == null)
-					return ParentSolution.ExtendedProperties;
-				else
-					return base.InternalGetExtendedProperties;
-			}
-		}
-		
-		protected override void InitializeItemHandler ()
-		{
-			SetItemHandler (new DummySolutionFolderHandler (this));
-		}
 
+		protected override IDictionary OnGetExtendedProperties ()
+		{
+			if (ParentSolution != null && ParentFolder == null)
+				return ParentSolution.ExtendedProperties;
+			else
+				return base.OnGetExtendedProperties ();
+		}
+		
 		public override void Dispose()
 		{
 			if (items != null) {
-				foreach (SolutionItem e in items)
+				foreach (SolutionFolderItem e in items)
 					e.Dispose ();
 				items = null;
 			}
@@ -210,30 +207,25 @@ namespace MonoDevelop.Projects
 			base.Dispose ();
 		}
 		
-		public SolutionItem ReloadItem (IProgressMonitor monitor, SolutionItem sitem)
+		public async Task<SolutionFolderItem> ReloadItem (ProgressMonitor monitor, SolutionFolderItem sitem)
 		{
 			if (Items.IndexOf (sitem) == -1)
 				throw new InvalidOperationException ("Solution item '" + sitem.Name + "' does not belong to folder '" + Name + "'");
 
-			SolutionEntityItem item = sitem as SolutionEntityItem;
+			SolutionItem item = sitem as SolutionItem;
 			if (item != null) {
 				// Load the new item
 				
-				SolutionEntityItem newItem;
+				SolutionItem newItem;
 				try {
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
-						newItem = Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
+						newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {
 							FileName = item.FileName
 						};
-						var ch = item.GetItemHandler () as MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler;
-						if (ch != null) {
-							var h = new MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler (ch.TypeGuid, ch.ItemId) {
-								Item = e,
-							};
-							e.SetItemHandler (h);
-						}
+						e.ItemId = item.ItemId;
+						e.TypeGuid = item.TypeGuid;
 						newItem = e;
 					}
 				} catch (Exception ex) {
@@ -249,7 +241,7 @@ namespace MonoDevelop.Projects
 					newItem.Dispose ();
 
 					// Find the replacement if it exists
-					return Items.OfType<SolutionEntityItem> ().FirstOrDefault (it => it.FileName == item.FileName);
+					return Items.OfType<SolutionItem> ().FirstOrDefault (it => it.FileName == item.FileName);
 				}
 
 				// Replace in the file list
@@ -269,7 +261,7 @@ namespace MonoDevelop.Projects
 				return sitem;
 		}
 		
-		internal void NotifyItemAdded (SolutionItem item, bool newToSolution)
+		internal void NotifyItemAdded (SolutionFolderItem item, bool newToSolution)
 		{
 			ConnectChildEntryEvents (item);
 
@@ -277,7 +269,7 @@ namespace MonoDevelop.Projects
 			OnItemAdded (new SolutionItemChangeEventArgs (item, ParentSolution, false), newToSolution);
 		}
 		
-		void ConnectChildEntryEvents (SolutionItem item)
+		void ConnectChildEntryEvents (SolutionFolderItem item)
 		{
 			if (item is Project) {
 				Project project = item as Project;
@@ -303,42 +295,36 @@ namespace MonoDevelop.Projects
 				folder.ReferenceAddedToProject += NotifyReferenceAddedToProject;
 			}
 			
-			if (item is SolutionEntityItem) {
-				((SolutionEntityItem)item).Saved += NotifyItemSaved;
+			if (item is SolutionItem) {
+				((SolutionItem)item).Saved += NotifyItemSaved;
 //				((SolutionEntityItem)item).ReloadRequired += NotifyItemReloadRequired;
 			}
 			item.Modified += NotifyItemModified;
 		}
 		
-		public override void Save (IProgressMonitor monitor)
-		{
-			foreach (SolutionItem item in Items)
-				item.Save (monitor);
-		}
-
-		public SolutionEntityItem AddItem (IProgressMonitor monitor, string filename)
+		public Task<SolutionItem> AddItem (ProgressMonitor monitor, string filename)
 		{
 			return AddItem (monitor, filename, false);
 		}
 
-		public SolutionEntityItem AddItem (IProgressMonitor monitor, string filename, bool createSolutionConfigurations)
+		public async Task<SolutionItem> AddItem (ProgressMonitor monitor, string filename, bool createSolutionConfigurations)
 		{
-			if (monitor == null) monitor = new NullProgressMonitor ();
-			SolutionEntityItem entry = Services.ProjectService.ReadSolutionItem (monitor, filename);
+			if (monitor == null) monitor = new ProgressMonitor ();
+			SolutionItem entry = await Services.ProjectService.ReadSolutionItem (monitor, filename);
 			AddItem (entry, createSolutionConfigurations);
 			return entry;
 		}
 
-		public void AddItem (SolutionItem item)
+		public void AddItem (SolutionFolderItem item)
 		{
 			AddItem (item, false);
 		}
 		
-		public void AddItem (SolutionItem item, bool createSolutionConfigurations)
+		public void AddItem (SolutionFolderItem item, bool createSolutionConfigurations)
 		{
 			Items.Add (item);
 			
-			SolutionEntityItem eitem = item as SolutionEntityItem;
+			SolutionItem eitem = item as SolutionItem;
 			if (eitem != null && createSolutionConfigurations && eitem.SupportsBuild ()) {
 				// Create new solution configurations for item configurations
 				foreach (ItemConfiguration iconf in eitem.Configurations) {
@@ -352,7 +338,7 @@ namespace MonoDevelop.Projects
 					if (!found) {
 						SolutionConfiguration sconf = new SolutionConfiguration (iconf.Id);
 						// Add all items to the new configuration
-						foreach (var it in ParentSolution.GetAllSolutionItems<SolutionEntityItem> ())
+						foreach (var it in ParentSolution.GetAllItems<SolutionItem> ())
 							sconf.AddItem (it);
 						ParentSolution.Configurations.Add (sconf);
 					}
@@ -360,14 +346,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void NotifyItemRemoved (SolutionItem item, bool removedFromSolution)
+		internal void NotifyItemRemoved (SolutionFolderItem item, bool removedFromSolution)
 		{
 			DisconnectChildEntryEvents (item);
 			NotifyModified ("Items");
 			OnItemRemoved (new SolutionItemChangeEventArgs (item, ParentSolution, false), removedFromSolution);
 		}
 		
-		void DisconnectChildEntryEvents (SolutionItem entry)
+		void DisconnectChildEntryEvents (SolutionFolderItem entry)
 		{
 			if (entry is Project) {
 				Project pce = entry as Project;
@@ -393,35 +379,29 @@ namespace MonoDevelop.Projects
 				cce.ReferenceAddedToProject -= NotifyReferenceAddedToProject;
 			}
 			
-			if (entry is SolutionEntityItem) {
-				((SolutionEntityItem)entry).Saved -= NotifyItemSaved;
+			if (entry is SolutionItem) {
+				((SolutionItem)entry).Saved -= NotifyItemSaved;
 //				((SolutionEntityItem)entry).ReloadRequired -= NotifyItemReloadRequired;
 			}
 			entry.Modified -= NotifyItemModified;
 		}
 		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public void Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}
-		
+
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return false;
+		}
+
 		/// <remarks>
 		/// Returns a collection containing all entries in this folder and 
 		/// undercombines
 		/// </remarks>
-		public ReadOnlyCollection<SolutionItem> GetAllItems ()
+		public IEnumerable<SolutionFolderItem> GetAllItems ()
 		{
-			return GetAllItems<SolutionItem> ();
-		}
-		
-		/// <remarks>
-		/// Returns a collection containing all entries of the given type in this folder and 
-		/// undercombines
-		/// </remarks>
-		public ReadOnlyCollection<T> GetAllItems<T> () where T: SolutionItem
-		{
-			List<T> list = new List<T> ();
-			GetAllItems<T> (list, this);
-			return list.AsReadOnly ();
+			return GetAllItems<SolutionFolderItem> ();
 		}
 		
 		public ReadOnlyCollection<T> GetAllItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
@@ -447,24 +427,24 @@ namespace MonoDevelop.Projects
 			return SolutionItem.TopologicalSort<Project> (list, configuration);
 		}
 		
-		void GetAllItems<T> (List<T> list, SolutionItem item) where T: SolutionItem
+		void GetAllItems<T> (List<T> list, SolutionFolderItem item) where T: SolutionFolderItem
 		{
 			if (item is T) {
 				list.Add ((T)item);
 			}
 		
 			if (item is SolutionFolder) {
-				foreach (SolutionItem ce in ((SolutionFolder)item).Items)
+				foreach (SolutionFolderItem ce in ((SolutionFolder)item).Items)
 					GetAllItems<T> (list, ce);
 			}
 		}
 		
 		public ReadOnlyCollection<SolutionItem> GetAllBuildableEntries (ConfigurationSelector configuration, bool topologicalSort, bool includeExternalReferences)
 		{
-			List<SolutionItem> list = new List<SolutionItem> ();
+			var list = new List<SolutionItem> ();
 			GetAllBuildableEntries (list, configuration, includeExternalReferences);
 			if (topologicalSort)
-				return TopologicalSort<SolutionItem> (list, configuration);
+				return SolutionItem.TopologicalSort<SolutionItem> (list, configuration);
 			else
 				return list.AsReadOnly ();
 		}
@@ -482,22 +462,25 @@ namespace MonoDevelop.Projects
 			if (conf == null)
 				return;
 
-			foreach (SolutionItem item in Items) {
+			foreach (SolutionFolderItem item in Items) {
 				if (item is SolutionFolder)
 					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
-				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item) && item.SupportsBuild ())
-					GetAllBuildableReferences (list, item, configuration, includeExternalReferences);
+				else if ((item is SolutionItem) && conf.BuildEnabledForItem ((SolutionItem) item) && ((SolutionItem)item).SupportsBuild ())
+					GetAllBuildableReferences (list, (SolutionItem)item, configuration, includeExternalReferences, false);
 			}
 		}
 
-		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, bool includeExternalReferences)
+		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, bool includeExternalReferences, bool isDirectReference)
 		{
 			if (list.Contains (item))
 				return;
+			// Skip unsupported projects which are not directly referenced by other (supported) projects
+			if (!isDirectReference && item.IsUnsupportedProject)
+				return;
 			list.Add (item);
 			if (includeExternalReferences) {
-				foreach (SolutionItem it in item.GetReferencedItems (configuration))
-					GetAllBuildableReferences (list, it, configuration, includeExternalReferences);
+				foreach (var it in item.GetReferencedItems (configuration))
+					GetAllBuildableReferences (list, it, configuration, includeExternalReferences, true);
 			}
 		}
 
@@ -538,19 +521,19 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionEntityItem FindSolutionItem (string fileName)
+		public SolutionItem FindSolutionItem (string fileName)
 		{
 			string path = Path.GetFullPath (fileName);
-			foreach (SolutionItem it in Items) {
+			foreach (SolutionFolderItem it in Items) {
 				if (it is SolutionFolder) {
-					SolutionEntityItem r = ((SolutionFolder)it).FindSolutionItem (fileName);
+					SolutionItem r = ((SolutionFolder)it).FindSolutionItem (fileName);
 					if (r != null)
 						return r;
 				}
-				else if (it is SolutionEntityItem) {
-					SolutionEntityItem se = (SolutionEntityItem) it;
+				else if (it is SolutionItem) {
+					SolutionItem se = (SolutionItem) it;
 					if (!string.IsNullOrEmpty (se.FileName) && path == Path.GetFullPath (se.FileName))
-						return (SolutionEntityItem) it;
+						return (SolutionItem) it;
 				}
 			}
 			return null;
@@ -558,7 +541,7 @@ namespace MonoDevelop.Projects
 		
 		public Project FindProjectByName (string name)
 		{
-			foreach (SolutionItem it in Items) {
+			foreach (SolutionFolderItem it in Items) {
 				if (it is SolutionFolder) {
 					Project r = ((SolutionFolder)it).FindProjectByName (name);
 					if (r != null)
@@ -572,85 +555,42 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		protected internal override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			if (target == ProjectService.BuildTarget)
-				return OnBuild (monitor, configuration);
-			else if (target == ProjectService.CleanTarget) {
-				OnClean (monitor, configuration);
+			if (ParentSolution == null)
 				return new BuildResult ();
-			}
-			
+			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
+			if (conf == null)
+				return new BuildResult ();
+
+			var res = new BuildResult { BuildCount = 0 };
+
 			ReadOnlyCollection<SolutionItem> allProjects;
-				
 			try {
 				allProjects = GetAllBuildableEntries (configuration, true, true);
 			} catch (CyclicDependencyException) {
 				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
 				return new BuildResult ("", 1, 1);
 			}
-			
-			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
-				
-				BuildResult cres = new BuildResult ();
-				cres.BuildCount = 0;
-				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
-				
-				foreach (SolutionItem item in allProjects) {
-					if (monitor.IsCancelRequested)
-						break;
 
-					if (!item.ContainsReferences (failedItems, configuration)) {
-						BuildResult res = item.RunTarget (monitor, target, configuration);
-						if (res != null) {
-							cres.Append (res);
-							if (res.ErrorCount > 0)
-								failedItems.Add (item);
-						}
-					} else
-						failedItems.Add (item);
-					monitor.Step (1);
-				}
-				return cres;
-			} finally {
-				monitor.EndTask ();
-			}
-		}
-		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			if (ParentSolution == null)
-				return;
-			SolutionConfiguration conf = ParentSolution.GetConfiguration (configuration);
-			if (conf == null)
-				return;
-			
+			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), Items.Count);
-
-				foreach (SolutionItem item in Items) {
-					if (item is SolutionFolder)
-						item.Clean (monitor, configuration);
-					else if (item is SolutionEntityItem) {
-						SolutionEntityItem si = (SolutionEntityItem) item;
-						// ce can be null if you add items to the root solution folder which
-						// causes them to be placed in an autogenerated 'Project Items' folder
-						SolutionConfigurationEntry ce = conf.GetEntryForItem (si);
-						if (ce != null && ce.Build)
-							si.Clean (monitor, ce.ItemConfigurationSelector);
-					} else {
-						item.Clean (monitor, configuration);
-					}
+				foreach (var si in allProjects) {
+					// ce can be null if you add items to the root solution folder which
+					// causes them to be placed in an autogenerated 'Project Items' folder
+					SolutionConfigurationEntry ce = conf.GetEntryForItem (si);
+					if (ce != null && ce.Build)
+						res.Append (await si.Clean (monitor, ce.ItemConfigurationSelector));
 					monitor.Step (1);
 				}
 			}
 			finally {
 				monitor.EndTask ();
 			}
+			return res;
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
@@ -671,11 +611,11 @@ namespace MonoDevelop.Projects
 				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
 				
 				foreach (SolutionItem item in toBuild) {
-					if (monitor.IsCancelRequested)
+					if (monitor.CancellationToken.IsCancellationRequested)
 						break;
 
 					if (!item.ContainsReferences (failedItems, configuration)) {
-						BuildResult res = item.Build (monitor, configuration, false);
+						BuildResult res = await item.Build (monitor, configuration, false);
 						if (res != null) {
 							cres.Append (res);
 							if (res.ErrorCount > 0)
@@ -691,12 +631,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public bool NeedsBuilding (ConfigurationSelector configuration)
+		{
+			return Items.OfType<IBuildTarget>().Any (t => t.NeedsBuilding (configuration));
+		}
+
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			// Return the min value, since that the last time all items in the
 			// folder were built
 			DateTime tim = DateTime.MaxValue;
-			foreach (SolutionItem it in Items) {
+			foreach (SolutionFolderItem it in Items) {
 				DateTime t = it.GetLastBuildTime (configuration);
 				if (t < tim)
 					tim = t;
@@ -1020,12 +965,12 @@ namespace MonoDevelop.Projects
 			get { return folder.Name; }
 		}
 		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			throw new NotImplementedException ();
 		}
 		
-		public void Save (IProgressMonitor monitor)
+		public Task Save (ProgressMonitor monitor)
 		{
 			throw new NotImplementedException ();
 		}

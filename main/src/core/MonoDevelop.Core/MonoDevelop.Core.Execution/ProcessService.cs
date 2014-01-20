@@ -155,15 +155,9 @@ namespace MonoDevelop.Core.Execution
 			// 	p.Exited += exited;
 			// p.EnableRaisingEvents = true;
 			
-			if (exited != null) {
-				MonoDevelop.Core.OperationHandler handler = null;
-				handler = delegate (MonoDevelop.Core.IAsyncOperation op) {
-					op.Completed -= handler;
-					exited (p, EventArgs.Empty);
-				};
-				((MonoDevelop.Core.IAsyncOperation)p).Completed += handler;
-			}
-			
+			if (exited != null)
+				p.Task.ContinueWith (t => exited (p, EventArgs.Empty));
+
 			Counters.ProcessesStarted++;
 			p.Start ();
 			return p;
@@ -194,13 +188,13 @@ namespace MonoDevelop.Core.Execution
 			return startInfo;
 		}
 		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console,
+		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console,
 		                                                   EventHandler exited)
 		{
 			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
 		}
 		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                   IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
 		{
 			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
@@ -218,11 +212,8 @@ namespace MonoDevelop.Core.Execution
 					console != null ? !console.CloseOnDispose : false);
 
 				if (p != null) {
-					if (exited != null) {
-						p.Completed += delegate {
-							exited (p, EventArgs.Empty);
-						};
-					}
+					if (exited != null)
+						p.Task.ContinueWith (t => exited (p, EventArgs.Empty));
 					Counters.ProcessesStarted++;
 					return p;
 				} else {
@@ -234,8 +225,8 @@ namespace MonoDevelop.Core.Execution
 				foreach (KeyValuePair<string, string> kvp in environmentVariables)
 					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
 			ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
-			new ProcessMonitor (console, pw, exited);
-			return pw;
+			new ProcessMonitor (console, pw.ProcessAsyncOperation, exited);
+			return pw.ProcessAsyncOperation;
 		}
 		
 		public IExecutionHandler GetDefaultExecutionHandler (ExecutionCommand command)
@@ -420,22 +411,22 @@ namespace MonoDevelop.Core.Execution
 	{
 		public IConsole console;
 		EventHandler exited;
-		IProcessAsyncOperation operation;
+		ProcessAsyncOperation operation;
 
-		public ProcessMonitor (IConsole console, IProcessAsyncOperation operation, EventHandler exited)
+		public ProcessMonitor (IConsole console, ProcessAsyncOperation operation, EventHandler exited)
 		{
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Completed += new OperationHandler (OnOperationCompleted);
-			console.CancelRequested += new EventHandler (OnCancelRequest);
+			operation.Task.ContinueWith (t => OnOperationCompleted ());
+			console.CancelRequested += OnCancelRequest;
 		}
 		
-		public void OnOperationCompleted (IAsyncOperation op)
+		public void OnOperationCompleted ()
 		{
 			try {
 				if (exited != null)
-					exited (op, null);
+					exited (operation, EventArgs.Empty);
 				
 				if (!Platform.IsWindows && Mono.Unix.Native.Syscall.WIFSIGNALED (operation.ExitCode))
 					console.Log.WriteLine (GettextCatalog.GetString ("The application was terminated by a signal: {0}"), Mono.Unix.Native.Syscall.WTERMSIG (operation.ExitCode));
@@ -451,7 +442,7 @@ namespace MonoDevelop.Core.Execution
 			operation.Cancel ();
 
 			//remove the cancel handler, it will be attached again when StartConsoleProcess is called
-			console.CancelRequested -= new EventHandler (OnCancelRequest);
+			console.CancelRequested -= OnCancelRequest;
 		}
 	}
 	
@@ -475,5 +466,5 @@ namespace MonoDevelop.Core.Execution
 		}
 	}
 	
-	public delegate IProcessAsyncOperation ExternalConsoleHandler (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
+	public delegate ProcessAsyncOperation ExternalConsoleHandler (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
 }

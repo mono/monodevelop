@@ -57,7 +57,8 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementProject project,
 			Action afterRestore)
 		{
-			Restore (new [] { project }, afterRestore);
+			var runner = new RestoreBeforeUpdateAction ();
+			runner.RestoreProjectPackages (project.DotNetProject, afterRestore);
 		}
 
 		public static void Restore (
@@ -65,24 +66,35 @@ namespace MonoDevelop.PackageManagement
 			Action afterRestore)
 		{
 			var runner = new RestoreBeforeUpdateAction ();
-			runner.RestoreProjectPackages (
+			runner.RestoreAllPackagesInSolution (
 				projects.Select (project => project.DotNetProject),
 				afterRestore);
 		}
 
-		public void RestoreProjectPackages (
+		public void RestoreAllPackagesInSolution (
 			IEnumerable<DotNetProject> projects,
 			Action afterRestore)
 		{
+			var restorer = new PackageRestorer (projects);
+			Restore (restorer, afterRestore);
+		}
+
+		void Restore (PackageRestorer restorer, Action afterRestore)
+		{
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesBeforeUpdateMessage ();
 
-			var restorer = new PackageRestorer (projects);
 			DispatchService.BackgroundDispatch (() => {
 				restorer.Restore (progressMessage);
 				if (!restorer.RestoreFailed) {
 					afterRestore ();
 				}
 			});
+		}
+
+		public void RestoreProjectPackages (DotNetProject project, Action afterRestore)
+		{
+			var restorer = new PackageRestorer (project);
+			Restore (restorer, afterRestore);
 		}
 	}
 }

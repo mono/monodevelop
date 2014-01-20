@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Templates
 			return txt.Substring (i+1);
 		}
 		
-		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
+		public override void ModifyTags (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			//prevent parser breakage from missing tags, which SingleFile only provides for DotNetProject
 			//if ((project as DotNetProject) == null)

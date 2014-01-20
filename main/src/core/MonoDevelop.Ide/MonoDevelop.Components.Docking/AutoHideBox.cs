@@ -59,9 +59,9 @@ namespace MonoDevelop.Components.Docking
 		bool disposed;
 		bool insideGrip;
 		
-		const int gripSize = 8;
+		int gripSize = 8;
 		
-		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
+		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size): base (frame)
 		{
 			this.position = pos;
 			this.frame = frame;
@@ -73,11 +73,22 @@ namespace MonoDevelop.Components.Docking
 			Box fr;
 			CustomFrame cframe = new CustomFrame ();
 			switch (pos) {
-				case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
-				case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
-				case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
-				case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
+			case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
+			case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
+			case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
+			case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
 			}
+
+			if (frame.UseWindowsForTopLevelFrames) {
+				// When using a top level window on mac, clicks on the first 4 pixels next to the border
+				// are not detected. To avoid confusing the user (since the resize cursor is shown), 
+				// we make the resize drag area smaller.
+				switch (pos) {
+				case PositionType.Left: cframe.SetPadding (0, 0, 0, 4); gripSize = 4; break;
+				case PositionType.Right: cframe.SetPadding (0, 0, 4, 0); gripSize = 4; break;
+				}
+			}
+
 			EventBox sepBox = new EventBox ();
 			cframe.Add (sepBox);
 			
@@ -128,12 +139,12 @@ namespace MonoDevelop.Components.Docking
 			sepBox.EnterNotifyEvent += delegate { insideGrip = true; sepBox.QueueDraw (); };
 			sepBox.LeaveNotifyEvent += delegate { insideGrip = false; sepBox.QueueDraw (); };
 		}
-		
+
 		public bool Disposed {
 			get { return disposed; }
 			set { disposed = value; }
 		}
-		
+
 		public void AnimateShow ()
 		{
 #if ANIMATE_DOCKING
@@ -143,18 +154,18 @@ namespace MonoDevelop.Components.Docking
 			
 			switch (position) {
 			case PositionType.Left:
-				WidthRequest = 0;
+				Width = 0;
 				break;
 			case PositionType.Right:
-				targetPos = X = X + WidthRequest;
-				WidthRequest = 0;
+				targetPos = X = X + Width;
+				Width = 0;
 				break;
 			case PositionType.Top:
-				HeightRequest = 0;
+				Height = 0;
 				break;
 			case PositionType.Bottom:
-				targetPos = Y = Y + HeightRequest;
-				HeightRequest = 0;
+				targetPos = Y = Y + Height;
+				Height = 0;
 				break;
 			}
 			Show ();
@@ -183,34 +194,34 @@ namespace MonoDevelop.Components.Docking
 
 			switch (position) {
 			case PositionType.Left:
-				WidthRequest += 1 + (targetSize - WidthRequest) / 3;
-				if (WidthRequest < targetSize)
+				Width += 1 + (targetSize - Width) / 3;
+				if (Width < targetSize)
 					return true;
 				break;
 			case PositionType.Right:
-				WidthRequest += 1 + (targetSize - WidthRequest) / 3;
-				X = targetPos - WidthRequest;
-				if (WidthRequest < targetSize)
+				Width += 1 + (targetSize - Width) / 3;
+				X = targetPos - Width;
+				if (Width < targetSize)
 					return true;
 				break;
 			case PositionType.Top:
-				HeightRequest += 1 + (targetSize - HeightRequest) / 3;
-				if (HeightRequest < targetSize)
+				Height += 1 + (targetSize - Height) / 3;
+				if (Height < targetSize)
 					return true;
 				break;
 			case PositionType.Bottom:
-				HeightRequest += 1 + (targetSize - HeightRequest) / 3;
-				Y = targetPos - HeightRequest;
-				if (HeightRequest < targetSize)
+				Height += 1 + (targetSize - Height) / 3;
+				Y = targetPos - Height;
+				if (Height < targetSize)
 					return true;
 				break;
 			}
 			
 			scrollable.ScrollMode = false;
 			if (horiz)
-				WidthRequest = targetSize;
+				Width = targetSize;
 			else
-				HeightRequest = targetSize;
+				Height = targetSize;
 			animating = false;
 			return false;
 		}
@@ -222,34 +233,34 @@ namespace MonoDevelop.Components.Docking
 
 			switch (position) {
 			case PositionType.Left: {
-				int ns = WidthRequest - 1 - WidthRequest / 3;
+				int ns = Width - 1 - Width / 3;
 				if (ns > 0) {
-					WidthRequest = ns;
+					Width = ns;
 					return true;
 				}
 				break;
 			}
 			case PositionType.Right: {
-				int ns = WidthRequest - 1 - WidthRequest / 3;
+				int ns = Width - 1 - Width / 3;
 				if (ns > 0) {
-					WidthRequest = ns;
+					Width = ns;
 					X = targetPos - ns;
 					return true;
 				}
 				break;
 			}
 			case PositionType.Top: {
-				int ns = HeightRequest - 1 - HeightRequest / 3;
+				int ns = Height - 1 - Height / 3;
 				if (ns > 0) {
-					HeightRequest = ns;
+					Height = ns;
 					return true;
 				}
 				break;
 			}
 			case PositionType.Bottom: {
-				int ns = HeightRequest - 1 - HeightRequest / 3;
+				int ns = Height - 1 - Height / 3;
 				if (ns > 0) {
-					HeightRequest = ns;
+					Height = ns;
 					Y = targetPos - ns;
 					return true;
 				}
@@ -275,25 +286,26 @@ namespace MonoDevelop.Components.Docking
 			return true;
 		}
 		
-		public int Size {
+		public int PadSize {
 			get {
-				return horiz ? WidthRequest : HeightRequest;
+				return horiz ? Width : Height;
 			}
 		}
-		
+
+		[GLib.ConnectBefore]
 		void OnSizeButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
 			if (!animating && args.Event.Button == 1 && !args.Event.TriggersContextMenu ()) {
 				int n;
 				if (horiz) {
-					Toplevel.GetPointer (out resizePos, out n);
-					origSize = WidthRequest;
+					frame.Toplevel.GetPointer (out resizePos, out n);
+					origSize = Width;
 					if (!startPos) {
 						origPos = X + origSize;
 					}
 				} else {
-					Toplevel.GetPointer (out n, out resizePos);
-					origSize = HeightRequest;
+					frame.Toplevel.GetPointer (out n, out resizePos);
+					origSize = Height;
 					if (!startPos) {
 						origPos = Y + origSize;
 					}
@@ -312,7 +324,7 @@ namespace MonoDevelop.Components.Docking
 			if (resizing) {
 				int newPos, n;
 				if (horiz) {
-					Toplevel.GetPointer (out newPos, out n);
+					frame.Toplevel.GetPointer (out newPos, out n);
 					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
 					int newSize = origSize + diff;
 					if (newSize < Child.SizeRequest ().Width)
@@ -320,9 +332,9 @@ namespace MonoDevelop.Components.Docking
 					if (!startPos) {
 						X = origPos - newSize;
 					}
-					WidthRequest = newSize;
+					Width = newSize;
 				} else {
-					Toplevel.GetPointer (out n, out newPos);
+					frame.Toplevel.GetPointer (out n, out newPos);
 					int diff = startPos ? (newPos - resizePos) : (resizePos - newPos);
 					int newSize = origSize + diff;
 					if (newSize < Child.SizeRequest ().Height)
@@ -330,7 +342,7 @@ namespace MonoDevelop.Components.Docking
 					if (!startPos) {
 						Y = origPos - newSize;
 					}
-					HeightRequest = newSize;
+					Height = newSize;
 				}
 				frame.QueueResize ();
 			}

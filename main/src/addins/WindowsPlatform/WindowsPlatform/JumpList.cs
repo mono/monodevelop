@@ -128,7 +128,7 @@ namespace MonoDevelop.Platform
 					continue;
 				}
 				
-				RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgIds"));
+				RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgids"));
 				if (openWithKey == null) {
 					continue;
 				}

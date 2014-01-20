@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement
 		public static void Save(this Project project)
 		{
 			DispatchService.GuiSyncDispatch(() => {
-				IdeApp.ProjectOperations.Save(project);
+				IdeApp.ProjectOperations.SaveAsync(project);
 			});
 		}
 	}

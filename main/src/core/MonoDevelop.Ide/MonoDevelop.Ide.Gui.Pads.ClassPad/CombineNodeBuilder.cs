@@ -69,17 +69,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			SolutionFolder combine = (SolutionFolder) dataObject;
 			if (builder.Options ["ShowProjects"]) {
-				foreach (SolutionItem entry in combine.Items)
+				foreach (SolutionFolderItem entry in combine.Items)
 					builder.AddChild (entry);
 			} else {
 				AddClasses (builder, combine);
 			}
 		}
 
-		void AddClasses (ITreeBuilder builder, SolutionItem entry)
+		void AddClasses (ITreeBuilder builder, SolutionFolderItem entry)
 		{
 			if (entry is SolutionFolder) {
-				foreach (SolutionItem e in ((SolutionFolder)entry).Items)
+				foreach (SolutionFolderItem e in ((SolutionFolder)entry).Items)
 					AddClasses (builder, e);
 			} else if (entry is Project) {
 				ProjectNodeBuilder.BuildChildNodes (builder, entry as Project);

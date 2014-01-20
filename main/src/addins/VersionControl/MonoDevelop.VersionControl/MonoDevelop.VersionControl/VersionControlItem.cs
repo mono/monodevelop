@@ -35,11 +35,11 @@ namespace MonoDevelop.VersionControl
 	{
 		FilePath path;
 		bool isDirectory;
-		IWorkspaceObject workspaceObject;
+		WorkspaceObject workspaceObject;
 		Repository repository;
 		VersionInfo versionInfo;
 
-		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
+		public VersionControlItem (Repository repository, WorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
 		{
 			this.path = path;
 			this.repository = repository;
@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 			this.versionInfo = versionInfo;
 		}
 		
-		public IWorkspaceObject WorkspaceObject {
+		public WorkspaceObject WorkspaceObject {
 			get {
 				return workspaceObject;
 			}

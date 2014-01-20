@@ -322,7 +322,7 @@ namespace MonoDevelop.Ide.Projects
 			IdeApp.ProjectOperations.AddFilesToProject (project,
 				fileDialog.SelectedFiles, baseDirectory, buildAction);
 
-			IdeApp.ProjectOperations.Save (project);
+			IdeApp.ProjectOperations.SaveAsync (project);
 
 			UpdateFileList (sender, e);
 		}

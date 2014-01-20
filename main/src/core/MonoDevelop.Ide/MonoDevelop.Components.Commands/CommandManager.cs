@@ -455,19 +455,21 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Disables all commands
 		/// </summary>
-		public void LockAll ()
+		public bool LockAll ()
 		{
 			guiLock++;
 			if (guiLock == 1) {
 				foreach (ICommandBar toolbar in toolbars)
 					toolbar.SetEnabled (false);
-			}
+				return true;
+			} else
+				return false;
 		}
 		
 		/// <summary>
 		/// Unlocks the command manager
 		/// </summary>
-		public void UnlockAll ()
+		public bool UnlockAll ()
 		{
 			if (guiLock == 1) {
 				foreach (ICommandBar toolbar in toolbars)
@@ -476,6 +478,7 @@ namespace MonoDevelop.Components.Commands
 			
 			if (guiLock > 0)
 				guiLock--;
+			return guiLock == 0;
 		}
 		
 		/// <summary>

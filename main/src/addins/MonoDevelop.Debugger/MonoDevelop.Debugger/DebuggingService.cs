@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.Semantics;
  */
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -75,6 +76,8 @@ namespace MonoDevelop.Debugger
 		static BusyEvaluatorDialog busyDialog;
 		static StatusBarIcon busyStatusIcon;
 		static bool isBusy;
+
+		static DebugAsyncOperation currentDebugOperation = new DebugAsyncOperation ();
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
@@ -187,9 +190,9 @@ namespace MonoDevelop.Debugger
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
-		public static bool ShowBreakpointProperties (ref BreakEvent bp)
+		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
-			using (var dlg = new BreakpointPropertiesDialog (bp)) {
+			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
 				Xwt.Command response = dlg.Run ();
 				if (bp == null)
 					bp = dlg.GetBreakEvent ();
@@ -303,6 +306,7 @@ namespace MonoDevelop.Debugger
 			session.ConnectionDialogCreator = delegate {
 				return new StatusBarConnectionDialog ();
 			};
+			currentDebugOperation = new DebugAsyncOperation ();
 
 			console.CancelRequested += OnCancelRequested;
 			
@@ -353,7 +357,8 @@ namespace MonoDevelop.Debugger
 			currentSession.TypeResolverHandler = null;
 			currentSession.OutputWriter = null;
 			currentSession.LogWriter = null;
-			
+			currentDebugOperation.Cleanup ();
+
 			if (currentConsole != null) {
 				currentConsole.CancelRequested -= OnCancelRequested;
 				currentConsole.Dispose ();
@@ -460,20 +465,24 @@ namespace MonoDevelop.Debugger
 			NotifyLocationChanged ();
 		}
 
-		public static IProcessAsyncOperation Run (string file, IConsole console)
+		public static ProcessAsyncOperation Run (string file, IConsole console)
 		{
-			var h = new DebugExecutionHandler (null);
 			var cmd = Runtime.ProcessService.CreateCommand (file);
+			return Run (cmd, console);
+		}
 
-			return h.Execute (cmd, console);
+		public static ProcessAsyncOperation Run (ExecutionCommand cmd, IConsole console, DebuggerEngine engine = null)
+		{
+			InternalRun (cmd, engine, console);
+			return currentDebugOperation;
 		}
 		
-		public static IAsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
+		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			console = monitor as IConsole;
 			SetupSession ();
 			session.TargetExited += delegate {
@@ -481,7 +490,7 @@ namespace MonoDevelop.Debugger
 			};
 			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
-			return monitor.AsyncOperation;
+			return currentDebugOperation;
 		}
 		
 		public static DebuggerSessionOptions GetUserOptions ()
@@ -1022,7 +1031,7 @@ namespace MonoDevelop.Debugger
 			return SupportedFeatures != DebuggerFeatures.None;
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
 		{
 			// Never called
 			throw new NotImplementedException ();
@@ -1043,10 +1052,9 @@ namespace MonoDevelop.Debugger
 			return engine.CanDebugCommand (command);
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			var h = new DebugExecutionHandler (engine);
-			return h.Execute (command, console);
+			return DebuggingService.Run (command, console, engine);
 		}
 	}
 

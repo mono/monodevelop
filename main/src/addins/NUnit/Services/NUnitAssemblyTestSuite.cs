@@ -45,6 +45,7 @@ using MonoDevelop.Ide;
 using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.NUnit
 {
@@ -69,7 +70,7 @@ namespace MonoDevelop.NUnit
 		{
 		}
 
-		public NUnitAssemblyTestSuite (string name, SolutionItem ownerSolutionItem): base (name, ownerSolutionItem)
+		public NUnitAssemblyTestSuite (string name, WorkspaceObject ownerSolutionItem): base (name, ownerSolutionItem)
 		{
 		}
 		
@@ -145,10 +146,9 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		public override IAsyncOperation Refresh ()
+		public override Task Refresh (CancellationToken ct)
 		{
-			AsyncOperation oper = new AsyncOperation ();
-			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+			return Task.Factory.StartNew (delegate {
 				lock (locker) {
 					try {
 						while (Status == TestStatus.Loading) {
@@ -162,13 +162,10 @@ namespace MonoDevelop.NUnit
 								Monitor.Wait (locker);
 							}
 						}
-						oper.SetCompleted (true);
 					} catch {
-						oper.SetCompleted (false);
 					}
 				}
 			});
-			return oper;
 		}
 		
 		DateTime GetAssemblyTime ()

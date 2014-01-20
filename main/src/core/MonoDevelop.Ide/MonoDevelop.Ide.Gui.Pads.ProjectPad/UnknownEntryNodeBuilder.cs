@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -64,8 +65,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = GettextCatalog.GetString ("<span foreground='grey'>{0} <span size='small'>(Unavailable)</span></span>", GLib.Markup.EscapeText (entry.Name));
 			}
 			else if (entry.LoadError.Length > 0) {
-				nodeInfo.Icon = Context.GetIcon (Gtk.Stock.DialogError);
-				nodeInfo.Label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Load failed)</span>", GLib.Markup.EscapeText (entry.Name));
+				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project).WithAlpha (0.5);
+				nodeInfo.Label = entry.Name;
+				nodeInfo.StatusSeverity = TaskSeverity.Error;
+				nodeInfo.StatusMessage = GettextCatalog.GetString ("Load failed: ") + entry.LoadError;
 			} else {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
 				var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
@@ -76,19 +79,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Icon = gicon;
 				nodeInfo.Label = GLib.Markup.EscapeText (entry.Name);
 			}
-		}
-		
-		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			return !(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0;
-		}
-		
-		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
-		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			if (!(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0)
-				treeBuilder.AddChild (new TreeViewItem (GLib.Markup.EscapeText (entry.LoadError)));
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -104,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnReload ()
 		{
 			var solutions = new HashSet<Solution> ();
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
 					UnknownSolutionItem entry = (UnknownSolutionItem) node.DataItem;
@@ -117,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.Save (solutions);
+			IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 		
 		[CommandUpdateHandler (ProjectCommands.Reload)]
@@ -137,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnUnload ()
 		{
 			HashSet<Solution> solutions = new HashSet<Solution> ();
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator nav in CurrentNodes) {
 					UnknownSolutionItem p = (UnknownSolutionItem) nav.DataItem;
@@ -148,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				m.EndTask ();
 			}
-			IdeApp.ProjectOperations.Save (solutions);
+			IdeApp.ProjectOperations.SaveAsync (solutions);
 		}
 
 		[CommandUpdateHandler (ProjectCommands.Unload)]
@@ -184,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (yes) {
 				cmb.Items.Remove (item);
 				item.Dispose ();
-				IdeApp.ProjectOperations.Save (cmb.ParentSolution);
+				IdeApp.ProjectOperations.SaveAsync (cmb.ParentSolution);
 			}
 		}
 	}

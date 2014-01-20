@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			foreach (SolutionItem entry in folder.Items)
+			foreach (SolutionFolderItem entry in folder.Items)
 				ctx.AddChild (entry);
 			foreach (FilePath file in folder.Files)
 				ctx.AddChild (new SolutionFolderFileNode (file, folder));
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			CurrentNode.Expanded = !CurrentNode.Expanded;
 		}
 
-		public override void RenameItem (string newName)
+		public async override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
 				MessageService.ShowError (GettextCatalog.GetString ("Solution name may not contain any of the following characters: {0}", "', (, ), \", {, }, |"));
@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			folder.Name = newName;
-			IdeApp.Workspace.Save();
+			await IdeApp.Workspace.SaveAsync();
 		}
 		
 		public override DragOperation CanDragNode ()
@@ -199,15 +199,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			if (dataObject is IFileItem)
 				return true;
-			SolutionItem it = dataObject as SolutionItem;
+			SolutionFolderItem it = dataObject as SolutionFolderItem;
 			return it != null && operation == DragOperation.Move;
 		}
 		
-		public override void OnNodeDrop (object dataObject, DragOperation operation)
+		public async override void OnNodeDrop (object dataObject, DragOperation operation)
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			if (dataObject is SolutionItem) {
-				SolutionItem it = (SolutionItem) dataObject;
+			if (dataObject is SolutionFolderItem) {
+				SolutionFolderItem it = (SolutionFolderItem) dataObject;
 				if (!MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to move the item '{0}' to the solution folder '{1}'?", it.Name, folder.Name), AlertButton.Move))
 					return;
 	
@@ -218,7 +218,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				DropFile (folder, (IFileItem) dataObject, operation);
 			}
 			
-		    IdeApp.ProjectOperations.Save (folder.ParentSolution);
+			await IdeApp.ProjectOperations.SaveAsync (folder.ParentSolution);
 		}
 		
 		internal static void DropFile (SolutionFolder folder, IFileItem fileItem, DragOperation operation)
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.ShowOptions (folder);
 		}
 		
-		public override void DeleteItem ()
+		public async override void DeleteItem ()
 		{
 			SolutionFolder folder = CurrentNode.DataItem as SolutionFolder;
 			SolutionFolder parent = folder.ParentFolder;
@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				Solution sol = folder.ParentSolution;
 				parent.Items.Remove (folder);
 				folder.Dispose ();
-				IdeApp.ProjectOperations.Save (sol);
+				await IdeApp.ProjectOperations.SaveAsync (sol);
 			}
 		}
 		
@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void AddNewProjectToSolutionFolder()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (folder);
+			SolutionFolderItem ce = IdeApp.ProjectOperations.CreateProject (folder);
 			if (ce == null) return;
 			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
 			CurrentNode.Expanded = true;
@@ -279,10 +279,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void AddProjectToSolutionFolder()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (folder);
-			if (ce == null) return;
-			Tree.AddNodeInsertCallback (ce, new TreeNodeCallback (OnEntryInserted));
-			CurrentNode.Expanded = true;
+			IdeApp.ProjectOperations.AddSolutionItem (folder).ContinueWith (t => {
+				if (t.Result == null) return;
+				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
+				CurrentNode.Expanded = true;
+			});
 		}
 		
 		[CommandHandler (ProjectCommands.AddSolutionFolder)]
@@ -300,7 +301,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnReload ()
 		{
-			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {
 					SolutionFolder folder = (SolutionFolder) node.DataItem;
@@ -334,12 +335,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}*/
 		
 		[CommandHandler (ProjectCommands.AddFiles)]
-		protected void OnAddFiles ()
+		protected async void OnAddFiles ()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			if (IdeApp.ProjectOperations.AddFilesToSolutionFolder (folder)) {
 				CurrentNode.Expanded = true;
-				IdeApp.ProjectOperations.Save (folder.ParentSolution);
+				await IdeApp.ProjectOperations.SaveAsync (folder.ParentSolution);
 			}
 		}
 		

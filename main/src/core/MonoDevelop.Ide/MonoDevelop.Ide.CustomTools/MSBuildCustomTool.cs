@@ -27,6 +27,7 @@
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -39,16 +40,14 @@ namespace MonoDevelop.Ide.CustomTools
 			this.targetName = targetName;
 		}
 
-		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public async Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (() => {
-				var buildResult = file.Project.RunTarget (monitor, targetName, IdeApp.Workspace.ActiveConfiguration);
-				foreach (var err in buildResult.Errors) {
-					result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
-						IsWarning = err.IsWarning
-					});
-				}
-			}, result);
+			var buildResult = await file.Project.RunTarget (monitor, targetName, IdeApp.Workspace.ActiveConfiguration);
+			foreach (var err in buildResult.Errors) {
+				result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
+					IsWarning = err.IsWarning
+				});
+			}
 		}
 	}
 }

@@ -330,7 +330,6 @@
     <Compile Include="MonoDevelop.VersionControl\Repository.cs" />
     <Compile Include="MonoDevelop.VersionControl\RevertCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Revision.cs" />
-    <Compile Include="MonoDevelop.VersionControl\Task.cs" />
     <Compile Include="MonoDevelop.VersionControl\UnknownRepository.cs" />
     <Compile Include="MonoDevelop.VersionControl\UpdateCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\UrlBasedRepository.cs" />
@@ -396,6 +395,7 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

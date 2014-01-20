@@ -72,12 +72,12 @@ namespace MonoDevelop.CSharp
 			return StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName), ".cs");
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			return CSharpBindingCompilerManager.Compile (projectItems, configuration, configSelector, monitor);
 		}
 		
-		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
+		public DotNetCompilerParameters CreateCompilationParameters (XmlElement projectOptions)
 		{
 			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
 			if (projectOptions != null) {
@@ -96,11 +96,6 @@ namespace MonoDevelop.CSharp
 			return pars;
 		}
 	
-		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
-		{
-			return new CSharpProjectParameters ();
-		}
-		
 		public string SingleLineCommentTag { get { return "//"; } }
 		public string BlockCommentStartTag { get { return "/*"; } }
 		public string BlockCommentEndTag { get { return "*/"; } }

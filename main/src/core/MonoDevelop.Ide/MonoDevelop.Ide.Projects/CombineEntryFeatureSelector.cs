@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		List<ISolutionItemFeature> selectedFeatures = new List<ISolutionItemFeature> ();
 		List<Gtk.Widget> selectedEditors = new List<Gtk.Widget> ();
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		SolutionFolder parentCombine;
 		VBox box = new VBox ();
 		Gdk.Cursor handCursor;
@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Projects
 			box.Show ();
 		}
 		
-		public void Fill (SolutionFolder parentCombine, SolutionItem entry, ISolutionItemFeature[] features)
+		public void Fill (SolutionFolder parentCombine, SolutionFolderItem entry, ISolutionItemFeature[] features)
 		{
 			selectedFeatures.Clear ();
 			selectedEditors.Clear ();

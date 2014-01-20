@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Commands
 			string initialDirectoryTool = StringParserService.Parse (tool.InitialDirectory, IdeApp.Workbench.GetStringTagModel ());
 
 			//Execute tool
-			IProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			ProgressMonitor progressMonitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			try {
 				progressMonitor.Log.WriteLine (GettextCatalog.GetString ("Running: {0} {1}", (commandTool), (argumentsTool)));
 				progressMonitor.Log.WriteLine ();

@@ -43,13 +43,10 @@ namespace MonoDevelop.Projects
 		public void LoadedWebProjectContainsWebProjectTypeGuid ()
 		{
 			string solutionFileName = Util.GetSampleProject ("WebProjectTest", "WebProjectTest.sln");
-			var solution = (Solution)Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution)Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName).Result;
 			Project project = solution.GetAllProjects ().First ();
 
-			string projectTypeGuids = (string) project.ExtendedProperties ["ProjectTypeGuids"];
-			string[] guids = projectTypeGuids.Split (';');
-
-			Assert.That (guids, Contains.Item ("{349C5851-65DF-11DA-9384-00065B846F21}"));
+			Assert.That (project.FlavorGuids, Contains.Item ("{349C5851-65DF-11DA-9384-00065B846F21}"));
 		}
 	}
 }

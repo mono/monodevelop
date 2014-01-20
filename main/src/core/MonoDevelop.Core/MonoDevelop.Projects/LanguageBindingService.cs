@@ -48,9 +48,6 @@ namespace MonoDevelop.Projects
 						object par = dotNetBinding.CreateCompilationParameters (null);
 						if (par != null)
 							Services.ProjectService.DataContext.IncludeType (par.GetType ());
-						par = dotNetBinding.CreateProjectParameters (null);
-						if (par != null)
-							Services.ProjectService.DataContext.IncludeType (par.GetType ());
 					}
 					break;
 				case ExtensionChange.Remove:

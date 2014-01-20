@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	class CheckoutWorker : Task
+	class CheckoutWorker : VersionControlTask
 	{
 		Repository vc;
 		string path;
@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl
 			return GettextCatalog.GetString ("Checking out {0}...", path);
 		}
 		
-		protected override IProgressMonitor CreateProgressMonitor ()
+		protected override ProgressMonitor CreateProgressMonitor ()
 		{
 			return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
 				base.CreateProgressMonitor (),
@@ -73,7 +73,7 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (Monitor.IsCancelRequested) {
+			if (Monitor.CancellationToken.IsCancellationRequested) {
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
 				return;
 			}

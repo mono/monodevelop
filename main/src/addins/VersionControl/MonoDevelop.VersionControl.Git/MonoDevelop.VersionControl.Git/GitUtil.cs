@@ -38,6 +38,7 @@ using NGit.Transport;
 using NGit.Diff;
 using NGit.Internal;
 using System;
+using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -287,7 +288,7 @@ namespace MonoDevelop.VersionControl.Git
 			return repo;
 		}
 
-		public static MergeCommandResult MergeTrees (ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
+		public static MergeCommandResult MergeTrees (NGit.ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
 			RevCommit newHead;
 			RevWalk revWalk = new RevWalk(repo);

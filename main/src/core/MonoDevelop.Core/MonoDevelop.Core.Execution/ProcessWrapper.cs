@@ -2,36 +2,47 @@
 using System;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Execution
 {
 	public delegate void ProcessEventHandler(object sender, string message);
 
 	[System.ComponentModel.DesignerCategory ("Code")]
-	public class ProcessWrapper : Process, IProcessAsyncOperation
+	public class ProcessWrapper : Process
 	{
-		private Thread captureOutputThread;
 		private Thread captureErrorThread;
 		ManualResetEvent endEventOut = new ManualResetEvent (false);
 		ManualResetEvent endEventErr = new ManualResetEvent (false);
 		bool done;
 		object lockObj = new object ();
+		Task task;
+		ProcessAsyncOperation operation;
+		IDisposable customCancelToken;
 		
 		public ProcessWrapper ()
 		{
 		}
 		public bool CancelRequested { get; private set; }
-		
+
+		public Task Task {
+			get { return task; }
+		}
+
+		public ProcessAsyncOperation ProcessAsyncOperation {
+			get { return operation; }
+		}
+
 		public new void Start ()
 		{
 			CheckDisposed ();
 			base.Start ();
-			
-			captureOutputThread = new Thread (new ThreadStart(CaptureOutput));
-			captureOutputThread.Name = "Process output reader";
-			captureOutputThread.IsBackground = true;
-			captureOutputThread.Start ();
-			
+
+			task = Task.Factory.StartNew (CaptureOutput, TaskCreationOptions.LongRunning);
+			var cs = new CancellationTokenSource ();
+			operation = new ProcessAsyncOperation (task, cs);
+			cs.Token.Register (Cancel);
+
 			if (ErrorStreamChanged != null) {
 				captureErrorThread = new Thread (new ThreadStart(CaptureError));
 				captureErrorThread.Name = "Process error reader";
@@ -40,6 +51,12 @@ namespace MonoDevelop.Core.Execution
 			} else {
 				endEventErr.Set ();
 			}
+			operation.ProcessId = Id;
+		}
+
+		public void SetCancellationToken (CancellationToken cancelToken)
+		{
+			customCancelToken = cancelToken.Register (Cancel);
 		}
 		
 		public void WaitForOutput (int milliseconds)
@@ -56,6 +73,7 @@ namespace MonoDevelop.Core.Execution
 		
 		private void CaptureOutput ()
 		{
+			Thread.CurrentThread.Name = "Process output reader";
 			try {
 				if (OutputStreamChanged != null) {
 					char[] buffer = new char [1024];
@@ -73,6 +91,9 @@ namespace MonoDevelop.Core.Execution
 				// Process leaks when an exit event is registered
 				if (endEventErr != null)
 					endEventErr.WaitOne ();
+
+				if (HasExited)
+					operation.ExitCode = ExitCode;
 
 				OnExited (this, EventArgs.Empty);
 
@@ -108,9 +129,9 @@ namespace MonoDevelop.Core.Execution
 					return;
 				
 				if (!done)
-					((IAsyncOperation)this).Cancel ();
+					Cancel ();
 				
-				captureOutputThread = captureErrorThread = null;
+				captureErrorThread = null;
 				endEventOut.Close ();
 				endEventErr.Close ();
 				endEventOut = endEventErr = null;
@@ -132,15 +153,7 @@ namespace MonoDevelop.Core.Execution
 				throw new ObjectDisposedException ("ProcessWrapper");
 		}
 		
-		int IProcessAsyncOperation.ExitCode {
-			get { return ExitCode; }
-		}
-		
-		int IProcessAsyncOperation.ProcessId {
-			get { return Id; }
-		}
-		
-		void IAsyncOperation.Cancel ()
+		public void Cancel ()
 		{
 			try {
 				if (!done) {
@@ -156,13 +169,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		void IAsyncOperation.WaitForCompleted ()
-		{
-			WaitForOutput ();
-		}
-		
 		void OnExited (object sender, EventArgs args)
 		{
+			if (customCancelToken != null) {
+				customCancelToken.Dispose ();
+				customCancelToken = null;
+			}
 			try {
 				if (!HasExited)
 					WaitForExit ();
@@ -171,48 +183,9 @@ namespace MonoDevelop.Core.Execution
 			} finally {
 				lock (lockObj) {
 					done = true;
-					try {
-						if (completedEvent != null)
-							completedEvent (this);
-					} catch {
-						// Ignore
-					}
 				}
 			}
 		}
-		
-		event OperationHandler IAsyncOperation.Completed {
-			add {
-				bool raiseNow = false;
-				lock (lockObj) {
-					if (done)
-						raiseNow = true;
-					else
-						completedEvent += value;
-				}
-				if (raiseNow)
-					value (this);
-			}
-			remove {
-				lock (lockObj) {
-					completedEvent -= value;
-				}
-			}
-		}
-	
-		bool IAsyncOperation.Success {
-			get { return done ? ExitCode == 0 : false; }
-		}
-		
-		bool IAsyncOperation.SuccessWithWarnings {
-			get { return false; }
-		}
-		
-		bool IAsyncOperation.IsCompleted {
-			get { return done; }
-		}
-		
-		event OperationHandler completedEvent;
 		
 		public event ProcessEventHandler OutputStreamChanged;
 		public event ProcessEventHandler ErrorStreamChanged;

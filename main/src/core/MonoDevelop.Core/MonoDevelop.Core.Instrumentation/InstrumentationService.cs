@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Instrumentation
 		static Thread autoSaveThread;
 		static bool stopping;
 		static int autoSaveInterval;
-		static List<IInstrumentationConsumer> handlers = new List<IInstrumentationConsumer> ();
+		static List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 		static bool handlersLoaded;
 		
 		static InstrumentationService ()
@@ -64,12 +64,12 @@ namespace MonoDevelop.Core.Instrumentation
 			startTime = DateTime.Now;
 		}
 		
-		static void InitializeHandlers ()
+		internal static void InitializeHandlers ()
 		{
 			if (!handlersLoaded && AddinManager.IsInitialized) {
 				lock (counters) {
 					handlersLoaded = true;
-					AddinManager.AddExtensionNodeHandler (typeof(IInstrumentationConsumer), HandleInstrumentationHandlerExtension);
+					AddinManager.AddExtensionNodeHandler (typeof(InstrumentationConsumer), HandleInstrumentationHandlerExtension);
 				}
 			}
 		}
@@ -84,26 +84,37 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		static void HandleInstrumentationHandlerExtension (object sender, ExtensionNodeEventArgs args)
 		{
-			var handler = (IInstrumentationConsumer)args.ExtensionObject;
+			var handler = (InstrumentationConsumer)args.ExtensionObject;
 			if (args.Change == ExtensionChange.Add) {
-				handlers.Add (handler);
-				lock (counters) {
-					foreach (var c in counters.Values) {
-						if (handler.SupportsCounter (c))
-							c.Handlers.Add (handler);
-					}
-				}
+				RegisterInstrumentationConsumer (handler);
 			}
 			else {
-				handlers.Remove (handler);
-				lock (counters) {
-					foreach (var c in counters.Values)
-						c.Handlers.Remove (handler);
+				UnregisterInstrumentationConsumer (handler);
+			}
+		}
+
+		public static void RegisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Add (consumer);
+				foreach (var c in counters.Values) {
+					if (consumer.SupportsCounter (c))
+						c.Handlers.Add (consumer);
 				}
 			}
 			UpdateCounterStatus ();
 		}
 		
+		public static void UnregisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Remove (consumer);
+				foreach (var c in counters.Values)
+					c.Handlers.Remove (consumer);
+			}
+			UpdateCounterStatus ();
+		}
+
 		public static int PublishService ()
 		{
 			RemotingService.RegisterRemotingChannel ();
@@ -123,7 +134,7 @@ namespace MonoDevelop.Core.Instrumentation
 				throw new InvalidOperationException ("Service not published");
 			
 			if (Platform.IsMac) {
-				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory;
+				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory.ParentDirectory.Combine ("MacOS");
 				var app = macOSDir.Combine ("MDMonitor.app");
 				if (Directory.Exists (app)) {
 					var psi = new ProcessStartInfo ("open", string.Format ("-n '{0}' --args -c localhost:{1} ", app, publicPort)) {
@@ -223,10 +234,15 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static Counter CreateCounter (string name, string category, bool logMessages)
 		{
-			return CreateCounter (name, category, logMessages, false);
+			return CreateCounter (name, category, logMessages, null, false);
 		}
 		
-		static Counter CreateCounter (string name, string category, bool logMessages, bool isTimer)
+		public static Counter CreateCounter (string name, string category = null, bool logMessages = false, string id = null)
+		{
+			return CreateCounter (name, category, logMessages, id, false);
+		}
+
+		static Counter CreateCounter (string name, string category, bool logMessages, string id, bool isTimer)
 		{
 			InitializeHandlers ();
 			
@@ -241,6 +257,7 @@ namespace MonoDevelop.Core.Instrumentation
 				}
 				
 				Counter c = isTimer ? new TimerCounter (name, cat) : new Counter (name, cat);
+				c.Id = id;
 				c.LogMessages = logMessages;
 				cat.AddCounter (c);
 				
@@ -289,7 +306,12 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static TimerCounter CreateTimerCounter (string name, string category, double minSeconds, bool logMessages)
 		{
-			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, true);
+			return CreateTimerCounter (name, category, minSeconds, logMessages, null);
+		}
+
+		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
+		{
+			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
 			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;
@@ -357,7 +379,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		public static IProgressMonitor GetInstrumentedMonitor (IProgressMonitor monitor, TimerCounter counter)
+		public static ProgressMonitor GetInstrumentedMonitor (ProgressMonitor monitor, TimerCounter counter)
 		{
 			if (enabled) {
 				AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
@@ -368,61 +390,39 @@ namespace MonoDevelop.Core.Instrumentation
 		}
 	}
 	
-	class IntrumentationMonitor: NullProgressMonitor
+	class IntrumentationMonitor: ProgressMonitor
 	{
 		TimerCounter counter;
 		Stack<ITimeTracker> timers = new Stack<ITimeTracker> ();
-		LogTextWriter logger = new LogTextWriter ();
-		
+
 		public IntrumentationMonitor (TimerCounter counter)
 		{
 			this.counter = counter;
-			logger.TextWritten += HandleLoggerTextWritten;
 		}
 
-		void HandleLoggerTextWritten (string writtenText)
+		protected override void OnWriteLog (string message)
 		{
 			if (timers.Count > 0)
-				timers.Peek ().Trace (writtenText);
-		}
-		
-		public override void BeginTask (string name, int totalWork)
-		{
-			if (!string.IsNullOrEmpty (name)) {
-				ITimeTracker c = counter.BeginTiming (name);
-				c.Trace (name);
-				timers.Push (c);
-			} else {
-				timers.Push (null);
-			}
-			base.BeginTask (name, totalWork);
-		}
-		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			if (!string.IsNullOrEmpty (name)) {
-				ITimeTracker c = counter.BeginTiming (name);
-				c.Trace (name);
-				timers.Push (c);
-			} else {
-				timers.Push (null);
-			}
-			base.BeginStepTask (name, totalWork, stepSize);
+				timers.Peek ().Trace (message);
 		}
 
-		public override void EndTask ()
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
+		{
+			if (!string.IsNullOrEmpty (name)) {
+				ITimeTracker c = counter.BeginTiming (name);
+				c.Trace (name);
+				timers.Push (c);
+			} else {
+				timers.Push (null);
+			}
+		}
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (timers.Count > 0) {
 				ITimeTracker c = timers.Pop ();
 				if (c != null)
 					c.End ();
-			}
-			base.EndTask ();
-		}
-		
-		public override System.IO.TextWriter Log {
-			get {
-				return logger;
 			}
 		}
 	}

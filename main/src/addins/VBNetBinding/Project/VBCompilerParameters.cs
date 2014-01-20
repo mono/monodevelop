@@ -36,7 +36,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class VBCompilerParameters: ConfigurationParameters
+	public class VBCompilerParameters: DotNetCompilerParameters
 	{
 		//
 		// Project level properties:

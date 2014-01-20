@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Templates
 			template = element;
 		}
 		
-		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public SolutionItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			Type type = addin.GetType (typeName, false);
 			
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Templates
 				return null;
 			}
 			
-			SolutionEntityItem item = (SolutionEntityItem) Activator.CreateInstance (type);
+			SolutionItem item = (SolutionItem) Activator.CreateInstance (type);
 			item.InitializeFromTemplate (template);
 			
 			string newProjectName = StringParserService.Parse (name, new string[,] { 
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Templates
 			return item;
 		}
 		
-		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
+		public void InitializeItem (SolutionFolderItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionItem item)
 		{
 		}
 		

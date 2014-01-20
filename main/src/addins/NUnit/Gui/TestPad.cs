@@ -44,6 +44,7 @@ using MonoDevelop.Projects;
 using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.NUnit
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.NUnit
 	{
 		NUnitService testService = NUnitService.Instance;
 		
-		IAsyncOperation runningTestOperation;
+		AsyncOperation runningTestOperation;
 		VPaned paned;
 		TreeView detailsTree;
 		ListStore detailsStore;
@@ -411,7 +412,7 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = GetSelectedTest ();
 			if (test != null) {
-				SolutionEntityItem item = test.OwnerObject as SolutionEntityItem;
+				SolutionItem item = test.OwnerObject as SolutionItem;
 				ExecutionModeCommandService.GenerateExecutionModeCommands (
 				    item,
 				    test.CanRun,
@@ -467,12 +468,12 @@ namespace MonoDevelop.NUnit
 			return nav.DataItem as UnitTest;
 		}
 
-		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler mode)
+		public AsyncOperation RunTest (UnitTest test, IExecutionHandler mode)
 		{
 			return RunTest (FindTestNode (test), mode, false);
 		}
 
-		IAsyncOperation RunTest (ITreeNavigator nav, IExecutionHandler mode, bool bringToFront = true)
+		AsyncOperation RunTest (ITreeNavigator nav, IExecutionHandler mode, bool bringToFront = true)
 		{
 			if (nav == null)
 				return null;
@@ -487,7 +488,7 @@ namespace MonoDevelop.NUnit
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
 			runningTestOperation = testService.RunTest (test, mode);
-			runningTestOperation.Completed += (OperationHandler) DispatchService.GuiDispatch (new OperationHandler (OnTestSessionCompleted));
+			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted ());
 			return runningTestOperation;
 		}
 		
@@ -501,10 +502,9 @@ namespace MonoDevelop.NUnit
 			RunTest (TreeView.GetSelectedNode (), mode);
 		}
 		
-		void OnTestSessionCompleted (IAsyncOperation op)
+		void OnTestSessionCompleted ()
 		{
-			if (op.Success)
-				RefreshDetails ();
+			RefreshDetails ();
 			runningTestOperation = null;
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;

@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class CommitWorker : Task
+		private class CommitWorker : VersionControlTask
 		{
 			Repository vc;
 			ChangeSet changeSet;

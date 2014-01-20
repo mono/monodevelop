@@ -67,7 +67,7 @@ namespace MonoDevelop.Gettext
 				this.Destroy ();
 			};
 			
-			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(SolutionItem), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(bool), typeof(string), typeof(SolutionFolderItem), typeof(bool));
 			treeviewProjectList.Model = store;
 			treeviewProjectList.HeadersVisible = false;
 			
@@ -98,7 +98,7 @@ namespace MonoDevelop.Gettext
 			TreeIter iter;
 			if (store.GetIterFromString (out iter, e.Path)) {
 				bool         isTogglod = (bool)store.GetValue (iter, 1);
-				SolutionItem entry     = (SolutionItem)store.GetValue (iter, 3);
+				SolutionFolderItem entry     = (SolutionFolderItem)store.GetValue (iter, 3);
 				if (entry is Project) {
 					TranslationProjectInformation info = project.GetProjectInformation (entry, true);
 					info.IsIncluded = !isTogglod;
@@ -108,7 +108,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		TreeStore store;
-		string GetIcon (SolutionItem entry)
+		string GetIcon (SolutionFolderItem entry)
 		{
 			if (entry is SolutionFolder)
 				return MonoDevelop.Ide.Gui.Stock.Solution;
@@ -119,10 +119,10 @@ namespace MonoDevelop.Gettext
 			return MonoDevelop.Ide.Gui.Stock.Project;
 		}
 		
-		bool IsIncluded (SolutionItem entry)
+		bool IsIncluded (SolutionFolderItem entry)
 		{
 			if (entry is SolutionFolder) {
-				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
+				foreach (SolutionFolderItem childEntry in ((SolutionFolder)entry).Items)
 					if (!IsIncluded (childEntry))
 						return false;
 				return true;
@@ -134,7 +134,7 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 			
-		void FillTree (TreeIter iter, SolutionItem entry)
+		void FillTree (TreeIter iter, SolutionFolderItem entry)
 		{
 			TreeIter curIter;
 			if (!iter.Equals (TreeIter.Zero)) {
@@ -144,10 +144,10 @@ namespace MonoDevelop.Gettext
 			}
 			if (entry is SolutionFolder) {
 				// Add solutions first, then projects
-				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
+				foreach (SolutionFolderItem childEntry in ((SolutionFolder)entry).Items)
 					if (childEntry is SolutionFolder)
 						FillTree (curIter, childEntry);
-				foreach (SolutionItem childEntry in ((SolutionFolder)entry).Items)
+				foreach (SolutionFolderItem childEntry in ((SolutionFolder)entry).Items)
 					if (!(childEntry is TranslationProject) && (childEntry is Project))
 						FillTree (curIter, childEntry);
 			}

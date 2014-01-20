@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -385,7 +386,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
+		public async static Task<Stetic.CodeGenerationResult> GenerateSteticCode (ProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
@@ -423,7 +424,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				
 				if (info.GuiBuilderProject.HasError) {
 					monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);
-					monitor.AsyncOperation.Cancel ();
 					return null;
 				}
 				
@@ -454,8 +454,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (!canGenerateInProcess) {
 					timer.Trace ("Generating out of process");
 				
-					// Run the generation in another thread to avoid freezing the GUI
-					System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					await Task.Factory.StartNew (delegate {
 						try {
 							// Generate the code in another process if stetic is not isolated
 							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
@@ -469,10 +468,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						}
 					});
 				
-					while (generating) {
-						DispatchService.RunPendingEvents ();
-						System.Threading.Thread.Sleep (100);
-					}
 				} else {
 					timer.Trace ("Generating in-process");
 					// No need to create another process, since stetic has its own backend process
@@ -544,7 +539,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// Make sure the generated files are added to the project
 				if (info.UpdateGtkFolder ()) {
 					Gtk.Application.Invoke (delegate {
-						IdeApp.ProjectOperations.Save (project);
+						IdeApp.ProjectOperations.SaveAsync (project);
 					});
 				}
 				

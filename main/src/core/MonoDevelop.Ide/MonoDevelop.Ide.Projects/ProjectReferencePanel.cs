@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
 			
-			foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
+			foreach (Project projectEntry in openSolution.GetAllItems<Project>()) {
 
 				if (projectEntry == configureProject)
 					continue;

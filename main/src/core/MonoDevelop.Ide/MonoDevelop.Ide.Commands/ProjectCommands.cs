@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedObject);
 		}
 	}
 	
@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedObject);
 		}
 	}
 
@@ -143,12 +143,12 @@ namespace MonoDevelop.Ide.Commands
 				info.Bypass = false;
 		}
 
-		protected override void Run ()
+		protected override async void Run ()
 		{
 			//Edit references
 			DotNetProject p = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
 			if (IdeApp.ProjectOperations.AddReferenceToProject (p))
-                IdeApp.ProjectOperations.Save (p);
+				await IdeApp.ProjectOperations.SaveAsync (p);
 
 		}
 	}
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)) && buildTarget.SupportsTarget (ProjectService.BuildTarget);
+				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("B_uild {0}", buildTarget.Name.Replace ("_","__"));
 					if (buildTarget is SolutionFolder)
@@ -184,24 +184,13 @@ namespace MonoDevelop.Ide.Commands
 						info.Description = GettextCatalog.GetString ("Build {0}", buildTarget.Name);
 				}
 			}
-			else {
-				info.Enabled = ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.IsBuildTarget) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
-				if (IdeApp.Workbench.ActiveDocument != null) {
-					info.Text = GettextCatalog.GetString ("B_uild {0}", Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name).Replace ("_","__"));
-                    info.Description = GettextCatalog.GetString ("Build {0}", Path.GetFileName (IdeApp.Workbench.ActiveDocument.Name));
-				}
-			}
+			else
+				info.Enabled = false;
 		}
 
 		protected override void Run ()
 		{
-			if (IdeApp.Workspace.IsOpen) {
-                IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-			}
-			else {
-				IdeApp.Workbench.ActiveDocument.Save ();
-				IdeApp.Workbench.ActiveDocument.Build ();
-			}
+			IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 		}
 	}
 
@@ -225,30 +214,19 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)) && buildTarget.SupportsTarget (ProjectService.BuildTarget);
+				info.Enabled = (buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 				}
 			}
-			else {
-				info.Enabled = ((IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.IsBuildTarget) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
-				if (info.Enabled) {
-					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.Workbench.ActiveDocument.FileName.FileName.Replace ("_","__"));
-					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.Workbench.ActiveDocument.FileName);
-				}
-			}
+			else
+				info.Enabled = false;
 		}
 
 		protected override void Run ()
 		{
-			if (IdeApp.Workspace.IsOpen) {
-				IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-			}
-			else {
-				IdeApp.Workbench.ActiveDocument.Save ();
-				IdeApp.Workbench.ActiveDocument.Rebuild ();
-			}
+			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 		}
 	}
 
@@ -273,12 +251,11 @@ namespace MonoDevelop.Ide.Commands
 		
 		public static bool CanRun (IExecutionHandler executionHandler)
 		{
-            if (IdeApp.Workspace.IsOpen) {
+			if (IdeApp.Workspace.IsOpen) {
 				var target = GetRunTarget ();
 				return target != null && IdeApp.ProjectOperations.CanExecute (target, executionHandler);
-			}
-            else
-                return (IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.CanRun (executionHandler));
+			} else
+				return false;
 		}
 
         public static void RunMethod (IExecutionHandler executionHandler)
@@ -290,27 +267,16 @@ namespace MonoDevelop.Ide.Commands
                 IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
             }
 
-            if (!IdeApp.Workspace.IsOpen) {
-                if (!IdeApp.Preferences.BuildBeforeExecuting)
-                    IdeApp.Workbench.ActiveDocument.Run (executionHandler);
-                else {
-                    IAsyncOperation asyncOperation = IdeApp.Workbench.ActiveDocument.Build ();
-                    asyncOperation.Completed += delegate {
-                        if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                            IdeApp.Workbench.ActiveDocument.Run (executionHandler);
-                    };
-                }
-            }
-            else {
+            if (IdeApp.Workspace.IsOpen) {
 				var target = GetRunTarget ();
                 if (!IdeApp.Preferences.BuildBeforeExecuting)
 					IdeApp.ProjectOperations.Execute (target, executionHandler);
                 else {
-                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
-                    asyncOperation.Completed += delegate {
-                        if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                            IdeApp.ProjectOperations.Execute (target, executionHandler);
-                    };
+					AsyncOperation<BuildResult> asyncOperation = IdeApp.ProjectOperations.Build (target);
+					asyncOperation.Task.ContinueWith (ta => {
+						if (!ta.Result.HasErrors && (!ta.Result.HasWarnings || IdeApp.Preferences.RunWithWarnings))
+							IdeApp.ProjectOperations.Execute (target, executionHandler);
+					});
                 }
 
             }
@@ -357,12 +323,11 @@ namespace MonoDevelop.Ide.Commands
 			if (!IdeApp.Preferences.BuildBeforeExecuting)
 				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
 			else {
-				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-				asyncOperation.Completed += delegate
-				{
-					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                        IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-				};
+				var asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				asyncOperation.Task.ContinueWith (t => {
+					if (!t.Result.HasErrors && (!t.Result.HasWarnings || IdeApp.Preferences.RunWithWarnings))
+						IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				});
 			}
 		}
 	}
@@ -371,7 +336,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			SolutionEntityItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionEntityItem;
+			SolutionItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionItem;
 			if (item != null) {
 				ExecutionModeCommandService.GenerateExecutionModeCommands (
 				    item,
@@ -392,12 +357,11 @@ namespace MonoDevelop.Ide.Commands
 			if (!IdeApp.Preferences.BuildBeforeExecuting)
 				IdeApp.ProjectOperations.Execute (target, h);
 			else {
-				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
-				asyncOperation.Completed += delegate
-				{
-					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
+				var asyncOperation = IdeApp.ProjectOperations.Build (target);
+				asyncOperation.Task.ContinueWith (t => {
+					if (!t.Result.HasErrors && (!t.Result.HasWarnings || IdeApp.Preferences.RunWithWarnings))
 						IdeApp.ProjectOperations.Execute (target, h);
-				};
+				});
 			}
 		}
 	}
@@ -409,7 +373,6 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
 				info.Enabled = false;
 			else {
-				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget.SupportsTarget (ProjectService.BuildTarget);
 				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 			}
@@ -473,9 +436,9 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run (object dataItem)
 		{
-			IWorkspaceObject ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			var ce = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as WorkspaceObject;
 			CustomCommand cmd = (CustomCommand) dataItem;
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			
 			Thread t = new Thread (
 				delegate () {
@@ -498,7 +461,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			// FIXME: Once we fix Workspaces to offer Visual Studio formats (instead of the deprecated MonoDevelop 1.0 format), we can allow exporting of Workspaces as well.
-			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is Solution) && !(IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem))
+			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is Solution) && !(IdeApp.ProjectOperations.CurrentSelectedItem is SolutionItem))
 				info.Enabled = false;
 		}
 
@@ -507,7 +470,7 @@ namespace MonoDevelop.Ide.Commands
 			WorkspaceItem workspace;
 			
 			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem))
-				workspace = ((SolutionEntityItem) IdeApp.ProjectOperations.CurrentSelectedItem).ParentSolution;
+				workspace = ((SolutionItem) IdeApp.ProjectOperations.CurrentSelectedItem).ParentSolution;
 			else
 				workspace = (WorkspaceItem) IdeApp.ProjectOperations.CurrentSelectedItem;
 			

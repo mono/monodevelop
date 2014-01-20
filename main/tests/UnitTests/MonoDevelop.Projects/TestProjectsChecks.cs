@@ -33,6 +33,7 @@ using UnitTests;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Project;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -146,7 +147,7 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			SolutionConfiguration scDebug = sol.AddConfiguration ("Debug", true);
 			
-			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			DotNetProject project = new CSharpProject ();
 			sol.RootFolder.Items.Add (project);
 			Assert.AreEqual (0, project.Configurations.Count);
 			
@@ -214,7 +215,7 @@ namespace Foo {
 		
 		public static DotNetProject CreateProject (string dir, string lang, string name)
 		{
-			DotNetAssemblyProject project = new DotNetAssemblyProject (lang);
+			DotNetProject project = Services.ProjectService.CreateDotNetProject (lang);
 			InitializeProject (dir, project, name);
 			return project;
 		}
@@ -251,6 +252,8 @@ namespace Foo {
 			string dir = Util.CreateTmpDir ("generic-item-" + fileFormat);
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
+
+			MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.RegisterGenericProjectType ("GenericItem", typeof(GenericItem));
 			
 			GenericItem it = new GenericItem ();
 			it.SomeValue = "hi";
@@ -261,9 +264,9 @@ namespace Foo {
 			
 			sol.Save (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
 			Assert.AreEqual (1, sol2.Items.Count);
-			Assert.IsTrue (sol2.Items [0] is GenericItem);
+			Assert.IsInstanceOf<GenericItem> (sol2.Items [0]);
 			
 			it = (GenericItem) sol2.Items [0];
 			Assert.AreEqual ("hi", it.SomeValue);
@@ -279,7 +282,7 @@ namespace Foo {
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
 			
-			DotNetAssemblyProject p1 = new DotNetAssemblyProject ("C#");
+			var p1 = Services.ProjectService.CreateDotNetProject ("C#");
 			p1.FileName = Path.Combine (dir, "p1");
 			sol.RootFolder.Items.Add (p1);
 			string idp1 = p1.ItemId;
@@ -295,7 +298,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idf1));
 			ids.Add (idf1);
 			
-			DotNetAssemblyProject p2 = new DotNetAssemblyProject ("C#");
+			var p2 = Services.ProjectService.CreateDotNetProject ("C#");
 			p2.FileName = Path.Combine (dir, "p2");
 			f1.Items.Add (p2);
 			string idp2 = p2.ItemId;
@@ -311,7 +314,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idf2));
 			ids.Add (idf2);
 			
-			DotNetAssemblyProject p3 = new DotNetAssemblyProject ("C#");
+			var p3 = Services.ProjectService.CreateDotNetProject ("C#");
 			p3.FileName = Path.Combine (dir, "p3");
 			f2.Items.Add (p3);
 			string idp3 = p3.ItemId;
@@ -319,7 +322,7 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idp3));
 			ids.Add (idp3);
 			
-			DotNetAssemblyProject p4 = new DotNetAssemblyProject ("C#");
+			var p4 = Services.ProjectService.CreateDotNetProject ("C#");
 			p4.FileName = Path.Combine (dir, "p4");
 			f2.Items.Add (p4);
 			string idp4 = p4.ItemId;
@@ -329,10 +332,10 @@ namespace Foo {
 			
 			sol.Save (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
 			Assert.AreEqual (4, sol2.Items.Count);
 			Assert.AreEqual (2, sol2.RootFolder.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), sol2.RootFolder.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), sol2.RootFolder.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), sol2.RootFolder.Items [1].GetType ());
 			Assert.AreEqual ("p1", sol2.RootFolder.Items [0].Name);
 			Assert.AreEqual ("f1", sol2.RootFolder.Items [1].Name);
@@ -341,7 +344,7 @@ namespace Foo {
 			
 			f1 = (SolutionFolder) sol2.RootFolder.Items [1];
 			Assert.AreEqual (2, f1.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f1.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f1.Items [0].GetType ());
 			Assert.AreEqual (typeof(SolutionFolder), f1.Items [1].GetType ());
 			Assert.AreEqual ("p2", f1.Items [0].Name);
 			Assert.AreEqual ("f2", f1.Items [1].Name);
@@ -350,8 +353,8 @@ namespace Foo {
 			
 			f2 = (SolutionFolder) f1.Items [1];
 			Assert.AreEqual (2, f2.Items.Count);
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [0].GetType ());
-			Assert.AreEqual (typeof(DotNetAssemblyProject), f2.Items [1].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f2.Items [0].GetType ());
+			Assert.AreEqual (typeof(CSharpProject), f2.Items [1].GetType ());
 			Assert.AreEqual ("p3", f2.Items [0].Name);
 			Assert.AreEqual ("p4", f2.Items [1].Name);
 			Assert.AreEqual (idp3, f2.Items [0].ItemId, "idp4");
@@ -366,26 +369,26 @@ namespace Foo {
 			sol.Save (Util.GetMonitor ());
 			string solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			CheckConsoleProject (sol);
 
 			// Save over existing file
 			sol.Save (Util.GetMonitor ());
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			CheckConsoleProject (sol);
 		}
 		
 		public static void TestLoadSaveResources (string fileFormat)
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			sol.Save (Util.GetMonitor ());
 			solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
@@ -394,7 +397,7 @@ namespace Foo {
 			pf.ResourceId = "SomeBitmap.bmp";
 			sol.Save (Util.GetMonitor ());
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
 			p = (DotNetProject) sol.Items [0];
 			f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			pf = p.Files.GetFile (f);
@@ -402,37 +405,26 @@ namespace Foo {
 		}
 	}
 	
-	public class GenericItem: SolutionEntityItem
+	public class GenericItem: Project
 	{
 		[ItemProperty]
 		public string SomeValue;
-		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+
+		public GenericItem ()
 		{
+			Initialize (this);
 		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			return null;
+			base.OnWriteProject (monitor, msproject);
+			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(GenericItem));
 		}
-		
-		protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+
+		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			return null;
+			base.OnReadProject (monitor, msproject);
+			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(GenericItem));
 		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
-		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-		}
-		
 	}
 }

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext.NodeBuilders
 {
@@ -111,7 +112,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					}
 					
 					project.RemoveTranslation (translation.IsoCode);
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project);
 				}
 			}
 			
@@ -125,14 +126,10 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				UpdateTranslations (project, translation);
 			}
 			
-			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+			static Task currentUpdateTranslationOperation = Task.FromResult (0);
 			
-			void UpdateTranslationsAsync (object ob)
+			void UpdateTranslationsAsync (ProgressMonitor monitor, TranslationProject project, Translation translation)
 			{
-				object[] data = (object[]) ob;
-				IProgressMonitor monitor = (IProgressMonitor) data [0];
-				TranslationProject project = (TranslationProject) data [1];
-				Translation        translation = (Translation) data [2];
 				try {
 					project.UpdateTranslations (monitor, translation);
 					Gtk.Application.Invoke (delegate {
@@ -151,9 +148,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			{
 				if (currentUpdateTranslationOperation != null && !currentUpdateTranslationOperation.IsCompleted) 
 					return;
-				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
-				currentUpdateTranslationOperation = monitor.AsyncOperation;
-				DispatchService.BackgroundDispatch (new StatefulMessageHandler (UpdateTranslationsAsync), new object[] {monitor, project, translation});
+				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				currentUpdateTranslationOperation = Task.Factory.StartNew (() => UpdateTranslationsAsync (monitor, project, translation));
 			}
 		}
 	}

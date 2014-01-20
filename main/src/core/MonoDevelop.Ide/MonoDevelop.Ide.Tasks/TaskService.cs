@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Tasks
 		/// <summary>
 		/// Shows a description of the task in the status bar
 		/// </summary>
-		public static void ShowStatus (Task t)
+		public static void ShowStatus (UserTask t)
 		{
 			if (t == null)
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("No more errors or warnings"));
@@ -125,8 +125,8 @@ namespace MonoDevelop.Ide.Tasks
 				// Load User Tasks from xml file
 				if (File.Exists (fileToLoad)) {
 					XmlDataSerializer serializer = new XmlDataSerializer (new DataContext ());
-					List<Task> ts = (List<Task>) serializer.Deserialize (fileToLoad, typeof(List<Task>));
-					foreach (Task t in ts) {
+					List<UserTask> ts = (List<UserTask>) serializer.Deserialize (fileToLoad, typeof(List<UserTask>));
+					foreach (UserTask t in ts) {
 						t.WorkspaceObject = e.Item;
 						userTasks.Add (t);
 					}
@@ -157,11 +157,11 @@ namespace MonoDevelop.Ide.Tasks
 			return combinePath.Combine (item.FileName.FileNameWithoutExtension + ".usertasks");
 		}
 		
-		internal static void SaveUserTasks (IWorkspaceObject item)
+		internal static void SaveUserTasks (WorkspaceObject item)
 		{
 			string fileToSave = GetUserTasksFilename ((WorkspaceItem)item);
 			try {
-				List<Task> utasks = new List<Task> (userTasks.GetItemTasks (item, true));
+				List<UserTask> utasks = new List<UserTask> (userTasks.GetItemTasks (item, true));
 				if (utasks.Count == 0) {
 					if (File.Exists (fileToSave))
 						File.Delete (fileToSave);
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public static event EventHandler<TaskEventArgs> JumpedToTask;
 
-		internal static void InformJumpToTask (Task task)
+		internal static void InformJumpToTask (UserTask task)
 		{
 			EventHandler<TaskEventArgs> handler = JumpedToTask;
 			if (handler != null)

@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (modifiedSolutionsToSave);
+			IdeApp.ProjectOperations.SaveAsync (modifiedSolutionsToSave);
 		}
 		
 		public override void ActivateItem ()

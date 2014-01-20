@@ -2,7 +2,7 @@
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,53 +44,67 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.Assemblies;
 using System.Globalization;
+using System.Threading.Tasks;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	[DataInclude(typeof(DotNetProjectConfiguration))]
-	[ProjectModelDataItem ("AbstractDotNetProject")]
-	public abstract class DotNetProject : Project, IAssemblyProject, IDotNetFileContainer
+	public class DotNetProject : Project, IAssemblyProject, IDotNetFileContainer
 	{
 		bool usePartialTypes = true;
-		ProjectParameters languageParameters;
 
 		DirectoryAssemblyContext privateAssemblyContext;
 		ComposedAssemblyContext composedAssemblyContext;
 		IAssemblyContext currentRuntimeContext;
 
-		[ItemProperty("OutputType")]
 		CompileTarget compileTarget;
 
 		IDotNetLanguageBinding languageBinding;
 
 		protected ProjectReferenceCollection projectReferences;
 
-		[ItemProperty("RootNamespace", DefaultValue = "")]
 		protected string defaultNamespace = String.Empty;
-		
-		public DotNetProject ()
+
+		protected DotNetProject ()
 		{
-			Runtime.SystemAssemblyService.DefaultRuntimeChanged += RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
+			Initialize (this);
+		}
+
+		protected DotNetProject (string languageName, params string[] flavorIds): base (flavorIds)
+		{
+			this.languageName = languageName;
+			Initialize (this);
+		}
+
+		protected override void OnInitialize ()
+		{
+			UseMSBuildEngineByDefault = true;
+			RequireMSBuildEngine = false;
 			projectReferences = new ProjectReferenceCollection ();
 			Items.Bind (projectReferences);
-			if (IsLibraryBasedProjectType)
-				CompileTarget = CompileTarget.Library;
 			FileService.FileRemoved += OnFileRemoved;
+			Runtime.SystemAssemblyService.DefaultRuntimeChanged += RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
+
+			base.OnInitialize ();
+
+			if (languageName == null)
+				languageName = MSBuildProjectService.GetLanguageFromGuid (TypeGuid);
 		}
 
-		public DotNetProject (string languageName) : this()
+		protected override void OnExtensionChainInitialized ()
 		{
-			// Language name must be set before the item handler is assigned
-			this.languageName = languageName;
-			this.languageBinding = FindLanguage (languageName);
-
-			if (this.languageBinding != null)
-				this.StockIcon = this.languageBinding.ProjectStockIcon;
+			base.OnExtensionChainInitialized ();
 
 			this.usePartialTypes = SupportsPartialTypes;
+
+			if (LanguageBinding != null)
+				this.StockIcon = LanguageBinding.ProjectStockIcon;
+
+			if (IsLibraryBasedProjectType)
+				CompileTarget = CompileTarget.Library;
 		}
 
-		public DotNetProject (string languageName, ProjectCreateInformation projectCreateInfo, XmlElement projectOptions) : this(languageName)
+		public override void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 			if ((projectOptions != null) && (projectOptions.Attributes ["Target"] != null))
 				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes ["Target"].Value);
@@ -98,8 +112,7 @@ namespace MonoDevelop.Projects
 				CompileTarget = CompileTarget.Library;
 
 			if (this.LanguageBinding != null) {
-				LanguageParameters = languageBinding.CreateProjectParameters (projectOptions);
-				
+
 				bool externalConsole = false;
 
 				string platform = null;
@@ -117,22 +130,22 @@ namespace MonoDevelop.Projects
 				}
 				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
-				configDebug.CompilationParameters = languageBinding.CreateCompilationParameters (projectOptions);
+				configDebug.CompilationParameters = LanguageBinding.CreateCompilationParameters (projectOptions);
 				configDebug.DebugMode = true;
 				configDebug.ExternalConsole = externalConsole;
 				configDebug.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configDebug);
 
 				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
-				
+
 				if (projectOptions != null) {
 					XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
 					releaseProjectOptions.SetAttribute ("Release", "True");
-					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (releaseProjectOptions);
+					configRelease.CompilationParameters = LanguageBinding.CreateCompilationParameters (releaseProjectOptions);
 				} else {
-					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (null);
+					configRelease.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
 				}
-				
+
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
 				configRelease.DebugMode = false;
 				configRelease.ExternalConsole = externalConsole;
@@ -184,9 +197,32 @@ namespace MonoDevelop.Projects
 			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
-		public override IEnumerable<string> GetProjectTypes ()
+		protected override void OnGetProjectTypes (HashSet<string> types)
 		{
-			yield return "DotNet";
+			types.Add ("DotNet");
+			types.Add ("DotNetAssembly");
+		}
+
+		DotNetProjectExtension projectExtension;
+		DotNetProjectExtension ProjectExtension {
+			get {
+				if (projectExtension == null)
+					projectExtension = ExtensionChain.GetExtension<DotNetProjectExtension> ();
+				return projectExtension;
+			}
+		}
+
+		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
+		{
+			return base.CreateDefaultExtensions ().Concat (Enumerable.Repeat (new DefaultDotNetProjectExtension (), 1));
+		}
+
+		protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)
+		{
+			if (item.Name == "Reference" || item.Name == "ProjectReference")
+				return new ProjectReference ();
+
+			return base.OnCreateProjectItem (item);
 		}
 
 		private string languageName;
@@ -195,22 +231,53 @@ namespace MonoDevelop.Projects
 		}
 
 		public override string[] SupportedLanguages {
-			get { return new string[] {"",languageName}; }
+			get { return ProjectExtension.SupportedLanguages; }
 		}
 
 		public virtual bool IsLibraryBasedProjectType {
-			get { return false; }
+			get { return ProjectExtension.IsLibraryBasedProjectType; }
+		}
+
+		public bool IsPortableLibrary {
+			get { return GetService<PortableDotNetProjectFlavor> () != null; }
 		}
 
 		public virtual bool GeneratesDebugInfoFile {
-			get { return true; }
+			get { return ProjectExtension.GeneratesDebugInfoFile; }
 		}
-		
-		protected virtual string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
+
+		protected string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
 		{
-			return string.Empty;
+			return ProjectExtension.OnGetDefaultTargetPlatform (projectCreateInfo);
 		}
-		
+
+		protected virtual string OnGetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
+		{
+			if (CompileTarget == CompileTarget.Library)
+				return string.Empty;
+
+			// Guess a good default platform for the project
+			if (projectCreateInfo.ParentFolder != null && projectCreateInfo.ParentFolder.ParentSolution != null) {
+				ItemConfiguration conf = projectCreateInfo.ParentFolder.ParentSolution.GetConfiguration (projectCreateInfo.ActiveConfiguration);
+				if (conf != null)
+					return conf.Platform;
+				else {
+					string curName, curPlatform, bestPlatform = null;
+					string sconf = projectCreateInfo.ActiveConfiguration.ToString ();
+					ItemConfiguration.ParseConfigurationId (sconf, out curName, out curPlatform);
+					foreach (ItemConfiguration ic in projectCreateInfo.ParentFolder.ParentSolution.Configurations) {
+						if (ic.Platform == curPlatform)
+							return curPlatform;
+						if (ic.Name == curName)
+							bestPlatform = ic.Platform;
+					}
+					if (bestPlatform != null)
+						return bestPlatform;
+				}
+			}
+			return Services.ProjectService.DefaultPlatformTarget;
+		}
+
 		public ProjectReferenceCollection References {
 			get { return projectReferences; }
 		}
@@ -228,6 +295,10 @@ namespace MonoDevelop.Projects
 		}
 
 		public virtual bool CanReferenceProject (DotNetProject targetProject, out string reason)
+		{
+			return ProjectExtension.OnGetCanReferenceProject (targetProject, out reason);
+		}
+		bool CheckCanReferenceProject (DotNetProject targetProject, out string reason)
 		{
 			if (!TargetFramework.CanReferenceAssembliesTargetingFramework (targetProject.TargetFramework)) {
 				reason = GettextCatalog.GetString ("Incompatible target framework: {0}", targetProject.TargetFramework.Id);
@@ -264,20 +335,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[ItemProperty("LanguageParameters")]
-		public ProjectParameters LanguageParameters {
-			get {
-				if (languageParameters == null && LanguageBinding != null)
-					LanguageParameters = LanguageBinding.CreateProjectParameters (null);
-				return languageParameters;
-			}
-			internal set {
-				languageParameters = value;
-				if (languageParameters != null)
-					languageParameters.ParentProject = this;
-			}
-		}
-		
 		/// <summary>
 		/// Default namespace setting. May be empty, use GetDefaultNamespace to get a usable value.
 		/// </summary>
@@ -288,7 +345,7 @@ namespace MonoDevelop.Projects
 				NotifyModified ("DefaultNamespace");
 			}
 		}
-		
+
 		/// <summary>
 		/// Given a namespace, removes from it the implicit namespace of the project,
 		/// if there is one. This depends on the target language. For example, in VB.NET
@@ -296,7 +353,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public string StripImplicitNamespace (string ns)
 		{
-			if ((LanguageParameters is DotNetProjectParameters) && ((DotNetProjectParameters)LanguageParameters).DefaultNamespaceIsImplicit) {
+			if (DefaultNamespaceIsImplicit) {
 				if (DefaultNamespace.Length > 0 && ns.StartsWith (DefaultNamespace + "."))
 					return ns.Substring (DefaultNamespace.Length + 1);
 				else if (DefaultNamespace == ns)
@@ -305,23 +362,26 @@ namespace MonoDevelop.Projects
 			return ns;
 		}
 
+		public bool DefaultNamespaceIsImplicit { get; set; }
+
 		IResourceHandler resourceHandler;
 
 		public IResourceHandler ResourceHandler {
 			get {
 				if (resourceHandler == null) {
 					DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
-					if (pol.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault)
-						resourceHandler = ItemHandler as IResourceHandler;
-					else if (pol.ResourceNamePolicy == ResourceNamePolicy.MSBuild)
-						resourceHandler = MSBuildProjectService.GetResourceHandlerForItem (this);
-					if (resourceHandler == null)
+					if (pol.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault || pol.ResourceNamePolicy == ResourceNamePolicy.MSBuild) {
+						resourceHandler = GetService<IResourceHandler> ();
+						if (resourceHandler == null)
+							resourceHandler = MSBuildResourceHandler.Instance;
+					}
+					else
 						resourceHandler = DefaultResourceHandler.Instance;
 				}
 				return resourceHandler;
 			}
 		}
-		
+
 		TargetFramework targetFramework;
 
 		public TargetFramework TargetFramework {
@@ -350,18 +410,23 @@ namespace MonoDevelop.Projects
 		public TargetRuntime TargetRuntime {
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
 		}
-		
+
 		/// <summary>
 		/// Gets the target framework for new projects
 		/// </summary>
 		/// <returns>
 		/// The default target framework identifier.
 		/// </returns>
-		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		public TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return ProjectExtension.OnGetDefaultTargetFrameworkId ();
+		}
+
+		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()
 		{
 			return Services.ProjectService.DefaultTargetFramework.Id;
 		}
-		
+
 		/// <summary>
 		/// Returns the default framework for a given format
 		/// </summary>
@@ -375,11 +440,25 @@ namespace MonoDevelop.Projects
 		/// This method is used to determine what's the correct target framework for a project
 		/// deserialized using a specific format.
 		/// </remarks>
-		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		public TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
 		{
+			return ProjectExtension.OnGetDefaultTargetFrameworkForFormat (format);
+		}
+
+		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+		{
+			switch (format.Id) {
+			case "MSBuild05":
+				return TargetFrameworkMoniker.NET_2_0;
+			case "MSBuild08":
+				return TargetFrameworkMoniker.NET_2_0;
+			case "MSBuild10":
+			case "MSBuild12":
+				return TargetFrameworkMoniker.NET_4_0;
+			}
 			return GetDefaultTargetFrameworkId ();
 		}
-		
+
 		public IAssemblyContext AssemblyContext {
 			get {
 				if (composedAssemblyContext == null) {
@@ -400,8 +479,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public virtual bool SupportsFramework (TargetFramework framework)
+		public bool SupportsFramework (TargetFramework framework)
 		{
+			return ProjectExtension.OnGetSupportsFramework (framework);
+		}
+
+		protected virtual bool OnSupportsFramework (TargetFramework framework)
+		{
+			// DotNetAssemblyProject can only generate assemblies for the regular framework.
+			// Special frameworks such as Moonlight or MonoTouch must override SupportsFramework.
+			if (!framework.CanReferenceAssembliesTargetingFramework (TargetFrameworkMoniker.NET_1_1))
+				return false;
 			if (LanguageBinding == null)
 				return false;
 			ClrVersion[] versions = LanguageBinding.GetSupportedClrVersions ();
@@ -414,7 +502,6 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		[ItemProperty(DefaultValue = true)]
 		public bool UsePartialTypes {
 			get { return usePartialTypes; }
 			set { usePartialTypes = value; }
@@ -426,16 +513,16 @@ namespace MonoDevelop.Projects
 				composedAssemblyContext.Dispose ();
 				// composedAssemblyContext = null;
 			}
-				
+
 			// languageParameters = null;
 			// privateAssemblyContext = null;
 			// currentRuntimeContext = null;
 			// languageBinding = null;
 			// projectReferences = null;
-			
+
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
-			
+
 			base.Dispose ();
 		}
 
@@ -477,7 +564,7 @@ namespace MonoDevelop.Projects
 			// cached and won't take into account unsubscriptions until the next dispatch
 			if (Disposed)
 				return;
-			
+
 			base.OnFileChanged (source, e);
 			foreach (FileEventInfo ei in e)
 				CheckReferenceChange (ei.FileName);
@@ -501,24 +588,24 @@ namespace MonoDevelop.Projects
 				this.References.Add (prNew);
 			}
 		}
-		
+
 		internal protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
 		{
 			base.PopulateOutputFileList (list, configuration);
 			DotNetProjectConfiguration conf = GetConfiguration (configuration) as DotNetProjectConfiguration;
-			
+
 			// Debug info file
-			
+
 			if (conf.DebugMode) {
 				string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
 				list.Add (mdbFile);
 			}
-			
+
 			// Generated satellite resource files
-			
+
 			FilePath outputDir = conf.OutputDirectory;
 			string satelliteAsmName = Path.GetFileNameWithoutExtension (conf.CompiledOutputName) + ".resources.dll";
-			
+
 			HashSet<string> cultures = new HashSet<string> ();
 			foreach (ProjectFile finfo in Files) {
 				if (finfo.Subtype == Subtype.Directory || finfo.BuildAction != BuildAction.EmbeddedResource)
@@ -532,7 +619,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
-		
+
 		[ThreadStatic]
 		static int supportReferDistance;
 		[ThreadStatic]
@@ -561,13 +648,13 @@ namespace MonoDevelop.Projects
 			//rename the app.config file
 			list.Remove ("app.config");
 			list.Remove ("App.config");
-			
+
 			ProjectFile appConfig = Files.FirstOrDefault (f => f.FilePath.FileName.Equals ("app.config", StringComparison.CurrentCultureIgnoreCase));
 			if (appConfig != null) {
 				string output = GetOutputFileName (configuration).FileName;
 				list.Add (appConfig.FilePath, true, output + ".config");
 			}
-			
+
 			//collect all the "local copy" references and their attendant files
 			foreach (ProjectReference projectReference in References) {
 				if (!projectReference.LocalCopy || !projectReference.CanSetLocalCopy)
@@ -614,7 +701,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}
-		
+
 		//Given a filename like foo.it.resx, get 'it', if its
 		//a valid culture
 		//Note: hand-written as this can get called lotsa times
@@ -664,14 +751,14 @@ namespace MonoDevelop.Projects
 				return cultureNamesTable;
 			}
 		}
-		
+
 		IEnumerable<string> GetAssemblyRefsRec (string fileName, HashSet<string> visited)
 		{
 			// Recursivelly finds assemblies referenced by the given assembly
-			
+
 			if (!visited.Add (fileName))
 				yield break;
-			
+
 			if (!File.Exists (fileName)) {
 				string ext = Path.GetExtension (fileName).ToLower ();
 				if (ext == ".dll" || ext == ".exe")
@@ -683,7 +770,7 @@ namespace MonoDevelop.Projects
 				else
 					yield break;
 			}
-			
+
 			yield return fileName;
 
 			foreach (var reference in SystemAssemblyService.GetAssemblyReferences (fileName)) {
@@ -705,9 +792,9 @@ namespace MonoDevelop.Projects
 			return newReferenceInformation;
 		}
 
-		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
+		protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 		{
-			List<SolutionItem> items = new List<SolutionItem> (base.GetReferencedItems (configuration));
+			var items = new List<SolutionItem> (base.OnGetReferencedItems (configuration));
 			if (ParentSolution == null)
 				return items;
 
@@ -745,23 +832,24 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public IEnumerable<string> GetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
 		{
-			return Services.ProjectService.GetExtensionChain (this).GetReferencedAssemblies (this, configuration, includeProjectReferences);
+			return ProjectExtension.OnGetReferencedAssemblies (configuration, includeProjectReferences);
 		}
 
 		internal protected virtual IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
 		{
-			IAssemblyReferenceHandler handler = this.ItemHandler as IAssemblyReferenceHandler;
-			if (handler != null) {
+			if (CheckUseMSBuildEngine (configuration)) {
 				if (includeProjectReferences) {
 					foreach (ProjectReference pref in References.Where (pr => pr.ReferenceType == ReferenceType.Project)) {
 						foreach (string asm in pref.GetReferencedFileNames (configuration))
 							yield return asm;
 					}
 				}
-				foreach (string file in handler.GetAssemblyReferences (configuration))
-					yield return file;
-			}
-			else {
+				// Get the references list from the msbuild project
+				RemoteProjectBuilder builder = GetProjectBuilder ();
+				var configs = GetConfigurations (configuration);
+				foreach (var r in builder.ResolveAssemblyReferences (configs))
+					yield return r;
+			} else {
 				foreach (ProjectReference pref in References) {
 					if (includeProjectReferences || pref.ReferenceType != ReferenceType.Project) {
 						foreach (string asm in pref.GetReferencedFileNames (configuration))
@@ -772,12 +860,8 @@ namespace MonoDevelop.Projects
 
 			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			bool noStdLib = false;
-			if (config != null) {
-				var parameters = config.CompilationParameters as DotNetConfigurationParameters;
-				if (parameters != null) {
-					noStdLib = parameters.NoStdLib;
-				}
-			}
+			if (config != null)
+				noStdLib = config.CompilationParameters.NoStdLib;
 
 			// System.Core is an implicit reference
 			if (!noStdLib) {
@@ -787,13 +871,13 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnSave (IProgressMonitor monitor)
+		protected internal override Task OnSave (ProgressMonitor monitor)
 		{
 			// Make sure the fx version is sorted out before saving
-			// to avoid changes in project references while saving 
+			// to avoid changes in project references while saving
 			if (targetFramework == null)
 				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
-			base.OnSave (monitor);
+			return base.OnSave (monitor);
 		}
 
 		IDotNetLanguageBinding FindLanguage (string name)
@@ -839,7 +923,7 @@ namespace MonoDevelop.Projects
 		{
 			if (base.CheckNeedsBuild (configuration))
 				return true;
-			
+
 			// base.CheckNeedsBuild() checks Project references, but not Assembly, Package, or Custom.
 			DateTime mtime = GetLastBuildTime (configuration);
 			foreach (ProjectReference pref in References) {
@@ -875,11 +959,11 @@ namespace MonoDevelop.Projects
 					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
 					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
 		}
-		
+
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			var outputBuildTime = base.OnGetLastBuildTime (configuration);
-			
+
 			//if the debug file is newer than the output file, use that as the build time
 			var conf = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			if (GeneratesDebugInfoFile && conf != null && conf.DebugMode) {
@@ -896,7 +980,7 @@ namespace MonoDevelop.Projects
 			}
 			return outputBuildTime;
 		}
-		
+
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null)
@@ -908,7 +992,12 @@ namespace MonoDevelop.Projects
 				.Where (d => !string.IsNullOrEmpty (d)).ToList ();
 		}
 
-		protected virtual ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
+		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
+		{
+			return ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
+		}
+
+		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{
 			DotNetExecutionCommand cmd = new DotNetExecutionCommand (configuration.CompiledOutputName);
 			cmd.Arguments = configuration.CommandLineParameters;
@@ -919,7 +1008,7 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 
-		protected internal override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			if (config == null)
@@ -931,10 +1020,11 @@ namespace MonoDevelop.Projects
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
+			var baseFiles = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
+				List<FilePath> col = new List<FilePath> ();
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType == ReferenceType.Assembly) {
 						foreach (var f in pref.GetReferencedFileNames (DefaultConfiguration.Selector))
@@ -945,10 +1035,20 @@ namespace MonoDevelop.Projects
 					if (c.SignAssembly)
 						col.Add (c.AssemblyKeyFile);
 				}
+				baseFiles = baseFiles.Concat (col);
 			}
-			return col;
+			return baseFiles;
 		}
 
+		internal Task<BuildResult> Compile (ProgressMonitor monitor, BuildData buildData)
+		{
+			return ProjectExtension.OnCompile (monitor, buildData);
+		}
+
+		protected virtual Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
+		{
+			return MD1DotNetProjectHandler.Compile (monitor, this, buildData);
+		}
 
 		public override bool IsCompileable (string fileName)
 		{
@@ -979,7 +1079,7 @@ namespace MonoDevelop.Projects
 			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
 				? defaultNamespace
 				: SanitisePotentialNamespace (project.Name) ?? "Application";
-			
+
 			if (string.IsNullOrEmpty (fileName)) {
 				return defaultNmspc;
 			}
@@ -1088,22 +1188,6 @@ namespace MonoDevelop.Projects
 			return BuildAction.DotNetCommonActions;
 		}
 
-		internal override void SetItemHandler (ISolutionItemHandler handler)
-		{
-			if (ProjectExtensionUtil.GetItemHandler (this) == null) {
-				// Initial assignment of the item handler
-				base.SetItemHandler (handler);
-				return;
-			}
-			IResourceHandler rh = ResourceHandler;
-
-			base.SetItemHandler (handler);
-			resourceHandler = null;
-			// A change in the file format may imply a change in the resource naming policy.
-			// Make sure that the resource Id don't change.
-			MigrateResourceIds (rh, ResourceHandler);
-		}
-
 		protected override void OnEndLoad ()
 		{
 			// The resource handler policy may have changed after loading, so reset any
@@ -1112,7 +1196,7 @@ namespace MonoDevelop.Projects
 
 			// Just after loading, the resource Ids are using the file format's policy.
 			// They have to be converted to the new policy
-			IResourceHandler handler = ItemHandler as IResourceHandler;
+			IResourceHandler handler = GetService<IResourceHandler> ();
 			if (handler != null)
 				MigrateResourceIds (handler, ResourceHandler);
 
@@ -1172,13 +1256,13 @@ namespace MonoDevelop.Projects
 		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
 		{
 			NotifyModified ("References");
-			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
+			ProjectExtension.OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
 		}
 
 		internal void NotifyReferenceAddedToProject (ProjectReference reference)
 		{
 			NotifyModified ("References");
-			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
+			ProjectExtension.OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}
 
 		protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
@@ -1205,7 +1289,7 @@ namespace MonoDevelop.Projects
 				CheckReferenceChange (ei.FileName);
 		}
 
-		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
@@ -1213,8 +1297,6 @@ namespace MonoDevelop.Projects
 			IConsole console = dotNetProjectConfig.ExternalConsole
 				? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput)
 				: context.ConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput);
-			
-			AggregatedOperationMonitor aggregatedOperationMonitor = new AggregatedOperationMonitor (monitor);
 
 			try {
 				try {
@@ -1227,14 +1309,16 @@ namespace MonoDevelop.Projects
 						return;
 					}
 
-					IProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
-					aggregatedOperationMonitor.AddOperation (asyncOp);
-					asyncOp.WaitForCompleted ();
+					ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
+					var stopper = monitor.CancellationToken.Register (asyncOp.Cancel);
+
+					await asyncOp.Task;
+
+					stopper.Dispose ();
 
 					monitor.Log.WriteLine (GettextCatalog.GetString ("The application exited with code: {0}", asyncOp.ExitCode));
 				} finally {
 					console.Dispose ();
-					aggregatedOperationMonitor.Dispose ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
@@ -1242,32 +1326,158 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public void AddImportIfMissing (string name, string condition)
+
+		protected override void OnReadProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			importsAdded.Add (new DotNetProjectImport (name, condition));
+			base.OnReadProjectHeader (monitor, msproject);
+
+			compileTarget = msproject.EvaluatedProperties.GetValue<CompileTarget> ("OutputType");
+			defaultNamespace = msproject.EvaluatedProperties.GetValue ("RootNamespace", string.Empty);
+			usePartialTypes = msproject.EvaluatedProperties.GetValue ("UsePartialTypes", true);
+
+			string frameworkIdentifier = msproject.EvaluatedProperties.GetValue ("TargetFrameworkIdentifier");
+			string frameworkVersion = msproject.EvaluatedProperties.GetValue ("TargetFrameworkVersion");
+			string frameworkProfile = msproject.EvaluatedProperties.GetValue ("TargetFrameworkProfile");
+
+			//determine the default target framework from the project type's default
+			//overridden by the components in the project
+			var def = GetDefaultTargetFrameworkForFormat (GetFileFormat (GetToolsFormat ()));
+			var targetFx = new TargetFrameworkMoniker (
+				string.IsNullOrEmpty (frameworkIdentifier)? def.Identifier : frameworkIdentifier,
+				string.IsNullOrEmpty (frameworkVersion)? def.Version : frameworkVersion,
+				string.IsNullOrEmpty (frameworkProfile)? def.Profile : frameworkProfile);
+
+
+			string fx = ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
+			if (!string.IsNullOrEmpty (fx)) {
+				targetFx = TargetFrameworkMoniker.Parse (fx);
+				ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
+			}
+
+			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 		}
 
-		public void RemoveImport (string name)
+		protected override void OnWriteProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			importsRemoved.Add (new DotNetProjectImport (name));
+			base.OnWriteProjectHeader (monitor, msproject);
+
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+
+			globalGroup.SetValue ("OutputType", compileTarget);
+			globalGroup.SetValue ("RootNamespace", defaultNamespace, string.Empty);
+			globalGroup.SetValue ("UsePartialTypes", usePartialTypes, true);
 		}
 
-		List <DotNetProjectImport> importsAdded = new List<DotNetProjectImport> ();
-
-		internal IList<DotNetProjectImport> ImportsAdded {
-			get { return importsAdded; }
-		}
-
-		List <DotNetProjectImport> importsRemoved = new List<DotNetProjectImport> ();
-
-		internal IList<DotNetProjectImport> ImportsRemoved {
-			get { return importsRemoved; }
-		}
-
-		public void ImportsSaved ()
+		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			importsAdded.Clear ();
-			importsRemoved.Clear ();
+			base.OnWriteProject (monitor, msproject);
+
+			var toolsFormat = GetToolsFormat ();
+			var moniker = TargetFramework.Id;
+			bool supportsMultipleFrameworks = toolsFormat.SupportsMonikers || toolsFormat.SupportedFrameworks.Length > 0;
+			var def = GetDefaultTargetFrameworkForFormat (GetFileFormat (toolsFormat));
+
+			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
+
+			// If the format only supports one fx version, or the version is the default, there is no need to store it.
+			// However, is there is already a value set, do not remove it.
+			if (supportsMultipleFrameworks) {
+				globalGroup.SetValue ("TargetFrameworkVersion", "v" + moniker.Version, "v" + def.Version, true);
+			}
+
+			if (toolsFormat.SupportsMonikers) {
+				globalGroup.SetValue ("TargetFrameworkIdentifier", moniker.Identifier, def.Identifier, true);
+				globalGroup.SetValue ("TargetFrameworkProfile", moniker.Profile, def.Profile, true);
+			}
+		}
+
+		protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		{
+			base.OnWriteConfiguration (monitor, config, pset);
+			if (pset.Project.IsNewProject)
+				pset.SetValue ("ErrorReport", "prompt");
+			
+		}
+
+		FileFormat GetFileFormat (MSBuildFileFormat fmt)
+		{
+			return new FileFormat (fmt, fmt.Id, fmt.Name);
+		}
+
+		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
+		{
+			internal protected override bool IsLibraryBasedProjectType {
+				get {
+					return false;
+				}
+			}
+
+			internal protected override bool GeneratesDebugInfoFile {
+				get {
+					return true;
+				}
+			}
+
+			internal protected override bool SupportsPartialTypes {
+				get {
+					return Project.SupportsPartialTypes;
+				}
+			}
+
+
+			internal protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
+			{
+				return Project.CheckCanReferenceProject (targetProject, out reason);
+			}
+
+			internal protected override string OnGetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
+			{
+				return Project.OnGetDefaultTargetPlatform (projectCreateInfo);
+			}
+
+			internal protected override IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
+			{
+				return Project.OnGetReferencedAssemblies (configuration, includeProjectReferences);
+			}
+
+			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
+			{
+				return Project.OnCreateExecutionCommand (configSel, configuration);
+			}
+
+			internal protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+			{
+				Project.OnReferenceRemovedFromProject (e);
+			}
+
+			internal protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+			{
+				Project.OnReferenceAddedToProject (e);
+			}
+
+			internal protected override Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
+			{
+				return Project.OnCompile (monitor, buildData);
+			}
+
+			#region Framework management
+
+			internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()
+			{
+				return Project.OnGetDefaultTargetFrameworkId ();
+			}
+
+			internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+			{
+				return Project.OnGetDefaultTargetFrameworkForFormat (format);
+			}
+
+			internal protected override bool OnGetSupportsFramework (TargetFramework framework)
+			{
+				return Project.OnSupportsFramework (framework);
+			}
+
+			#endregion
 		}
 	}
 }

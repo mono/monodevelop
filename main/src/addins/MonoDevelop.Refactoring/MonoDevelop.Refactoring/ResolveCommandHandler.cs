@@ -202,9 +202,12 @@ namespace MonoDevelop.Refactoring
 
 			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
 
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
-				doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+				parsedDocument.ParsedFile as CSharpUnresolvedFile,
 				unit,
 				location, 
 				out node);
@@ -276,14 +279,14 @@ namespace MonoDevelop.Refactoring
 				if (OnlyAddReference)
 					return GettextCatalog.GetString (
 						"Reference '{0}'", 
-						GetLibraryName ());
+						GetLibraryName ().Replace ("_", "__"));
 				if (Reference != null) 
 						return GettextCatalog.GetString (
 							"Reference '{0}' and use '{1}'", 
 							GetLibraryName (),
-							string.Format ("using {0};", Namespace));
+						string.Format ("using {0};", Namespace.Replace ("_", "__")));
 
-				return string.Format ("using {0};", Namespace);
+				return string.Format ("using {0};", Namespace.Replace ("_", "__"));
 			}
 
 			public string GetInsertNamespaceText (string member)
@@ -291,10 +294,10 @@ namespace MonoDevelop.Refactoring
 				if (Reference != null) 
 					return GettextCatalog.GetString (
 						"Reference '{0}' and use '{1}'", 
-						GetLibraryName (),
-						Namespace + "." + member
+						GetLibraryName ().Replace ("_", "__"),
+						(Namespace + "." + member).Replace ("_", "__")
 					);
-				return Namespace + "." + member;
+				return (Namespace + "." + member).Replace ("_", "__");
 			}
 		}
 
@@ -338,14 +341,14 @@ namespace MonoDevelop.Refactoring
 
 			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-			var referencedItems = IdeApp.Workspace != null ? project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+			var referencedItems = IdeApp.Workspace != null ? project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionFolderItem>) new SolutionFolderItem[0];
 			var solution = project != null ? project.ParentSolution : null;
 			if (solution != null) {
 				foreach (var curProject in solution.GetAllProjects ()) {
 					if (curProject == project || referencedItems.Contains (curProject))
 						continue;
 
-					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionFolderItem>) new SolutionFolderItem[0];
 					if (otherRefes.Contains (project))
 						continue;
 
@@ -540,7 +543,7 @@ namespace MonoDevelop.Refactoring
 				if (reference != null) {
 					var project = doc.Project;
 					project.Items.Add (reference);
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project);
 				}
 
 				if (string.IsNullOrEmpty (ns))

@@ -41,12 +41,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using Cecil = Mono.Cecil;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public static class MSBuildProjectService
 	{
-		const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
+		internal const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 		
@@ -58,7 +60,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static IMSBuildGlobalPropertyProvider[] globalPropertyProviders;
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
-		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
+		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
 
 		internal static bool ShutDown { get; private set; }
 		
@@ -67,13 +69,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (dataContext == null) {
 					dataContext = new MSBuildDataContext ();
 					Services.ProjectService.InitializeDataContext (dataContext);
-					foreach (ItemMember prop in MSBuildProjectHandler.ExtendedMSBuildProperties) {
-						ItemProperty iprop = new ItemProperty (prop.Name, prop.Type);
-						iprop.IsExternal = prop.IsExternal;
-						if (prop.CustomAttributes != null)
-							iprop.CustomAttributes = prop.CustomAttributes;
-						dataContext.RegisterProperty (prop.DeclaringType, iprop);
-					}
 				}
 				return dataContext;
 			}
@@ -88,10 +83,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 
-			Runtime.ShuttingDown += delegate {
-				ShutDown = true;
-				CleanProjectBuilders ();
-			};
+			Runtime.ShuttingDown += (sender, e) => ShutDown = true;
 
 			const string gppPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (gppPath);
@@ -118,84 +110,184 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static MSBuildVerbosity DefaultMSBuildVerbosity { get; private set; }
 		
-		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
+		public async static Task<SolutionItem> LoadItem (ProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
-					return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
+					return await LoadProjectAsync (monitor, fileName, expectedFormat, typeGuid, null, node);
 			}
 			
-			if (string.IsNullOrEmpty (typeGuid) && IsProjectSubtypeFile (fileName)) {
-				typeGuid = LoadProjectTypeGuids (fileName);
-				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-					if (node.CanHandleFile (fileName, typeGuid))
-						return node.LoadSolutionItem (monitor, fileName, expectedFormat, itemGuid);
-				}
-			}
-
 			// If it is a known unsupported project, load it as UnknownProject
 			var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (typeGuid != null ? new [] { typeGuid } : new string[0], fileName);
 			if (projectInfo != null && projectInfo.LoadFiles) {
 				if (typeGuid == null)
 					typeGuid = projectInfo.Guid;
-				var h = new MSBuildProjectHandler (typeGuid, "", itemGuid);
-				h.SetUnsupportedType (projectInfo);
-				return h.Load (monitor, fileName, expectedFormat, "", null);
+				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, "", typeof(UnknownProject), null);
+				p.UnsupportedProjectMessage = projectInfo.GetInstructions ();
+				return p;
 			}
-
 			return null;
 		}
-		
-		internal static IResourceHandler GetResourceHandlerForItem (DotNetProject project)
+
+		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, string typeGuid, Type itemType, SolutionItemTypeNode node)
 		{
-			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-				DotNetProjectNode pNode = node as DotNetProjectNode;
-				if (pNode != null && pNode.CanHandleItem (project))
-					return pNode.GetResourceHandler ();
+			try {
+				ProjectExtensionUtil.BeginLoadOperation ();
+				var item = await CreateSolutionItem (monitor, fileName, typeGuid, itemType, node);
+				item.TypeGuid = typeGuid ?? node.Guid;
+				await item.LoadAsync (monitor, fileName, format);
+				return item;
+			} finally {
+				ProjectExtensionUtil.EndLoadOperation ();
 			}
-			return new MSBuildResourceHandler ();
 		}
-		
-		internal static MSBuildHandler GetItemHandler (SolutionEntityItem item)
+
+		// All of the last 4 parameters are optional, but at least one must be provided.
+		static async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid, Type itemClass, SolutionItemTypeNode node)
 		{
-			MSBuildHandler handler = item.ItemHandler as MSBuildHandler;
-			if (handler != null)
-				return handler;
-			else
-				throw new InvalidOperationException ("Not an MSBuild project");
+			if (itemClass != null)
+				return (SolutionItem)Activator.CreateInstance (itemClass);
+
+			return await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
 		}
-		
-		internal static void SetId (SolutionItem item, string id)
+
+		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			MSBuildHandler handler = item.ItemHandler as MSBuildHandler;
-			if (handler != null)
-				handler.ItemId = id;
-			else
-				throw new InvalidOperationException ("Not an MSBuild project");
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.CanCreateSolutionItem (type, info, projectOptions))
+					return true;
+			}
+			return false;
 		}
-		
-		internal static void InitializeItemHandler (SolutionItem item)
+
+		internal static SolutionItem CreateSolutionItem (string typeGuid)
 		{
-			SolutionEntityItem eitem = item as SolutionEntityItem;
-			if (eitem != null) {
-				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-					if (node.CanHandleItem (eitem)) {
-						node.InitializeHandler (eitem);
-						foreach (DotNetProjectSubtypeNode snode in GetItemSubtypeNodes ()) {
-							if (snode.CanHandleItem (eitem))
-								snode.InitializeHandler (eitem);
-						}
-						return;
-					}
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
+					return node.CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
 				}
 			}
-			else if (item is SolutionFolder) {
-				MSBuildHandler h = new MSBuildHandler (FolderTypeGuid, null);
-				h.Item = item;
-				item.SetItemHandler (h);
+			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
+		}
+
+		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
+		{
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.CanCreateSolutionItem (type, info, projectOptions))
+					return node.CreateSolutionItem (type, info, projectOptions);
+			}
+			throw new InvalidOperationException ("Unknown project type: " + type);
+		}
+
+/*		internal static bool CanMigrateFlavor (string[] guids)
+		{
+
+		}
+
+		internal static async Task<bool> MigrateFlavor (IProgressMonitor monitor, string fileName, string typeGuid, MSBuildProjectNode node, MSBuildProject p)
+		{
+			var language = GetLanguageFromGuid (typeGuid);
+
+			if (MigrateProject (monitor, node, p, fileName, language)) {
+				p.Save (fileName);
+				return true;
+			}
+
+			return false;
+		}
+
+		static async Task<bool> MigrateProject (IProgressMonitor monitor, MSBuildProjectNode st, MSBuildProject p, string fileName, string language)
+		{
+			var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
+			if (projectLoadMonitor == null) {
+				// projectLoadMonitor will be null when running through md-tool, but
+				// this is not fatal if migration is not required, so just ignore it. --abock
+				if (!st.IsMigrationRequired)
+					return false;
+
+				LoggingService.LogError (Environment.StackTrace);
+				monitor.ReportError ("Could not open unmigrated project and no migrator was supplied", null);
+				throw new Exception ("Could not open unmigrated project and no migrator was supplied");
+			}
+			
+			var migrationType = st.MigrationHandler.CanPromptForMigration
+				? st.MigrationHandler.PromptForMigration (projectLoadMonitor, p, fileName, language)
+				: projectLoadMonitor.ShouldMigrateProject ();
+			if (migrationType == MigrationType.Ignore) {
+				if (st.IsMigrationRequired) {
+					monitor.ReportError (string.Format ("{1} cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName), BrandingService.ApplicationName), null);
+					throw new Exception ("The user choose not to migrate the project");
+				} else
+					return false;
+			}
+			
+			var baseDir = (FilePath) Path.GetDirectoryName (fileName);
+			if (migrationType == MigrationType.BackupAndMigrate) {
+				var backupDirFirst = baseDir.Combine ("backup");
+				string backupDir = backupDirFirst;
+				int i = 0;
+				while (Directory.Exists (backupDir)) {
+					backupDir = backupDirFirst + "-" + i.ToString ();
+					if (i++ > 20) {
+						throw new Exception ("Too many backup directories");
+					}
+				}
+				Directory.CreateDirectory (backupDir);
+				foreach (var file in st.MigrationHandler.FilesToBackup (fileName))
+					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
+			}
+			
+			var res = await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language);
+			if (!res)
+				throw new Exception ("Could not migrate the project");
+
+			return true;
+		}*/
+
+		internal static string GetLanguageGuid (string language)
+		{
+			foreach (var node in GetItemTypeNodes ().OfType<DotNetProjectTypeNode> ()) {
+				if (node.Language == language)
+					return node.Guid;
+			}
+			throw new InvalidOperationException ("Language not supported: " + language);
+		}
+
+		internal static string GetLanguageFromGuid (string guid)
+		{
+			foreach (var node in GetItemTypeNodes ().OfType<DotNetProjectTypeNode> ()) {
+				if (node.Guid.Equals (guid, StringComparison.OrdinalIgnoreCase))
+					return node.Language;
+			}
+			throw new InvalidOperationException ("Language not supported: " + guid);
+		}
+
+		internal static bool IsKnownTypeGuid (string guid)
+		{
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.Guid.Equals (guid, StringComparison.OrdinalIgnoreCase))
+					return true;
+			}
+			return false;
+		}
+
+		internal static string GetTypeGuidFromAlias (string alias)
+		{
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.Alias.Equals (alias, StringComparison.OrdinalIgnoreCase))
+					return node.Guid;
+			}
+			return null;
+		}
+
+		internal static IEnumerable<string> GetDefaultImports (string typeGuid)
+		{
+			foreach (var node in GetItemTypeNodes ()) {
+				if (node.Guid == typeGuid && !string.IsNullOrEmpty (node.Import))
+					yield return node.Import;
 			}
 		}
-		
+
 		public static bool SupportsProjectType (string projectFile)
 		{
 			if (!string.IsNullOrWhiteSpace (projectFile)) {
@@ -212,9 +304,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-		public static void CheckHandlerUsesMSBuildEngine (SolutionItem item, out bool useByDefault, out bool require)
+		public static void CheckHandlerUsesMSBuildEngine (SolutionFolderItem item, out bool useByDefault, out bool require)
 		{
-			var handler = item.ItemHandler as MSBuildProjectHandler;
+			var handler = item as Project;
 			if (handler == null) {
 				useByDefault = require = false;
 				return;
@@ -223,88 +315,92 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			require = handler.RequireMSBuildEngine;
 		}
 
-		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (string typeGuids)
-		{
-			if (!string.IsNullOrEmpty (typeGuids))
-				return GetDotNetProjectSubtype (typeGuids.Split (';').Select (t => t.Trim ()));
-			else
-				return null;
-		}
-
-		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (IEnumerable<string> typeGuids)
-		{
-			Type ptype = null;
-			DotNetProjectSubtypeNode foundNode = null;
-			foreach (string guid in typeGuids) {
-				foreach (DotNetProjectSubtypeNode st in GetItemSubtypeNodes ()) {
-					if (st.SupportsType (guid)) {
-						if (ptype == null || ptype.IsAssignableFrom (st.Type)) {
-							ptype = st.Type;
-							foundNode = st;
-						}
-					}
-				}
-			}
-			return foundNode;
-		}
-
-		static IEnumerable<ItemTypeNode> GetItemTypeNodes ()
+		static IEnumerable<SolutionItemTypeNode> GetItemTypeNodes ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
-				if (node is ItemTypeNode)
-					yield return (ItemTypeNode) node;
-			}
-			yield return genericItemTypeNode;
-		}
-		
-		internal static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
-		{
-			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
-				if (node is DotNetProjectSubtypeNode)
-					yield return (DotNetProjectSubtypeNode) node;
+				if (node is SolutionItemTypeNode)
+					yield return (SolutionItemTypeNode) node;
 			}
 		}
 		
 		internal static bool CanReadFile (FilePath file)
 		{
-			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
+			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (file, null)) {
 					return true;
-				}
-			}
-			if (IsProjectSubtypeFile (file)) {
-				string typeGuids = LoadProjectTypeGuids (file);
-				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-					if (node.CanHandleFile (file, typeGuids)) {
-						return true;
-					}
 				}
 			}
 			return GetUnknownProjectTypeInfo (new string[0], file) != null;
 		}
 		
-		internal static string GetExtensionForItem (SolutionEntityItem item)
+		internal static string GetExtensionForItem (SolutionItem item)
 		{
-			foreach (DotNetProjectSubtypeNode node in GetItemSubtypeNodes ()) {
-				if (!string.IsNullOrEmpty (node.Extension) && node.CanHandleItem (item))
+			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
+				if (node.Guid.Equals (item.TypeGuid, StringComparison.OrdinalIgnoreCase))
 					return node.Extension;
-			}
-			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
-				if (node.CanHandleItem (item)) {
-					return node.Extension;
-				}
 			}
 			// The generic handler should always be found
 			throw new InvalidOperationException ();
 		}
-		
-		static bool IsProjectSubtypeFile (FilePath file)
+
+		internal static string GetTypeGuidForItem (SolutionItem item)
 		{
-			foreach (DotNetProjectSubtypeNode node in GetItemSubtypeNodes ()) {
-				if (!string.IsNullOrEmpty (node.Extension) && node.CanHandleFile (file, null))
-					return true;
+			var className = item.GetType ().FullName;
+			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
+				if (node.ItenTypeName == className)
+					return node.Guid;
 			}
-			return false;
+			return GenericItemGuid;
+		}
+
+		public static void RegisterGenericProjectType (string projectId, Type type)
+		{
+			lock (genericProjectTypes) {
+				if (!typeof(Project).IsAssignableFrom (type))
+					throw new ArgumentException ("Type is not a subclass of MonoDevelop.Projects.Project");
+				genericProjectTypes [projectId] = type;
+			}
+		}
+
+		internal static Task<SolutionItem> CreateGenericProject (string file)
+		{
+			return Task<SolutionItem>.Factory.StartNew (delegate {
+				var t = ReadGenericProjectType (file);
+				if (t == null)
+					throw new UserException ("Unknown project type");
+
+				Type type;
+				lock (genericProjectTypes) {
+					if (!genericProjectTypes.TryGetValue (t, out type))
+						throw new UserException ("Unknown project type: " + t);
+				}
+				return (SolutionItem)Activator.CreateInstance (type);
+			});
+		}
+
+		static string ReadGenericProjectType (string file)
+		{
+			using (XmlTextReader tr = new XmlTextReader (file)) {
+				tr.MoveToContent ();
+				if (tr.LocalName != "Project")
+					return null;
+				if (tr.IsEmptyElement)
+					return null;
+				tr.ReadStartElement ();
+				tr.MoveToContent ();
+				if (tr.LocalName != "PropertyGroup")
+					return null;
+				if (tr.IsEmptyElement)
+					return null;
+				tr.ReadStartElement ();
+				tr.MoveToContent ();
+				while (tr.NodeType != XmlNodeType.EndElement) {
+					if (tr.NodeType == XmlNodeType.Element && !tr.IsEmptyElement && tr.LocalName == "ItemType")
+						return tr.ReadElementString ();
+					tr.Skip ();
+				}
+				return null;
+			}
 		}
 		
 		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?' };
@@ -342,10 +438,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return str;
 		}
 		
-		public static string ToMSBuildPath (string baseDirectory, string absPath)
+		public static string ToMSBuildPath (string baseDirectory, string absPath, bool normalize = true)
 		{
+			if (string.IsNullOrEmpty (absPath))
+				return absPath;
 			if (baseDirectory != null) {
-				absPath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (baseDirectory, absPath));
+				absPath = FileService.AbsoluteToRelativePath (baseDirectory, absPath);
+				if (normalize)
+					absPath = FileService.NormalizeRelativePath (absPath);
 			}
 			return EscapeString (absPath).Replace ('/', '\\');
 		}
@@ -501,6 +601,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			extn = fname.Substring (last_dot + 1);
 			return true;
 		}
+
+		static bool runLocal = false;
 		
 		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
@@ -537,6 +639,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//always start the remote process explicitly, even if it's using the current runtime and fx
 				//else it won't pick up the assembly redirects from the builder exe
 				var exe = GetExeLocation (runtime, toolsVersion);
+
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				var pinfo = new ProcessStartInfo (exe) {
 					UseShellExecute = false,
@@ -547,22 +650,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 				
 				Process p = null;
+
 				try {
-					p = runtime.ExecuteAssembly (pinfo);
-					p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-					string responseKey = "[MonoDevelop]";
-					string sref;
-					while (true) {
-						sref = p.StandardError.ReadLine ();
-						if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
-							sref = sref.Substring (responseKey.Length);
-							break;
+					IBuildEngine engine;
+					if (!runLocal) {
+						p = runtime.ExecuteAssembly (pinfo);
+						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+						string responseKey = "[MonoDevelop]";
+						string sref;
+						while (true) {
+							sref = p.StandardError.ReadLine ();
+							if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
+								sref = sref.Substring (responseKey.Length);
+								break;
+							}
 						}
+						byte[] data = Convert.FromBase64String (sref);
+						MemoryStream ms = new MemoryStream (data);
+						BinaryFormatter bf = new BinaryFormatter ();
+						engine = (IBuildEngine)bf.Deserialize (ms);
+					} else {
+						var asm = System.Reflection.Assembly.LoadFrom (exe);
+						var t = asm.GetType ("MonoDevelop.Projects.Formats.MSBuild.BuildEngine");
+						engine = (IBuildEngine)Activator.CreateInstance (t);
 					}
-					byte[] data = Convert.FromBase64String (sref);
-					MemoryStream ms = new MemoryStream (data);
-					BinaryFormatter bf = new BinaryFormatter ();
-					var engine = (IBuildEngine)bf.Deserialize (ms);
 					engine.SetCulture (GettextCatalog.UICulture);
 					engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
 					foreach (var gpp in globalPropertyProviders)
@@ -572,13 +683,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (p != null) {
 						try {
 							p.Kill ();
-						} catch { }
+						} catch {
+						}
 					}
 					throw;
 				}
-				
+
+
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
+				builder.Disconnected += delegate {
+					lock (builders)
+						builders.Remove (builderKey);
+				};
 				return new RemoteProjectBuilder (file, builder);
 			}
 		}
@@ -623,45 +740,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			lock (builders) {
-				if (engine.ReferenceCount > 0) {
-					if (--engine.ReferenceCount == 0) {
-						engine.ReleaseTime = DateTime.Now.AddSeconds (3);
-						ScheduleProjectBuilderCleanup (engine.ReleaseTime.AddMilliseconds (500));
-					}
-				}
-			}
-		}
-		
-		static DateTime nextCleanup = DateTime.MinValue;
-		
-		static void ScheduleProjectBuilderCleanup (DateTime cleanupTime)
-		{
-			lock (builders) {
-				if (cleanupTime < nextCleanup)
+				if (--engine.ReferenceCount != 0)
 					return;
-				nextCleanup = cleanupTime;
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					DateTime tnow = DateTime.Now;
-					while (tnow < nextCleanup) {
-						System.Threading.Thread.Sleep ((int)(nextCleanup - tnow).TotalMilliseconds);
-						CleanProjectBuilders ();
-						tnow = DateTime.Now;
-					}
-				});
+				builders.Remove (builders.First (kvp => kvp.Value == engine).Key);
 			}
-		}
-		
-		static void CleanProjectBuilders ()
-		{
-			lock (builders) {
-				DateTime tnow = DateTime.Now;
-				foreach (var val in new Dictionary<string,RemoteBuildEngine> (builders)) {
-					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
-						builders.Remove (val.Key);
-						val.Value.Dispose ();
-					}
-				}
-			}
+			engine.Dispose ();
 		}
 
 		static Dictionary<string, string> cultureNamesTable;
@@ -682,11 +765,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildProject project = new MSBuildProject ();
 			project.Load (fileName);
 			
-			MSBuildPropertySet globalGroup = project.GetGlobalPropertyGroup ();
+			IMSBuildPropertySet globalGroup = project.GetGlobalPropertyGroup ();
 			if (globalGroup == null)
 				return null;
 
-			return globalGroup.GetPropertyValue ("ProjectTypeGuids");
+			return globalGroup.GetValue ("ProjectTypeGuids");
 		}
 
 		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids, string fileName = null)
@@ -695,11 +778,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var nodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes")
 				.Where (p => guids.Any (p.MatchesGuid) || (ext != null && p.Extension == ext)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
-		}
-
-		public static MSBuildProjectHandler GetHandler (Project project)
-		{
-			return (MSBuildProjectHandler) project.GetItemHandler ();
 		}
 	}
 	
@@ -807,21 +885,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	class GenericItemTypeNode: ItemTypeNode
+	[RegisterProjectType (MSBuildProjectService.GenericItemGuid, Extension="mdproj")]
+	class GenericItemFactory: SolutionItemFactory
 	{
-		public GenericItemTypeNode (): base (MSBuildProjectService.GenericItemGuid, "mdproj", null)
+		public override Task<SolutionItem> CreateItem (string fileName, string typeGuid)
 		{
-		}
-		
-		public override bool CanHandleItem (SolutionEntityItem item)
-		{
-			return true;
-		}
-		
-		public override SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string itemGuid)
-		{
-			MSBuildProjectHandler handler = new MSBuildProjectHandler (Guid, Import, itemGuid);
-			return handler.Load (monitor, fileName, expectedFormat, null, null);
+			return MSBuildProjectService.CreateGenericProject (fileName);
 		}
 	}
 }

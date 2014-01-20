@@ -41,15 +41,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		Solution sol;
 		ListStore listStore;
-		List<SolutionEntityItem> startupItems;
+		List<SolutionItem> startupItems;
 		
 		public StartupOptionsPanelWidget (Solution sol)
 		{
 			this.Build();
 			this.sol = sol;
 			
-			startupItems = new List<SolutionEntityItem> ();
-			foreach (SolutionEntityItem it in sol.GetAllSolutionItems<SolutionEntityItem> ()) {
+			startupItems = new List<SolutionItem> ();
+			foreach (SolutionItem it in sol.GetAllItems<SolutionItem> ()) {
 				// Include in the list if it can run in any of the existing execution modes and configurations
 				foreach (IExecutionModeSet mset in Runtime.ProcessService.GetExecutionModes ()) {
 					bool matched = false;
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			}
 			
-			listStore = new ListStore (typeof(SolutionItem), typeof(bool), typeof(string));
+			listStore = new ListStore (typeof(SolutionFolderItem), typeof(bool), typeof(string));
 			treeItems.Model = listStore;
 			
 			CellRendererToggle crt = new CellRendererToggle ();
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			if (startupItems.Count > 0) {
 				for (int n=0; n<startupItems.Count; n++) {
-					SolutionEntityItem it = startupItems [n];
+					SolutionItem it = startupItems [n];
 					comboItems.AppendText (it.Name);
 					listStore.AppendValues (it, sol.MultiStartupItems.Contains (it), it.Name);
 					if (sol.StartupItem == it)
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				if (listStore.GetIterFirst (out it)) {
 					do {
 						if ((bool) listStore.GetValue (it, 1))
-							sol.MultiStartupItems.Add ((SolutionEntityItem) listStore.GetValue (it, 0));
+							sol.MultiStartupItems.Add ((SolutionItem) listStore.GetValue (it, 0));
 					} while (listStore.IterNext (ref it));
 				}
 				sol.StartupItem = null;

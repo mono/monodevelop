@@ -34,10 +34,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public abstract class ItemOptionsPanel: OptionsPanel
 	{
-		SolutionEntityItem solutionItem;
+		SolutionItem solutionItem;
 		WorkspaceItem workspaceItem;
 		
-		public SolutionEntityItem ConfiguredSolutionItem {
+		public SolutionItem ConfiguredSolutionItem {
 			get {
 				return solutionItem;
 			}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			base.Initialize (dialog, dataObject);
 			
-			solutionItem = dataObject as SolutionEntityItem;
+			solutionItem = dataObject as SolutionItem;
 			if (solutionItem != null)
 				workspaceItem = solutionItem.ParentSolution;
 			else

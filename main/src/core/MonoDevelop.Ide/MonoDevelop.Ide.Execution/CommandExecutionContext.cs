@@ -33,22 +33,22 @@ namespace MonoDevelop.Ide.Execution
 	public class CommandExecutionContext
 	{
 		CanExecuteDelegate runCheckDelegate;
-		SolutionEntityItem project;
+		SolutionItem project;
 		ExecutionCommand cmd;
 		
-		public CommandExecutionContext (SolutionEntityItem project, CanExecuteDelegate runCheckDelegate)
+		public CommandExecutionContext (SolutionItem project, CanExecuteDelegate runCheckDelegate)
 		{
 			this.project = project;
 			this.runCheckDelegate = runCheckDelegate;
 		}
 		
-		public CommandExecutionContext (SolutionEntityItem project, ExecutionCommand cmd)
+		public CommandExecutionContext (SolutionItem project, ExecutionCommand cmd)
 		{
 			this.project = project;
 			this.cmd = cmd;
 		}
 		
-		public SolutionEntityItem Project {
+		public SolutionItem Project {
 			get { return project; }
 		}
 		
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Execution
 				return true;
 			}
 			
-			public IProcessAsyncOperation Execute (MonoDevelop.Core.Execution.ExecutionCommand command, MonoDevelop.Core.Execution.IConsole console)
+			public ProcessAsyncOperation Execute (MonoDevelop.Core.Execution.ExecutionCommand command, MonoDevelop.Core.Execution.IConsole console)
 			{
 				throw new InvalidOperationException ();
 			}

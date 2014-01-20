@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class RevertWorker : Task {
+		private class RevertWorker : VersionControlTask {
 			VersionControlItemList items;
 						
 			public RevertWorker (VersionControlItemList items) {

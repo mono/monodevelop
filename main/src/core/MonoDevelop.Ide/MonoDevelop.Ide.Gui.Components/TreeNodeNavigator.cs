@@ -358,7 +358,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					object data = DataItem;
 					NodeBuilder[] chain = BuilderChain;
 					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return GetStoreValue (ExtensibleTreeView.TextColumn) as string;
+					else return GetStoreNodeInfo ().Label;
 				}
 			}
 			
@@ -369,6 +369,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 			
+			public T GetParentDataItem<T> (bool includeCurrent)
+			{
+				return (T)GetParentDataItem (typeof(T), includeCurrent);
+			}
+
 			public object GetParentDataItem (Type type, bool includeCurrent)
 			{
 				if (includeCurrent && type.IsInstanceOfType (DataItem))
@@ -400,6 +405,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			object GetStoreValue (int column)
 			{
 				return store.GetValue (currentIter, column);
+			}
+
+			NodeInfo GetStoreNodeInfo ()
+			{
+				return (NodeInfo) store.GetValue (currentIter, 0);
 			}
 		}
 	}

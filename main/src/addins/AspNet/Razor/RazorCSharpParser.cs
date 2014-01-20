@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNet.Razor
 		ChangeInfo lastChange;
 		string lastParsedFile;
 		TextDocument currentDocument;
-		AspNetAppProject aspProject;
+		AspNetFlavor aspProject;
 		DotNetProject project;
 		IList<TextDocument> openDocuments;
 
@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet.Razor
 			if (currentDocument == null && !TryAddDocument (fileName))
 				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
 
-			this.aspProject = project as AspNetAppProject;
+			this.aspProject = project.GetService<AspNetFlavor> ();
 
 			EnsureParserInitializedFor (fileName);
 
@@ -211,7 +211,7 @@ namespace MonoDevelop.AspNet.Razor
 			// Try to create host using web.config file
 			var webConfigMap = new WebConfigurationFileMap ();
 			if (aspProject != null) {
-				var vdm = new VirtualDirectoryMapping (aspProject.BaseDirectory.Combine ("Views"), true, "web.config");
+				var vdm = new VirtualDirectoryMapping (project.BaseDirectory.Combine ("Views"), true, "web.config");
 			webConfigMap.VirtualDirectories.Add ("/", vdm);
 			}
 			Configuration configuration;

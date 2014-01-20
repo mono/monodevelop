@@ -144,17 +144,17 @@ namespace MonoDevelop.VersionControl.Subversion
 			return true;
 		}
 
-		protected override void OnLock (IProgressMonitor monitor, params FilePath[] localPaths)
+		protected override void OnLock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			Svn.Lock (monitor, "", false, localPaths);
 		}
 
-		protected override void OnUnlock (IProgressMonitor monitor, params FilePath[] localPaths)
+		protected override void OnUnlock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			Svn.Unlock (monitor, false, localPaths);
 		}
 
-		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
 			string url = Url;
 			if (!serverPath.StartsWith ("/", StringComparison.Ordinal) && !url.EndsWith ("/", StringComparison.Ordinal))
@@ -180,7 +180,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			return new SubversionRepository (VersionControlSystem, paths[0], localPath);
 		}
 
-		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, IProgressMonitor monitor)
+		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, ProgressMonitor monitor)
 		{
 			if (dirs.Add (dir.CanonicalPath)) {
 				if (rec) {
@@ -190,31 +190,28 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			foreach (string path in localPaths)
 				Svn.Update (path, recurse, monitor);
 		}
 		
-		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
-			List<FilePath> list = new List<FilePath> ();
-			foreach (ChangeSetItem it in changeSet.Items)
-				list.Add (it.LocalPath);
-			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
+			Svn.Commit (changeSet.Items.Select (it => it.LocalPath).ToArray (), changeSet.GlobalComment, monitor);
 		}
 
-		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)
+		void CreateDirectory (string[] paths, string message, ProgressMonitor monitor)
 		{
 			Svn.Mkdir (paths, message, monitor);
 		}
 
-		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
 			Svn.Checkout (this.Url, targetLocalPath, rev, recurse, monitor);
 		}
 
-		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			// If we have an array of paths such as: new [] { "/Foo/Directory", "/Foo/Directory/File1", "/Foo/Directory/File2" }
 			// svn will successfully revert the first entry (the directory) and then throw an error when trying to revert the
@@ -225,17 +222,17 @@ namespace MonoDevelop.VersionControl.Subversion
 			Svn.Revert (localPaths, recurse, monitor);
 		}
 
-		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			Svn.RevertRevision (localPath, revision, monitor);
 		}
 
-		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			Svn.RevertToRevision (localPath, revision, monitor);
 		}
 
-		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			foreach (FilePath path in localPaths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
@@ -293,10 +290,10 @@ namespace MonoDevelop.VersionControl.Subversion
 		public string Root {
 			get {
 				try {
-					UriBuilder ub = new UriBuilder (Url);
-					ub.Path = string.Empty;
-					ub.Query = string.Empty;
-					return ub.ToString ();
+					return new UriBuilder (Url) {
+						Path = string.Empty,
+						Query = string.Empty
+					}.ToString ();
 				} catch {
 					return string.Empty;
 				}
@@ -308,7 +305,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			return (srcRepository is SubversionRepository) && ((SubversionRepository)srcRepository).Root == Root;
 		}
 
-		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			bool destIsVersioned = false;
 			
@@ -343,7 +340,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			if (IsVersioned (localDestPath))
 			{
@@ -434,7 +431,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 		
-		void MakeDirVersioned (string dir, IProgressMonitor monitor)
+		void MakeDirVersioned (string dir, ProgressMonitor monitor)
 		{
 			if (Directory.Exists (SubversionBackend.GetDirectoryDotSvn (VersionControlSystem, dir)))
 				return;
@@ -461,7 +458,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (string path in localPaths) {
 				if (IsVersioned (path)) {
@@ -489,7 +486,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (string path in localPaths) {
 				if (IsVersioned (path)) {

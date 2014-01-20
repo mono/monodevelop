@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				return slnFolder.GetAllItems<DotNetProject> ().Any ();
 			
 			// Global options case
-			return !(item is IWorkspaceObject);
+			return !(item is WorkspaceObject);
 		}
 		
 		public override Widget CreatePanelWidget ()
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					foreach (DotNetProject prj in ((SolutionFolder)DataObject).GetAllItems<DotNetProject> ())
 						prj.UpdateResourceHandler (migrateIds);
 				} else if (ConfiguredSolution != null) {
-					foreach (DotNetProject prj in ConfiguredSolution.GetAllSolutionItems<DotNetProject> ())
+					foreach (DotNetProject prj in ConfiguredSolution.GetAllItems<DotNetProject> ())
 						prj.UpdateResourceHandler (migrateIds);
 				}
 			}

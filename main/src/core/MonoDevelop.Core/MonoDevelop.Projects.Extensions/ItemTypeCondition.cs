@@ -34,7 +34,7 @@ namespace MonoDevelop.Projects.Extensions
 	public class ItemTypeCondition: ConditionType
 	{
 		Type objType;
-		List<string> typeNames;
+		HashSet<string> typeNames;
 		IDictionary<string,string> aliases;
 		
 		public ItemTypeCondition ()
@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Extensions
 			aliases [alias] = fullName;
 		}
 		
-		bool MatchesType (string type)
+		protected bool MatchesType (string type)
 		{
 			if (type.IndexOf ('.') == -1) {
 				string res;
@@ -106,29 +106,36 @@ namespace MonoDevelop.Projects.Extensions
 			// use of the condition.
 			
 			if (typeNames == null) {
-				typeNames = new List<string> ();
+				typeNames = new HashSet<string> ();
+
+				foreach (var t in GetObjectTypes ()) {
+					typeNames.Add (t.FullName);
+					typeNames.Add (t.AssemblyQualifiedName);
 				
-				typeNames.Add (objType.FullName);
-				typeNames.Add (objType.AssemblyQualifiedName);
-				
-	 			// base class hierarchy
+					// base class hierarchy
 	
-	 			Type baseType = objType.BaseType;
-	 			while (baseType != null) {
-					typeNames.Add (baseType.FullName);
-					typeNames.Add (baseType.AssemblyQualifiedName);
-					baseType = baseType.BaseType;
-				}
+					Type baseType = t.BaseType;
+					while (baseType != null) {
+						typeNames.Add (baseType.FullName);
+						typeNames.Add (baseType.AssemblyQualifiedName);
+						baseType = baseType.BaseType;
+					}
 	
-	 			// Implemented interfaces
+					// Implemented interfaces
 	
-	 			Type[] interfaces = objType.GetInterfaces();
-	 			foreach (Type itype in interfaces) {
-					typeNames.Add (itype.FullName);
-					typeNames.Add (itype.AssemblyQualifiedName);
+					Type[] interfaces = t.GetInterfaces ();
+					foreach (Type itype in interfaces) {
+						typeNames.Add (itype.FullName);
+						typeNames.Add (itype.AssemblyQualifiedName);
+					}
 				}
 			}
 			return typeNames.Contains (type);
+		}
+
+		protected virtual IEnumerable<Type> GetObjectTypes ()
+		{
+			yield return objType;
 		}
 	}
 }

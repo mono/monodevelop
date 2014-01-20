@@ -29,36 +29,70 @@
 
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Core
 {
-	public delegate void MonitorHandler (IProgressMonitor monitor);
-	
-	public interface IProgressMonitor: IDisposable
-	{
-		void BeginTask (string name, int totalWork);
-		void BeginStepTask (string name, int totalWork, int stepSize);
-		void EndTask ();
-		void Step (int work);
-		
-		TextWriter Log { get; }
-		
-		void ReportWarning (string message);
-		
-		void ReportSuccess (string message);
-		void ReportError (string message, Exception exception);
-		
-		bool IsCancelRequested { get; }
-		event MonitorHandler CancelRequested;
-		
-		// The returned IAsyncOperation object must be thread safe
-		IAsyncOperation AsyncOperation { get; }
-		
-		object SyncRoot { get; }
-	}
+	public delegate void MonitorHandler (ProgressMonitor monitor);
 	
 	public interface IProgressMonitorFactory
 	{
-		IProgressMonitor CreateProgressMonitor ();
+		ProgressMonitor CreateProgressMonitor ();
+	}
+
+	public class AsyncOperation
+	{
+		public static AsyncOperation CompleteOperation = new AsyncOperation (Task.FromResult(0), null);
+
+		protected AsyncOperation ()
+		{
+			Task = Task.FromResult (0);
+		}
+
+		public AsyncOperation (Task task, CancellationTokenSource cancellationTokenSource)
+		{
+			Task = task;
+			this.CancellationTokenSource = cancellationTokenSource;
+		}
+
+		public Task Task { get; protected set; }
+
+		protected CancellationTokenSource CancellationTokenSource { get; set; }
+
+		public bool IsCompleted {
+			get { return Task.IsCompleted; }
+		}
+
+		public void Cancel ()
+		{
+			if (CancellationTokenSource != null)
+				CancellationTokenSource.Cancel ();
+		}
+
+		public void WaitForCompleted ()
+		{
+			Task.Wait ();
+		}
+	}
+
+	public class AsyncOperation<T>: AsyncOperation
+	{
+		public AsyncOperation (Task<T> task, CancellationTokenSource cancellationTokenSource): base (task, cancellationTokenSource)
+		{
+		}
+
+		public new Task<T> Task {
+			get { return (Task<T>) base.Task; }
+		}
+	}
+
+	public static class ProgressMonitorExtensions
+	{
+		public static ProgressMonitor WithCancellationSource (this ProgressMonitor monitor, CancellationTokenSource cancellationTokenSource)
+		{
+			return new AggregatedProgressMonitor (monitor, cancellationTokenSource);
+		}
 	}
 }

@@ -44,6 +44,7 @@ using NGit.Transport;
 using NGit.Diff;
 using NGit.Merge;
 using NGit.Submodule;
+using ProgressMonitor = MonoDevelop.Core.ProgressMonitor;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -409,7 +410,7 @@ namespace MonoDevelop.VersionControl.Git
 				.Select (f => new FilePath (f).CanonicalPath));
 		}
 
-		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
 			// Initialize the repository
 			RootRepository = GitUtil.Init (localPath, Url);
@@ -451,7 +452,7 @@ namespace MonoDevelop.VersionControl.Git
 			return this;
 		}
 		
-		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			
@@ -478,7 +479,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		public void Fetch (IProgressMonitor monitor)
+		public void Fetch (ProgressMonitor monitor)
 		{
 			string remote = GetCurrentRemote ();
 			if (remote == null)
@@ -536,7 +537,7 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
+		public void Rebase (string upstreamRef, GitUpdateOptions options, ProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
@@ -660,7 +661,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
@@ -798,7 +799,7 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 			string message = changeSet.GlobalComment;
 			if (string.IsNullOrEmpty (message))
@@ -864,7 +865,7 @@ namespace MonoDevelop.VersionControl.Git
 			config.Save ();
 		}
 
-		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
 			CloneCommand cmd = NGit.Api.Git.CloneRepository ();
 			cmd.SetURI (Url);
@@ -889,108 +890,109 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			// Replace with NGit.Api.Git.Reset ()
+
 			// FIXME: we lack info about what happened to files
-			foreach (var group in GroupByRepository (localPaths)) {
+
+			var groups = GroupByRepository (localPaths).ToArray ();
+			monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), groups.Length);
+
+			foreach (var group in groups) {
+				monitor.BeginStep (1);
 				var repository = group.Key;
 				var files = group.ToArray ();
 
-			var c = GetHeadCommit (repository);
-			RevTree tree = c != null ? c.Tree : null;
-			
-			List<FilePath> changedFiles = new List<FilePath> ();
-			List<FilePath> removedFiles = new List<FilePath> ();
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 3);
-			monitor.BeginStepTask (GettextCatalog.GetString ("Reverting files"), files.Length, 2);
-			
-			DirCache dc = repository.LockDirCache ();
-			DirCacheBuilder builder = dc.Builder ();
-			
-			try {
-				HashSet<string> entriesToRemove = new HashSet<string> ();
-				HashSet<string> foldersToRemove = new HashSet<string> ();
+				var c = GetHeadCommit (repository);
+				RevTree tree = c != null ? c.Tree : null;
 				
-				// Add the new entries
-				foreach (FilePath fp in files) {
-					string p = repository.ToGitPath (fp);
+				List<FilePath> changedFiles = new List<FilePath> ();
+				List<FilePath> removedFiles = new List<FilePath> ();
+				
+				monitor.BeginTask (files.Length);
+				
+				DirCache dc = repository.LockDirCache ();
+				DirCacheBuilder builder = dc.Builder ();
+				
+				try {
+					HashSet<string> entriesToRemove = new HashSet<string> ();
+					HashSet<string> foldersToRemove = new HashSet<string> ();
 					
-					// Register entries to be removed from the index
-					if (Directory.Exists (fp))
-						foldersToRemove.Add (p);
-					else
-						entriesToRemove.Add (p);
-					
-					TreeWalk tw = tree != null ? TreeWalk.ForPath (repository, p, tree) : null;
-					if (tw == null) {
-						// Removed from the index
-					}
-					else {
-						// Add new entries
+					// Add the new entries
+					foreach (FilePath fp in files) {
+						string p = repository.ToGitPath (fp);
 						
-						TreeWalk r;
-						if (tw.IsSubtree) {
-							// It's a directory. Make sure we remove existing index entries of this directory
+						// Register entries to be removed from the index
+						if (Directory.Exists (fp))
 							foldersToRemove.Add (p);
-							
-							// We have to iterate through all folder files. We need a new iterator since the
-							// existing rw is not recursive
-							r = new TreeWalk(repository);
-							r.Reset (tree);
-							r.Filter = PathFilterGroup.CreateFromStrings(new string[]{p});
-							r.Recursive = true;
-							r.Next ();
-						} else {
-							r = tw;
-						}
+						else
+							entriesToRemove.Add (p);
 						
-						do {
-							// There can be more than one entry if reverting a whole directory
-							string rpath = repository.FromGitPath (r.PathString);
-							DirCacheEntry e = new DirCacheEntry (r.PathString);
-							e.SetObjectId (r.GetObjectId (0));
-							e.FileMode = r.GetFileMode (0);
-							if (!Directory.Exists (Path.GetDirectoryName (rpath)))
-								Directory.CreateDirectory (rpath);
-							DirCacheCheckout.CheckoutEntry (repository, rpath, e);
-							builder.Add (e);
-							changedFiles.Add (rpath);
-						} while (r.Next ());
+						TreeWalk tw = tree != null ? TreeWalk.ForPath (repository, p, tree) : null;
+						if (tw == null) {
+							// Removed from the index
+						}
+						else {
+							// Add new entries
+							
+							TreeWalk r;
+							if (tw.IsSubtree) {
+								// It's a directory. Make sure we remove existing index entries of this directory
+								foldersToRemove.Add (p);
+								
+								// We have to iterate through all folder files. We need a new iterator since the
+								// existing rw is not recursive
+								r = new TreeWalk(repository);
+								r.Reset (tree);
+								r.Filter = PathFilterGroup.CreateFromStrings(new string[]{p});
+								r.Recursive = true;
+								r.Next ();
+							} else {
+								r = tw;
+							}
+							
+							do {
+								// There can be more than one entry if reverting a whole directory
+								string rpath = repository.FromGitPath (r.PathString);
+								DirCacheEntry e = new DirCacheEntry (r.PathString);
+								e.SetObjectId (r.GetObjectId (0));
+								e.FileMode = r.GetFileMode (0);
+								if (!Directory.Exists (Path.GetDirectoryName (rpath)))
+									Directory.CreateDirectory (rpath);
+								DirCacheCheckout.CheckoutEntry (repository, rpath, e);
+								builder.Add (e);
+								changedFiles.Add (rpath);
+							} while (r.Next ());
+						}
 					}
+					
+					// Add entries we want to keep
+					int count = dc.GetEntryCount ();
+					for (int n=0; n<count; n++) {
+						DirCacheEntry e = dc.GetEntry (n);
+						string path = e.PathString;
+						if (!entriesToRemove.Contains (path) && !foldersToRemove.Any (f => IsSubpath (f,path)))
+							builder.Add (e);
+					}
+					
+					builder.Commit ();
 					monitor.Step (1);
 				}
-				
-				// Add entries we want to keep
-				int count = dc.GetEntryCount ();
-				for (int n=0; n<count; n++) {
-					DirCacheEntry e = dc.GetEntry (n);
-					string path = e.PathString;
-					if (!entriesToRemove.Contains (path) && !foldersToRemove.Any (f => IsSubpath (f,path)))
-						builder.Add (e);
+				catch {
+					dc.Unlock ();
+					throw;
 				}
 				
-				builder.Commit ();
-			}
-			catch {
-				dc.Unlock ();
-				throw;
-			}
-			
-			monitor.EndTask ();
-			monitor.BeginTask (null, files.Length);
+				foreach (FilePath p in changedFiles)
+					FileService.NotifyFileChanged (p, true);
 
-			foreach (FilePath p in changedFiles) {
-				FileService.NotifyFileChanged (p, true);
-				monitor.Step (1);
-			}
-			foreach (FilePath p in removedFiles) {
-				FileService.NotifyFileRemoved (p);
-				monitor.Step (1);
+				foreach (FilePath p in removedFiles)
+					FileService.NotifyFileRemoved (p);
+
+				monitor.EndTask ();
 			}
 			monitor.EndTask ();
-			}
 		}
 		
 		static bool IsSubpath (string basePath, string childPath)
@@ -1001,12 +1003,12 @@ namespace MonoDevelop.VersionControl.Git
 			return childPath.StartsWith (basePath + "/", StringComparison.InvariantCulture);
 		}
 
-		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			throw new NotSupportedException ();
 		}
 
-		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			NGit.Repository repo = GetRepository (localPath);
 			NGit.Api.Git git = new NGit.Api.Git (repo);
@@ -1020,7 +1022,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 
-		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
@@ -1034,7 +1036,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
 
@@ -1054,7 +1056,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
 
@@ -1076,7 +1078,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		void DeleteCore (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				List<FilePath> backupFiles = new List<FilePath> ();
@@ -1220,7 +1222,7 @@ namespace MonoDevelop.VersionControl.Git
 			return remotes[0];
 		}
 
-		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
+		public void Push (ProgressMonitor monitor, string remote, string remoteBranch)
 		{
 			string remoteRef = "refs/heads/" + remoteBranch;
 			IEnumerable<PushResult> res;
@@ -1422,7 +1424,7 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.GetBranch ();
 		}
 
-		public void SwitchToBranch (IProgressMonitor monitor, string branch)
+		public void SwitchToBranch (ProgressMonitor monitor, string branch)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 			
@@ -1477,7 +1479,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<DiffEntry> statusList)
+		void NotifyFileChanges (ProgressMonitor monitor, IEnumerable<DiffEntry> statusList)
 		{
 			List<DiffEntry> changes = new List<DiffEntry> (statusList);
 
@@ -1575,7 +1577,7 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
-		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			VersionInfo vi = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi == null || !vi.IsVersioned) {
@@ -1589,7 +1591,7 @@ namespace MonoDevelop.VersionControl.Git
 				Revert (localSrcPath, false, monitor);
 		}
 
-		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
 			base.OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
@@ -1767,21 +1769,21 @@ namespace MonoDevelop.VersionControl.Git
 		public string PushUrl { get; internal set; }
 	}
 	
-	class GitMonitor: ProgressMonitor, IDisposable
+	class GitMonitor: NGit.ProgressMonitor, IDisposable
 	{
-		readonly IProgressMonitor monitor;
+		readonly MonoDevelop.Core.ProgressMonitor monitor;
 		int currentWork;
 		int currentStep;
 		bool taskStarted;
 		int totalTasksOverride = -1;
 		bool monitorStarted;
 		
-		public GitMonitor (IProgressMonitor monitor)
+		public GitMonitor (MonoDevelop.Core.ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
 		}
 		
-		public GitMonitor (IProgressMonitor monitor, int totalTasksOverride)
+		public GitMonitor (MonoDevelop.Core.ProgressMonitor monitor, int totalTasksOverride)
 		{
 			this.monitor = monitor;
 			this.totalTasksOverride = totalTasksOverride;
@@ -1829,7 +1831,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override bool IsCancelled ()
 		{
-			return monitor.IsCancelRequested;
+			return monitor.CancellationToken.IsCancellationRequested;
 		}
 		
 		public void Dispose ()

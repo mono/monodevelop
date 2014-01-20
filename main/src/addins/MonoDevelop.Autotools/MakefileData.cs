@@ -38,6 +38,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
+using System.Xml;
 
 namespace MonoDevelop.Autotools
 {
@@ -69,6 +70,24 @@ namespace MonoDevelop.Autotools
 			assemblyContext = GetMonoRuntimeContext ();
 			if (assemblyContext == null)
 				integrationEnabled = false;
+		}
+
+		public static MakefileData Read (XmlElement ext)
+		{
+			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+			return (MakefileData) ser.Deserialize (new XmlNodeReader (ext), typeof(MakefileData));
+		}
+
+		public XmlElement Write ()
+		{
+			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+			var sw = new StringWriter ();
+			ser.Serialize (new XmlTextWriter (sw), this);
+			XmlDocument doc = new XmlDocument ();
+			doc.LoadXml (sw.ToString ());
+			var elem = doc.DocumentElement;
+			doc.RemoveChild (elem);
+			return elem;
 		}
 		
 		internal static IAssemblyContext GetMonoRuntimeContext ()
@@ -613,7 +632,7 @@ namespace MonoDevelop.Autotools
 			return customRegex [index];
 		}
 
-		IProgressMonitor monitor = null;
+		ProgressMonitor monitor = null;
 
 		// VarName -> Encode filenames Eg. $(srcdir)
 		Dictionary<string, bool> encodeValues;
@@ -651,7 +670,7 @@ namespace MonoDevelop.Autotools
 		}
 
 		//use events.. 
-		public void UpdateProject (IProgressMonitor monitor, bool promptForRemoval)
+		public void UpdateProject (ProgressMonitor monitor, bool promptForRemoval)
 		{
 			if (!IntegrationEnabled)
 				return;
@@ -1177,7 +1196,7 @@ namespace MonoDevelop.Autotools
 			return pref;
 		}
 
-		public static void ResolveProjectReferences (SolutionFolder folder, IProgressMonitor monitor)
+		public static void ResolveProjectReferences (SolutionFolder folder, ProgressMonitor monitor)
 		{
 			Dictionary<string, DotNetProject> projects = new Dictionary<string, DotNetProject> ();
 			foreach (DotNetProject p in folder.GetAllItems<DotNetProject> ()) {
@@ -1325,7 +1344,7 @@ namespace MonoDevelop.Autotools
 
 		//Writing methods
 
-		public void UpdateMakefile (IProgressMonitor monitor)
+		public void UpdateMakefile (ProgressMonitor monitor)
 		{
 			//FIXME: AssemblyName & OutputDir
 

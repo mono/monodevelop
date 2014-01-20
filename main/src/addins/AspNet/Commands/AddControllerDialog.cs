@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Projects;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -57,13 +58,14 @@ namespace MonoDevelop.AspNet.Commands
 			}
 		}
 
-		public AddControllerDialog (AspNetAppProject project)
+		public AddControllerDialog (DotNetProject project)
 		{
 			Build ();
 
+			var ext = project.GetService<AspNetFlavor> ();
 			provider = project.LanguageBinding.GetCodeDomProvider ();
 
-			loadedTemplateList = project.GetCodeTemplates ("AddController");
+			loadedTemplateList = ext.GetCodeTemplates ("AddController");
 			bool foundEmptyTemplate = false;
 			int templateIndex = 0;
 			foreach (string file in loadedTemplateList) {

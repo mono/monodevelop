@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects
 			align.Add (topBar);
 			
 			HeaderBox ebox = new HeaderBox ();
-			ebox.GradientBackround = true;
+			ebox.GradientBackground = true;
 			ebox.SetMargins (0, 1, 0, 0);
 			ebox.Add (align);
 			
@@ -251,14 +251,14 @@ namespace MonoDevelop.Ide.Projects
 			try {
 				dlg.Title = GettextCatalog.GetString ("Apply to Project");
 				dlg.RootItem = IdeApp.Workspace;
-				dlg.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				dlg.SelectableItemTypes = new Type[] { typeof(Solution), typeof(SolutionItem) };
+				dlg.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedObject;
+				dlg.SelectableItemTypes = new Type[] { typeof(Solution), typeof(SolutionFolderItem) };
 				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
 					((IPolicyProvider)dlg.SelectedItem).Policies.Import (currentSet, true);
 					if (dlg.SelectedItem is IWorkspaceFileObject)
-						IdeApp.ProjectOperations.Save ((IWorkspaceFileObject)dlg.SelectedItem);
+						IdeApp.ProjectOperations.SaveAsync (dlg.SelectedItem);
 					else
-						IdeApp.ProjectOperations.Save (((SolutionItem)dlg.SelectedItem).ParentSolution);
+						IdeApp.ProjectOperations.SaveAsync (((SolutionFolderItem)dlg.SelectedItem).ParentSolution);
 				}
 			} finally {
 				dlg.Destroy ();

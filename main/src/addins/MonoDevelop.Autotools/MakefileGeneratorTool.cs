@@ -50,7 +50,7 @@ namespace MonoDevelop.Autotools
 			Console.WriteLine (GettextCatalog.GetString ("Loading solution file {0}", filename));
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			
-			Solution solution = Services.ProjectService.ReadWorkspaceItem (monitor, filename) as Solution;
+			Solution solution = Services.ProjectService.ReadWorkspaceItem (monitor, filename).Result as Solution;
 			if (solution == null) {
 				Console.WriteLine (GettextCatalog.GetString ("Error: Makefile generation supported only for solutions.\n"));
 				return 1;

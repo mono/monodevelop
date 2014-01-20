@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Projects
 		public UnknownWorkspaceItem ()
 		{
 			NeedsReload = false;
+			Initialize (this);
 		}
 		
 		public string LoadError {
@@ -52,19 +54,17 @@ namespace MonoDevelop.Projects
 			set { unloaded = value; }
 		}
 		
-		protected internal override void OnSave (IProgressMonitor monitor)
+		protected internal override Task OnSave (ProgressMonitor monitor)
 		{
-			Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
+			return Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
 		}
 		
-		public override string Name {
-			get {
-				if (!FileName.IsNullOrEmpty)
-					return FileName.FileNameWithoutExtension;
-				else
-					return GettextCatalog.GetString ("Unknown entry");
-			}
-			set { }
+		protected override string OnGetName ()
+		{
+			if (!FileName.IsNullOrEmpty)
+				return FileName.FileNameWithoutExtension;
+			else
+				return GettextCatalog.GetString ("Unknown entry");
 		}
 	}
 }

@@ -37,6 +37,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Components.Docking;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -51,22 +52,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 		
-		public IProgressMonitor GetBuildProgressMonitor ()
+		public ProgressMonitor GetBuildProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Building..."));
 		}
 		
-		public IProgressMonitor GetCleanProgressMonitor ()
+		public ProgressMonitor GetCleanProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Cleaning..."));
 		}
 		
-		public IProgressMonitor GetRebuildProgressMonitor ()
+		public ProgressMonitor GetRebuildProgressMonitor ()
 		{
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Rebuilding..."));
 		}
 		
-		private IProgressMonitor GetBuildProgressMonitor (string statusText)
+		private ProgressMonitor GetBuildProgressMonitor (string statusText)
 		{
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
 			ErrorListPad errorPad = (ErrorListPad) pad.Content;
@@ -75,27 +76,27 @@ namespace MonoDevelop.Ide.Gui
 			return mon;
 		}
 		
-		public IProgressMonitor GetRunProgressMonitor ()
+		public ProgressMonitor GetRunProgressMonitor ()
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
 		}
 		
-		public IProgressMonitor GetToolOutputProgressMonitor (bool bringToFront)
+		public ProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.RunProgramIcon, bringToFront, true);
 		}
 		
-		public IProgressMonitor GetLoadProgressMonitor (bool lockGui)
+		public ProgressMonitor GetLoadProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Loading..."), Stock.StatusSolutionOperation, true, false, lockGui);
 		}
 		
-		public IProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
+		public ProgressMonitor GetProjectLoadProgressMonitor (bool lockGui)
 		{
 			return new GtkProjectLoadProgressMonitor (GetLoadProgressMonitor (lockGui));
 		}
 		
-		public IProgressMonitor GetSaveProgressMonitor (bool lockGui)
+		public ProgressMonitor GetSaveProgressMonitor (bool lockGui)
 		{
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.StatusSolutionOperation, true, false, lockGui);
 		}
@@ -108,32 +109,32 @@ namespace MonoDevelop.Ide.Gui
 		/******************************/
 		
 		
-		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs)
+		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs)
 		{
 			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false, null);
 		}
 		
-		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
+		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
 		{
 			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, null);
 		}
 		
-		public IProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad)
+		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad)
 		{
 			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad);
 		}
 		
-		public IProgressMonitor GetBackgroundProgressMonitor (string title, IconId icon)
+		public ProgressMonitor GetBackgroundProgressMonitor (string title, IconId icon)
 		{
 			return new BackgroundProgressMonitor (title, icon);
 		}
 		
-		public IProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
+		public ProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
 		{
 			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse);
 		}
 		
-		public IProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
+		public ProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
 		{
 			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = true;
@@ -150,7 +151,7 @@ namespace MonoDevelop.Ide.Gui
 		/// For example, if you have a monitor 'm' created with a call to GetOutputProgressMonitor,
 		/// GetPadForMonitor (m) will return the output pad.
 		/// </remarks>
-		public Pad GetPadForMonitor (IProgressMonitor monitor)
+		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
 			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
@@ -236,12 +237,12 @@ namespace MonoDevelop.Ide.Gui
 			pad.Destroy ();
 		}
 		
-		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
+		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
 		{
 			return GetSearchProgressMonitor (bringToFront, false);
 		}
 		
-		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad)
+		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad)
 		{
 			Pad pad = null;
 			string title = GettextCatalog.GetString ("Search Results");

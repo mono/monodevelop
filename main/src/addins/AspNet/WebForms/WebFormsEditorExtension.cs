@@ -48,6 +48,7 @@ using S = MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.AspNet.WebForms
 		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
 		WebFormsParsedDocument aspDoc;
-		AspNetAppProject project;
+		DotNetProject project;
 		WebFormsTypeContext refman = new WebFormsTypeContext ();
 
 		ILanguageCompletionBuilder documentBuilder;
@@ -90,7 +91,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (HasDoc)
 				refman.Doc = aspDoc;
 			
-			var newProj = Document.Project as AspNetAppProject;
+			var newProj = Document.Project as DotNetProject;
 			if (newProj != null) {
 				project = newProj;
 				refman.Project = newProj;

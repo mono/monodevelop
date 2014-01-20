@@ -104,11 +104,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 					                                AlertButton.Cancel, AlertButton.Remove) == AlertButton.Remove) {
 						templates.Remove (template);
 						templateStore.Remove (ref selected);
+						templatesToRemove.Add (template);
 					}
 				}
 			}
 		}
 		List<CodeTemplate> templatesToSave = new List<CodeTemplate> ();
+		List<CodeTemplate> templatesToRemove = new List<CodeTemplate> ();
 		void ButtonEditClicked (object sender, EventArgs e)
 		{
 			var template = GetSelectedTemplate ();
@@ -142,8 +144,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public void Store ()
 		{
-			templatesToSave.ForEach (template => CodeTemplateService.SaveTemplate (template));
+			templatesToSave.ForEach (CodeTemplateService.SaveTemplate);
 			templatesToSave.Clear ();
+			templatesToRemove.ForEach (CodeTemplateService.DeleteTemplate);
+			templatesToRemove.Clear ();
 			CodeTemplateService.Templates = templates;
 		}
 		

@@ -300,7 +300,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		internal MergeCommandResult Apply (ProgressMonitor monitor, Stash stash)
+		internal MergeCommandResult Apply (NGit.ProgressMonitor monitor, Stash stash)
 		{
 			monitor.Start (1);
 			monitor.BeginTask ("Applying stash", 100);

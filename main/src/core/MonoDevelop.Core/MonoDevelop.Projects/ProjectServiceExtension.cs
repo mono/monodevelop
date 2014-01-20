@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Execution;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -39,9 +40,8 @@ namespace MonoDevelop.Projects
 		internal ProjectServiceExtension Next;
 		
 		Stack<ItemLoadCallback> loadCallbackStack = new Stack<ItemLoadCallback> ();
-		Stack<ItemCompileCallback> compileCallbackStack = new Stack<ItemCompileCallback> ();
-		
-		internal ProjectServiceExtension GetNext (IBuildTarget item)
+
+		internal ProjectServiceExtension GetNext (WorkspaceObject item)
 		{
 			if (Next.SupportsItem (item))
 				return Next;
@@ -49,40 +49,9 @@ namespace MonoDevelop.Projects
 				return Next.GetNext (item);
 		}
 		
-		public virtual bool SupportsItem (IBuildTarget item)
+		public virtual bool SupportsItem (WorkspaceObject item)
 		{
 			return true;
-		}
-		
-		public virtual object GetService (SolutionItem item, Type type)
-		{
-			if (type.IsInstanceOfType (this))
-				return this;
-			else
-				return GetNext (item).GetService (item, type);
-		}
-
-		public virtual object GetService (WorkspaceItem item, Type type)
-		{
-			if (type.IsInstanceOfType (this))
-				return this;
-			else
-				return GetNext (item).GetService (item, type);
-		}
-
-		public virtual void Save (IProgressMonitor monitor, SolutionEntityItem item)
-		{
-			GetNext (item).Save (monitor, item);
-		}
-		
-		public virtual void Save (IProgressMonitor monitor, WorkspaceItem item)
-		{
-			GetNext (item).Save (monitor, item);
-		}
-
-		public virtual List<FilePath> GetItemFiles (SolutionEntityItem item, bool includeReferencedFiles)
-		{
-			return GetNext (item).GetItemFiles (item, includeReferencedFiles);
 		}
 		
 		public virtual bool IsSolutionItemFile (string fileName)
@@ -95,306 +64,24 @@ namespace MonoDevelop.Projects
 			return GetNext (UnknownItem.Instance).IsWorkspaceItemFile (fileName);
 		}
 		
-		internal virtual SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName, ItemLoadCallback callback)
+		internal async virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName, ItemLoadCallback callback)
 		{
 			loadCallbackStack.Push (callback);
 			try {
-				SolutionEntityItem res = LoadSolutionItem (monitor, fileName);
-				return res;
+				return await LoadSolutionItem (monitor, fileName);
 			} finally {
 				loadCallbackStack.Pop ();
 			}
 		}
 		
-		protected virtual SolutionEntityItem LoadSolutionItem (IProgressMonitor monitor, string fileName)
+		protected virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName)
 		{
 			return GetNext (UnknownItem.Instance).LoadSolutionItem (monitor, fileName, loadCallbackStack.Peek ());
 		}
 		
-		public virtual WorkspaceItem LoadWorkspaceItem (IProgressMonitor monitor, string fileName)
+		public virtual Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
 			return GetNext (UnknownItem.Instance).LoadWorkspaceItem (monitor, fileName);
-		}
-		
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, ConfigurationSelector configuration)
-		{
-			if (target == ProjectService.BuildTarget)
-				return Build (monitor, item, configuration);
-			else if (target == ProjectService.CleanTarget) {
-				Clean (monitor, item, configuration);
-				return null;
-			}
-			else
-				return GetNext (item).RunTarget (monitor, item, target, configuration);
-		}
-		
-		public virtual bool SupportsTarget (IBuildTarget item, string target)
-		{
-			if (item is SolutionEntityItem)
-				return SupportsTarget ((SolutionEntityItem)item, target);
-			else if (item is WorkspaceItem)
-				return SupportsTarget ((WorkspaceItem) item, target);
-			else 
-				return GetNext (item).SupportsTarget (item, target);
-		}
-
-		protected virtual bool SupportsTarget (SolutionEntityItem item, string target)
-		{
-			return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
-		}
-
-		protected virtual bool SupportsTarget (Solution solution, string target)
-		{
-			return GetNext (solution).SupportsTarget ((IBuildTarget) solution, target);
-		}
-
-		protected virtual bool SupportsTarget (WorkspaceItem item, string target)
-		{
-			if (item is Solution)
-				return SupportsTarget ((Solution) item, target);
-			else
-				return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
-		}
-
-		public virtual bool SupportsExecute (IBuildTarget item)
-		{
-			if (item is SolutionEntityItem)
-				return SupportsExecute ((SolutionEntityItem)item);
-			else if (item is WorkspaceItem)
-				return SupportsExecute ((WorkspaceItem) item);
-			else 
-				return GetNext (item).SupportsExecute (item);
-		}
-
-		protected virtual bool SupportsExecute (SolutionEntityItem item)
-		{
-			return GetNext (item).SupportsExecute ((IBuildTarget) item);
-		}
-
-		protected virtual bool SupportsExecute (Solution solution)
-		{
-			return GetNext (solution).SupportsExecute ((IBuildTarget) solution);
-		}
-
-		protected virtual bool SupportsExecute (WorkspaceItem item)
-		{
-			if (item is Solution)
-				return SupportsExecute ((Solution) item);
-			else
-				return GetNext (item).SupportsExecute ((IBuildTarget) item);
-		}
-
-		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				Clean (monitor, (SolutionEntityItem) item, configuration);
-			else if (item is WorkspaceItem)
-				Clean (monitor, (WorkspaceItem) item, configuration);
-			else
-				GetNext (item).RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
-		}
-		
-		protected virtual void Clean (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
-		{
-			GetNext (item).RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
-		}
-		
-		protected virtual void Clean (IProgressMonitor monitor, Solution item, ConfigurationSelector configuration)
-		{
-			GetNext (item).RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
-		}
-		
-		protected virtual void Clean (IProgressMonitor monitor, WorkspaceItem item, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				Clean (monitor, (Solution) item, configuration);
-			else
-				GetNext (item).RunTarget (monitor, item, ProjectService.CleanTarget, configuration);
-		}
-		
-		protected virtual BuildResult Build (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				return Build (monitor, (SolutionEntityItem) item, configuration);
-			if (item is WorkspaceItem)
-				return Build (monitor, (WorkspaceItem) item, configuration);
-			return GetNext (item).RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
-		}
-		
-		protected virtual BuildResult Build (IProgressMonitor monitor, SolutionEntityItem item, ConfigurationSelector configuration)
-		{
-			return GetNext (item).RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
-		}
-		
-		protected virtual BuildResult Build (IProgressMonitor monitor, WorkspaceItem item, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				return Build (monitor, (Solution) item, configuration);
-			return GetNext (item).RunTarget (monitor, item, ProjectService.BuildTarget, configuration);
-		}
-		
-		protected virtual BuildResult Build (IProgressMonitor monitor, Solution solution, ConfigurationSelector configuration)
-		{
-			return GetNext (solution).RunTarget (monitor, solution, ProjectService.BuildTarget, configuration);
-		}
-
-		public virtual void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				Execute (monitor, (SolutionEntityItem)item, context, configuration);
-			else if (item is WorkspaceItem)
-				Execute (monitor, (WorkspaceItem) item, context, configuration);
-			else 
-				GetNext (item).Execute (monitor, item, context, configuration);
-		}
-		
-		protected virtual void Execute (IProgressMonitor monitor, SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			GetNext (item).Execute (monitor, (IBuildTarget) item, context, configuration);
-		}
-		
-		protected virtual void Execute (IProgressMonitor monitor, Solution solution, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			GetNext (solution).Execute (monitor, (IBuildTarget) solution, context, configuration);
-		}
-		
-		protected virtual void Execute (IProgressMonitor monitor, WorkspaceItem item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				Execute (monitor, (Solution) item, context, configuration);
-			else
-				GetNext (item).Execute (monitor, (IBuildTarget) item, context, configuration);
-		}
-		
-		public virtual bool CanExecute (IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				return CanExecute ((SolutionEntityItem)item, context, configuration);
-			else if (item is WorkspaceItem)
-				return CanExecute ((WorkspaceItem) item, context, configuration);
-			else 
-				return GetNext (item).CanExecute (item, context, configuration);
-		}
-		
-		protected virtual bool CanExecute (SolutionEntityItem item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return GetNext (item).CanExecute ((IBuildTarget) item, context, configuration);
-		}
-		
-		protected virtual bool CanExecute (Solution solution, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return GetNext (solution).CanExecute ((IBuildTarget) solution, context, configuration);
-		}
-		
-		protected virtual bool CanExecute (WorkspaceItem item, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				return CanExecute ((Solution) item, context, configuration);
-			else
-				return GetNext (item).CanExecute ((IBuildTarget) item, context, configuration);
-		}
-		
-		public virtual IEnumerable<ExecutionTarget> GetExecutionTargets (IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				return GetExecutionTargets ((SolutionEntityItem)item, configuration);
-			else if (item is WorkspaceItem)
-				return GetExecutionTargets ((WorkspaceItem) item, configuration);
-			else 
-				return GetNext (item).GetExecutionTargets (item, configuration);
-		}
-		
-		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (SolutionEntityItem item, ConfigurationSelector configuration)
-		{
-			return GetNext (item).GetExecutionTargets ((IBuildTarget) item, configuration);
-		}
-		
-		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)
-		{
-			return GetNext (solution).GetExecutionTargets ((IBuildTarget) solution, configuration);
-		}
-		
-		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (WorkspaceItem item, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				return GetExecutionTargets ((Solution) item, configuration);
-			else
-				return GetNext (item).GetExecutionTargets ((IBuildTarget) item, configuration);
-		}
-
-		public virtual bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				return GetNeedsBuilding ((SolutionEntityItem) item, configuration);
-			if (item is WorkspaceItem)
-				return GetNeedsBuilding ((WorkspaceItem) item, configuration);
-			return GetNext (item).GetNeedsBuilding (item, configuration);
-		}
-		
-		protected virtual bool GetNeedsBuilding (SolutionEntityItem item, ConfigurationSelector configuration)
-		{
-			return GetNext (item).GetNeedsBuilding ((IBuildTarget) item, configuration);
-		}
-		
-		protected virtual bool GetNeedsBuilding (Solution item, ConfigurationSelector configuration)
-		{
-			return GetNext (item).GetNeedsBuilding ((IBuildTarget) item, configuration);
-		}
-		
-		protected virtual bool GetNeedsBuilding (WorkspaceItem item, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				return GetNeedsBuilding ((Solution) item, configuration);
-			return GetNext (item).GetNeedsBuilding ((IBuildTarget) item, configuration);
-		}
-		
-		public virtual void SetNeedsBuilding (IBuildTarget item, bool val, ConfigurationSelector configuration)
-		{
-			if (item is SolutionEntityItem)
-				SetNeedsBuilding ((SolutionEntityItem) item, val, configuration);
-			else if (item is WorkspaceItem)
-				SetNeedsBuilding ((WorkspaceItem) item, val, configuration);
-			else 
-				GetNext (item).SetNeedsBuilding (item, val, configuration);
-		}
-		
-		protected virtual void SetNeedsBuilding (SolutionEntityItem item, bool val, ConfigurationSelector configuration)
-		{
-			GetNext (item).SetNeedsBuilding ((IBuildTarget) item, val, configuration);
-		}
-		
-		protected virtual void SetNeedsBuilding (Solution item, bool val, ConfigurationSelector configuration)
-		{
-			GetNext (item).SetNeedsBuilding ((IBuildTarget) item, val, configuration);
-		}
-		
-		protected virtual void SetNeedsBuilding (WorkspaceItem item, bool val, ConfigurationSelector configuration)
-		{
-			if (item is Solution)
-				SetNeedsBuilding ((Solution) item, val, configuration);
-			else
-				GetNext (item).SetNeedsBuilding ((IBuildTarget) item, val, configuration);
-		}
-		
-		internal virtual BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData, ItemCompileCallback callback)
-		{
-			compileCallbackStack.Push (callback);
-			try {
-				BuildResult res = Compile (monitor, item, buildData);
-				return res;
-			} finally {
-				compileCallbackStack.Pop ();
-			}
-		}
-		
-		protected virtual BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
-		{
-			return GetNext (item).Compile (monitor, item, buildData, compileCallbackStack.Peek ());
-		}
-
-		public virtual IEnumerable<string> GetReferencedAssemblies (DotNetProject project, ConfigurationSelector configuration, bool includeProjectReferences)
-		{
-			return GetNext (project).GetReferencedAssemblies (project, configuration, includeProjectReferences);
 		}
 	}
 
@@ -405,16 +92,21 @@ namespace MonoDevelop.Projects
 		public ConfigurationSelector ConfigurationSelector { get; internal set; }
 	}
 	
-	class UnknownItem: IBuildTarget
+	class UnknownItem: WorkspaceObject, IBuildTarget
 	{
 		public static UnknownItem Instance = new UnknownItem ();
-		
-		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false)
 		{
-			return new BuildResult ();
+			return Task.FromResult (BuildResult.Success);
 		}
 		
-		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (BuildResult.Success);
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -424,45 +116,24 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public bool SupportsTarget (string target)
-		{
-			return false;
-		}
-
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;
 		}
-		
-		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
+
+		protected override string OnGetName ()
 		{
+			return "Unknown";
 		}
-		
-		public void Save (IProgressMonitor monitor)
+
+		protected override string OnGetBaseDirectory ()
 		{
+			return FilePath.Empty;
 		}
-		
-		public string Name {
-			get { return "Unknown"; }
-			set { }
-		}
-		
-		
-		public FilePath ItemDirectory {
-			get { return FilePath.Empty; }
-		}
-		
-		public FilePath BaseDirectory {
-			get { return FilePath.Empty; }
-			set { }
-		}
-		
-		public void Dispose ()
+
+		protected override string OnGetItemDirectory ()
 		{
-		}
-		
-		public System.Collections.IDictionary ExtendedProperties {
-			get { return null; }
+			return FilePath.Empty;
 		}
 	}
 }

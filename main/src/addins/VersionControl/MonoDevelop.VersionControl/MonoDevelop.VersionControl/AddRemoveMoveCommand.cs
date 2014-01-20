@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		private class AddWorker : Task {
+		private class AddWorker : VersionControlTask {
 			VersionControlItemList items;
 						
 			public AddWorker (VersionControlItemList items) 
@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				IProgressMonitor monitor = Monitor;
+				ProgressMonitor monitor = Monitor;
 				
 				foreach (VersionControlItemList list in items.SplitByRepository ())
 					list[0].Repository.Add (list.Paths, true, monitor);
@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		private class RemoveWorker : Task {
+		private class RemoveWorker : VersionControlTask {
 			VersionControlItemList items;
 						
 			public RemoveWorker (VersionControlItemList items) {

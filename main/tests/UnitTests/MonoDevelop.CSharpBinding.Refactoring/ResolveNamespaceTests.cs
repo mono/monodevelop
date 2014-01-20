@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
 
-			var project = new DotNetAssemblyProject ("C#");
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));

@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	sealed class GitNodeBuilderExtension: NodeBuilderExtension
 	{
-		readonly Dictionary<FilePath,IWorkspaceObject> repos = new Dictionary<FilePath, IWorkspaceObject> ();
+		readonly Dictionary<FilePath,WorkspaceObject> repos = new Dictionary<FilePath, WorkspaceObject> ();
 		
 		protected override void Initialize ()
 		{
@@ -53,15 +53,15 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(IWorkspaceObject).IsAssignableFrom (dataType);
+			return typeof(WorkspaceObject).IsAssignableFrom (dataType);
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
+			WorkspaceObject ob = (WorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null) {
-				IWorkspaceObject rob;
+				WorkspaceObject rob;
 				if (repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
 					if (ob == rob)
 						nodeInfo.Label += " (" + rep.GetCurrentBranch () + ")";
@@ -71,7 +71,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
+			WorkspaceObject ob = (WorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null && !repos.ContainsKey (rep.RootPath.CanonicalPath)) {
 				repos [rep.RootPath] = ob;
@@ -80,9 +80,9 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
+			WorkspaceObject ob = (WorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
-			IWorkspaceObject rob;
+			WorkspaceObject rob;
 			if (rep != null && repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
 				if (ob == rob)
 					repos.Remove (rep.RootPath.CanonicalPath);

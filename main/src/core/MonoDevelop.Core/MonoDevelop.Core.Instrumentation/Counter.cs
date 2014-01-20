@@ -35,6 +35,7 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		internal int count;
 		int totalCount;
+		int lastStoredCount;
 		string name;
 		bool logMessages;
 		CounterCategory category;
@@ -45,8 +46,9 @@ namespace MonoDevelop.Core.Instrumentation
 		bool disposed;
 		bool storeValues;
 		bool enabled;
+		string id;
 		
-		List<IInstrumentationConsumer> handlers = new List<IInstrumentationConsumer> ();
+		List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 
 		public bool StoreValues {
 			get {
@@ -56,14 +58,22 @@ namespace MonoDevelop.Core.Instrumentation
 				storeValues = value;
 			}
 		}
+
+		public bool Enabled {
+			get { return enabled; }
+		}
 		
-		internal List<IInstrumentationConsumer> Handlers {
-			get { return handlers; }
+		internal List<InstrumentationConsumer> Handlers {
+			get {
+				InstrumentationService.InitializeHandlers ();
+				return handlers; 
+			}
 		}
 		
 		internal void UpdateStatus ()
 		{
-			enabled = InstrumentationService.Enabled || handlers.Count > 0;
+			InstrumentationService.InitializeHandlers ();
+			enabled = InstrumentationService.Enabled || Handlers.Count > 0;
 			storeValues = InstrumentationService.Enabled;
 		}
 	
@@ -75,6 +85,11 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public string Name {
 			get { return name; }
+		}
+
+		public string Id {
+			get { return id ?? Name; }
+			internal set { id = value; }
 		}
 		
 		public CounterCategory Category {
@@ -182,19 +197,29 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		internal int StoreValue (string message, TimerTraceList traces)
+		internal int StoreValue (string message, TimeCounter timer)
 		{
 			DateTime now = DateTime.Now;
 			if (resolution.Ticks != 0) {
 				if (now - lastValueTime < resolution)
 					return -1;
 			}
-			var val = new CounterValue (count, totalCount, now, message, traces);
+			var val = new CounterValue (count, totalCount, count - lastStoredCount, now, message, timer != null ? timer.TraceList : null);
+			lastStoredCount = count;
+
 			if (storeValues)
 				values.Add (val);
-			if (handlers.Count > 0) {
-				foreach (var h in handlers)
-					h.ConsumeValue (this, val);
+			if (Handlers.Count > 0) {
+				if (timer != null) {
+					foreach (var h in handlers) {
+						var t = h.BeginTimer ((TimerCounter)this, val);
+						if (t != null)
+							timer.AddHandlerTracker (t);
+					}
+				} else {
+					foreach (var h in handlers)
+						h.ConsumeValue (this, val);
+				}
 			}
 			return values.Count - 1;
 		}
@@ -322,6 +347,7 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		int value;
 		int totalCount;
+		int change;
 		DateTime timestamp;
 		string message;
 		TimerTraceList traces;
@@ -335,15 +361,17 @@ namespace MonoDevelop.Core.Instrumentation
 			this.message = null;
 			traces = null;
 			threadId = 0;
+			change = 0;
 		}
 		
-		internal CounterValue (int value, int totalCount, DateTime timestamp, string message, TimerTraceList traces)
+		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces)
 		{
 			this.value = value;
 			this.timestamp = timestamp;
 			this.totalCount = totalCount;
 			this.message = message;
 			this.traces = traces;
+			this.change = change;
 			this.threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 		}
 		
@@ -357,6 +385,10 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public int TotalCount {
 			get { return totalCount; }
+		}
+
+		public int ValueChange {
+			get { return change; }
 		}
 		
 		public int ThreadId {

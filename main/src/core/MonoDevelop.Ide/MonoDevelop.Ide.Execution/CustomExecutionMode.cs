@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Execution
 		[ItemProperty (DefaultValue=false)]
 		public bool PromptForParameters { get; set; }
 		
-		public SolutionEntityItem Project { get; set; }
+		public SolutionItem Project { get; set; }
 		
 		public CustomModeScope Scope { get; set; }
 		
@@ -117,12 +117,12 @@ namespace MonoDevelop.Ide.Execution
 			return false;
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			return Execute (command, console, true, false);
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, bool allowPrompt, bool forcePrompt)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, bool allowPrompt, bool forcePrompt)
 		{
 			if ((PromptForParameters || forcePrompt) && allowPrompt) {
 				CommandExecutionContext ctx = new CommandExecutionContext (Project, command);

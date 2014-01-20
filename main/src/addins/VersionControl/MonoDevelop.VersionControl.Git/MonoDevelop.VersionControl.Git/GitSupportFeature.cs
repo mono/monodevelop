@@ -27,31 +27,32 @@ using System;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	sealed class GitSupportFeature: ISolutionItemFeature
 	{
-		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionItem entry)
+		public FeatureSupportLevel GetSupportLevel (SolutionFolder parentFolder, SolutionFolderItem entry)
 		{
 			if (parentFolder != null && !parentFolder.ParentSolution.FileName.IsNullOrEmpty && System.IO.File.Exists (parentFolder.ParentSolution.FileName))
 				return FeatureSupportLevel.NotSupported;
 			return FeatureSupportLevel.SupportedByDefault;
 		}
 
-		public Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
+		public Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("A new local Git Repository for the solution will be created"));
 			label.Show ();
 			return label;
 		}
 
-		public string Validate (SolutionFolder parentCombine, SolutionItem entry, Gtk.Widget editor)
+		public string Validate (SolutionFolder parentCombine, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			return null;
 		}
 
-		public void ApplyFeature (SolutionFolder parentFolder, SolutionItem entry, Gtk.Widget editor)
+		public void ApplyFeature (SolutionFolder parentFolder, SolutionFolderItem entry, Gtk.Widget editor)
 		{
 			// The solution may not be saved yet
 			if (parentFolder.ParentSolution.FileName.IsNullOrEmpty || !System.IO.File.Exists (parentFolder.ParentSolution.FileName))
@@ -67,7 +68,7 @@ namespace MonoDevelop.VersionControl.Git
 			GitUtil.Init (sol.BaseDirectory, null);
 			
 			GitRepository gitRepo = new GitRepository (sol.BaseDirectory, null);
-			gitRepo.Add (sol.GetItemFiles (true).ToArray (), false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			gitRepo.Add (sol.GetItemFiles (true).ToArray (), false, new MonoDevelop.Core.ProgressMonitor ());
 		}
 
 		public string Title {

@@ -38,10 +38,12 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Execution;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext
 {	
-	class TranslationProject : SolutionEntityItem, IDeployable
+	class TranslationProject : SolutionItem, IDeployable
 	{
 		[ItemProperty("packageName")]
 		string packageName = null;
@@ -94,9 +96,9 @@ namespace MonoDevelop.Gettext
 				Configurations.Add (new TranslationProjectConfiguration (config));
 		}
 		
-		protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
+			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles).ToList();
 			if (includeReferencedFiles) {
 				foreach (Translation tr in translations)
 					col.Add (tr.PoFile);
@@ -104,7 +106,7 @@ namespace MonoDevelop.Gettext
 			return col;
 		}
 		
-		public TranslationProjectInformation GetProjectInformation (SolutionItem entry, bool force)
+		public TranslationProjectInformation GetProjectInformation (SolutionFolderItem entry, bool force)
 		{
 			foreach (TranslationProjectInformation info in this.projectInformations) {
 				if (info.ProjectName == entry.Name)
@@ -118,7 +120,7 @@ namespace MonoDevelop.Gettext
 			return null;
 		}
 		
-		public bool IsIncluded (SolutionItem entry)
+		public bool IsIncluded (SolutionFolderItem entry)
 		{
 			TranslationProjectInformation info = GetProjectInformation (entry, false);
 			if (info != null)
@@ -126,7 +128,7 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		public override void InitializeFromTemplate (XmlElement template)
+		protected override void OnInitializeFromTemplate (XmlElement template)
 		{
 			OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), template.GetAttribute ("outputType"));
 			PackageName = template.GetAttribute ("packageName");
@@ -169,7 +171,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 
-		public Translation AddNewTranslation (string isoCode, IProgressMonitor monitor)
+		public Translation AddNewTranslation (string isoCode, ProgressMonitor monitor)
 		{
 			try {
 				Translation tr = new Translation (this, isoCode);
@@ -236,7 +238,7 @@ namespace MonoDevelop.Gettext
 			return Path.Combine (this.ParentSolution.StartupItem.BaseDirectory, RelPath);
 		}
 		
-		void CreateDefaultCatalog (IProgressMonitor monitor)
+		void CreateDefaultCatalog (ProgressMonitor monitor)
 		{
 			IFileScanner[] scanners = TranslationService.GetFileScanners ();
 			
@@ -259,19 +261,19 @@ namespace MonoDevelop.Gettext
 						}
 					}
 				}
-				if (monitor.IsCancelRequested)
+				if (monitor.CancellationToken.IsCancellationRequested)
 					return;
 				monitor.Step (1);
 			}
 			catalog.Save (Path.Combine (this.BaseDirectory, "messages.po"));
 		}
 		
-		public void UpdateTranslations (IProgressMonitor monitor)
+		public void UpdateTranslations (ProgressMonitor monitor)
 		{
 			UpdateTranslations (monitor, translations.ToArray ());
 		}
 		
-		public void UpdateTranslations (IProgressMonitor monitor, params Translation[] translations)
+		public void UpdateTranslations (ProgressMonitor monitor, params Translation[] translations)
 		{
 			monitor.BeginTask (null, Translations.Count + 1);
 			
@@ -288,7 +290,7 @@ namespace MonoDevelop.Gettext
 				monitor.EndTask ();
 				monitor.Step (1);
 			}
-			if (monitor.IsCancelRequested) {
+			if (monitor.CancellationToken.IsCancellationRequested) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Operation cancelled."));
 				return;
 			}
@@ -324,7 +326,7 @@ namespace MonoDevelop.Gettext
 					monitor.EndTask ();
 					monitor.Step (1);
 				}
-				if (monitor.IsCancelRequested) {
+				if (monitor.CancellationToken.IsCancellationRequested) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Operation cancelled."));
 					return;
 				}
@@ -335,7 +337,7 @@ namespace MonoDevelop.Gettext
 			foreach (Translation translation in this.Translations) {
 				string poFileName  = translation.PoFile;
 				Catalog catalog = new Catalog (this);
-				catalog.Load (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), poFileName);
+				catalog.Load (new MonoDevelop.Core.ProgressMonitor (), poFileName);
 				CatalogEntry entry = catalog.FindItem (msgstr);
 				if (entry != null) {
 					catalog.RemoveItem (entry);
@@ -344,40 +346,43 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
+			var toBuild = Translations.Where (t => t.NeedsBuilding(configuration)).ToArray ();
 			BuildResult results = new BuildResult ("", 1, 0);
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (!string.IsNullOrEmpty (outputDirectory)) {
-				foreach (Translation translation in this.Translations) {
-					if (translation.NeedsBuilding (configuration)) {
-						BuildResult res = translation.Build (monitor, configuration);
-						results.Append (res);
+				await Task.Factory.StartNew (delegate {
+					foreach (Translation translation in toBuild) {
+						if (translation.NeedsBuilding (configuration)) {
+							BuildResult res = translation.Build (monitor, configuration);
+							results.Append (res);
+						}
 					}
-				}
-				isDirty = false;
+					isDirty = false;
+				});
 			}
 			return results;
 		}
 		
-		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			isDirty = true;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (string.IsNullOrEmpty (outputDirectory))
-				return;
-			foreach (Translation translation in this.Translations) {
-				string moFileName  = translation.GetOutFile (configuration);
-				if (File.Exists (moFileName)) 
-					File.Delete (moFileName);
-			}
+				return BuildResult.Success;
+
+			var toClean = Translations.Select (t => t.GetOutFile (configuration)).ToArray ();
+			await Task.Factory.StartNew (delegate {
+				foreach (string moFileName in toClean) {
+					if (File.Exists (moFileName))
+						File.Delete (moFileName);
+				}
+			});
+			return BuildResult.Success;
 		}
-		
-		protected override void OnExecute (IProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
-		{
-		}
-		
+
 #region Deployment
 		public DeployFileCollection GetDeployFiles (ConfigurationSelector configuration)
 		{
@@ -408,11 +413,6 @@ namespace MonoDevelop.Gettext
 					return true;
 			}
 			return false;
-		}
-		
-		protected override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-			isDirty = val;
 		}
 		
 		protected virtual void OnTranslationAdded (EventArgs e)

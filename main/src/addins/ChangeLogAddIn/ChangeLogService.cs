@@ -38,7 +38,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		// Returns the path of the ChangeLog where changes of the provided file have to be logged.
 		// Returns null if no ChangeLog could be found.
 		// Returns an empty string if changes don't have to be logged.
-		public static string GetChangeLogForFile (string baseCommitPath, FilePath file, out SolutionItem parentEntry, out ChangeLogPolicy policy)
+		public static string GetChangeLogForFile (string baseCommitPath, FilePath file, out SolutionFolderItem parentEntry, out ChangeLogPolicy policy)
 		{
 			parentEntry = null;
 			policy = null;
@@ -50,7 +50,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			string bestPath = null;
 			file = file.CanonicalPath;
 			
-			foreach (SolutionItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
+			foreach (SolutionFolderItem e in IdeApp.Workspace.GetAllSolutionItems ()) {
 				if (e is Project && ((Project)e).Files.GetFile (file) != null) {
 					parentEntry = e;
 					break;
@@ -108,18 +108,18 @@ namespace MonoDevelop.ChangeLogAddIn
 		
 		public static string GetChangeLogForFile (string baseCommitPath, string file)
 		{
-			SolutionItem parentEntry;
+			SolutionFolderItem parentEntry;
 			ChangeLogPolicy policy;
 			return GetChangeLogForFile (baseCommitPath, file, out parentEntry, out policy);
 		}
 		
-		public static CommitMessageStyle GetMessageStyle (SolutionItem item)
+		public static CommitMessageStyle GetMessageStyle (SolutionFolderItem item)
 		{
 			ChangeLogPolicy policy = item != null ? GetPolicy (item) : new ChangeLogPolicy ();
 			return policy.MessageStyle;
 		}
 		
-		static ChangeLogPolicy GetPolicy (SolutionItem item)
+		static ChangeLogPolicy GetPolicy (SolutionFolderItem item)
 		{
 			return item.Policies.Get<ChangeLogPolicy> ();
 		}

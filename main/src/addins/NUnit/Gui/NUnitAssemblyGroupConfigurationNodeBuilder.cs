@@ -122,7 +122,7 @@ namespace MonoDevelop.NUnit
 			foreach (string file in dlg.SelectedFiles)
 				config.Assemblies.Add (new TestAssembly (file));
 			
-			IdeApp.Workspace.Save();
+			IdeApp.Workspace.SaveAsync();
 		}
 	}
 }

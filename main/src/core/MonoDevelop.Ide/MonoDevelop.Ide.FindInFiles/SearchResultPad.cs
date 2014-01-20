@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -50,12 +51,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public IAsyncOperation AsyncOperation {
+		public CancellationTokenSource CancellationTokenSource {
 			get {
-				return widget.AsyncOperation;
+				return widget.CancellationTokenSource;
 			}
 			set {
-				widget.AsyncOperation = value;
+				widget.CancellationTokenSource = value;
 			}
 		}
 		public bool FocusPad {

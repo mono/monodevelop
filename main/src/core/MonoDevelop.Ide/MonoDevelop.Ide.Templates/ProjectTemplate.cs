@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -217,17 +218,18 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		//methods
-		public IAsyncOperation OpenCreatedSolution ()
+		public Task<bool> OpenCreatedSolution ()
 		{
-			IAsyncOperation asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName);
-			asyncOperation.Completed += delegate {
-				if (asyncOperation.Success) {
+			var asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName);
+			return asyncOperation.ContinueWith (t => {
+				if (t.Result) {
 					foreach (string action in actions) {
 						IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
 					}
+					return true;
 				}
-			};
-			return asyncOperation;
+				return false;
+			});
 		}
 
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
@@ -241,13 +243,13 @@ namespace MonoDevelop.Ide.Templates
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public SolutionItem CreateProject (SolutionFolderItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
 			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
-			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
+			SolutionItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
 			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
 
 			SavePackageReferences (solutionEntryItem, descriptor);
@@ -257,7 +259,7 @@ namespace MonoDevelop.Ide.Templates
 			return solutionEntryItem;
 		}
 
-		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
+		void SavePackageReferences (SolutionItem solutionEntryItem, ISolutionItemDescriptor descriptor)
 		{
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
