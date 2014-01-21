@@ -45,11 +45,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	{
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions(MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{
-			MDRefactoringContext context = (MDRefactoringContext)refactoringContext;
+			var context = refactoringContext as MDRefactoringContext;
 
-			if (context.IsInvalid) {
+			if (context == null || context.IsInvalid)
 				yield break;
-			}
 
 			VariableInitializer currentVariable = context.GetNode<VariableInitializer>();
 			if (currentVariable == null) {

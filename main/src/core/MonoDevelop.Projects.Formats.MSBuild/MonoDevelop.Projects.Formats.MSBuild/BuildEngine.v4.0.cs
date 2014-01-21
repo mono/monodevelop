@@ -103,6 +103,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			RunSTA (delegate {
 				if (!engines.TryGetValue (binDir, out engine)) {
 					engine = new ProjectCollection ();
+					engine.DefaultToolsVersion = MSBuildConsts.Version;
 					engine.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
 					
 					//we don't have host compilers in MD, and this is set to true by some of the MS targets

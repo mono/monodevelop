@@ -954,10 +954,21 @@ namespace Mono.TextEditor
 		
 		internal void HideMouseCursor ()
 		{
-			if (GdkWindow != null)
-				GdkWindow.Cursor = invisibleCursor;
+			SetCursor (invisibleCursor);
 		}
-		
+
+		Gdk.Cursor currentCursor;
+
+		/// <summary>
+		/// Sets the mouse cursor of the gdk window and avoids unnecessary native calls.
+		/// </summary>
+		void SetCursor (Gdk.Cursor cursor)
+		{
+			if (GdkWindow == null || currentCursor == cursor)
+				return;
+			GdkWindow.Cursor = currentCursor = cursor;
+		}
+
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			Gdk.Key key;
@@ -1328,10 +1339,10 @@ namespace Mono.TextEditor
 				margin = GetMarginAtX (x, out startPos);
 				if (margin != null && GdkWindow != null) {
 					if (!overChildWidget)
-						GdkWindow.Cursor = margin.MarginCursor;
+						SetCursor (margin.MarginCursor);
 					else {
 						// Set the default cursor when the mouse is over an embedded widget
-						GdkWindow.Cursor = null;
+						SetCursor (null);
 					}
 				}
 			}
@@ -1387,7 +1398,7 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (GdkWindow != null)
-				GdkWindow.Cursor = null;
+				SetCursor (null);
 			if (oldMargin != null)
 				oldMargin.MouseLeft ();
 			

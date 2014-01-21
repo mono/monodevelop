@@ -207,7 +207,7 @@ namespace MonoDevelop.NUnit
 			toolbar.Add (new SeparatorToolItem ());
 			
 			buttonRun = new Button ();
-			buttonRun.Label = GettextCatalog.GetString ("Run Test");
+			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
 			buttonRun.Image = new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;

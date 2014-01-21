@@ -32,6 +32,8 @@ namespace MonoDevelop.Projects.Extensions
 {
 	class UnknownProjectTypeNode: ExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute ("_instructions", Localizable=true)]
 		string instructions;
 
@@ -49,6 +51,8 @@ namespace MonoDevelop.Projects.Extensions
 
 		[NodeAttribute ("product")]
 		string requiresProduct { get; set; }
+
+		#pragma warning restore 649
 
 		public bool IsSolvable {
 			get {

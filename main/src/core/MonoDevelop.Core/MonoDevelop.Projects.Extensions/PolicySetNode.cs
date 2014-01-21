@@ -40,6 +40,8 @@ namespace MonoDevelop.Projects.Extensions
 	class PolicySetNode : ExtensionNode
 	{
 		PolicySet polSet;
+
+		#pragma warning disable 649
 		
 		[NodeAttribute ("_name", Required=true)]
 		string name = null;
@@ -49,6 +51,8 @@ namespace MonoDevelop.Projects.Extensions
 		
 		[NodeAttribute ("allowDiffSerialize")]
 		bool allowDiffSerialize;
+
+		#pragma warning restore 649
 		
 		protected override void OnChildNodeAdded (ExtensionNode node)
 		{

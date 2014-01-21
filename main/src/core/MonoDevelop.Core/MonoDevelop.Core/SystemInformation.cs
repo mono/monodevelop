@@ -119,8 +119,10 @@ namespace MonoDevelop.Core
 			};
 		}
 
+		[Obsolete ("Use Runtime.Version")]
 		public static string GetReleaseId ()
 		{
+			// Change to internal
 			var biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
 				var line = File.ReadAllLines (biFile).Select (l => l.Split (':')).FirstOrDefault (a => a.Length > 1 && a [0].Trim () == "Release ID");

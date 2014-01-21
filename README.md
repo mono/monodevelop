@@ -50,6 +50,8 @@ Installing *(Optional)*
 You can install MonoDevelop by running:
 `make install`
 
+Bear in mind that if you are installing under a custom prefix, you may need to modify your `/etc/ld.so.conf` or `LD_LIBRARY_PATH` to ensure that any required native libraries are found correctly.
+
 *(It's possible that you need to install for your locale to be
 correctly set.)*
 

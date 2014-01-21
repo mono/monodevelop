@@ -340,23 +340,35 @@ namespace MonoDevelop.Ide.Desktop
 			UnixFileSystemInfo info = UnixFileSystemInfo.GetFileSystemEntry (fileName);
 			info.FileAccessPermissions = (FileAccessPermissions)attributes;
 		}
-		
-		public virtual IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
-		                                                           IDictionary<string, string> environmentVariables, 
-		                                                           string title, bool pauseWhenFinished)
+
+		//must be implemented if CanOpenTerminal returns true
+		public virtual IProcessAsyncOperation StartConsoleProcess (
+			string command, string arguments, string workingDirectory,
+			IDictionary<string, string> environmentVariables,
+			string title, bool pauseWhenFinished)
 		{
-			return null;
+			throw new InvalidOperationException ();
 		}
-		
+
+		/// <summary>
+		/// True if both OpenTerminal and StartConsoleProcess are implemented.
+		/// </summary>
 		public virtual bool CanOpenTerminal {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
-		
+
+		[Obsolete ("Implement/call OpenTerminal instead")]
 		public virtual void OpenInTerminal (FilePath directory)
 		{
 			throw new InvalidOperationException ();
+		}
+
+		public virtual void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
+		{
+			// use old version as old fallback, it'll throw if it's not implemted either
+			#pragma warning disable 618
+			OpenInTerminal (directory);
+			#pragma warning restore 618
 		}
 		
 		protected virtual RecentFiles CreateRecentFilesProvider ()

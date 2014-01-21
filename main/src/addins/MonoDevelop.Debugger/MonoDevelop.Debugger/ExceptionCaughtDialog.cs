@@ -131,38 +131,35 @@ namespace MonoDevelop.Debugger
 			return scrolled;
 		}
 
-		static void LineNumberLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
+		static void StackFrameLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
 		{
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
-			var renderer = (ExceptionCaughtLineNumberRenderer) cr;
+			var renderer = (StackFrameCellRenderer) cr;
 
-			if (!(renderer.CanRender = frame != null))
+			if (!(renderer.IsStackFrame = frame != null))
 				return;
 
 			renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
 			renderer.LineNumber = !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
+			renderer.Markup = (string) model.GetValue (iter, (int) ModelColumn.Markup);
 		}
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool), typeof (int), typeof (int));
 			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
 			StackTraceTreeView.RulesHint = true;
 			StackTraceTreeView.Show ();
 
-			var ccr = new ExceptionCaughtLineNumberRenderer ();
+			var renderer = new StackFrameCellRenderer (StackTraceTreeView.PangoContext);
+			renderer.Width = DefaultWidth;
 
-			var crt = new CellRendererText ();
-			crt.Ellipsize = Pango.EllipsizeMode.None;
-			crt.WrapMode = Pango.WrapMode.Word;
-			//crt.WidthChars = -1;
+			StackTraceTreeView.AppendColumn ("", renderer, (CellLayoutDataFunc) StackFrameLayout);
 
-			StackTraceTreeView.AppendColumn ("", ccr, (CellLayoutDataFunc) LineNumberLayout);
-			StackTraceTreeView.AppendColumn ("", crt, "markup", (int) ModelColumn.Markup);
-
-			StackTraceTreeView.SizeAllocated += (o, args) => crt.WrapWidth = args.Allocation.Width;
+			StackTraceTreeView.SizeAllocated += (o, args) => renderer.Width = args.Allocation.Width;
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow () { HeightRequest = 180 };
@@ -311,14 +308,22 @@ namespace MonoDevelop.Debugger
 		void ShowStackTrace (ExceptionInfo ex)
 		{
 			var model = (ListStore) StackTraceTreeView.Model;
+			bool external = false;
 
 			model.Clear ();
 
 			foreach (var frame in ex.StackTrace) {
 				bool isUserCode = IsUserCode (frame);
 
-				if (OnlyShowMyCodeCheckbox.Active && !isUserCode)
+				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
+					if (!external) {
+						var str = GettextCatalog.GetString ("<b>[External Code]</b>");
+						model.AppendValues (null, str, false);
+						external = true;
+					}
+
 					continue;
+				}
 
 				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
 
@@ -333,10 +338,13 @@ namespace MonoDevelop.Debugger
 				}
 
 				model.AppendValues (frame, markup, isUserCode);
+				external = false;
 			}
 
-			if (ex.StackIsEvaluating)
-				model.AppendValues (null, GettextCatalog.GetString ("Loading..."), false);
+			if (ex.StackIsEvaluating) {
+				var str = GettextCatalog.GetString ("Loading...");
+				model.AppendValues (null, str, false);
+			}
 		}
 
 		void UpdateDisplay ()
@@ -366,26 +374,7 @@ namespace MonoDevelop.Debugger
 
 		void OnlyShowMyCodeToggled (object sender, EventArgs e)
 		{
-			var model = (ListStore) StackTraceTreeView.Model;
-			TreeIter iter;
-
-			if (!model.GetIterFirst (out iter))
-				return;
-
-			if (OnlyShowMyCodeCheckbox.Active) {
-				bool next;
-
-				do {
-					bool isUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
-
-					if (isUserCode)
-						next = model.IterNext (ref iter);
-					else
-						next = model.Remove (ref iter);
-				} while (next);
-			} else {
-				ShowStackTrace (selected);
-			}
+			ShowStackTrace (selected);
 		}
 
 		void CloseClicked (object sender, EventArgs e)
@@ -418,75 +407,125 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class ExceptionCaughtLineNumberRenderer : CellRenderer
+	class StackFrameCellRenderer : CellRenderer
 	{
-		static readonly Pango.FontDescription DefaultFont = Pango.FontDescription.FromString ("Menlo 9");
+		static readonly Pango.FontDescription LineNumberFont = Pango.FontDescription.FromString ("Menlo 9");
 		const int RoundedRectangleRadius = 2;
 		const int RoundedRectangleHeight = 14;
 		const int RoundedRectangleWidth = 28;
 		const int Padding = 6;
 
-		public bool CanRender;
+		public readonly Pango.Context Context;
+		public bool IsStackFrame;
 		public bool IsUserCode;
 		public int LineNumber;
+		public string Markup;
+
+		public StackFrameCellRenderer (Pango.Context ctx)
+		{
+			Context = ctx;
+		}
+
+		int MaxMarkupWidth {
+			get {
+				if (Width < 0)
+					return Width;
+
+				return Width - (Padding + RoundedRectangleWidth + Padding + Padding + Padding);
+			}
+		}
 
 		public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
-			height = RoundedRectangleHeight + Padding + Padding;
-			width = RoundedRectangleWidth + Padding + Padding;
-			x_offset = Padding;
-			y_offset = Padding;
+			using (var layout = new Pango.Layout (Context)) {
+				Pango.Rectangle ink, logical;
+
+				layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
+				layout.SetMarkup (Markup);
+
+				layout.GetPixelExtents (out ink, out logical);
+
+				width = Padding + RoundedRectangleWidth + Padding + Padding + logical.Width + Padding;
+				height = Padding + Math.Max (RoundedRectangleHeight, logical.Height) + Padding;
+
+				x_offset = 0;
+				y_offset = 0;
+			}
+		}
+
+		void RenderLineNumberIcon (Widget widget, Cairo.Context cr, Gdk.Rectangle cell_area, int markupHeight, int yOffset)
+		{
+			if (!IsStackFrame)
+				return;
+
+			cr.Save ();
+
+			#if CENTER_ROUNDED_RECTANGLE
+			cr.Translate (cell_area.X + Padding, (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
+			#else
+			cr.Translate (cell_area.X + Padding, cell_area.Y + Padding + yOffset);
+			#endif
+
+			cr.Antialias = Cairo.Antialias.Subpixel;
+
+			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+			cr.Clip ();
+
+			if (IsUserCode)
+				cr.SetSourceRGBA (0.90, 0.60, 0.87, 1.0); // 230, 152, 223
+			else
+				cr.SetSourceRGBA (0.77, 0.77, 0.77, 1.0); // 197, 197, 197
+
+			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+			cr.Fill ();
+
+			cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.11);
+			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
+			cr.LineWidth = 2;
+			cr.Stroke ();
+
+			using (var layout = PangoUtil.CreateLayout (widget, LineNumber != -1 ? LineNumber.ToString () : "???")) {
+				layout.Alignment = Pango.Alignment.Left;
+				layout.FontDescription = LineNumberFont;
+
+				int width, height;
+				layout.GetPixelSize (out width, out height);
+
+				double y_offset = (RoundedRectangleHeight - height) / 2.0;
+				double x_offset = (RoundedRectangleWidth - width) / 2.0;
+
+				// render the text shadow
+				cr.Save ();
+				cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.34);
+				cr.Translate (x_offset, y_offset + 1);
+				cr.ShowLayout (layout);
+				cr.Restore ();
+
+				cr.SetSourceRGBA (1.0, 1.0, 1.0, 1.0);
+				cr.Translate (x_offset, y_offset);
+				cr.ShowLayout (layout);
+			}
+
+			cr.Restore ();
 		}
 
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
-			if (!CanRender)
-				return;
-
 			using (var cr = Gdk.CairoHelper.Create (window)) {
-				#if CENTER_ROUNDED_RECTANGLE
-				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), (cell_area.Y + (cell_area.Height - RoundedRectangleHeight) / 2.0));
-				#else
-				cr.Translate ((cell_area.X + (cell_area.Width - RoundedRectangleWidth) / 2.0), cell_area.Y + 4);
-				#endif
+				using (var layout = new Pango.Layout (Context)) {
+					Pango.Rectangle ink, logical;
 
-				cr.Antialias = Cairo.Antialias.Subpixel;
+					layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
+					layout.SetMarkup (Markup);
 
-				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
-				cr.Clip ();
+					layout.GetPixelExtents (out ink, out logical);
 
-				if (IsUserCode)
-					cr.SetSourceRGBA (0.90, 0.60, 0.87, 1.0); // 230, 152, 223
-				else
-					cr.SetSourceRGBA (0.77, 0.77, 0.77, 1.0); // 197, 197, 197
+					RenderLineNumberIcon (widget, cr, cell_area, logical.Height, ink.Y);
 
-				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
-				cr.Fill ();
+					cr.Rectangle (expose_area.X, expose_area.Y, expose_area.Width, expose_area.Height);
+					cr.Clip ();
 
-				cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.11);
-				cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
-				cr.LineWidth = 2;
-				cr.Stroke ();
-
-				using (var layout = PangoUtil.CreateLayout (widget, LineNumber != -1 ? LineNumber.ToString () : "???")) {
-					layout.Alignment = Pango.Alignment.Left;
-					layout.FontDescription = DefaultFont;
-
-					int width, height;
-					layout.GetPixelSize (out width, out height);
-
-					double y_offset = (RoundedRectangleHeight - height) / 2.0;
-					double x_offset = (RoundedRectangleWidth - width) / 2.0;
-
-					// render the text shadow
-					cr.Save ();
-					cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.34);
-					cr.Translate (x_offset, y_offset + 1);
-					cr.ShowLayout (layout);
-					cr.Restore ();
-
-					cr.SetSourceRGBA (1.0, 1.0, 1.0, 1.0);
-					cr.Translate (x_offset, y_offset);
+					cr.Translate (cell_area.X + Padding + RoundedRectangleWidth + Padding + Padding, cell_area.Y + Padding);
 					cr.ShowLayout (layout);
 				}
 			}

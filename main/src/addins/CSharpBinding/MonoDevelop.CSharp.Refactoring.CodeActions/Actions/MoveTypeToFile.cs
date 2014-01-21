@@ -45,7 +45,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	{
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{
-			var context = (MDRefactoringContext)refactoringContext;
+			var context = refactoringContext as MDRefactoringContext;
+			if (context == null)
+				return Enumerable.Empty<MonoDevelop.CodeActions.CodeAction> ();
 			return GetActions (context);
 		}
 		protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)

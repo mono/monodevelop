@@ -249,9 +249,11 @@ namespace Mono.TextEditor
 			int curVisualColumn = 1;
 			int offset = Offset;
 			int max = offset + Length;
+			var textLength = editor.Document.TextLength;
+			int tabSize = editor.Options != null ? editor.Options.TabSize : 4;
 			for (int i = offset; i < max; i++) {
-				if (i < editor.Document.TextLength && editor.Document.GetCharAt (i) == '\t') {
-					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn);
+				if (i < textLength && editor.Document.GetCharAt (i) == '\t') {
+					curVisualColumn = TextViewMargin.GetNextTabstop (editor, curVisualColumn, tabSize);
 				} else {
 					curVisualColumn++;
 				}
@@ -265,19 +267,21 @@ namespace Mono.TextEditor
 		{
 			int result = 1;
 			int offset = Offset;
+			var tabSize = editor.Options.TabSize;
 			if (editor.Options.IndentStyle == IndentStyle.Virtual && Length == 0 && logicalColumn > DocumentLocation.MinColumn) {
 				foreach (char ch in editor.GetIndentationString (Offset)) {
 					if (ch == '\t') {
-						result += editor.Options.TabSize;
+						result += tabSize;
 						continue;
 					}
 					result++;
 				}
 				return result;
 			}
+
 			for (int i = 0; i < logicalColumn - 1; i++) {
 				if (i < Length && editor.Document.GetCharAt (offset + i) == '\t') {
-					result = TextViewMargin.GetNextTabstop (editor, result);
+					result = TextViewMargin.GetNextTabstop (editor, result, tabSize);
 				} else {
 					result++;
 				}

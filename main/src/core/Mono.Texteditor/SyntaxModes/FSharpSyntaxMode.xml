@@ -83,12 +83,12 @@
 	<!-- ' is also used for type parameters therefore we need a regex match to find out if something is a char literal 
          Here we capture unicode literals and escaped chars in a separate group for colouring. Char literals are not part
          of the 'String' rule, and unicode literal matching will not happen. -->
-	<Match expression="(')(?:(apa|\\U[0-9a-fA-F]{8}|\\u[0-9a-fA-F]{4}|\\[\\'ntbrafv])|([^\\']))(')">
+<!--	<Match expression="(')(?:(apa|\\U[0-9a-fA-F]{8}|\\u[0-9a-fA-F]{4}|\\[\\'ntbrafv])|([^\\']))(')">
        <Group color="String"/>
        <Group color="String(Escape)"/>
        <Group color="String"/>
        <Group color="String"/>
-	</Match>
+	</Match> -->
 
 	<Match color="String">'(\w|\\['ntbrafv])'</Match>
        

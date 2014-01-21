@@ -402,6 +402,13 @@ namespace MonoDevelop.CSharp.Completion
 
 			public ConversionFlags ConversionFlags { get; set; }
 			#region ConvertEntity
+			public string ConvertSymbol(ISymbol symbol)
+			{
+				if (symbol is IEntity)
+					return ConvertEntity ((IEntity)symbol);
+				return symbol.ToString ();
+			}
+
 			public string ConvertEntity (IEntity entity)
 			{
 				if (entity == null)
@@ -619,6 +626,8 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
+
+
 #endregion
 			
 			public string ConvertVariable (IVariable v)

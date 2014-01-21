@@ -98,8 +98,11 @@ namespace MonoDevelop.AssemblyBrowser
 						return;
 					publicApiOnly = value;
 					var root = GetRootNode ();
-					if (root != null)
-						RefreshNode (root);
+					if (root != null) {
+						do {
+							RefreshNode (root);
+						} while (root.MoveNext ());
+					}
 				}
 			}
 

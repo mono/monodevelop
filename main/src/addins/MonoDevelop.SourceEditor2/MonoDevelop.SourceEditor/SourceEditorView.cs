@@ -1277,11 +1277,16 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			HashSet<int> lineNumbers = new HashSet<int> ();
-			foreach (DocumentLine line in breakpointSegments) {
-				lineNumbers.Add (Document.OffsetToLineNumber (line.Offset));
-				widget.TextEditor.Document.RemoveMarker (line, typeof(BreakpointTextMarker));
-				widget.TextEditor.Document.RemoveMarker (line, typeof(DisabledBreakpointTextMarker));
-				widget.TextEditor.Document.RemoveMarker (line, typeof(InvalidBreakpointTextMarker));
+			var document = widget.TextEditor.Document;
+			if (document == null)
+				return;
+			foreach (var line in breakpointSegments) {
+				if (line == null)
+					continue;
+				lineNumbers.Add (document.OffsetToLineNumber (line.Offset));
+				document.RemoveMarker (line, typeof(BreakpointTextMarker));
+				document.RemoveMarker (line, typeof(DisabledBreakpointTextMarker));
+				document.RemoveMarker (line, typeof(InvalidBreakpointTextMarker));
 			}
 			
 			breakpointSegments.Clear ();
@@ -1292,12 +1297,12 @@ namespace MonoDevelop.SourceEditor
 					AddBreakpoint (bp);
 				}
 			}
-			
+
 			foreach (int lineNumber in lineNumbers) {
-				widget.Document.RequestUpdate (new LineUpdate (lineNumber));
+				document.RequestUpdate (new LineUpdate (lineNumber));
 			}
 			
-			widget.Document.CommitDocumentUpdate ();
+			document.CommitDocumentUpdate ();
 			
 			// Ensure the current line marker is drawn at the top
 			lastDebugLine = -1;
@@ -1311,6 +1316,10 @@ namespace MonoDevelop.SourceEditor
 
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
+				if (bp.Line <= 0 || bp.Line > widget.TextEditor.Document.LineCount) {
+					LoggingService.LogWarning ("Invalid breakpoint :" + bp +" in line " + bp.Line); 
+					return;
+				}
 				DocumentLine line = widget.TextEditor.Document.GetLine (bp.Line);
 				var status = bp.GetStatus (DebuggingService.DebuggerSession);
 				bool tracepoint = bp.HitAction != HitAction.Break;

@@ -746,7 +746,7 @@ namespace Mono.TextEditor
 					cr.Fill ();
 					char caretChar = GetCaretChar ();
 					if (!char.IsWhiteSpace (caretChar) && caretChar != '\0') {
-						using (var layout = PangoUtil.CreateLayout (textEditor)) {
+						using (var layout = textEditor.LayoutCache.RequestLayout ()) {
 							layout.FontDescription = textEditor.Options.Font;
 							layout.SetText (caretChar.ToString ());
 							cr.MoveTo (caretRectangle.X, caretRectangle.Y);
@@ -906,7 +906,7 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+			var wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
 			wrapper.IsUncached = containsPreedit;
 			if (logicalRulerColumn < 0)
 				logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
@@ -1051,12 +1051,13 @@ namespace Mono.TextEditor
 			wrapper.LineChars = lineChars;
 			wrapper.Layout.SetText (lineText);
 			wrapper.IndentSize = 0;
+			var tabSize = textEditor.Options != null ? textEditor.Options.TabSize : 4;
 			for (int i = 0; i < lineChars.Length; i++) {
 				char ch = lineChars [i];
 				if (ch == ' ') {
 					wrapper.IndentSize ++;
 				} else if (ch == '\t') {
-					wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize);
+					wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize, tabSize);
 				} else {
 					break;
 				}
@@ -1237,7 +1238,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public Pango.Layout Layout {
+			public LayoutCache.LayoutProxy Layout {
 				get;
 				private set;
 			}
@@ -1299,7 +1300,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public LayoutWrapper (Pango.Layout layout)
+			public LayoutWrapper (LayoutCache.LayoutProxy layout)
 			{
 				this.Layout = layout;
 				this.IsUncached = false;
@@ -1536,7 +1537,7 @@ namespace Mono.TextEditor
 			// predit layout already contains virtual space.
 			if (!string.IsNullOrEmpty (textEditor.preeditString))
 				virtualSpace = "";
-			LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
+			LayoutWrapper wrapper = new LayoutWrapper (textEditor.LayoutCache.RequestLayout ());
 			wrapper.LineChars = virtualSpace.ToCharArray ();
 			wrapper.Layout.SetText (virtualSpace);
 			wrapper.Layout.Tabs = tabArray;
@@ -2391,6 +2392,11 @@ namespace Mono.TextEditor
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
 			int tabSize = textEditor != null && textEditor.Options != null ? textEditor.Options.TabSize : 4;
+			return GetNextTabstop (textEditor, currentColumn, tabSize);
+		}
+
+		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn, int tabSize)
+		{
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}
@@ -2478,8 +2484,8 @@ namespace Mono.TextEditor
 			int offset = line.Offset;
 			double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
 			restart:
-			using (var calcTextLayout = PangoUtil.CreateLayout (textEditor))
-			using (var calcFoldingLayout = PangoUtil.CreateLayout (textEditor)) {
+			using (var calcTextLayout = textEditor.LayoutCache.RequestLayout ())
+			using (var calcFoldingLayout = textEditor.LayoutCache.RequestLayout ()) {
 				calcTextLayout.FontDescription = textEditor.Options.Font;
 				calcTextLayout.Tabs = this.tabArray;
 
@@ -2960,7 +2966,8 @@ namespace Mono.TextEditor
 						layoutWrapper.Layout.GetPixelSize (out width, out height);
 						xPos += width * (int)Pango.Scale.PangoScale;
 						if (measueLayout == null) {
-							measueLayout = PangoUtil.CreateLayout (margin.textEditor, folding.Description);
+							measueLayout = margin.textEditor.LayoutCache.RequestLayout ();
+							measueLayout.SetText (folding.Description);
 							measueLayout.FontDescription = margin.textEditor.Options.Font;
 						}
 
@@ -3056,7 +3063,8 @@ namespace Mono.TextEditor
 			column--;
 			// calculate virtual indentation
 			if (column > 0 && line.Length == 0 && textEditor.GetTextEditorData ().HasIndentationTracker) {
-				using (var l = PangoUtil.CreateLayout (textEditor, textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset))) {
+				using (var l = textEditor.LayoutCache.RequestLayout ()) {
+					l.SetText (textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset)); 
 					l.Alignment = Pango.Alignment.Left;
 					l.FontDescription = textEditor.Options.Font;
 					l.Tabs = tabArray;

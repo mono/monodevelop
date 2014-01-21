@@ -38,6 +38,8 @@ namespace MonoDevelop.Projects.Extensions
 	[ExtensionNodeChild (typeof(DotNetProjectSubtypeNodeImport), "RemoveImport")]
 	public class DotNetProjectSubtypeNode: ExtensionNode
 	{
+		#pragma warning disable 649
+
 		[NodeAttribute]
 		string guid = null;
 		
@@ -64,6 +66,8 @@ namespace MonoDevelop.Projects.Extensions
 
 		[NodeAttribute]
 		bool migrationRequired = true;
+
+		#pragma warning restore 649
 
 		Type itemType;
 
