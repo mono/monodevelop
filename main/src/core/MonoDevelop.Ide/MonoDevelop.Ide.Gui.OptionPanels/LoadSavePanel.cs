@@ -84,19 +84,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
 			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
 			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup;
-
-			string defaultFormat = IdeApp.Preferences.DefaultProjectFileFormat;
-			
-			Solution sol = new Solution ();
-			FileFormat[] fs = IdeApp.Services.ProjectService.FileFormats.GetFileFormatsForObject (sol);
-			foreach (FileFormat f in fs) {
-				if (!f.CanDefault)
-					continue;
-				comboFileFormats.AppendText (f.Name);
-				formats.Add (f.Id);
-				if (f.Id == defaultFormat)
-					comboFileFormats.Active = formats.Count - 1;
-			}
 		}
 		
 		public bool ValidateChanges ()
@@ -117,7 +104,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.LoadPrevSolutionOnStartup = loadPrevProjectCheckButton.Active;
 			IdeApp.Preferences.LoadDocumentUserProperties = loadUserDataCheckButton.Active;
 			IdeApp.Preferences.CreateFileBackupCopies = createBackupCopyCheckButton.Active;
-			IdeApp.Preferences.DefaultProjectFileFormat = formats [comboFileFormats.Active];
 			IdeApp.ProjectOperations.ProjectsDefaultPath = folderEntry.Path;
 		}
 	}

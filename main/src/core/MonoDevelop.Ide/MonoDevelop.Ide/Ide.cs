@@ -221,15 +221,6 @@ namespace MonoDevelop.Ide
 			MessageService.RootWindow = workbench.RootWindow;
 		
 			commandService.EnableIdleUpdate = true;
-			
-			// Default file format
-			MonoDevelop.Projects.Services.ProjectServiceLoaded += delegate(object sender, EventArgs e) {
-				((ProjectService)sender).DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
-			};
-			
-			IdeApp.Preferences.DefaultProjectFileFormatChanged += delegate {
-				IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
-			};
 
 			// Perser service initialization
 			TypeSystemService.TrackFileChanges = true;
@@ -431,10 +422,6 @@ namespace MonoDevelop.Ide
 
 		static void OnUpgraded (int previousRevision)
 		{
-			// Upgrade to latest msbuild version
-			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
-				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
-			
 			if (previousRevision <= 3) {
 				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
 				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;

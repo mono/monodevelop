@@ -47,6 +47,7 @@ using MonoDevelop.Projects.Extensions;
 using Mono.Unix;
 using MonoDevelop.Core.StringParsing;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -92,7 +93,7 @@ namespace MonoDevelop.Projects
 			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			
-			defaultFormat = formatManager.GetFileFormat ("MSBuild10");
+			defaultFormat = formatManager.GetFileFormat (MSBuildProjectService.DefaultFormat);
 		}
 		
 		public DataContext DataContext {
@@ -176,16 +177,11 @@ namespace MonoDevelop.Projects
 				defaultTargetFramework = value;
 			}
 		}
-		
+
+		[Obsolete ("Use DefaultFileFormat.Id")]
 		public string DefaultFileFormatId {
 			get { return defaultFormat.Id; }
-			set {
-				FileFormat f = FileFormats.GetFileFormat (value);
-				if (f != null)
-					defaultFormat = f;
-				else
-					LoggingService.LogError ("Unknown format: " + value);
-			}
+			set { /* nop */ }
 		}
 
 		public FileFormat DefaultFileFormat {

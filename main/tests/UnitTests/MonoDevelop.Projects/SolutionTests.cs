@@ -509,8 +509,8 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
 			Project p = (Project) sol.Items [0];
 			
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, sol.FileFormat.Id);
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, p.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, sol.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, p.FileFormat.Id);
 			
 			// Change solution format of unsaved solution
 			
