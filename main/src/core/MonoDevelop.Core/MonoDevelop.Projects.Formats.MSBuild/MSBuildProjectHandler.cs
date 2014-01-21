@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string lastFileName;
 		ITimeTracker timer;
 		bool modifiedInMemory;
+		string toolsVersion;
 
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -73,6 +74,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set {
 				targetImports = value;
 			}
+		}
+
+		internal override void SetTargetFormat (MSBuildFileFormat targetFormat)
+		{
+			//ensure ToolsVersion is set to default when converting format or creating new projects
+			if (toolsVersion == null || (TargetFormat != null && TargetFormat.Id != targetFormat.Id))
+				toolsVersion = targetFormat.ToolsVersion;
+
+			base.SetTargetFormat (targetFormat);
 		}
 
 		public void SetCustomResourceHandler (IResourceHandler value)
@@ -118,14 +128,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			SolutionEntityItem item = (SolutionEntityItem) Item;
 			TargetRuntime runtime = null;
-			string toolsVersion;
 			if (item is IAssemblyProject) {
 				runtime = ((IAssemblyProject) item).TargetRuntime;
-				toolsVersion = this.TargetFormat.ToolsVersion;
-			}
-			else {
+			} 	else {
 				runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-				toolsVersion = MSBuildProjectService.DefaultToolsVersion;
 			}
 			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName) {
 				if (projectBuilder != null) {
@@ -266,33 +272,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return FileService.AbsoluteToRelativePath (basePath, path);
 		}
 
-		public SolutionEntityItem Load (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string language, Type itemClass)
+		public SolutionEntityItem Load (IProgressMonitor monitor, string fileName, MSBuildFileFormat format, string language, Type itemClass)
 		{
 			timer = Counters.ReadMSBuildProject.BeginTiming ();
 			
 			timer.Trace ("Reading project file");
 			MSBuildProject p = new MSBuildProject ();
 			p.Load (fileName);
-			
-			//determine the file format
-			MSBuildFileFormat format = null;
-			if (expectedFormat != null) {
-				if (!expectedFormat.SupportsToolsVersion (p.ToolsVersion)) {
-					monitor.ReportWarning (GettextCatalog.GetString (
-						"Project '{0}' has a ToolsVersion that does not match the containing solution.",
-						Path.GetFileNameWithoutExtension (fileName)
-					));
-				} else {
-					format = expectedFormat;
-				}
-			}
-			if (format == null) {
-				string toolsVersion = p.ToolsVersion;
-				if (string.IsNullOrEmpty (toolsVersion))
-					toolsVersion = "2.0";
-				format = MSBuildFileFormat.GetFormatForToolsVersion (toolsVersion);
-			}
-			SetTargetFormat (format);
+
+			toolsVersion = p.ToolsVersion;
+			if (string.IsNullOrEmpty (toolsVersion))
+				toolsVersion = "2.0";
+
+			SetTargetFormat (format ?? new MSBuildFileFormatVS12 ());
 			
 			timer.Trace ("Read project guids");
 			
@@ -1019,7 +1011,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				projectBuilder.Refresh ();
 		}
 
-		MSBuildProject SaveProject (MonoDevelop.Core.IProgressMonitor monitor)
+		MSBuildProject SaveProject (IProgressMonitor monitor)
 		{
 			if (Item is UnknownProject || Item is UnknownSolutionItem)
 				return null;
@@ -1086,9 +1078,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
 			
-			if (TargetFormat.ToolsVersion != "2.0")
-				msproject.ToolsVersion = TargetFormat.ToolsVersion;
-			else
+			if (toolsVersion != "2.0")
+				msproject.ToolsVersion = toolsVersion;
+			else if (msproject.ToolsVersion != "2.0")
 				msproject.ToolsVersion = string.Empty;
 
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties

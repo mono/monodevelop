@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return version == SlnVersion;
 		}
 
-		internal virtual bool SupportsToolsVersion (string version)
+		protected virtual bool SupportsToolsVersion (string version)
 		{
 			return version == ToolsVersion;
 		}
@@ -224,22 +224,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		public abstract string Id { get; }
-
-		// Used to load projects independently of a solution
-		public static MSBuildFileFormat GetFormatForToolsVersion (string toolsVersion)
-		{
-			switch (toolsVersion) {
-			case "2.0":
-				return new MSBuildFileFormatVS05 ();
-			case "3.5":
-				return new MSBuildFileFormatVS08 ();
-				// since both VS2010 and 2012 support ToolVersion 4.0, just use the newer format
-			case "4.0":
-			case "12.0":
-				return new MSBuildFileFormatVS12 ();
-			}
-			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
-		}
 	}
 	
 	class MSBuildFileFormatVS05: MSBuildFileFormat
@@ -355,7 +339,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "Visual Studio 2012"; }
 		}
 
-		internal override bool SupportsToolsVersion (string version)
+		protected override bool SupportsToolsVersion (string version)
 		{
 			return version == "4.0" || version == ToolsVersion;
 		}

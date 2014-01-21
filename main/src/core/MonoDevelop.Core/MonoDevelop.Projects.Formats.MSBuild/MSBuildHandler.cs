@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		internal void SetTargetFormat (MSBuildFileFormat targetFormat)
+		internal virtual void SetTargetFormat (MSBuildFileFormat targetFormat)
 		{
 			this.targetFormat = targetFormat;
 		}
@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new NotSupportedException ();
 		}
 		
-		public void Save (MonoDevelop.Core.IProgressMonitor monitor)
+		public void Save (IProgressMonitor monitor)
 		{
 			if (HasSlnData && !SavingSolution && Item.ParentSolution != null) {
 				// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
