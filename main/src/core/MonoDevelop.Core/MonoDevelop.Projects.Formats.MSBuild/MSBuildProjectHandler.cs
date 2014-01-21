@@ -66,6 +66,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		protected SolutionEntityItem EntityItem {
 			get { return (SolutionEntityItem) Item; }
 		}
+
+		public string ToolsVersion {
+			get { return toolsVersion; }
+		}
 		
 		public List<string> TargetImports {
 			get {

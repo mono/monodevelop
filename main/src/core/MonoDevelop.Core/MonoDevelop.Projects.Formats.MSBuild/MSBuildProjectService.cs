@@ -634,6 +634,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				.Where (p => guids.Any (p.MatchesGuid)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
 		}
+
+		public static MSBuildProjectHandler GetHandler (Project project)
+		{
+			return (MSBuildProjectHandler) project.GetItemHandler ();
+		}
 	}
 	
 	class MSBuildDataContext: DataContext
