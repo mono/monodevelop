@@ -1206,7 +1206,7 @@ namespace Mono.TextEditor
 					}
 					textEditorData.PasteText (offset, selection_data.Text, null, ref undo);
 					Caret.Offset = offset + selection_data.Text.Length;
-					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
+					MainSelection = new Selection (Document.OffsetToLocation (offset), Caret.Location);
 				}
 				dragOver = false;
 				context = null;
