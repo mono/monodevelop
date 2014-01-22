@@ -516,13 +516,13 @@ namespace MonoDevelop.Projects
 			
 			// Change solution format of unsaved solution
 			
-			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
+			sol.ConvertToFormat (Util.FileFormatMSBuild08, true);
 			
 			Assert.AreEqual ("MSBuild08", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild08", p.FileFormat.Id);
 			Assert.AreEqual ("3.5", MSBuildProjectService.GetHandler (p).ToolsVersion);
 
-			sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
+			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
 			
 			Assert.AreEqual ("MSBuild10", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild10", p.FileFormat.Id);
@@ -541,11 +541,13 @@ namespace MonoDevelop.Projects
 			// Add new project
 			
 			Project newp = new DotNetAssemblyProject ("C#");
-			Assert.AreEqual ("MSBuild10", newp.FileFormat.Id);
-			
+			Assert.AreEqual ("MSBuild12", newp.FileFormat.Id);
+			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
-			
+			Assert.AreEqual ("2.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+
 			// Add saved project
 			
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");

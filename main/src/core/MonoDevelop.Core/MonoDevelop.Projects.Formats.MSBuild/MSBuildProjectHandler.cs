@@ -91,6 +91,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			base.SetTargetFormat (targetFormat);
 		}
 
+		//HACK: the solution's format is irrelevant to MSBuild projects, what matters is the ToolsVersion
+		MSBuildFileFormat GetToolsFormat ()
+		{
+			MSBuildFileFormat format;
+			switch (toolsVersion) {
+			case "2.0":
+				return new MSBuildFileFormatVS05 ();
+			case "3.5":
+				return new MSBuildFileFormatVS08 ();
+			case "4.0":
+			case "12.0":
+				return new MSBuildFileFormatVS12 ();
+			default:
+				throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
+			}
+		}
+
 		public void SetCustomResourceHandler (IResourceHandler value)
 		{
 			customResourceHandler = value;
@@ -288,12 +305,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildProject p = new MSBuildProject ();
 			p.Load (fileName);
 
+			SetTargetFormat (format ?? new MSBuildFileFormatVS12 ());
+
 			toolsVersion = p.ToolsVersion;
 			if (string.IsNullOrEmpty (toolsVersion))
 				toolsVersion = "2.0";
 
-			SetTargetFormat (format ?? new MSBuildFileFormatVS12 ());
-			
 			timer.Trace ("Read project guids");
 			
 			MSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
@@ -484,9 +501,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return type;
 		}
 		
-		FileFormat GetFileFormat ()
+		FileFormat GetFileFormat (MSBuildFileFormat fmt)
 		{
-			return new FileFormat (TargetFormat, TargetFormat.Id, TargetFormat.Name);
+			return new FileFormat (fmt, fmt.Id, fmt.Name);
 		}
 		
 		void RemoveDuplicateItems (MSBuildProject msproject, string fileName)
@@ -608,7 +625,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				//determine the default target framework from the project type's default
 				//overridden by the components in the project
-				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
+				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat (GetToolsFormat ()));
 				targetFx = new TargetFrameworkMoniker (
 					string.IsNullOrEmpty (frameworkIdentifier)? def.Identifier : frameworkIdentifier,
 					string.IsNullOrEmpty (frameworkVersion)? def.Version : frameworkVersion,
@@ -1023,6 +1040,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (Item is UnknownProject || Item is UnknownSolutionItem)
 				return null;
+
+			var toolsFormat = GetToolsFormat ();
 			
 			bool newProject;
 			SolutionEntityItem eitem = EntityItem;
@@ -1078,10 +1097,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
+
+			//this value is based on the solution format, not the ToolsVersion
 			string productVersion = (string) Item.ExtendedProperties ["ProductVersion"];
 			if (productVersion == null) {
-				Item.ExtendedProperties ["ProductVersion"] = TargetFormat.ProductVersion;
 				productVersion = TargetFormat.ProductVersion;
+				Item.ExtendedProperties ["ProductVersion"] = productVersion;
 			}
 
 			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
@@ -1212,7 +1233,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Add the new items
 			foreach (object ob in ((SolutionEntityItem)Item).Items.Concat (((SolutionEntityItem)Item).WildcardItems))
-				SaveItem (monitor, ser, msproject, ob, oldItems);
+				SaveItem (monitor, toolsFormat, ser, msproject, ob, oldItems);
 
 			foreach (ItemInfo itemInfo in oldItems.Values) {
 				if (!itemInfo.Added)
@@ -1221,9 +1242,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (dotNetProject != null) {
 				var moniker = dotNetProject.TargetFramework.Id;
-				bool supportsMultipleFrameworks = TargetFormat.SupportsMonikers ||
-					 TargetFormat.SupportedFrameworks.Length > 0;
-				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
+				bool supportsMultipleFrameworks = toolsFormat.SupportsMonikers || toolsFormat.SupportedFrameworks.Length > 0;
+				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat (toolsFormat));
 
 				// If the format only supports one fx version, or the version is the default, there is no need to store it.
 				// However, is there is already a value set, do not remove it.
@@ -1231,7 +1251,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, "v" + def.Version);
 				}
 				
-				if (TargetFormat.SupportsMonikers) {
+				if (toolsFormat.SupportsMonikers) {
 					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier, def.Identifier);
 					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkProfile", moniker.Profile, def.Profile);
 				}
@@ -1338,10 +1358,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems)
+		void SaveItem (IProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems)
 		{
 			if (ob is ProjectReference) {
-				SaveReference (monitor, ser, msproject, (ProjectReference) ob, oldItems);
+				SaveReference (monitor, fmt, ser, msproject, (ProjectReference) ob, oldItems);
 			}
 			else if (ob is ProjectFile) {
 				SaveProjectFile (ser, msproject, (ProjectFile) ob, oldItems);
@@ -1422,7 +1442,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveReference (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref, Dictionary<string,ItemInfo> oldItems)
+		void SaveReference (IProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildSerializer ser, MSBuildProject msproject, ProjectReference pref, Dictionary<string,ItemInfo> oldItems)
 		{
 			MSBuildItem buildItem;
 			if (pref.ReferenceType == ReferenceType.Assembly) {
@@ -1481,7 +1501,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				//RequiredTargetFramework is undocumented, maybe only a hint for VS. Only seems to be used for .NETFramework
 				var dnp = pref.OwnerProject as DotNetProject;
-				IList supportedFrameworks = TargetFormat.SupportedFrameworks;
+				IList supportedFrameworks = fmt.SupportedFrameworks;
 				if (supportedFrameworks != null && dnp != null && pkg != null
 					&& dnp.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK
 					&& pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework)
