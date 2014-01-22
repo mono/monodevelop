@@ -44,7 +44,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void InsertParensToggled (object sender, EventArgs e)
 		{
-			openingRadiobutton.Sensitive = bothRadiobutton.Sensitive = false;//insertParenthesesCheckbutton.Active;
+			openingRadiobutton.Sensitive = bothRadiobutton.Sensitive = insertParenthesesCheckbutton.Active;
 		}
 
 		#region IOptionsPanel implementation
