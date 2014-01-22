@@ -42,6 +42,7 @@ using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -193,6 +194,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestSimpleCase ()
 		{
+			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Set (true); 
 			string completion = Test (@"class MyClass
 {
 	int foo;
@@ -208,6 +210,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestNoAutoCase ()
 		{
+			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Set (false); 
 			string completion = Test (@"class MyClass
 {
 	int foo;

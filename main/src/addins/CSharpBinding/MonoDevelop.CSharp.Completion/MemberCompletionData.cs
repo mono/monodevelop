@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -350,7 +351,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (runParameterCompletionCommand)
 				editorCompletion.RunParameterCompletionCommand ();
-			if (runCompletionCompletionCommand) {
+			if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
 				Application.Invoke (delegate {
 					editorCompletion.RunCompletionCommand ();
 				});
