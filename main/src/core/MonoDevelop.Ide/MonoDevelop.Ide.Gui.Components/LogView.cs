@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
 		
-		const int MAX_BUFFER_LENGTH = 16000 * 1024;
+		const int MAX_BUFFER_LENGTH = 4000 * 1024;
 
 		/// <summary>
 		/// The log text view allows the user to jump to the source of an error/warning
