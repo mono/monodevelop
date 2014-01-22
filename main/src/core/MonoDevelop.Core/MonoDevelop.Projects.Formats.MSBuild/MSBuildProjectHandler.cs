@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder projectBuilder;
 		ITimeTracker timer;
 		bool modifiedInMemory;
-		string toolsVersion;
 		
 		string lastBuildToolsVersion;
 		string lastBuildRuntime;
@@ -69,42 +68,39 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return (SolutionEntityItem) Item; }
 		}
 
-		public string ToolsVersion {
-			get { return toolsVersion; }
-		}
-		
-		public List<string> TargetImports {
-			get {
-				return targetImports;
-			}
-			set {
-				targetImports = value;
-			}
-		}
+		public string ToolsVersion { get; private set; }
+		string productVersion;
 
-		internal override void SetTargetFormat (MSBuildFileFormat targetFormat)
+		public List<string> TargetImports { get; set; }
+
+		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
 		{
-			//ensure ToolsVersion is set to default when converting format or creating new projects
-			if (toolsVersion == null || (TargetFormat != null && TargetFormat.Id != targetFormat.Id))
-				toolsVersion = targetFormat.ToolsVersion;
+			//only touch the ToolsVersion and ProductVersion when converting formats (this happens on creation too)
+			if (converting) {
+				ToolsVersion = format.ToolsVersion;
+				productVersion = format.ProductVersion;
+			}
 
-			base.SetTargetFormat (targetFormat);
+			base.SetSolutionFormat (format, converting);
 		}
 
 		//HACK: the solution's format is irrelevant to MSBuild projects, what matters is the ToolsVersion
+		// but other parts of the MD API expect a FileFormat
 		MSBuildFileFormat GetToolsFormat ()
 		{
-			MSBuildFileFormat format;
-			switch (toolsVersion) {
+			switch (ToolsVersion) {
 			case "2.0":
 				return new MSBuildFileFormatVS05 ();
 			case "3.5":
 				return new MSBuildFileFormatVS08 ();
 			case "4.0":
+				if (SolutionFormat != null && SolutionFormat.Id == "MSBuild10")
+					return SolutionFormat;
+				return new MSBuildFileFormatVS12 ();
 			case "12.0":
 				return new MSBuildFileFormatVS12 ();
 			default:
-				throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
+				throw new Exception ("Unknown ToolsVersion '" + ToolsVersion + "'");
 			}
 		}
 
@@ -159,13 +155,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var sln = item.ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
+			if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
 				if (projectBuilder != null) {
 					projectBuilder.Dispose ();
 					projectBuilder = null;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName, slnFile);
-				lastBuildToolsVersion = toolsVersion;
+				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
+				lastBuildToolsVersion = ToolsVersion;
 				lastBuildRuntime = runtime.Id;
 				lastFileName = item.FileName;
 				lastSlnFileName = slnFile;
@@ -305,11 +301,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildProject p = new MSBuildProject ();
 			p.Load (fileName);
 
-			SetTargetFormat (format ?? new MSBuildFileFormatVS12 ());
+			ToolsVersion = p.ToolsVersion;
+			if (string.IsNullOrEmpty (ToolsVersion))
+				ToolsVersion = "2.0";
 
-			toolsVersion = p.ToolsVersion;
-			if (string.IsNullOrEmpty (toolsVersion))
-				toolsVersion = "2.0";
+			SetSolutionFormat (format ?? new MSBuildFileFormatVS12 (), false);
 
 			timer.Trace ("Read project guids");
 			
@@ -318,6 +314,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Avoid crash if there is not global group
 			if (globalGroup == null)
 				globalGroup = p.AddNewPropertyGroup (false);
+
+			productVersion = globalGroup.GetPropertyValue ("ProductVersion");
 			
 			string itemGuid = globalGroup.GetPropertyValue ("ProjectGuid");
 			if (itemGuid == null)
@@ -1097,20 +1095,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
-
-			//this value is based on the solution format, not the ToolsVersion
-			string productVersion = (string) Item.ExtendedProperties ["ProductVersion"];
-			if (productVersion == null) {
-				productVersion = TargetFormat.ProductVersion;
-				Item.ExtendedProperties ["ProductVersion"] = productVersion;
-			}
-
+			Item.ExtendedProperties ["ProductVersion"] = productVersion;
 			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
-			
-			if (toolsVersion != "2.0")
-				msproject.ToolsVersion = toolsVersion;
-			else if (msproject.ToolsVersion != "2.0")
-				msproject.ToolsVersion = string.Empty;
+
+			// having no ToolsVersion is equivalent to 2.0, roundtrip that correctly
+			if (ToolsVersion != "2.0")
+				msproject.ToolsVersion = ToolsVersion;
+			else if (string.IsNullOrEmpty (msproject.ToolsVersion))
+				msproject.ToolsVersion = null;
+			else
+				msproject.ToolsVersion = "2.0";
 
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());

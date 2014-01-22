@@ -145,7 +145,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (!(item.ItemHandler is MSBuildProjectHandler))
 					MSBuildProjectService.InitializeItemHandler (item);
 				MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
-				handler.SetTargetFormat (this);
+				handler.SetSolutionFormat (this, false);
 				handler.Save (monitor);
 			}
 		}
@@ -177,14 +177,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (item != null) {
 				handler = item.GetItemHandler() as MSBuildHandler;
 				if (handler != null) {
-					handler.SetTargetFormat (this);
+					handler.SetSolutionFormat (this, true);
 					return;
 				}
 			}
-			
+
 			MSBuildProjectService.InitializeItemHandler (item);
 			handler = (MSBuildHandler) item.ItemHandler;
-			handler.SetTargetFormat (this);
+			handler.SetSolutionFormat (this, true);
 		}
 		
 		public bool SupportsMixedFormats {

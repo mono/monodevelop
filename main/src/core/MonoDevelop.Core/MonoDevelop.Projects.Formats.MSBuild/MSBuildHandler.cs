@@ -43,7 +43,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string typeGuid;
 		string id;
 		string[] slnProjectContent;
-		MSBuildFileFormat targetFormat;
 		DataItem customSlnData;
 		
 		internal List<string> UnresolvedProjectDependencies { get; set; }
@@ -99,15 +98,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { id = value; }
 		}
 
-		internal MSBuildFileFormat TargetFormat {
-			get {
-				return targetFormat;
-			}
-		}
+		internal MSBuildFileFormat SolutionFormat { get; private set; }
 
-		internal virtual void SetTargetFormat (MSBuildFileFormat targetFormat)
+		internal virtual void SetSolutionFormat (MSBuildFileFormat format, bool converting)
 		{
-			this.targetFormat = targetFormat;
+			SolutionFormat = format;
 		}
 
 		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
@@ -123,7 +118,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SaveItem (monitor);
 				monitor.Step (1);
 				Solution sol = Item.ParentSolution;
-				targetFormat.SlnFileFormat.WriteFile (sol.FileName, sol, targetFormat, false, monitor);
+				SolutionFormat.SlnFileFormat.WriteFile (sol.FileName, sol, SolutionFormat, false, monitor);
 				sol.NeedsReload = false;
 				monitor.EndTask ();
 			} else
