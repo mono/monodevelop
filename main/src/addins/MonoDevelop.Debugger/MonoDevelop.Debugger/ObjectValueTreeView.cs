@@ -27,8 +27,9 @@
 
 using System;
 using System.Text;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Gtk;
 using Mono.Debugging.Client;
@@ -50,6 +51,7 @@ namespace MonoDevelop.Debugger
 		readonly Dictionary<ObjectValue, TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
 		readonly Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
+		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		readonly Dictionary<string, string> oldValues = new Dictionary<string, string> ();
 		readonly List<ObjectValue> values = new List<ObjectValue> ();
 		readonly List<string> valueNames = new List<string> ();
@@ -238,14 +240,10 @@ namespace MonoDevelop.Debugger
 			crtValue.Edited -= OnValueEdited;
 			crtValue.EditingCanceled -= OnEditingCancelled;
 
-			if (expandTasks.Count > 0) {
-				var tasks = new Task[expandTasks.Count];
-				expandTasks.Values.CopyTo (tasks, 0);
-				Task.WaitAll (tasks);
-			}
+			disposed = true;
+			cancellationTokenSource.Cancel ();
 
 			base.OnDestroyed ();
-			disposed = true;
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -843,7 +841,7 @@ namespace MonoDevelop.Debugger
 			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
 
-		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value)
+		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value, CancellationToken cancellationToken)
 		{
 			return Task.Factory.StartNew<ObjectValue[]> (delegate (object arg) {
 				try {
@@ -853,7 +851,7 @@ namespace MonoDevelop.Debugger
 					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
 					return new ObjectValue[0];
 				}
-			}, value);
+			}, value, cancellationToken);
 		}
 
 		void AddChildrenAsync (ObjectValue value, TreePathReference row)
@@ -863,8 +861,11 @@ namespace MonoDevelop.Debugger
 			if (expandTasks.TryGetValue (value, out task))
 				return;
 
-			task = GetChildrenAsync (value).ContinueWith (t => {
+			task = GetChildrenAsync (value, cancellationTokenSource.Token).ContinueWith (t => {
 				TreeIter iter, it;
+
+				if (disposed)
+					return;
 
 				if (row.IsValid && store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
 					foreach (var child in t.Result) {
@@ -881,7 +882,7 @@ namespace MonoDevelop.Debugger
 
 				expandTasks.Remove (value);
 				row.Dispose ();
-			}, Xwt.Application.UITaskScheduler);
+			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 			expandTasks.Add (value, task);
 		}
 		
