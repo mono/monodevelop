@@ -51,12 +51,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> subtypeGuids = new List<string> ();
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
-		string lastBuildToolsVersion;
-		string lastBuildRuntime;
-		string lastFileName;
 		ITimeTracker timer;
 		bool modifiedInMemory;
 		string toolsVersion;
+		
+		string lastBuildToolsVersion;
+		string lastBuildRuntime;
+		string lastFileName;
+		string lastSlnFileName;
 
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -130,24 +132,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		RemoteProjectBuilder GetProjectBuilder ()
 		{
-			SolutionEntityItem item = (SolutionEntityItem) Item;
+			var item = (SolutionEntityItem) Item;
+
+			//FIXME: we can't really have per-project runtimes, has to be per-solution
 			TargetRuntime runtime = null;
-			if (item is IAssemblyProject) {
-				runtime = ((IAssemblyProject) item).TargetRuntime;
-			} 	else {
-				runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-			}
-			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName) {
+			var ap = item as IAssemblyProject;
+			runtime = ap != null ? ap.TargetRuntime : Runtime.SystemAssemblyService.CurrentRuntime;
+
+			var sln = item.ParentSolution;
+			var slnFile = sln != null ? sln.FileName : null;
+
+			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
 				if (projectBuilder != null) {
 					projectBuilder.Dispose ();
 					projectBuilder = null;
 				}
-				var sln = item.ParentSolution;
-				var slnFile = sln != null ? sln.FileName : null;
 				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName, slnFile);
 				lastBuildToolsVersion = toolsVersion;
 				lastBuildRuntime = runtime.Id;
 				lastFileName = item.FileName;
+				lastSlnFileName = slnFile;
 			}
 			else if (modifiedInMemory) {
 				modifiedInMemory = false;

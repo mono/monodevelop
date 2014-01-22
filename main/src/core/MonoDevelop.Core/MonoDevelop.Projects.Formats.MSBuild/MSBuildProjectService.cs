@@ -485,11 +485,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (binDir == null) {
 					//fall back to 4.0, we know it's always available
 					toolsVersion = "4.0";
-					binDir = runtime.GetMSBuildBinPath ("4.0");
 				}
 
 				//check the ToolsVersion we found can handle the project
-				if (Version.Parse (toolsVersion) < Version.Parse (minToolsVersion)) {
+				Version tv, mtv;
+				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
 					string error = null;
 					if (runtime is MsNetTargetRuntime && minToolsVersion == "12.0")
 						error = "MSBuild 2013 is not installed. Please download and install it from " +
@@ -499,12 +499,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						runtime.Id, toolsVersion)
 					);
 				}
-				
-				string builderKey = runtime.Id + " " + toolsVersion;
+
+				//one builder per solution
+				string builderKey = runtime.Id + " # " + solutionFile;
 				RemoteBuildEngine builder;
 				if (builders.TryGetValue (builderKey, out builder)) {
 					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
+					return new RemoteProjectBuilder (file, builder);
 				}
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
@@ -528,7 +529,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();
 					var engine = (IBuildEngine)bf.Deserialize (ms);
-					engine.SetUICulture (GettextCatalog.UICulture);
+					engine.Initialize (solutionFile, GettextCatalog.UICulture);
 					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
@@ -541,7 +542,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
-				return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
+				return new RemoteProjectBuilder (file, builder);
 			}
 		}
 		
