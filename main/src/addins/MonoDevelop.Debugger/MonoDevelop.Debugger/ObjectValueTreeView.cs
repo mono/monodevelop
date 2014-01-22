@@ -351,7 +351,7 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				allowAdding = value;
-				Refresh ();
+				Refresh (false);
 			}
 		}
 
@@ -362,7 +362,7 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				allowEditing = value;
-				Refresh ();
+				Refresh (false);
 			}
 		}
 		
@@ -428,39 +428,39 @@ namespace MonoDevelop.Debugger
 		public void AddExpression (string exp)
 		{
 			valueNames.Add (exp);
-			Refresh ();
+			Refresh (false);
 		}
 		
 		public void AddExpressions (IEnumerable<string> exps)
 		{
 			valueNames.AddRange (exps);
-			Refresh ();
+			Refresh (false);
 		}
 		
 		public void RemoveExpression (string exp)
 		{
 			cachedValues.Remove (exp);
 			valueNames.Remove (exp);
-			Refresh ();
+			Refresh (true);
 		}
 		
 		public void AddValue (ObjectValue value)
 		{
 			values.Add (value);
-			Refresh ();
+			Refresh (false);
 		}
 		
 		public void AddValues (IEnumerable<ObjectValue> newValues)
 		{
 			foreach (ObjectValue val in newValues)
 				values.Add (val);
-			Refresh ();
+			Refresh (false);
 		}
 		
 		public void RemoveValue (ObjectValue value)
 		{
 			values.Remove (value);
-			Refresh ();
+			Refresh (true);
 		}
 
 		public void ReplaceValue (ObjectValue old, ObjectValue @new)
@@ -470,13 +470,13 @@ namespace MonoDevelop.Debugger
 				return;
 
 			values [idx] = @new;
-			Refresh ();
+			Refresh (false);
 		}
 		
 		public void ClearValues ()
 		{
 			values.Clear ();
-			Refresh ();
+			Refresh (true);
 		}
 		
 		public void ClearExpressions ()
@@ -492,16 +492,17 @@ namespace MonoDevelop.Debugger
 		public void Update ()
 		{
 			cachedValues.Clear ();
-			Refresh ();
+			Refresh (true);
 		}
 		
-		public void Refresh ()
+		void Refresh (bool resetScrollPosition)
 		{
 			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
 			nodes.Clear ();
 
-			if (IsRealized)
+			// Note: this is a hack that ideally we could get rid of...
+			if (IsRealized && resetScrollPosition)
 				ScrollToPoint (0, 0);
 
 			SaveState ();
@@ -533,6 +534,11 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
 
 			LoadState ();
+		}
+
+		public void Refresh ()
+		{
+			Refresh (true);
 		}
 		
 		void RefreshRow (TreeIter iter)
@@ -935,7 +941,7 @@ namespace MonoDevelop.Debugger
 			if (store.GetValue (it, ObjectColumn) == null) {
 				if (args.NewText.Length > 0) {
 					valueNames.Add (args.NewText);
-					Refresh ();
+					Refresh (false);
 				}
 			} else {
 				string exp = (string) store.GetValue (it, NameColumn);
@@ -952,7 +958,7 @@ namespace MonoDevelop.Debugger
 					valueNames.RemoveAt (i);
 				
 				cachedValues.Remove (exp);
-				Refresh ();
+				Refresh (true);
 			}
 		}
 		
@@ -1370,7 +1376,7 @@ namespace MonoDevelop.Debugger
 					valueNames.Remove (exp);
 				}
 			}
-			Refresh ();
+			Refresh (true);
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
