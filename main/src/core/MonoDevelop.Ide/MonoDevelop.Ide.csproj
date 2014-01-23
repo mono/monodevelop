@@ -857,11 +857,11 @@
     <EmbeddedResource Include="icons\feedback-16.png">
       <LogicalName>feedback-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\update-available-16.png">
-      <LogicalName>update-available-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\updates-16.png">
+      <LogicalName>updates-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\update-available-16%402x.png">
-      <LogicalName>update-available-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\updates-16%402x.png">
+      <LogicalName>updates-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="branding\WelcomePage_Logo.png">
       <LogicalName>WelcomePage_Logo.png</LogicalName>
