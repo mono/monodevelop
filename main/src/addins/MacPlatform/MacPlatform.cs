@@ -411,17 +411,22 @@ namespace MonoDevelop.MacIntegration
 			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
 
-		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
+		public static Gdk.Pixbuf GetPixbufFromNSImage (NSImage icon, int width, int height)
 		{
 			var rect = new RectangleF (0, 0, width, height);
+
+			var rep = icon.BestRepresentation (rect, null, null);
 			var bitmap = rep as NSBitmapImageRep;
-			
-			if (bitmap == null) {
-				using (var cgi = rep.AsCGImage (ref rect, null, null))
-					bitmap = new NSBitmapImageRep (cgi);
-			}
-			
 			try {
+				if (bitmap == null) {
+					if (rep != null)
+						rep.Dispose ();
+					using (var cgi = icon.AsCGImage (ref rect, null, null)) {
+						if (cgi == null)
+							return null;
+						bitmap = new NSBitmapImageRep (cgi);
+					}
+				}
 				byte[] data;
 				using (var tiff = bitmap.TiffRepresentation) {
 					data = new byte[tiff.Length];
@@ -452,7 +457,7 @@ namespace MonoDevelop.MacIntegration
 				
 				return scaled;
 			} finally {
-				if (bitmap != rep)
+				if (bitmap != null)
 					bitmap.Dispose ();
 			}
 		}
@@ -481,15 +486,8 @@ namespace MonoDevelop.MacIntegration
 			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h)) {
 				w = h = 22;
 			}
-			
-			var rect = new System.Drawing.RectangleF (0, 0, w, h);
-			
-			using (var rep = icon.BestRepresentation (rect, null, null)) {
-				if (rep == null)
-					return base.OnGetPixbufForFile (filename, size);
 				
-				return GetPixbufFromNSImageRep (rep, w, h);
-			}
+			return GetPixbufFromNSImage (icon, w, h) ?? base.OnGetPixbufForFile (filename, size);
 		}
 		
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
