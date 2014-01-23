@@ -216,20 +216,20 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-24.png" size = "LargeToolbar"/>
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-light-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/><!-- TODO: VV -->
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-24.png" size = "LargeToolbar"/><!-- TODO: VV -->
 		<StockIcon stockid = "md-continue-debug" resource = "ico-debug-continue-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-pause-debug" resource = "ico-debug-pause-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-into-debug" resource = "ico-debug-step-in-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-out-debug" resource = "ico-debug-step-out-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-over-debug" resource = "ico-debug-step-over-light-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-pause-debug" resource = "pause-light-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-into-debug" resource = "step-in-light-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-out-debug" resource = "step-out-light-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-over-debug" resource = "step-over-light-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-call-stack" resource = "view-debug-call-stack-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-locals" resource = "view-debug-locals-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-threads" resource = "view-debug-threads-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-watch" resource = "view-debug-watch-16.png" size="Menu" />
-		<StockIcon stockid = "md-bug" resource = "bug-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-call-stack" resource = "view-debug-call-stack-16.png" size="Menu" /><!-- TODO: VV -->
+		<StockIcon stockid = "md-view-debug-locals" resource = "view-debug-locals-16.png" size="Menu" /><!-- TODO: VV -->
+		<StockIcon stockid = "md-view-debug-threads" resource = "view-debug-threads-16.png" size="Menu" /><!-- TODO: VV -->
+		<StockIcon stockid = "md-view-debug-watch" resource = "view-debug-watch-16.png" size="Menu" /><!-- TODO: VV -->
+		<StockIcon stockid = "md-bug" resource = "bug-16.png" size="Menu" /><!-- TODO: VV -->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CommandBar">

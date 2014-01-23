@@ -157,8 +157,11 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-16.png">
-      <LogicalName>debug-overlay-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\debug-overlay-16.png">
+      <LogicalName>debug-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\debug-overlay-16%402x.png">
+      <LogicalName>debug-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\debug-overlay-22.png">
       <LogicalName>debug-overlay-22.png</LogicalName>
@@ -187,29 +190,29 @@
     <EmbeddedResource Include="icons\debug-overlay-24.png">
       <LogicalName>debug-overlay-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-pause-16.png">
-      <LogicalName>ico-debug-pause-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pause-16.png">
+      <LogicalName>pause-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-pause-16%402x.png">
-      <LogicalName>ico-debug-pause-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pause-16%402x.png">
+      <LogicalName>pause-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-in-16.png">
-      <LogicalName>ico-debug-step-in-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-in-16.png">
+      <LogicalName>step-in-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-in-16%402x.png">
-      <LogicalName>ico-debug-step-in-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-in-16%402x.png">
+      <LogicalName>step-in-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-out-16.png">
-      <LogicalName>ico-debug-step-out-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-out-16.png">
+      <LogicalName>step-out-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-out-16%402x.png">
-      <LogicalName>ico-debug-step-out-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-out-16%402x.png">
+      <LogicalName>step-out-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-over-16.png">
-      <LogicalName>ico-debug-step-over-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-over-16.png">
+      <LogicalName>step-over-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-step-over-16%402x.png">
-      <LogicalName>ico-debug-step-over-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\step-over-16%402x.png">
+      <LogicalName>step-over-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\ico-debug-continue-16.png">
       <LogicalName>ico-debug-continue-light-16.png</LogicalName>
