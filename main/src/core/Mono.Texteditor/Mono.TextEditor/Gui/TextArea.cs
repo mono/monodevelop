@@ -917,6 +917,10 @@ namespace Mono.TextEditor
 			               this.Allocation.Width, this.Allocation.Height - y);
 		}
 
+		internal bool IsInKeypress {
+			get;
+			set;
+		}
 
 		/// <summary>Handles key input after key mapping and input methods.</summary>
 		/// <param name="key">The mapped keycode.</param>
@@ -924,10 +928,16 @@ namespace Mono.TextEditor
 		/// <param name="modifier">Keyboard modifier, excluding any consumed by key mapping or IM.</param>
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask
-				 | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
-			CurrentMode.InternalHandleKeypress (textEditorData.Parent, textEditorData, key, unicodeChar, filteredModifiers);
+			IsInKeypress = true;
+			try {
+				ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask
+					 | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
+				CurrentMode.InternalHandleKeypress (textEditorData.Parent, textEditorData, key, unicodeChar, filteredModifiers);
+			} finally {
+				IsInKeypress = false;
+			}
 			RequestResetCaretBlink ();
+
 		}
 		
 		bool IMFilterKeyPress (Gdk.EventKey evt, Gdk.Key mappedKey, uint mappedChar, Gdk.ModifierType mappedModifiers)
@@ -1338,9 +1348,10 @@ namespace Mono.TextEditor
 			} else {
 				margin = GetMarginAtX (x, out startPos);
 				if (margin != null && GdkWindow != null) {
-					if (!overChildWidget)
-						SetCursor (margin.MarginCursor);
-					else {
+					if (!overChildWidget) {
+						if (!editor.IsInKeypress)
+							SetCursor (margin.MarginCursor);
+					} else {
 						// Set the default cursor when the mouse is over an embedded widget
 						SetCursor (null);
 					}
