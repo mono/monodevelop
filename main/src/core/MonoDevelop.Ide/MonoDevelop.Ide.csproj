@@ -347,8 +347,11 @@
     <EmbeddedResource Include="icons\assembly-project-16.png">
       <LogicalName>assembly-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-16.png">
-      <LogicalName>breakpoint-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\breakpoint-16.png">
+      <LogicalName>breakpoint-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\breakpoint-16%402x.png">
+      <LogicalName>breakpoint-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disable-all-16.png">
       <LogicalName>breakpoint-disable-all-16.png</LogicalName>
