@@ -51,7 +51,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/TypeSystem/Parser">
-    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
+    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp-fs, text/x-fsharp-fsx, text/x-fsharp-fsi" />
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
@@ -59,7 +59,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
-    <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
+    <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp-fs, text/x-fsharp-fsx" />
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -102,25 +102,26 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Core/StockIcons">
-    <StockIcon stockid="md-fs-logo32" resource="icons.fsharp-icon-32.png" />
-    <StockIcon stockid="md-fs-script32" resource="icons.fsharp-script-32.png" />
-    <StockIcon stockid="md-fs-file" resource="icons.fsharp-file-icon.png" />
-    <StockIcon stockid="md-fs-script" resource="icons.fsharp-script-icon.png" />
-    <StockIcon stockid="md-fs-project" resource="icons.fsharp-project-icon.png" />
+    <!-- Not used <StockIcon stockid="md-fs-logo32"   resource="icons.fsharp-icon-32.png" /> -->
+    <!-- Not used <StockIcon stockid="md-fs-script32" resource="icons.fsharp-script-32.png" /> -->
+    <StockIcon stockid="md-fs-file"    resource="icons.fsharp-file-icon.png" size="Menu" />
+    <StockIcon stockid="md-fs-script"  resource="icons.fsharp-script-icon.png" size="Menu" />
+    <StockIcon stockid="md-fs-project" resource="icons.fsharp-project-icon.png" size="Menu" />
   </Extension>
 
   <Extension path="/MonoDevelop/Core/MimeTypes">
-    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-fs-file" isText="true">
+    <MimeType id="text/x-fsharp-fs" _description="F# Source File" icon="md-fs-file" isText="true">
       <File pattern="*.fs" />
     </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
+    <MimeType id="text/x-fsharp-fsx" _description="F# Script File" icon="md-fs-script" isText="true">
       <File pattern="*.fsx" />
-    </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
       <File pattern="*.fsscript" />
-    </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-fs-file" isText="true">
+        </MimeType>
+    <MimeType id="text/x-fsharp-fsi" _description="F# Signature File" icon="md-fs-file" isText="true">
       <File pattern="*.fsi" />
+        </MimeType>
+    <MimeType id="application/fsproject+xml" _description="F# project file" baseType="application/xml">
+      <File pattern="*.fsproj" />
     </MimeType>
   </Extension>
 
