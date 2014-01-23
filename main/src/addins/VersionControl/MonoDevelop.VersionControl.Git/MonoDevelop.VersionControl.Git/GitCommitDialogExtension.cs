@@ -60,17 +60,10 @@ namespace MonoDevelop.VersionControl.Git
 			// In this callback we check if the user information configured in Git
 			// matches the user information configured in MonoDevelop. If the configurations
 			// don't match, it shows a dialog asking the user what to do.
-			
+
 			GitRepository repo = (GitRepository) changeSet.Repository;
-			
-			if (!widget.CommitterIsAuthor) {
-				if (widget.AuthorName.Length > 0)
-					changeSet.ExtendedProperties ["Git.AuthorName"] = widget.AuthorName;
-				if (widget.AuthorMail.Length > 0)
-					changeSet.ExtendedProperties ["Git.AuthorEmail"] = widget.AuthorMail;
-			}
-			
 			Solution sol = null;
+
 			// Locate the solution to which the changes belong
 			foreach (Solution s in IdeApp.Workspace.GetAllSolutions ()) {
 				if (s.BaseDirectory == changeSet.BaseLocalPath || changeSet.BaseLocalPath.IsChildPathOf (s.BaseDirectory)) {
@@ -80,6 +73,14 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			if (sol == null)
 				return true;
+
+			if (!widget.CommitterIsAuthor) {
+				if (widget.AuthorName.Length > 0)
+					changeSet.ExtendedProperties ["Git.AuthorName"] = widget.AuthorName;
+				if (widget.AuthorMail.Length > 0)
+					changeSet.ExtendedProperties ["Git.AuthorEmail"] = widget.AuthorMail;
+				return true;
+			}
 
 			string user;
 			string email;

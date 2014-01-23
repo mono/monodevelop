@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 			// Container child table1.Gtk.Table+TableChild
 			this.entryEmail = new global::Gtk.Entry ();
 			this.entryEmail.CanFocus = true;
-			this.entryEmail.Name = "entry2";
+			this.entryEmail.Name = "entryEmail";
 			this.entryEmail.IsEditable = true;
 			this.entryEmail.InvisibleChar = '●';
 			this.table1.Add (this.entryEmail);
