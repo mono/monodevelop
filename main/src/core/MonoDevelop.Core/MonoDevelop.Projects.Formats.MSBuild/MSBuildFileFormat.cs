@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		protected virtual bool SupportsToolsVersion (string version)
 		{
-			return version == ToolsVersion;
+			return version == DefaultToolsVersion;
 		}
 
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
@@ -191,11 +191,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return false; }
 		}
 
-		public abstract string ToolsVersion { get; }
+		public abstract string DefaultToolsVersion { get; }
 
 		public abstract string SlnVersion { get; }
 
-		public abstract string ProductVersion { get; }
+		public virtual string DefaultProductVersion { get { return null; } }
+
+		public virtual string DefaultSchemaVersion { get { return null; } }
 
 		public abstract string ProductDescription { get; }
 
@@ -236,11 +238,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild05"; }
 		}
 
-		public override string ProductVersion {
+		public override string DefaultProductVersion {
 			get { return "8.0.50727"; }
 		}
 
-		public override string ToolsVersion {
+		public override string DefaultToolsVersion {
+			get { return "2.0"; }
+		}
+
+		public override string DefaultSchemaVersion {
 			get { return "2.0"; }
 		}
 
@@ -272,12 +278,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild08"; }
 		}
 
-		public override string ProductVersion {
+		public override string DefaultProductVersion {
 			get { return "9.0.21022"; }
 		}
 
-		public override string ToolsVersion {
+		public override string DefaultToolsVersion {
 			get { return "3.5"; }
+		}
+
+		public override string DefaultSchemaVersion {
+			get { return "2.0"; }
 		}
 
 		public override string SlnVersion {
@@ -299,11 +309,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild10"; }
 		}
 
-		public override string ProductVersion {
-			get { return "10.0.0"; }
+		//WTF VS
+		public override string DefaultProductVersion {
+			get { return "8.0.30703"; }
 		}
 
-		public override string ToolsVersion {
+		public override string DefaultSchemaVersion {
+			get { return "2.0"; }
+		}
+
+		public override string DefaultToolsVersion {
 			get { return "4.0"; }
 		}
 
@@ -323,11 +338,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild12"; }
 		}
 
-		public override string ProductVersion {
-			get { return "12.0.0"; }
-		}
-
-		public override string ToolsVersion {
+		public override string DefaultToolsVersion {
 			get { return "4.0"; }
 		}
 
@@ -341,7 +352,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		protected override bool SupportsToolsVersion (string version)
 		{
-			return version == "4.0" || version == ToolsVersion;
+			return version == "4.0" || version == DefaultToolsVersion;
 		}
 	}
 }

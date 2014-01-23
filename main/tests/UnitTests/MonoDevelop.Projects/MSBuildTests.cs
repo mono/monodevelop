@@ -400,6 +400,16 @@ namespace MonoDevelop.Projects
 
 			if (f != null)
 				Assert.IsTrue (f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
+
+			string projectFile = ((Project)sol.Items [0]).FileName;
+			string solXml = Util.ReadAllWithWindowsEndings (solFile);
+			string projectXml = Util.ReadAllWithWindowsEndings (projectFile);
+
+			sol.Save (monitor);
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+
+			Assert.AreEqual (projectXml, Util.ReadAllWithWindowsEndings (projectFile));
 		}
 
 		[Test]

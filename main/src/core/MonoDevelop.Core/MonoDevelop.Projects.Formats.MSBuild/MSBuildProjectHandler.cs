@@ -70,15 +70,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string ToolsVersion { get; private set; }
 		string productVersion;
+		string schemaVersion;
 
 		public List<string> TargetImports { get; set; }
 
 		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
 		{
-			//only touch the ToolsVersion and ProductVersion when converting formats (this happens on creation too)
+			// when converting formats, set ToolsVersion, ProductVersion, SchemaVersion to default values written by VS 
+			// this happens on creation too
+			// else we leave them alone and just roundtrip them
 			if (converting) {
-				ToolsVersion = format.ToolsVersion;
-				productVersion = format.ProductVersion;
+				ToolsVersion = format.DefaultToolsVersion;
+				productVersion = format.DefaultProductVersion;
+				schemaVersion = format.DefaultSchemaVersion;
 			}
 
 			base.SetSolutionFormat (format, converting);
@@ -316,6 +320,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				globalGroup = p.AddNewPropertyGroup (false);
 
 			productVersion = globalGroup.GetPropertyValue ("ProductVersion");
+			schemaVersion = globalGroup.GetPropertyValue ("SchemaVersion");
 			
 			string itemGuid = globalGroup.GetPropertyValue ("ProjectGuid");
 			if (itemGuid == null)
@@ -1096,7 +1101,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 
 			Item.ExtendedProperties ["ProductVersion"] = productVersion;
-			Item.ExtendedProperties ["SchemaVersion"] = "2.0";
+			Item.ExtendedProperties ["SchemaVersion"] = schemaVersion;
 
 			// having no ToolsVersion is equivalent to 2.0, roundtrip that correctly
 			if (ToolsVersion != "2.0")
