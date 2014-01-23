@@ -878,8 +878,11 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml">
       <LogicalName>ClassPadContextMenu.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\feedback-16.png">
-      <LogicalName>feedback-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\feedback-16.png">
+      <LogicalName>feedback-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\feedback-16%402x.png">
+      <LogicalName>feedback-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\updates-16.png">
       <LogicalName>updates-light-16.png</LogicalName>
@@ -1347,8 +1350,11 @@
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\command-16.png">
-      <LogicalName>command-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\command-16.png">
+      <LogicalName>command-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\command-16%402x.png">
+      <LogicalName>command-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-disabled-32.png">
       <LogicalName>ico-build-disabled-light-32.png</LogicalName>
@@ -1365,14 +1371,17 @@
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
       <LogicalName>tree-popup-button-hover.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\console-16.png">
-      <LogicalName>console-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\stop-16.png">
+      <LogicalName>stop-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop-16.png">
-      <LogicalName>stop-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\stop-16%402x.png">
+      <LogicalName>stop-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\clear-16.png">
-      <LogicalName>clear-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\clear-16.png">
+      <LogicalName>clear-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\clear-16%402x.png">
+      <LogicalName>clear-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\status-ready-14.png">
       <LogicalName>status-ready-light-14.png</LogicalName>
