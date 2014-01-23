@@ -1089,6 +1089,12 @@
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-generic-16.png">
+      <LogicalName>file-generic-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-generic-16%402x.png">
+      <LogicalName>file-generic-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-generic-32.png">
       <LogicalName>file-generic-light-32.png</LogicalName>
     </EmbeddedResource>
