@@ -53,14 +53,14 @@ namespace MonoDevelop.NUnit
 		static CircleImage ()
 		{
 			try {
-				Running = Xwt.Drawing.Image.FromResource ("NUnit.Running.png");
-				Failure = Xwt.Drawing.Image.FromResource ("NUnit.Failed.png");
-				None = Xwt.Drawing.Image.FromResource ("NUnit.None.png");
-				NotRun = Xwt.Drawing.Image.FromResource ("NUnit.NotRun.png");
-				Success = Xwt.Drawing.Image.FromResource ("NUnit.Success.png");
-				SuccessAndFailure = Xwt.Drawing.Image.FromResource ("NUnit.SuccessAndFailed.png");
-				Loading = Xwt.Drawing.Image.FromResource ("NUnit.Loading.png");
-				Inconclusive = Xwt.Drawing.Image.FromResource ("NUnit.Inconclusive.png");
+				Running = Xwt.Drawing.Image.FromResource ("unit-running-light-16.png");
+				Failure = Xwt.Drawing.Image.FromResource ("unit-failed-light-16.png");
+				None = Xwt.Drawing.Image.FromResource ("unit-not-yet-run-light-16.png");
+				NotRun = Xwt.Drawing.Image.FromResource ("unit-skipped-light-16.png");
+				Success = Xwt.Drawing.Image.FromResource ("unit-success-light-16.png");
+				SuccessAndFailure = Xwt.Drawing.Image.FromResource ("unit-mixed-results-light-16.png");
+				Loading = Xwt.Drawing.Image.FromResource ("unit-loading-light-16.png");
+				Inconclusive = Xwt.Drawing.Image.FromResource ("unit-inconclusive-light-16.png");
 				OldFailure = Failure.WithAlpha (0.4);
 				OldSuccess = Success.WithAlpha (0.4);
 				OldSuccessAndFailure = SuccessAndFailure.WithAlpha (0.4);
