@@ -170,23 +170,38 @@
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">
       <LogicalName>MonoDevelop.DesignerSupport.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\group-by-category.png">
-      <LogicalName>group-by-category.png</LogicalName>
+    <EmbeddedResource Include="icons\light\group-by-category-16.png">
+      <LogicalName>group-by-category-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\group-by-category-16@2x.png">
+      <LogicalName>group-by-category-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\md-design-listboxtoggle.png">
-      <LogicalName>md-design-listboxtoggle.png</LogicalName>
+    <EmbeddedResource Include="icons\light\compact-display-16.png">
+      <LogicalName>compact-display-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\properties-pad-16.png">
-      <LogicalName>properties-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\compact-display-16%402x.png">
+      <LogicalName>compact-display-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\toolbox-pad-16.png">
-      <LogicalName>toolbox-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\properties-16.png">
+      <LogicalName>properties-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-document-outline-16.png">
-      <LogicalName>pad-document-outline-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\properties-16%402x.png">
+      <LogicalName>properties-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\toolbox-16.png">
+      <LogicalName>toolbox-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\toolbox-16%402x.png">
+      <LogicalName>toolbox-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\document-outline-16.png">
+      <LogicalName>document-outline-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\document-outline-16%402x.png">
+      <LogicalName>document-outline-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public IconId Icon {
-			get { return !string.IsNullOrEmpty (icon) ? icon : "md-output-icon"; }
+			get { return !string.IsNullOrEmpty (icon) ? icon : "md-generic-pad"; }
 		}
 		
 		public string ClassName {

@@ -257,11 +257,17 @@
     <EmbeddedResource Include="icons\system-file-manager-16.png">
       <LogicalName>system-file-manager-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pin-red-down.png">
-      <LogicalName>pin-red-down.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pin-down-16.png">
+      <LogicalName>pin-down-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pin-red-up.png">
-      <LogicalName>pin-red-up.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pin-down-16%402x.png">
+      <LogicalName>pin-down-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\pin-up-16.png">
+      <LogicalName>pin-up-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\pin-up-16.png%402x">
+      <LogicalName>pin-up-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeEmacs.xml">
       <LogicalName>KeyBindingSchemeEmacs.xml</LogicalName>
@@ -611,11 +617,11 @@
     <EmbeddedResource Include="icons\package-x-generic-48.png">
       <LogicalName>package-x-generic-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-task-list-16.png">
-      <LogicalName>pad-task-list-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\task-list-16.png">
+      <LogicalName>task-list-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pad-task-list-24.png">
-      <LogicalName>pad-task-list-24.png</LogicalName>
+    <EmbeddedResource Include="icons\light\task-list-16%402x.png">
+      <LogicalName>task-list-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\plugin-16.png">
       <LogicalName>plugin-16.png</LogicalName>
@@ -725,9 +731,6 @@
     <EmbeddedResource Include="icons\user-package-22.png">
       <LogicalName>user-package-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\view-message-log-16.png">
-      <LogicalName>view-message-log-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-visibility-internal-overlay-16.png">
       <LogicalName>element-visibility-internal-overlay-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -803,8 +806,11 @@
     <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp">
       <LogicalName>MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.SortByCat.png">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.SortByCat.png</LogicalName>
+    <EmbeddedResource Include="icons-components\light\group-by-category-16.png">
+      <LogicalName>group-by-category-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons-components\light\group-by-category-16%402x.png">
+      <LogicalName>group-by-category-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\light\pad-minimize-9.png">
       <LogicalName>pad-minimize-light-9.png</LogicalName>
@@ -1007,8 +1013,11 @@
     <EmbeddedResource Include="icons\disclose-arrow-up-16.png">
       <LogicalName>disclose-arrow-up-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\magnify-16.png">
-      <LogicalName>magnify-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\search-results-16.png">
+      <LogicalName>search-results-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\search-results-16%402x.png">
+      <LogicalName>search-results-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-16.png">
       <LogicalName>searchbox-clear-16.png</LogicalName>
@@ -1056,8 +1065,23 @@
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\output-icon-16.png">
-      <LogicalName>output-icon-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\application-output-16.png">
+      <LogicalName>application-output-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\application-output-16%402x.png">
+      <LogicalName>application-output-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\immediate-16.png">
+      <LogicalName>immediate-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\immediate-16%402x.png">
+      <LogicalName>immediate-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-pad-16.png">
+      <LogicalName>generic-pad-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-pad-16%402x.png">
+      <LogicalName>generic-pad-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\replace-in-files-16.png">
       <LogicalName>replace-in-files-16.png</LogicalName>
@@ -1419,8 +1443,11 @@
     <EmbeddedResource Include="icons\sdk-locations-16.png">
       <LogicalName>sdk-locations-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\errors-pad-16.png">
-      <LogicalName>errors-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\error-list-off-16.png">
+      <LogicalName>error-list-off-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-list-off-16%402x.png">
+      <LogicalName>error-list-off-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>

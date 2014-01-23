@@ -175,17 +175,29 @@
     <EmbeddedResource Include="icons\light\breakpoint-16%402x.png">
       <LogicalName>breakpoint-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\view-debug-call-stack-16.png">
-      <LogicalName>view-debug-call-stack-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\call-stack-16.png">
+      <LogicalName>call-stack-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\view-debug-locals-16.png">
-      <LogicalName>view-debug-locals-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\call-stack-16%402x.png">
+      <LogicalName>call-stack-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\view-debug-threads-16.png">
-      <LogicalName>view-debug-threads-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\locals-16.png">
+      <LogicalName>locals-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\view-debug-watch-16.png">
-      <LogicalName>view-debug-watch-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\locals-16%402x.png">
+      <LogicalName>locals-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\threads-16.png">
+      <LogicalName>threads-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\threads-16%402x.png">
+      <LogicalName>threads-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\watch-16.png">
+      <LogicalName>watch-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\watch-16%402x.png">
+      <LogicalName>watch-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\debug-overlay-24.png">
       <LogicalName>debug-overlay-24.png</LogicalName>

@@ -93,9 +93,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton.Relief = ReliefStyle.None;
 			Gdk.Pixbuf pixbuf = null;
 			try {
-				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.Components.PropertyGrid.SortByCat.png");
+				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "group-by-category-16.png");
 			} catch (Exception e) {
-				LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
+				LoggingService.LogError ("Can't create pixbuf from resource: group-by-category-16.png", e);
 			}
 			if (pixbuf != null) {
 				catButton.Image = new Gtk.Image (pixbuf);
