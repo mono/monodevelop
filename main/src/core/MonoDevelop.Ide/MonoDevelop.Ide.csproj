@@ -392,8 +392,11 @@
     <EmbeddedResource Include="icons\light\element-template-surroundwith-16%402x.png">
       <LogicalName>element-template-surroundwith-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\comment-16.png">
-      <LogicalName>comment-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\comment-16.png">
+      <LogicalName>comment-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\comment-16%402x.png">
+      <LogicalName>comment-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\compiler-options-16.png">
       <LogicalName>compiler-options-16.png</LogicalName>

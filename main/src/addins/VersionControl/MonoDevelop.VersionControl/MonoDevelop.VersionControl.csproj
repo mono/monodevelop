@@ -194,32 +194,53 @@
     <EmbeddedResource Include="icons\menu_diff.png">
       <LogicalName>menu_diff.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_update.png">
-      <LogicalName>menu_update.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pull-16.png">
+      <LogicalName>pull-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\pull-16%402x.png">
+      <LogicalName>pull-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\menu_status.png">
       <LogicalName>menu_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_commit.png">
-      <LogicalName>menu_commit.png</LogicalName>
+    <EmbeddedResource Include="icons\light\commit-16.png">
+      <LogicalName>commit-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\commit-16%402x.png">
+      <LogicalName>commit-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\menu_remote_status.png">
       <LogicalName>menu_remote_status.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_add.png">
-      <LogicalName>menu_add.png</LogicalName>
+    <EmbeddedResource Include="icons\light\vcs-added-16.png">
+      <LogicalName>vcs-added-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_remove.png">
-      <LogicalName>menu_remove.png</LogicalName>
+    <EmbeddedResource Include="icons\light\vcs-added-16%402x.png">
+      <LogicalName>vcs-added-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_resolve.png">
-      <LogicalName>menu_resolve.png</LogicalName>
+    <EmbeddedResource Include="icons\light\vcs-removed-16.png">
+      <LogicalName>vcs-removed-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\comment.png">
-      <LogicalName>comment.png</LogicalName>
+    <EmbeddedResource Include="icons\light\vcs-removed-16%402x.png">
+      <LogicalName>vcs-removed-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_revert.png">
-      <LogicalName>menu_revert.png</LogicalName>
+    <EmbeddedResource Include="icons\light\vcs-conflicted-16.png">
+      <LogicalName>vcs-conflicted-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\vcs-conflicted-16%402x.png">
+      <LogicalName>vcs-conflicted-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\comment-16.png">
+      <LogicalName>comment-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\comment-16%402x.png">
+      <LogicalName>comment-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\revert-16.png">
+      <LogicalName>revert-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\revert-16%402x.png">
+      <LogicalName>revert-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
