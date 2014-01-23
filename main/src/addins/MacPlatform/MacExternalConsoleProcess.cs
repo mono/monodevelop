@@ -107,7 +107,7 @@ bash pause on exit trick
 					string val = environmentVariables [env];
 					if (!string.IsNullOrEmpty (val))
 						val = Escape (val);
-					sb.AppendFormat ("{0}=\"{1}\" ", env, val);
+					sb.AppendFormat ("export {0}=\"{1}\"; ", env, val);
 				}
 			}
 			if (command != null) {

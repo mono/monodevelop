@@ -508,7 +508,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			string tabId, windowId;
 			MacExternalConsoleProcess.RunTerminal (
-				null, null, directory, environmentVariables, null, false, out tabId, out windowId
+				null, null, directory, environmentVariables, title, false, out tabId, out windowId
 			);
 		}
 		
