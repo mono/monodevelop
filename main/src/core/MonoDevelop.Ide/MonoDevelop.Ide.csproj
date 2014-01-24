@@ -266,7 +266,7 @@
     <EmbeddedResource Include="icons\light\pin-up-16.png">
       <LogicalName>pin-up-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pin-up-16.png%402x">
+    <EmbeddedResource Include="icons\light\pin-up-16%402x.png">
       <LogicalName>pin-up-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeEmacs.xml">
