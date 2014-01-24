@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var files = new List<ProjectFile> ();
 					foreach (var file in e) {
 						var f = content.Project.GetProjectFile (file.FileName);
-						if (f == null || f.BuildAction != BuildAction.Compile)
+						if (f == null || f.BuildAction == BuildAction.None)
 							continue;
 						files.Add (f);
 					}
