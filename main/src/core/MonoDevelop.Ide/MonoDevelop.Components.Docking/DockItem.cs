@@ -290,6 +290,7 @@ namespace MonoDevelop.Components.Docking
 				icon = value;
 				if (titleTab != null)
 					titleTab.SetLabel (widget, icon, label);
+				frame.UpdateTitle (this);
 			}
 		}
 

@@ -165,19 +165,23 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string Title {
 			get { return title; }
-			set { 
-				title = value;
-				if (StatusChanged != null)
-					StatusChanged (this, EventArgs.Empty);
+			set {
+				if (title != value) {
+					title = value;
+					if (StatusChanged != null)
+						StatusChanged (this, EventArgs.Empty);
+				}
 			}
 		}
 		
 		public IconId Icon  {
 			get { return icon; }
 			set { 
-				icon = value;
-				if (StatusChanged != null)
-					StatusChanged (this, EventArgs.Empty);
+				if (icon != value) {
+					icon = value;
+					if (StatusChanged != null)
+						StatusChanged (this, EventArgs.Empty);
+				}
 			}
 		}
 		
