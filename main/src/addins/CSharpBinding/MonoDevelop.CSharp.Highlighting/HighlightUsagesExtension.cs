@@ -36,6 +36,9 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Components;
 using Cairo;
+using System.Threading.Tasks;
+using System.Threading;
+using Gtk;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -88,6 +91,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public override void Dispose ()
 		{
+			CancelTooltip ();
 			if (syntaxMode != null) {
 				textEditorData.Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
@@ -144,6 +148,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
+		CancellationTokenSource tooltipCancelSrc = new CancellationTokenSource ();
+
+		void CancelTooltip ()
+		{
+			tooltipCancelSrc.Cancel ();
+			tooltipCancelSrc = new CancellationTokenSource ();
+		}
+
 		bool DelayedTooltipShow ()
 		{
 			try {
@@ -158,8 +170,18 @@ namespace MonoDevelop.CSharp.Highlighting
 					ClearQuickTasks ();
 					return false;
 				}
+				CancelTooltip ();
+				var token = tooltipCancelSrc.Token;
+				Task.Factory.StartNew (delegate {
+					var list = GetReferences (result, token).ToList ();
+					if (!token.IsCancellationRequested) {
+						Application.Invoke (delegate {
+							if (!token.IsCancellationRequested)
+								ShowReferences (list);
+						});
+					}
+				});
 
-				ShowReferences (GetReferences (result));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
 			} finally {
@@ -204,7 +226,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 
 		static readonly List<MemberReference> emptyList = new List<MemberReference> ();
-		IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult)
+		IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult, CancellationToken token)
 		{
 			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
 			if (resolveResult is MemberResolveResult) {
@@ -222,7 +244,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			} else {
 				return emptyList;
 			}
-			
+
 			try {
 				return new List<MemberReference> (finder.FindInDocument (Document));
 			} catch (Exception e) {
