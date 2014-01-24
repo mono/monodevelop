@@ -72,7 +72,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string productVersion;
 		string schemaVersion;
 
-		public List<string> TargetImports { get; set; }
+		public List<string> TargetImports {
+			get { return targetImports; }
+		}
 
 		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
 		{
