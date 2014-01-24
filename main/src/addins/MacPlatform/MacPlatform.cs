@@ -438,7 +438,7 @@ namespace MonoDevelop.MacIntegration
 			var rep = icon.BestRepresentation (rect, null, null);
 			var bitmap = rep as NSBitmapImageRep;
 			try {
-				if (bitmap != null) {
+				if (bitmap == null) {
 					if (rep != null)
 						rep.Dispose ();
 					using (var cgi = icon.AsCGImage (ref rect, null, null)) {
