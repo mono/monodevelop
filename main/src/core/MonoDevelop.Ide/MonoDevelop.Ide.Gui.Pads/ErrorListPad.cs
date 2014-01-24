@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int warningCount;
 		int infoCount;
 		bool initialLogShow = true;
+		IPadWindow window;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -113,6 +114,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void IPadContent.Initialize (IPadWindow window)
 		{
+			this.window = window;
 			window.Title = GettextCatalog.GetString ("Errors");
 
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
@@ -155,6 +157,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Add (logBtn);
 			
 			toolbar.ShowAll ();
+
+			UpdatePadIcon ();
 		}
 		
 		void CreateControl ()
@@ -695,6 +699,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
+			UpdatePadIcon ();
 		}
 		
 		void TaskChanged (object sender, TaskEventArgs e)
@@ -754,6 +759,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			tasks [t] = t;
 			
 			store.AppendValues (stock, false, t);
+			UpdatePadIcon ();
 		}
 
 		void UpdateErrorsNum () 
@@ -772,6 +778,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
 			msgBtn.Image.Show ();
+		}
+
+		void UpdatePadIcon ()
+		{
+			if (errorCount > 0)
+				window.Icon = "md-errors-list-has-errors";
+			else if (warningCount > 0)
+				window.Icon = "md-errors-list-has-warnings";
+			else
+				window.Icon = "md-errors-list";
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

@@ -300,6 +300,8 @@
 	<StockIcon stockid = "md-monkey" resource = "monkey-16.png" size="Menu" />
 	<StockIcon stockid = "md-locale" resource = "locale-16.png" size="Menu" />
 	<StockIcon stockid = "md-errors-list" resource = "error-list-off-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-errors-list-has-errors" resource = "error-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-errors-list-has-warnings" resource = "warning-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-bubble-error" resource = "bubble-error-16.png" size="Menu" />
 	<StockIcon stockid = "md-bubble-warning" resource = "bubble-warning-16.png" size="Menu" />
 	<StockIcon stockid = "md-file-source" resource = "file-source-light-16.png" size="Menu" />
