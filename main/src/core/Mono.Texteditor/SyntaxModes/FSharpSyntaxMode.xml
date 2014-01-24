@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
 
-<SyntaxMode name="F#" mimeTypes="text/x-fsharp">
+<SyntaxMode name="F#" mimeTypes="text/x-fsharp-fs, text/x-fsharp-fsx, text/x-fsharp-fsi">
 	<Property name="LineComment">//</Property>
 	<Property name="BlockCommentStart">(*</Property>
 	<Property name="BlockCommentEnd">*)</Property>
