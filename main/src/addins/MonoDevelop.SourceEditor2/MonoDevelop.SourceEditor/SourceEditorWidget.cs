@@ -46,6 +46,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -388,16 +389,8 @@ namespace MonoDevelop.SourceEditor
 				parsedDocument = null;
 
 //				IdeApp.Workbench.StatusBar.ClearCaretState ();
-				if (parseInformationUpdaterWorkerThread != null) {
-					parseInformationUpdaterWorkerThread.Dispose ();
-					parseInformationUpdaterWorkerThread = null;
-				}
-
 			};
 			vbox.ShowAll ();
-			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
-			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
-			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
 		}
 
 		void OnLostFocus ()
@@ -444,10 +437,8 @@ namespace MonoDevelop.SourceEditor
 		HashSet<string> symbols = new HashSet<string> ();
 		bool reloadSettings;
 		
-		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
+		void HandleParseInformationUpdaterWorkerThreadDoWork (bool firstTime, ParsedDocument parsedDocument, CancellationToken token = default(CancellationToken))
 		{
-			BackgroundWorker worker = sender as BackgroundWorker;
-			var parsedDocument = (ParsedDocument)e.Argument;
 			var doc = Document;
 			if (doc == null || parsedDocument == null)
 				return;
@@ -462,6 +453,8 @@ namespace MonoDevelop.SourceEditor
 				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
 				if (!updateSymbols) {
 					foreach (PreProcessorDefine define in parsedDocument.Defines) {
+						if (token.IsCancellationRequested)
+							return;
 						if (!symbols.Contains (define.Define)) {
 							updateSymbols = true;
 							break;
@@ -477,7 +470,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				foreach (FoldingRegion region in parsedDocument.Foldings) {
-					if (worker != null && worker.CancellationPending)
+					if (token.IsCancellationRequested)
 						return;
 					FoldingType type = FoldingType.None;
 					bool setFolded = false;
@@ -517,7 +510,7 @@ namespace MonoDevelop.SourceEditor
 					                                       region.Region, type);
 					
 					//and, if necessary, set its fold state
-					if (marker != null && setFolded && worker == null) {
+					if (marker != null && setFolded && firstTime) {
 						// only fold on document open, later added folds are NOT folded by default.
 						marker.IsFolded = folded;
 						continue;
@@ -526,7 +519,7 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegments (foldSegments, false, true);
+				doc.UpdateFoldSegments (foldSegments, false, true, token);
 
 				if (reloadSettings) {
 					reloadSettings = false;
@@ -541,9 +534,7 @@ namespace MonoDevelop.SourceEditor
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
 		}
-		
-		BackgroundWorker parseInformationUpdaterWorkerThread;
-		
+
 		internal void UpdateParsedDocument (ParsedDocument document)
 		{
 			if (this.isDisposed || document == null || this.view == null)
@@ -560,38 +551,27 @@ namespace MonoDevelop.SourceEditor
 				SetParsedDocument (value, true);
 			}
 		}
-
+		CancellationTokenSource parserInformationUpdateSrc = new CancellationTokenSource ();
 		internal void SetParsedDocument (ParsedDocument newDocument, bool runInThread)
 		{
 			this.parsedDocument = newDocument;
-			if (parsedDocument == null || parseInformationUpdaterWorkerThread == null)
+			if (parsedDocument == null)
 				return;
 			StopParseInfoThread ();
 			if (runInThread) {
-				parseInformationUpdaterWorkerThread.RunWorkerAsync (parsedDocument);
+				var token = parserInformationUpdateSrc.Token;
+				System.Threading.Tasks.Task.Factory.StartNew (delegate {
+					HandleParseInformationUpdaterWorkerThreadDoWork (false, parsedDocument, token);
+				}); 
 			} else {
-				HandleParseInformationUpdaterWorkerThreadDoWork (null, new DoWorkEventArgs (parsedDocument));
+				HandleParseInformationUpdaterWorkerThreadDoWork (true, parsedDocument);
 			}
 		}
 		
 		void StopParseInfoThread ()
 		{
-			if (!parseInformationUpdaterWorkerThread.IsBusy)
-				return;
-			parseInformationUpdaterWorkerThread.CancelAsync ();
-			WaitForParseInformationUpdaterWorkerThread ();
-			parseInformationUpdaterWorkerThread.Dispose ();
-			
-			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
-			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
-			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
-		}
-		
-		public void WaitForParseInformationUpdaterWorkerThread ()
-		{
-			int count = 0;
-			while (count++ < 5 && parseInformationUpdaterWorkerThread.IsBusy)
-				Thread.Sleep (20);
+			parserInformationUpdateSrc.Cancel ();
+			parserInformationUpdateSrc = new CancellationTokenSource ();
 		}
 
 		internal void SetLastActiveEditor (ExtensibleTextEditor editor)
@@ -861,7 +841,10 @@ namespace MonoDevelop.SourceEditor
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
 			get {
-				if (Document.HasLineEndingMismatchOnTextSet)
+				var document = Document;
+				if (document == null)
+					return false;
+				if (document.HasLineEndingMismatchOnTextSet)
 					return true;
 				string eol = DetectedEolMarker;
 				if (eol == null)

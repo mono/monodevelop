@@ -240,10 +240,12 @@ namespace MonoDevelop.Core.Assemblies
 		internal List<TargetFrameworkMoniker> IncludedFrameworks {
 			get { return includedFrameworks; }
 		}
-				
+
 		[ItemProperty (Name="IncludesFramework")]
+		#pragma warning disable 649
 		string includesFramework;
-		
+		#pragma warning restore 649
+
 		internal TargetFrameworkMoniker GetIncludesFramework ()
 		{
 			if (string.IsNullOrEmpty (includesFramework))
@@ -307,16 +309,18 @@ namespace MonoDevelop.Core.Assemblies
 						fx.clrVersion = ClrVersion.Net_4_0;
 						break;
 					case "4.5":
+					case "4.5.1":
 						fx.clrVersion = ClrVersion.Net_4_5;
 						break;
 					default:
-						throw new Exception ("Unknown RuntimeVersion '" + runtimeVersion + "'");
+						LoggingService.LogInfo ("Framework {0} has unknown RuntimeVersion {1}", moniker, runtimeVersion);
+						return null;
 					}
 				}
 				
 				if (reader.MoveToAttribute ("ToolsVersion") && reader.ReadAttributeValue ()) {
-					string runtimeVersion = reader.ReadContentAsString ();
-					switch (runtimeVersion) {
+					string toolsVersion = reader.ReadContentAsString ();
+					switch (toolsVersion) {
 					case "2.0":
 						fx.toolsVersion = TargetFrameworkToolsVersion.V2_0;
 						break;
@@ -330,7 +334,8 @@ namespace MonoDevelop.Core.Assemblies
 						fx.toolsVersion = TargetFrameworkToolsVersion.V4_5;
 						break;
 					default:
-						throw new Exception ("Unknown ToolsVersion '" + runtimeVersion + "'");
+						LoggingService.LogInfo ("Framework {0} has unknown ToolsVersion {1}", moniker, toolsVersion);
+						return null;
 					}
 				}
 				

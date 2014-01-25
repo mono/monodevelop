@@ -85,44 +85,89 @@ bash pause on exit trick
 			IDictionary<string, string> environmentVariables,
 			string title, bool pauseWhenFinished)
 		{
+			RunTerminal (
+				command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished,
+				out tabId, out windowId
+			);
+		}
+
+		#region AppleScript terminal manipulation
+
+		internal static void RunTerminal (
+			string command, string arguments, string workingDirectory,
+			IDictionary<string, string> environmentVariables,
+			string title, bool pauseWhenFinished, out string tabId, out string windowId)
+		{
 			//build the sh command
 			var sb = new StringBuilder ("clear; ");
 			if (!string.IsNullOrEmpty (workingDirectory))
 				sb.AppendFormat ("cd \"{0}\"; ", Escape (workingDirectory));
-			foreach (string env in environmentVariables.Keys) {
-				string val = environmentVariables[env];
-				if (!string.IsNullOrEmpty (val))
-					val = Escape (val);
-				sb.AppendFormat ("{0}=\"{1}\" ", env, val);
+			if (environmentVariables != null) {
+				foreach (string env in environmentVariables.Keys) {
+					string val = environmentVariables [env];
+					if (!string.IsNullOrEmpty (val))
+						val = Escape (val);
+					sb.AppendFormat ("export {0}=\"{1}\"; ", env, val);
+				}
 			}
-			sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
-			if (pauseWhenFinished)
-				sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
-			sb.Append ("; exit");
-			var cmd = Escape (sb.ToString ());
-			
-			//run the command in Terminal.app and extrac tab and window handles
-			var ret = AppleScript.Run ("tell app \"Terminal\" to do script \"{0}\"", cmd);
-			int i = ret.IndexOf ("of");
+			if (command != null) {
+				sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
+				if (pauseWhenFinished)
+					sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
+				sb.Append ("; exit");
+			}
+
+			//run the command in Terminal.app and extract tab and window IDs
+			var ret = AppleScript.Run ("tell app \"Terminal\" to do script \"{0}\"", Escape (sb.ToString ()));
+			int i = ret.IndexOf ("of", StringComparison.Ordinal);
 			tabId = ret.Substring (0, i -1);
 			windowId = ret.Substring (i + 3);
-			
+
 			//rename tab and give it focus
-			AppleScript.Run (
-@"tell app ""Terminal""
-	set custom title of {0} of {1} to ""{2}""
-	set frontmost of {1} to true
-	set selected of {0} of {1} to true
-	activate
-end tell", tabId, windowId, Escape (title));
+			sb.Clear ();
+			sb.Append ("tell app \"Terminal\"\n");
+			if (!string.IsNullOrEmpty (title))
+				sb.AppendFormat ("\tset custom title of {0} of {1} to \"{2}\"\n", tabId, windowId, Escape (title));
+			sb.AppendFormat ("\tset frontmost of {0} to true\n", windowId);
+			sb.AppendFormat ("\tset selected of {0} of {1} to true\n", tabId, windowId);
+			sb.Append ("\tactivate\n");
+			sb.Append ("end tell");
+
+			try {
+				AppleScript.Run (sb.ToString ());
+			} catch (AppleScriptException) {
+				//it may already have closed
+			}
 		}
 		
 		//FIXME: make escaping work properly
-		string Escape (string str)
+		static string Escape (string str)
 		{
 			return str.Replace ("\\","\\\\").Replace ("\"", "\\\"");
 		}
-			
+
+		static void CloseTerminalWindow (string tabId, string windowId)
+		{
+			try {
+				AppleScript.Run (
+@"tell application ""Terminal""
+	activate
+	set frontmost of {1} to true
+	close {1}
+	tell application ""System Events"" to tell process ""Terminal"" to keystroke return
+end tell", tabId, windowId);
+			} catch (AppleScriptException) {
+				//it may already have closed
+			}
+		}
+
+		static bool TabExists (string tabId, string windowId)
+		{
+			return AppleScript.Run ("tell app \"Terminal\" to get exists of {0} of {1}", tabId, windowId) == "true";
+		}
+
+		#endregion
+
 		#region IProcessAsyncOperation implementation
 
 		public void Dispose ()
@@ -147,26 +192,13 @@ end tell", tabId, windowId, Escape (title));
 		
 		#region IAsyncOperation implementation
 		
-		public event MonoDevelop.Core.OperationHandler Completed;
-		
-		void CloseTerminalWindow ()
-		{
-			try {
-				AppleScript.Run (
-@"tell application ""Terminal""
-	activate
-	set frontmost of {1} to true
-	close {1}
-	tell application ""System Events"" to tell process ""Terminal"" to keystroke return
-end tell", tabId, windowId);
-			} catch {}
-		}
+		public event OperationHandler Completed;
 		
 		public void Cancel ()
 		{
 			cancelled = true;
 			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
-			CloseTerminalWindow ();
+			CloseTerminalWindow (tabId, windowId);
 		}
 		
 		public void WaitForCompleted ()
@@ -179,8 +211,7 @@ end tell", tabId, windowId);
 		public bool IsCompleted {
 			get {
 				//FIXME: get the status of the process, not the whole script
-				var ret = AppleScript.Run ("tell app \"Terminal\" to get exists of {0} of {1}", tabId, windowId);
-				return ret != "true";
+				return !TabExists (tabId, windowId);
 			}
 		}
 		

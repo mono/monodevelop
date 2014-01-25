@@ -45,6 +45,15 @@ namespace Mono.TextEditor
 	{
 		readonly TextArea textArea;
 
+		internal LayoutCache LayoutCache {
+			get;
+			private set;
+		}
+
+		internal bool IsInKeypress {
+			get { return textArea.IsInKeypress; }
+		}
+
 		public TextArea TextArea {
 			get {
 				return textArea;
@@ -54,7 +63,7 @@ namespace Mono.TextEditor
 		public TextEditor () : this(new TextDocument ())
 		{
 		}
-		
+
 		public TextEditor (TextDocument doc)
 			: this (doc, null)
 		{
@@ -69,6 +78,7 @@ namespace Mono.TextEditor
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			WidgetFlags |= WidgetFlags.NoWindow;
+			LayoutCache = new LayoutCache (this);
 			this.textArea = new TextArea (doc, options, initialMode);
 			this.textArea.Initialize (this, doc, options, initialMode);
 			this.textArea.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
@@ -99,6 +109,7 @@ namespace Mono.TextEditor
 		{
 			base.OnDestroyed ();
 			UnregisterAdjustments ();
+			LayoutCache.Dispose (); 
 		}
 
 		void UnregisterAdjustments ()

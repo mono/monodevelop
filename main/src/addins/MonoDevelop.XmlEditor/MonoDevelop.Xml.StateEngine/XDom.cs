@@ -1,11 +1,11 @@
-// 
+//
 // XDom.cs
-// 
+//
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-// 
+//
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -38,28 +38,19 @@ namespace MonoDevelop.Xml.StateEngine
 	public abstract class XObject
 	{
 		DomRegion region;
-		XObject parent;
-		
-		public XObject (TextLocation start)
+
+		protected XObject (TextLocation start)
 		{
 			region = new DomRegion (start, TextLocation.Empty);
 		}
-		
+
 		protected XObject (DomRegion region)
 		{
-			Debug.Assert (region.Begin < region.End, "End must be greater than start.");
 			this.region = region;
 		}
-		
-		public XObject Parent {
-			get { return parent; }
-			internal protected set {
-				parent = value;
-				Debug.Assert (parent != null || !region.Begin.IsEmpty, "When parent is null, start must not be negative.");
-				Debug.Assert (parent.Region.End.IsEmpty || region.Begin >= parent.Region.End, "Start must be >= parent's end.");
-			}
-		}
-		
+
+		public XObject Parent { get; internal protected set; }
+
 		public IEnumerable<XNode> Parents {
 			get {
 				XNode next = Parent as XNode;
@@ -69,131 +60,115 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 		}
-		
+
 		public DomRegion Region {
-			get { return region; }	
+			get { return region; }
 		}
-		
+
 		public void End (TextLocation endLocation)
 		{
-			Debug.Assert (region.Begin < endLocation, "End must be greater than start.");
-			Debug.Assert (region.End.IsEmpty || region.Begin < region.End, "XObject cannot be ended multiple times.");
 			region = new DomRegion (region.Begin, endLocation);
 		}
-		
+
 		public bool IsEnded {
 			get { return region.End > region.Begin; }
 		}
-		
+
 		public virtual bool IsComplete {
 			get { return region.End > region.Begin; }
 		}
-		
-		public virtual void BuildTreeString (System.Text.StringBuilder builder, int indentLevel)
+
+		public virtual void BuildTreeString (StringBuilder builder, int indentLevel)
 		{
 			builder.Append (' ', indentLevel * 2);
 			builder.AppendFormat (ToString ());
 			builder.AppendLine ();
 		}
-		
+
 		public override string ToString ()
 		{
 			return string.Format ("[{0} Location='{1}']", GetType (), Region);
 		}
-		
+
 		//creates a parallel tree -- should NOT retain references into old tree
 		public XObject ShallowCopy ()
 		{
 			XObject copy = NewInstance ();
-			Debug.Assert (copy.GetType () == this.GetType ());
 			copy.ShallowCopyFrom (this);
-			Debug.Assert (copy.region == this.region);
 			return copy;
 		}
-		
+
 		protected abstract XObject NewInstance ();
-		
+
 		protected virtual void ShallowCopyFrom (XObject copyFrom)
 		{
-			this.region = copyFrom.region; //immutable value type
+			region = copyFrom.region; //immutable value type
 		}
-		
+
 		protected XObject () {}
-		
+
 		public virtual string FriendlyPathRepresentation {
 			get { return GetType ().ToString (); }
 		}
 	}
-	
+
 	public abstract class XNode : XObject
 	{
-		public XNode (TextLocation start) : base (start) {}
+		protected XNode (TextLocation start) : base (start) {}
 		protected XNode (DomRegion region) : base (region) {}
-		
-		XNode nextSibling;
-		
-		public XNode NextSibling {
-			get { return nextSibling; }
-			internal protected set {
-				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Region.Begin >= Region.End, "Start must >= previous sibling's end.");
-				nextSibling = value;
-			}
-		}
-		
 		protected XNode () {}
+
+		public XNode NextSibling { get; internal protected set; }
 	}
-	
+
 	public struct XName : IEquatable<XName>
 	{
-		string prefix;
-		string name;
+		readonly string prefix;
+		readonly string name;
 
 		public XName (string prefix, string name)
 		{
 			this.prefix = prefix;
 			this.name = name;
-			Debug.Assert (IsValid);
 		}
-		
+
 		public XName (string name)
 		{
 			prefix = null;
 			this.name = name;
-			Debug.Assert (IsValid);
 		}
-		
+
 		public string Prefix { get { return prefix; } }
 		public string Name { get { return name; } }
 		public string FullName { get { return prefix == null? name : prefix + ':' + name; } }
-		
+
 		public bool IsValid { get { return !string.IsNullOrEmpty (name); } }
 		public bool HasPrefix { get { return !string.IsNullOrEmpty (prefix); } }
-		
+
 		#region Equality
-		
+
 		public static bool operator == (XName x, XName y)
 		{
 			return x.Equals (y);
 		}
-		
+
 		public static bool operator != (XName x, XName y)
 		{
 			return !x.Equals (y);
 		}
-		
+
 		public bool Equals (XName other)
 		{
 			return prefix == other.prefix && name == other.name;
 		}
-		
-		public override bool Equals (object o)
+
+		public override bool Equals (object obj)
 		{
-			if (!(o is XName))
+			if (!(obj is XName))
 				return false;
-			return Equals ((XName) o); 
+			return Equals ((XName) obj);
 		}
-		
+
 		public override int GetHashCode ()
 		{
 			int hash = 0;
@@ -201,7 +176,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (name != null) hash += name.GetHashCode ();
 			return hash;
 		}
-		
+
 		#endregion
 
 		public static bool Equals (XName a, XName b, bool ignoreCase)
@@ -210,16 +185,16 @@ namespace MonoDevelop.Xml.StateEngine
 			return string.Equals (a.prefix, b.prefix, comp) && string.Equals (a.name, b.name, comp);
 		}
 	}
-	
+
 	public abstract class XContainer : XNode
 	{
-		public XContainer (TextLocation start) : base (start) {	}
-		
+		protected XContainer (TextLocation start) : base (start) {	}
+
 		XNode firstNode;
 		XNode lastChild;
 		public XNode FirstChild { get { return firstNode; } }
 		public XNode LastChild { get { return lastChild; } }
-		
+
 		public IEnumerable<XNode> Nodes {
 			get {
 				XNode next = firstNode;
@@ -229,7 +204,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 		}
-		
+
 		public IEnumerable<XNode> AllDescendentNodes {
 			get {
 				foreach (XNode n in Nodes) {
@@ -241,7 +216,7 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 			}
 		}
-		
+
 		public virtual void AddChildNode (XNode newChild)
 		{
 			newChild.Parent = this;
@@ -251,9 +226,9 @@ namespace MonoDevelop.Xml.StateEngine
 				firstNode = newChild;
 			lastChild = newChild;
 		}
-		
+
 		protected XContainer () {}
-		
+
 		public override void BuildTreeString (StringBuilder builder, int indentLevel)
 		{
 			base.BuildTreeString (builder, indentLevel);
@@ -261,92 +236,80 @@ namespace MonoDevelop.Xml.StateEngine
 				child.BuildTreeString (builder, indentLevel + 1);
 		}
 	}
-	
+
 	public class XElement : XContainer, IAttributedXObject
 	{
 		XNode closingTag;
-		XName name;
-		XAttributeCollection attributes;
-		
+		readonly XAttributeCollection attributes;
+
 		public XElement (TextLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
-		
+
 		public XElement (TextLocation start, XName name) : this (start)
 		{
-			this.name = name;
+			this.Name = name;
 		}
-		
+
 		public XNode ClosingTag { get { return closingTag; } }
 		public bool IsClosed { get { return closingTag != null; } }
 		public bool IsSelfClosing { get { return closingTag == this; } }
-		
+
 		public void Close (XNode closingTag)
 		{
-			Debug.Assert (!IsClosed, "Element already closed.");
-			Debug.Assert (closingTag == this | closingTag is XClosingTag);
 			this.closingTag = closingTag;
 			if (closingTag is XClosingTag)
 				closingTag.Parent = this;
 		}
-		
-		public XName Name {
-			get { return name; }
-			set {
-				Debug.Assert (!IsNamed, "Should not name node more than once.");
-				name = value;
-			}
-		}
-		
+
+		public XName Name { get; set; }
+
 		public override bool IsComplete { get { return base.IsComplete && IsNamed; } }
-		public bool IsNamed { get { return name.IsValid; } }
-		
+		public bool IsNamed { get { return Name.IsValid; } }
+
 		public XAttributeCollection Attributes {
 			get { return attributes; }
 		}
-		
-		public override void AddChildNode (XNode newChild)
-		{
-			Debug.Assert (!IsClosed, "Cannot add children to a closed node.");
-			base.AddChildNode (newChild);
-		}
-		
+
 		protected XElement ()
 		{
 			attributes = new XAttributeCollection (this);
 		}
-		
+
 		protected override XObject NewInstance () { return new XElement (); }
-		
+
 		protected override void ShallowCopyFrom (XObject copyFrom)
 		{
 			base.ShallowCopyFrom (copyFrom);
 			XElement copyFromEl = (XElement) copyFrom;
-			name = copyFromEl.name; //XName is immutable value type
+			Name = copyFromEl.Name; //XName is immutable value type
+			//include attributes
+			foreach (var a in copyFromEl.Attributes)
+				Attributes.AddAttribute ((XAttribute) a.ShallowCopy ());
 		}
-		
+
 		public override string ToString ()
 		{
-			return string.Format ("[XElement Name='{0}' Location='{1}'",  name.FullName, this.Region);
+			return string.Format ("[XElement Name='{0}' Location='{1}'", Name.FullName, Region);
 		}
-		
+
 		public override void BuildTreeString (StringBuilder builder, int indentLevel)
 		{
 			builder.Append (' ', indentLevel * 2);
-			builder.AppendFormat ("[XElement Name='{0}' Location='{1}' Children=", name.FullName, this.Region);
+			builder.AppendFormat ("[XElement Name='{0}' Location='{1}' Children=", Name.FullName, Region);
 			builder.AppendLine ();
-			
+
 			foreach (XNode child in Nodes)
 				child.BuildTreeString (builder, indentLevel + 1);
-			
+
 			builder.Append (' ', indentLevel * 2);
 			builder.Append ("Attributes=");
 			builder.AppendLine ();
-			
+
 			foreach (XAttribute att in Attributes)
 				att.BuildTreeString (builder, indentLevel + 1);
-			
+
 			if (closingTag is XClosingTag) {
 				builder.AppendLine ("ClosingTag=");
 				closingTag.BuildTreeString (builder, indentLevel + 1);
@@ -354,15 +317,15 @@ namespace MonoDevelop.Xml.StateEngine
 				builder.AppendLine ("ClosingTag=(null)");
 			else
 				builder.AppendLine ("ClosingTag=(Self)");
-			
+
 			builder.Append (' ', indentLevel * 2);
 			builder.AppendLine ("]");
 		}
-		
+
 		public override string FriendlyPathRepresentation {
-			get { return name.FullName; }
+			get { return Name.FullName; }
 		}
-		
+
 		public IEnumerable<XElement> Elements {
 			get {
 				XElement el;
@@ -371,9 +334,9 @@ namespace MonoDevelop.Xml.StateEngine
 					if (el != null)
 						yield return el;
 				}
-			}	
+			}
 		}
-		
+
 		public IEnumerable<XElement> AllDescendentElements {
 			get {
 				foreach (XElement el in Elements) {
@@ -381,93 +344,68 @@ namespace MonoDevelop.Xml.StateEngine
 					foreach (XElement el2 in el.AllDescendentElements)
 						yield return el2;
 				}
-			}	
+			}
 		}
 
 	}
-	
+
 	public class XAttribute : XObject, INamedXObject
 	{
-		XName name;
-		string valu;
-		
-		public XAttribute (TextLocation start, XName name, string valu) : base (start)
+
+		public XAttribute (TextLocation start, XName name, string value) : base (start)
 		{
-			this.name = name;
-			this.valu = valu;
+			this.Name = name;
+			this.Value = value;
 		}
-		
+
 		public XAttribute (TextLocation start) : base (start)
 		{
 		}
-		
-		public XName Name {
-			get { return name; }
-			set {
-				Debug.Assert ((value.HasPrefix && !name.HasPrefix) || !IsNamed, "Should not name node more than once.");
-				name = value;
-			}
-		}
-		
+
+		public XName Name { get; set; }
+
 		public override bool IsComplete { get { return base.IsComplete && IsNamed; } }
-		public bool IsNamed { get { return name.IsValid; } }
-		
-		public string Value {
-			get { return valu; }
-			set {
-				Debug.Assert (valu == null, "Should not set attribute value more than once.");
-				valu = value;
-			}
-		}
-		
-		XAttribute nextSibling;
-		
-		public XAttribute NextSibling {
-			get { return nextSibling; }
-			internal protected set {
-				Debug.Assert (nextSibling == null, "The NextSibling cannot be changed after it is set.");
-				Debug.Assert (value.Region.Begin >= Region.End, "Start must be >= previous sibling's end.");
-				nextSibling = value;
-			}
-		}
-		
+		public bool IsNamed { get { return Name.IsValid; } }
+
+		public string Value { get; set; }
+		public XAttribute NextSibling { get; internal protected set; }
+
 		protected XAttribute () {}
 		protected override XObject NewInstance () { return new XAttribute (); }
-		
+
 		protected override void ShallowCopyFrom (XObject copyFrom)
 		{
 			base.ShallowCopyFrom (copyFrom);
 			XAttribute copyFromAtt = (XAttribute) copyFrom;
 			//immutable types
-			name = copyFromAtt.name;
-			valu = copyFromAtt.valu;
+			Name = copyFromAtt.Name;
+			Value = copyFromAtt.Value;
 		}
-		
+
 		public override string ToString ()
 		{
 			return string.Format (
-				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", name.FullName, this.Region, this.valu);
+				"[XAttribute Name='{0}' Location='{1}' Value='{2}']", Name.FullName, Region, Value);
 		}
-		
+
 		public override string FriendlyPathRepresentation {
-			get { return "@" + name.FullName; }
+			get { return "@" + Name.FullName; }
 		}
 
 
 	}
-	
+
 	public class XAttributeCollection : IEnumerable<XAttribute>
 	{
-		XObject parent;
+		readonly XObject parent;
 		XAttribute firstChild;
 		XAttribute lastChild;
-		
+
 		public XAttributeCollection (XObject parent)
 		{
-			Debug.Assert (parent != null);
 			this.parent = parent;
 		}
-		
+
 		public Dictionary<XName, XAttribute> ToDictionary ()
 		{
 			Dictionary<XName, XAttribute> dict = new Dictionary<XName,XAttribute> ();
@@ -478,7 +416,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			return dict;
 		}
-		
+
 		public XAttribute this [XName name] {
 			get {
 				XAttribute current = firstChild;
@@ -520,11 +458,10 @@ namespace MonoDevelop.Xml.StateEngine
 			var att = Get (name, ignoreCase);
 			return att != null? att.Value : null;
 		}
-		
+
 		public void AddAttribute (XAttribute newChild)
 		{
-			System.Diagnostics.Debug.Assert (!parent.IsComplete, "Attributes cannot be added to a completed parent.");
-			newChild.Parent = this.parent;
+			newChild.Parent = parent;
 			if (lastChild != null) {
 				lastChild.NextSibling = newChild;
 			}
@@ -532,7 +469,7 @@ namespace MonoDevelop.Xml.StateEngine
 				firstChild = newChild;
 			lastChild = newChild;
 		}
-		
+
 		public IEnumerator<XAttribute> GetEnumerator ()
 		{
 			XAttribute current = firstChild;
@@ -541,72 +478,72 @@ namespace MonoDevelop.Xml.StateEngine
 				current = current.NextSibling;
 			}
 		}
-		
+
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		{
 			IEnumerator<XAttribute> en = GetEnumerator ();
 			return en;
 		}
 	}
-	
+
 	public class XCData : XNode
 	{
 		public XCData (TextLocation start) : base (start) {}
 		public XCData (DomRegion region) : base (region) {}
-		
+
 		protected XCData () {}
 		protected override XObject NewInstance () { return new XCData (); }
-		
+
 		public override string FriendlyPathRepresentation {
 			get { return "<![CDATA[ ]]>"; }
 		}
 
 	}
-	
+
 	public class XComment : XNode
 	{
 		public XComment (TextLocation start) : base (start) {}
 		public XComment (DomRegion region) : base (region) {}
-		
+
 		protected XComment () {}
 		protected override XObject NewInstance () { return new XComment (); }
-		
+
 		public override string FriendlyPathRepresentation {
 			get { return "<!-- -->"; }
 		}
 	}
-	
+
 	public class XProcessingInstruction : XNode
 	{
 		public XProcessingInstruction (TextLocation start) : base (start) {}
 		public XProcessingInstruction (DomRegion region) : base (region) {}
-		
+
 		protected XProcessingInstruction () {}
 		protected override XObject NewInstance () { return new XProcessingInstruction (); }
-		
+
 		public override string FriendlyPathRepresentation {
 			get { return "<? ?>"; }
 		}
 	}
-	
-	public class XDocType : XNode, INamedXObject 
+
+	public class XDocType : XNode, INamedXObject
 	{
 		public XDocType (TextLocation start) : base (start) {}
 		public XDocType (DomRegion region) : base (region) {}
-		
+
 		protected XDocType () {}
 		protected override XObject NewInstance () { return new XDocType (); }
-		
+
 		public XName RootElement { get; set; }
 		public string PublicFpi { get; set; }
 		public bool IsPublic { get { return PublicFpi != null; } }
 		public DomRegion InternalDeclarationRegion { get; set; }
 		public string Uri { get; set; }
-		
+
 		public override string FriendlyPathRepresentation {
 			get { return "<!DOCTYPE>"; }
 		}
-		
+
 		protected override void ShallowCopyFrom (XObject copyFrom)
 		{
 			base.ShallowCopyFrom (copyFrom);
@@ -617,91 +554,81 @@ namespace MonoDevelop.Xml.StateEngine
 			InternalDeclarationRegion = copyFromDT.InternalDeclarationRegion;
 			Uri = copyFromDT.Uri;
 		}
-		
+
 		XName INamedXObject.Name {
 			get { return RootElement; }
 			set { RootElement = value; }
 		}
-		
+
 		bool INamedXObject.IsNamed {
 			get { return RootElement.IsValid; }
 		}
-		
+
 		public override string ToString ()
 		{
 			return string.Format("[DocType: RootElement='{0}', PublicFpi='{1}',  InternalDeclarationRegion='{2}', Uri='{3}']",
 			                     RootElement.FullName, PublicFpi, InternalDeclarationRegion, Uri);
 		}
 	}
-	
+
 	public class XClosingTag : XNode, INamedXObject
 	{
-		XName name;
-		
+
 		public XClosingTag (TextLocation start) : base (start) {}
-		
+
 		public XClosingTag (XName name, TextLocation start) : base (start)
 		{
-			this.name = name;
+			this.Name = name;
 		}
-		
-		public XName Name {
-			get { return name; }
-			set {
-				Debug.Assert (string.IsNullOrEmpty (Name.Name) ||
-				               (string.IsNullOrEmpty (Name.Prefix) && !string.IsNullOrEmpty (Name.Prefix)
-				               && value.Name == Name.Name),
-				             "Should not name node more than once.");
-				name = value;
-			}
-		}
-		
+
+		public XName Name { get; set; }
+
 		public override bool IsComplete { get { return base.IsComplete && IsNamed; } }
-		public bool IsNamed { get { return name.IsValid; } }
-		
+		public bool IsNamed { get { return Name.IsValid; } }
+
 		protected XClosingTag () {}
 		protected override XObject NewInstance () { return new XClosingTag (); }
-		
+
 		protected override void ShallowCopyFrom (XObject copyFrom)
 		{
 			base.ShallowCopyFrom (copyFrom);
 			XClosingTag copyFromAtt = (XClosingTag) copyFrom;
 			//immutable types
-			name = copyFromAtt.name;
+			Name = copyFromAtt.Name;
 		}
-		
+
 		public override string FriendlyPathRepresentation {
-			get { return "/" + name.FullName; }
+			get { return "/" + Name.FullName; }
 		}
 
 	}
-	
+
 	public class XDocument : XContainer
 	{
 		public XElement RootElement { get; private set; }
-		
+
 		public XDocument () : base (new TextLocation (1, 1)) {}
 		protected override XObject NewInstance () { return new XDocument (); }
-		
+
 		public override string FriendlyPathRepresentation {
 			get { throw new InvalidOperationException ("Should not display document in path bar."); }
 		}
-		
+
 		public override void AddChildNode (XNode newChild)
 		{
 			if (RootElement == null && newChild is XElement)
 				RootElement = (XElement) newChild;
 			base.AddChildNode (newChild);
 		}
- 
+
 	}
-	
+
 	public interface INamedXObject
 	{
 		XName Name { get; set; }
 		bool IsNamed { get; }
 	}
-	
+
 	public interface IAttributedXObject : INamedXObject
 	{
 		XAttributeCollection Attributes { get; }

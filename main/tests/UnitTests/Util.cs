@@ -128,6 +128,11 @@ namespace UnitTests
 		{
 			return s.Replace ("\r\n", "\n").Replace ("\n", "\r\n");
 		}
+
+		public static string ReadAllWithWindowsEndings (string fileName)
+		{
+			return File.ReadAllText (fileName).Replace ("\r\n", "\n").Replace ("\n", "\r\n");
+		}
 		
 		static void CopyDir (string src, string dst)
 		{

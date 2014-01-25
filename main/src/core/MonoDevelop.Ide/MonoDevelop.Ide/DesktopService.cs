@@ -59,7 +59,8 @@ namespace MonoDevelop.Ide
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
-			Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
+			if (PlatformService.CanOpenTerminal)
+				Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
 			
 			FileService.FileRemoved += DispatchService.GuiDispatch (
 				new EventHandler<FileEventArgs> (NotifyFileRemoved));
@@ -207,10 +208,25 @@ namespace MonoDevelop.Ide
 				return PlatformService.CanOpenTerminal;
 			}
 		}
-		
+
+		[Obsolete ("Use OpenTerminal")]
 		public static void OpenInTerminal (FilePath directory)
 		{
-			PlatformService.OpenInTerminal (directory);
+			OpenTerminal (directory, null, null);
+		}
+
+		/// <summary>
+		/// Opens an external terminal window.
+		/// </summary>
+		/// <param name="workingDirectory">Working directory.</param>
+		/// <param name="environmentVariables">Environment variables.</param>
+		/// <param name="windowTitle">Window title.</param>
+		public static void OpenTerminal (
+			FilePath workingDirectory,
+			IDictionary<string, string> environmentVariables = null,
+			string windowTitle = null)
+		{
+			PlatformService.OpenTerminal (workingDirectory, environmentVariables, windowTitle);
 		}
 		
 		public static RecentFiles RecentFiles {

@@ -178,11 +178,12 @@ namespace MonoDevelop.Core
 					return;
 
 				var customData = new Hashtable ();
-				customData["SystemInformation"] = SystemInformation.GetTextDescription ();
+				foreach (var cd in SystemInformation.GetDescription ())
+					customData[cd.Title ?? ""] = cd.Description;
 
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
-						raygunClient.Send (ex, tags, customData, BuildInfo.Version);
+						raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
 					});
 				}
 

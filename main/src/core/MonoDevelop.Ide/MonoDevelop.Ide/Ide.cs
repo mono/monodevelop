@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -57,6 +58,7 @@ namespace MonoDevelop.Ide
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
 		static IdePreferences preferences;
+		static IdeCustomizer customizer;
 
 		public const int CurrentRevision = 5;
 		
@@ -77,7 +79,9 @@ namespace MonoDevelop.Ide
 				initializedEvent -= value;
 			}
 		}
-		
+
+		internal static IdeCustomizer Customizer { get; set; }
+
 		/// <summary>
 		/// Fired when the IDE gets the focus
 		/// </summary>
@@ -157,7 +161,7 @@ namespace MonoDevelop.Ide
 		
 		public static Version Version {
 			get {
-				return IdeVersionInfo.GetVersion ();
+				return Runtime.Version;
 			}
 		}
 		
@@ -217,20 +221,12 @@ namespace MonoDevelop.Ide
 			MessageService.RootWindow = workbench.RootWindow;
 		
 			commandService.EnableIdleUpdate = true;
-			
-			// Default file format
-			MonoDevelop.Projects.Services.ProjectServiceLoaded += delegate(object sender, EventArgs e) {
-				((ProjectService)sender).DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
-			};
-			
-			IdeApp.Preferences.DefaultProjectFileFormatChanged += delegate {
-				IdeApp.Services.ProjectService.DefaultFileFormatId = IdeApp.Preferences.DefaultProjectFileFormat;
-			};
 
 			// Perser service initialization
 			TypeSystemService.TrackFileChanges = true;
 			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
+			Customizer.Initialize ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -426,10 +422,6 @@ namespace MonoDevelop.Ide
 
 		static void OnUpgraded (int previousRevision)
 		{
-			// Upgrade to latest msbuild version
-			if (IdeApp.Preferences.DefaultProjectFileFormat.StartsWith ("MSBuild"))
-				IdeApp.Preferences.DefaultProjectFileFormat = MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat;
-			
 			if (previousRevision <= 3) {
 				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
 				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;

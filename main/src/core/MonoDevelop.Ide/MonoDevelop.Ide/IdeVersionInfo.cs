@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide
 				return "unknown";
 			var mi = t.GetMethod ("GetDisplayName", BindingFlags.NonPublic | BindingFlags.Static);
 			if (mi == null) {
-				LoggingService.LogError ("No Mono.Runtime.GetDiplayName method found.");
+				LoggingService.LogError ("No Mono.Runtime.GetDisplayName method found.");
 				return "error";
 			}
 			return (string)mi.Invoke (null, null); 
@@ -69,6 +69,12 @@ namespace MonoDevelop.Ide
 			if (v1 == 99 || v2 == 99 || v3 == 99)
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
+		}
+		
+		static string GetGtkTheme ()
+		{
+			var settings = Gtk.Settings.Default;
+			return settings != null ? settings.ThemeName : null;
 		}
 
 		static string GetMonoUpdateInfo ()
@@ -119,11 +125,19 @@ namespace MonoDevelop.Ide
 				sb.Append (GetRuntimeInfo ());
 				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
-				sb.AppendLine (GetGtkVersion () + " theme: " + Gtk.Settings.Default.ThemeName);
-				sb.Append ("\tGTK# (");
-				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
-				sb.Append (")");
-
+				sb.Append (GetGtkVersion ());
+				var gtkTheme = GetGtkTheme ();
+				if (!string.IsNullOrEmpty (gtkTheme))
+					sb.AppendLine (" (" + gtkTheme + " theme)");
+				else
+					sb.AppendLine ();
+				if (Platform.IsWindows && !IsMono ()) {
+					using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Xamarin\GtkSharp\Version")) {
+						Version ver;
+						if (key != null && Version.TryParse (key.GetValue (null) as string, out ver))
+							sb.Append ("\tGTK# " + ver);
+					}
+				}
 				if (Platform.IsMac && IsMono ()) {
 					var pkgVer = GetMonoUpdateInfo ();
 					if (!string.IsNullOrEmpty (pkgVer)) {
@@ -144,32 +158,16 @@ namespace MonoDevelop.Ide
 				if (BuildInfo.Version != BuildInfo.VersionLabel)
 					v += BuildInfo.Version;
 #pragma warning restore 162
-				if (GetVersion ().Revision >= 0) {
+				if (Runtime.Version.Revision >= 0) {
 					if (v.Length > 0)
 						v += " ";
-					v += "build " + GetVersion ().Revision;
+					v += "build " + Runtime.Version.Revision;
 				}
 				if (v.Length == 0)
 					return BuildInfo.VersionLabel;
 				else
 					return BuildInfo.VersionLabel + " (" + v + ")";
 			}
-		}
-
-		static Version version;
-
-		internal static Version GetVersion ()
-		{
-			if (version == null) {
-				version = new Version (BuildInfo.Version);
-				var relId = SystemInformation.GetReleaseId ();
-				if (relId != null && relId.Length >= 9) {
-					int rev;
-					int.TryParse (relId.Substring (relId.Length - 4), out rev);
-					version = new Version (Math.Max (version.Major, 0), Math.Max (version.Minor, 0), Math.Max (version.Build, 0), Math.Max (rev, 0));
-				}
-			}
-			return version;
 		}
 	}
 }

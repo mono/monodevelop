@@ -259,6 +259,25 @@ namespace MonoDevelop.Core
 			}
 		}
 		
+		static Version version;
+
+		public static Version Version {
+			get {
+				if (version == null) {
+					version = new Version (BuildInfo.Version);
+					#pragma warning disable 618
+					var relId = SystemInformation.GetReleaseId ();
+					#pragma warning restore 618
+					if (relId != null && relId.Length >= 9) {
+						int rev;
+						int.TryParse (relId.Substring (relId.Length - 4), out rev);
+						version = new Version (Math.Max (version.Major, 0), Math.Max (version.Minor, 0), Math.Max (version.Build, 0), Math.Max (rev, 0));
+					}
+				}
+				return version;
+			}
+		}
+
 		public static void SetProcessName (string name)
 		{
 			if (!Platform.IsMac && !Platform.IsWindows) {

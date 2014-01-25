@@ -40,6 +40,8 @@ using CustomControls.OS;
 using MonoDevelop.Ide.Desktop;
 using System.Diagnostics;
 using MonoDevelop.Core.Execution;
+using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
@@ -206,28 +208,55 @@ namespace MonoDevelop.Platform
 			return new Gdk.Rectangle (x, y, width, height);
 		}
 
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
-		                                                            IDictionary<string, string> environmentVariables,
-		                                                            string title, bool pauseWhenFinished)
+		static ProcessStartInfo CreateConsoleStartInfo (
+			string command, string arguments, string workingDirectory,
+			IDictionary<string, string> environmentVariables,
+			string title, bool pauseWhenFinished)
 		{
-			string args = "/C \"title " + title + " && \"" + command + "\" " + arguments;
-			if (pauseWhenFinished)
-				args += " & pause\"";
-			else
-				args += "\"";
-
-			var psi = new ProcessStartInfo ("cmd.exe", args) {
+			var sb = new StringBuilder ();
+			if (command != null) {
+				sb.Append ("/C \"");
+				if (title != null)
+					sb.Append ("title " + title + " && ");
+				sb.Append ("\"" + command + "\" " + arguments);
+				if (pauseWhenFinished)
+					sb.Append (" & pause");
+				sb.Append ("\"");
+			} else if (title != null) {
+				sb.Append ("/K \"title " + title + "\"");
+			}
+			var psi = new ProcessStartInfo ("cmd.exe", sb.ToString ()) {
 				CreateNoWindow = false,
 				WorkingDirectory = workingDirectory,
 				UseShellExecute = false,
 			};
-			foreach (var env in environmentVariables)
-				psi.EnvironmentVariables [env.Key] = env.Value;
+			if (environmentVariables != null)
+				foreach (var env in environmentVariables)
+					psi.EnvironmentVariables [env.Key] = env.Value;
+			return psi;
+		}
 
-			ProcessWrapper proc = new ProcessWrapper ();
-			proc.StartInfo = psi;
+		public override IProcessAsyncOperation StartConsoleProcess (
+			string command, string arguments, string workingDirectory,
+			IDictionary<string, string> environmentVariables,
+			string title, bool pauseWhenFinished)
+		{
+			var proc = new ProcessWrapper {
+				StartInfo = CreateConsoleStartInfo (
+					command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished
+				)
+			};
 			proc.Start ();
 			return proc;
+		}
+
+		public override bool CanOpenTerminal {
+			get { return true; }
+		}
+
+		public override void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
+		{
+			Process.Start (CreateConsoleStartInfo (null, null, directory, environmentVariables, title, false));
 		}
 
 		protected override RecentFiles CreateRecentFilesProvider ()

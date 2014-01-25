@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 
 		void CalculateWidth ()
 		{
-			using (var layout = PangoUtil.CreateLayout (editor)) {
+			using (var layout = editor.LayoutCache.RequestLayout ()) {
 				layout.FontDescription = gutterFont;
 				layout.SetText (LineCountMax.ToString ());
 				layout.Alignment = Pango.Alignment.Left;
@@ -239,7 +239,7 @@ namespace Mono.TextEditor
 			if (line <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
-				using (var layout = PangoUtil.CreateLayout (editor)) {
+				using (var layout = editor.LayoutCache.RequestLayout ()) {
 					layout.FontDescription = gutterFont;
 					layout.Width = (int)Width;
 					layout.Alignment = Pango.Alignment.Right;

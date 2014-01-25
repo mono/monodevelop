@@ -251,7 +251,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return true;
 		}
 		
-		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
+		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc, CancellationToken token = default (CancellationToken))
 		{
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();
@@ -268,7 +268,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
-					}, CancellationToken.None);
+					}, token);
 				} else if (obj is ISymbol) {
 					var sym = (ISymbol)obj;
 
@@ -279,7 +279,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (sym), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor)); 
-					}, CancellationToken.None);
+					}, token);
 				}
 			}
 			return result;

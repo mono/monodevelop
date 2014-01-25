@@ -1,21 +1,21 @@
-// 
-// TargetFrameworkNode.cs
-//  
+﻿//
+// IdeCustomizer.cs
+//
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//       Lluis Sanchez Gual <lluis@xamarin.com>
+//
+// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,45 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.IO;
-using Mono.Addins;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Core.Serialization;
-using System.Xml;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Extensions
 {
-	class TargetFrameworkNode: ExtensionNode
+	/// <summary>
+	/// Allows customizing the behavior of the IDE
+	/// </summary>
+	/// <remarks>
+	/// IN PROGRESS: this class will have hooks that will allow applications that
+	/// host MonoDevelop to customize the behavior of the IDE, such as hiding
+	/// menus and commands, or disabling some functionality.
+	/// </remarks>
+	public class IdeCustomizer
 	{
-		#pragma warning disable 649
-
-		[NodeAttribute]
-		protected string resource;
-		
-		[NodeAttribute]
-		protected string file;
-
-		#pragma warning restore 649
-
-		public TargetFramework CreateFramework ()
+		internal protected virtual void Initialize ()
 		{
-			Stream s;
-			if (resource != null)
-				s = Addin.GetResource (resource);
-			else if (file != null)
-				s = File.OpenRead (Addin.GetFilePath (file));
-			else
-				throw new InvalidOperationException ("Framework xml source not specified");
-			
-			using (s) {
-				XmlTextReader reader = new XmlTextReader (s);
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				TargetFramework fx = (TargetFramework) ser.Deserialize (reader, typeof(TargetFramework));
-				fx.FrameworkNode = this;
-				return fx;
-			}
 		}
 	}
 }
+

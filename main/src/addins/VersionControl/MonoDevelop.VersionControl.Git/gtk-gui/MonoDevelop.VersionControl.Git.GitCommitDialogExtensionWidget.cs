@@ -9,7 +9,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.CheckButton checkAuthor;
 		private global::Gtk.Alignment authorBox;
 		private global::Gtk.Table table1;
-		private global::Gtk.Entry entry2;
+		private global::Gtk.Entry entryEmail;
 		private global::Gtk.Entry entryName;
 		private global::Gtk.Label labelMail;
 		private global::Gtk.Label labelName;
@@ -58,13 +58,13 @@ namespace MonoDevelop.VersionControl.Git
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry2 = new global::Gtk.Entry ();
-			this.entry2.CanFocus = true;
-			this.entry2.Name = "entry2";
-			this.entry2.IsEditable = true;
-			this.entry2.InvisibleChar = '●';
-			this.table1.Add (this.entry2);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry2]));
+			this.entryEmail = new global::Gtk.Entry ();
+			this.entryEmail.CanFocus = true;
+			this.entryEmail.Name = "entryEmail";
+			this.entryEmail.IsEditable = true;
+			this.entryEmail.InvisibleChar = '●';
+			this.table1.Add (this.entryEmail);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryEmail]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.Hide ();
 			this.checkAuthor.Toggled += new global::System.EventHandler (this.OnCheckAuthorToggled);
 			this.entryName.Changed += new global::System.EventHandler (this.OnChanged);
-			this.entry2.Changed += new global::System.EventHandler (this.OnChanged);
+			this.entryEmail.Changed += new global::System.EventHandler (this.OnChanged);
 		}
 	}
 }

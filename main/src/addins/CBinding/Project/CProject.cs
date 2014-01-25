@@ -206,17 +206,14 @@ namespace CBinding
 			foreach (var p in base.GetReferencedItems (configuration))
 				yield return p;
 
-			List<string> project_names = new List<string> ();
-			
+			if (ParentSolution == null)
+				yield break;
+
 			foreach (Package p in Packages) {
 				if (p.IsProject && p.Name != Name) {
-					project_names.Add (p.Name);
-				}
-			}
-			
-			foreach (SolutionItem e in ParentFolder.Items) {
-				if (e is CProject && project_names.Contains (e.Name)) {
-					yield return e;
+					var cp = ParentSolution.FindProjectByName (p.Name) as CProject;
+					if (cp != null)
+						yield return cp;
 				}
 			}
 		}

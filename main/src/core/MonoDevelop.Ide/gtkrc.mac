@@ -385,6 +385,7 @@ widget "*GtkTextView"   style "entry"
 
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
 widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
+widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
 

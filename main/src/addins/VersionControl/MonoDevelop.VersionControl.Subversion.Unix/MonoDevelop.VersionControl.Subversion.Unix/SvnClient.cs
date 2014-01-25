@@ -1142,9 +1142,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			lock (sync) {
 				if (inProgress) {
-					LoggingService.LogError ("Old: {0}", oldStacktrace);
-					LoggingService.LogError ("Current: {1}", Environment.StackTrace);
-					throw new SubversionException ("Another Subversion operation is already in progress.");
+					var se = new SubversionException ("Another Subversion operation is already in progress.");
+					se.Data.Add ("OldStacktrace", oldStacktrace);
+					se.Data.Add ("CurrentStackTrace", Environment.StackTrace);
+					throw se;
 				}
 				oldStacktrace = Environment.StackTrace;
 				inProgress = true;

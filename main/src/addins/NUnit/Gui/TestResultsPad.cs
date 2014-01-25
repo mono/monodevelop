@@ -206,7 +206,7 @@ namespace MonoDevelop.NUnit
 			toolbar.Add (new SeparatorToolItem ());
 			
 			buttonRun = new Button ();
-			buttonRun.Label = GettextCatalog.GetString ("Run Test");
+			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
 			buttonRun.Image = new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
@@ -668,10 +668,7 @@ namespace MonoDevelop.NUnit
 			else
 				frac = 1;
 
-			if (frac < 0)
-				frac = 0;
-			else if (frac > 1)
-				frac = 1;
+			frac = Math.Min (1, Math.Max (0, frac));
 
 			progressBar.Fraction = frac;
 			progressBar.Text = testsRun + " / " + testsToRun;

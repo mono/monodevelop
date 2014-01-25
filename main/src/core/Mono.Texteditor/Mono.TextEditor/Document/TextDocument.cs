@@ -1017,12 +1017,12 @@ namespace Mono.TextEditor
 		CancellationTokenSource foldSegmentSrc;
 		Task foldSegmentTask;
 
-		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false)
+		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
 		{
 			if (newSegments == null) {
 				return;
 			}
-			
+
 			InterruptFoldWorker ();
 			bool update;
 			if (!startTask) {
@@ -1039,6 +1039,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			foldSegmentSrc = new CancellationTokenSource ();
+			masterToken.Register (InterruptFoldWorker); 
 			var token = foldSegmentSrc.Token;
 			foldSegmentTask = Task.Factory.StartNew (delegate {
 				var segments = UpdateFoldSegmentWorker (newSegments, out update, token);

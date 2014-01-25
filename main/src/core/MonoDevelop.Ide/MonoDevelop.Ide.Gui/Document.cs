@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 
 				var pf = project.GetProjectFile (FileName);
-				return pf != null && pf.BuildAction == BuildAction.Compile;
+				return pf != null && pf.BuildAction != BuildAction.None;
 			}
 		}
 

@@ -176,9 +176,11 @@ namespace MonoDevelop.Projects.Text
 		}
 
 		struct GError {
+			#pragma warning disable 649
 			public int Domain;
 			public int Code;
 			public IntPtr Msg;
+			#pragma warning restore 649
 		}
 
 		static unsafe int strlen (IntPtr str)

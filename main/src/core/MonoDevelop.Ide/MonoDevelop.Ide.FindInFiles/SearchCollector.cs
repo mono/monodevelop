@@ -150,7 +150,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				var par = o as IParameter;
 				if (par != null) {
-					Collect (TypeSystemService.GetProject (par.Owner), par.Owner);
+					if (par.Owner != null) {
+						Collect (TypeSystemService.GetProject (par.Owner), par.Owner);
+					} else {
+						Collect (IdeApp.Workbench.ActiveDocument.Project, null);
+					}
 				} else {
 					var entity = o as IEntity;
 					if (entity == null)
@@ -221,6 +225,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (var project in GetAllReferencingProjects (solution, assemblyName))
 					AddProject (project);
 
+				return;
+			}
+
+			if (entity == null) {
+				AddProject (sourceProject);
 				return;
 			}
 
