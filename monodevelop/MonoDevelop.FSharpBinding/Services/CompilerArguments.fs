@@ -289,3 +289,8 @@ module CompilerArguments =
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
 
+  let getArgumentsFromProject (proj:MonoDevelop.Projects.Project, config) =
+        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
+        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
+        generateCompilerOptions (fsconfig, FSharpCompilerVersion.LatestKnown , projConfig.TargetFramework.Id, proj.Items, config, false) |> Array.ofList
+

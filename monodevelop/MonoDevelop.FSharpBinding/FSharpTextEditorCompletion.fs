@@ -222,7 +222,9 @@ type FSharpTextEditorCompletion() =
       if config = null then null else
 
       // Try to get typed result - with the specified timeout
-      let tyRes = LanguageService.Service.GetTypedParseResult(FilePath(doc.Editor.FileName), docText, doc.Project, config, allowRecentTypeCheckResults=true, timeout = ServiceSettings.blockingTimeout)
+      let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
+      let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
+      let tyRes = LanguageService.Service.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, allowRecentTypeCheckResults=true, timeout = ServiceSettings.blockingTimeout)
       let methsOpt = tyRes.GetMethods(startOffset, doc.Editor.Document)
       match methsOpt with 
       | None -> 
@@ -287,9 +289,10 @@ type FSharpTextEditorCompletion() =
   member x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults) =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
-
+      let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
+      let args = CompilerArguments.getArgumentsFromProject(x.Document.Project, config)
       // Try to get typed information from LanguageService (with the specified timeout)
-      let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
+      let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
       
       // Get declarations and generate list for MonoDevelop
       match tyRes.GetDeclarations(x.Document, context) with

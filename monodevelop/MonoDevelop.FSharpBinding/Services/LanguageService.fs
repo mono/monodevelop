@@ -391,12 +391,9 @@ type internal TypedParseResult(info:CheckFileResults, untyped : ParseFileResults
     member x.Untyped with get() = untyped 
 
 // --------------------------------------------------------------------------------------
-
-type internal AfterCompleteTypeCheckCallback = (FilePath * Error list -> unit) option
-
 /// Represents request send to the background worker
 /// We need information about the current file and project (options)
-type internal ParseRequest (file:FilePath, source:string, options:ProjectOptions, fullCompile:bool, afterCompleteTypeCheckCallback: AfterCompleteTypeCheckCallback) =
+type internal ParseRequest (file:string, source:string, options:ProjectOptions, fullCompile:bool, afterCompleteTypeCheckCallback: (string * ErrorInfo [] -> unit) option) =
   member x.File  = file
   member x.Source = source
   member x.Options = options
@@ -416,12 +413,7 @@ type internal LanguageServiceMessage =
   // Request for information - when we receive this, we parse and reply when information become available
   | UpdateAndGetTypedInfo of ParseRequest * AsyncReplyChannel<TypedParseResult>
   | GetTypedInfoDone of AsyncReplyChannel<TypedParseResult>
-  
 
-open System.Reflection
-//open FSharp.CompilerBinding.Reflection
-open ICSharpCode.NRefactory.TypeSystem
-open MonoDevelop.Ide.TypeSystem
 
 /// Provides functionality for working with the F# interactive checker running in background
 type internal LanguageService private () =
@@ -429,26 +421,11 @@ type internal LanguageService private () =
   // Single instance of the language service
   static let instance = Lazy.Create(fun () -> LanguageService())
 
-  /// Format errors for the given line (if there are multiple, we collapse them into a single one)
-  let formatError (error:ErrorInfo) =
-      // Single error for this line
-      let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn + 1, error.EndLine + 1, error.EndColumn + 1))
-  
-  /// To be called from the language service mailbox processor (on a 
-  /// GUI thread!) when new errors are reported for the specified file
-  let makeErrors(currentErrors:ErrorInfo[]) = 
-    [ for error in currentErrors do
-          yield formatError error ]
-
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
   let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
   
-
-  // -----------------------------------------------------------------------------------
-  // Nuke the checker when the current requested language version changes
-  let reqLangVersion = FSharpCompilerVersion.LatestKnown 
+ 
   
   // Create an instance of interactive checker. The callback is called by the F# compiler service
   // when its view of the prior-typechecking-state of the start of a file has changed, for example
@@ -481,7 +458,7 @@ type internal LanguageService private () =
           let newTypedInfo = 
            try
             Debug.WriteLine("Worker: TriggerRequest")
-            let fileName = info.File.FullPath.ToString()        
+            let fileName = info.File        
             Debug.WriteLine("Worker: Request parse received")
             // Run the untyped parsing of the file and report result...
             Debug.WriteLine("Worker: Untyped parse...")
@@ -513,8 +490,8 @@ type internal LanguageService private () =
                   match info.AfterCompleteTypeCheckCallback with 
                   | None -> ()
                   | Some cb -> 
-                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (Path.GetFileName(file.FullPath.ToString())))
-                      DispatchService.GuiDispatch(fun () -> cb(file, makeErrors results.Errors))
+                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (Path.GetFileName(file)))
+                      cb(file, results.Errors)
 
                   match results.HasFullTypeCheckInfo with
                   | true -> Some(TypedParseResult(results, untypedInfo))
@@ -554,16 +531,15 @@ type internal LanguageService private () =
             return! loop None} )
 
    /// Constructs options for the interactive checker for the given file in the project under the given configuration.
-  member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
+  member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
     let ext = Path.GetExtension(fileName)
     let opts = 
-      if (proj = null || ext = ".fsx" || ext = ".fsscript") then
-      
+      if (ext = ".fsx" || ext = ".fsscript") then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         try 
           let fileName = CompilerArguments.fixFileName(fileName)
           Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
-          let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
+          let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename)
           
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
@@ -571,7 +547,7 @@ type internal LanguageService private () =
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
             let dirs = ScriptOptions.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, TargetFrameworkMoniker.NET_4_0 )
-            {opts with ProjectOptions = [| yield! opts.ProjectOptions; 
+            {opts with ProjectOptions = [| yield! opts.ProjectOptions
                                            match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
                                            | Some fn -> yield sprintf "-r:%s" fn
                                            | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
@@ -582,23 +558,14 @@ type internal LanguageService private () =
           
       // We are in a project - construct options using current properties
       else
-        let projFile = proj.FileName.ToString()
-        Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile )
-        let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
-        
-        // Read project configuration (compiler & build)
-        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        
-        // Order files using the configuration settings & get options
-        let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
-        let args = CompilerArguments.generateCompilerOptions (fsconfig, reqLangVersion, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
-        {ProjectFileName = projFile
+        Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFilename )
+
+        {ProjectFileName = projFilename
          ProjectFileNames = files
          ProjectOptions = args
          IsIncompleteTypeCheckEnvironment = false
          UseScriptResolutionRules = false   
-         LoadTime = fakeDateTimeRepresentingTimeLoaded proj
+         LoadTime = fakeDateTimeRepresentingTimeLoaded projFilename
          UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
@@ -609,33 +576,31 @@ type internal LanguageService private () =
   
   /// Parses and type-checks the given file in the given project under the given configuration. The callback
   /// is called after the complete typecheck has been performed.
-  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
-    let fileName = file.FullPath.ToString()
-    let opts = x.GetCheckerOptions(fileName, src, proj, config)
+  member x.TriggerParse(projectFilename, fileName:string, src, files, args, afterCompleteTypeCheckCallback) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args)
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
-    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
+    mbox.Post(TriggerRequest(ParseRequest(fileName, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
-  member x.GetUntypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config) = 
-        let fileName = file.FullPath.ToString()
-        let opts = x.GetCheckerOptions(fileName, src, proj, config)
+  member x.GetUntypedParseResult(projectFilename, fileName:string, src, files, args) = 
+        let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
         Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
-        let req = ParseRequest(file, src, opts, false, None)
+        let req = ParseRequest(fileName, src, opts, false, None)
         checker.ParseFileInProject(fileName, src, opts)
 
-  member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
-    let fileName = file.FullPath.ToString()
-    let opts = x.GetCheckerOptions(fileName, src, proj, config)
+  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
-    let req = ParseRequest(file, src, opts, false, None)
+    let req = ParseRequest(fileName, src, opts, false, None)
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
     | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
         Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
         TypedParseResult(typed, untyped)
-    | _ ->
-        Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
-        // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
+    | _ -> Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
+           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+           mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
+
+  member x.Checker with get() = checker
     
   /// Single instance of the language service
   static member Service = instance.Value

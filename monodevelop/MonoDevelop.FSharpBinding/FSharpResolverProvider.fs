@@ -52,12 +52,15 @@ type FSharpLanguageItemTooltipProvider() =
         if docText = null || offset >= docText.Length || offset < 0 then null else
         let config = IdeApp.Workspace.ActiveConfiguration
         if config = null then null else
+        let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
+        let args = CompilerArguments.getArgumentsFromProject(extEditor.Project, config)
         let tyRes = 
             LanguageService.Service.GetTypedParseResult
-                 (new FilePath(editor.FileName), 
+                 (extEditor.Project.FileName.ToString(),
+                  editor.FileName, 
                   docText, 
-                  extEditor.Project, 
-                  config, 
+                  files,
+                  args,
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
@@ -127,12 +130,15 @@ type FSharpResolverProvider() =
 
         Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
+        let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
+        let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
         let tyRes = 
             LanguageService.Service.GetTypedParseResult
-                 (new FilePath(doc.Editor.FileName), 
+                 (doc.Project.FileName.ToString(),
+                  doc.Editor.FileName, 
                   docText, 
-                  doc.Project, 
-                  config, 
+                  files, 
+                  args, 
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
 
