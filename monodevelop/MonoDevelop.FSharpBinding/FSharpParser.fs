@@ -39,7 +39,7 @@ type FSharpParser() =
           yield formatError error ]
 
   override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
-    if fileName = null || not (CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName))) then null else
+    if fileName = null || proj = null ||  not (CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName))) then null else
 
     let fileContent = content.ReadToEnd()
 
