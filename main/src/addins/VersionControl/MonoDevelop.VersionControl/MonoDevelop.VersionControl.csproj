@@ -131,12 +131,6 @@
     <EmbeddedResource Include="icons\light\conflict-overlay-16%402x.png">
       <LogicalName>conflict-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="normal-overlay-16.png">
-      <LogicalName>normal-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="normal-overlay-16%402x.png">
-      <LogicalName>normal-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\locked-overlay-16.png">
       <LogicalName>locked-overlay-light-16.png</LogicalName>
     </EmbeddedResource>
