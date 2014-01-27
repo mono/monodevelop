@@ -40,6 +40,8 @@ type FSharpCompilerVersion =
 
 module FSharpEnvironment =
 
+  let safeExists f = (try File.Exists(f) with _ -> false)
+
   let FSharpCoreLibRunningVersion =
     try 
       match (typeof<Microsoft.FSharp.Collections.List<int>>).Assembly.GetName().Version.ToString() with
@@ -236,7 +238,6 @@ module FSharpEnvironment =
       BackupInstallationProbePoints 
       |> List.tryPick (fun x -> 
          Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing    %s" x)
-         let safeExists f = (try File.Exists(f) with _ -> false)
          let file f = Path.Combine(Path.Combine(x,"bin"),f)
          let exists f = safeExists(file f)
          match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
@@ -357,4 +358,23 @@ module FSharpEnvironment =
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
 
+  /// Returns default directories to be used when searching for DLL files
+  let getDefaultDirectories(langVersion, fsTargetFramework) =   
+    // Return all known directories, get the location of the System DLLs
+    [match FolderOfDefaultFSharpCore(langVersion, fsTargetFramework) with 
+     | Some dir -> Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
+                   yield dir
+     | None -> Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
+     yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()]
+
+  /// Resolve assembly in the specified list of directories
+  let rec resolveAssembly dirs asm =
+    match dirs with 
+    | dir::dirs ->
+        let asmPath = Path.Combine(dir, asm)
+        let any = List.tryFind safeExists [ asmPath + ".dll" ]
+        match any with 
+        | Some(file) -> Some(file)
+        | _ -> resolveAssembly dirs asm
+    | [] -> None
 

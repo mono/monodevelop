@@ -42,6 +42,7 @@
     <Compile Include="CompilerLocationUtils.fs" />
     <Compile Include="Parser.fs" />
     <None Include="packages.config" />
+    <Compile Include="LanguageService.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
