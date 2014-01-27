@@ -1337,6 +1337,16 @@ namespace MonoDevelop.CSharp.Formatting
 				options.SpaceBeforeForSemicolon = value;
 			}
 		}
+
+		[ItemProperty]
+		public bool SpaceBeforeSemicolon {
+			get {
+				return options.SpaceBeforeSemicolon;
+			}
+			set {
+				options.SpaceBeforeSemicolon = value;
+			}
+		}
 		
 		[ItemProperty]
 		public bool SpacesAfterForSemicolon {

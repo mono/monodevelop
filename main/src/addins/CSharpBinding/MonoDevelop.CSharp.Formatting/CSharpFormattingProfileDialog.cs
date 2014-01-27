@@ -1023,6 +1023,10 @@ delegate void BarFoo ();
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Array Declarations"), example);
 			AddOption (whiteSpaceOptions, category, "SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), example);
+
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Other"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeSemicolon", GettextCatalog.GetString ("before semicolon"), example);
+
 			/*
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
