@@ -32,21 +32,22 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
 
+//this is the builder for the deprecated build engine API
+#pragma warning disable 618
+
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
 		Engine engine;
 		string file;
-		string solutionFile;
 		ILogWriter currentLogWriter;
 		MDConsoleLogger consoleLogger;
 		BuildEngine buildEngine;
 
-		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file, string solutionFile)
+		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file)
 		{
 			this.file = file;
-			this.solutionFile = solutionFile;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
@@ -54,17 +55,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Dispose ()
 		{
-			buildEngine.UnloadProject (file);
+			buildEngine.UnloadProject (engine, file, true);
 		}
 		
 		public void Refresh ()
 		{
-			buildEngine.UnloadProject (file);
+			buildEngine.UnloadProject (engine, file, false);
 		}
 		
 		public void RefreshWithContent (string projectContent)
 		{
-			buildEngine.UnloadProject (file);
+			buildEngine.UnloadProject (engine, file, false);
 			buildEngine.SetUnsavedProjectContent (file, projectContent);
 		}
 
@@ -166,12 +167,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 					}
 				}
-				if (!string.IsNullOrEmpty (solutionFile)) {
-					p.GlobalProperties.SetProperty ("SolutionPath", Path.GetFullPath (solutionFile));
-					p.GlobalProperties.SetProperty ("SolutionName", Path.GetFileNameWithoutExtension (solutionFile));
-					p.GlobalProperties.SetProperty ("SolutionFilename", Path.GetFileName (solutionFile));
-					p.GlobalProperties.SetProperty ("SolutionDir", Path.GetDirectoryName (solutionFile) + Path.DirectorySeparatorChar);
-				};
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);

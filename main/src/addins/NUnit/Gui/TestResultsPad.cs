@@ -669,10 +669,7 @@ namespace MonoDevelop.NUnit
 			else
 				frac = 1;
 
-			if (frac < 0)
-				frac = 0;
-			else if (frac > 1)
-				frac = 1;
+			frac = Math.Min (1, Math.Max (0, frac));
 
 			progressBar.Fraction = frac;
 			progressBar.Text = testsRun + " / " + testsToRun;

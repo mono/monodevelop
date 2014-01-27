@@ -52,8 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		//NOTE: default toolsversion should match the default format.
 		// remember to update the builder process' app.config too
-		public const string DefaultFormat = "MSBuild10";
-		internal const string DefaultToolsVersion = "4.0";
+		public const string DefaultFormat = "MSBuild12";
 		
 		static DataContext dataContext;
 		
@@ -477,34 +476,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file, string solutionFile)
+		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
 				//attempt to use 12.0 builder first if available
+				string toolsVersion = "12.0";
 				string binDir = runtime.GetMSBuildBinPath ("12.0");
-				if (binDir != null) {
-					toolsVersion = "12.0";
-				} else if (toolsVersion == "12.0") {
-					//else if 12 was required but not available
+				if (binDir == null) {
+					//fall back to 4.0, we know it's always available
+					toolsVersion = "4.0";
+				}
+
+				//check the ToolsVersion we found can handle the project
+				Version tv, mtv;
+				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
 					string error = null;
-					if (runtime is MsNetTargetRuntime)
+					if (runtime is MsNetTargetRuntime && minToolsVersion == "12.0")
 						error = "MSBuild 2013 is not installed. Please download and install it from " +
 						"http://www.microsoft.com/en-us/download/details.aspx?id=40760";
 					throw new InvalidOperationException (error ?? string.Format (
 						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
 						runtime.Id, toolsVersion)
 					);
-				} else {
-					//fall back to 4.0, we know it's always available
-					toolsVersion = "4.0";
-					binDir = runtime.GetMSBuildBinPath ("4.0");
 				}
-				
-				string builderKey = runtime.Id + " " + toolsVersion;
+
+				//one builder per solution
+				string builderKey = runtime.Id + " # " + solutionFile;
 				RemoteBuildEngine builder;
 				if (builders.TryGetValue (builderKey, out builder)) {
 					builder.ReferenceCount++;
-					return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
+					return new RemoteProjectBuilder (file, builder);
 				}
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
@@ -528,7 +529,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();
 					var engine = (IBuildEngine)bf.Deserialize (ms);
-					engine.SetUICulture (GettextCatalog.UICulture);
+					engine.Initialize (solutionFile, GettextCatalog.UICulture);
 					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
@@ -541,7 +542,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
-				return new RemoteProjectBuilder (file, solutionFile, binDir, builder);
+				return new RemoteProjectBuilder (file, builder);
 			}
 		}
 		
@@ -633,6 +634,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var nodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes")
 				.Where (p => guids.Any (p.MatchesGuid)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
+		}
+
+		public static MSBuildProjectHandler GetHandler (Project project)
+		{
+			return (MSBuildProjectHandler) project.GetItemHandler ();
 		}
 	}
 	

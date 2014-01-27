@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 
 				var pf = project.GetProjectFile (FileName);
-				return pf != null && pf.BuildAction == BuildAction.Compile;
+				return pf != null && pf.BuildAction != BuildAction.None;
 			}
 		}
 
@@ -508,6 +508,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnSaved (EventArgs args)
 		{
+			IdeApp.Workbench.SaveFileStatus ();
 			if (Saved != null)
 				Saved (this, args);
 		}

@@ -330,7 +330,7 @@ namespace MonoDevelop.SourceEditor
 					try {
 						tooltipInfo.SignatureMarkup = sig.GetMarkup (or.UserDefinedOperatorMethod);
 					} catch (Exception e) {
-						LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
+						LoggingService.LogError ("Got exception while creating markup for :" + result, e);
 						return new TooltipInformation ();
 					}
 					return tooltipInfo;

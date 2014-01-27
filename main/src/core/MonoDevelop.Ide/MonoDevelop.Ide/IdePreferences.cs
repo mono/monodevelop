@@ -75,14 +75,16 @@ namespace MonoDevelop.Ide
 			});
 		}
 		
+		[Obsolete ("Default format cannot be customized globally")]
 		public string DefaultProjectFileFormat {
-			get { return PropertyService.Get ("MonoDevelop.DefaultFileFormat", MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.DefaultFormat); }
-			set { PropertyService.Set ("MonoDevelop.DefaultFileFormat", value); }
+			get { return Services.ProjectService.DefaultFileFormatId; }
+			set { throw new InvalidOperationException (); }
 		}
-		
+
+		[Obsolete ("Default format does not change")]
 		public event EventHandler<PropertyChangedEventArgs> DefaultProjectFileFormatChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.DefaultFileFormat", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.DefaultFileFormat", value); }
+			add { /* nop */ }
+			remove { /* nop */ }
 		}
 		
 		public bool LoadPrevSolutionOnStartup {

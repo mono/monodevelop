@@ -79,12 +79,13 @@ namespace Mono.TextEditor.Vi
 				return;
 			lastAllocation = allocation;
 
-			if (textArea.Allocation != allocation)
+			if (textArea.Allocation != allocation) {
 				textArea.SizeAllocate (allocation);
-			SetSizeRequest (allocation.Width, (int)editor.LineHeight);
-			var pos = ((TextEditor.EditorContainerChild)editor [this]);
-			if (pos.X != 0 || pos.Y != allocation.Height) 
-				editor.MoveTopLevelWidget (this, 0, allocation.Height);
+				SetSizeRequest (allocation.Width, (int)editor.LineHeight);
+				var pos = ((TextEditor.EditorContainerChild)editor [this]);
+				if (pos.X != 0 || pos.Y != allocation.Height)
+					editor.MoveTopLevelWidget (this, 0, allocation.Height);
+			}
 		}
 
 		public bool ShowCaret {

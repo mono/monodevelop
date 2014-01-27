@@ -31,8 +31,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public interface IBuildEngine: IDisposable
 	{
-		void SetUICulture (CultureInfo uiCulture);
-		IProjectBuilder LoadProject (string file, string solutionFile, string binPath);
+		void Initialize (string solutionFile, CultureInfo uiCulture);
+		IProjectBuilder LoadProject (string projectFile);
 		void UnloadProject (IProjectBuilder pb);
 	}
 }

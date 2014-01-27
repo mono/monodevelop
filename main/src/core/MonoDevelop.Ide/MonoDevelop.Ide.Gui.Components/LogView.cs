@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
 		
-		const int MAX_BUFFER_LENGTH = 4000 * 1024; 
+		const int MAX_BUFFER_LENGTH = 4000 * 1024;
 
 		/// <summary>
 		/// The log text view allows the user to jump to the source of an error/warning
@@ -74,7 +74,26 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 			}
 
-			static Regex lineRegex = new Regex ("\\b.*\\s(?<file>[/\\\\].*):(line\\s)?(?<line>\\d+)\\s*$", RegexOptions.Compiled);
+
+			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
+
+			internal static bool TryExtractFileAndLine (string lineText, out string file, out int line)
+			{
+				var match = lineRegex.Match (lineText);
+				if (match.Success) {
+					file = match.Groups["file"].Value;
+					string lineNumberText = match.Groups["line"].Value;
+					try {
+						line = int.Parse (lineNumberText);
+						return true;
+					} catch (Exception) {
+					}
+				}
+				file = null;
+				line = 0;
+				return false;
+			}
+
 			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 			{
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
@@ -92,27 +111,19 @@ namespace MonoDevelop.Ide.Gui.Components
 						LoggingService.LogError ("Error in getting text of the current line.", e);
 						return base.OnButtonPressEvent (evnt);
 					}
+					string file;
+					int lineNumber;
 
-					var match = lineRegex.Match (lineText);
-					if (match.Success) {
-						string file = match.Groups["file"].Value;
-						string line = match.Groups["line"].Value;
-						if (!string.IsNullOrEmpty (file) && !string.IsNullOrEmpty (line)) {
+					if (TryExtractFileAndLine (lineText, out file, out lineNumber)) {
+						if (!string.IsNullOrEmpty (file)) {
 							bool fileExists;
 							try {
 								fileExists = File.Exists (file);
 							} catch {
 								fileExists = false;
 							}
-							if (fileExists) {
-								int lineNumber;
-								try {
-									lineNumber = int.Parse (line);
-								} catch (Exception) {
-									lineNumber = 1;
-								}
+							if (fileExists)
 								IdeApp.Workbench.OpenDocument (file, lineNumber, 1);
-							}
 						}
 					}
 				}
@@ -231,7 +242,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected void UnsafeBeginTask (string name, int totalWork)
 		{
-			if (name != null && name.Length > 0) {
+			if (!string.IsNullOrEmpty (name)) {
 				Indent ();
 				indents.Push (name);
 			} else

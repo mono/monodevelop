@@ -50,6 +50,10 @@ namespace Mono.TextEditor
 			private set;
 		}
 
+		internal bool IsInKeypress {
+			get { return textArea.IsInKeypress; }
+		}
+
 		public TextArea TextArea {
 			get {
 				return textArea;

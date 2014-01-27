@@ -35,7 +35,7 @@ namespace MonoDevelop.Debugger
 	public class ObjectValuePad: IPadContent
 	{
 		protected ObjectValueTreeView tree;
-		ScrolledWindow scrolled;
+		readonly ScrolledWindow scrolled;
 		bool needsUpdate;
 		IPadWindow container;
 		bool initialResume;

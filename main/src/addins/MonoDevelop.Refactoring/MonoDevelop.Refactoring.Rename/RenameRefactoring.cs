@@ -195,7 +195,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 
 				var par = options.SelectedItem as IParameter;
-				if (par != null && (par.Owner.Accessibility != Accessibility.Private || par.Owner.DeclaringTypeDefinition != null && par.Owner.DeclaringTypeDefinition.Parts.Count > 1)) {
+				if (par != null && par.Owner != null && (par.Owner.Accessibility != Accessibility.Private || par.Owner.DeclaringTypeDefinition != null && par.Owner.DeclaringTypeDefinition.Parts.Count > 1)) {
 					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;
 				}
