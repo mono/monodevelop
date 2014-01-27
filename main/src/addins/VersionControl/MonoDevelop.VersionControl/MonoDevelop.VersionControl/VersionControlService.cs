@@ -30,6 +30,7 @@ namespace MonoDevelop.VersionControl
 		static Xwt.Drawing.Image overlay_protected;
 		static Xwt.Drawing.Image overlay_locked;
 		static Xwt.Drawing.Image overlay_unlocked;
+        static Xwt.Drawing.Image overlay_ignored;
 
 		static Xwt.Drawing.Image icon_modified;
 		static Xwt.Drawing.Image icon_removed;
@@ -63,6 +64,7 @@ namespace MonoDevelop.VersionControl
 					overlay_protected = Xwt.Drawing.Image.FromResource("lock-required-overlay-light-16.png");
 					overlay_unlocked = Xwt.Drawing.Image.FromResource("unlocked-overlay-light-16.png");
 					overlay_locked = Xwt.Drawing.Image.FromResource("locked-overlay-light-16.png");
+                    overlay_ignored = Xwt.Drawing.Image.FromResource("ignored-overlay-light-16.png");
 			
 					icon_modified = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
 					icon_removed = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);

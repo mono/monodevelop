@@ -146,6 +146,12 @@
     <EmbeddedResource Include="icons\light\removed-overlay-16%402x.png">
       <LogicalName>removed-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\ignored-overlay-16.png">
+      <LogicalName>ignored-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\ignored-overlay-16%402x.png">
+      <LogicalName>ignored-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\repository.png">
       <LogicalName>repository.png</LogicalName>
     </EmbeddedResource>
