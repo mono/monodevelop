@@ -508,6 +508,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnSaved (EventArgs args)
 		{
+			IdeApp.Workbench.SaveFileStatus ();
 			if (Saved != null)
 				Saved (this, args);
 		}
