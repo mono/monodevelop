@@ -15,7 +15,7 @@ open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.CodeCompletion
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-
+open FSharp.CompilerBinding
 open ICSharpCode.NRefactory.Editor
 open ICSharpCode.NRefactory.Completion
 
@@ -224,8 +224,9 @@ type FSharpTextEditorCompletion() =
       // Try to get typed result - with the specified timeout
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
-      let tyRes = LanguageService.Service.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, allowRecentTypeCheckResults=true, timeout = ServiceSettings.blockingTimeout)
-      let methsOpt = tyRes.GetMethods(startOffset, doc.Editor.Document)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, allowRecentTypeCheckResults=true, timeout = ServiceSettings.blockingTimeout)
+      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
+      let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
       | None -> 
           Debug.WriteLine("Getting Parameter Info: no methods")
@@ -292,10 +293,11 @@ type FSharpTextEditorCompletion() =
       let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(x.Document.Project, config)
       // Try to get typed information from LanguageService (with the specified timeout)
-      let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
-      
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
+      context.TriggerOffset
       // Get declarations and generate list for MonoDevelop
-      match tyRes.GetDeclarations(x.Document, context) with
+      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
+      match tyRes.GetDeclarations(line, col, lineStr) with
       | Some(decls, residue) when decls.Items.Any() -> 
             let items = decls.Items
                         |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)

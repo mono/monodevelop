@@ -46,7 +46,7 @@ module CompilerService =
           yield ("--doc:" + CompilerArguments.wrapFile docFile) 
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-      yield! CompilerArguments.generateCompilerOptions (fsconfig, regLangVersion, config.TargetFramework.Id, items, configSel, shouldWrap) ]
+      yield! CompilerArguments.generateCompilerOptions (fsconfig, regLangVersion, CompilerArguments.getTargetFramework config.TargetFramework.Id, items, configSel, shouldWrap) ]
 
 
   let private regParseFsOutput = Regex(@"(?<file>[^\(]*)\((?<line>[0-9]*),(?<col>[0-9]*)\):\s(?<type>[^:]*)\s(?<err>[^:]*):\s(?<msg>.*)", RegexOptions.Compiled);

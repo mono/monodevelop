@@ -16,6 +16,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Projects
 open MonoDevelop.FSharp
+open FSharp.CompilerBinding
 
 [<AutoOpen>]
 module ColorHelpers =
@@ -123,6 +124,12 @@ type FSharpInteractivePad() =
       sendCommand ""
     elif cie.Text.EndsWith(";;") then 
       sendCommand cie.Text
+  
+  /// Make path absolute using the specified 'root' path if it is not already
+  let makeAbsolute root (path:string) = 
+    let path = path.Replace("\"","")
+    if Path.IsPathRooted(path) then path
+    else Path.Combine(root, path)
     
   //let handler = 
   do Debug.WriteLine ("InteractivePad: created!")
@@ -249,7 +256,7 @@ type FSharpInteractivePad() =
     let references =
         let getAbsProjRefs (proj:DotNetProject) = 
             proj.GetReferencedAssemblies(ConfigurationSelector.Default, true)
-            |> Seq.map (ScriptOptions.makeAbsolute (proj.BaseDirectory.ToString()))
+            |> Seq.map (makeAbsolute (proj.BaseDirectory.ToString()))
 
         let projRefAssemblies =
             project.References 

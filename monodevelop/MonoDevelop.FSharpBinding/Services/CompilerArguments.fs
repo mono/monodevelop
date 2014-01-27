@@ -17,89 +17,24 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open FSharp.CompilerBinding
 
-module ScriptOptions =
-
-  /// Make path absolute using the specified 'root' path if it is not already
-  let makeAbsolute root (path:string) = 
-    let path = path.Replace("\"","")
-    if Path.IsPathRooted(path) then path
-    else Path.Combine(root, path)
-  
-  /// Returns true if the specified file exists (and never throws exception)
-  let safeExists f = 
-    try File.Exists(f) with _ -> false
-    
-  /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories(langVersion, targetFramework) =   
-    
-    // Translate the target framework to an enum used by FSharp.CompilerBinding
-    let fsTargetFramework = 
-      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
-      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
-      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
-      else FSharpTargetFramework.NET_4_0
-    
-    // Return all known directories
-    [ // Get the location of the System DLLs
-      match FSharpEnvironment.FolderOfDefaultFSharpCore(langVersion, fsTargetFramework) with 
-      | Some dir -> 
-          Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
-          yield dir
-      | None -> 
-          Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
-
-      yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
-    ]
-                
-  /// Resolve assembly in the specified list of directories
-  let rec resolveAssembly dirs asm =
-    match dirs with 
-    | dir::dirs ->
-        let asmPath = Path.Combine(dir, asm)
-        let any = List.tryFind safeExists [ asmPath + ".dll" ]
-        match any with 
-        | Some(file) -> Some(file)
-        | _ -> resolveAssembly dirs asm
-    | [] -> None
-  
-
 // --------------------------------------------------------------------------------------
 // Common utilities for working with files & extracting information from 
 // MonoDevelop objects (e.g. references, project items etc.)
 // --------------------------------------------------------------------------------------
 
 module CompilerArguments = 
+
   /// Wraps the given string between double quotes
   let wrapFile (s:string) = if s.StartsWith "\"" then s else "\"" + s + "\""  
-
-  /// When creating new script file on Mac, the filename we get sometimes 
-  /// has a name //foo.fsx, and as a result 'Path.GetFullPath' throws in the F#
-  /// language service - this fixes the issue by inventing nicer file name.
-  let fixFileName path = 
-    if (try Path.GetFullPath(path) |> ignore; true
-        with _ -> false) then path
-    else 
-      let dir = 
-        if Environment.OSVersion.Platform = PlatformID.Unix ||  
-           Environment.OSVersion.Platform = PlatformID.MacOSX then
-          Environment.GetEnvironmentVariable("HOME") 
-        else
-          Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
-      Path.Combine(dir, Path.GetFileName(path))
   
   /// Is the specified extension supported F# file?
   let supportedExtension ext = 
     [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> List.exists (fun sup ->
         String.Compare(ext, sup, true) = 0)
 
-  /// Is the specified extension used by F# script files?
-  let fsharpScriptExtension ext = 
-    [".fsscript"; ".fsx"] |> Seq.exists (fun sup ->
-        String.Compare(ext, sup, true) = 0)
-
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
+  let private generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
@@ -119,8 +54,8 @@ module CompilerArguments =
                                                      fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
       match coreRef with
       | None ->
-        let dirs = ScriptOptions.getDefaultDirectories(langVersion, targetFramework) 
-        match ScriptOptions.resolveAssembly dirs assumedFile with
+        let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
+        match FSharpEnvironment.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
       | Some r -> 
@@ -154,13 +89,6 @@ module CompilerArguments =
         if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
           yield file.Name.ToString() ]
 
-  /// Creates a relative path from one file or folder to another. 
-  let makeRelativePath (root:string) (file:string) = 
-    let file = Uri(file)
-    let sep = Path.DirectorySeparatorChar.ToString()
-    let root = Uri(if root.EndsWith(sep) then root else root + sep + "dummy" )
-    root.MakeRelativeUri(file).ToString().Replace("/", sep)
-
     
   /// Generate inputs for the compiler (excluding source code!); returns list of items 
   /// containing resources (prefixed with the --resource parameter)
@@ -175,7 +103,7 @@ module CompilerArguments =
         | "None" | "Content" | "Compile" -> ()
         | s -> ()] // failwith("Items of type '" + s + "' not supported") ]
 
-  let getToolPath (pathsToSearch:seq<string>) (extensions:seq<string>) (toolName:string) =
+  let private getToolPath (pathsToSearch:seq<string>) (extensions:seq<string>) (toolName:string) =
     let filesToSearch = Seq.map (fun x -> toolName + x) extensions
 
     let tryFindPathAndFile (filesToSearch:seq<string>) (path:string) =
@@ -193,11 +121,6 @@ module CompilerArguments =
 
     Seq.tryPick (tryFindPathAndFile filesToSearch) pathsToSearch
 
-
-  let getShellToolPath (extensions:seq<string>) (toolName:string)  =
-    let pathVariable = Environment.GetEnvironmentVariable("PATH")
-    let searchPaths = pathVariable.Split [| IO.Path.PathSeparator  |]
-    getToolPath searchPaths extensions toolName
 
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
@@ -238,6 +161,11 @@ module CompilerArguments =
     let best_info = Seq.fold newest_net_framework_folder (first,[| 0 |]) candidate_frameworks
     fst best_info
 
+  let private getShellToolPath (extensions:seq<string>) (toolName:string)  =
+    let pathVariable = Environment.GetEnvironmentVariable("PATH")
+    let searchPaths = pathVariable.Split [| IO.Path.PathSeparator  |]
+    getToolPath searchPaths extensions toolName
+
   let getDefaultInteractive() =
 
     let runtime = IdeApp.Preferences.DefaultTargetRuntime
@@ -256,7 +184,7 @@ module CompilerArguments =
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None-> 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
-    | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
+    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsi.exe")) ->  
         Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
 
@@ -267,7 +195,14 @@ module CompilerArguments =
     match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsc" with
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> None
-    
+  
+      // Translate the target framework to an enum used by FSharp.CompilerBinding
+  let getTargetFramework targetFramework = 
+      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
+      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
+      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
+      else FSharpTargetFramework.NET_4_0
+        
   // Only used when xbuild support is not enabled. When xbuild is enabled, the .targets 
   // file finds FSharp.Build.dll which finds the F# compiler.
   let getDefaultFSharpCompiler() =
@@ -285,12 +220,12 @@ module CompilerArguments =
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
-    | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsc.exe")) ->  
+    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsc.exe")) ->  
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
 
   let getArgumentsFromProject (proj:MonoDevelop.Projects.Project, config) =
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateCompilerOptions (fsconfig, FSharpCompilerVersion.LatestKnown , projConfig.TargetFramework.Id, proj.Items, config, false) |> Array.ofList
+        generateCompilerOptions (fsconfig, FSharpCompilerVersion.LatestKnown , getTargetFramework projConfig.TargetFramework.Id, proj.Items, config, false) |> Array.ofList
 
