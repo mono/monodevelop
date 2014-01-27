@@ -344,9 +344,10 @@ module MonoDevelop =
 /// Provides functionality for working with the F# interactive checker running in background
 type internal MDLanguageService private () =
 
-  // Single instance of the language service
+  // Single instance of the language service, this used to be lazy but the initialization code for the file will be run
+  // when "Instance" is first evalauted anyway, and I don't think there is any substantive cost to creating an instance of LanguageService.
   static let instance =
-    lazy  FSharp.CompilerBinding.LanguageService(
+    FSharp.CompilerBinding.LanguageService(
         (fun changedfile ->
             DispatchService.GuiDispatch(fun () -> 
                 try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
@@ -357,7 +358,7 @@ type internal MDLanguageService private () =
                 with exn  -> () )))
                 
   //Single instance of the language service
-  static member Instance = instance.Value
+  static member Instance = instance
     
 // --------------------------------------------------------------------------------------
 /// Various utilities for working with F# language service
