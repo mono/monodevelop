@@ -1577,7 +1577,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						);
 						if (corLibRef != null) {
 							ctx = LoadAssemblyContext (corLibRef.Location);
-							if (ctx != null)
+							if (ctx != null) 
 								contexts.Add (ctx);
 						}
 					}
@@ -2235,14 +2235,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (asmLocker) {
 					if (assembly != null)
 						return;
-					assembly = new DefaultUnresolvedAssembly (fileName);
-
-					assembly = LoadAssembly () ?? assembly; 
+					var loadedAssembly = LoadAssembly ();
+					if (loadedAssembly == null) {
+						LoggingService.LogWarning ("Assembly " + fileName + " could not be loaded cleanly.");
+						assembly = new DefaultUnresolvedAssembly (fileName);
+					} else {
+						assembly = loadedAssembly;
+					}
 
 					OnLoad (EventArgs.Empty);
 				}
 			}
 
+			public override string ToString ()
+			{
+				return string.Format ("[LazyAssemblyLoader: fileName={0}, assembly={1}]", fileName, assembly);
+			}
+			
 			public bool InLoad {
 				get {
 					return assembly == null;
