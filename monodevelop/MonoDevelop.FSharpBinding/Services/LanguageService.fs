@@ -345,15 +345,16 @@ module MonoDevelop =
 type internal MDLanguageService private () =
 
   // Single instance of the language service
-  static let instance = Lazy.Create(fun () ->  FSharp.CompilerBinding.LanguageService(
-    (fun changedfile ->
-        DispatchService.GuiDispatch(fun () -> 
-            try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
-                let doc = IdeApp.Workbench.ActiveDocument
-                if doc <> null && doc.FileName.FullPath.ToString() = changedfile then 
-                    Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
-                    doc.ReparseDocument()
-            with exn  -> () ))))
+  static let instance =
+    lazy  FSharp.CompilerBinding.LanguageService(
+        (fun changedfile ->
+            DispatchService.GuiDispatch(fun () -> 
+                try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
+                    let doc = IdeApp.Workbench.ActiveDocument
+                    if doc <> null && doc.FileName.FullPath.ToString() = changedfile then 
+                        Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
+                        doc.ReparseDocument()
+                with exn  -> () )))
                 
   //Single instance of the language service
   static member Instance = instance.Value
