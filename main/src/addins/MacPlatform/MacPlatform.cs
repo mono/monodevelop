@@ -514,7 +514,7 @@ namespace MonoDevelop.MacIntegration
 			}
 				
 			var res = GetPixbufFromNSImage (icon, w, h);
-			return res != null ? res.ToXwtImage () : base.OnGetPixbufForFile (filename, size);
+			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
 		
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
