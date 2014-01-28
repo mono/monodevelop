@@ -133,17 +133,17 @@ namespace MonoDevelop.VersionControl.Views
 			widget = main;
 			
 			buttonCommit = new Gtk.Button () {
-				Image = new Gtk.Image ("vc-commit", Gtk.IconSize.Menu),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-light-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Commit...")
 			};
 			buttonCommit.Image.Show ();
 			buttonRevert = new Gtk.Button () {
-				Image = new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("revert-light-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Revert")
 			};
 			buttonRevert.Image.Show ();
 			showRemoteStatus = new Gtk.Button () {
-				Image = new Gtk.Image ("vc-remote-status", Gtk.IconSize.Menu),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("menu_remote_status.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Show Remote Status")
 			};
 			showRemoteStatus.Image.Show ();
@@ -168,7 +168,7 @@ namespace MonoDevelop.VersionControl.Views
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
-			colCommit.Widget = new Gtk.Image ("vc-commit", Gtk.IconSize.Menu);
+			colCommit.Widget = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-light-16.png")).ToGtkWidget ();
 			colCommit.Widget.Show ();
 			colCommit.PackStart (cellToggle, false);
 			colCommit.PackStart (crc, false);
@@ -228,7 +228,7 @@ namespace MonoDevelop.VersionControl.Views
 			HBox labBox = new HBox ();
 			labelCommit = new Gtk.Label (GettextCatalog.GetString ("Commit message:"));
 			labelCommit.Xalign = 0;
-			labBox.PackStart (new Gtk.Image ("vc-comment", Gtk.IconSize.Menu), false, false, 0);
+			labBox.PackStart (new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("comment-light-16.png")).ToGtkWidget (), false, false, 0);
 			labBox.PackStart (labelCommit, true, true, 3);
 
 			commitMessageLabelBox.Add (labBox);
@@ -300,7 +300,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var btnRefresh = new Gtk.Button () {
 				Label = GettextCatalog.GetString ("Refresh"),
-				Image = new Gtk.Image (Gtk.Stock.Refresh, IconSize.Menu)
+				Image = new Xwt.ImageView (ImageService.GetIcon (Gtk.Stock.Refresh, IconSize.Menu)).ToGtkWidget ()
 			};
 			btnRefresh.Image.Show ();
 
@@ -314,7 +314,7 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (showRemoteStatus);
 			
 			var btnCreatePatch = new Gtk.Button () {
-				Image = new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), 
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("menu_diff.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Create Patch")
 			};
 			btnCreatePatch.Image.Show ();
@@ -324,7 +324,7 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (new Gtk.SeparatorToolItem ());
 			
 			var btnOpen = new Gtk.Button () {
-				Image = new Gtk.Image (Gtk.Stock.Open, IconSize.Menu), 
+				Image = new Xwt.ImageView (ImageService.GetIcon (Gtk.Stock.Open, IconSize.Menu)).ToGtkWidget (), 
 				Label = GettextCatalog.GetString ("Open")
 			};
 			btnOpen.Image.Show ();
