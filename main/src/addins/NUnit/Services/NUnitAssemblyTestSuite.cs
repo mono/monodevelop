@@ -369,6 +369,8 @@ namespace MonoDevelop.NUnit
 		{
 			List<string> result = new List<string> ();
 			foreach (var t in group.Tests) {
+				if (t.IsExplicit)
+					continue;
 				if (t is UnitTestGroup) {
 					result.AddRange (CollectTests ((UnitTestGroup)t));
 				} else {
