@@ -388,9 +388,15 @@ namespace Stetic
 			
 			foreach (SteticCompilationUnit unit in res.Units) {
 				string fname;
-				if (unit.Name.Length == 0)
+				if (unit.Name.Length == 0) {
+					if (provider is Microsoft.CSharp.CSharpCodeProvider && unit.Namespaces.Count > 0) {
+						var types = unit.Namespaces [0].Types;
+						if (types.Count > 0) {
+							types [0].Members.Insert (0, new CodeSnippetTypeMember ("#pragma warning disable 436"));
+						}
+					}
 					fname = file;
-				else
+				} else
 					fname = Path.Combine (basePath, unit.Name) + ext;
 				files.Add (fname);
 				unit.Name = fname;
