@@ -52,17 +52,21 @@ type FSharpLanguageItemTooltipProvider() =
         if docText = null || offset >= docText.Length || offset < 0 then null else
         let config = IdeApp.Workspace.ActiveConfiguration
         if config = null then null else
+        let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
+        let args = CompilerArguments.getArgumentsFromProject(extEditor.Project, config)
         let tyRes = 
-            LanguageService.Service.GetTypedParseResult
-                 (new FilePath(editor.FileName), 
+            MDLanguageService.Instance.GetTypedParseResult
+                 (extEditor.Project.FileName.ToString(),
+                  editor.FileName, 
                   docText, 
-                  extEditor.Project, 
-                  config, 
+                  files,
+                  args,
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
         // Get tool-tip from the language service
-        let tip = tyRes.GetToolTip(offset, editor.Document)
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
+        let tip = tyRes.GetToolTip(line, col, lineStr)
         match tip with
         | None -> null
         | Some (ToolTipText(elems),_) when elems |> List.forall (function ToolTipElementNone -> true | _ -> false) -> 
@@ -127,19 +131,23 @@ type FSharpResolverProvider() =
 
         Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
+        let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
+        let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
         let tyRes = 
-            LanguageService.Service.GetTypedParseResult
-                 (new FilePath(doc.Editor.FileName), 
+            MDLanguageService.Instance.GetTypedParseResult
+                 (doc.Project.FileName.ToString(),
+                  doc.Editor.FileName, 
                   docText, 
-                  doc.Project, 
-                  config, 
+                  files, 
+                  args, 
                   allowRecentTypeCheckResults=true,
                   timeout = ServiceSettings.blockingTimeout)
 
         Debug.WriteLine("getting declaration location...")
        
         // Get the declaration location from the language service
-        let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
+        let loc = tyRes.GetDeclarationLocation(line, col, lineStr)
         let reg = match loc with
                   | FindDeclResult.DeclFound((line, col), file) -> 
                        Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)

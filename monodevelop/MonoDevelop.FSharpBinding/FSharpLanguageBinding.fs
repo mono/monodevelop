@@ -10,6 +10,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
+open FSharp.CompilerBinding
 
 type FSharpLanguageBinding() =
   static let LanguageName = "F#"
