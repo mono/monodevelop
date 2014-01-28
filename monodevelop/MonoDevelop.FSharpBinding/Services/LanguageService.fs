@@ -339,6 +339,19 @@ module MonoDevelop =
         let currentLine = doc.Lines |> Seq.nth line
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
         (line, col, lineStr)
+    
+    ///gets the projectFilename, sourceFiles, commandargs from the project and current config
+    let getFilesAndArgsFromProject(project:Project, config) =
+        let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
+        let projConfig = project.GetConfiguration(config) :?> MonoDevelop.Projects.DotNetProjectConfiguration
+        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
+        let args = CompilerArguments.generateCompilerOptions(fsconfig, 
+                                                             FSharp.CompilerBinding.FSharpCompilerVersion.LatestKnown, 
+                                                             CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
+                                                             project.Items, 
+                                                             config, 
+                                                             false) |> Array.ofList
+        project.FileName.ToString(), files, args
                 
 
 /// Provides functionality for working with the F# interactive checker running in background

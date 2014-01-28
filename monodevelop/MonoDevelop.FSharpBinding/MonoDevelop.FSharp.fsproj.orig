@@ -116,6 +116,8 @@
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
+    <Compile Include="FSharpHighlightUsagesExtension.fs" />
+    <Compile Include="FSharpReferenceFinderExtension.fs" />
     <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Helpers.dll">
       <Link>System.Web.Helpers.dll</Link>
     </Mvc4Files>

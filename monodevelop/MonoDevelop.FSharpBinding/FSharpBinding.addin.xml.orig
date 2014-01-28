@@ -51,7 +51,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/TypeSystem/Parser">
-    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp-fs, text/x-fsharp-fsx, text/x-fsharp-fsi" />
+    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
@@ -59,7 +59,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
-    <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp-fs, text/x-fsharp-fsx" />
+    <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -110,14 +110,14 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Core/MimeTypes">
-    <MimeType id="text/x-fsharp-fs" _description="F# Source File" icon="md-fs-file" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-fs-file" isText="true">
       <File pattern="*.fs" />
     </MimeType>
-    <MimeType id="text/x-fsharp-fsx" _description="F# Script File" icon="md-fs-script" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
       <File pattern="*.fsx" />
       <File pattern="*.fsscript" />
         </MimeType>
-    <MimeType id="text/x-fsharp-fsi" _description="F# Signature File" icon="md-fs-file" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-fs-file" isText="true">
       <File pattern="*.fsi" />
         </MimeType>
     <MimeType id="application/fsproject+xml" _description="F# project file" baseType="application/xml">
@@ -129,9 +129,16 @@
     <LanguageBinding id="F#" supportedextensions=".fs,.fsi,.fsx,.fsscript"
                      class="MonoDevelop.FSharp.FSharpLanguageBinding" />
   </Extension>
+
+  <Extension path = "/MonoDevelop/Ide/ReferenceFinder">
+    <ReferenceFinder supportedmimetypes = "text/x-fsharp"
+                     class = "MonoDevelop.FSharp.FSharpReferenceFinder" />
+  </Extension>
+
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
-    <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpPathExtension" />
+    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
+    <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">

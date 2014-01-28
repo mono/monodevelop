@@ -261,5 +261,35 @@ type LanguageService(dirtyNotify) =
            // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
            mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
 
+  member x.GetReferences(projectFilename, file, source, files, line:int, col, lineStr, args) =
+    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args)
+
+    //parse and retrieve Checked Project results, this has the entity graph and errors etc
+    let projectResults = checker.ParseAndCheckProject(projectOptions) |> Async.RunSynchronously
+  
+    //get the parse results for the current file
+    let backgroundParseResults, backgroundTypedParse = //Note this operates on the file system so the file needs to be current
+        checker.GetBackgroundCheckResultsForFileInProject(file, projectOptions) 
+        |> Async.RunSynchronously
+
+    let tryGetRange (dec: Microsoft.FSharp.Compiler.Range.range) = 
+       dec.FileName, ((dec.StartLine-1, dec.StartColumn), (dec.EndLine-1, dec.EndColumn))
+
+    let tryGetSymbolRange (range :Microsoft.FSharp.Compiler.Range.range option) = 
+        range |> Option.map tryGetRange
+
+    match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
+    | Some(colu, identIsland) ->
+        //get symbol at location
+        //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
+        match backgroundTypedParse.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
+        | Some(currentSymbol) ->
+            let currentSymbolName = Seq.last identIsland
+            let currentSymbolRange = tryGetSymbolRange currentSymbol.DeclarationLocation
+            let refs = projectResults.GetUsesOfSymbol(currentSymbol)
+            Some(currentSymbolName, currentSymbolRange, refs)
+        | _ -> None
+    | _ -> None
+
   member x.Checker with get() = checker
 
