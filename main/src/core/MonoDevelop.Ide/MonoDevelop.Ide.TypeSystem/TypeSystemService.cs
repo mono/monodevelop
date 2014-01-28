@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (content.Location);
 		}
 
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
+		[Obsolete ("Use TryGetSourceProject.")]
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
 			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
@@ -67,11 +67,47 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (location);
 		}
 
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
+		[Obsolete ("Use TryGetSourceProject.")]
 		public static Project GetSourceProject (this IType type)
 		{
 			return type.GetDefinition ().GetSourceProject ();
 		}
+
+		/// <summary>
+		/// Tries to the get source project for a given type definition. This operation may fall if it was called on an outdated
+		/// compilation unit or the correspondening project was unloaded.
+		/// </summary>
+		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
+		/// <param name="type">The type definition.</param>
+		/// <param name="project">The project or null if it wasn't found.</param>
+		public static bool TryGetSourceProject (this ITypeDefinition type, out Project project)
+		{
+			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
+			if (string.IsNullOrEmpty (location)) {
+				project = null;
+				return false;
+			}
+			project = TypeSystemService.GetProject (location);
+			return project != null;
+		}
+
+		/// <summary>
+		/// Tries to the get source project for a given type. This operation may fall if it was called on an outdated
+		/// compilation unit or the correspondening project was unloaded.
+		/// </summary>
+		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
+		/// <param name="type">The type.</param>
+		/// <param name="project">The project or null if it wasn't found.</param>
+		public static bool TryGetSourceProject (this IType type, out Project project)
+		{
+			var def = type.GetDefinition ();
+			if (def == null) {
+				project = null;
+				return false;
+			}
+			return def.TryGetSourceProject (out project);
+		}
+
 
 		internal static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
 		{
