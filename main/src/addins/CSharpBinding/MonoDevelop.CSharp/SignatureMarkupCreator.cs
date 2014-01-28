@@ -1658,8 +1658,9 @@ namespace MonoDevelop.CSharp
 				var def = type.GetDefinition ();
 				if (def != null) {
 					if (!def.Region.IsEmpty) {
-						var project = def.GetSourceProject ();
-						if (project != null) {
+						MonoDevelop.Projects.Project project;
+
+						if (def.TryGetSourceProject (out project)) {
 							var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
 							return
 								(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +

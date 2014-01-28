@@ -234,9 +234,9 @@ namespace MonoDevelop.CSharp.Completion
 			var method = Entity as IMethod;
 			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
-				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
-				var end = line.Offset + line.Length;
-				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
+				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
+				//var end = line.Offset + line.Length;
+				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
 				bool addSpace = Policy.BeforeMethodCallParentheses && CSharpTextEditorIndentation.OnTheFlyFormatting;
 
 				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
