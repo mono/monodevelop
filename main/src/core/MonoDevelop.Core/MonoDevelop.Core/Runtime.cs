@@ -53,6 +53,7 @@ namespace MonoDevelop.Core
 		static AddinSetupService setupService;
 		static ApplicationService applicationService;
 		static bool initialized;
+		static SynchronizationContext mainSynchronizationContext;
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -275,6 +276,17 @@ namespace MonoDevelop.Core
 					}
 				}
 				return version;
+			}
+		}
+
+		public static SynchronizationContext MainSynchronizationContext {
+			get {
+				return mainSynchronizationContext ?? SynchronizationContext.Current;
+			}
+			set {
+				if (mainSynchronizationContext != null && value != null)
+					throw new InvalidOperationException ("The main synchronization context has already been set");
+				mainSynchronizationContext = value;
 			}
 		}
 
