@@ -151,8 +151,8 @@ namespace MonoDevelop.Ide.Desktop
 				pic = ImageService.GetIcon (icon, false);
 			
 			if (pic == null)
-				pic = OnGetIconForFile (filename);
-			
+				pic = Xwt.Desktop.GetFileIcon (filename);
+
 			if (pic == null) {
 				string mtype = GetMimeTypeForUri (filename);
 				if (mtype != null) {
