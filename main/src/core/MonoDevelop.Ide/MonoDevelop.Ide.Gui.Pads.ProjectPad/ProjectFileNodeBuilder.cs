@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nodeInfo.Icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
-				var overlay = ImageService.GetIcon ("md-link-overlay");
+				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
 				var cached = Context.GetComposedIcon (nodeInfo.Icon, overlay);
 				if (cached != null)
 					nodeInfo.Icon = cached;
