@@ -485,7 +485,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		static string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
+		static readonly string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
 		
 		public static string CreateTempDirectory ()
 		{

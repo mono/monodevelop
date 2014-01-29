@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public sealed class Workbench
 	{
+		static readonly StringComparer PathComparer = Platform.IsWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 		List<Document> documents = new List<Document> ();
 		PadCollection pads;
 		ProgressMonitorManager monitors = new ProgressMonitorManager ();
@@ -145,8 +146,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document GetDocument (string name)
 		{
+			var fullPath = FileService.GetFullPath (name);
+
 			foreach (Document doc in documents) {
-				if (FileService.GetFullPath (doc.Name) == name)
+				var fullDocPath = FileService.GetFullPath (doc.Name);
+
+				if (PathComparer.Compare (fullDocPath, fullPath) == 0)
 					return doc;
 			}
 			return null;
