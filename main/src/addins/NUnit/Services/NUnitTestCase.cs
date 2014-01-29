@@ -48,6 +48,7 @@ namespace MonoDevelop.NUnit
 			this.pathName = tinfo.PathName;
 			this.rootSuite = rootSuite;
 			this.TestId = tinfo.TestId;
+			this.IsExplicit = tinfo.IsExplicit;
 		}
 		
 		protected override UnitTestResult OnRun (TestContext testContext)

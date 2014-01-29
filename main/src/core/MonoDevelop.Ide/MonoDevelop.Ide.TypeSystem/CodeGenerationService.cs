@@ -507,8 +507,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			var type = new CodeTypeDeclaration ("temp");
 			type.CustomAttributes.Add (attr);
-			
-			var provider = ((DotNetProject)cls.GetSourceProject ()).LanguageBinding.GetCodeDomProvider ();
+			Project project;
+			if (!cls.TryGetSourceProject (out project)) {
+				LoggingService.LogError ("Error can't get source project for:" + cls.FullName); 
+			}
+
+			var provider = ((DotNetProject)project).LanguageBinding.GetCodeDomProvider ();
 			var sw = new StringWriter ();
 			provider.GenerateCodeFromType (type, sw, new CodeGeneratorOptions ());
 			string code = sw.ToString ();

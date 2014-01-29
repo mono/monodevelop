@@ -137,6 +137,8 @@ namespace MonoDevelop.NUnit
 			
 			try {
 				foreach (UnitTest t in Tests) {
+					if (t.IsExplicit)
+						continue;
 					UnitTestResult res;
 					try {
 						res = OnRunChildTest (t, testContext);
