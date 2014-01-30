@@ -134,6 +134,12 @@ type HighlightUsagesExtension() as this =
     let usages = List<DocumentLocation>()
     let usagesSegments = List<UsageSegment>();
     let mutable doc = Unchecked.defaultof<Gui.Document>
+    let mutable cts = new Threading.CancellationTokenSource()
+
+    let cancelHighlight() =
+        cts.Cancel()
+        cts.Dispose()
+        cts <- new Threading.CancellationTokenSource()
 
     let removeMarkers(updateLine) =
         if markers.Count <> 0 then
@@ -187,8 +193,25 @@ type HighlightUsagesExtension() as this =
         
         usagesUpdated.Trigger(this, EventArgs.Empty)
 
-   
-    let delayedTooltipShow =
+    let ShowHighlightAsync(projectFilename, currentFile, source, files, line, col, lineStr, args) =
+        let token = cts.Token
+        let asyncOperation = 
+            async{let symbolReferences =
+                    MDLanguageService.Instance.GetReferences(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args)
+
+                  match symbolReferences with
+                  | Some(currentSymbolName, currentSymbolRange, references) -> 
+                      let memberReferences =
+                          references
+                          //We only want symbol refs from the current file as we are highlighting text
+                          |> Seq.filter (fun (fileName, range) -> fileName = currentFile)
+                          |> Seq.map (fun (filename, range) -> NRefactory.createMemberReference(filename, range, currentSymbolName, currentSymbolRange))
+                      if not token.IsCancellationRequested then
+                          Gtk.Application.Invoke(fun _ _ -> showReferences(memberReferences))
+                  | _ -> () }
+        Async.Start(asyncOperation, token)
+
+    let delayedHighight =
         GLib.TimeoutHandler(fun _ -> 
                                 try
                                     try
@@ -199,26 +222,14 @@ type HighlightUsagesExtension() as this =
 
                                         let projectFilename, files, args = MonoDevelop.getFilesAndArgsFromProject(doc.Project, IdeApp.Workspace.ActiveConfiguration)
 
-                                        let symbolReferences =
-                                            MDLanguageService.Instance.GetReferences(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args)
+                                        //cancel any current highlights
+                                        cancelHighlight()
+                                        ShowHighlightAsync(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args)
 
-                                        match symbolReferences with
-                                        | Some(currentSymbolName, currentSymbolRange, references) -> 
-                                            let memberReferences =
-                                                references
-                                                //In this instance we only want symbol refs from the current file as we are highlighting text
-                                                |> Seq.filter (fun (fileName, range) -> fileName = currentFile)
-                                                |> Seq.map (fun (filename, range) -> NRefactory.createMemberReference(filename, range, currentSymbolName, currentSymbolRange))
-                                            showReferences(memberReferences)
-                                        | _ -> ()
-                                        false    
-                                        
-                                    with exn ->
-                                        LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                                        false
+                                    with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
 
-                                finally
-                                    popupTimer := 0u )
+                                finally popupTimer := 0u
+                                false )
 
     let caretPositionChanged =
         EventHandler<_>
@@ -228,7 +239,7 @@ type HighlightUsagesExtension() as this =
                              removeMarkers (textEditorData.IsSomethingSelected)
                              removeTimer()
                          if not textEditorData.IsSomethingSelected then
-                             popupTimer := GLib.Timeout.Add(1000u, delayedTooltipShow))
+                             popupTimer := GLib.Timeout.Add(1000u, delayedHighight))
 
     let documentTextReplaced = EventHandler<_>(fun _ _ -> removeMarkers(false))
     let documentSelectionChanged = EventHandler(fun _ _ -> removeMarkers(false))
@@ -242,11 +253,12 @@ type HighlightUsagesExtension() as this =
         textEditorData.SelectionChanged.AddHandler documentSelectionChanged
 
     override x.Dispose() =
+        base.Dispose ()
         textEditorData.SelectionChanged.RemoveHandler documentSelectionChanged
         textEditorData.Caret.PositionChanged.RemoveHandler caretPositionChanged
         textEditorData.Document.TextReplaced.RemoveHandler documentTextReplaced
-        base.Dispose ()
         removeTimer()
+        cancelHighlight()
     
     //These three members will be used by 'move to next reference'
     member x.IsTimerOnQueue
@@ -254,7 +266,7 @@ type HighlightUsagesExtension() as this =
 
     member x.ForceUpdate () =
         removeTimer()
-        delayedTooltipShow.Invoke()
+        delayedHighight.Invoke()
 
     member x.UsagesSegments
         with get() = usagesSegments
