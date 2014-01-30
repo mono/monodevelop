@@ -181,15 +181,6 @@
     <EmbeddedResource Include="icons\gettext-overlay-32.png">
       <LogicalName>gettext-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-fuzzy-16.png">
-      <LogicalName>translation-fuzzy-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-missing-16.png">
-      <LogicalName>translation-missing-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\translation-valid-16.png">
-      <LogicalName>translation-valid-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\silk_accept.png">
       <LogicalName>silk_accept.png</LogicalName>
     </EmbeddedResource>
