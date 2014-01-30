@@ -211,9 +211,6 @@
     <EmbeddedResource Include="icons\light\watch-16%402x.png">
       <LogicalName>watch-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-24.png">
-      <LogicalName>debug-overlay-24.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pause-16.png">
       <LogicalName>pause-light-16.png</LogicalName>
     </EmbeddedResource>
