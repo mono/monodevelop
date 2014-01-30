@@ -61,6 +61,11 @@ namespace MonoDevelop.NUnit
 			set;
 		}
 
+		public bool IsExplicit {
+			get;
+			set;
+		}
+
 		protected UnitTest (string name)
 		{
 			this.name = name;

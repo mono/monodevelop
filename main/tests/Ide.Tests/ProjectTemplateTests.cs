@@ -33,22 +33,22 @@ using System.Text;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	public class ProjectTemplateTests
+	public class ProjectTemplateTests : TestBase
 	{
 		string TempDir {
 			get; set;
 		}
 
-		[SetUp]
-		public void Setup ()
+		public override void Setup ()
 		{
+			base.Setup ();
 			var currentDir = Path.GetDirectoryName (typeof(ProjectTemplateTests).Assembly.Location);
 			TempDir = Path.GetFullPath (Path.Combine (currentDir, "TempDirForTests"));
 		}
 
-		[TearDown]
-		public void Teardown ()
+		public override void Teardown ()
 		{
+			base.Teardown ();
 			try { Directory.Delete (TempDir, true); } catch { }
 		}
 

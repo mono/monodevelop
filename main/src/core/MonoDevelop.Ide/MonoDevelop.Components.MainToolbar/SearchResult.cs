@@ -171,8 +171,9 @@ namespace MonoDevelop.Components.MainToolbar
 		public override string Description {
 			get {
 				string loc;
-				if (type.GetSourceProject () != null) {
-					loc = GettextCatalog.GetString ("project {0}", type.GetSourceProject ().Name);
+				MonoDevelop.Projects.Project project;
+				if (type.TryGetSourceProject (out project)) {
+					loc = GettextCatalog.GetString ("project {0}", project.Name);
 				} else {
 					loc = GettextCatalog.GetString ("file {0}", type.Region.FileName);
 				}

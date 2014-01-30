@@ -678,7 +678,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					result.Append ("=");
 				}
-				AppendConstant (result, field.Type, field.ConstantValue);
+				AppendConstant (result, field.Type, field.ConstantValue, field.DeclaringType.Kind == TypeKind.Enum);
 			}
 
 			return result.ToString ();
@@ -1506,7 +1506,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		void AppendConstant (StringBuilder sb, IType constantType, object constantValue)
+		void AppendConstant (StringBuilder sb, IType constantType, object constantValue, bool useNumericalEnumValue = false)
 		{
 			if (constantValue is string) {
 				sb.Append (Highlight ("\"" + constantValue + "\"", colorStyle.String));
@@ -1536,7 +1536,11 @@ namespace MonoDevelop.CSharp
 			if (constantType.Kind == TypeKind.Enum) {
 				foreach (var field in constantType.GetFields ()) {
 					if (field.ConstantValue == constantValue){
-						sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+						if (useNumericalEnumValue) {
+							sb.Append (Highlight (string.Format ("0x{0:X}", field.ConstantValue), colorStyle.Number));
+						} else {
+							sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+						}
 						return;
 					}
 				}
@@ -1658,8 +1662,9 @@ namespace MonoDevelop.CSharp
 				var def = type.GetDefinition ();
 				if (def != null) {
 					if (!def.Region.IsEmpty) {
-						var project = def.GetSourceProject ();
-						if (project != null) {
+						MonoDevelop.Projects.Project project;
+
+						if (def.TryGetSourceProject (out project)) {
 							var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
 							return
 								(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
@@ -1676,8 +1681,8 @@ namespace MonoDevelop.CSharp
 
 			if (entity.DeclaringTypeDefinition != null) {
 				if (!entity.Region.IsEmpty) {
-					var project = entity.DeclaringTypeDefinition.GetSourceProject ();
-					if (project != null) {
+					MonoDevelop.Projects.Project project;
+					if (entity.DeclaringTypeDefinition.TryGetSourceProject (out project)) {
 						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, entity.Region.FileName);
 						return
 							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
