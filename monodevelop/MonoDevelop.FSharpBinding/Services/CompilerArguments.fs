@@ -34,7 +34,7 @@ module CompilerArguments =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let private generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
+  let private generateReferences (project:DotNetProject, items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
@@ -54,10 +54,15 @@ module CompilerArguments =
                                                      fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
       match coreRef with
       | None ->
-        let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
-        match FSharpEnvironment.resolveAssembly dirs assumedFile with
-        | Some fn -> yield "-r:" + wrapf(fn)
-        | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
+        let fullName = project.AssemblyContext.GetAssemblyFullName (assumedFile, project.TargetFramework);
+        let fxCoreRef = project.AssemblyContext.GetAssemblyLocation(fullName, project.TargetFramework)
+        if fxCoreRef <> null then
+          yield "-r:" + wrapf(fxCoreRef)
+        else
+          let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
+          match FSharpEnvironment.resolveAssembly dirs assumedFile with
+          | Some fn -> yield "-r:" + wrapf(fn)
+          | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
       | Some r -> 
         Debug.WriteLine(sprintf "Resolution: Found '%s' reference '%s'" assumedFile r)
       
@@ -69,7 +74,8 @@ module CompilerArguments =
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
   let generateCompilerOptions (fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, items, configSelector, shouldWrap) =
-    let dashr = generateReferences (items, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let project = fsconfig.ParentConfiguration.ParentItem
+    let dashr = generateReferences (project, items, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
