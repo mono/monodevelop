@@ -203,7 +203,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			int triggerWordLength = 0;
 			
 			tracker.UpdateEngine ();
-			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
+			return HandleCodeCompletion (completionContext, true, ref triggerWordLength);
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (
@@ -213,8 +213,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
 			if (pos > 0 && ch == completionChar) {
 				tracker.UpdateEngine ();
-				return HandleCodeCompletion ((CodeCompletionContext) completionContext, 
-				                             false, ref triggerWordLength);
+				return HandleCodeCompletion (completionContext, false, ref triggerWordLength);
 			}
 			return null;
 		}

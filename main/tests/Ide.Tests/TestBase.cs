@@ -1,9 +1,10 @@
-// FileFormatNode.cs
+﻿//
+// TestBase.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Alan McGovern <alan@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2014 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
-using Mono.Addins;
+using System.Threading;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
+using NUnit.Framework;
 
-namespace MonoDevelop.Projects.Extensions
+namespace MonoDevelop.Ide
 {
-	class FileFormatNode: TypeExtensionNode
+	[TestFixture]
+	public abstract class TestBase
 	{
-		#pragma warning disable 649
+		static bool Initialized {
+			get; set;
+		}
 
-		[NodeAttribute]
-		string name;
-		
-		[NodeAttribute]
-		bool canDefault;
+		[SetUp]
+		public virtual void Setup ()
+		{
+			// All this initialization was copied/pasted from IdeApp.Run. Hopefully i copied enough of it.
+			if (!Initialized) {
+				Initialized = true;
+				//ensure native libs initialized before we hit anything that p/invokes
+				MonoDevelop.Core.Platform.Initialize ();
+				// Set a synchronization context for the main gtk thread
+				SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
+				IdeApp.Customizer = new MonoDevelop.Ide.Extensions.IdeCustomizer ();
 
-		#pragma warning restore 649
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
+				DispatchService.Initialize ();
+				InternalLog.Initialize ();
+				DesktopService.Initialize ();
+				ImageService.Initialize ();
+				IdeApp.Initialize (new NullProgressMonitor ());
 			}
 		}
-		
-		public bool CanDefault {
-			get {
-				return canDefault;
-			}
+
+		[TearDown]
+		public virtual void Teardown ()
+		{
+
 		}
 	}
 }
+

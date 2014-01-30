@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 		
 		public string AuthorMail {
-			get { return entryName.Text; }
+			get { return entryEmail.Text; }
 		}
 
 		protected void OnCheckAuthorToggled (object sender, System.EventArgs e)

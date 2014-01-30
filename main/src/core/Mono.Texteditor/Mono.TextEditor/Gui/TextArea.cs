@@ -917,6 +917,10 @@ namespace Mono.TextEditor
 			               this.Allocation.Width, this.Allocation.Height - y);
 		}
 
+		internal bool IsInKeypress {
+			get;
+			set;
+		}
 
 		/// <summary>Handles key input after key mapping and input methods.</summary>
 		/// <param name="key">The mapped keycode.</param>
@@ -924,10 +928,16 @@ namespace Mono.TextEditor
 		/// <param name="modifier">Keyboard modifier, excluding any consumed by key mapping or IM.</param>
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask
-				 | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
-			CurrentMode.InternalHandleKeypress (textEditorData.Parent, textEditorData, key, unicodeChar, filteredModifiers);
+			IsInKeypress = true;
+			try {
+				ModifierType filteredModifiers = modifier & (ModifierType.ShiftMask | ModifierType.Mod1Mask
+					 | ModifierType.ControlMask | ModifierType.MetaMask | ModifierType.SuperMask);
+				CurrentMode.InternalHandleKeypress (textEditorData.Parent, textEditorData, key, unicodeChar, filteredModifiers);
+			} finally {
+				IsInKeypress = false;
+			}
 			RequestResetCaretBlink ();
+
 		}
 		
 		bool IMFilterKeyPress (Gdk.EventKey evt, Gdk.Key mappedKey, uint mappedChar, Gdk.ModifierType mappedModifiers)
@@ -954,10 +964,21 @@ namespace Mono.TextEditor
 		
 		internal void HideMouseCursor ()
 		{
-			if (GdkWindow != null)
-				GdkWindow.Cursor = invisibleCursor;
+			SetCursor (invisibleCursor);
 		}
-		
+
+		Gdk.Cursor currentCursor;
+
+		/// <summary>
+		/// Sets the mouse cursor of the gdk window and avoids unnecessary native calls.
+		/// </summary>
+		void SetCursor (Gdk.Cursor cursor)
+		{
+			if (GdkWindow == null || currentCursor == cursor)
+				return;
+			GdkWindow.Cursor = currentCursor = cursor;
+		}
+
 		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
 			Gdk.Key key;
@@ -1195,7 +1216,7 @@ namespace Mono.TextEditor
 					}
 					textEditorData.PasteText (offset, selection_data.Text, null, ref undo);
 					Caret.Offset = offset + selection_data.Text.Length;
-					MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
+					MainSelection = new Selection (Document.OffsetToLocation (offset), Caret.Location);
 				}
 				dragOver = false;
 				context = null;
@@ -1327,11 +1348,12 @@ namespace Mono.TextEditor
 			} else {
 				margin = GetMarginAtX (x, out startPos);
 				if (margin != null && GdkWindow != null) {
-					if (!overChildWidget)
-						GdkWindow.Cursor = margin.MarginCursor;
-					else {
+					if (!overChildWidget) {
+						if (!editor.IsInKeypress)
+							SetCursor (margin.MarginCursor);
+					} else {
 						// Set the default cursor when the mouse is over an embedded widget
-						GdkWindow.Cursor = null;
+						SetCursor (null);
 					}
 				}
 			}
@@ -1387,7 +1409,7 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (GdkWindow != null)
-				GdkWindow.Cursor = null;
+				SetCursor (null);
 			if (oldMargin != null)
 				oldMargin.MouseLeft ();
 			

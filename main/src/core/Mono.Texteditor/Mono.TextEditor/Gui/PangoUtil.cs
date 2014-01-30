@@ -225,7 +225,7 @@ namespace Mono.TextEditor
 		{
 			pango_layout_set_attributes (layout.Handle, list);
 		}
-		
+
 		[StructLayout (LayoutKind.Sequential)]
 		struct PangoAttribute
 		{

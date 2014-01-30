@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute (Required=false)]
 		protected bool isText;
 		
-		IFileNameEvalutor regex;
+		IFileNameEvaluator regex;
 		
 		public IconId Icon {
 			get {
@@ -81,16 +81,16 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 		
-		interface IFileNameEvalutor
+		interface IFileNameEvaluator
 		{
 			bool SupportsFile (string fileName);
 		}
 		
-		class RegexFileNameEvalutor : IFileNameEvalutor
+		class RegexFileNameEvaluator : IFileNameEvaluator
 		{
 			Regex regex;
 			
-			public RegexFileNameEvalutor (MimeTypeNode node)
+			public RegexFileNameEvaluator (MimeTypeNode node)
 			{
 				regex = CreateRegex (node);
 			}
@@ -117,11 +117,11 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 		
-		class EndsWithFileNameEvalutor : IFileNameEvalutor
+		class EndsWithFileNameEvaluator : IFileNameEvaluator
 		{
 			string[] endings;
 			
-			public EndsWithFileNameEvalutor (MimeTypeNode node)
+			public EndsWithFileNameEvaluator (MimeTypeNode node)
 			{
 				endings = ExtractEndings (node);
 			}
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Extensions
 				var result = new List<string> ();
 				foreach (MimeTypeFileNode file in node.ChildNodes) {
 					foreach (string pattern in file.Pattern.Split ('|')) {
-						result.Add (pattern.StartsWith ("*.") ? pattern.Substring (1) : pattern);
+						result.Add (pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern);
 					}
 				}
 				return result.ToArray ();
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Extensions
 			{
 				foreach (MimeTypeFileNode file in node.ChildNodes) {
 					foreach (string pattern in file.Pattern.Split ('|')) {
-						var pat = pattern.StartsWith ("*.") ? pattern.Substring (1) : pattern;
+						var pat = pattern.StartsWith ("*.", StringComparison.Ordinal) ? pattern.Substring (1) : pattern;
 						if (pat.Any (p => p == '*' || p == '?'))
 							return false;
 					}
@@ -158,17 +158,17 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 		
-		IFileNameEvalutor CreateFileNameEvalutor ()
+		IFileNameEvaluator CreateFileNameEvaluator ()
 		{
-			if (EndsWithFileNameEvalutor.IsCompatible (this))
-				return new EndsWithFileNameEvalutor (this);
-			return new RegexFileNameEvalutor (this);
+			if (EndsWithFileNameEvaluator.IsCompatible (this))
+				return new EndsWithFileNameEvaluator (this);
+			return new RegexFileNameEvaluator (this);
 		}
 
 		public bool SupportsFile (string fileName)
 		{
 			if (regex == null)
-				regex = CreateFileNameEvalutor ();
+				regex = CreateFileNameEvaluator ();
 			return regex.SupportsFile (fileName);
 		}
 		

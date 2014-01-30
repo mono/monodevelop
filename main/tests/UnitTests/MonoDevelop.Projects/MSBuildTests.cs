@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Projects;
 using System.Linq;
 using Mono.CSharp;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -376,7 +377,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
-		void LoadBuildVSConsoleProject (string vsVersion)
+		void LoadBuildVSConsoleProject (string vsVersion, string toolsVersion)
 		{
 			string solFile = Util.GetSampleProject ("ConsoleApp-VS" + vsVersion, "ConsoleApplication.sln");
 			var monitor = new NullProgressMonitor ();
@@ -384,6 +385,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (monitor.Errors.Length == 0);
 			Assert.IsTrue (monitor.Warnings.Length == 0);
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
+			Assert.AreEqual (toolsVersion, MSBuildProjectService.GetHandler (p).ToolsVersion);
 			var r = sol.Build (monitor, "Debug");
 			Assert.IsTrue (monitor.Errors.Length == 0);
 			Assert.IsTrue (monitor.Warnings.Length == 0);
@@ -398,25 +400,35 @@ namespace MonoDevelop.Projects
 
 			if (f != null)
 				Assert.IsTrue (f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
+
+			string projectFile = ((Project)sol.Items [0]).FileName;
+			string solXml = Util.ReadAllWithWindowsEndings (solFile);
+			string projectXml = Util.ReadAllWithWindowsEndings (projectFile);
+
+			sol.Save (monitor);
+			Assert.IsTrue (monitor.Errors.Length == 0);
+			Assert.IsTrue (monitor.Warnings.Length == 0);
+
+			Assert.AreEqual (projectXml, Util.ReadAllWithWindowsEndings (projectFile));
 		}
 
 		[Test]
 		public void LoadBuildVS2010ConsoleProject ()
 		{
-			LoadBuildVSConsoleProject ("2010");
+			LoadBuildVSConsoleProject ("2010", "4.0");
 		}
 
 		[Test]
 		public void LoadBuildVS2012ConsoleProject ()
 		{
-			LoadBuildVSConsoleProject ("2012");
+			LoadBuildVSConsoleProject ("2012", "4.0");
 		}
 
 		[Ignore ("ToolsVersion 12.0 does not yet work w/ xbuild")]
 		[Test]
 		public void LoadBuildVS2013ConsoleProject ()
 		{
-			LoadBuildVSConsoleProject ("2013");
+			LoadBuildVSConsoleProject ("2013", "12.0");
 		}
 	}
 }

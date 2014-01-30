@@ -44,9 +44,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 		}
 
-		public IProjectBuilder LoadProject (string file, string solutionFile, string binPath)
+		public IProjectBuilder LoadProject (string projectFile)
 		{
-			return engine.LoadProject (file, solutionFile, binPath);
+			return engine.LoadProject (projectFile);
 		}
 		
 		public void UnloadProject (IProjectBuilder pb)
@@ -54,9 +54,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine.UnloadProject (pb);
 		}
 
-		public void SetUICulture (CultureInfo uiCulture)
+		public void Initialize (string slnFile, CultureInfo uiCulture)
 		{
-			engine.SetUICulture (uiCulture);
+			engine.Initialize (slnFile, uiCulture);
 		}
 		
 		public void Dispose ()
@@ -77,10 +77,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteBuildEngine engine;
 		IProjectBuilder builder;
 		
-		internal RemoteProjectBuilder (string file, string solutionFile, string binPath, RemoteBuildEngine engine)
+		internal RemoteProjectBuilder (string file, RemoteBuildEngine engine)
 		{
 			this.engine = engine;
-			builder = engine.LoadProject (file, solutionFile, binPath);
+			builder = engine.LoadProject (file);
 		}
 		
 		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,

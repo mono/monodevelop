@@ -186,7 +186,7 @@ namespace MonoDevelop.HexEditor
 			}
 
 			if (i < count) {
-				var chunk = array.Substring ((int) offset, (count - i));
+				var chunk = array.Substring ((int) offset / 2, ((count + 1) - i) / 2);
 				var buf = Encoding.Unicode.GetBytes (chunk);
 
 				for (int j = 0; j < buf.Length; j++)

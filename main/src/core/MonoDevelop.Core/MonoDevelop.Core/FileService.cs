@@ -485,7 +485,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		static string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
+		static readonly string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
 		
 		public static string CreateTempDirectory ()
 		{
@@ -852,8 +852,11 @@ namespace MonoDevelop.Core
 					return;
 				}
 			}
-			if (del != null)
-				del.DynamicInvoke (thisObj, args);
+			if (del != null) {
+				Runtime.MainSynchronizationContext.Post (delegate {
+					del.DynamicInvoke (thisObj, args);
+				}, null);
+			}
 		}
 	}
 	

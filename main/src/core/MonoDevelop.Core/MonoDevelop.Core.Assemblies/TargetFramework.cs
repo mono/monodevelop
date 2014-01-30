@@ -240,10 +240,12 @@ namespace MonoDevelop.Core.Assemblies
 		internal List<TargetFrameworkMoniker> IncludedFrameworks {
 			get { return includedFrameworks; }
 		}
-				
+
 		[ItemProperty (Name="IncludesFramework")]
+		#pragma warning disable 649
 		string includesFramework;
-		
+		#pragma warning restore 649
+
 		internal TargetFrameworkMoniker GetIncludesFramework ()
 		{
 			if (string.IsNullOrEmpty (includesFramework))

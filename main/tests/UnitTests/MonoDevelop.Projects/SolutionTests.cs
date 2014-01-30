@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -509,21 +510,24 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
 			Project p = (Project) sol.Items [0];
 			
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, sol.FileFormat.Id);
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, p.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, sol.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, p.FileFormat.Id);
+			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
 			
 			// Change solution format of unsaved solution
 			
+			sol.ConvertToFormat (Util.FileFormatMSBuild08, true);
+			
+			Assert.AreEqual ("MSBuild08", sol.FileFormat.Id);
+			Assert.AreEqual ("MSBuild08", p.FileFormat.Id);
+			Assert.AreEqual ("3.5", MSBuildProjectService.GetHandler (p).ToolsVersion);
+
 			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
 			
 			Assert.AreEqual ("MSBuild10", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild10", p.FileFormat.Id);
-			
-			sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
-			
-			Assert.AreEqual ("MSBuild12", sol.FileFormat.Id);
-			Assert.AreEqual ("MSBuild12", p.FileFormat.Id);
-			
+			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
+
 			// Change solution format of saved solution
 			
 			sol.Save (Util.GetMonitor ());
@@ -532,15 +536,18 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
-			
+			Assert.AreEqual ("2.0", MSBuildProjectService.GetHandler (p).ToolsVersion);
+
 			// Add new project
 			
 			Project newp = new DotNetAssemblyProject ("C#");
-			Assert.AreEqual ("MSBuild10", newp.FileFormat.Id);
-			
+			Assert.AreEqual ("MSBuild12", newp.FileFormat.Id);
+			Assert.AreEqual ("4.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
-			
+			Assert.AreEqual ("2.0", MSBuildProjectService.GetHandler (newp).ToolsVersion);
+
 			// Add saved project
 			
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");

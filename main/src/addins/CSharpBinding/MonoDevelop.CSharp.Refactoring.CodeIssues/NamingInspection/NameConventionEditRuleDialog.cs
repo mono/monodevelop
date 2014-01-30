@@ -127,16 +127,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				entryPrefixAllowed.Text = string.Join (", ", rule.AllowedPrefixes); 
 			if (rule.RequiredSuffixes != null)
 				entrySuffix.Text = rule.RequiredSuffixes.FirstOrDefault (); 
+			styleComboBox.AppendText ("PascalCase"); 
+			styleComboBox.AppendText ("CamelCase"); 
+			styleComboBox.AppendText ("all_lower"); 
+			styleComboBox.AppendText ("ALL_UPPER"); 
+			styleComboBox.AppendText ("ALL_UPPER"); 
+			styleComboBox.AppendText ("First_upper"); 
+			styleComboBox.AppendText ("PascalCase_UnderscoreTolerant"); 
+			styleComboBox.AppendText ("PascalCase_underscoreTolerant"); 
+			styleComboBox.AppendText ("CamelCase_UnderscoreTolerant"); 
+			styleComboBox.AppendText ("CamelCase_underscoreTolerant"); 
 
-			radiobuttonPascalCase.Active = rule.NamingStyle == NamingStyle.PascalCase;
-			radiobuttonCamelCase.Active = rule.NamingStyle == NamingStyle.CamelCase;
-			radiobuttonAllLower.Active = rule.NamingStyle == NamingStyle.AllLower;
-			radiobuttonAllUpper.Active = rule.NamingStyle == NamingStyle.AllUpper;
-			radiobuttonFirstUpper.Active = rule.NamingStyle == NamingStyle.FirstUpper;
-			radiobuttonPascalCaseU1.Active = rule.NamingStyle == NamingStyle.PascalCaseWithUpperLetterUnderscore;
-			radiobuttonPascalCaseU2.Active = rule.NamingStyle == NamingStyle.PascalCaseWithLowerLetterUnderscore;
-			radiobuttonCamelCaseU1.Active = rule.NamingStyle == NamingStyle.CamelCaseWithUpperLetterUnderscore;
-			radiobuttonCamelCaseU2.Active = rule.NamingStyle == NamingStyle.CamelCaseWithLowerLetterUnderscore;
+			styleComboBox.Active = (int)rule.NamingStyle - 1;
 
 			foreach (AffectedEntity ae in Enum.GetValues (typeof (AffectedEntity))) {
 				if (!EntityName.ContainsKey (ae))
@@ -158,25 +160,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public void Apply ()
 		{
 			rule.Name = entryRuleName.Text;
-			if (radiobuttonPascalCase.Active) {
-				rule.NamingStyle = NamingStyle.PascalCase;
-			} else if (radiobuttonCamelCase.Active) {
-				rule.NamingStyle = NamingStyle.CamelCase;
-			} else if (radiobuttonAllLower.Active) {
-				rule.NamingStyle = NamingStyle.AllLower;
-			} else if (radiobuttonAllUpper.Active) {
-				rule.NamingStyle = NamingStyle.AllUpper;
-			} else if (radiobuttonFirstUpper.Active) {
-				rule.NamingStyle = NamingStyle.FirstUpper;
-			} else if (radiobuttonPascalCaseU1.Active) {
-				rule.NamingStyle = NamingStyle.PascalCaseWithUpperLetterUnderscore;
-			} else if (radiobuttonPascalCaseU2.Active) {
-				rule.NamingStyle = NamingStyle.PascalCaseWithLowerLetterUnderscore;
-			} else if (radiobuttonCamelCaseU1.Active) {
-				rule.NamingStyle = NamingStyle.CamelCaseWithUpperLetterUnderscore;
-			} else if (radiobuttonCamelCaseU2.Active) {
-				rule.NamingStyle = NamingStyle.CamelCaseWithLowerLetterUnderscore;
-			}
+			rule.NamingStyle = (NamingStyle)(1 + styleComboBox.Active);
 
 			var prefix = entryPrefix.Text.Trim ();
 			if (string.IsNullOrEmpty (prefix)) {

@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (content.Location);
 		}
 
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
+		[Obsolete ("Use TryGetSourceProject.")]
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
 			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
@@ -67,11 +67,47 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProject (location);
 		}
 
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
+		[Obsolete ("Use TryGetSourceProject.")]
 		public static Project GetSourceProject (this IType type)
 		{
 			return type.GetDefinition ().GetSourceProject ();
 		}
+
+		/// <summary>
+		/// Tries to the get source project for a given type definition. This operation may fall if it was called on an outdated
+		/// compilation unit or the correspondening project was unloaded.
+		/// </summary>
+		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
+		/// <param name="type">The type definition.</param>
+		/// <param name="project">The project or null if it wasn't found.</param>
+		public static bool TryGetSourceProject (this ITypeDefinition type, out Project project)
+		{
+			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
+			if (string.IsNullOrEmpty (location)) {
+				project = null;
+				return false;
+			}
+			project = TypeSystemService.GetProject (location);
+			return project != null;
+		}
+
+		/// <summary>
+		/// Tries to the get source project for a given type. This operation may fall if it was called on an outdated
+		/// compilation unit or the correspondening project was unloaded.
+		/// </summary>
+		/// <returns><c>true</c>, if get source project was found, <c>false</c> otherwise.</returns>
+		/// <param name="type">The type.</param>
+		/// <param name="project">The project or null if it wasn't found.</param>
+		public static bool TryGetSourceProject (this IType type, out Project project)
+		{
+			var def = type.GetDefinition ();
+			if (def == null) {
+				project = null;
+				return false;
+			}
+			return def.TryGetSourceProject (out project);
+		}
+
 
 		internal static Project GetProjectWhereTypeIsDefined (this ITypeDefinition type)
 		{
@@ -252,7 +288,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var files = new List<ProjectFile> ();
 					foreach (var file in e) {
 						var f = content.Project.GetProjectFile (file.FileName);
-						if (f == null || f.BuildAction != BuildAction.Compile)
+						if (f == null || f.BuildAction == BuildAction.None)
 							continue;
 						files.Add (f);
 					}
@@ -310,13 +346,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
-			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
-			return provider != null ? provider.Parser : null;
+			var n = GetTypeSystemParserNode (mimeType, buildAction);
+			return n != null ? n.Parser : null;
 		}
 
 		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
-			return Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
+			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
+				if (provider != null)
+					return provider;
+			}
+			return null;
 		}
 
 		static List<MimeTypeExtensionNode> foldingParsers;
@@ -342,8 +383,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static IFoldingParser GetFoldingParser (string mimeType)
 		{
-			var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mimeType);
-			return node == null ? null : node.CreateInstance () as IFoldingParser;
+			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
+				var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mt);
+				if (node != null)
+					return node.CreateInstance () as IFoldingParser;
+			}
+			return null;
 		}
 
 		public static ParsedDocument ParseFile (Project project, string fileName)
@@ -536,7 +581,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return GetCacheDirectory (project.FileName, forceCreation);
 		}
 
-		static readonly object cacheLocker = new object ();
+		static readonly Dictionary<string, object> cacheLocker = new Dictionary<string, object> ();
 
 		/// <summary>
 		/// Gets the cache directory for arbitrary file names.
@@ -549,9 +594,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
+			object locker;
+			bool newLock;
 			lock (cacheLocker) {
+				if (!cacheLocker.TryGetValue (fileName, out locker)) {
+					cacheLocker [fileName] = locker = new object ();
+					newLock = true;
+				} else {
+					newLock = false;
+				}
+			}
+			lock (locker) {
 				var result = InternalGetCacheDirectory (fileName);
-				if (result != null)
+				if (newLock && result != null)
 					TouchCache (result);
 				if (forceCreation && result == null)
 					result = CreateCacheDirectory (fileName);
@@ -1534,7 +1589,23 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					UnresolvedAssemblyProxy ctx;
 					// Add mscorlib reference
-					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
+
+					// hack: find the NoStdLib flag
+					var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration : null;
+					bool noStdLib = false;
+					if (config != null) {
+						var parameters = config.CompilationParameters;
+						if (parameters != null) {
+							var prop = parameters.GetType ().GetProperty ("NoStdLib");
+							if (prop != null) {
+								var val = prop.GetValue (parameters, null);
+								if (val is bool)
+									noStdLib = (bool)val;
+							}
+						}
+					}
+
+					if (!noStdLib && netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
 						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
 							typeof(object).Assembly.FullName,
 							null,
@@ -1542,7 +1613,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						);
 						if (corLibRef != null) {
 							ctx = LoadAssemblyContext (corLibRef.Location);
-							if (ctx != null)
+							if (ctx != null) 
 								contexts.Add (ctx);
 						}
 					}
@@ -1553,6 +1624,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
 						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+
+							// HACK: core reference get added automatically, even if no std lib is set.
+							if (noStdLib && file.Contains ("System.Core.dll"))
+								continue;
+
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
@@ -2195,14 +2271,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (asmLocker) {
 					if (assembly != null)
 						return;
-					assembly = new DefaultUnresolvedAssembly (fileName);
-
-					assembly = LoadAssembly () ?? assembly; 
+					var loadedAssembly = LoadAssembly ();
+					if (loadedAssembly == null) {
+						LoggingService.LogWarning ("Assembly " + fileName + " could not be loaded cleanly.");
+						assembly = new DefaultUnresolvedAssembly (fileName);
+					} else {
+						assembly = loadedAssembly;
+					}
 
 					OnLoad (EventArgs.Empty);
 				}
 			}
 
+			public override string ToString ()
+			{
+				return string.Format ("[LazyAssemblyLoader: fileName={0}, assembly={1}]", fileName, assembly);
+			}
+			
 			public bool InLoad {
 				get {
 					return assembly == null;
@@ -2586,6 +2671,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
+				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
@@ -2595,12 +2681,19 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (filesSkippedInParseThread.Any (f => f == fileName))
 							continue;
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-							node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							node = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 							parser = node != null ? node.Parser : null;
 						}
-						if (parser == null)
+
+						if (parser == null || !File.Exists (fileName))
 							continue;
-						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						ParsedDocument parsedDocument;
+						try {
+							parsedDocument = parser.Parse (false, fileName, Context.Project);
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while parsing " + fileName, e);
+							continue;
+						} 
 						if (token.IsCancellationRequested)
 							return;
 						if (tags != null)

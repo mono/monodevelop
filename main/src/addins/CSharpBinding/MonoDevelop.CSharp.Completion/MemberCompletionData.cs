@@ -45,6 +45,8 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
+using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -228,12 +230,13 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
+			bool runCompletionCompletionCommand = false;
 			var method = Entity as IMethod;
 			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
-				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
-				var end = line.Offset + line.Length;
-				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
+				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
+				//var end = line.Offset + line.Length;
+				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
 				bool addSpace = Policy.BeforeMethodCallParentheses && CSharpTextEditorIndentation.OnTheFlyFormatting;
 
 				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
@@ -323,17 +326,21 @@ namespace MonoDevelop.CSharp.Completion
 				ka |= KeyActions.Ignore;
 			}
 			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
+				CompletionTextEditorExtension.AddParenthesesAfterCompletion &&
 			    (closeChar == Gdk.Key.Tab ||
 				 closeChar == Gdk.Key.KP_Tab ||
 				 closeChar == Gdk.Key.ISO_Left_Tab ||
 				 closeChar == Gdk.Key.Return ||
 				 closeChar == Gdk.Key.KP_Enter ||
-				 closeChar == Gdk.Key.ISO_Enter)) {
+				 closeChar == Gdk.Key.ISO_Enter ||
+				 closeChar == Gdk.Key.space ||
+				 closeChar == Gdk.Key.KP_Space)) {
 				if (Policy.AroundAssignmentParentheses)
 					text += " ";
 				text += "=";
-				if (Policy.AroundAssignmentParentheses)
+				if (Policy.AroundAssignmentParentheses && !(closeChar == Gdk.Key.space || closeChar == Gdk.Key.KP_Space))
 					text += " ";
+				runCompletionCompletionCommand = true;
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 			int offset = Editor.Caret.Offset;
@@ -344,6 +351,11 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (runParameterCompletionCommand)
 				editorCompletion.RunParameterCompletionCommand ();
+			if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
+				Application.Invoke (delegate {
+					editorCompletion.RunCompletionCommand ();
+				});
+			}
 		}
 
 		bool ContainsType (IType testType, IType searchType)
@@ -402,6 +414,13 @@ namespace MonoDevelop.CSharp.Completion
 
 			public ConversionFlags ConversionFlags { get; set; }
 			#region ConvertEntity
+			public string ConvertSymbol(ISymbol symbol)
+			{
+				if (symbol is IEntity)
+					return ConvertEntity ((IEntity)symbol);
+				return symbol.ToString ();
+			}
+
 			public string ConvertEntity (IEntity entity)
 			{
 				if (entity == null)
@@ -619,6 +638,8 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
+
+
 #endregion
 			
 			public string ConvertVariable (IVariable v)

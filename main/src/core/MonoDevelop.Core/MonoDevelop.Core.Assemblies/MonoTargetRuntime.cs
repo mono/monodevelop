@@ -308,12 +308,12 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (PackageAssemblyInfo pi in pinfo.Assemblies) {
 				TargetFrameworkMoniker targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.CurrentRuntime, pi.File);
 				if (commonFramework == null) {
-					commonFramework = Runtime.SystemAssemblyService.GetCoreFramework (targetFramework);
+					commonFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
 					if (commonFramework == null)
 						inconsistentFrameworks = true;
 				}
 				else if (targetFramework != null) {
-					TargetFramework newfx = Runtime.SystemAssemblyService.GetCoreFramework (targetFramework);
+					TargetFramework newfx = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
 					if (newfx == null)
 						inconsistentFrameworks = true;
 					else {

@@ -414,47 +414,77 @@ namespace MonoDevelop.MacIntegration
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
 		{
 			var rect = new RectangleF (0, 0, width, height);
+
 			var bitmap = rep as NSBitmapImageRep;
-			
-			if (bitmap == null) {
-				using (var cgi = rep.AsCGImage (ref rect, null, null))
-					bitmap = new NSBitmapImageRep (cgi);
-			}
-			
 			try {
-				byte[] data;
-				using (var tiff = bitmap.TiffRepresentation) {
-					data = new byte[tiff.Length];
-					System.Runtime.InteropServices.Marshal.Copy (tiff.Bytes, data, 0, data.Length);
+				if (bitmap == null) {
+					using (var cgi = rep.AsCGImage (ref rect, null, null)) {
+						if (cgi == null)
+							return null;
+						bitmap = new NSBitmapImageRep (cgi);
+					}
 				}
-				
-				int pw = bitmap.PixelsWide, ph = bitmap.PixelsHigh;
-				var pixbuf = new Gdk.Pixbuf (data, pw, ph);
-				
-				// if one dimension matches, and the other is same or smaller, use as-is
-				if ((pw == width && ph <= height) || (ph == height && pw <= width))
-					return pixbuf;
-				
-				// otherwise scale proportionally such that the largest dimension matches the desired size
-				if (pw == ph) {
-					pw = width;
-					ph = height;
-				} else if (pw > ph) {
-					ph = (int) (width * ((float) ph / pw));
-					pw = width;
-				} else {
-					pw = (int) (height * ((float) pw / ph));
-					ph = height;
-				}
-				
-				var scaled = pixbuf.ScaleSimple (pw, ph, Gdk.InterpType.Bilinear);
-				pixbuf.Dispose ();
-				
-				return scaled;
+				return GetPixbufFromNSBitmapImageRep (bitmap, width, height);
 			} finally {
-				if (bitmap != rep)
+				if (bitmap != null)
 					bitmap.Dispose ();
 			}
+		}
+
+		public static Gdk.Pixbuf GetPixbufFromNSImage (NSImage icon, int width, int height)
+		{
+			var rect = new RectangleF (0, 0, width, height);
+
+			var rep = icon.BestRepresentation (rect, null, null);
+			var bitmap = rep as NSBitmapImageRep;
+			try {
+				if (bitmap == null) {
+					if (rep != null)
+						rep.Dispose ();
+					using (var cgi = icon.AsCGImage (ref rect, null, null)) {
+						if (cgi == null)
+							return null;
+						bitmap = new NSBitmapImageRep (cgi);
+					}
+				}
+				return GetPixbufFromNSBitmapImageRep (bitmap, width, height);
+			} finally {
+				if (bitmap != null)
+					bitmap.Dispose ();
+			}
+		}
+
+		static Gdk.Pixbuf GetPixbufFromNSBitmapImageRep (NSBitmapImageRep bitmap, int width, int height)
+		{
+			byte[] data;
+			using (var tiff = bitmap.TiffRepresentation) {
+				data = new byte[tiff.Length];
+				System.Runtime.InteropServices.Marshal.Copy (tiff.Bytes, data, 0, data.Length);
+			}
+
+			int pw = bitmap.PixelsWide, ph = bitmap.PixelsHigh;
+			var pixbuf = new Gdk.Pixbuf (data, pw, ph);
+
+			// if one dimension matches, and the other is same or smaller, use as-is
+			if ((pw == width && ph <= height) || (ph == height && pw <= width))
+				return pixbuf;
+
+			// otherwise scale proportionally such that the largest dimension matches the desired size
+			if (pw == ph) {
+				pw = width;
+				ph = height;
+			} else if (pw > ph) {
+				ph = (int) (width * ((float) ph / pw));
+				pw = width;
+			} else {
+				pw = (int) (height * ((float) pw / ph));
+				ph = height;
+			}
+
+			var scaled = pixbuf.ScaleSimple (pw, ph, Gdk.InterpType.Bilinear);
+			pixbuf.Dispose ();
+
+			return scaled;
 		}
 		
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
@@ -481,15 +511,8 @@ namespace MonoDevelop.MacIntegration
 			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h)) {
 				w = h = 22;
 			}
-			
-			var rect = new System.Drawing.RectangleF (0, 0, w, h);
-			
-			using (var rep = icon.BestRepresentation (rect, null, null)) {
-				if (rep == null)
-					return base.OnGetPixbufForFile (filename, size);
 				
-				return GetPixbufFromNSImageRep (rep, w, h);
-			}
+			return GetPixbufFromNSImage (icon, w, h) ?? base.OnGetPixbufForFile (filename, size);
 		}
 		
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
@@ -505,14 +528,13 @@ namespace MonoDevelop.MacIntegration
 				return true;
 			}
 		}
-		
-		public override void OpenInTerminal (FilePath directory)
+
+		public override void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
 		{
-			AppleScript.Run (string.Format (
-@"tell application ""Terminal""
-activate
-do script with command ""cd {0}""
-end tell", directory.ToString ().Replace ("\"", "\\\"")));
+			string tabId, windowId;
+			MacExternalConsoleProcess.RunTerminal (
+				null, null, directory, environmentVariables, title, false, out tabId, out windowId
+			);
 		}
 		
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)
