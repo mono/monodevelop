@@ -167,66 +167,6 @@
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml">
       <LogicalName>EmptyXMLFile.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-closed-16.png">
-      <LogicalName>component-folder-closed-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-closed-16%402x.png">
-      <LogicalName>component-folder-closed-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-open-16.png">
-      <LogicalName>component-folder-open-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-open-16%402x.png">
-      <LogicalName>component-folder-open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\folder-closed-16.png">
-      <LogicalName>folder-closed-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\folder-closed-16%402x.png">
-      <LogicalName>folder-closed-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\reference-folder-closed-16.png">
-      <LogicalName>reference-folder-closed-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\reference-folder-closed-16%402x.png">
-      <LogicalName>reference-folder-closed-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\resource-folder-closed-16.png">
-      <LogicalName>resource-folder-closed-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\resource-folder-closed-16%402x.png">
-      <LogicalName>resource-folder-closed-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\solution-folder-closed-16.png">
-      <LogicalName>solution-folder-closed-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\solution-folder-closed-16%402x.png">
-      <LogicalName>solution-folder-closed-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\folder-open-16.png">
-      <LogicalName>folder-open-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\folder-open-16%402x.png">
-      <LogicalName>folder-open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\reference-folder-open-16.png">
-      <LogicalName>reference-folder-open-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\reference-folder-open-16%402x.png">
-      <LogicalName>reference-folder-open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\resource-folder-open-16.png">
-      <LogicalName>resource-folder-open-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\resource-folder-open-16%402x.png">
-      <LogicalName>resource-folder-open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\solution-folder-open-16.png">
-      <LogicalName>solution-folder-open-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\solution-folder-open-16%402x.png">
-      <LogicalName>solution-folder-open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\assembly-reference-overlay-16.png">
       <LogicalName>assembly-reference-overlay-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1596,17 +1536,53 @@
     <EmbeddedResource Include="icons\light\status-waiting-5-14%402x.png">
       <LogicalName>status-waiting-5-light-14@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-closed-16.png">
-      <LogicalName>web-reference-folder-closed-light-16.png</LogicalName>
+      <EmbeddedResource Include="icons\light\component-folder-osx-16.png">
+      <LogicalName>component-folder-osx-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-closed-16%402x.png">
-      <LogicalName>web-reference-folder-closed-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-osx-16%402x.png">
+      <LogicalName>component-folder-osx-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-open-16.png">
-      <LogicalName>web-reference-folder-open-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-win-16.png">
+      <LogicalName>component-folder-win-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-open-16%402x.png">
-      <LogicalName>web-reference-folder-open-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\component-folder-win-16%402x.png">
+      <LogicalName>component-folder-win-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-folder-osx-16.png">
+      <LogicalName>generic-folder-osx-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-folder-osx-16%402x.png">
+      <LogicalName>generic-folder-osx-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-folder-win-16.png">
+      <LogicalName>generic-folder-win-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\generic-folder-win-16%402x.png">
+      <LogicalName>generic-folder-win-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\special-folder-osx-16.png">
+      <LogicalName>special-folder-osx-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\special-folder-osx-16%402x.png">
+      <LogicalName>special-folder-osx-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\special-folder-win-16.png">
+      <LogicalName>special-folder-win-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\special-folder-win-16%402x.png">
+      <LogicalName>special-folder-win-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-osx-16.png">
+      <LogicalName>web-reference-folder-osx-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-osx-16%402x.png">
+      <LogicalName>web-reference-folder-osx-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-win-16.png">
+      <LogicalName>web-reference-folder-win-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\web-reference-folder-win-16%402x.png">
+      <LogicalName>web-reference-folder-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
