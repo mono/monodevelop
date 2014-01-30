@@ -678,7 +678,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					result.Append ("=");
 				}
-				AppendConstant (result, field.Type, field.ConstantValue);
+				AppendConstant (result, field.Type, field.ConstantValue, field.DeclaringType.Kind == TypeKind.Enum);
 			}
 
 			return result.ToString ();
@@ -1506,7 +1506,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		void AppendConstant (StringBuilder sb, IType constantType, object constantValue)
+		void AppendConstant (StringBuilder sb, IType constantType, object constantValue, bool useNumericalEnumValue = false)
 		{
 			if (constantValue is string) {
 				sb.Append (Highlight ("\"" + constantValue + "\"", colorStyle.String));
@@ -1536,7 +1536,11 @@ namespace MonoDevelop.CSharp
 			if (constantType.Kind == TypeKind.Enum) {
 				foreach (var field in constantType.GetFields ()) {
 					if (field.ConstantValue == constantValue){
-						sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+						if (useNumericalEnumValue) {
+							sb.Append (Highlight (string.Format ("0x{0:X}", field.ConstantValue), colorStyle.Number));
+						} else {
+							sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+						}
 						return;
 					}
 				}
