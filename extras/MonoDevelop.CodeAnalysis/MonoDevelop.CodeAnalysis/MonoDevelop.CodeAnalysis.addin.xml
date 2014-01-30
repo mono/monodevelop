@@ -6,11 +6,11 @@
 	url         = "http://code.google.com/p/md-codeanalysis"
 	description = "MonoDevelop CodeAnalysis addin"
 	category    = "Code Analysis"
-	version     = "4.2.3">
+	version     = "4.3.2">
 
 	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
+		<Addin id="Core" version="4.3.2"/>
+		<Addin id="Ide" version="4.3.2"/>
 	</Dependencies>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
