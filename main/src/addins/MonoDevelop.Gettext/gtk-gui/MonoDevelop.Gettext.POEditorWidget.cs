@@ -101,7 +101,7 @@ namespace MonoDevelop.Gettext
 			this.togglebuttonOk.UseUnderline = true;
 			this.togglebuttonOk.Label = global::Mono.Unix.Catalog.GetString ("Valid");
 			global::Gtk.Image w5 = new global::Gtk.Image ();
-			w5.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("silk_accept.png");
+			w5.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("done-light-16.png");
 			this.togglebuttonOk.Image = w5;
 			this.hbox2.Add (this.togglebuttonOk);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebuttonOk]));
@@ -115,7 +115,7 @@ namespace MonoDevelop.Gettext
 			this.togglebuttonMissing.UseUnderline = true;
 			this.togglebuttonMissing.Label = global::Mono.Unix.Catalog.GetString ("Missing");
 			global::Gtk.Image w7 = new global::Gtk.Image ();
-			w7.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("silk_exclamation.png");
+			w7.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("warning-light-16.png");
 			this.togglebuttonMissing.Image = w7;
 			this.hbox2.Add (this.togglebuttonMissing);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebuttonMissing]));
@@ -129,7 +129,7 @@ namespace MonoDevelop.Gettext
 			this.togglebuttonFuzzy.UseUnderline = true;
 			this.togglebuttonFuzzy.Label = global::Mono.Unix.Catalog.GetString ("Fuzzy");
 			global::Gtk.Image w9 = new global::Gtk.Image ();
-			w9.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("silk_error.png");
+			w9.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("error-light-16.png");
 			this.togglebuttonFuzzy.Image = w9;
 			this.hbox2.Add (this.togglebuttonFuzzy);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.togglebuttonFuzzy]));
