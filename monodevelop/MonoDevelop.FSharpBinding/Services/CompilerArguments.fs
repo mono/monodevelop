@@ -55,10 +55,10 @@ module CompilerArguments =
       match coreRef with
       | None ->
         let fullName = project.AssemblyContext.GetAssemblyFullName (assumedFile, project.TargetFramework);
-        let fxCoreRef = Some(project.AssemblyContext.GetAssemblyLocation(fullName, project.TargetFramework))
-        match fxCoreRef with
-        | Some fn -> yield "-r:" + wrapf(fn)
-        | None ->
+        let fxCoreRef = project.AssemblyContext.GetAssemblyLocation(fullName, project.TargetFramework)
+        if fxCoreRef <> null then
+          yield "-r:" + wrapf(fxCoreRef)
+        else
           let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
           match FSharpEnvironment.resolveAssembly dirs assumedFile with
           | Some fn -> yield "-r:" + wrapf(fn)
