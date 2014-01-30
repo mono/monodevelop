@@ -179,7 +179,7 @@
           macShortcut="Meta|Control|P"
           shortcut="Ctrl|Alt|P" />
           
-      <Command _description="Restart the F# Interactive"
+      <Command _description="Restart F# Interactive"
           _label="Restart F# Interactive"
           defaultHandler="MonoDevelop.FSharp.RestartFsi"
           id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
