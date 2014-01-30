@@ -1392,11 +1392,23 @@
     <EmbeddedResource Include="icons\sdk-locations-16.png">
       <LogicalName>sdk-locations-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-off-16.png">
-      <LogicalName>error-list-off-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\error-list-16.png">
+      <LogicalName>error-list-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-off-16%402x.png">
-      <LogicalName>error-list-off-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\error-list-16%402x.png">
+      <LogicalName>error-list-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-list-errors-16.png">
+      <LogicalName>error-list-errors-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-list-errors-16%402x.png">
+      <LogicalName>error-list-errors-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-list-warnings-16.png">
+      <LogicalName>error-list-warnings-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-list-warnings-16%402x.png">
+      <LogicalName>error-list-warnings-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>
