@@ -54,6 +54,9 @@ namespace MonoDevelop.GtkCore
 		
 		[ItemProperty (DefaultValue="Mono.Unix.Catalog")]
 		string gettextClass = "Mono.Unix.Catalog";
+
+		[ItemProperty (DefaultValue="Gdk.Pixbuf")]
+		string imageResourceLoaderClass = "Gdk.Pixbuf";
 		
 		GtkDesignInfo ()
 		{
@@ -182,6 +185,11 @@ namespace MonoDevelop.GtkCore
 		public string GettextClass {
 			get { return gettextClass; }
 			set { gettextClass = value; }
+		}
+
+		public string ImageResourceLoaderClass {
+			get { return imageResourceLoaderClass; }
+			set { imageResourceLoaderClass = value; }
 		}
 		
 		public static bool HasDesignedObjects (Project project)

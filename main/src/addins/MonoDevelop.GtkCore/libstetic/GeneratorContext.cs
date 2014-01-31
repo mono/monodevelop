@@ -506,7 +506,8 @@ namespace Stetic
 		string path;
 		string globalNamespace = "Stetic";
 		string gettextClass;
-		
+		string resourceLoader;
+
 		public bool UseGettext {
 			get { return useGettext; }
 			set { useGettext = value; }
@@ -514,7 +515,7 @@ namespace Stetic
 		
 		public string GettextClass {
 			get {
-				if (gettextClass == null || gettextClass.Length == 0)
+				if (string.IsNullOrEmpty (gettextClass))
 					return "Mono.Unix.Catalog";
 				else
 					return gettextClass;
@@ -522,6 +523,16 @@ namespace Stetic
 			set { gettextClass = value; }
 		}
 		
+		public string ImageResourceLoaderClass {
+			get {
+				if (string.IsNullOrEmpty (resourceLoader))
+					return "Gdk.Pixbuf";
+				else
+					return resourceLoader;
+			}
+			set { resourceLoader = value; }
+		}
+
 		public bool UsePartialClasses {
 			get { return partialClasses; }
 			set { partialClasses = value; }

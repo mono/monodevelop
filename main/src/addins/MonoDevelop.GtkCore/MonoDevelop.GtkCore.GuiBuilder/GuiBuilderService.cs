@@ -460,7 +460,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 							// Generate the code in another process if stetic is not isolated
 							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
 							using (cob) {
-								generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, project.UsePartialTypes);
+								generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, info.ImageResourceLoaderClass, project.UsePartialTypes);
 							}
 						} catch (Exception ex) {
 							generatedException = ex;
@@ -481,6 +481,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 						options.UseGettext = info.GenerateGettext;
 						options.GettextClass = info.GettextClass;
+						options.ImageResourceLoaderClass = info.ImageResourceLoaderClass;
 						options.UsePartialClasses = project.UsePartialTypes;
 						options.GenerateSingleFile = false;
 						options.GenerateModifiedOnly = true;
@@ -648,7 +649,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, string gettextClass, bool usePartialClasses)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, string gettextClass, string resourceLoaderClass, bool usePartialClasses)
 		{
 			Gtk.Application.Init ();
 			
@@ -663,6 +664,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 			options.UseGettext = useGettext;
 			options.GettextClass = gettextClass;
+			options.ImageResourceLoaderClass = resourceLoaderClass;
 			options.UsePartialClasses = usePartialClasses;
 			options.GenerateSingleFile = false;
 			
