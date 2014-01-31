@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Desktop
 	public abstract class PlatformService
 	{
 		Hashtable iconHash = new Hashtable ();
+		const bool UsePlatformFileIcons = false;
 		
 		public abstract string DefaultMonospaceFont { get; }
 		public abstract string Name { get; }
@@ -149,8 +150,8 @@ namespace MonoDevelop.Ide.Desktop
 			string icon = GetIconIdForFile (filename);
 			if (icon != null)
 				pic = ImageService.GetIcon (icon, false);
-			
-			if (pic == null)
+
+			if (pic == null && UsePlatformFileIcons)
 				pic = Xwt.Desktop.GetFileIcon (filename);
 
 			if (pic == null) {
@@ -182,16 +183,16 @@ namespace MonoDevelop.Ide.Desktop
 				}
 				
 				// Try getting a pixbuff
-				bf = OnGetIconForType (type);
-				if (bf != null)
-					break;
+				if (UsePlatformFileIcons) {
+					bf = OnGetIconForType (type);
+					if (bf != null)
+						break;
+				}
 			}
 			
-			if (bf == null) {
-				bf = ImageService.GetIcon (mimeType, false);
-				if (bf == null)
-					bf = GetDefaultIcon ();
-			}
+			if (bf == null)
+				bf = GetDefaultIcon ();
+
 			iconHash [mimeType] = bf;
 			return bf;
 		}
@@ -230,8 +231,10 @@ namespace MonoDevelop.Ide.Desktop
 			MimeTypeNode mt = FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;
-			else
+			else if (UsePlatformFileIcons)
 				return OnGetIconIdForType (type);
+			else
+				return null;
 		}
 
 		static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
