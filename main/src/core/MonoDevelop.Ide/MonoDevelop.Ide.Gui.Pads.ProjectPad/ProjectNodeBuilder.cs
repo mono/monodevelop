@@ -419,6 +419,31 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 
+		[CommandHandler (ProjectCommands.Unload)]
+		[AllowMultiSelection]
+		public void OnUnload ()
+		{
+			HashSet<Solution> solutions = new HashSet<Solution> ();
+			using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+				m.BeginTask (null, CurrentNodes.Length);
+				foreach (ITreeNavigator nav in CurrentNodes) {
+					Project p = (Project) nav.DataItem;
+					p.Enabled = false;
+					p.ParentFolder.ReloadItem (m, p);
+					m.Step (1);
+					solutions.Add (p.ParentSolution);
+				}
+				m.EndTask ();
+			}
+			IdeApp.ProjectOperations.Save (solutions);
+		}
+
+		[CommandUpdateHandler (ProjectCommands.Unload)]
+		public void OnUpdateUnload (CommandInfo info)
+		{
+			info.Enabled = CurrentNodes.All (nav => ((Project)nav.DataItem).Enabled);
+		}
+
 		[CommandHandler (ProjectCommands.EditSolutionItem)]
 		public void OnEditProject ()
 		{

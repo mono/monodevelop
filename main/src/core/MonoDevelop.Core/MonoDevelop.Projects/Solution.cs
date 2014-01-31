@@ -235,12 +235,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public override void LoadUserProperties ()
+		protected override void OnEndLoad ()
 		{
-			base.LoadUserProperties ();
+			base.OnEndLoad ();
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
-		
+
 		public override void SaveUserProperties ()
 		{
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
@@ -502,6 +502,31 @@ namespace MonoDevelop.Projects
 			Counters.SolutionsLoaded--;
 		}
 
+		internal bool IsSolutionItemEnabled (string solutionItemPath)
+		{
+			solutionItemPath = GetRelativeChildPath (Path.GetFullPath (solutionItemPath));
+			var list = UserProperties.GetValue<List<string>> ("DisabledProjects");
+			return list == null || !list.Contains (solutionItemPath);
+		}
+
+		public void SetSolutionItemEnabled (string solutionItemPath, bool enabled)
+		{
+			solutionItemPath = GetRelativeChildPath (Path.GetFullPath (solutionItemPath));
+			var list = UserProperties.GetValue<List<string>> ("DisabledProjects");
+			if (!enabled) {
+				if (list == null)
+					list = new List<string> ();
+				if (!list.Contains (solutionItemPath))
+					list.Add (solutionItemPath);
+				UserProperties.SetValue ("DisabledProjects", list);
+			} else if (list != null) {
+				list.Remove (solutionItemPath);
+				if (list.Count == 0)
+					UserProperties.RemoveValue ("DisabledProjects");
+				else
+					UserProperties.SetValue ("DisabledProjects", list);
+			}
+		}
 
 		internal void UpdateDefaultConfigurations ()
 		{
