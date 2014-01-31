@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Preferences.EnableInstrumentation) {
 				if (instrumentationStatusIcon == null) {
-					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (Gtk.Stock.DialogInfo));
+					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Information));
 					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
 					instrumentationStatusIcon.EventBox.ButtonPressEvent += delegate {
 						InstrumentationService.StartMonitor ();

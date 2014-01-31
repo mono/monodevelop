@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId FullScreen = Gtk.Stock.Fullscreen;
 		public static readonly IconId GotoNextbookmark = "md-goto-nextbookmark";
 		public static readonly IconId GotoPrevbookmark = "md-goto-prevbookmark";
-		public static readonly IconId Information = Gtk.Stock.DialogInfo;
+		public static readonly IconId Information = "md-information";
 		public static readonly IconId Interface = "md-interface";
 		public static readonly IconId InternalClass = "md-internal-class";
 		public static readonly IconId InternalDelegate = "md-internal-delegate";

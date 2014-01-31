@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			msgBtn = new ToggleButton ();
 			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
-			msgBtn.Image = new Gtk.Image (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu);
+			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			iconWarning = sw.RenderIcon (Stock.Warning, Gtk.IconSize.Menu, "");
 			iconError = sw.RenderIcon (Stock.Error, Gtk.IconSize.Menu, "");
-			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
+			iconInfo = sw.RenderIcon (Stock.Information, Gtk.IconSize.Menu, "");
 			
 			control.Add1 (sw);
 			

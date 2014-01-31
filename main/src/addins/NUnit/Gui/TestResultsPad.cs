@@ -347,7 +347,7 @@ namespace MonoDevelop.NUnit
 		public void AddStartMessage (bool isRunning = true)
 		{
 			if (rootTest != null) {
-				Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
+				Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (MonoDevelop.Ide.Gui.Stock.Information, Gtk.IconSize.Menu, "");
 				string msg = string.Format (isRunning ? GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>") : GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
 				startMessageIter = failuresStore.AppendValues (infoIcon, msg, rootTest, null, 0);
 			} else {
