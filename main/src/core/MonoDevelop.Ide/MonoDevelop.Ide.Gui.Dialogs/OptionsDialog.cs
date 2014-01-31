@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tree.AppendColumn (col0);
 
 			TreeViewColumn col = new TreeViewColumn ();
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			col.PackStart (crp, false);
 			col.SetCellDataFunc (crp, PixbufCellDataFunc);
 			var crt = new CellRendererText ();
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeIter parent;
 			bool toplevel = !model.IterParent (out parent, iter);
 			
-			var crp = (CellRendererPixbuf) cell;
+			var crp = (CellRendererImage) cell;
 			crp.Visible = !toplevel;
 			
 			if (toplevel) {
@@ -214,15 +214,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Instead, give this some awareness of the mime system.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
 			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize).ToPixbuf ();
+				var pix = DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize);
 				if (pix != null) {
-					crp.Pixbuf = pix;
+					crp.Image = pix;
 				} else {
-					crp.Pixbuf = ImageService.GetPixbuf (emptyCategoryIcon, treeIconSize);
+					crp.Image = ImageService.GetIcon (emptyCategoryIcon, treeIconSize);
 				}
 			} else {
 				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
-				crp.Pixbuf = ImageService.GetPixbuf (icon, treeIconSize);
+				crp.Image = ImageService.GetIcon (icon, treeIconSize);
 			}
 		}
 		
