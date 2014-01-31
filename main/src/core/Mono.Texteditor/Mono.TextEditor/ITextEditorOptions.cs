@@ -79,7 +79,6 @@ namespace Mono.TextEditor
 
 		bool DrawIndentationMarkers { get; set; }
 
-		bool UseAntiAliasing { get; set; }
 		bool WrapLines { get; set; }
 		string FontName { get;  set; }
 		Pango.FontDescription Font { get;  }
