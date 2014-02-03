@@ -157,7 +157,7 @@ namespace MonoDevelop.DesignerSupport
 				return toolbarWidgets;
 			
 			var groupToggleButton = new ToggleButton () {
-				Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu)),
+				Image = new Image (ImageService.GetPixbuf ("md-group-by-category", IconSize.Menu)),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
 			};	
@@ -169,7 +169,7 @@ namespace MonoDevelop.DesignerSupport
 			};
 
 			var sortAlphabeticallyToggleButton = new ToggleButton () {
-				Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu),
+				Image = new Image (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
 				Active = settings.IsSorted,
 			};	
@@ -180,8 +180,7 @@ namespace MonoDevelop.DesignerSupport
 				UpdateSorting ();
 			};
 
-			var preferencesButton = new DockToolButton (Gtk.Stock.Preferences) {
-				Image = new Image (Gtk.Stock.Preferences, IconSize.Menu),
+			var preferencesButton = new DockToolButton (Ide.Gui.Stock.Options) {
 				TooltipText = GettextCatalog.GetString ("Open preferences dialog"),
 			};
 			preferencesButton.Clicked += delegate {

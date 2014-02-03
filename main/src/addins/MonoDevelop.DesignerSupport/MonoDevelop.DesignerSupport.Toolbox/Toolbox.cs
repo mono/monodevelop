@@ -79,7 +79,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolbar.Add (filterEntry, true);
 			
 			catToggleButton = new ToggleButton ();
-			catToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
+			catToggleButton.Image = new Image (ImageService.GetPixbuf ("md-group-by-category", IconSize.Menu));
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
 			toolbar.Add (catToggleButton);
