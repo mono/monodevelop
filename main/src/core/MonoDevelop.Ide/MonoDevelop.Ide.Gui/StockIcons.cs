@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId OpenProjectIcon = "md-open-project-icon";
 		public static readonly IconId OpenReferenceFolder = "md-open-reference-folder";
 		public static readonly IconId OpenResourceFolder = "md-open-resource-folder";
-		public static readonly IconId Options = Gtk.Stock.Preferences;
+		public static readonly IconId Options = "md-preferences";
 		public static readonly IconId OutputIcon = "md-output-icon";
 		public static readonly IconId PasteIcon = Gtk.Stock.Paste;
 		public static readonly IconId PreView = Gtk.Stock.PrintPreview;
@@ -162,5 +162,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Letters = "md-letters";
 		public static readonly IconId Hammer = "md-hammer";
 		public static readonly IconId Monkey = "md-monkey";
+		public static readonly IconId SortAlphabetically = "md-sort-alphabetically";
+		public static readonly IconId GroupByCategory = "md-group-by-category";
+		public static readonly IconId Help = "md-help";
 	}
 }

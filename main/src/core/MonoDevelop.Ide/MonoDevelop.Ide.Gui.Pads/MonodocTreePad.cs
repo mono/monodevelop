@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ScrolledWindow scroller;
 		TreeIter root_iter;
 	
-		public HelpTree () : base (GettextCatalog.GetString ("Help"), Gtk.Stock.Help)
+		public HelpTree () : base (GettextCatalog.GetString ("Help"), "md-help")
 		{
 			tree_view = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 

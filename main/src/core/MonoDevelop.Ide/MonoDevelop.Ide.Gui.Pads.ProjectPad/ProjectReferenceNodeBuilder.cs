@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectReference pref = (ProjectReference) dataObject;
 			if (!pref.IsValid)
-				treeBuilder.AddChild (new TreeViewItem (pref.ValidationErrorMessage, Gtk.Stock.DialogWarning));
+				treeBuilder.AddChild (new TreeViewItem (pref.ValidationErrorMessage, Stock.Warning));
 		}
 		
 		public override void OnNodeAdded (object dataObject)

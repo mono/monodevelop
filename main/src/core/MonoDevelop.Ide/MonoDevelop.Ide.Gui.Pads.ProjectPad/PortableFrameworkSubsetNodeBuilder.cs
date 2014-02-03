@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			if (!project.TargetRuntime.IsInstalled (project.TargetFramework)) {
 				string msg = GettextCatalog.GetString ("Framework not installed: {0}", project.TargetFramework.Id);
-				treeBuilder.AddChild (new TreeViewItem (msg, Gtk.Stock.DialogWarning));
+				treeBuilder.AddChild (new TreeViewItem (msg, Stock.Warning));
 			}
 
 			foreach (var asm in project.TargetRuntime.AssemblyContext.GetAssemblies (project.TargetFramework))

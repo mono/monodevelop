@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			warningMessage = new HBox ();
 			warningMessage.Spacing = 6;
-			Image img = new Image (Gtk.Stock.DialogWarning, IconSize.LargeToolbar);
+			Image img = new Image (Stock.Warning, IconSize.Menu);
 			warningMessage.PackStart (img, false, false, 0);
 			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
 				"Settings for existing projects can be modified in the project (or solution) options dialog."));

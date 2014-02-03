@@ -91,16 +91,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton = new RadioButton ((Gtk.RadioButton)null);
 			catButton.DrawIndicator = false;
 			catButton.Relief = ReliefStyle.None;
-			Gdk.Pixbuf pixbuf = null;
-			try {
-				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "group-by-category-16.png");
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't create pixbuf from resource: group-by-category-16.png", e);
-			}
-			if (pixbuf != null) {
-				catButton.Image = new Gtk.Image (pixbuf);
-				catButton.Image.Show ();
-			}
+			catButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
+			catButton.Image.Show ();
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
@@ -108,7 +100,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			alphButton = new RadioButton (catButton);
 			alphButton.DrawIndicator = false;
 			alphButton.Relief = ReliefStyle.None;
-			alphButton.Image = new Gtk.Image (Stock.SortAscending, IconSize.Menu);
+			alphButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
 			alphButton.Image.Show ();
 			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);

@@ -324,6 +324,10 @@
 	<StockIcon stockid = "md-file-header" resource = "file-header-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-file-header" resource = "file-header-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-file-unit-test" resource = "file-unit-test-light-32.png" size="Dnd" />
+	<StockIcon stockid = "md-preferences" resource = "preferences-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-help" resource = "help-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-sort-alphabetically" resource = "sort-alphabetically-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-group-by-category" resource = "group-by-category-light-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>
