@@ -178,6 +178,20 @@
           id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
           macShortcut="Meta|Control|P"
           shortcut="Ctrl|Alt|P" />
+          
+      <Command _description="Restart F# Interactive"
+          _label="Restart F# Interactive"
+          defaultHandler="MonoDevelop.FSharp.RestartFsi"
+          id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
+          macShortcut="Meta|Control|R"
+          shortcut="Ctrl|Alt|R" />
+          
+      <Command _description="Clear F# Interactive"
+          _label="Clear F# Interactive"
+          defaultHandler="MonoDevelop.FSharp.ClearFsi"
+          id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
+          macShortcut="Meta|Control|C"
+          shortcut="Ctrl|Alt|C" />
 
     </Category>
   </Extension>
