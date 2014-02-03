@@ -66,10 +66,10 @@ namespace MonoDevelop.VersionControl
 					overlay_locked = Xwt.Drawing.Image.FromResource("locked-overlay-light-16.png");
 					overlay_ignored = Xwt.Drawing.Image.FromResource("ignored-overlay-light-16.png");
 
-					icon_modified = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
-					icon_removed = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-					icon_conflicted = ImageService.GetIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
-					icon_added = ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					icon_modified = ImageService.GetIcon ("vc-file-modified", Gtk.IconSize.Menu);
+					icon_removed = ImageService.GetIcon ("vc-file-removed", Gtk.IconSize.Menu);
+					icon_conflicted = ImageService.GetIcon ("vc-file-conflicted", Gtk.IconSize.Menu);
+					icon_added = ImageService.GetIcon ("vc-file-added", Gtk.IconSize.Menu);
 					icon_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-light-16.png");
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading icons.", e);

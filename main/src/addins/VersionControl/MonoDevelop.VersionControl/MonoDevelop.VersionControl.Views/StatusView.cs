@@ -300,7 +300,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			var btnRefresh = new Gtk.Button () {
 				Label = GettextCatalog.GetString ("Refresh"),
-				Image = new Xwt.ImageView (ImageService.GetIcon (Gtk.Stock.Refresh, IconSize.Menu)).ToGtkWidget ()
+				Image = new Xwt.ImageView (ImageService.GetIcon ("vc-status-refresh", IconSize.Menu)).ToGtkWidget ()
 			};
 			btnRefresh.Image.Show ();
 
