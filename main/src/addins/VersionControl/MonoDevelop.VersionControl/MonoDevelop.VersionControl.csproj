@@ -200,6 +200,18 @@
     <EmbeddedResource Include="icons\light\pull-16%402x.png">
       <LogicalName>pull-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\push-16.png">
+      <LogicalName>push-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\push-16%402x.png">
+      <LogicalName>push-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\refresh-16.png">
+      <LogicalName>refresh-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\refresh-16%402x.png">
+      <LogicalName>refresh-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\menu_status.png">
       <LogicalName>menu_status.png</LogicalName>
     </EmbeddedResource>
@@ -229,6 +241,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\vcs-conflicted-16%402x.png">
       <LogicalName>vcs-conflicted-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\vcs-modified-16.png">
+      <LogicalName>vcs-modified-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\vcs-modified-16%402x.png">
+      <LogicalName>vcs-modified-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\comment-16.png">
       <LogicalName>comment-light-16.png</LogicalName>

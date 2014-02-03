@@ -1596,6 +1596,24 @@
     <EmbeddedResource Include="icons\light\web-reference-folder-win-16%402x.png">
       <LogicalName>web-reference-folder-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\help-16.png">
+      <LogicalName>help-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\help-16%402x.png">
+      <LogicalName>help-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preferences-16.png">
+      <LogicalName>preferences-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preferences-16%402x.png">
+      <LogicalName>preferences-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\sort-alphabetically-16.png">
+      <LogicalName>sort-alphabetically-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\sort-alphabetically-16%402x.png">
+      <LogicalName>sort-alphabetically-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
