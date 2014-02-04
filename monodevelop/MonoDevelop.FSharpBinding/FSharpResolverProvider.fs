@@ -45,7 +45,16 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 //TODO: Implement windows caching so we only rebuild a TooltipInformationWindow if it differs from the last shown one.
 type FSharpLanguageItemTooltipProvider() = 
     inherit Mono.TextEditor.TooltipProvider()
-    
+
+    //keep the last result and tooltip window cached
+    let lastResult = ref None : TooltipItem option ref
+    static let lastWindow = ref None
+
+    let killTooltipWindow() =
+       match !lastWindow with
+       | Some(w:TooltipInformationWindow) -> w.Destroy()
+       | None -> ()
+
     override x.GetItem (editor, offset) =
         let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
         let docText = editor.Text
@@ -72,48 +81,70 @@ type FSharpLanguageItemTooltipProvider() =
         match tip with
         | None -> null
         | Some (ToolTipText(elems),_) when elems |> List.forall (function ToolTipElementNone -> true | _ -> false) -> 
-            Debug.WriteLine (sprintf "TooltipProvider: No data found")
+            Debug.WriteLine ("TooltipProvider: No data found")
             null
-        | Some (tiptext,(col1,col2)) -> 
-            Debug.WriteLine(sprintf "TooltipProvider: Got data")
-            let line = editor.Document.OffsetToLineNumber offset
+        | Some(tiptext,(col1,col2)) -> 
+            Debug.WriteLine("TooltipProvider: Got data")
+            //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
+            match !lastResult with
+            | Some(tooltipItem) when tooltipItem.Item :?> _ = tiptext -> tooltipItem
+            //If theres no match or previous cached result generate a new tooltipitem
+            | Some(_) | None -> 
+                let line = editor.Document.OffsetToLineNumber offset
+                let segment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
+                let tti = TooltipItem (tiptext, segment)
+                lastResult := Some(tti)
+                tti
 
-            let segment = new TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
-            TooltipItem (tiptext, segment)
-
-    override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
-            let doc = IdeApp.Workbench.ActiveDocument
-            if (doc = null) then null else
-            match item.Item with 
-            | :? ToolTipText as titem -> 
-                let tooltip = TipFormatter.formatTipWithHeader(titem)               
+    override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
+        let doc = IdeApp.Workbench.ActiveDocument
+        if (doc = null) then null else
+        match item.Item with 
+        | :? ToolTipText as titem ->
+            let tooltip = TipFormatter.formatTipWithHeader(titem)
+            //dont show a tooltip if there is no content
+            if String.IsNullOrEmpty(tooltip) then null 
+            else            
                 let result = new TooltipInformationWindow(ShowArrow = true)
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
                 result.AddOverload(toolTipInfo)
                 result.RepositionWindow ()                  
-                result :> Gtk.Window
-            | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
+                result :> _
+        | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!")
+               null
     
     override x.ShowTooltipWindow (editor, offset, modifierState, mouseX, mouseY, item) =
-        let tipWindow = x.CreateTooltipWindow (editor, offset, modifierState, item) :?> TooltipInformationWindow
-        if tipWindow = null then null else
-
-        let positionWidget = editor.TextArea
-        let region = item.ItemSegment.GetRegion(editor.Document)
-        let p1, p2 = editor.LocationToPoint(region.Begin), editor.LocationToPoint(region.End)
-        let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X, 
-                                   int p2.Y - positionWidget.Allocation.Y, 
-                                   int (p2.X - p1.X), 
-                                   int editor.LineHeight)
-        //For debug this is usful for visualising the tooltip location
-        // editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
-        tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
-        tipWindow :> Gtk.Window
+        match (!lastResult, !lastWindow) with
+        | Some(lastRes), Some(lastWin) when item.Item = lastRes.Item && lastWin.IsRealized ->
+            lastWin :> _                   
+        | _ -> killTooltipWindow()
+               match x.CreateTooltipWindow (editor, offset, modifierState, item) with
+               | :? TooltipInformationWindow as tipWindow ->
+                   let positionWidget = editor.TextArea
+                   let region = item.ItemSegment.GetRegion(editor.Document)
+                   let p1, p2 = editor.LocationToPoint(region.Begin), editor.LocationToPoint(region.End)
+                   let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X, 
+                                              int p2.Y - positionWidget.Allocation.Y, 
+                                              int (p2.X - p1.X), 
+                                              int editor.LineHeight)
+                   //For debug this is usful for visualising the tooltip location
+                   // editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
+               
+                   tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
+                   tipWindow.EnterNotifyEvent.Add(fun _ -> editor.HideTooltip (false))
+                   //cache last window shown
+                   lastWindow := Some(tipWindow)
+                   lastResult := Some(item)
+                   tipWindow :> _
+               | _ -> null
+            
+    interface IDisposable with
+        member x.Dispose() = killTooltipWindow()
 
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
-  do Debug.WriteLine (sprintf "Resolver: Creating FSharpResolverProvider")
+  do Debug.WriteLine ("Resolver: Creating FSharpResolverProvider")
   // TODO: ITextEditorMemberPositionProvider
   // TODO: ITextEditorExtension
   // TODO: MonoDevelop.Ide.Gui.Content.CompletionTextEditorExtension (Parameter completion etc.)
@@ -124,14 +155,14 @@ type FSharpResolverProvider() =
     member x.GetLanguageItem(doc:Document, offset:int, region:DomRegion byref) : ResolveResult =
 
       try 
-        Debug.WriteLine (sprintf "Resolver: In GetLanguageItem")
+        Debug.WriteLine ("Resolver: In GetLanguageItem")
         if doc.Editor = null || doc.Editor.Document = null then null else
         let docText = doc.Editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
         let config = IdeApp.Workspace.ActiveConfiguration
         if config = null then null else
 
-        Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
+        Debug.WriteLine("Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
         let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
