@@ -1,0 +1,82 @@
+﻿<Addin name        = "NuGet Package Management"
+       id          = "PackageManagement"
+       namespace   = "MonoDevelop"
+       author      = "Matt Ward"
+       copyright   = "MIT X11"
+       url         = "https://github.com/mrward/monodevelop-nuget-addin"
+       description = "Provides support for adding and maintaining NuGet packages in your project. Updated to use NuGet 2.7.2"
+       category    = "IDE extensions"
+       version     = "4.2.3">
+
+	<Header>
+		<ReleaseNotesFile>ReleaseNotes.txt</ReleaseNotesFile>
+	</Header>
+	
+	<Runtime>
+		<Import assembly="MonoDevelop.PackageManagement.dll" />
+		<Import assembly="Microsoft.Web.XmlTransform.dll" />
+		<Import assembly="NuGet.Core.dll" />
+		<Import file="NuGet.exe" />
+	</Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="4.2.3"/>
+		<Addin id="Ide" version="4.2.3"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command
+			id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+			_description = "Manage NuGet packages"
+			_label = "_Manage NuGet Packages..."
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.ManagePackagesHandler" />
+		<Command
+			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
+			_description = "Restore NuGet packages"
+			_label = "_Restore NuGet Packages"
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<CommandItem
+			id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+			insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+			insertbefore = "ExportSeparator" />
+		<CommandItem
+			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
+			insertafter = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+			insertbefore = "ExportSeparator" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="Solution|Project|ProjectReferenceCollection">
+			<CommandItem
+				id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+				insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore = "AddSectionEnd" />
+			<CommandItem
+				id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
+				insertafter = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+				insertbefore = "AddSectionEnd" />
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-nuget-package" resource="packageicon.png" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id="NuGetPackageManagement" _label="NuGet">
+			<Section
+				id="General"
+				_label="General"
+				fill="true"
+				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" />
+			<Section
+				id="PackageSources"
+				_label="Package Sources"
+				fill="true"
+				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" />
+		</Section>
+	</Extension>
+</Addin>
