@@ -14,7 +14,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.HSeparator hseparator1;
 		private global::Gtk.Button buttonDelete;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -134,6 +134,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.Show ();
 			this.buttonApplyRemove.Clicked += new global::System.EventHandler (this.OnButtonApplyRemoveClicked);
 			this.buttonApply.Clicked += new global::System.EventHandler (this.OnButtonApplyClicked);
+			this.buttonBranch.Clicked += new global::System.EventHandler (this.OnButtonBranchClicked);
 			this.buttonDelete.Clicked += new global::System.EventHandler (this.OnButtonDeleteClicked);
 		}
 	}

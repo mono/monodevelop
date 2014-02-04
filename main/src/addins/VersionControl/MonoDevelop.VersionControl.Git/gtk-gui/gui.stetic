@@ -1678,6 +1678,7 @@
                     <property name="Type">TextOnly</property>
                     <property name="Label" translatable="yes">Convert to Branch</property>
                     <property name="UseUnderline">True</property>
+                    <signal name="Clicked" handler="OnButtonBranchClicked" />
                   </widget>
                   <packing>
                     <property name="Position">2</property>
