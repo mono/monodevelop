@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class PinnedWatchWidget : Gtk.EventBox
 	{
-		ObjectValueTreeView valueTree;
+		readonly ObjectValueTreeView valueTree;
 		ObjectValue objectValue;
 
 		TextEditor Editor {
