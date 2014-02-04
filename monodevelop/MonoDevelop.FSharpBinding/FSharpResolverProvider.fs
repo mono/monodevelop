@@ -47,11 +47,11 @@ type FSharpLanguageItemTooltipProvider() =
     inherit Mono.TextEditor.TooltipProvider()
 
     //keep the last result and tooltip window cached
-    let lastResult = ref None : TooltipItem option ref
-    static let lastWindow = ref None
+    let mutable lastResult = None : TooltipItem option
+    static let mutable lastWindow = None
 
     let killTooltipWindow() =
-       match !lastWindow with
+       match lastWindow with
        | Some(w:TooltipInformationWindow) -> w.Destroy()
        | None -> ()
 
@@ -86,14 +86,14 @@ type FSharpLanguageItemTooltipProvider() =
         | Some(tiptext,(col1,col2)) -> 
             Debug.WriteLine("TooltipProvider: Got data")
             //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
-            match !lastResult with
+            match lastResult with
             | Some(tooltipItem) when tooltipItem.Item :?> _ = tiptext -> tooltipItem
             //If theres no match or previous cached result generate a new tooltipitem
             | Some(_) | None -> 
                 let line = editor.Document.OffsetToLineNumber offset
                 let segment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
                 let tti = TooltipItem (tiptext, segment)
-                lastResult := Some(tti)
+                lastResult <- Some(tti)
                 tti
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
@@ -114,7 +114,7 @@ type FSharpLanguageItemTooltipProvider() =
                null
     
     override x.ShowTooltipWindow (editor, offset, modifierState, mouseX, mouseY, item) =
-        match (!lastResult, !lastWindow) with
+        match (lastResult, lastWindow) with
         | Some(lastRes), Some(lastWin) when item.Item = lastRes.Item && lastWin.IsRealized ->
             lastWin :> _                   
         | _ -> killTooltipWindow()
@@ -133,8 +133,8 @@ type FSharpLanguageItemTooltipProvider() =
                    tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
                    tipWindow.EnterNotifyEvent.Add(fun _ -> editor.HideTooltip (false))
                    //cache last window shown
-                   lastWindow := Some(tipWindow)
-                   lastResult := Some(item)
+                   lastWindow <- Some(tipWindow)
+                   lastResult <- Some(item)
                    tipWindow :> _
                | _ -> null
             
