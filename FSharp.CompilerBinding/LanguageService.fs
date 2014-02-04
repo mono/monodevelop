@@ -192,7 +192,7 @@ type LanguageService(dirtyNotify) =
             return! loop None} )
 
    /// Constructs options for the interactive checker for the given file in the project under the given configuration.
-  member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
+  member x.GetCheckerOptions(fileName, projFilename, source, files, args, targetFramework) =
     let ext = Path.GetExtension(fileName)
     let opts = 
       if (ext = ".fsx" || ext = ".fsscript") then
@@ -207,7 +207,7 @@ type LanguageService(dirtyNotify) =
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
-            let dirs = FSharpEnvironment.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, FSharpTargetFramework.NET_4_0 )
+            let dirs = FSharpEnvironment.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, targetFramework )
             {opts with ProjectOptions = [| yield! opts.ProjectOptions
                                            match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
                                            | Some fn -> yield sprintf "-r:%s" fn
@@ -237,19 +237,19 @@ type LanguageService(dirtyNotify) =
   
   /// Parses and type-checks the given file in the given project under the given configuration. The callback
   /// is called after the complete typecheck has been performed.
-  member x.TriggerParse(projectFilename, fileName:string, src, files, args, afterCompleteTypeCheckCallback) = 
-    let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args)
+  member x.TriggerParse(projectFilename, fileName:string, src, files, args, targetFramework, afterCompleteTypeCheckCallback) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args, targetFramework)
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
     mbox.Post(TriggerRequest(ParseRequest(fileName, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
-  member x.GetUntypedParseResult(projectFilename, fileName:string, src, files, args) = 
-        let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
+  member x.GetUntypedParseResult(projectFilename, fileName:string, src, files, args, targetFramework) = 
+        let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
         Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
         let req = ParseRequest(fileName, src, opts, false, None)
         checker.ParseFileInProject(fileName, src, opts)
 
-  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout)  : TypedParseResult = 
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
+  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout, targetFramework)  : TypedParseResult = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
     let req = ParseRequest(fileName, src, opts, false, None)
     // Try to get recent results from the F# service
