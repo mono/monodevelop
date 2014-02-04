@@ -187,9 +187,7 @@ type LanguageService(dirtyNotify) =
             None )
         
     // Start looping with no initial information        
-    async { // Delay a bit, on app startup let the projects load first
-            do! Async.Sleep 3000
-            return! loop None} )
+    loop None)
 
    /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
