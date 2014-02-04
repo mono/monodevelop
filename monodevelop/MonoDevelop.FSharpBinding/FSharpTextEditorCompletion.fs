@@ -224,7 +224,8 @@ type FSharpTextEditorCompletion() =
       // Try to get typed result - with the specified timeout
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, allowRecentTypeCheckResults=true, timeout = ServiceSettings.blockingTimeout)
+      let framework = CompilerArguments.getTargetFramework( (doc.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, true, ServiceSettings.blockingTimeout, framework)
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
@@ -292,8 +293,9 @@ type FSharpTextEditorCompletion() =
       let config = IdeApp.Workspace.ActiveConfiguration
       let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(x.Document.Project, config)
+      let framework = CompilerArguments.getTargetFramework( (x.Document.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, timeout = ServiceSettings.blockingTimeout)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, ServiceSettings.blockingTimeout, framework)
       context.TriggerOffset
       // Get declarations and generate list for MonoDevelop
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
