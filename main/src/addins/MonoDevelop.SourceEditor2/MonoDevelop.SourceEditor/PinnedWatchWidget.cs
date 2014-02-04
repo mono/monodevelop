@@ -55,6 +55,9 @@ namespace MonoDevelop.SourceEditor
 				return objectValue;
 			}
 			set {
+				if (objectValue == value)
+					return;
+
 				if (objectValue != null && value != null) {
 					valueTree.ReplaceValue (objectValue, value);
 				} else {
