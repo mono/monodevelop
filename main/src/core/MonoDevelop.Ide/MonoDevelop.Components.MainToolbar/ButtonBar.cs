@@ -204,7 +204,7 @@ namespace MonoDevelop.Components.MainToolbar
 					var icon = ImageService.GetIcon (button.Image, IconSize.Menu);
 					if (!Sensitive || !button.Enabled)
 						icon = icon.WithAlpha (0.4);
-					context.DrawImage (this, icon, x + (img.Width - icon.Width) / 2, y + (img.Height - icon.Height) / 2);
+					context.DrawImage (this, icon, Math.Truncate (x + (img.Width - icon.Width) / 2), Math.Truncate (y + (img.Height - icon.Height) / 2));
 					x += img.Width;
 				}
 			}
