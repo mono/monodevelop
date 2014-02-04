@@ -23,20 +23,24 @@ type FSharpTargetFramework =
     | NET_3_0
     | NET_3_5
     | NET_4_0
+    | NET_4_5
     
 type FSharpCompilerVersion = 
     // F# 2.0
     | FSharp_2_0 
     // F# 3.0
     | FSharp_3_0
-    override x.ToString() = match x with | FSharp_2_0 -> "4.0.0.0" | FSharp_3_0 -> "4.3.0.0"
+    // F# 3.1
+    | FSharp_3_1
+    override x.ToString() = match x with | FSharp_2_0 -> "4.0.0.0" | FSharp_3_0 -> "4.3.0.0" | FSharp_3_1 -> "4.3.1.0"
     /// The current requested language version can be overriden by the user using environment variable.
     static member LatestKnown = 
         match System.Environment.GetEnvironmentVariable("FSHARP_PREFERRED_VERSION") with
-        | null -> FSharp_3_0
+        | null -> FSharp_3_1
         | "4.0.0.0" -> FSharp_2_0
         | "4.3.0.0" -> FSharp_3_0
-        | _ -> FSharp_3_0
+        | "4.3.1.0" -> FSharp_3_1
+        | _ -> FSharp_3_1
 
 module FSharpEnvironment =
 
@@ -206,6 +210,7 @@ module FSharpEnvironment =
     let key40 = match reqLangVersion with 
                 | FSharp_2_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
                 | FSharp_3_0 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
+                | FSharp_3_1 ->  @"Software\Microsoft\FSharp\3.1\Runtime\v4.0"
                 
     let key1,key2 = match FSharpCoreLibRunningVersion with 
                     | None -> key20,key40 
@@ -289,16 +294,20 @@ module FSharpEnvironment =
         let result =
             //early termination on Mono, continuing here results in failed pinvokes and reg key failures ~18-35ms
             if Environment.runningOnMono then None else
-            match reqLangVersion, targetFramework with 
-            | FSharp_2_0, x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
+            match reqLangVersion, targetFramework with
+            | FSharp_2_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
                 tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
-            | FSharp_2_0, _ -> 
+            | FSharp_2_0, _ ->
                 tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
-            | FSharp_3_0, x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
+            | FSharp_3_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
                 tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\F# 3.0 Core Assemblies"
-            | FSharp_3_0, _ -> 
+            | FSharp_3_0, NET_4_0 ->
                 tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
-            | _ -> None 
+            | FSharp_3_0, NET_4_5 ->
+                tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+            | FSharp_3_1, NET_4_5 ->
+                tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.1 Core Assemblies"
+            | _ -> None
         
         match result with 
         | Some _ ->  result 
@@ -317,10 +326,10 @@ module FSharpEnvironment =
         Debug.WriteLine(sprintf "Resolution: targetFramework = %A" targetFramework)
         let ext = 
             match targetFramework with 
-            | x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
-                "2.0"
-            | _ -> 
-                "4.0"
+            | NET_2_0 | NET_3_0 | NET_3_5 -> "2.0"
+            | NET_4_0 -> "4.0"
+            | NET_4_5 -> "4.5"
+
         let safeExists f = (try File.Exists(f) with _ -> false)
         let result = 
             possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
