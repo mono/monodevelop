@@ -848,7 +848,7 @@ namespace MonoDevelop.Ide
 				});
 				animatedImages.Add (new WeakReference (ainfo));
 			} else
-				image.Pixbuf = GetPixbuf (iconId, size);
+				image.SetFromStock (iconId, size);
 		}
 
 		static void UnregisterImageAnimation (AnimatedImageInfo ainfo)

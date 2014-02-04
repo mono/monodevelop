@@ -162,14 +162,14 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
-			buttonStop = new ToolButton (Stock.Stop) { Sensitive = false };
+			buttonStop = new ToolButton (Ide.Gui.Stock.Stop) { Sensitive = false };
 
 			buttonStop.Clicked += ButtonStopClicked;
 			
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			var buttonClear = new ToolButton (Gtk.Stock.Clear);
+			var buttonClear = new ToolButton (Ide.Gui.Stock.Clear);
 			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);

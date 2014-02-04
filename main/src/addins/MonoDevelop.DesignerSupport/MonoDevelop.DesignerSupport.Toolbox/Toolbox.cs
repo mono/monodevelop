@@ -79,18 +79,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolbar.Add (filterEntry, true);
 			
 			catToggleButton = new ToggleButton ();
-			catToggleButton.Image = new Image (ImageService.GetPixbuf ("md-group-by-category", IconSize.Menu));
+			catToggleButton.Image = new Image (Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
 			catToggleButton.Toggled += new EventHandler (toggleCategorisation);
 			catToggleButton.TooltipText = GettextCatalog.GetString ("Show categories");
 			toolbar.Add (catToggleButton);
 			
 			compactModeToggleButton = new ToggleButton ();
-			compactModeToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-listboxtoggle", IconSize.Menu));
+			compactModeToggleButton.Image = new ImageView (ImageService.GetIcon ("md-compact-display", IconSize.Menu));
 			compactModeToggleButton.Toggled += new EventHandler (ToggleCompactMode);
 			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
 			toolbar.Add (compactModeToggleButton);
 	
-			toolboxAddButton = new Button (new Gtk.Image (Gtk.Stock.Add, IconSize.Menu));
+			toolboxAddButton = new Button (new Gtk.Image (Ide.Gui.Stock.Add, IconSize.Menu));
 			toolbar.Add (toolboxAddButton);
 			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);

@@ -98,7 +98,7 @@ namespace MonoDevelop.NUnit
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
 			
-			buttonRun = new Button (new Gtk.Image (Gtk.Stock.Execute, IconSize.Menu));
+			buttonRun = new Button (new Gtk.Image (Ide.Gui.Stock.Execute, IconSize.Menu));
 			buttonRun.Clicked += new EventHandler (OnRunClicked);
 			buttonRun.Sensitive = true;
 			buttonRun.TooltipText = GettextCatalog.GetString ("Run test");
@@ -203,7 +203,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col3 = new TreeViewColumn ();
 			col3.Expand = false;
 //			col3.Alignment = 0.5f;
-			col3.Widget = new ImageView (CircleImage.Success);
+			col3.Widget = new ImageView (TestStatusIcon.Success);
 			col3.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col4 = new TreeViewColumn ();
 			col4.Expand = false;
 //			col4.Alignment = 0.5f;
-			col4.Widget = new ImageView (CircleImage.Failure);
+			col4.Widget = new ImageView (TestStatusIcon.Failure);
 			col4.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -225,7 +225,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col5 = new TreeViewColumn ();
 			col5.Expand = false;
 //			col5.Alignment = 0.5f;
-			col5.Widget = new ImageView (CircleImage.NotRun);
+			col5.Widget = new ImageView (TestStatusIcon.NotRun);
 			col5.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -645,7 +645,7 @@ namespace MonoDevelop.NUnit
 					UnitTestCollection regs = detailsTest.GetRegressions (chart.ReferenceDate, chart.CurrentDate);
 					if (regs.Count > 0) {
 						foreach (UnitTest t in regs)
-							regressionStore.AppendValues (t, t.Name, CircleImage.Failure);
+							regressionStore.AppendValues (t, t.Name, TestStatusIcon.Failure);
 					} else
 						regressionStore.AppendValues (null, GettextCatalog.GetString ("No regressions found."));
 				}
@@ -654,7 +654,7 @@ namespace MonoDevelop.NUnit
 					UnitTestCollection regs = group.GetFailedTests (chart.CurrentDate);
 					if (regs.Count > 0) {
 						foreach (UnitTest t in regs)
-							failedStore.AppendValues (t, t.Name, CircleImage.Failure);
+							failedStore.AppendValues (t, t.Name, TestStatusIcon.Failure);
 					} else
 						failedStore.AppendValues (null, GettextCatalog.GetString ("No failed tests found."));
 				}

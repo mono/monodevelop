@@ -319,6 +319,36 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
+		public Xwt.Drawing.Image StatusIcon {
+			get {
+				if (Status == TestStatus.Running) {
+					return TestStatusIcon.Running;
+				} else if (Status == TestStatus.Loading) {
+					return TestStatusIcon.Loading;
+				} else if (Status == TestStatus.LoadError) {
+					return TestStatusIcon.Failure;
+				} else {
+					UnitTestResult res = GetLastResult ();
+					if (res == null)
+						return TestStatusIcon.None;
+					else if (res.Status == ResultStatus.Ignored)
+						return TestStatusIcon.NotRun;
+					else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
+						return IsHistoricResult ? TestStatusIcon.OldSuccessAndFailure : TestStatusIcon.SuccessAndFailure;
+					else if (res.IsInconclusive)
+						return IsHistoricResult ? TestStatusIcon.OldInconclusive : TestStatusIcon.Inconclusive;
+					else if (res.IsFailure)
+						return IsHistoricResult ? TestStatusIcon.OldFailure : TestStatusIcon.Failure;
+					else if (res.IsSuccess)
+						return IsHistoricResult ? TestStatusIcon.OldSuccess : TestStatusIcon.Success;
+					else if (res.IsNotRun || res.Ignored > 0)
+						return TestStatusIcon.NotRun;
+					else
+						return TestStatusIcon.None;
+				}
+			}
+		}
+
 		public string TestId {
 			get;
 			protected set;

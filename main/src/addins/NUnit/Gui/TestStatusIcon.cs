@@ -33,24 +33,24 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {
-	static class CircleImage
+	static class TestStatusIcon
 	{
-		internal static Xwt.Drawing.Image Running;
-		internal static Xwt.Drawing.Image None;
-		internal static Xwt.Drawing.Image NotRun;
-		internal static Xwt.Drawing.Image Loading;
+		public static readonly Xwt.Drawing.Image Running;
+		public static readonly Xwt.Drawing.Image None;
+		public static readonly Xwt.Drawing.Image NotRun;
+		public static readonly Xwt.Drawing.Image Loading;
 
-		internal static Xwt.Drawing.Image Failure;
-		internal static Xwt.Drawing.Image Success;
-		internal static Xwt.Drawing.Image SuccessAndFailure;
-		internal static Xwt.Drawing.Image Inconclusive;
+		public static readonly Xwt.Drawing.Image Failure;
+		public static readonly Xwt.Drawing.Image Success;
+		public static readonly Xwt.Drawing.Image SuccessAndFailure;
+		public static readonly Xwt.Drawing.Image Inconclusive;
 		
-		internal static Xwt.Drawing.Image OldFailure;
-		internal static Xwt.Drawing.Image OldSuccess;
-		internal static Xwt.Drawing.Image OldSuccessAndFailure;
-		internal static Xwt.Drawing.Image OldInconclusive;
+		public static readonly Xwt.Drawing.Image OldFailure;
+		public static readonly Xwt.Drawing.Image OldSuccess;
+		public static readonly Xwt.Drawing.Image OldSuccessAndFailure;
+		public static readonly Xwt.Drawing.Image OldInconclusive;
 
-		static CircleImage ()
+		static TestStatusIcon ()
 		{
 			try {
 				Running = Xwt.Drawing.Image.FromResource ("unit-running-light-16.png");

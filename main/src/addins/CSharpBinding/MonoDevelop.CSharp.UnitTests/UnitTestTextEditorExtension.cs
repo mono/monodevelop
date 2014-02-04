@@ -39,6 +39,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Gtk;
 using System.Text;
 using MonoDevelop.AnalysisCore;
+using Xwt.Drawing;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CSharp
 {
@@ -398,88 +400,45 @@ namespace MonoDevelop.CSharp
 			string failMessage;
 			public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 			{
-				cr.Arc (metrics.X + metrics.Width / 2 + 2, metrics.Y + metrics.Height / 2, 7 * editor.Options.Zoom, 0, Math.PI * 2);
 				isFailed = false;
 				var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier);
 				bool searchCases = false;
 
-				if (unitTest.IsIgnored) {
-					cr.SetSourceRGB (0.9, 0.9, 0);
-				} else {
+				Xwt.Drawing.Image icon = null;
 
-					if (test != null) {
-						var result = test.GetLastResult ();
-						if (result == null) {
-							cr.SetSourceRGB (0.5, 0.5, 0.5);
-							searchCases = true;
-
-						} else if (result.IsNotRun) {
-							cr.SetSourceRGBA (0.9, 0.9, 0, test.IsHistoricResult ? 0.5 : 1.0);
-						} else if (result.IsSuccess) {
-							cr.SetSourceRGBA (0, 1, 0, test.IsHistoricResult ? 0.2 : 1.0);
-						} else if (result.IsFailure) {
-							cr.SetSourceRGBA (1, 0, 0, test.IsHistoricResult ? 0.2 : 1.0);
-							failMessage = result.Message;
-							isFailed = true;
-						} else if (result.IsInconclusive) {
-							cr.SetSourceRGBA (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
-						} else {
-							cr.SetSourceRGB (0.5, 0.5, 0.5);
-						}
-					} else {
-						cr.SetSourceRGB (0.5, 0.5, 0.5);
+				if (test != null) {
+					icon = test.StatusIcon;
+					var result = test.GetLastResult ();
+					if (result == null) {
 						searchCases = true;
+					} else if (result.IsFailure) {
+						failMessage = result.Message;
+						isFailed = true;
 					}
-					if (searchCases) {
-						foreach (var caseId in unitTest.TestCases) {
-							test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + caseId);
-							if (test != null) {
-								var result = test.GetLastResult ();
-								if (result == null || result.IsNotRun || test.IsHistoricResult) {
-								} else if (result.IsNotRun) {
-									cr.SetSourceRGB (0.9, 0.9, 0);
-								} else if (result.IsSuccess) {
-									cr.SetSourceRGB (0, 1, 0);
-								} else if (result.IsFailure) {
-									cr.SetSourceRGB (1, 0, 0);
-									failMessage = result.Message;
-									isFailed = true;
-									break;
-								} else if (result.IsInconclusive) {
-									cr.SetSourceRGB (0, 1, 1);
-								} 
-							}
+				} else {
+					searchCases = true;
+				}
+
+				if (searchCases) {
+					foreach (var caseId in unitTest.TestCases) {
+						test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + caseId);
+						if (test != null) {
+							icon = test.StatusIcon;
+							var result = test.GetLastResult ();
+							if (result != null && result.IsFailure) {
+								failMessage = result.Message;
+								isFailed = true;
+								break;
+							} 
 						}
 					}
 				}
 
-				cr.FillPreserve ();
-				if (unitTest.IsIgnored) {
-					cr.SetSourceRGB (0.4, 0.4, 0);
-					cr.Stroke ();
-
-				} else {
-					if (test != null) {
-						var result = test.GetLastResult ();
-						if (result == null) {
-							cr.SetSourceRGB (0.2, 0.2, 0.2);
-							cr.Stroke ();
-						} else if (result.IsNotRun && !test.IsHistoricResult) {
-							cr.SetSourceRGB (0.4, 0.4, 0);
-							cr.Stroke ();
-						} else if (result.IsSuccess && !test.IsHistoricResult) {
-							cr.SetSourceRGB (0, 0.5, 0);
-							cr.Stroke ();
-						} else if (result.IsFailure && !test.IsHistoricResult) {
-							cr.SetSourceRGB (0.5, 0, 0);
-							cr.Stroke ();
-						} else if (result.IsInconclusive && !test.IsHistoricResult) {
-							cr.SetSourceRGB (0, 0.7, 0.7);
-							cr.Stroke ();
-						} 
-					}
+				if (icon != null) {
+					if (icon.Width > metrics.Width || icon.Height > metrics.Height)
+						icon = icon.WithBoxSize (metrics.Width, metrics.Height);
+					cr.DrawImage (editor, icon, Math.Truncate (metrics.X + metrics.Width / 2 - icon.Width / 2), Math.Truncate (metrics.Y + metrics.Height / 2 - icon.Height / 2));
 				}
-				cr.NewPath ();
 			}
 		}
 

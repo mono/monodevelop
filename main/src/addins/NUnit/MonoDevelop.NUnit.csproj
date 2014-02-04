@@ -195,7 +195,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Commands\NUnitCommands.cs" />
-    <Compile Include="Gui\CircleImage.cs" />
     <Compile Include="Gui\TestPad.cs" />
     <Compile Include="Gui\TestResultsPad.cs" />
     <Compile Include="Gui\TestNodeBuilder.cs" />
@@ -234,6 +233,7 @@
     <Compile Include="Gui\NUnitOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.NUnit.NUnitOptionsWidget.cs" />
     <Compile Include="Services\TcpTestListener.cs" />
+    <Compile Include="Gui\TestStatusIcon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

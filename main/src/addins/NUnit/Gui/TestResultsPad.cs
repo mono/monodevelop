@@ -162,7 +162,7 @@ namespace MonoDevelop.NUnit
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
 			buttonSuccess.Active = false;
-			buttonSuccess.Image = new ImageView (CircleImage.Success);
+			buttonSuccess.Image = new ImageView (TestStatusIcon.Success);
 			buttonSuccess.Image.Show ();
 			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
 			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
@@ -171,7 +171,7 @@ namespace MonoDevelop.NUnit
 			buttonInconclusive = new ToggleButton ();
 			buttonInconclusive.Label = GettextCatalog.GetString ("Inconclusive Tests");
 			buttonInconclusive.Active = true;
-			buttonInconclusive.Image = new ImageView (CircleImage.Inconclusive);
+			buttonInconclusive.Image = new ImageView (TestStatusIcon.Inconclusive);
 			buttonInconclusive.Image.Show ();
 			buttonInconclusive.Toggled += new EventHandler (OnShowInconclusiveToggled);
 			buttonInconclusive.TooltipText = GettextCatalog.GetString ("Show Inconclusive Tests");
@@ -180,7 +180,7 @@ namespace MonoDevelop.NUnit
 			buttonFailures = new ToggleButton ();
 			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
 			buttonFailures.Active = true;
-			buttonFailures.Image = new ImageView (CircleImage.Failure);
+			buttonFailures.Image = new ImageView (TestStatusIcon.Failure);
 			buttonFailures.Image.Show ();
 			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
 			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
@@ -189,7 +189,7 @@ namespace MonoDevelop.NUnit
 			buttonIgnored = new ToggleButton ();
 			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
 			buttonIgnored.Active = true;
-			buttonIgnored.Image = new ImageView (CircleImage.NotRun);
+			buttonIgnored.Image = new ImageView (TestStatusIcon.NotRun);
 			buttonIgnored.Image.Show ();
 			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
 			buttonIgnored.TooltipText = GettextCatalog.GetString ("Show Ignored Tests");
@@ -213,7 +213,7 @@ namespace MonoDevelop.NUnit
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
 			
-			buttonStop = new Button (new Gtk.Image (Gtk.Stock.Stop, Gtk.IconSize.Menu));
+			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
 			toolbar.Add (buttonStop);
 			toolbar.ShowAll ();
 			
@@ -586,14 +586,14 @@ namespace MonoDevelop.NUnit
 			if (result.IsSuccess) {
 				if (!buttonSuccess.Active)
 					return;
-				TreeIter testRow = failuresStore.AppendValues (CircleImage.Success, Escape (test.FullName), test);
+				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.Success, Escape (test.FullName), test);
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
 			}
 			if (result.IsFailure) {
 				if (!buttonFailures.Active)
 					return;
 				string file = test.SourceCodeLocation != null ? test.SourceCodeLocation.FileName + ":" + test.SourceCodeLocation.Line : null;
-				TreeIter testRow = failuresStore.AppendValues (CircleImage.Failure, Escape (test.FullName), test, file);
+				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.Failure, Escape (test.FullName), test, file);
 				bool hasMessage = result.Message != null && result.Message.Length > 0;
 				if (hasMessage)
 					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
@@ -608,7 +608,7 @@ namespace MonoDevelop.NUnit
 			if (result.IsNotRun) {
 				if (!buttonIgnored.Active)
 					return;
-				TreeIter testRow = failuresStore.AppendValues (CircleImage.NotRun, Escape (test.FullName), test);
+				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.NotRun, Escape (test.FullName), test);
 				if (result.Message != null)
 					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
@@ -616,7 +616,7 @@ namespace MonoDevelop.NUnit
 			if (result.IsInconclusive) {
 				if (!buttonInconclusive.Active)
 					return;
-				TreeIter testRow = failuresStore.AppendValues (CircleImage.Inconclusive, Escape (test.FullName), test);
+				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.Inconclusive, Escape (test.FullName), test);
 				if (result.Message != null)
 					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
@@ -687,7 +687,7 @@ namespace MonoDevelop.NUnit
 				return;
 			cancel = true;
 			Gtk.Application.Invoke (delegate {
-				failuresStore.AppendValues (CircleImage.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
+				failuresStore.AppendValues (TestStatusIcon.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
 			});
 			if (CancelRequested != null)
 				CancelRequested ();

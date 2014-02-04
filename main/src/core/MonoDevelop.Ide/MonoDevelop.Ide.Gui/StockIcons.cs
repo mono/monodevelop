@@ -166,5 +166,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId GroupByCategory = "md-group-by-category";
 		public static readonly IconId Help = "md-help";
 		public static readonly IconId Add = "md-add";
+		public static readonly IconId Clear = "md-clear";
+		public static readonly IconId Execute = Gtk.Stock.Execute;
 	}
 }

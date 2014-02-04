@@ -86,11 +86,11 @@ namespace MonoDevelop.CodeIssues
 		public CodeIssuePadControl ()
 		{
 			var buttonRow = new HBox();
-			runButton.Image = GetStockImage(Gtk.Stock.Execute);
+			runButton.Image = ImageService.GetIcon (Ide.Gui.Stock.Execute, IconSize.Menu);
 			runButton.Clicked += StartAnalyzation;
 			buttonRow.PackStart (runButton);
 
-			cancelButton.Image = GetStockImage(Gtk.Stock.Stop);
+			cancelButton.Image = ImageService.GetIcon (Ide.Gui.Stock.Stop, IconSize.Menu);
 			cancelButton.Clicked += StopAnalyzation;
 			cancelButton.Sensitive = false;
 			buttonRow.PackStart (cancelButton);

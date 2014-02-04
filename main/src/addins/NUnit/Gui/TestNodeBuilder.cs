@@ -73,40 +73,21 @@ namespace MonoDevelop.NUnit
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			UnitTest test = dataObject as UnitTest;
+			nodeInfo.Icon = test.StatusIcon;
 			
 			if (test.Status == TestStatus.Running) {
-				nodeInfo.Icon = CircleImage.Running;
 				nodeInfo.Label = test.Title;
 				return;
 			} else if (test.Status == TestStatus.Loading) {
-				nodeInfo.Icon = CircleImage.Loading;
 				nodeInfo.Label = test.Title + GettextCatalog.GetString (" (Loading)");
 				return;
 			} else if (test.Status == TestStatus.LoadError) {
-				nodeInfo.Icon = CircleImage.Failure;
 				nodeInfo.Label = test.Title + GettextCatalog.GetString (" (Load failed)");
 				return;
 			} else {
 				nodeInfo.Label = test.Title;
 
 				UnitTestResult res = test.GetLastResult ();
-				if (res == null)
-					nodeInfo.Icon = CircleImage.None;
-				else if (res.Status == ResultStatus.Ignored)
-					nodeInfo.Icon = CircleImage.NotRun;
-				else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
-					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldSuccessAndFailure : CircleImage.SuccessAndFailure;
-				else if (res.IsInconclusive)
-					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldInconclusive : CircleImage.Inconclusive;
-				else if (res.IsFailure)
-					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldFailure : CircleImage.Failure;
-				else if (res.IsSuccess)
-					nodeInfo.Icon = test.IsHistoricResult ? CircleImage.OldSuccess : CircleImage.Success;
-				else if (res.IsNotRun || res.Ignored > 0)
-					nodeInfo.Icon = CircleImage.NotRun;
-				else
-					nodeInfo.Icon = CircleImage.None;
-
 				if (res != null && treeBuilder.Options ["ShowTestCounters"] && (test is UnitTestGroup)) {
 					nodeInfo.Label += string.Format (GettextCatalog.GetString (" ({0} passed, {1} failed, {2} not run)"), res.Passed, res.ErrorsAndFailures, res.TestsNotRun);
 				}
