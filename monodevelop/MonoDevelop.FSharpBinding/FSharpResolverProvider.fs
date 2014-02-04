@@ -54,6 +54,7 @@ type FSharpLanguageItemTooltipProvider() =
         if config = null then null else
         let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(extEditor.Project, config)
+        let framework = CompilerArguments.getTargetFramework( (extEditor.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
         let tyRes = 
             MDLanguageService.Instance.GetTypedParseResult
                  (extEditor.Project.FileName.ToString(),
@@ -61,8 +62,9 @@ type FSharpLanguageItemTooltipProvider() =
                   docText, 
                   files,
                   args,
-                  allowRecentTypeCheckResults=true,
-                  timeout = ServiceSettings.blockingTimeout)
+                  true,
+                  ServiceSettings.blockingTimeout,
+                  framework)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
         // Get tool-tip from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
@@ -133,6 +135,7 @@ type FSharpResolverProvider() =
         // Try to get typed result - with the specified timeout
         let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
+        let framework = CompilerArguments.getTargetFramework( (doc.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
         let tyRes = 
             MDLanguageService.Instance.GetTypedParseResult
                  (doc.Project.FileName.ToString(),
@@ -140,8 +143,9 @@ type FSharpResolverProvider() =
                   docText, 
                   files, 
                   args, 
-                  allowRecentTypeCheckResults=true,
-                  timeout = ServiceSettings.blockingTimeout)
+                  true,
+                  ServiceSettings.blockingTimeout,
+                  framework)
 
         Debug.WriteLine("getting declaration location...")
        
