@@ -48,6 +48,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -72,9 +73,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
 		Clipboard clipboard;
 
-		Gdk.Pixbuf iconWarning;
-		Gdk.Pixbuf iconError;
-		Gdk.Pixbuf iconInfo;
+		Xwt.Drawing.Image iconWarning;
+		Xwt.Drawing.Image iconError;
+		Xwt.Drawing.Image iconInfo;
 		
 		const string showErrorsPropertyName = "SharpDevelop.TaskList.ShowErrors";
 		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
@@ -165,7 +166,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			control = new HPaned ();
 
-			store = new Gtk.ListStore (typeof (Gdk.Pixbuf), // image - type
+			store = new Gtk.ListStore (typeof (Xwt.Drawing.Image), // image - type
 			                           typeof (bool),       // read?
 			                           typeof (Task));       // read? -- use Pango weight
 
@@ -200,9 +201,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
 			
-			iconWarning = sw.RenderIcon (Stock.Warning, Gtk.IconSize.Menu, "");
-			iconError = sw.RenderIcon (Stock.Error, Gtk.IconSize.Menu, "");
-			iconInfo = sw.RenderIcon (Stock.Information, Gtk.IconSize.Menu, "");
+			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
+			iconInfo = ImageService.GetIcon (Ide.Gui.Stock.Information, Gtk.IconSize.Menu);
 			
 			control.Add1 (sw);
 			
@@ -517,13 +518,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void AddColumns ()
 		{
-			Gtk.CellRendererPixbuf iconRender = new Gtk.CellRendererPixbuf ();
+			CellRendererImage iconRender = new CellRendererImage ();
 			
 			Gtk.CellRendererToggle toggleRender = new Gtk.CellRendererToggle ();
 			toggleRender.Toggled += new ToggledHandler (ItemToggled);
 			
 			TreeViewColumn col;
-			col = view.AppendColumn ("!", iconRender, "pixbuf", DataColumns.Type);
+			col = view.AppendColumn ("!", iconRender, "image", DataColumns.Type);
 			
 			col = view.AppendColumn ("", toggleRender);
 			col.SetCellDataFunc (toggleRender, new Gtk.TreeCellDataFunc (ToggleDataFunc));
@@ -736,7 +737,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (tasks.Contains (t)) return;
 			
-			Gdk.Pixbuf stock;
+			Xwt.Drawing.Image stock;
 			
 			switch (t.Severity) {
 				case TaskSeverity.Error:

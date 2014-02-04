@@ -104,7 +104,7 @@ namespace MonoDevelop.NUnit
 			buttonRun.TooltipText = GettextCatalog.GetString ("Run test");
 			topToolbar.Add (buttonRun);
 			
-			buttonStop = new Button (new Gtk.Image (Gtk.Stock.Stop, IconSize.Menu));
+			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
 			buttonStop.TooltipText = GettextCatalog.GetString ("Cancel running test");
@@ -203,7 +203,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col3 = new TreeViewColumn ();
 			col3.Expand = false;
 //			col3.Alignment = 0.5f;
-			col3.Widget = new Gtk.Image (CircleImage.Success.ToPixbuf (Gtk.IconSize.Menu));
+			col3.Widget = new ImageView (CircleImage.Success);
 			col3.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -214,7 +214,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col4 = new TreeViewColumn ();
 			col4.Expand = false;
 //			col4.Alignment = 0.5f;
-			col4.Widget = new Gtk.Image (CircleImage.Failure.ToPixbuf (Gtk.IconSize.Menu));
+			col4.Widget = new ImageView (CircleImage.Failure);
 			col4.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -225,7 +225,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col5 = new TreeViewColumn ();
 			col5.Expand = false;
 //			col5.Alignment = 0.5f;
-			col5.Widget = new Gtk.Image (CircleImage.NotRun.ToPixbuf (Gtk.IconSize.Menu));
+			col5.Widget = new ImageView (CircleImage.NotRun);
 			col5.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -257,14 +257,14 @@ namespace MonoDevelop.NUnit
 			regressionTree = new TreeView ();
 			regressionTree.HeadersVisible = false;
 			regressionTree.RulesHint = true;
-			regressionStore = new ListStore (typeof(object), typeof(string), typeof (Pixbuf));
+			regressionStore = new ListStore (typeof(object), typeof(string), typeof (Xwt.Drawing.Image));
 			
 			CellRendererText trtest2 = new CellRendererText ();
-			var pr = new CellRendererPixbuf ();
+			var pr = new CellRendererImage ();
 			
 			TreeViewColumn col = new TreeViewColumn ();
 			col.PackStart (pr, false);
-			col.AddAttribute (pr, "pixbuf", 2);
+			col.AddAttribute (pr, "image", 2);
 			col.PackStart (trtest2, false);
 			col.AddAttribute (trtest2, "markup", 1);
 			regressionTree.AppendColumn (col);
@@ -282,14 +282,14 @@ namespace MonoDevelop.NUnit
 			failedTree = new TreeView ();
 			failedTree.HeadersVisible = false;
 			failedTree.RulesHint = true;
-			failedStore = new ListStore (typeof(object), typeof(string), typeof (Pixbuf));
+			failedStore = new ListStore (typeof(object), typeof(string), typeof (Xwt.Drawing.Image));
 			
 			trtest2 = new CellRendererText ();
-			pr = new CellRendererPixbuf ();
+			pr = new CellRendererImage ();
 			
 			col = new TreeViewColumn ();
 			col.PackStart (pr, false);
-			col.AddAttribute (pr, "pixbuf", 2);
+			col.AddAttribute (pr, "image", 2);
 			col.PackStart (trtest2, false);
 			col.AddAttribute (trtest2, "markup", 1);
 			failedTree.AppendColumn (col);

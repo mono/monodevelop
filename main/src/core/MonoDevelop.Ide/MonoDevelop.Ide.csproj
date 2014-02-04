@@ -1446,12 +1446,6 @@
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-error-16.png">
-      <LogicalName>bubble-error-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-warning-16.png">
-      <LogicalName>bubble-warning-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\issuestatus-error-16.png">
       <LogicalName>issuestatus-error-16.png</LogicalName>
     </EmbeddedResource>
@@ -1613,6 +1607,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\group-by-category-16%402x.png">
       <LogicalName>group-by-category-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\add-16.png">
+      <LogicalName>add-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\add-16%402x.png">
+      <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

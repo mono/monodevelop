@@ -114,7 +114,7 @@ namespace MonoDevelop.DesignerSupport
 
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 
-			var pixRenderer = new CellRendererPixbuf ();
+			var pixRenderer = new CellRendererImage ();
 			pixRenderer.Xpad = 0;
 			pixRenderer.Ypad = 0;
 
@@ -157,7 +157,7 @@ namespace MonoDevelop.DesignerSupport
 				return toolbarWidgets;
 			
 			var groupToggleButton = new ToggleButton () {
-				Image = new Image (ImageService.GetPixbuf ("md-group-by-category", IconSize.Menu)),
+				Image = new Image (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
 			};	
@@ -228,12 +228,12 @@ namespace MonoDevelop.DesignerSupport
 
 		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var pixRenderer = (CellRendererPixbuf)cell;
+			var pixRenderer = (CellRendererImage)cell;
 			object o = model.GetValue (iter, 0);
 			if (o is IEntity) {
-				pixRenderer.Pixbuf = ImageService.GetPixbuf (((IEntity)o).GetStockIcon (), IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (((IEntity)o).GetStockIcon (), IconSize.Menu);
 			} else if (o is FoldingRegion) {
-				pixRenderer.Pixbuf = ImageService.GetPixbuf ("gtk-add", IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Add, IconSize.Menu);
 			}
 		}
 

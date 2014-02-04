@@ -28,6 +28,7 @@ using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -43,11 +44,11 @@ namespace MonoDevelop.VersionControl.Git
 			this.Build ();
 			this.repo =  repo;
 			
-			comboStore = new ListStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string));
+			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string));
 			comboSources.Model = comboStore;
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			comboSources.PackStart (crp, false);
-			comboSources.AddAttribute (crp, "pixbuf", 1);
+			comboSources.AddAttribute (crp, "image", 1);
 			var crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
@@ -61,21 +62,21 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu));
+				AddValues (b.Name, ImageService.GetIcon ("vc-git-branch", IconSize.Menu));
 			}
 			
 			foreach (string t in repo.GetTags ())
-				AddValues (t, ImageService.GetPixbuf ("vc-git-tag", IconSize.Menu));
+				AddValues (t, ImageService.GetIcon ("vc-git-tag", IconSize.Menu));
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetPixbuf ("md-web-search-icon", IconSize.Menu));
+					AddValues (r.Name + "/" + b, ImageService.GetIcon ("md-web-search-icon", IconSize.Menu));
 			}
 				
 			UpdateStatus ();
 		}
 		
-		void AddValues (string name, Gdk.Pixbuf icon)
+		void AddValues (string name, Xwt.Drawing.Image icon)
 		{
 			TreeIter it = comboStore.AppendValues (name, icon, name);
 			if (name == currentTracking)

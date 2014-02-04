@@ -30,6 +30,7 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		List<CodeTemplate> templates;
 		Gtk.TreeStore templateStore;
 		CellRendererText   templateCellRenderer;
-		CellRendererPixbuf pixbufCellRenderer;
+		CellRendererImage pixbufCellRenderer;
 		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
 		Mono.TextEditor.TextEditorOptions options;
 		
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TreeViewColumn column = new TreeViewColumn ();
 			column.Title = GettextCatalog.GetString ("Key");
 			
-			pixbufCellRenderer = new CellRendererPixbuf ();
+			pixbufCellRenderer = new CellRendererImage ();
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, new Gtk.TreeCellDataFunc (RenderIcon));
 			
@@ -151,9 +152,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			CodeTemplate template = (CodeTemplate)templateStore.GetValue (iter, 0);
 			
 			if (template == null) {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+				pixbufCellRenderer.Image = ImageService.GetIcon (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (template.Icon, IconSize.Menu);
+				pixbufCellRenderer.Image = ImageService.GetIcon (template.Icon, IconSize.Menu);
 			}
 				
 		}

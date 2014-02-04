@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -46,13 +47,13 @@ namespace MonoDevelop.VersionControl.Git
 			this.repo = repo;
 			this.rebasing = rebasing;
 			
-			store = new TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string), typeof(string));
+			store = new TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			tree.Model = store;
 			
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererImage crp = new CellRendererImage ();
 			TreeViewColumn col = new TreeViewColumn ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "pixbuf", 1);
+			col.AddAttribute (crp, "image", 1);
 			CellRendererText crt = new CellRendererText ();
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", 2);
@@ -100,15 +101,15 @@ namespace MonoDevelop.VersionControl.Git
 			store.Clear ();
 			
 			foreach (Branch b in repo.GetBranches ())
-				store.AppendValues (b.Name, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu), b.Name, "branch");
+				store.AppendValues (b.Name, ImageService.GetIcon ("vc-git-branch", IconSize.Menu), b.Name, "branch");
 			
 			foreach (string t in repo.GetTags ())
-				store.AppendValues (t, ImageService.GetPixbuf ("vc-git-tag", IconSize.Menu), t, "tag");
+				store.AppendValues (t, ImageService.GetIcon ("vc-git-tag", IconSize.Menu), t, "tag");
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
-				TreeIter it = store.AppendValues (null, ImageService.GetPixbuf ("md-web-search-icon", IconSize.Menu), r.Name, null);
+				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("md-web-search-icon", IconSize.Menu), r.Name, null);
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					store.AppendValues (it, r.Name + "/" + b, ImageService.GetPixbuf ("vc-git-branch", IconSize.Menu), b, "remote");
+					store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-git-branch", IconSize.Menu), b, "remote");
 			}
 			UpdateStatus ();
 		}

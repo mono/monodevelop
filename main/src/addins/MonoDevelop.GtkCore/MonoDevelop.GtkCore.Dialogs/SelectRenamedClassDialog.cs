@@ -34,6 +34,7 @@ using Glade;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.GtkCore.Dialogs
@@ -49,23 +50,23 @@ namespace MonoDevelop.GtkCore.Dialogs
 			XML glade = new XML (null, "gui.glade", "SelectRenamedClassDialog", null);
 			glade.Autoconnect (this);
 			
-			store = new ListStore (typeof(Pixbuf), typeof(string));
+			store = new ListStore (typeof(Xwt.Drawing.Image), typeof(string));
 			treeClasses.Model = store;
 			
 			TreeViewColumn column = new TreeViewColumn ();
 		
-			var pr = new CellRendererPixbuf ();
+			var pr = new CellRendererImage ();
 			column.PackStart (pr, false);
-			column.AddAttribute (pr, "pixbuf", 0);
+			column.AddAttribute (pr, "image", 0);
 			
 			CellRendererText crt = new CellRendererText ();
 			column.PackStart (crt, true);
 			column.AddAttribute (crt, "text", 1);
-			
+
 			treeClasses.AppendColumn (column);
 			
 			foreach (var cls in classes) {
-				Pixbuf pic = ImageService.GetPixbuf (cls.GetStockIcon ());
+				var pic = ImageService.GetIcon (cls.GetStockIcon ());
 				store.AppendValues (pic, cls.FullName);
 			}
 		}

@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
 			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.Reference)) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetPixbuf ("md-empty-file-icon", IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
 		}
 
 		TreeIter AddProjectReference (ProjectReference refInfo)
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
 			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (p.BaseDirectory.ToString ()) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetPixbuf ("md-project", IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), p.BaseDirectory.ToString (), refInfo, ImageService.GetIcon ("md-project", IconSize.Dnd));
 		}
 
 		TreeIter AddPackageReference (ProjectReference refInfo)
@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Projects
 			int i = refInfo.Reference.IndexOf (',');
 			if (i != -1)
 				txt = GLib.Markup.EscapeText (txt.Substring (0, i)) + "\n<span color='darkgrey'><small>" + GLib.Markup.EscapeText (refInfo.Reference.Substring (i+1).Trim()) + "</small></span>";
-			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetPixbuf ("md-package", IconSize.Dnd));
+			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), refInfo.Reference, refInfo, ImageService.GetIcon ("md-package", IconSize.Dnd));
 		}
 		
 		public SelectReferenceDialog ()
@@ -168,15 +168,15 @@ namespace MonoDevelop.Ide.Projects
 
 			boxRefs.WidthRequest = 200;
 			
-			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Gdk.Pixbuf));
+			refTreeStore = new ListStore (typeof (string), typeof(string), typeof(string), typeof(ProjectReference), typeof(Xwt.Drawing.Image));
 			ReferencesTreeView.Model = refTreeStore;
 
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString("Reference");
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererImage crp = new CellRendererImage ();
 			crp.Yalign = 0f;
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "pixbuf", IconColumn);
+			col.AddAttribute (crp, "image", IconColumn);
 			CellRendererText text_render = new CellRendererText ();
 			col.PackStart (text_render, true);
 			col.AddAttribute (text_render, "markup", NameColumn);

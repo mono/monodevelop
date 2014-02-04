@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui;
 
 using Gtk;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects {
 	
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.Projects {
 		{
 			this.selectDialog = selectDialog;
 			
-			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Gdk.Pixbuf), typeof(bool), typeof(string));
+			store = new ListStore (typeof (string), typeof (string), typeof(Project), typeof(bool), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			store.SetSortFunc (0, CompareNodes);
 			treeView = new TreeView (store);
 			
@@ -76,9 +77,9 @@ namespace MonoDevelop.Ide.Projects {
 			firstColumn.AddAttribute (tog_render, "visible", ColVisible);
 
 			secondColumn.Title = GettextCatalog.GetString ("Project");
-			Gtk.CellRendererPixbuf pix_render = new Gtk.CellRendererPixbuf ();
+			CellRendererImage pix_render = new CellRendererImage ();
 			secondColumn.PackStart (pix_render, false);
-			secondColumn.AddAttribute (pix_render, "pixbuf", ColPixbuf);
+			secondColumn.AddAttribute (pix_render, "image", ColPixbuf);
 			
 			CellRendererText text_render = new CellRendererText ();
 			secondColumn.PackStart (text_render, true);
@@ -211,12 +212,12 @@ namespace MonoDevelop.Ide.Projects {
 					}
 				}
 				
-				Gdk.Pixbuf icon = ImageService.GetPixbuf (projectEntry.StockIcon, IconSize.Menu);
+				var icon = ImageService.GetIcon (projectEntry.StockIcon, IconSize.Menu);
 				if (!allowSelecting) {
 					// Don't show unselectable projects if there is a filter
 					if (stringMatcher != null)
 						continue;
-					icon = ImageService.MakeTransparent (icon, 0.5);
+					icon = icon.WithAlpha (0.5);
 				}
 				Gtk.TreeIter it = store.AppendValues (txt, projectEntry.BaseDirectory.ToString (), projectEntry, selected, icon, allowSelecting);
 				if (!allowSelecting)

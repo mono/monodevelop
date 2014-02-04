@@ -260,11 +260,11 @@ namespace MonoDevelop.AnalysisCore
 		{
 			switch (severity) {
 			case Severity.Error:
-				return Gtk.Stock.DialogError;
+				return Ide.Gui.Stock.Error;
 			case Severity.Warning:
-				return Gtk.Stock.DialogWarning;
+				return Ide.Gui.Stock.Warning;
 			case Severity.Hint:
-				return Gtk.Stock.Info;
+				return Ide.Gui.Stock.Information;
 			default:
 				return null;
 			}
