@@ -341,7 +341,7 @@ module MonoDevelop =
         (line, col, lineStr)
     
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
-    let getFilesAndArgsFromProject(project:Project, config) =
+    let getCheckerArgsFromProject(project:Project, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let projConfig = project.GetConfiguration(config) :?> MonoDevelop.Projects.DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
@@ -351,7 +351,8 @@ module MonoDevelop =
                                                              project.Items, 
                                                              config, 
                                                              false) |> Array.ofList
-        project.FileName.ToString(), files, args
+        let framework = CompilerArguments.getTargetFramework( (project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+        project.FileName.ToString(), files, args, framework
                 
 
 /// Provides functionality for working with the F# interactive checker running in background
