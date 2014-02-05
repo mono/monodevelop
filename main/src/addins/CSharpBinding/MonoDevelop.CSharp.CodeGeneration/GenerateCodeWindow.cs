@@ -37,7 +37,7 @@ namespace MonoDevelop.CodeGeneration
 {
 	partial class GenerateCodeWindow : Gtk.Window
 	{
-		TreeStore generateActionsStore = new TreeStore (typeof(Gdk.Pixbuf), typeof (string), typeof (ICodeGenerator));
+		TreeStore generateActionsStore = new TreeStore (typeof(Xwt.Drawing.Image), typeof (string), typeof (ICodeGenerator));
 		
 		class CustomTreeView : TreeView
 		{
@@ -110,9 +110,9 @@ namespace MonoDevelop.CodeGeneration
 			treeviewGenerateActions.HeadersVisible = false;
 			treeviewGenerateActions.Model = generateActionsStore;
 			TreeViewColumn column = new TreeViewColumn ();
-			var pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererImage ();
 			column.PackStart (pixbufRenderer, false);
-			column.AddAttribute (pixbufRenderer, "pixbuf", 0);
+			column.AddAttribute (pixbufRenderer, "image", 0);
 			
 			CellRendererText textRenderer = new CellRendererText ();
 			column.PackStart (textRenderer, true);
@@ -148,7 +148,7 @@ namespace MonoDevelop.CodeGeneration
 		void Populate (List<ICodeGenerator> validGenerators)
 		{
 			foreach (var generator in validGenerators)
-				generateActionsStore.AppendValues (ImageService.GetPixbuf (generator.Icon, IconSize.Menu), generator.Text, generator);
+				generateActionsStore.AppendValues (ImageService.GetIcon (generator.Icon, IconSize.Menu), generator.Text, generator);
 			
 			TreeIter iter;
 			if (generateActionsStore.GetIterFirst (out iter))

@@ -121,7 +121,8 @@ namespace MonoDevelop.Components
 			
 			NoShowAll = true;
 		}
-		public Gdk.Pixbuf FilterButtonPixbuf {
+
+		public Xwt.Drawing.Image FilterButtonPixbuf {
 			get {
 				return filter_button.Pixbuf;
 			}
@@ -160,8 +161,6 @@ namespace MonoDevelop.Components
 				NotifyActivated ();
 			};
 
-			filter_button.Image.Xpad = 0;
-			clear_button.Image.Xpad = 0;
 			filter_button.CanFocus = false;
 			clear_button.CanFocus = false;
 			

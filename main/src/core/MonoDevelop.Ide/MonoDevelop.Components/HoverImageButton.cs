@@ -38,9 +38,9 @@ namespace MonoDevelop.Components
 
         private IconSize icon_size = IconSize.Menu;
         private string [] icon_names = { "image-missing", Stock.MissingImage };
-        private Gdk.Pixbuf normal_pixbuf;
-        private Gdk.Pixbuf active_pixbuf;
-        private Image image;
+		private Xwt.Drawing.Image normal_pixbuf;
+		private Xwt.Drawing.Image active_pixbuf;
+		private ImageView image;
         private bool is_hovering;
         private bool is_pressed;
 
@@ -59,7 +59,7 @@ namespace MonoDevelop.Components
 			al.Show ();
             CanFocus = true;
 			VisibleWindow = false;
-            image = new Image();
+			image = new ImageView();
             image.Show();
 			al.Add (image);
             Add(al);
@@ -166,7 +166,7 @@ namespace MonoDevelop.Components
 
         private void UpdateImage()
         {
-            image.Pixbuf = is_hovering || is_pressed || HasFocus
+			image.Image = is_hovering || is_pressed || HasFocus
                 ? active_pixbuf : normal_pixbuf;
         }
 
@@ -187,8 +187,8 @@ namespace MonoDevelop.Components
 
             for(int i = 0; i < icon_names.Length; i++) {
                 try {
-					normal_pixbuf = ImageService.GetPixbuf (icon_names[i], icon_size);
-					active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30);
+					normal_pixbuf = ImageService.GetIcon (icon_names[i], icon_size);
+					active_pixbuf = normal_pixbuf;
                     break;
                 } catch {
                 }
@@ -197,45 +197,14 @@ namespace MonoDevelop.Components
             UpdateImage();
         }
 		
-		public Gdk.Pixbuf Pixbuf {
+		public Xwt.Drawing.Image Pixbuf {
 			get { return this.normal_pixbuf; }
 			set { 
 				this.normal_pixbuf = value; 
-				active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30); 
+				active_pixbuf = normal_pixbuf; 
 				UpdateImage();
 			}
 		}
-		
-
-        private static byte PixelClamp(int val)
-        {
-            return (byte)Math.Max(0, Math.Min(255, val));
-        }
-
-        private unsafe Gdk.Pixbuf ColorShiftPixbuf(Gdk.Pixbuf src, byte shift)
-        {
-            Gdk.Pixbuf dest = new Gdk.Pixbuf(src.Colorspace, src.HasAlpha, src.BitsPerSample, src.Width, src.Height);
-
-            byte *src_pixels_orig = (byte *)src.Pixels;
-            byte *dest_pixels_orig = (byte *)dest.Pixels;
-
-            for(int i = 0; i < src.Height; i++) {
-                byte *src_pixels = src_pixels_orig + i * src.Rowstride;
-                byte *dest_pixels = dest_pixels_orig + i * dest.Rowstride;
-
-                for(int j = 0; j < src.Width; j++) {
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
-
-                    if(src.HasAlpha) {
-                        *(dest_pixels++) = *(src_pixels++);
-                    }
-                }
-            }
-
-            return dest;
-        }
 
         public string [] IconNames {
             get { return icon_names; }
@@ -253,7 +222,7 @@ namespace MonoDevelop.Components
             }
         }
 
-        public Image Image {
+		public ImageView Image {
             get { return image; }
         }
 

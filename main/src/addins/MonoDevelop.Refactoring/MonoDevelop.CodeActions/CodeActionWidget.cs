@@ -43,6 +43,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory.Refactoring;
 using System.Threading;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CodeActions
 {
@@ -52,15 +53,15 @@ namespace MonoDevelop.CodeActions
 		MonoDevelop.Ide.Gui.Document document;
 		IEnumerable<CodeAction> fixes;
 		TextLocation loc;
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		
 		public CodeActionWidget (CodeActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document)
 		{
 //			this.ext = ext;
 			this.document = document;
 			Events = Gdk.EventMask.AllEventsMask;
-			icon = ImageService.GetPixbuf ("md-text-quickfix", Gtk.IconSize.Menu);
-			SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , icon.Width) + 4, (int)document.Editor.LineHeight + 4);
+			icon = ImageService.GetIcon ("md-text-quickfix", Gtk.IconSize.Menu);
+			SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , (int)icon.Width) + 4, (int)document.Editor.LineHeight + 4);
 			document.Editor.Parent.EditorOptionsChanged += HandleDocumentEditorParentEditorOptionsChanged;
 		}
 
@@ -395,8 +396,7 @@ namespace MonoDevelop.CodeActions
 				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.PlainText.Foreground : document.Editor.ColorStyle.FoldLineColor.Color;
 				cr.Stroke ();
 
-				Gdk.CairoHelper.SetSourcePixbuf (cr, icon, (Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2);
-				cr.Paint ();
+				cr.DrawImage (this, icon, (Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2);
 			}
 			
 			return true;

@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Build ();
 			this.item = item;
 			
-			store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(string), typeof(string));
+			store = new TreeStore (typeof(bool), typeof(Xwt.Drawing.Image), typeof(string), typeof(string), typeof(string));
 			fileList.Model = store;
 			
 			TreeViewColumn col = new TreeViewColumn ();

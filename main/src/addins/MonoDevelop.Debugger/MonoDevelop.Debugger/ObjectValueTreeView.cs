@@ -56,8 +56,8 @@ namespace MonoDevelop.Debugger
 		readonly List<ObjectValue> values = new List<ObjectValue> ();
 		readonly List<string> valueNames = new List<string> ();
 
-		readonly Gdk.Pixbuf noLiveIcon;
-		readonly Gdk.Pixbuf liveIcon;
+		readonly Xwt.Drawing.Image noLiveIcon;
+		readonly Xwt.Drawing.Image liveIcon;
 
 		readonly TreeViewState state;
 		readonly TreeStore store;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Debugger
 		readonly CellRendererText crtType;
 		readonly CellRendererIcon crpButton;
 		readonly CellRendererIcon crpPin;
-		readonly CellRendererIcon crpLiveUpdate;
+		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererIcon crpViewer;
 		Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
@@ -132,7 +132,7 @@ namespace MonoDevelop.Debugger
 		
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -143,8 +143,8 @@ namespace MonoDevelop.Debugger
 			Pango.FontDescription newFont = this.Style.FontDescription.Copy ();
 			newFont.Size = (newFont.Size * 8) / 10;
 			
-			liveIcon = ImageService.GetPixbuf (Stock.Execute, IconSize.Menu);
-			noLiveIcon = ImageService.MakeTransparent (liveIcon, 0.5);
+			liveIcon = ImageService.GetIcon (Stock.Execute, IconSize.Menu);
+			noLiveIcon = liveIcon.WithAlpha (0.5);
 			
 			expCol = new TreeViewColumn ();
 			expCol.Title = GettextCatalog.GetString ("Name");
@@ -202,9 +202,9 @@ namespace MonoDevelop.Debugger
 			crpPin = new CellRendererIcon ();
 			pinCol.PackStart (crpPin, false);
 			pinCol.AddAttribute (crpPin, "stock_id", PinIconColumn);
-			crpLiveUpdate = new CellRendererIcon ();
+			crpLiveUpdate = new CellRendererImage ();
 			pinCol.PackStart (crpLiveUpdate, false);
-			pinCol.AddAttribute (crpLiveUpdate, "pixbuf", LiveUpdateIconColumn);
+			pinCol.AddAttribute (crpLiveUpdate, "image", LiveUpdateIconColumn);
 			pinCol.Resizable = false;
 			pinCol.Visible = false;
 			pinCol.Expand = false;

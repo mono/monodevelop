@@ -46,8 +46,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool listMode       = false;
 		int mouseX, mouseY;
 		Pango.FontDescription desc;
-		Gdk.Pixbuf discloseDown;
-		Gdk.Pixbuf discloseUp;
+		Xwt.Drawing.Image discloseDown;
+		Xwt.Drawing.Image discloseUp;
 		Gdk.Cursor handCursor;
 		
 		const uint animationTimeSpan = 10;
@@ -148,8 +148,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				           EventMask.KeyPressMask | 
 					       EventMask.PointerMotionMask;
 			this.CanFocus = true;
-			discloseDown = ImageService.GetPixbuf ("md-disclose-arrow-down", Gtk.IconSize.Menu);
-			discloseUp = ImageService.GetPixbuf ("md-disclose-arrow-up", Gtk.IconSize.Menu);
+			discloseDown = ImageService.GetIcon ("md-disclose-arrow-down", Gtk.IconSize.Menu);
+			discloseUp = ImageService.GetIcon ("md-disclose-arrow-up", Gtk.IconSize.Menu);
 			handCursor = new Cursor (CursorType.Hand1);
 		}
 
@@ -273,8 +273,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				Pango.CairoHelper.ShowLayout (cr, headerLayout);
 
 				var img = category.IsExpanded ? discloseUp : discloseDown;
-				Gdk.CairoHelper.SetSourcePixbuf (cr, img, Allocation.Width - img.Width - CategoryRightPadding, ypos + (itemDimension.Height - img.Height) / 2);
-				cr.Paint ();
+				cr.DrawImage (this, img, Allocation.Width - img.Width - CategoryRightPadding, ypos + (itemDimension.Height - img.Height) / 2);
 
 				lastCategory = category;
 				lastCategoryYpos = ypos + itemDimension.Height;

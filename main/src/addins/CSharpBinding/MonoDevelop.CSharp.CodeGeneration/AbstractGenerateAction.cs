@@ -33,12 +33,13 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CodeGeneration
 {
 	public abstract class AbstractGenerateAction : IGenerateAction
 	{
-		readonly TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(object));
+		readonly TreeStore store = new TreeStore (typeof(bool), typeof(Xwt.Drawing.Image), typeof(string), typeof(object));
 		readonly CodeGenerationOptions options;
 		
 		public CodeGenerationOptions Options {
@@ -65,9 +66,9 @@ namespace MonoDevelop.CodeGeneration
 			column.PackStart (toggleRenderer, false);
 			column.AddAttribute (toggleRenderer, "active", 0);
 
-			var pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererImage ();
 			column.PackStart (pixbufRenderer, false);
-			column.AddAttribute (pixbufRenderer, "pixbuf", 1);
+			column.AddAttribute (pixbufRenderer, "image", 1);
 
 			var textRenderer = new CellRendererText ();
 			column.PackStart (textRenderer, true);
@@ -79,19 +80,19 @@ namespace MonoDevelop.CodeGeneration
 			foreach (object obj in GetValidMembers ()) {
 				var member = obj as IEntity;
 				if (member != null) {
-					Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
+					Store.AppendValues (false, ImageService.GetIcon (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
 					continue;
 				}
 
 				var tuple = obj as Tuple<IMember, bool>;
 				if (tuple != null) {
-					Store.AppendValues (false, ImageService.GetPixbuf (tuple.Item1.GetStockIcon (), IconSize.Menu), ambience.GetString (tuple.Item1, OutputFlags.ClassBrowserEntries), tuple);
+					Store.AppendValues (false, ImageService.GetIcon (tuple.Item1.GetStockIcon (), IconSize.Menu), ambience.GetString (tuple.Item1, OutputFlags.ClassBrowserEntries), tuple);
 					continue;
 				}
 
 				var variable = obj as IVariable;
 				if (variable != null)
-					Store.AppendValues (false, ImageService.GetPixbuf (variable.GetStockIcon (), IconSize.Menu), variable.Name, variable);
+					Store.AppendValues (false, ImageService.GetIcon (variable.GetStockIcon (), IconSize.Menu), variable.Name, variable);
 			}
 			
 			treeView.Model = store;

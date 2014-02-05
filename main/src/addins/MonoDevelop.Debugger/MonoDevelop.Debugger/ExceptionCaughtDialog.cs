@@ -42,7 +42,7 @@ namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Dialog
 	{
-		static readonly Gdk.Pixbuf WarningIconPixbuf = Gdk.Pixbuf.LoadFromResource ("exception-icon.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-icon.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 		protected TreeView StackTraceTreeView { get; private set; }
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
@@ -96,7 +96,7 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateExceptionHeader ()
 		{
-			var icon = new Image (WarningIconPixbuf);
+			var icon = new ImageView (WarningIconPixbuf);
 			icon.Show ();
 
 			var hbox = new HBox (false, 12) { BorderWidth = 12 };

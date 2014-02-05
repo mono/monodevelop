@@ -63,7 +63,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			this.Build();
 			
-			store = new TreeStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Gdk.Pixbuf), typeof(ItemToolboxNode), typeof(bool), typeof(int));
+			store = new TreeStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Xwt.Drawing.Image), typeof(ItemToolboxNode), typeof(bool), typeof(int));
 			
 			TreeViewColumn col;
 			col = new TreeViewColumn ();
@@ -78,12 +78,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			col = new TreeViewColumn ();
 			col.Spacing = 3;
 			col.Title = GettextCatalog.GetString ("Name");
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			CellRendererText crx = new CellRendererText ();
 			crx.Width = 150;
 			col.PackStart (crp, false);
 			col.PackStart (crx, false);
-			col.AddAttribute (crp, "pixbuf", ColIcon);
+			col.AddAttribute (crp, "image", ColIcon);
 			col.AddAttribute (crp, "visible", ColShowCheck);
 			col.AddAttribute (crx, "text", ColName);
 			col.AddAttribute (crx, "weight", ColBold);

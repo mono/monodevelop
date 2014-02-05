@@ -33,13 +33,14 @@ using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.Refactoring
 {
 	public partial class RefactoringPreviewDialog : Gtk.Dialog
 	{
-		TreeStore store = new TreeStore (typeof(Gdk.Pixbuf), typeof(string), typeof(object), typeof (bool));
+		TreeStore store = new TreeStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object), typeof (bool));
 
 		const int pixbufColumn = 0;
 		const int textColumn = 1;
@@ -57,9 +58,9 @@ namespace MonoDevelop.Refactoring
 			TreeViewColumn column = new TreeViewColumn ();
 
 			// pixbuf column
-			var pixbufCellRenderer = new CellRendererPixbuf ();
+			var pixbufCellRenderer = new CellRendererImage ();
 			column.PackStart (pixbufCellRenderer, false);
-			column.SetAttributes (pixbufCellRenderer, "pixbuf", pixbufColumn);
+			column.SetAttributes (pixbufCellRenderer, "image", pixbufColumn);
 			column.AddAttribute (pixbufCellRenderer, "visible", statusVisibleColumn);
 			
 			// text column
@@ -172,9 +173,9 @@ namespace MonoDevelop.Refactoring
 			foreach (Change change in changes) {
 				TreeIter iter = GetFile (change);
 				if (iter.Equals (TreeIter.Zero)) {
-					iter = store.AppendValues (ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+					iter = store.AppendValues (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
 				} else {
-					iter = store.AppendValues (iter, ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
+					iter = store.AppendValues (iter, ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ReplaceIcon, IconSize.Menu), change.Description, change, true);
 				}
 				TextReplaceChange replaceChange = change as TextReplaceChange;
 				if (replaceChange != null && replaceChange.Offset >= 0)

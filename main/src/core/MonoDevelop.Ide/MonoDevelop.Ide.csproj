@@ -2331,7 +2331,6 @@
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
-    <Compile Include="MonoDevelop.Components\SquaredNotebook.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
     <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
     <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />

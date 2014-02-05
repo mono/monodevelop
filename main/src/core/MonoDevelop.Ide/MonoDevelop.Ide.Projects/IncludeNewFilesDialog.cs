@@ -30,13 +30,15 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.IO;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
 	partial class IncludeNewFilesDialog : Gtk.Dialog
 	{
-		TreeStore store = new TreeStore (typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (string),
+		TreeStore store = new TreeStore (typeof (Xwt.Drawing.Image), typeof (Xwt.Drawing.Image), typeof (string),
 			typeof (string), typeof (bool));
+
 		FilePath baseDirectory;
 		
 		static class Columns {
@@ -65,11 +67,11 @@ namespace MonoDevelop.Ide.Projects
 			textColumn.AddAttribute (toggleRender, "active", Columns.IsToggled);
 			
 			textColumn.Title = "Name";
-			var pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererImage ();
 			textColumn.PackStart (pixbufRenderer, false);
-			textColumn.AddAttribute (pixbufRenderer, "pixbuf", Columns.IconOpened);
-			textColumn.AddAttribute (pixbufRenderer, "pixbuf-expander-open", Columns.IconOpened);
-			textColumn.AddAttribute (pixbufRenderer, "pixbuf-expander-closed", Columns.IconClosed);
+			textColumn.AddAttribute (pixbufRenderer, "image", Columns.IconOpened);
+			textColumn.AddAttribute (pixbufRenderer, "image-expander-open", Columns.IconOpened);
+			textColumn.AddAttribute (pixbufRenderer, "image-expander-closed", Columns.IconClosed);
 			
 			CellRendererText textRenderer = new CellRendererText ();
 			textColumn.PackStart (textRenderer, false);
@@ -183,8 +185,8 @@ namespace MonoDevelop.Ide.Projects
 		
 		object[] GetFolderValues (string name)
 		{
-			return new object[] { ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu),
-				 ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu), name, null, false };
+			return new object[] { ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu),
+				ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu), name, null, false };
 		}
 
 		TreeIter GetPath (string fullPath)

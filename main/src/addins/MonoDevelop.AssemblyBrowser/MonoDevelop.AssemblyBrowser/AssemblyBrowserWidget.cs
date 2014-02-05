@@ -249,14 +249,14 @@ namespace MonoDevelop.AssemblyBrowser
 			notebook1.Page = 0;
 			//this.searchWidget.Visible = false;
 				
-			typeListStore = new Gtk.ListStore (typeof(Gdk.Pixbuf), // type image
+			typeListStore = new Gtk.ListStore (typeof(Xwt.Drawing.Image), // type image
 			                                   typeof(string), // name
 			                                   typeof(string), // namespace
 			                                   typeof(string), // assembly
 				                               typeof(IMember)
 			                                  );
 			
-			memberListStore = new Gtk.ListStore (typeof(Gdk.Pixbuf), // member image
+			memberListStore = new Gtk.ListStore (typeof(Xwt.Drawing.Image), // member image
 			                                   typeof(string), // name
 			                                   typeof(string), // Declaring type full name
 			                                   typeof(string), // assembly
@@ -642,11 +642,11 @@ namespace MonoDevelop.AssemblyBrowser
 			case SearchMode.Decompiler:
 				col = new TreeViewColumn ();
 				col.Title = GettextCatalog.GetString ("Member");
-				crp = new Gtk.CellRendererPixbuf ();
+				crp = new CellRendererImage ();
 				crt = new Gtk.CellRendererText ();
 				col.PackStart (crp, false);
 				col.PackStart (crt, true);
-				col.AddAttribute (crp, "pixbuf", 0);
+				col.AddAttribute (crp, "image", 0);
 				col.AddAttribute (crt, "text", 1);
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
@@ -659,11 +659,11 @@ namespace MonoDevelop.AssemblyBrowser
 			case SearchMode.Type:
 				col = new TreeViewColumn ();
 				col.Title = GettextCatalog.GetString ("Type");
-				crp = new Gtk.CellRendererPixbuf ();
+				crp = new CellRendererImage ();
 				crt = new Gtk.CellRendererText ();
 				col.PackStart (crp, false);
 				col.PackStart (crt, true);
-				col.AddAttribute (crp, "pixbuf", 0);
+				col.AddAttribute (crp, "image", 0);
 				col.AddAttribute (crt, "text", 1);
 				searchTreeview.AppendColumn (col);
 				col.Resizable = true;
@@ -752,7 +752,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								memberListStore.AppendValues (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu),
+								memberListStore.AppendValues (ImageService.GetIcon (member.GetStockIcon (), Gtk.IconSize.Menu),
 								                              member.Name,
 								                              member.DeclaringTypeDefinition.FullName,
 								                              kv.Key.Assembly.FullName,
@@ -787,7 +787,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								memberListStore.AppendValues ("", //iImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+								memberListStore.AppendValues ("", //iImageService.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
 								                              member.Name,
 								                              member.DeclaringTypeDefinition.FullName,
 								                              kv.Key.Assembly.FullName,
@@ -817,7 +817,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								memberListStore.AppendValues ("", //ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+								memberListStore.AppendValues ("", //ImageService.GetIcon (member.StockIcon, Gtk.IconSize.Menu),
 								                              member.Name,
 								                              member.DeclaringTypeDefinition.FullName,
 								                              kv.Key.Assembly.FullName,
@@ -844,7 +844,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var type in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								typeListStore.AppendValues (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu),
+								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
 								                            type.Name,
 								                            type.Namespace,
 								                            kv.Key.Assembly.FullName,

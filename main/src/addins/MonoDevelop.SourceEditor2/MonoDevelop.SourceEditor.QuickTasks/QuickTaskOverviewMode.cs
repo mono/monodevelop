@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -311,15 +312,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		Gdk.Pixbuf GetIndicatorIcon (Severity severity)
+		Xwt.Drawing.Image GetIndicatorIcon (Severity severity)
 		{
 			switch (severity) {
 			case Severity.Error:
-				return ImageService.GetPixbuf ("md-issuestatus-error", IconSize.Menu);
+				return ImageService.GetIcon ("md-issuestatus-error", IconSize.Menu);
 			case Severity.Warning:
-				return ImageService.GetPixbuf ("md-issuestatus-warning", IconSize.Menu);
+				return ImageService.GetIcon ("md-issuestatus-warning", IconSize.Menu);
 			default:
-				return ImageService.GetPixbuf ("md-issuestatus-ok", IconSize.Menu);
+				return ImageService.GetIcon ("md-issuestatus-ok", IconSize.Menu);
 			}
 		}
 
@@ -379,20 +380,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Save ();
 			var pixbuf = GetIndicatorIcon (severity);
-			cr.Translate (
-				1 + (Allocation.Width - pixbuf.Width) / 2,
-				1
-			);
-
-			CairoHelper.SetSourcePixbuf (
-				cr,
-				pixbuf,
-				0, 0
-			);
-			cr.Paint ();
-			cr.Restore ();
+			cr.DrawImage (this, pixbuf, 1 + (Allocation.Width - pixbuf.Width) / 2, 1);
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
@@ -407,7 +396,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
 			
-			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.Color;
+			var darkColor = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.SearchResult.Color;
 			darkColor.L *= 0.5;
 
 			if (flatStyle) {
@@ -513,7 +502,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
-				var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
+				var col = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.PlainText.Background;
 				if (!flatStyle) {
 					col.L *= 0.88;
 				}
@@ -546,7 +535,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, barWidth / 2);
 			}
 			
-			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
+			var color = (MonoDevelop.Components.HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
 			color.L = flatStyle? 0.7 : 0.5;
 			var c = (Cairo.Color)color;
 			c.A = 0.6;
@@ -577,7 +566,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
+					var col = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.PlainText.Background;
 					col.L *= 0.95;
 					if (flatStyle) {
 						using (var pattern = new Cairo.SolidPattern (col)) {
