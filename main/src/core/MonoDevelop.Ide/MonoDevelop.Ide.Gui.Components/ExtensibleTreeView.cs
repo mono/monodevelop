@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.EnableDragUriSource (nodeToUri);
 		}
 
-		object[] GetDragObjects (out Gdk.Pixbuf icon)
+		object[] GetDragObjects (out Xwt.Drawing.Image icon)
 		{
 			ITreeNavigator[] navs = GetSelectedNodes ();
 			if (navs.Length == 0) {
@@ -342,7 +342,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			var dragObjects = new object [navs.Length];
 			for (int n=0; n<navs.Length; n++)
 				dragObjects [n] = navs [n].DataItem;
-			icon = ((Xwt.Drawing.Image) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn)).ToPixbuf (Gtk.IconSize.Menu);
+			icon = (Xwt.Drawing.Image) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
 			return dragObjects;
 		}
 
@@ -2162,14 +2162,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				this.nodeToUri = nodeToUri;
 			}
 
-			public delegate object[] GetDragObjects (out Gdk.Pixbuf dragIcon);
-			public delegate bool CheckAndDrop (int x,int y,bool drop,Gdk.DragContext ctx,object[] obj);
-
 			protected override void OnDragBegin (Gdk.DragContext context)
 			{
-				Gdk.Pixbuf dragIcon;
+				Xwt.Drawing.Image dragIcon;
 				dragObjects = tv.GetDragObjects (out dragIcon);
-				Gtk.Drag.SetIconPixbuf (context, dragIcon, -10, -10);
+				Gtk.Drag.SetIconPixbuf (context, dragIcon != null ? dragIcon.ToPixbuf (Gtk.IconSize.Menu) : null, -10, -10);
 
 				base.OnDragBegin (context);
 			}

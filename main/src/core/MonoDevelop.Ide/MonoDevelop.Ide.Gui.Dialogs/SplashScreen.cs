@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using System.Collections;
-using System.Reflection;
 using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	
@@ -16,7 +15,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		const int SplashFontSize = 10;
 		const string SplashFontFamily = "sans-serif";
 
-		Gdk.Pixbuf bitmap;
+		Xwt.Drawing.Image bitmap;
 		bool showVersionInfo;
 
 		//this is a popup so it behaves like other splashes on Windows, i.e. doesn't show up as a second window in the taskbar.
@@ -27,9 +26,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
 			this.showVersionInfo = BrandingService.GetBool ("SplashScreen", "ShowVersionInfo") ?? true;
-			using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
-				bitmap = new Gdk.Pixbuf (stream);
-			this.Resize (bitmap.Width, bitmap.Height);
+
+			var file = BrandingService.GetFile ("SplashScreen.png");
+			if (file != null)
+				bitmap = Xwt.Drawing.Image.FromFile (file);
+			else
+				bitmap = Xwt.Drawing.Image.FromResource ("SplashScreen.png");
+
+			this.Resize ((int)bitmap.Width, (int)bitmap.Height);
 		}
 		
 		protected override void OnDestroyed ()
@@ -57,8 +61,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					context.Antialias = Cairo.Antialias.Subpixel;
 				
 					// Render the image first.
-					bitmap.RenderToDrawable (GdkWindow, new Gdk.GC (GdkWindow), 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
-					
+					context.DrawImage (this, bitmap, 0, 0);
+
 					if (showVersionInfo) {
 						var bottomRight = new Cairo.PointD (bitmap.Width - 12, bitmap.Height - 25);
 						// Render the alpha/beta text if we're an alpha or beta. If this

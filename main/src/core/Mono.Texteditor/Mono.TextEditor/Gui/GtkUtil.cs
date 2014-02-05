@@ -1,21 +1,21 @@
-// 
-// IListDataProvider.cs
-//  
+﻿//
+// GtkUtil.cs
+//
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//       Lluis Sanchez Gual <lluis@xamarin.com>
+//
+// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,29 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
 
-namespace Mono.TextEditor.PopupWindow
+namespace Mono.TextEditor
 {
-	public interface IListDataProvider<T>
+	static class GtkUtil
 	{
-		int Count {
-			get; 
+		public static Cairo.Color ToCairoColor (this Gdk.Color color)
+		{
+			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
+				(double)color.Green / ushort.MaxValue,
+				(double)color.Blue / ushort.MaxValue);
 		}
-		
-		T this[int index] { 
-			get;
+
+		public static Xwt.Drawing.Color ToXwtColor (this Gdk.Color color)
+		{
+			return new Xwt.Drawing.Color ((double)color.Red / ushort.MaxValue,
+				(double)color.Green / ushort.MaxValue,
+				(double)color.Blue / ushort.MaxValue);
 		}
-		
-		Xwt.Drawing.Image GetIcon (int index);
-		string GetText (int index);
-	}
-	
-	public interface IMarkupListDataProvider<T> : IListDataProvider<T>
-	{
-		bool HasMarkup (int index);
-		string GetMarkup (int index);
+
+		public static Gdk.Color ToGdkColor (this Cairo.Color color)
+		{
+			return new Gdk.Color ((byte)(color.R * 255d), (byte)(color.G * 255d), (byte)(color.B * 255d));
+		}
+
+		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
+		{
+			var c = Gdk.CairoHelper.Create (w.GdkWindow);
+			return Xwt.Toolkit.CurrentEngine.WrapContext (w, c);
+		}
 	}
 }
+

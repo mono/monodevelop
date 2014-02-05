@@ -32,13 +32,13 @@ using System.Text;
 
 namespace Mono.TextEditor.PopupWindow
 {
-	public class ListWidget<T> : Gtk.DrawingArea
+	class ListWidget<T> : Gtk.DrawingArea
 	{
 		int margin = 0;
 		int padding = 4;
 		int listWidth = 300;
 		
-		Pango.Layout layout;
+		Xwt.Drawing.TextLayout layout;
 		ListWindow<T> win;
 		int selection = 0;
 		int visibleRows = -1;
@@ -216,68 +216,76 @@ namespace Mono.TextEditor.PopupWindow
 			int ypos = margin;
 			int lineWidth = winWidth - margin*2;
 			int xpos = margin + padding;
-			
-			//avoid recreating the GC objects that we use multiple times
-			var textGCNormal = this.Style.TextGC (StateType.Normal);
-			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
-				
-			int n = 0;
-			n = (int)(vadj.Value / rowHeight);
 
-			while (ypos < winHeight - margin && n < win.DataProvider.Count)
-			{
-				bool hasMarkup = false;
-				IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
-				if (markupListDataProvider != null) {
-					if (markupListDataProvider.HasMarkup (n)) {
-						layout.SetMarkup (markupListDataProvider.GetMarkup (n) ?? "&lt;null&gt;");
-						hasMarkup = true;
+			using (var cr = this.CreateXwtContext ()) {
+
+				//avoid recreating the GC objects that we use multiple times
+				var textColor = this.Style.Text (StateType.Normal).ToXwtColor ();
+
+				int n = 0;
+				n = (int)(vadj.Value / rowHeight);
+
+				while (ypos < winHeight - margin && n < win.DataProvider.Count) {
+					bool hasMarkup = false;
+					IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
+					if (markupListDataProvider != null) {
+						if (markupListDataProvider.HasMarkup (n)) {
+							layout.Markup = (markupListDataProvider.GetMarkup (n) ?? "&lt;null&gt;");
+							hasMarkup = true;
+						}
 					}
-				}
 				
-				if (!hasMarkup)
-					layout.SetText (win.DataProvider.GetText (n) ?? "<null>");
+					if (!hasMarkup)
+						layout.Text = (win.DataProvider.GetText (n) ?? "<null>");
 				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (n);
-				int iconHeight, iconWidth;
+					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (n);
+					int iconHeight, iconWidth;
 				
-				if (icon != null) {
-					iconWidth = icon.Width;
-					iconHeight = icon.Height;
-				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-					iconHeight = iconWidth = 24;
-				}
-				
-				int wi, he, typos, iypos;
-				layout.GetPixelSize (out wi, out he);
-				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				
-				if (n == selection) {
-					if (!disableSelection) {
-						args.Window.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              true, margin, ypos, lineWidth, he + padding);
-						window.DrawLayout (this.Style.TextGC (StateType.Selected),
-							                           xpos + iconWidth + 2, typos, layout);
+					if (icon != null) {
+						iconWidth = (int)icon.Width;
+						iconHeight = (int)icon.Height;
+					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+						iconHeight = iconWidth = 24;
 					}
-					else {
-						window.DrawRectangle (this.Style.BaseGC (StateType.Selected),
-						                              false, margin, ypos, lineWidth, he + padding);
-						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
+				
+					var s = layout.GetSize ();
+					int typos, iypos;
+					int he = (int)s.Height;
+
+					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
+					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
+				
+					if (n == selection) {
+						if (!disableSelection) {
+							cr.Rectangle (margin, ypos, lineWidth, he + padding);
+							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
+							cr.Fill ();
+
+							cr.SetColor (this.Style.Text (StateType.Selected).ToXwtColor ());
+							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
+						} else {
+							cr.Rectangle (margin, ypos, lineWidth, he + padding);
+							cr.SetColor (this.Style.Base (StateType.Selected).ToXwtColor ());
+							cr.Stroke ();
+
+							cr.SetColor (textColor);
+							cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
+						}
+					} else {
+						cr.SetColor (textColor);
+						cr.DrawTextLayout (layout, xpos + iconWidth + 2, typos);
 					}
+				
+					if (icon != null)
+						cr.DrawImage (icon, xpos, iypos);
+				
+					ypos += rowHeight;
+					n++;
+				
+					//reset the markup or it carries over to the next SetText
+					if (hasMarkup)
+						layout.Markup = string.Empty;
 				}
-				else
-					window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
-				
-				if (icon != null)
-					window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-				
-				ypos += rowHeight;
-				n++;
-				
-				//reset the markup or it carries over to the next SetText
-				if (hasMarkup)
-					layout.SetMarkup (string.Empty);
 			}
 		}
 		
@@ -303,12 +311,12 @@ namespace Mono.TextEditor.PopupWindow
 		{
 			//int winHeight = 200;
 			int lvWidth, lvHeight;
-			int rowWidth;
-			
+
 			this.GetSizeRequest (out lvWidth, out lvHeight);
 
-			layout.GetPixelSize (out rowWidth, out rowHeight);
-			rowHeight += padding;
+			var s = layout.GetSize ();
+			rowHeight = (int)s.Height + padding;
+
 			visibleRows = 7;//(winHeight + padding - margin * 2) / rowHeight;
 			
 			int newHeight;
@@ -334,11 +342,9 @@ namespace Mono.TextEditor.PopupWindow
 			this.GdkWindow.Background = this.Style.Base (StateType.Normal);
 			if (layout != null)
 				layout.Dispose ();
-			layout = PangoUtil.CreateLayout (this);
-			layout.Wrap = Pango.WrapMode.Char;
+			layout = new Xwt.Drawing.TextLayout ();
+			layout.Trimming = Xwt.Drawing.TextTrimming.Word;
 			
-			FontDescription des = this.Style.FontDescription.Copy();
-			layout.FontDescription = des;
 			CalcVisibleRows ();
 		}
 	}

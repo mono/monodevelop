@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (Owner.BackgroundImage == null)
 					return;
 
-				context.RenderTiled (Owner.BackgroundImage, Allocation, new Gdk.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset), opacity);
+				context.RenderTiled (this, Owner.BackgroundImage, Allocation, new Gdk.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset), opacity);
 			}
 
 			void DrawBackground (Cairo.Context context, Gdk.Rectangle area)
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (Owner.BackgroundImage == null)
 					return;
 
-				context.RenderTiled (Owner.BackgroundImage, Allocation, Allocation, 1);
+				context.RenderTiled (this, Owner.BackgroundImage, Allocation, Allocation, 1);
 			}
 
 			protected override bool OnExposeEvent (EventExpose evnt)

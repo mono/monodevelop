@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public Gdk.Pixbuf GetIcon (int n)
+		public Xwt.Drawing.Image GetIcon (int n)
 		{
 			return Values != null ? Values.GetIcon (n) : null;
 		}

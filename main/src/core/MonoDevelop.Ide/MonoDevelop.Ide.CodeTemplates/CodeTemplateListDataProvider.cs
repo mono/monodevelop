@@ -57,12 +57,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public Gdk.Pixbuf GetIcon (int index)
+		public Xwt.Drawing.Image GetIcon (int index)
 		{
 			string iconName = itemList[index].IconName;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
-			return ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);
+			return ImageService.GetIcon (iconName, Gtk.IconSize.Menu);
 		}
 		
 		public int Count {

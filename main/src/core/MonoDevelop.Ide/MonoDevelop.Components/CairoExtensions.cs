@@ -435,9 +435,9 @@ namespace MonoDevelop.Components
 			CAIRO_EXTEND_PAD
 		}
 
-		public static void RenderTiled (this Cairo.Context self, Xwt.Drawing.Image source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
+		public static void RenderTiled (this Cairo.Context self, Gtk.Widget target, Xwt.Drawing.Image source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
 		{
-			var ctx = Xwt.Toolkit.CurrentEngine.WrapContext (self);
+			var ctx = Xwt.Toolkit.CurrentEngine.WrapContext (target, self);
 			ctx.Save ();
 			ctx.Rectangle (clip.X, clip.Y, clip.Width, clip.Height);
 			ctx.Clip ();
