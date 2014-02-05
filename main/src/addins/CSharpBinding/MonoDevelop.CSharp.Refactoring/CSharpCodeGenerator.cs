@@ -1033,7 +1033,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var fixer = new ConstructFixer (doc.GetFormattingOptions ());
+			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
 			int newOffset;
 			if (fixer.TryFix (doc.Editor.Document, doc.Editor.Caret.Offset, out newOffset)) {
 				doc.Editor.Caret.Offset = newOffset;
