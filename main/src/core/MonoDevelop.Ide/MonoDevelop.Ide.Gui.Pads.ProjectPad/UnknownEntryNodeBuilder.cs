@@ -55,10 +55,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (entry.UnloadedEntry) {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
-				Xwt.Drawing.Image gicon = Context.GetComposedIcon (icon, "fade");
+				Xwt.Drawing.Image gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
 				if (gicon == null) {
-					gicon = icon.WithAlpha (0.5);
-					Context.CacheComposedIcon (icon, "fade", gicon);
+					gicon = nodeInfo.Icon.WithAlpha (0.5);
+					Context.CacheComposedIcon (nodeInfo.Icon, "fade", gicon);
 				}
 				nodeInfo.Icon = gicon;
 				nodeInfo.Label = GettextCatalog.GetString ("<span foreground='grey'>{0} <span size='small'>(Unavailable)</span></span>", GLib.Markup.EscapeText (entry.Name));
