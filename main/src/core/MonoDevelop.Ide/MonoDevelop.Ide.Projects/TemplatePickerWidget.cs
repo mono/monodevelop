@@ -508,8 +508,8 @@ namespace MonoDevelop.Ide.Projects
 				filterModel.VisibleFunc = FilterFuncWrapper;
 				
 				var col = new TreeViewColumn ();
-				var crp = new CellRendererIcon () {
-					StockSize = (uint) Gtk.IconSize.Dnd,
+				var crp = new CellRendererImage () {
+					StockSize = Gtk.IconSize.Dnd,
 					Ypad = 2,
 				};
 				col.PackStart (crp, false);
@@ -550,7 +550,7 @@ namespace MonoDevelop.Ide.Projects
 			{
 				var item = (TemplateItem) model.GetValue (iter, 0);
 				var id = item.Template.Icon.IsNull ? "md-project" : item.Template.Icon.ToString ();
-				((CellRendererIcon)cell).StockId = id;
+				((CellRendererImage)cell).StockId = id;
 			}
 			
 			public void Filter (Func<TemplateItem,bool> filter)

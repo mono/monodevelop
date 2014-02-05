@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			CellRendererToggle cellToggle = new CellRendererToggle();
 //			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
-			var crc = new CellRendererIcon ();
+			var crc = new CellRendererImage ();
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;

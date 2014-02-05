@@ -31,6 +31,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.RegexToolkit
 			
 			var col = new TreeViewColumn ();
 			this.elementsTreeview.AppendColumn (col);
-			var pix = new CellRendererPixbuf ();
+			var pix = new CellRendererImage ();
 			var cellRendText = new CellRendererText ();
 			
 			col.PackStart (pix, false);

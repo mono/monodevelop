@@ -159,13 +159,13 @@ namespace MonoDevelop.Gettext
 			treeviewEntries.Selection.Changed += OnEntrySelected;
 			
 			// found in tree view
-			foundInStore = new ListStore (typeof(string), typeof(string), typeof(string), typeof(Pixbuf));
+			foundInStore = new ListStore (typeof(string), typeof(string), typeof(string), typeof(Xwt.Drawing.Image));
 			this.treeviewFoundIn.Model = foundInStore;
 			
 			TreeViewColumn fileColumn = new TreeViewColumn ();
-			var pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererImage ();
 			fileColumn.PackStart (pixbufRenderer, false);
-			fileColumn.SetAttributes (pixbufRenderer, "pixbuf", FoundInColumns.Pixbuf);
+			fileColumn.SetAttributes (pixbufRenderer, "image", FoundInColumns.Pixbuf);
 			
 			CellRendererText textRenderer = new CellRendererText ();
 			fileColumn.PackStart (textRenderer, true);

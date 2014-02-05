@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using System.Globalization;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -81,7 +82,7 @@ namespace MonoDevelop.Ide.Projects
 
             TreeViewColumn secondColumn = new TreeViewColumn ();
             secondColumn.Title = GettextCatalog.GetString ("Assembly");
-            CellRendererIcon crp = new CellRendererIcon ();
+			CellRendererImage crp = new CellRendererImage ();
             secondColumn.PackStart (crp, false);
             secondColumn.AddAttribute (crp, "icon-id", ColIcon);
 

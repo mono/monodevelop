@@ -28,15 +28,13 @@
 
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components.Commands;
-using Mono.Addins;
 using Gtk;
-using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -75,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Command");
 			col.Spacing = 4;
-			CellRendererIcon crp = new CellRendererIcon ();
+			CellRendererImage crp = new CellRendererImage ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock-id", iconCol);
 			col.AddAttribute (crp, "visible", iconVisibleCol);

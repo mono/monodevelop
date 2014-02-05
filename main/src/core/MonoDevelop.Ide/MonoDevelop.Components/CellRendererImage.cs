@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Xwt.Drawing;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -33,9 +34,41 @@ namespace MonoDevelop.Components
 		Image image;
 		Image imageOpen;
 		Image imageClosed;
+		IconId icon;
+		Gtk.IconSize stockSize = Gtk.IconSize.Menu;
 
 		public CellRendererImage ()
 		{
+		}
+
+		[GLib.Property ("stock-size")]
+		public Gtk.IconSize StockSize {
+			get {
+				return stockSize;
+			}
+			set {
+				stockSize = value;
+			}
+		}
+
+		[GLib.Property ("icon-id")]
+		public IconId IconId {
+			get {
+				return icon;
+			}
+			set {
+				icon = value;
+			}
+		}
+
+		[GLib.Property ("stock-id")]
+		public string StockId {
+			get {
+				return icon;
+			}
+			set {
+				icon = value;
+			}
 		}
 
 		[GLib.Property ("image")]
@@ -74,7 +107,7 @@ namespace MonoDevelop.Components
 				return;
 
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
-				var img = IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
+				var img = GetImate ();
 				var x = Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
 				var y = Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
 				ctx.DrawImage (widget, img, x, y);
@@ -83,7 +116,7 @@ namespace MonoDevelop.Components
 
 		protected void GetImageInfo (Gdk.Rectangle cell_area, out Image img, out int x, out int y)
 		{
-			img = IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
+			img = GetImate ();
 			x = (int)(Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2));
 			y = (int)(Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2));
 		}
@@ -97,6 +130,14 @@ namespace MonoDevelop.Components
 				width = height = 0;
 
 			x_offset = y_offset = 0;
+		}
+
+		Xwt.Drawing.Image GetImate ()
+		{
+			if (icon.IsNull)
+				return IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
+			else
+				return Ide.ImageService.GetIcon (icon);
 		}
 	}
 }

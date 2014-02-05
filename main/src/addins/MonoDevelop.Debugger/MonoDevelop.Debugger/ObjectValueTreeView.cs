@@ -78,7 +78,7 @@ namespace MonoDevelop.Debugger
 		readonly CellRendererText crtValue;
 		readonly CellRendererText crtType;
 		readonly CellRendererImage crpButton;
-		readonly CellRendererIcon crpPin;
+		readonly CellRendererImage crpPin;
 		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererImage crpViewer;
 		Entry editEntry;
@@ -148,7 +148,7 @@ namespace MonoDevelop.Debugger
 			
 			expCol = new TreeViewColumn ();
 			expCol.Title = GettextCatalog.GetString ("Name");
-			CellRendererIcon crp = new CellRendererIcon ();
+			CellRendererImage crp = new CellRendererImage ();
 			expCol.PackStart (crp, false);
 			expCol.AddAttribute (crp, "stock_id", IconColumn);
 			crtExp = new CellRendererText ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.Debugger
 			AppendColumn (typeCol);
 			
 			pinCol = new TreeViewColumn ();
-			crpPin = new CellRendererIcon ();
+			crpPin = new CellRendererImage ();
 			pinCol.PackStart (crpPin, false);
 			pinCol.AddAttribute (crpPin, "stock_id", PinIconColumn);
 			crpLiveUpdate = new CellRendererImage ();

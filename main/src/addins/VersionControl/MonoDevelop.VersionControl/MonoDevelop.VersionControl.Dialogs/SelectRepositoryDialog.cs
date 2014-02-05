@@ -5,6 +5,7 @@ using System.Collections;
 using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			TreeViewColumn col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Repository");
 			CellRendererText crt = new CellRendererText ();
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererImage crp = new CellRendererImage ();
 			col.PackStart (crp, false);
 			col.PackStart (crt, true);
 			col.AddAttribute (crp, "stock-id", IconCol);

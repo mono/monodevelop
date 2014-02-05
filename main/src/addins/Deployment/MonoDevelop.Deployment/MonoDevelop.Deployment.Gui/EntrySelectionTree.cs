@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -32,7 +33,7 @@ namespace MonoDevelop.Deployment.Gui
 			Gtk.CellRendererToggle ctog = new CellRendererToggle ();
 			ctog.Toggled += OnToggled;
 			col.PackStart (ctog, false);
-			Gtk.CellRendererPixbuf cr = new Gtk.CellRendererPixbuf();
+			CellRendererImage cr = new CellRendererImage();
 			col.PackStart (cr, false);
 			Gtk.CellRendererText crt = new Gtk.CellRendererText();
 			col.PackStart (crt, true);

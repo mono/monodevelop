@@ -35,6 +35,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace CBinding
 {
@@ -71,7 +72,7 @@ namespace CBinding
 			
 			Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
 			
-			Gtk.CellRendererPixbuf pixbufRenderer = new Gtk.CellRendererPixbuf ();
+			CellRendererImage pixbufRenderer = new CellRendererImage ();
 			pixbufRenderer.StockId = "md-package";
 			
 			normalPackageListStore.DefaultSortFunc = NormalPackageCompareNodes;

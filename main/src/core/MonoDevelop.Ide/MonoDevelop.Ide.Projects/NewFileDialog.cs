@@ -37,6 +37,7 @@ using MonoDevelop.Projects;
 using Gtk;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -744,8 +745,8 @@ namespace MonoDevelop.Ide.Projects
 				Model = templateStore;
 				
 				TreeViewColumn col = new TreeViewColumn ();
-				CellRendererIcon crp = new CellRendererIcon ();
-				crp.StockSize = (uint) Gtk.IconSize.Dnd;
+				CellRendererImage crp = new CellRendererImage ();
+				crp.StockSize = Gtk.IconSize.Dnd;
 				crp.Ypad = 2;
 				col.PackStart (crp, false);
 				col.AddAttribute (crp, "stock-id", 0);

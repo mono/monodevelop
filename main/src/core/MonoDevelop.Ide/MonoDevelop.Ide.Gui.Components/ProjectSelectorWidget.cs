@@ -28,6 +28,7 @@ using System.Linq;
 using MonoDevelop.Projects;
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			Gtk.CellRendererToggle ctog = new CellRendererToggle ();
 			ctog.Toggled += OnToggled;
 			col.PackStart (ctog, false);
-			Gtk.CellRendererPixbuf cr = new Gtk.CellRendererPixbuf();
+			var cr = new CellRendererImage ();
 			col.PackStart (cr, false);
 			Gtk.CellRendererText crt = new Gtk.CellRendererText();
 			crt.Mode &= ~CellRendererMode.Activatable;

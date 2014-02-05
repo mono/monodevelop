@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -152,8 +153,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			TreeViewColumn dirCol = new TreeViewColumn ();
 			dirCol.Title = GettextCatalog.GetString ("Directory");
-			var iconRenderer = new CellRendererPixbuf ();
-			iconRenderer.StockSize = (int) Gtk.IconSize.Menu;
+			var iconRenderer = new CellRendererImage ();
+			iconRenderer.StockSize = Gtk.IconSize.Menu;
 			CellRendererText textRenderer = new CellRendererText ();
 			dirCol.PackStart (iconRenderer, false);
 			dirCol.PackStart (textRenderer, false);

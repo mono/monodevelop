@@ -30,6 +30,7 @@ using System;
 using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Gettext
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.Gettext
 			col.AddAttribute (cellRendererToggle, "active", 1);
 			col.AddAttribute (cellRendererToggle, "visible", 4);
 			
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererImage crp = new CellRendererImage ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", 0);
 			

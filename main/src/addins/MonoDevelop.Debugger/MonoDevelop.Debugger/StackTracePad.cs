@@ -91,7 +91,7 @@ namespace MonoDevelop.Debugger
 			tree.DoPopupMenu = ShowPopup;
 
 			TreeViewColumn col = new TreeViewColumn ();
-			CellRenderer crp = new CellRendererIcon ();
+			CellRenderer crp = new CellRendererImage ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "stock_id", IconColumn);
 			tree.AppendColumn (col);
