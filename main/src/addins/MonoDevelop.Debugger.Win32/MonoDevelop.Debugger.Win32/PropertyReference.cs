@@ -40,6 +40,7 @@ namespace MonoDevelop.Debugger.Win32
 		readonly CorModule module;
 		readonly CorType declaringType;
 		readonly CorValRef.ValueLoader loader;
+		readonly ObjectValueFlags flags;
 		CorValRef cachedValue;
 
 		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
@@ -56,6 +57,8 @@ namespace MonoDevelop.Debugger.Win32
 			this.index = index;
 			if (!prop.GetGetMethod (true).IsStatic)
 				this.thisobj = thisobj;
+
+			flags = GetFlags (prop);
 
 			loader = delegate {
 				return ((CorValRef)Value).Val;
@@ -134,31 +137,36 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		internal static ObjectValueFlags GetFlags (PropertyInfo prop)
+		{
+			ObjectValueFlags flags = ObjectValueFlags.Property;
+			MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
+
+			if (prop.GetSetMethod (true) == null)
+				flags |= ObjectValueFlags.ReadOnly;
+
+			if (mi.IsStatic)
+				flags |= ObjectValueFlags.Global;
+
+			if (mi.IsFamilyAndAssembly)
+				flags |= ObjectValueFlags.Internal;
+			else if (mi.IsFamilyOrAssembly)
+				flags |= ObjectValueFlags.InternalProtected;
+			else if (mi.IsFamily)
+				flags |= ObjectValueFlags.Protected;
+			else if (mi.IsPublic)
+				flags |= ObjectValueFlags.Public;
+			else
+				flags |= ObjectValueFlags.Private;
+
+			if (!prop.CanWrite)
+				flags |= ObjectValueFlags.ReadOnly;
+
+			return flags;
+		}
+
 		public override ObjectValueFlags Flags {
 			get {
-				ObjectValueFlags flags = ObjectValueFlags.Property;
-				MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
-
-				if (prop.GetSetMethod (true) == null)
-					flags |= ObjectValueFlags.ReadOnly;
-
-				if (mi.IsStatic)
-					flags |= ObjectValueFlags.Global;
-
-				if (mi.IsFamilyAndAssembly)
-					flags |= ObjectValueFlags.Internal;
-				else if (mi.IsFamilyOrAssembly)
-					flags |= ObjectValueFlags.InternalProtected;
-				else if (mi.IsFamily)
-					flags |= ObjectValueFlags.Protected;
-				else if (mi.IsPublic)
-					flags |= ObjectValueFlags.Public;
-				else
-					flags |= ObjectValueFlags.Private;
-
-				if (!prop.CanWrite)
-					flags |= ObjectValueFlags.ReadOnly;
-
 				return flags;
 			}
 		}

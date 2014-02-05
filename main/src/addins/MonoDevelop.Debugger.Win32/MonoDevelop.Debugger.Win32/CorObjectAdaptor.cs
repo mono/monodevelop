@@ -42,6 +42,9 @@ using SR = System.Reflection;
 using CorDebugHandleType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugHandleType;
 using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
+using Microsoft.Samples.Debugging.Extensions;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -93,7 +96,22 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsClass (EvaluationContext ctx, object type)
 		{
-			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_CLASS && ((CorType)type).Class != null;
+			var t = (CorType) type;
+			var cctx = (CorEvaluationContext)ctx;
+			Type tt;
+			// Primitive check
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (t.Type, out tt))
+				return false;
+
+			if (IsIEnumerable (t, cctx.Session))
+				return false;
+
+			return (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class != null) || IsValueType (t);
+		}
+
+		public override bool IsGenericType (EvaluationContext ctx, object type)
+		{
+			return (((CorType)type).Type == CorElementType.ELEMENT_TYPE_GENERICINST) || base.IsGenericType (ctx, type);
 		}
 
 		public override string GetTypeName (EvaluationContext ctx, object gtype)
@@ -101,7 +119,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorType type = (CorType) gtype;
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			Type t;
-			if (CorMetadataImport.CoreTypes.TryGetValue (type.Type, out t))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
 				return t.FullName;
 			try {
 				if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
@@ -116,8 +134,8 @@ namespace MonoDevelop.Debugger.Win32
 				return type.GetTypeInfo (cctx.Session).FullName;
 			}
 			catch (Exception ex) {
-				Console.WriteLine (ex);
-				throw;
+				ctx.WriteDebuggerError (ex);
+				return t.FullName;
 			}
 		}
 
@@ -137,7 +155,7 @@ namespace MonoDevelop.Debugger.Win32
 			return CastArray<object> (types);
 		}
 
-		IEnumerable<Type> GetAllTypes (EvaluationContext gctx)
+		static IEnumerable<Type> GetAllTypes (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
@@ -149,19 +167,27 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		Dictionary<string, CorType> typeCache = new Dictionary<string, CorType> ();
 		public override object GetType (EvaluationContext gctx, string name, object[] gtypeArgs)
 		{
+			CorType fastRet;
+			if (typeCache.TryGetValue (name, out fastRet))
+				return fastRet;
+
 			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
 
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
 				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
 				if (mi != null) {
-					foreach (Type t in mi.DefinedTypes)
+					foreach (Type t in mi.DefinedTypes) {
 						if (t.FullName == name) {
 							CorClass cls = mod.GetClassFromToken (t.MetadataToken);
-							return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+							fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
+							typeCache [name] = fastRet;
+							return fastRet;
 						}
+					}
 				}
 			}
 			return null;
@@ -183,14 +209,18 @@ namespace MonoDevelop.Debugger.Win32
             if ((obj is CorReferenceValue) && ((CorReferenceValue)obj).IsNull)
                 return string.Empty;
 
-            CorStringValue stringVal = obj as CorStringValue;
+            var stringVal = obj as CorStringValue;
             if (stringVal != null)
                 return stringVal.String;
 
-            CorArrayValue arr = obj as CorArrayValue;
+			var genericVal = obj as CorGenericValue;
+			if (genericVal != null)
+				return genericVal.GetValue ().ToString ();
+
+            var arr = obj as CorArrayValue;
             if (arr != null)
             {
-                StringBuilder tn = new StringBuilder (GetDisplayTypeName (ctx, arr.ExactType.FirstTypeParameter));
+                var tn = new StringBuilder (GetDisplayTypeName (ctx, arr.ExactType.FirstTypeParameter));
                 tn.Append("[");
                 int[] dims = arr.GetDimensions();
                 for (int n = 0; n < dims.Length; n++)
@@ -203,8 +233,8 @@ namespace MonoDevelop.Debugger.Win32
                 return tn.ToString();
             }
 
-            CorEvaluationContext cctx = (CorEvaluationContext)ctx;
-            CorObjectValue co = obj as CorObjectValue;
+            var cctx = (CorEvaluationContext)ctx;
+            var co = obj as CorObjectValue;
             if (co != null)
             {
                 if (IsEnum (ctx, co.ExactType))
@@ -242,13 +272,13 @@ namespace MonoDevelop.Debugger.Win32
                         return nval.ToString ();
                 }
 
-				CorType targetType = (CorType)GetValueType (ctx, objr);
+				var targetType = (CorType)GetValueType (ctx, objr);
 
 				MethodInfo met = OverloadResolve (cctx, "ToString", targetType, new CorType[0], BindingFlags.Public | BindingFlags.Instance, false);
 				if (met != null && met.DeclaringType.FullName != "System.Object") {
-					object[] args = new object[0];
+					var args = new object[0];
 					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", args, args);
-					CorStringValue res = GetRealObject (ctx, ores) as CorStringValue;
+					var res = GetRealObject (ctx, ores) as CorStringValue;
                     if (res != null)
                         return res.String;
                 }
@@ -256,22 +286,16 @@ namespace MonoDevelop.Debugger.Win32
 				return GetDisplayTypeName (ctx, targetType);
             }
 
-            CorGenericValue genVal = obj as CorGenericValue;
-            if (genVal != null)
-            {
-                return genVal.GetValue().ToString ();
-            }
-
             return base.CallToString(ctx, obj);
         }
 
 		public override object CreateTypeObject (EvaluationContext ctx, object type)
 		{
-			CorType t = (CorType)type;
+			var t = (CorType)type;
 			string tname = GetTypeName (ctx, t) + ", " + System.IO.Path.GetFileNameWithoutExtension (t.Class.Module.Assembly.Name);
-			CorType stype = (CorType) GetType (ctx, "System.Type");
-			object[] argTypes = new object[] { GetType (ctx, "System.String") };
-			object[] argVals = new object[] { CreateValue (ctx, tname) };
+			var stype = (CorType) GetType (ctx, "System.Type");
+			object[] argTypes = { GetType (ctx, "System.String") };
+			object[] argVals = { CreateValue (ctx, tname) };
 			return RuntimeInvoke (ctx, stype, null, "GetType", argTypes, argVals);
 		}
 
@@ -300,10 +324,10 @@ namespace MonoDevelop.Debugger.Win32
 			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, arr) as CorArrayValue;
 			
 			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
-			realArr.SetElement (new int[] { 0 }, val);
+			realArr.SetElement (new [] { 0 }, val);
 			
 			CorType at = (CorType) GetType (ctx, "System.Array");
-			object[] argTypes = new object[] { GetType (ctx, "System.Int32") };
+			object[] argTypes = { GetType (ctx, "System.Int32") };
 			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
 		}
 
@@ -335,6 +359,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
 			MethodInfo method = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
 			ParameterInfo[] parameters = method.GetParameters ();
+			// TODO: Check this.
 			for (int n = 0; n < parameters.Length; n++) {
 				if (parameters[n].ParameterType == typeof(object) && (IsValueType (ctx, argValues[n])))
 					argValues[n] = Box (ctx, argValues[n]);
@@ -374,9 +399,16 @@ namespace MonoDevelop.Debugger.Win32
 							candidates.Add (met);
 					}
 				}
+
+				if (argtypes == null && candidates.Count > 0)
+					break; // when argtypes is null, we are just looking for *any* match (not a specific match)
+
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
-				currentType = currentType.Base;
+				if (rtype.BaseType == null && rtype.FullName != "System.Object")
+					currentType = ctx.Adapter.GetType (ctx, "System.Object") as CorType;
+				else
+					currentType = currentType.Base;
 			}
 
 			return OverloadResolve (ctx, GetTypeName (ctx, type), methodName, argtypes, candidates, throwIfNotFound);
@@ -481,30 +513,32 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override string[] GetImportedNamespaces (EvaluationContext ctx)
 		{
-			Set<string> list = new Set<string> ();
+			var list = new HashSet<string> ();
 			foreach (Type t in GetAllTypes (ctx)) {
 				list.Add (t.Namespace);
 			}
-			string[] arr = new string[list.Count];
-			list.CopyTo (arr, 0);
+			var arr = new string[list.Count];
+			list.CopyTo (arr);
 			return arr;
 		}
 
 		public override void GetNamespaceContents (EvaluationContext ctx, string namspace, out string[] childNamespaces, out string[] childTypes)
 		{
-			Set<string> nss = new Set<string> ();
-			List<string> types = new List<string> ();
+			var nss = new HashSet<string> ();
+			var types = new HashSet<string> ();
+			string namspacePrefix = namspace.Length > 0 ? namspace + "." : "";
 			foreach (Type t in GetAllTypes (ctx)) {
-				if (t.Namespace == namspace)
+				if (t.Namespace == namspace || t.Namespace.StartsWith (namspacePrefix, StringComparison.InvariantCulture)) {
+					nss.Add (t.Namespace);
 					types.Add (t.FullName);
-				else if (t.Namespace.StartsWith (namspace + ".", StringComparison.Ordinal)) {
-					if (t.Namespace.IndexOf ('.', namspace.Length + 1) == -1)
-						nss.Add (t.Namespace);
 				}
 			}
+
 			childNamespaces = new string[nss.Count];
-			nss.CopyTo (childNamespaces, 0);
-			childTypes = types.ToArray ();
+			nss.CopyTo (childNamespaces);
+
+			childTypes = new string [types.Count];
+			types.CopyTo (childTypes);
 		}
 
 		bool IsAssignableFrom (CorEvaluationContext ctx, Type baseType, CorType ctype)
@@ -517,7 +551,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (tname == ctypeName)
 				return true;
 
-			if (CorMetadataImport.CoreTypes.ContainsKey (ctype.Type))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (ctype.Type))
 				return false;
 
 			switch (ctype.Type) {
@@ -538,7 +572,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override object TryCast (EvaluationContext ctx, object val, object type)
 		{
-			CorType ctype = (CorType) GetValueType (ctx, val);
+			var ctype = (CorType) GetValueType (ctx, val);
             CorValue obj = GetRealObject(ctx, val);
             string tname = GetTypeName(ctx, type);
             string ctypeName = GetValueTypeName (ctx, val);
@@ -554,26 +588,9 @@ namespace MonoDevelop.Debugger.Win32
             if (obj is CorArrayValue)
                 return (ctypeName == tname || ctypeName == "System.Array") ? val : null;
 
-            if (obj is CorObjectValue)
-            {
-				CorObjectValue co = (CorObjectValue)obj;
-				if (IsEnum (ctx, co.ExactType)) {
-					ValueReference rval = GetMember (ctx, null, val, "value__");
-					return TryCast (ctx, rval.Value, type);
-				}
-
-                while (ctype != null)
-                {
-                    if (GetTypeName(ctx, ctype) == tname)
-                        return val;
-                    ctype = ctype.Base;
-                }
-                return null;
-            }
-
-            CorGenericValue genVal = obj as CorGenericValue;
-            if (genVal != null) {
-                Type t = Type.GetType(tname);
+			var genVal = obj as CorGenericValue;
+			if (genVal != null) {
+				Type t = Type.GetType(tname);
 				try {
 					if (t != null && t.IsPrimitive && t != typeof (string)) {
 						object pval = genVal.GetValue ();
@@ -591,6 +608,23 @@ namespace MonoDevelop.Debugger.Win32
 					}
 				} catch {
 				}
+			}
+
+            if (obj is CorObjectValue)
+            {
+				var co = (CorObjectValue)obj;
+				if (IsEnum (ctx, co.ExactType)) {
+					ValueReference rval = GetMember (ctx, null, val, "value__");
+					return TryCast (ctx, rval.Value, type);
+				}
+
+                while (ctype != null)
+                {
+                    if (GetTypeName(ctx, ctype) == tname)
+                        return val;
+                    ctype = ctype.Base;
+                }
+                return null;
             }
             return null;
         }
@@ -604,8 +638,8 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			object systemEnumType = GetType (ctx, "System.Enum");
 			object enumType = CreateTypeObject (ctx, type);
-			object[] argTypes = new object[] { GetValueType (ctx, enumType), GetValueType (ctx, val) };
-			object[] args = new object[] { enumType, val };
+			object[] argTypes = { GetValueType (ctx, enumType), GetValueType (ctx, val) };
+			object[] args = { enumType, val };
 			return RuntimeInvoke (ctx, systemEnumType, null, "ToObject", argTypes, args);
 		}
 
@@ -623,7 +657,7 @@ namespace MonoDevelop.Debugger.Win32
 				});
 			}
 
-			foreach (KeyValuePair<CorElementType, Type> tt in CorMetadataImport.CoreTypes) {
+			foreach (KeyValuePair<CorElementType, Type> tt in MetadataHelperFunctionsExtensions.CoreTypes) {
 				if (tt.Value == value.GetType ()) {
 					CorValue val = ctx.Eval.CreateValue (tt.Key, null);
 					CorGenericValue gv = val.CastToGenericValue ();
@@ -631,7 +665,8 @@ namespace MonoDevelop.Debugger.Win32
 					return new CorValRef (val);
 				}
 			}
-			throw new NotSupportedException ();
+			ctx.WriteDebuggerError (new NotSupportedException (String.Format ("Unable to create value for type: {0}", value.GetType ())));
+			return null;
 		}
 
 		public override object CreateValue (EvaluationContext ctx, object type, params object[] gargs)
@@ -678,9 +713,8 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue val = CorObjectAdaptor.GetRealObject (ctx, arr);
 			
 			if (val is CorArrayValue)
-				return new ArrayAdaptor (ctx, (CorValRef) arr, (CorArrayValue) val);
-			else
-				return null;
+				return new ArrayAdaptor (ctx, (CorValRef)arr, (CorArrayValue)val);
+			return null;
 		}
 		
 		public override IStringAdaptor CreateStringAdaptor (EvaluationContext ctx, object str)
@@ -688,9 +722,8 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue val = CorObjectAdaptor.GetRealObject (ctx, str);
 			
 			if (val is CorStringValue)
-				return new StringAdaptor (ctx, (CorValRef) str, (CorStringValue) val);
-			else
-				return null;
+				return new StringAdaptor (ctx, (CorValRef)str, (CorStringValue)val);
+			return null;
 		}
 
 		public static CorValue GetRealObject (EvaluationContext cctx, object objr)
@@ -736,7 +769,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (obj.ExactType.Type == CorElementType.ELEMENT_TYPE_STRING)
 					return obj.CastToStringValue ();
 
-				if (CorMetadataImport.CoreTypes.ContainsKey (obj.Type)) {
+				if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (obj.Type)) {
 					CorGenericValue genVal = obj.CastToGenericValue ();
 					if (genVal != null)
 						return genVal;
@@ -830,7 +863,7 @@ namespace MonoDevelop.Debugger.Win32
 					catch {
 						// Ignore
 					}
-					if (mi != null && mi.GetParameters ().Length > 0) {
+					if (mi != null && !mi.IsStatic && mi.GetParameters ().Length > 0) {
 						candidates.Add (mi);
 						props.Add (prop);
 						propTypes.Add (t);
@@ -841,6 +874,10 @@ namespace MonoDevelop.Debugger.Win32
 
 			MethodInfo idx = OverloadResolve (cctx, GetTypeName (ctx, targetType), null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
+
+			if (props [i].GetGetMethod (true) == null)
+				return null;
+
 			return new PropertyReference (ctx, props[i], (CorValRef)target, propTypes[i], values);
 		}
 
@@ -874,19 +911,48 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)
 		{
-			CorType t = (CorType) tt;
-			CorValRef val = (CorValRef) gval;
+			var subProps = new Dictionary<string, PropertyInfo> ();
+			var t = (CorType) tt;
+			var val = (CorValRef) gval;
+			CorType realType = null;
+			if (gval != null && (bindingFlags & BindingFlags.Instance) != 0)
+				realType = GetValueType (ctx, gval) as CorType;
 
-			if (t.Class == null)
+			if (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class == null)
 				yield break;
 
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 
+			// First of all, get a list of properties overriden in sub-types
+			while (realType != null && realType != t) {
+				Type type = realType.GetTypeInfo (cctx.Session);
+				foreach (PropertyInfo prop in type.GetProperties (bindingFlags | BindingFlags.DeclaredOnly)) {
+					MethodInfo mi = prop.GetGetMethod (true);
+					if (mi == null || mi.GetParameters ().Length != 0 || mi.IsAbstract || !mi.IsVirtual || mi.IsStatic)
+						continue;
+					if (mi.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!mi.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
+					subProps [prop.Name] = prop;
+				}
+				realType = realType.Base;
+			}
+
 			while (t != null) {
 				Type type = t.GetTypeInfo (cctx.Session);
 
-				foreach (FieldInfo field in type.GetFields (bindingFlags))
+				foreach (FieldInfo field in type.GetFields (bindingFlags)) {
+					if (field.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+						continue;
+					if (!field.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+						continue;
+					if (field.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!field.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
 					yield return new FieldReference (ctx, val, t, field);
+				}
 
 				foreach (PropertyInfo prop in type.GetProperties (bindingFlags)) {
 					MethodInfo mi = null;
@@ -895,42 +961,190 @@ namespace MonoDevelop.Debugger.Win32
 					} catch {
 						// Ignore
 					}
-					if (mi != null && mi.GetParameters ().Length == 0)
+					if (mi == null || mi.GetParameters ().Length != 0 || mi.IsAbstract)
+						continue;
+
+					if (mi.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+						continue;
+					if (!mi.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+						continue;
+					if (mi.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+						continue;
+					if (!mi.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+						continue;
+
+					// If a property is overriden, return the override instead of the base property
+					PropertyInfo overridden;
+					if (mi.IsVirtual && subProps.TryGetValue (prop.Name, out overridden)) {
+						mi = overridden.GetGetMethod (true);
+						if (mi == null)
+							continue;
+
+						var declaringType = GetType (ctx, overridden.DeclaringType.FullName) as CorType;
+						yield return new PropertyReference (ctx, overridden, val, declaringType);
+					} else {
 						yield return new PropertyReference (ctx, prop, val, t);
+					}
 				}
 				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;
 				t = t.Base;
 			}
 		}
-		
-		public static string UnscapeString (string text)
+
+		static T FindByName<T> (IEnumerable<T> elems, Func<T,string> getName, string name, bool caseSensitive)
 		{
-			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < text.Length; i++) {
-				char c = text[i];
-				if (c != '\\') {
-					sb.Append (c);
-					continue;
-				}
-				i++;
-				if (i >= text.Length)
-					return null;
-				
-				switch (text[i]) {
-					case '\\': c = '\\'; break;
-					case 'a': c = '\a'; break;
-					case 'b': c = '\b'; break;
-					case 'f': c = '\f'; break;
-					case 'v': c = '\v'; break;
-					case 'n': c = '\n'; break;
-					case 'r': c = '\r'; break;
-					case 't': c = '\t'; break;
-					default: return null;
-				}
-				sb.Append (c);
+			T best = default(T);
+			foreach (T t in elems) {
+				string n = getName (t);
+				if (n == name) 
+					return t;
+				if (!caseSensitive && n.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = t;
 			}
-			return sb.ToString ();
+			return best;
+		}
+
+		static bool IsStatic (PropertyInfo prop)
+		{
+			MethodInfo met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
+			return met.IsStatic;
+		}
+
+		static bool IsAnonymousType (Type type)
+		{
+			return type.Name.StartsWith ("<>__AnonType", StringComparison.Ordinal);
+		}
+
+		static bool IsCompilerGenerated (FieldInfo field)
+		{
+			return field.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
+		}
+
+		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
+		{
+			var cctx = ctx as CorEvaluationContext;
+			var type = t as CorType;
+
+			while (type != null) {
+				var tt = type.GetTypeInfo (cctx.Session);
+				FieldInfo field = FindByName (tt.GetFields (), f => f.Name, name, ctx.CaseSensitive);
+				if (field != null && (field.IsStatic || co != null))
+					return new FieldReference (ctx, co as CorValRef, type, field);
+
+				PropertyInfo prop = FindByName (tt.GetProperties (), p => p.Name, name, ctx.CaseSensitive);
+				if (prop != null && (IsStatic (prop) || co != null)) {
+					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
+					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
+					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (tt) ? "" : "k__BackingField");
+					if ((field = FindByName (tt.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
+						return new FieldReference (ctx, co as CorValRef, type, field, prop.Name, ObjectValueFlags.Property);
+
+					// Backing field not available, so do things the old fashioned way.
+					MethodInfo getter = prop.GetGetMethod (true);
+					if (getter == null)
+						return null;
+
+					return new PropertyReference (ctx, prop, co as CorValRef, type);
+				}
+
+				type = type.Base;
+			}
+
+			return null;
+		}
+
+		static bool IsIEnumerable (Type type)
+		{
+			if (type.Namespace == "System.Collections" && type.Name == "IEnumerable")
+				return true;
+
+			if (type.Namespace == "System.Collections.Generic" && type.Name == "IEnumerable`1")
+				return true;
+
+			return false;
+		}
+
+		static bool IsIEnumerable (CorType type, CorDebuggerSession session)
+		{
+			return IsIEnumerable (type.GetTypeInfo (session));
+		}
+
+		protected override CompletionData GetMemberCompletionData (EvaluationContext ctx, ValueReference vr)
+		{
+			var properties = new HashSet<string> ();
+			var methods = new HashSet<string> ();
+			var fields = new HashSet<string> ();
+			var data = new CompletionData ();
+			var type = vr.Type as CorType;
+			bool isEnumerable = false;
+			Type t;
+
+			var cctx = (CorEvaluationContext)ctx;
+			while (type != null) {
+				t = type.GetTypeInfo (cctx.Session);
+				if (!isEnumerable && IsIEnumerable (t))
+					isEnumerable = true;
+
+				foreach (var field in t.GetFields ()) {
+					if (field.IsStatic || field.IsSpecialName || !field.IsPublic)
+						continue;
+
+					if (fields.Add (field.Name))
+						data.Items.Add (new CompletionItem (field.Name, FieldReference.GetFlags (field)));
+				}
+
+				foreach (var property in t.GetProperties ()) {
+					var getter = property.GetGetMethod (true);
+
+					if (getter == null || getter.IsStatic || !getter.IsPublic)
+						continue;
+
+					if (properties.Add (property.Name))
+						data.Items.Add (new CompletionItem (property.Name, PropertyReference.GetFlags (property)));
+				}
+
+				foreach (var method in t.GetMethods ()) {
+					if (method.IsStatic || method.IsConstructor || method.IsSpecialName || !method.IsPublic)
+						continue;
+
+					if (methods.Add (method.Name))
+						data.Items.Add (new CompletionItem (method.Name, ObjectValueFlags.Method | ObjectValueFlags.Public));
+				}
+
+				if (t.BaseType == null && t.FullName != "System.Object")
+					type = ctx.Adapter.GetType (ctx, "System.Object") as CorType;
+				else
+					type = type.Base;
+			}
+
+			type = vr.Type as CorType;
+			t = type.GetTypeInfo (cctx.Session);
+			foreach (var iface in t.GetInterfaces ()) {
+				if (!isEnumerable && IsIEnumerable (iface)) {
+					isEnumerable = true;
+					break;
+				}
+			}
+
+			if (isEnumerable) {
+				// Look for LINQ extension methods...
+				var linq = ctx.Adapter.GetType (ctx, "System.Linq.Enumerable") as CorType;
+				if (linq != null) {
+					var linqt = linq.GetTypeInfo (cctx.Session);
+					foreach (var method in linqt.GetMethods ()) {
+						if (!method.IsStatic || method.IsConstructor || method.IsSpecialName || !method.IsPublic)
+							continue;
+
+						if (methods.Add (method.Name))
+							data.Items.Add (new CompletionItem (method.Name, ObjectValueFlags.Method | ObjectValueFlags.Public));
+					}
+				}
+			}
+
+			data.ExpressionLength = 0;
+
+			return data;
 		}
 
 		public override object TargetObjectToObject (EvaluationContext ctx, object objr)
@@ -941,8 +1155,18 @@ namespace MonoDevelop.Debugger.Win32
 				return new EvaluationResult ("(null)");
 
 			CorStringValue stringVal = obj as CorStringValue;
-			if (stringVal != null)
-				return stringVal.String;
+			if (stringVal != null) {
+				string str;
+				if (ctx.Options.EllipsizeStrings) {
+					str = stringVal.String;
+					if (str.Length > ctx.Options.EllipsizedLength)
+						str = str.Substring (0, ctx.Options.EllipsizedLength) + EvaluationOptions.Ellipsis;
+				} else {
+					str = stringVal.String;
+				}
+				return str;
+
+			}
 
 			CorArrayValue arr = obj as CorArrayValue;
 			if (arr != null)
@@ -959,12 +1183,122 @@ namespace MonoDevelop.Debugger.Win32
 			return base.TargetObjectToObject (ctx, objr);
 		}
 
-		protected override ValueReference OnGetThisReference (EvaluationContext gctx)
+		static bool InGeneratedClosureOrIteratorType (CorEvaluationContext ctx)
 		{
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			if (ctx.Frame.FrameType != CorFrameType.ILFrame || ctx.Frame.Function == null)
+			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			if (mi == null || mi.IsStatic)
+				return false;
+
+			Type tm = mi.DeclaringType;
+			return IsGeneratedType (tm);
+		}
+
+		internal static bool IsGeneratedType (string name)
+		{
+			//
+			// This should cover all C# generated special containers
+			// - anonymous methods
+			// - lambdas
+			// - iterators
+			// - async methods
+			//
+			// which allow stepping into
+			//
+
+			return name[0] == '<' &&
+				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
+				(name.IndexOf (">c__", StringComparison.Ordinal) > 0 ||
+				// csc is of form <${NAME}>d__${NUMBER}
+				name.IndexOf (">d__", StringComparison.Ordinal) > 0);
+		}
+
+		internal static bool IsGeneratedType (Type tm)
+		{
+			return IsGeneratedType (tm.Name);
+		}
+
+		ValueReference GetHoistedThisReference (CorEvaluationContext cx)
+		{
+			try {
+				CorValRef vref = new CorValRef (delegate {
+					return cx.Frame.GetArgument (0);
+				});
+				var type = (CorType) GetValueType (cx, vref);
+				return GetHoistedThisReference (cx, type, vref);
+			} catch (Exception) {
+			}
+			return null;
+		}
+
+		ValueReference GetHoistedThisReference (CorEvaluationContext cx, CorType type, object val)
+		{
+			Type t = type.GetTypeInfo (cx.Session);
+			var vref = (CorValRef)val;
+			foreach (FieldInfo field in t.GetFields ()) {
+				if (IsHoistedThisReference (field))
+					return new FieldReference (cx, vref, type, field, "this", ObjectValueFlags.Literal);
+
+				if (IsClosureReferenceField (field)) {
+					var fieldRef = new FieldReference (cx, vref, type, field);
+					var fieldType = (CorType)GetValueType (cx, fieldRef.Value);
+					var thisRef = GetHoistedThisReference (cx, fieldType, fieldRef.Value);
+					if (thisRef != null)
+						return thisRef;
+				}
+			}
+
+			return null;
+		}
+
+		static bool IsHoistedThisReference (FieldInfo field)
+		{
+			// mcs is "<>f__this" or "$this" (if in an async compiler generated type)
+			// csc is "<>4__this"
+			return field.Name == "$this" ||
+				(field.Name.StartsWith ("<>", StringComparison.Ordinal) &&
+				field.Name.EndsWith ("__this", StringComparison.Ordinal));
+		}
+
+		static bool IsClosureReferenceField (FieldInfo field)
+		{
+			// mcs is "<>f__ref"
+			// csc is "CS$<>"
+			return field.Name.StartsWith ("CS$<>", StringComparison.Ordinal) ||
+				field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal);
+		}
+
+		static bool IsClosureReferenceLocal (ISymbolVariable local)
+		{
+			if (local.Name == null)
+				return false;
+
+			// mcs is "$locvar" or starts with '<'
+			// csc is "CS$<>"
+			return local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar", StringComparison.Ordinal) ||
+				local.Name.StartsWith ("CS$<>", StringComparison.Ordinal);
+		}
+
+		static bool IsGeneratedTemporaryLocal (ISymbolVariable local)
+		{
+			// csc uses CS$ prefix for temporary variables and <>t__ prefix for async task-related state variables
+			return local.Name != null && (local.Name.StartsWith ("CS$", StringComparison.Ordinal) || local.Name.StartsWith ("<>t__", StringComparison.Ordinal));
+		}
+
+		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
+		{
+			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
+			if (cctx.Frame.FrameType != CorFrameType.ILFrame || cctx.Frame.Function == null)
 				return null;
 
+			if (InGeneratedClosureOrIteratorType (cctx))
+				return GetHoistedThisReference (cctx);
+
+			return GetThisReference (cctx);
+
+		}
+
+		ValueReference GetThisReference (CorEvaluationContext ctx)
+		{
 			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return null;
@@ -976,7 +1310,7 @@ namespace MonoDevelop.Debugger.Win32
 
 				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
 			} catch (Exception e) {
-				gctx.WriteDebuggerError (e);
+				ctx.WriteDebuggerError (e);
 				return null;
 			}
 		}
@@ -1009,7 +1343,7 @@ namespace MonoDevelop.Debugger.Win32
 			int count = ctx.Frame.GetArgumentCount ();
 			for (int n = 0; n < count; n++) {
 				int locn = n;
-				CorValRef vref = new CorValRef (delegate {
+				var vref = new CorValRef (delegate {
 					return ctx.Frame.GetArgument (locn);
 				});
 				yield return new VariableReference (ctx, vref, "arg_" + (n + 1), ObjectValueFlags.Parameter);
@@ -1018,14 +1352,76 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
-			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
+			CorEvaluationContext cctx = (CorEvaluationContext)ctx;
+			if (InGeneratedClosureOrIteratorType (cctx)) {
+				ValueReference vthis = GetThisReference (cctx);
+				return GetHoistedLocalVariables (cctx, vthis).Union (GetLocalVariables (cctx));
+			}
+
+			return GetLocalVariables (cctx);
+		}
+
+		IEnumerable<ValueReference> GetHoistedLocalVariables (CorEvaluationContext cx, ValueReference vthis)
+		{
+			if (vthis == null)
+				return new ValueReference [0];
+
+			object val = vthis.Value;
+			if (IsNull (cx, val))
+				return new ValueReference [0];
+
+			CorType tm = (CorType) vthis.Type;
+			Type t = tm.GetTypeInfo (cx.Session);
+			bool isIterator = IsGeneratedType (t);
+
+			var list = new List<ValueReference> ();
+			foreach (FieldInfo field in t.GetFields ()) {
+				if (IsHoistedThisReference (field))
+					continue;
+				if (IsClosureReferenceField (field)) {
+					list.AddRange (GetHoistedLocalVariables (cx, new FieldReference (cx, (CorValRef)val, tm, field)));
+					continue;
+				}
+				if (field.Name[0] == '<') {
+					if (isIterator) {
+						var name = GetHoistedIteratorLocalName (field);
+						if (!string.IsNullOrEmpty (name)) {
+							list.Add (new FieldReference (cx, (CorValRef)val, tm, field, name, ObjectValueFlags.Variable));
+						}
+					}
+				} else if (!field.Name.Contains ("$")) {
+					list.Add (new FieldReference (cx, (CorValRef)val, tm, field, field.Name, ObjectValueFlags.Variable));
+				}
+			}
+			return list;
+		}
+
+		static string GetHoistedIteratorLocalName (FieldInfo field)
+		{
+			//mcs captured args, of form <$>name
+			if (field.Name.StartsWith ("<$>", StringComparison.Ordinal)) {
+				return field.Name.Substring (3);
+			}
+
+			// csc, mcs locals of form <name>__0
+			if (field.Name[0] == '<') {
+				int i = field.Name.IndexOf ('>');
+				if (i > 1) {
+					return field.Name.Substring (1, i - 1);
+				}
+			}
+			return null;
+		}
+
+		IEnumerable<ValueReference> GetLocalVariables (CorEvaluationContext cx)
+		{
 			uint offset;
 			CorDebugMappingResult mr;
 			try {
-				wctx.Frame.GetIP (out offset, out mr);
-				return GetLocals (wctx, null, (int) offset, false);
+				cx.Frame.GetIP (out offset, out mr);
+				return GetLocals (cx, null, (int) offset, false);
 			} catch (Exception e) {
-				ctx.WriteDebuggerError (e);
+				cx.WriteDebuggerError (e);
 				return null;
 			}
 		}
@@ -1078,9 +1474,18 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolVariable var in scope.GetLocals ()) {
 				if (var.Name == "$site")
 					continue;
-				if (var.Name.IndexOfAny(new char[] {'$','<','>'}) == -1 || showHidden) {
+				if (IsClosureReferenceLocal (var) && IsGeneratedType (var.Name)) {
 					int addr = var.AddressField1;
-					CorValRef vref = new CorValRef (delegate {
+					var vref = new CorValRef (delegate {
+						return ctx.Frame.GetLocalVariable (addr);
+					});
+
+					foreach (var gv in GetHoistedLocalVariables (ctx, new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable))) {
+						yield return gv;
+					}
+				} else if (!IsGeneratedTemporaryLocal (var) || showHidden) {
+					int addr = var.AddressField1;
+					var vref = new CorValRef (delegate {
 						return ctx.Frame.GetLocalVariable (addr);
 					});
 					yield return new VariableReference (ctx, vref, var.Name, ObjectValueFlags.Variable);
@@ -1097,21 +1502,20 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)
 		{
-			CorType type = (CorType) gtype;
+			var type = (CorType) gtype;
 
-			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
+			var wctx = (CorEvaluationContext) ctx;
 			Type t = type.GetTypeInfo (wctx.Session);
 			if (t == null)
 				return null;
 
-			// FIXME: find out how to implement CompilerGenerated.
-			//bool isCompilerGenerated = false;
 			string proxyType = null;
 			string nameDisplayString = null;
 			string typeDisplayString = null;
 			string valueDisplayString = null;
 			Dictionary<string, DebuggerBrowsableState> memberData = null;
 			bool hasTypeData = false;
+			bool isCompilerGenerated = false;
 
 			try {
 				foreach (object att in t.GetCustomAttributes (false)) {
@@ -1129,6 +1533,11 @@ namespace MonoDevelop.Debugger.Win32
 						valueDisplayString = datt.Value;
 						continue;
 					}
+					CompilerGeneratedAttribute cgatt = att as CompilerGeneratedAttribute;
+					if (cgatt != null) {
+						isCompilerGenerated = true;
+						continue;
+					}
 				}
 
 				ArrayList mems = new ArrayList ();
@@ -1138,13 +1547,14 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (MemberInfo m in mems) {
 					object[] atts = m.GetCustomAttributes (typeof (DebuggerBrowsableAttribute), false);
 					if (atts.Length == 0) {
-						atts = m.GetCustomAttributes (typeof (System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+						atts = m.GetCustomAttributes (typeof (CompilerGeneratedAttribute), false);
 						if (atts.Length > 0)
 							atts[0] = new DebuggerBrowsableAttribute (DebuggerBrowsableState.Never);
 					}
 					if (atts.Length > 0) {
 						hasTypeData = true;
-						if (memberData == null) memberData = new Dictionary<string, DebuggerBrowsableState> ();
+						if (memberData == null)
+							memberData = new Dictionary<string, DebuggerBrowsableState> ();
 						memberData[m.Name] = ((DebuggerBrowsableAttribute)atts[0]).State;
 					}
 				}
@@ -1152,9 +1562,33 @@ namespace MonoDevelop.Debugger.Win32
 				ctx.WriteDebuggerError (ex);
 			}
 			if (hasTypeData)
-				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, false, memberData);
+				return new TypeDisplayData (proxyType, valueDisplayString, typeDisplayString, nameDisplayString, isCompilerGenerated, memberData);
 			else
 				return null;
 		}
+
+		// TODO: implement in metadatatype
+		public override IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
+		{
+			return base.GetNestedTypes (ctx, type);
+		}
+
+		// TODO: implement for session
+		public override bool IsExternalType (EvaluationContext ctx, object type)
+		{
+			return base.IsExternalType (ctx, type);
+		}
+
+		public override bool IsTypeLoaded (EvaluationContext ctx, string typeName)
+		{
+			return ctx.Adapter.GetType (ctx, typeName) != null;
+		}
+
+		public override bool IsTypeLoaded (EvaluationContext ctx, object type)
+		{
+			var t = type as Type;
+			return IsTypeLoaded (ctx, t.FullName);
+		}
+		// TODO: Implement GetHoistedLocalVariables
 	}
 }
