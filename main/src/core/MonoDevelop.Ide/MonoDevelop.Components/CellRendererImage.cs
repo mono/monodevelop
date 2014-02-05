@@ -42,6 +42,15 @@ namespace MonoDevelop.Components
 		}
 
 		[GLib.Property ("stock-size")]
+		int StockSizeInt {
+			get {
+				return (int)stockSize;
+			}
+			set {
+				stockSize = (Gtk.IconSize) value;
+			}
+		}
+
 		public Gtk.IconSize StockSize {
 			get {
 				return stockSize;
@@ -58,6 +67,16 @@ namespace MonoDevelop.Components
 			}
 			set {
 				icon = value;
+			}
+		}
+
+		[GLib.Property ("stock_id")]
+		string StockIdInt {
+			get {
+				return StockId;
+			}
+			set {
+				StockId = value;
 			}
 		}
 
@@ -103,11 +122,11 @@ namespace MonoDevelop.Components
 
 		protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 		{
-			if (image == null)
+			var img = GetImate ();
+			if (img == null)
 				return;
 
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
-				var img = GetImate ();
 				var x = Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
 				var y = Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
 				ctx.DrawImage (widget, img, x, y);
@@ -123,9 +142,10 @@ namespace MonoDevelop.Components
 
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
-			if (image != null) {
-				width = (int)image.Width;
-				height = (int)image.Height;
+			var img = GetImate ();
+			if (img != null) {
+				width = (int)img.Width;
+				height = (int)img.Height;
 			} else
 				width = height = 0;
 
@@ -137,7 +157,7 @@ namespace MonoDevelop.Components
 			if (icon.IsNull)
 				return IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
 			else
-				return Ide.ImageService.GetIcon (icon);
+				return Ide.ImageService.GetIcon (icon, stockSize);
 		}
 	}
 }

@@ -99,7 +99,7 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn FrameCol = new TreeViewColumn ();
 			FrameCol.Title = GettextCatalog.GetString ("Name");
 			refresh = new CellRendererImage ();
-			refresh.Image = ImageService.GetIcon (Gtk.Stock.Refresh).WithBoxSize (12);
+			refresh.Image = ImageService.GetIcon (Gtk.Stock.Refresh).WithSize (12,12);
 			FrameCol.PackStart (refresh, false);
 			FrameCol.AddAttribute (refresh, "visible", CanRefreshColumn);
 			FrameCol.PackStart (tree.TextRenderer, true);
