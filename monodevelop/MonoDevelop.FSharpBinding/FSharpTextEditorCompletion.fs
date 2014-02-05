@@ -408,7 +408,7 @@ type FSharpPathExtension() =
 
             let toplevel = 
                 // GetNavigationItems is not 100% solid and throws occasional exceptions
-                try ast.Untyped.GetNavigationItemsDeclarationsSafe()
+                try ast.ParseFileResults.GetNavigationItemsDeclarationsSafe()
                 with _ -> [| |] 
 
             let topLevelTypesInsideCursor =
@@ -472,12 +472,12 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
         memberList.Clear()
         match tag with
         | :? TypedParseResult as tpr ->
-            let navitems = tpr.Untyped.GetNavigationItemsDeclarationsSafe()
+            let navitems = tpr.ParseFileResults.GetNavigationItemsDeclarationsSafe()
             for decl in navitems do
                 memberList.Add(decl.Declaration)
         | :? (TypedParseResult * string) as typeAndFilter ->
             let tpr, filter = typeAndFilter 
-            let navitems = tpr.Untyped.GetNavigationItemsDeclarationsSafe()
+            let navitems = tpr.ParseFileResults.GetNavigationItemsDeclarationsSafe()
             for decl in navitems do
                 if decl.Declaration.Name.StartsWith(filter) then
                     memberList.Add(decl.Declaration)
