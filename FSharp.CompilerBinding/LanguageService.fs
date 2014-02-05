@@ -259,8 +259,8 @@ type LanguageService(dirtyNotify) =
            // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
            mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
 
-  member x.GetReferences(projectFilename, file, source, files, line:int, col, lineStr, args) =
-    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args)
+  member x.GetReferences(projectFilename, file, source, files, line:int, col, lineStr, args, framework) =
+    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
 
     //parse and retrieve Checked Project results, this has the entity graph and errors etc
     let projectResults = checker.ParseAndCheckProject(projectOptions) |> Async.RunSynchronously
