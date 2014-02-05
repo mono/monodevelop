@@ -193,11 +193,11 @@ type HighlightUsagesExtension() as this =
         
         usagesUpdated.Trigger(this, EventArgs.Empty)
 
-    let ShowHighlightAsync(projectFilename, currentFile, source, files, line, col, lineStr, args) =
+    let ShowHighlightAsync(projectFilename, currentFile, source, files, line, col, lineStr, args, framework) =
         let token = cts.Token
         let asyncOperation = 
             async{let symbolReferences =
-                    MDLanguageService.Instance.GetReferences(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args)
+                    MDLanguageService.Instance.GetReferences(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
                   | Some(currentSymbolName, currentSymbolRange, references) -> 
@@ -220,11 +220,11 @@ type HighlightUsagesExtension() as this =
                                         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(textEditorData.Caret.Offset, doc.Editor.Document)
                                         let currentFile = FilePath(textEditorData.FileName).ToString()
 
-                                        let projectFilename, files, args = MonoDevelop.getFilesAndArgsFromProject(doc.Project, IdeApp.Workspace.ActiveConfiguration)
+                                        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project, IdeApp.Workspace.ActiveConfiguration)
 
                                         //cancel any current highlights
                                         cancelHighlight()
-                                        ShowHighlightAsync(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args)
+                                        ShowHighlightAsync(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                                     with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
 

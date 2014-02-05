@@ -31,8 +31,8 @@ type FSharpReferenceFinder() =
 
             let source = activeDoc.Editor.Text
             let lineStr = activeDoc.Editor.GetLineText(line)
-            let projectFilename, files, args = MonoDevelop.getFilesAndArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
-            let references = MDLanguageService.Instance.GetReferences(projectFilename, filename, source, files, line-1, col-1, lineStr, args)
+            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
+            let references = MDLanguageService.Instance.GetReferences(projectFilename, filename, source, files, line-1, col-1, lineStr, args, framework)
             match references with
             | Some(currentSymbolName, currentSymbolRange, references) -> 
                 let memberRefs = 
