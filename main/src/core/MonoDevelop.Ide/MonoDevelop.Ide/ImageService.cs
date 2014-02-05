@@ -316,17 +316,7 @@ namespace MonoDevelop.Ide
 			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
 		}
 
-		public static Gdk.Pixbuf GetPixbuf (string name)
-		{
-			return GetPixbuf (name, Gtk.IconSize.Button);
-		}
-
-		public static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size)
-		{
-			return GetPixbuf (name, size, true);
-		}
-		
-		public static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size, bool generateDefaultIcon)
+		static Gdk.Pixbuf GetPixbuf (string name, Gtk.IconSize size, bool generateDefaultIcon = true)
 		{
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);

@@ -70,6 +70,12 @@ namespace MonoDevelop.Components
 			return c;
 		}
 
+		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
+		{
+			var c = Gdk.CairoHelper.Create (w.GdkWindow);
+			return Xwt.Toolkit.CurrentEngine.WrapContext (w, c);
+		}
+
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
 			return (Gtk.Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (widget);

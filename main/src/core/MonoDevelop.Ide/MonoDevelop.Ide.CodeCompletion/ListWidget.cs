@@ -457,10 +457,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
 					int x = 2;
 					if (category.CompletionCategory != null && !string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
-						var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-						Gdk.CairoHelper.SetSourcePixbuf (context, icon, 0, ypos);
-						context.Paint ();
-						x = icon.Width + 4;
+						var icon = ImageService.GetIcon (category.CompletionCategory.Icon, IconSize.Menu);
+						context.DrawImage (this, icon, 0, ypos);
+						x = (int)icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 					context.SetSourceColor (backgroundColor);

@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Components;
 	
 namespace MonoDevelop.MacIntegration
 {
@@ -46,9 +47,9 @@ namespace MonoDevelop.MacIntegration
 			using (var alert = new NSAlert ()) {
 				alert.Window.Title = data.Title ?? BrandingService.ApplicationName;
 
-				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
+				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information || data.Message.Icon == Gtk.Stock.DialogInfo) {
 					alert.AlertStyle = NSAlertStyle.Critical;
-				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Warning) {
+				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Warning || data.Message.Icon == Gtk.Stock.DialogWarning) {
 					alert.AlertStyle = NSAlertStyle.Warning;
 				} else { //if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
 					alert.AlertStyle = NSAlertStyle.Informational;
@@ -56,7 +57,7 @@ namespace MonoDevelop.MacIntegration
 				
 				//FIXME: use correct size so we don't get horrible scaling?
 				if (!string.IsNullOrEmpty (data.Message.Icon)) {
-					var pix = ImageService.GetPixbuf (data.Message.Icon, Gtk.IconSize.Dialog);
+					var pix = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog).ToPixbuf();
 					byte[] buf = pix.SaveToBuffer ("tiff");
 					unsafe {
 						fixed (byte* b = buf) {

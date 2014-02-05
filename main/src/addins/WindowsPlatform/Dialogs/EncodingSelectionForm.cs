@@ -35,6 +35,7 @@ using System.Windows.Forms;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Components;
 
 using CustomControls.OS;
 
@@ -94,7 +95,7 @@ namespace MonoDevelop.Platform
 
 		void SetStockImage (Button b, string stockId)
 		{
-			var pixbuf = MonoDevelop.Ide.ImageService.GetPixbuf (stockId, Gtk.IconSize.Button);
+			var pixbuf = MonoDevelop.Ide.ImageService.GetIcon (stockId, Gtk.IconSize.Button).ToPixbuf ();
 			var stockImage = Image.FromStream (new System.IO.MemoryStream (pixbuf.SaveToBuffer ("png")));
 
 			b.Image = stockImage;

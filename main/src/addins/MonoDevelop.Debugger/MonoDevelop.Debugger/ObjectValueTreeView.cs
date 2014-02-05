@@ -77,10 +77,10 @@ namespace MonoDevelop.Debugger
 		readonly CellRendererText crtExp;
 		readonly CellRendererText crtValue;
 		readonly CellRendererText crtType;
-		readonly CellRendererIcon crpButton;
+		readonly CellRendererImage crpButton;
 		readonly CellRendererIcon crpPin;
 		readonly CellRendererImage crpLiveUpdate;
-		readonly CellRendererIcon crpViewer;
+		readonly CellRendererImage crpViewer;
 		Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -165,13 +165,12 @@ namespace MonoDevelop.Debugger
 			
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
-			crpViewer = new CellRendererIcon ();
-			crpViewer.IconId = Stock.ZoomIn;
+			crpViewer = new CellRendererImage ();
+			crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn, Gtk.IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
-			crpButton = new CellRendererIcon ();
-			crpButton.StockSize = (uint) IconSize.Menu;
-			crpButton.IconId = Stock.Refresh;
+			crpButton = new CellRendererImage ();
+			crpButton.Image = ImageService.GetIcon (Stock.Refresh, Gtk.IconSize.Menu);
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
 			crtValue = new CellRendererText ();
@@ -407,8 +406,8 @@ namespace MonoDevelop.Debugger
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
-					crpButton.Pixbuf = ImageService.GetPixbuf (Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
-					crpViewer.Pixbuf = ImageService.GetPixbuf (Stock.ZoomIn).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
+					crpButton.Image = ImageService.GetIcon (Stock.Refresh).WithBoxSize (12);
+					crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn).WithBoxSize (12);
 					ColumnsAutosize ();
 				} else {
 					newFont = Style.FontDescription;

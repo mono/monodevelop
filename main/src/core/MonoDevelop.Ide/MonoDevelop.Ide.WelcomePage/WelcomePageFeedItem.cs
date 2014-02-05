@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Label subtitleLabel;
 		Label summaryLabel;
 
-		Image image;
+		ImageView image;
 		string text, desc, icon, subtitle;
 		Gtk.IconSize iconSize = IconSize.Menu;
 		VBox box;
@@ -278,14 +279,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return;
 			}
 			if (image == null) {
-				image = new Gtk.Image ();
-				int w, h;
-				Gtk.Icon.SizeLookup (iconSize, out w, out h);
-				image.IconSize = w;
+				image = new ImageView ();
 				box.PackStart (image, false, false, 0);
 				box.ReorderChild (image, 0);
 			}
-			image.Pixbuf = ImageService.GetPixbuf (icon, iconSize);
+			image.Image = ImageService.GetIcon (icon, iconSize);
 		}
 
 		string CleanHtml (string txt)

@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using Stock = MonoDevelop.Ide.Gui.Stock;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.Debugger
 		const int FrameIndexColumn = 8;
 		const int CanRefreshColumn = 9;
 
-		readonly CellRendererIcon refresh;
+		readonly CellRendererImage refresh;
 		readonly CommandEntrySet menuSet;
 		readonly PadTreeView tree;
 		readonly ListStore store;
@@ -97,8 +98,8 @@ namespace MonoDevelop.Debugger
 			
 			TreeViewColumn FrameCol = new TreeViewColumn ();
 			FrameCol.Title = GettextCatalog.GetString ("Name");
-			refresh = new CellRendererIcon ();
-			refresh.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
+			refresh = new CellRendererImage ();
+			refresh.Image = ImageService.GetIcon (Gtk.Stock.Refresh).WithBoxSize (12);
 			FrameCol.PackStart (refresh, false);
 			FrameCol.AddAttribute (refresh, "visible", CanRefreshColumn);
 			FrameCol.PackStart (tree.TextRenderer, true);

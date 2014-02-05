@@ -2,6 +2,7 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -19,7 +20,7 @@ namespace MonoDevelop.Deployment.Gui
 			target = package.PackageBuilder.Clone ();
 			this.Title = target.Description;
 			
-			this.Icon = ImageService.GetPixbuf (target.Icon, Gtk.IconSize.Menu);
+			this.Icon = ImageService.GetIcon (target.Icon, Gtk.IconSize.Menu).ToPixbuf ();
 			entryName.Text = package.Name;
 			
 			targetBox.PackStart (new PackageBuilderEditor (target), true, true, 0);

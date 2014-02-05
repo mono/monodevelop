@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using CustomControls.OS;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Platform
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Platform
         static Icon LoadMonoDevelopIcon ()
         {
             // IconSize.Dnd seems to be the best match for Form.Icon
-            var pixbuf = MonoDevelop.Ide.ImageService.GetPixbuf ("md-monodevelop", Gtk.IconSize.Dnd);
+			var pixbuf = MonoDevelop.Ide.ImageService.GetIcon ("md-monodevelop", Gtk.IconSize.Dnd).ToPixbuf();
             return new Icon (new System.IO.MemoryStream (pixbuf.SaveToBuffer ("ico")));
         }
 		

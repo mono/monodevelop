@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		static readonly string descFormat = "<span size=\"small\" foreground=\"" + Styles.WelcomeScreen.Pad.TextColor + "\">{0}</span>";
 		
 		Label label;
-		Image image;
+		ImageView image;
 		string text, desc, icon;
 		Gtk.IconSize iconSize = IconSize.Menu;
 		HBox box;
@@ -145,14 +146,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return;
 			}
 			if (image == null) {
-				image = new Gtk.Image ();
-				int w, h;
-				Gtk.Icon.SizeLookup (iconSize, out w, out h);
-				image.IconSize = w;
+				image = new ImageView ();
 				box.PackStart (image, false, false, 0);
 				box.ReorderChild (image, 0);
 			}
-			image.Pixbuf = ImageService.GetPixbuf (icon, iconSize);
+			image.Image = ImageService.GetIcon (icon, iconSize);
 		}
 		
 		public int MaxWidthChars {

@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using System.ComponentModel;
 using System.Threading;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Gettext
 {
@@ -122,7 +123,7 @@ namespace MonoDevelop.Gettext
 			fuzzyColumn.SortColumnId = 0;
 				
 			fuzzyColumn.Title = GettextCatalog.GetString ("Fuzzy");
-			var iconRenderer = new CellRendererPixbuf ();
+			var iconRenderer = new CellRendererImage ();
 			fuzzyColumn.PackStart (iconRenderer, false);
 			fuzzyColumn.SetCellDataFunc (iconRenderer, CatalogIconDataFunc);
 			
@@ -269,7 +270,7 @@ namespace MonoDevelop.Gettext
 		void CatalogIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
-			((CellRendererPixbuf)cell).Pixbuf = ImageService.GetPixbuf (GetStockForEntry (entry), IconSize.Menu);
+			((CellRendererImage)cell).Image = ImageService.GetIcon (GetStockForEntry (entry), IconSize.Menu);
 			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
 		}
 		

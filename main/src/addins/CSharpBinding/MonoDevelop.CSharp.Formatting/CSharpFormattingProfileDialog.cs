@@ -31,6 +31,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Components;
+
+
 namespace MonoDevelop.CSharp.Formatting
 {
 	partial class CSharpFormattingProfileDialog : Dialog
@@ -482,7 +485,7 @@ namespace TestSpace {
 			
 			var column = new TreeViewColumn ();
 			// pixbuf column
-			var pixbufCellRenderer = new CellRendererPixbuf ();
+			var pixbufCellRenderer = new CellRendererImage ();
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
 			
@@ -1223,11 +1226,11 @@ delegate void BarFoo ();
 		
 		static void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
 		{
-			var pixbufCellRenderer = (CellRendererPixbuf)cell;
+			var pixbufCellRenderer = (CellRendererImage)cell;
 			if (model.IterHasChild (iter)) {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (((TreeView)col.TreeView).GetRowExpanded (model.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+				pixbufCellRenderer.Image = ImageService.GetIcon (((TreeView)col.TreeView).GetRowExpanded (model.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
-				pixbufCellRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Property, IconSize.Menu);
+				pixbufCellRenderer.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Property, IconSize.Menu);
 			}
 		}
 		

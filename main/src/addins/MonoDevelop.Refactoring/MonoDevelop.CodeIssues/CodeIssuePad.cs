@@ -132,12 +132,6 @@ namespace MonoDevelop.CodeIssues
 			IdeApp.Workspace.LastWorkspaceItemClosed += HandleLastWorkspaceItemClosed;
 		}
 
-	    private static Image GetStockImage (string name)
-	    {
-            // HACK: Assume we are running with the GTK backend, which supports the pixbuf type
-	        return Toolkit.CurrentEngine.WrapImage (ImageService.GetPixbuf (name, IconSize.SmallToolbar));
-	    }
-
 	    void HandleLastWorkspaceItemClosed (object sender, EventArgs e)
 		{
 			ClearState ();
