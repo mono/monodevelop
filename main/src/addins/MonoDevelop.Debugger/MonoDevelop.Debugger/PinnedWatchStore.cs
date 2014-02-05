@@ -306,7 +306,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public PinnedWatch Watch {
-			get { return this.watch; }
+			get { return watch; }
 		}
 	}
 }

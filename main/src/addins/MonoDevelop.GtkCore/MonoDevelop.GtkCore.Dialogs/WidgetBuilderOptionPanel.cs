@@ -42,6 +42,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		{
 			Gtk.CheckButton checkGettext;
 			Gtk.Entry entryGettext;
+			Gtk.Entry entryResourceLoader;
 			Gtk.ComboBox comboVersions;
 			
 			DotNetProject project;
@@ -75,6 +76,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 				checkGettext.Active = designInfo.GenerateGettext;
 				checkGettext.Show ();
 				PackStart (checkGettext, false, false, 0);
+
 				box = new Gtk.HBox (false, 3);
 				box.PackStart (new Label (GettextCatalog.GetString ("Gettext class:")), false, false, 0);
 				entryGettext = new Gtk.Entry ();
@@ -83,7 +85,16 @@ namespace MonoDevelop.GtkCore.Dialogs
 				box.PackStart (entryGettext, false, false, 0);
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
-				
+
+				box = new Gtk.HBox (false, 3);
+				box.PackStart (new Label (GettextCatalog.GetString ("Resource loader class:")), false, false, 0);
+				entryResourceLoader = new Gtk.Entry ();
+				entryResourceLoader.Text = designInfo.ImageResourceLoaderClass;
+				entryResourceLoader.Sensitive = checkGettext.Active;
+				box.PackStart (entryResourceLoader, false, false, 0);
+				box.ShowAll ();
+				PackStart (box, false, false, 0);
+
 				checkGettext.Clicked += delegate {
 					box.Sensitive = checkGettext.Active;
 					if (checkGettext.Active)
@@ -100,6 +111,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 					GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 					info.GenerateGettext = checkGettext.Active;
 					info.GettextClass = entryGettext.Text;
+					info.ImageResourceLoaderClass = entryResourceLoader.Text;
 					info.GuiBuilderProject.SteticProject.TargetGtkVersion = comboVersions.ActiveText;
 					info.GuiBuilderProject.SaveProject (false);
 				}

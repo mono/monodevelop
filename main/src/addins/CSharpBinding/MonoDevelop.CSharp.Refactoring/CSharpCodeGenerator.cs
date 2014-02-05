@@ -1033,55 +1033,11 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var file = doc.Editor;
-			var caretLocation = file.Caret.Location;
-			
-			int pos = file.LocationToOffset (caretLocation.Line + 1, 1);
-			var line = new StringBuilder ();
-			int lineNr = caretLocation.Line + 1, column = 1, maxColumn = 1, lastPos = pos;
-			if (true) 
-				while (lineNr == caretLocation.Line + 1) {
-					maxColumn = column;
-					lastPos = pos;
-					line.Append (file.GetCharAt (pos));
-					pos++;
-					var loc = file.OffsetToLocation (pos);
-					lineNr = loc.Line;
-					column = loc.Column;
-				}
-			string trimmedline = line.ToString ().Trim ();
-			string indent = line.ToString ().Substring (0, line.Length - line.ToString ().TrimStart (' ', '\t').Length);
-			if (trimmedline.EndsWith (";") || trimmedline.EndsWith ("{")) {
-				file.Caret.Location = caretLocation;
-				return;
+			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
+			int newOffset;
+			if (fixer.TryFix (doc.Editor.Document, doc.Editor.Caret.Offset, out newOffset)) {
+				doc.Editor.Caret.Offset = newOffset;
 			}
-			int caretLine = caretLocation.Line;
-			int caretColumn = caretLocation.Column;
-			if (trimmedline.StartsWith ("if") || 
-				trimmedline.StartsWith ("while") ||
-				trimmedline.StartsWith ("switch") ||
-				trimmedline.StartsWith ("for") ||
-				trimmedline.StartsWith ("foreach")) {
-				if (!trimmedline.EndsWith (")")) {
-					file.Insert (lastPos, " () {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
-					caretColumn = maxColumn + 1;
-				} else {
-					file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
-					caretColumn = indent.Length + 1;
-					caretLine++;
-				}
-			} else if (trimmedline.StartsWith ("do")) {
-				file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "} while ();");
-				caretColumn = indent.Length + 1;
-				caretLine++;
-			} else {
-				file.Insert (lastPos, ";" + file.EolMarker + indent);
-				caretColumn = indent.Length;
-				caretLine++;
-			}
-			file.Caret.Location = new DocumentLocation (caretLine, caretColumn);
 		}
-		
-		
 	}
 }

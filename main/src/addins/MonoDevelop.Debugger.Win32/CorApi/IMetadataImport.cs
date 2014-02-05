@@ -42,10 +42,15 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                             [ComAliasName("mdTypeDef*")] out int rTypeDefs,
                             uint cMax /*must be 1*/, 
                             [ComAliasName("ULONG*")] out uint pcTypeDefs); 
-#if !MDBG_FAKE_COM
+
         //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
-        void EnumInterfaceImpls_(IntPtr phEnum, int td);
-        
+        void EnumInterfaceImpls(
+                            ref IntPtr phEnum,
+                            int td,
+                            [ComAliasName("mdInterfaceImpl*")] out int rImpls,
+                            uint cMax /*must be 1*/,
+                            [ComAliasName("ULONG*")] out uint pcImpls);
+#if !MDBG_FAKE_COM
         //STDMETHOD(EnumTypeRefs)(HCORENUM *phEnum, mdTypeRef rTypeRefs[], ULONG cMax, ULONG* pcTypeRefs) PURE;
         void EnumTypeRefs_();
 #endif
@@ -640,10 +645,16 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
                             [ComAliasName("mdTypeDef*")] out int rTypeDefs,
                             uint cMax /*must be 1*/, 
                             [ComAliasName("ULONG*")] out uint pcTypeDefs); 
-#if !MDBG_FAKE_COM
-        //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
-        new void EnumInterfaceImpls_(IntPtr phEnum, int td);
 
+        //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
+        new void EnumInterfaceImpls(
+                            ref IntPtr phEnum,
+                            int td,
+                            [ComAliasName("mdInterfaceImpl*")] out int rImpls,
+                            uint cMax /*must be 1*/,
+                            [ComAliasName("ULONG*")] out uint pcImpls);
+
+#if !MDBG_FAKE_COM
         //STDMETHOD(EnumTypeRefs)(HCORENUM *phEnum, mdTypeRef rTypeRefs[], ULONG cMax, ULONG* pcTypeRefs) PURE;
         new void EnumTypeRefs_();
 #endif

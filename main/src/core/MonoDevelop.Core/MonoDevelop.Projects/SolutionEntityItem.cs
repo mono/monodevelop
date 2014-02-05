@@ -188,7 +188,15 @@ namespace MonoDevelop.Projects
 				NotifyModified ("FileName");
 			}
 		}
-		
+
+		public bool Enabled {
+			get { return ParentSolution != null ? ParentSolution.IsSolutionItemEnabled (FileName) : true; }
+			set { 
+				if (ParentSolution != null)
+					ParentSolution.SetSolutionItemEnabled (FileName, value);
+			}
+		}
+
 		public FileFormat FileFormat {
 			get {
 				if (ParentSolution != null) {

@@ -58,10 +58,13 @@ namespace MonoDevelop.Refactoring
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
+			var editor = doc.Editor;
+			if (editor == null || editor.MimeType != "text/x-csharp") {
+				node = null;
+				resolveResult = null;
+				return false;
+			}
 			if (!InternalResolveAt (doc, out resolveResult, out node)) {
-				var editor = doc.Editor;
-				if (editor == null)
-					return false;
 				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.Caret.Location);
 				resolveResult = GetHeuristicResult (doc, location, ref node);
 				if (resolveResult == null)

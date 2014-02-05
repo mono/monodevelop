@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Microsoft.Samples.Debugging.CorDebug; 
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi; 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Samples.Debugging.Extensions;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
@@ -66,8 +67,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 m_value = ParseDefaultValue(declaringType,ppvSigBlob,ppvRawValue);
             }
 			// [Xamarin] Expression evaluator.
-			MetadataHelperFunctions.GetCustomAttribute (importer, m_fieldToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
-		}
+			MetadataHelperFunctionsExtensions.GetCustomAttribute (m_importer, m_fieldToken, typeof (DebuggerBrowsableAttribute));
+        }
 
         private static object ParseDefaultValue(MetadataType declaringType, IntPtr ppvSigBlob, IntPtr ppvRawValue)
         {
@@ -76,7 +77,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 Debug.Assert(callingConv == CorCallingConvention.Field);
 
                 CorElementType elementType = MetadataHelperFunctions.CorSigUncompressElementType(ref ppvSigTemp);
-				if (elementType == CorElementType.ELEMENT_TYPE_END || elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
+                if (elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
                 {
                         uint token = MetadataHelperFunctions.CorSigUncompressToken(ref ppvSigTemp);
 
@@ -148,9 +149,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }
 
 		// [Xamarin] Expression evaluator.
-		public override bool IsDefined (Type attributeType, bool inherit)
+		public override object[] GetCustomAttributes (bool inherit)
 		{
-			return GetCustomAttributes (attributeType, inherit).Length > 0;
+			if (m_customAttributes == null)
+				m_customAttributes = MetadataHelperFunctionsExtensions.GetDebugAttributes (m_importer, m_fieldToken);
+			return m_customAttributes;
 		}
 
 		// [Xamarin] Expression evaluator.
@@ -165,11 +168,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		}
 
 		// [Xamarin] Expression evaluator.
-		public override object[] GetCustomAttributes (bool inherit)
+		public override bool IsDefined (Type attributeType, bool inherit)
 		{
-			if (m_customAttributes == null)
-				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_fieldToken);
-			return m_customAttributes;
+			return GetCustomAttributes (attributeType, inherit).Length > 0;
 		}
 
 
@@ -246,5 +247,5 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private Object m_value;
 		// [Xamarin] Expression evaluator.
 		private object[] m_customAttributes;
-	}
+    }
 }
