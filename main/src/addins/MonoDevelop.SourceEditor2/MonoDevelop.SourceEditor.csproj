@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -187,6 +187,9 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Samples.Debugging.Extensions;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
@@ -82,7 +83,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 			m_propAttributes = (PropertyAttributes) pdwPropFlags;
 			m_name = szProperty.ToString ();
-			MetadataHelperFunctions.GetCustomAttribute (importer, propertyToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
+			MetadataHelperFunctionsExtensions.GetCustomAttribute (importer, propertyToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
 
 			if (!m_importer.IsValidToken ((uint)m_pmdGetter))
 				m_pmdGetter = 0;
@@ -183,7 +184,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		public override object[] GetCustomAttributes (bool inherit)
 		{
 			if (m_customAttributes == null)
-				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_propertyToken);
+				m_customAttributes = MetadataHelperFunctionsExtensions.GetDebugAttributes (m_importer, m_propertyToken);
 			return m_customAttributes;
 		}
 

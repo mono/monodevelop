@@ -101,8 +101,11 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			if (Repository != null)
 				labelRepository.Text = Repository.LocationDescription;
-			else
-				labelRepository.Text = "";
+			else {
+				labelRepository.Text = String.Empty;
+				entryMessage.Text = String.Empty;
+				entryFolder.Text = String.Empty;
+			}
 		}
 
 		protected virtual void OnRepComboChanged(object sender, System.EventArgs e)
@@ -176,6 +179,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				VersionControlService.SaveConfiguration ();
 				store.Remove (ref iter);
 			}
+			UpdateRepoDescription ();
 		}
 
 		protected virtual void OnButtonEditClicked(object sender, System.EventArgs e)

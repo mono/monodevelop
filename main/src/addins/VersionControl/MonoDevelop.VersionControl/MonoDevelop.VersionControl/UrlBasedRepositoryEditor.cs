@@ -91,8 +91,10 @@ namespace MonoDevelop.VersionControl
 		{
 			updating = true;
 			repositoryUrlEntry.Text = repo.Url;
-			if (repo.Uri != null && repo.Name == repositoryServerEntry.Text)
-				repo.Name = repo.Uri.Host;
+			if (repo.Uri != null && repo.Name == repositoryServerEntry.Text) {
+				if (repo.Uri.IsAbsoluteUri)
+					repo.Name = repo.Uri.Host;
+			}
 			updating = false;
 		}
 		

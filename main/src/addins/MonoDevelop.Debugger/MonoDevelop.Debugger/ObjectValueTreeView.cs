@@ -1405,21 +1405,25 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-		
+
 		[CommandHandler (DebugCommands.AddWatch)]
 		protected void OnAddWatch ()
 		{
-			List<string> exps = new List<string> ();
+			var expressions = new List<string> ();
+
 			foreach (TreePath tp in Selection.GetSelectedRows ()) {
 				TreeIter it;
+
 				if (store.GetIter (out it, tp)) {
-					string exp = GetFullExpression (it);
-					exps.Add (exp);
+					var expression = GetFullExpression (it);
+
+					if (!string.IsNullOrEmpty (expression))
+						expressions.Add (expression);
 				}
 			}
-			foreach (string s in exps) {
-				DebuggingService.AddWatch (s);
-			}
+
+			foreach (string expr in expressions)
+				DebuggingService.AddWatch (expr);
 		}
 
 		[CommandUpdateHandler (DebugCommands.AddWatch)]
@@ -1483,41 +1487,50 @@ namespace MonoDevelop.Debugger
 		string GetFullExpression (TreeIter it)
 		{
 			TreePath path = store.GetPath (it);
-			string exp = "";
+			string name, expression = "";
 			
 			while (path.Depth != 1) {
-				ObjectValue val = (ObjectValue)store.GetValue (it, ObjectColumn);
-				exp = val.ChildSelector + exp;
+				var val = (ObjectValue) store.GetValue (it, ObjectColumn);
+				if (val == null)
+					return null;
+
+				expression = val.ChildSelector + expression;
 				if (!store.IterParent (out it, it))
 					break;
+
 				path = store.GetPath (it);
 			}
 
-			string name = (string) store.GetValue (it, NameColumn);
+			name = (string) store.GetValue (it, NameColumn);
 
-			return name + exp;
+			return name + expression;
 		}
 
 		public void CreatePinnedWatch (TreeIter it)
 		{
-			string exp = GetFullExpression (it);
-			
-			PinnedWatch watch = new PinnedWatch ();
+			var expression = GetFullExpression (it);
+
+			if (string.IsNullOrEmpty (expression))
+				return;
+
+			var watch = new PinnedWatch ();
+
 			if (PinnedWatch != null) {
 				CollapseAll ();
 				watch.File = PinnedWatch.File;
 				watch.Line = PinnedWatch.Line;
 				watch.OffsetX = PinnedWatch.OffsetX;
 				watch.OffsetY = PinnedWatch.OffsetY + SizeRequest ().Height + 5;
-			}
-			else {
+			} else {
 				watch.File = PinnedWatchFile;
 				watch.Line = PinnedWatchLine;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
-			watch.Expression = exp;
+
+			watch.Expression = expression;
 			DebuggingService.PinnedWatches.Add (watch);
+
 			if (PinStatusChanged != null)
 				PinStatusChanged (this, EventArgs.Empty);
 		}

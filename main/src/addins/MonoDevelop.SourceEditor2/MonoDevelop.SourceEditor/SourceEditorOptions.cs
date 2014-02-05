@@ -187,9 +187,6 @@ namespace MonoDevelop.SourceEditor
 				case "EnableAnimations":
 					base.EnableAnimations = (bool)args.NewValue;
 					break;
-				case "UseAntiAliasing":
-					base.UseAntiAliasing = (bool)args.NewValue;
-					break;
 				case "DrawIndentationMarkers":
 					base.DrawIndentationMarkers = (bool)args.NewValue;
 					break;
@@ -230,7 +227,6 @@ namespace MonoDevelop.SourceEditor
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
-			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
 			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
@@ -599,13 +595,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override bool UseAntiAliasing {
-			set {
-				PropertyService.Set ("UseAntiAliasing", value);
-				base.UseAntiAliasing = value;
-			}
-		}
-
 		public override bool DrawIndentationMarkers {
 			set {
 				PropertyService.Set ("DrawIndentationMarkers", value);

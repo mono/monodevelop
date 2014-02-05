@@ -54,6 +54,16 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run () 
 		{
+			if (System.IO.Directory.Exists (path)) {
+				if (MessageService.AskQuestion (GettextCatalog.GetString (
+					    "Checkout path is not empty. Do you want to delete its contents?"),
+					    path,
+					    AlertButton.Cancel,
+					    AlertButton.Ok) == AlertButton.Cancel)
+					return;
+				FileService.DeleteDirectory (path);
+			}
+
 			vc.Checkout (path, null, true, Monitor);
 			if (Monitor.IsCancelRequested) {
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));

@@ -130,5 +130,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return data;
 		}
+
+		public static void TransferData (SolutionItem source, SolutionItem target)
+		{
+			ItemSlnData data = (ItemSlnData) source.ExtendedProperties [typeof(ItemSlnData)];
+			if (data != null)
+				target.ExtendedProperties [typeof(ItemSlnData)] = data;
+		}
 	}
 }

@@ -184,7 +184,7 @@ namespace Stetic
 			switch (source) {
 				case ImageSource.Resource:
 					return new CodeMethodInvokeExpression (
-						new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Gdk.Pixbuf), CodeTypeReferenceOptions.GlobalReference)),
+						new CodeTypeReferenceExpression (new CodeTypeReference (ctx.Options.ImageResourceLoaderClass, CodeTypeReferenceOptions.GlobalReference)),
 						"LoadFromResource",
 						new CodePrimitiveExpression (name)
 					);

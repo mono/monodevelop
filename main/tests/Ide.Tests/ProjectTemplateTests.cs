@@ -53,10 +53,22 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
+		[Ignore]
+		public void CreateGtkSharpProjectTemplate ()
+		{
+			// This test is a placeholder to remind us that Gtk# project creationg is untested because
+			// we cannot reliably start/shutdown XS as part of the test suite. We hit may differnt kinds
+			// of race condition once we initialize the ide services.
+		}
+
+		[Test]
 		public void CreateEveryProjectTemplate ()
 		{
 			var builder = new StringBuilder ();
 			foreach (var template in ProjectTemplate.ProjectTemplates) {
+				if (template.Name.Contains ("Gtk#"))
+					continue;
+
 				try {
 					try { Directory.Delete (TempDir, true); } catch { }
 					var cinfo = new ProjectCreateInformation {

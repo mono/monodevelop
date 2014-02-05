@@ -45,5 +45,9 @@ namespace MonoDevelop.Projects
 			return target.Configurations [Id];
 		}
 
+		public override string ToString ()
+		{
+			return Id;
+		}
 	}
 }
