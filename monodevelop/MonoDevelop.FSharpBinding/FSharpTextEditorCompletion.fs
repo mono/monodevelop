@@ -36,14 +36,29 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, gl
     override x.Icon = icon.Value
 
     /// Check if the datatip has multiple overloads
-    override x.HasOverloads = match datatipLazy.Value with ToolTipText xs -> xs.Length > 1
+    override x.HasOverloads = 
+        match datatipLazy.Value with 
+        | ToolTipText [xs] ->
+            match xs with 
+            | ToolTipElementGroup ttg -> true 
+            | _ -> false
+        | ToolTipText list -> true
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
         match datatipLazy.Value with 
         | ToolTipText xs -> 
-            xs |> Seq.map (fun x -> FSharpMemberCompletionData(name, ToolTipText[x], glyph)) 
-               |> Seq.cast
+            seq{for tooltipElement in xs do
+                match tooltipElement with
+                | ToolTipElement(a, b) -> yield FSharpMemberCompletionData(name, ToolTipText[tooltipElement], glyph) :> _
+                | ToolTipElementGroup(items) ->
+                  let overloads =
+                      items 
+                      |> Seq.map (fun args -> FSharpMemberCompletionData(name, ToolTipText[ToolTipElement(args)], glyph)) 
+                      |> Seq.cast
+                  yield! overloads
+                | _ -> () }
+
 
     override x.AddOverload (data: ICompletionData) = ()//not currently called
 
