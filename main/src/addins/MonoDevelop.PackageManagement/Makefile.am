@@ -1,3 +1,3 @@
-SUBDIRS = \
-	MonoDevelop.PackageManagement \
-	MonoDevelop.PackageManagement.Tests
+SUBDIRS = . MonoDevelop.PackageManagement.Tests
+
+include $(top_srcdir)/xbuild.include

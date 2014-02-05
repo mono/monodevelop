@@ -39,10 +39,10 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.PackageManagement</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.PackageManagement</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.PackageManagement</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.PackageManagement</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -57,7 +57,7 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
     <Reference Include="NuGet.Core">
-      <HintPath>..\lib\NuGet.Core.dll</HintPath>
+      <HintPath>lib\NuGet.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -264,23 +264,23 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\lib\NuGet.exe">
+    <None Include="lib\NuGet.exe">
       <Link>NuGet.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\lib\NuGet-LICENSE.txt">
+    <None Include="lib\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
