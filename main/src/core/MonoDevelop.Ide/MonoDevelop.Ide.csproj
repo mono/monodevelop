@@ -1880,7 +1880,6 @@
     <Compile Include="MonoDevelop.Components\FileEntry.cs" />
     <Compile Include="MonoDevelop.Components\FolderDialog.cs" />
     <Compile Include="MonoDevelop.Components\FolderEntry.cs" />
-    <Compile Include="MonoDevelop.Components\IconView.cs" />
     <Compile Include="MonoDevelop.Components\Navbar.cs" />
     <Compile Include="MonoDevelop.Components\TabLabel.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />

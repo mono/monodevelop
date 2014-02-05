@@ -27,22 +27,14 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
-using Mono.Addins;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 using Gtk;
-using MonoDevelop.Components;
-using IconView = MonoDevelop.Components.IconView;
-using Gdk;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 

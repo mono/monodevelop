@@ -33,15 +33,10 @@ using System.Collections;
 using System.IO;
 using System.Text;
 
-using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Dialogs;
 
-using MonoDevelop.Components;
-using IconView = MonoDevelop.Components.IconView;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
