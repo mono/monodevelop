@@ -80,14 +80,16 @@ type FSharpParser() =
           activeRequests.[fileName] <- fileContent
           let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
           let args = CompilerArguments.getArgumentsFromProject(proj, config)
-          MDLanguageService.Instance.TriggerParse(proj.FileName.ToString(), filePath, fileContent, files, args, afterCompleteTypeCheckCallback = 
+          let framework = CompilerArguments.getTargetFramework( (proj :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+
+          MDLanguageService.Instance.TriggerParse(proj.FileName.ToString(), filePath, fileContent, files, args, framework,
             (fun (_,errors) ->
                 DispatchService.GuiDispatch( fun () ->
                     Debug.WriteLine("[Thread {0}]: Callback after parsing, file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
 
                     // Keep the result until we reparse
                     activeResults.[fileName] <- makeErrors errors
-                    typedParsedResult <- MDLanguageService.Instance.GetTypedParseResult(proj.FileName.ToString(), filePath, fileContent, files, args, true, 400)
+                    typedParsedResult <- MDLanguageService.Instance.GetTypedParseResult(proj.FileName.ToString(), filePath, fileContent, files, args, true, 400, framework)
                     // Schedule a reparse to actually update the errors, checking first if this is still the active document
                     try 
                        let doc = IdeApp.Workbench.ActiveDocument

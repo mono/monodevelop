@@ -4,8 +4,6 @@ namespace MonoDevelop.FSharp
 open System
 open System.Diagnostics
 open System.IO
-open System.Xml
-open System.CodeDom.Compiler
 
 open Gdk
 open MonoDevelop.Components
@@ -13,7 +11,6 @@ open MonoDevelop.Components.Docking
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Ide
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Projects
 open MonoDevelop.FSharp
 open FSharp.CompilerBinding
@@ -191,6 +188,7 @@ type FSharpInteractivePad() =
     member x.RedrawContent() = ()
   
   member x.RestartFsi() = resetFsi Restart
+  member x.ClearFsi() = view.Clear()
     
   member x.UpdateColors() =
     match view.Child with
@@ -300,35 +298,35 @@ type ShowFSharpInteractive() =
     info.Enabled <- true
     info.Visible <- true
 
-type SendSelection() =
+type InteractiveCommand(desription, command, ?bringToFront) =
   inherit CommandHandler()
-  override x.Run() =
-    Debug.WriteLine (sprintf "Interactive: Send selection to F# interactive invoked!")
-    FSharpInteractivePad.CurrentFsi.SendSelection()
-    FSharpInteractivePad.CurrentPad.BringToFront(false)
+  let toFront = defaultArg bringToFront false
   override x.Update(info:CommandInfo) =
     let fsi = FSharpInteractivePad.CurrentFsi
     info.Enabled <- true
     info.Visible <- fsi.IsInsideFSharpFile
+  override x.Run() =
+    Debug.WriteLine(desription)
+    command()
+    FSharpInteractivePad.CurrentPad.BringToFront(toFront)
+
+  
+type SendSelection() =
+  inherit InteractiveCommand("Interactive: Send selection to F# interactive invoked!",
+                             FSharpInteractivePad.CurrentFsi.SendSelection)
 
 type SendLine() =
-  inherit CommandHandler()
-  override x.Run() =
-    Debug.WriteLine (sprintf "Interactive: Send line to F# interactive invoked!")
-    FSharpInteractivePad.CurrentFsi.SendLine()
-    FSharpInteractivePad.CurrentPad.BringToFront(false)
-  override x.Update(info:CommandInfo) =
-    let fsi = FSharpInteractivePad.CurrentFsi
-    info.Enabled <- true
-    info.Visible <- fsi.IsInsideFSharpFile
-    
+  inherit InteractiveCommand("Interactive: Send line to F# interactive invoked!",
+                             FSharpInteractivePad.CurrentFsi.SendLine)
+
 type SendReferences() =
-  inherit CommandHandler()
-  override x.Run() =
-    Debug.WriteLine (sprintf "Interactive: Load references in F# interactive invoked!")
-    FSharpInteractivePad.CurrentFsi.LoadReferences()
-    FSharpInteractivePad.CurrentPad.BringToFront(false)
-  override x.Update(info:CommandInfo) =
-    let fsi = FSharpInteractivePad.CurrentFsi
-    info.Enabled <- true
-    info.Visible <- fsi.IsInsideFSharpFile
+  inherit InteractiveCommand("Interactive: Load references in F# interactive invoked!",
+                             FSharpInteractivePad.CurrentFsi.LoadReferences)
+
+type RestartFsi() =
+  inherit InteractiveCommand("Interactive: Restart invoked!",
+                             FSharpInteractivePad.CurrentFsi.RestartFsi)
+
+type ClearFsi() =
+  inherit InteractiveCommand("Interactive: Clear invoked!",
+                             FSharpInteractivePad.CurrentFsi.ClearFsi)

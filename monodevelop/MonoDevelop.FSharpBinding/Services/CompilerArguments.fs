@@ -32,32 +32,43 @@ module CompilerArguments =
     [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> List.exists (fun sup ->
         String.Compare(ext, sup, true) = 0)
 
+  // Translate the target framework to an enum used by FSharp.CompilerBinding
+  let getTargetFramework (targetFramework:TargetFrameworkMoniker) = 
+      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
+      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
+      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
+      elif targetFramework = TargetFrameworkMoniker.NET_4_0 then FSharpTargetFramework.NET_4_0
+      elif targetFramework = TargetFrameworkMoniker.NET_4_5 then FSharpTargetFramework.NET_4_5
+      else FSharpTargetFramework.NET_4_5
+
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let private generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
+
+    // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
+    // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
     let files = 
-      [ for ref in items.GetAll<ProjectReference>() do
-          for file in ref.GetReferencedFileNames(configSelector) do
-            // The plain reference text "FSharp.Core" is used in Visual Studio .fsproj files.
-            // On MonoDevelop+windows this is incorrectly resolved. We just skip reference text of this form,
-            // and rely on the default directory search below.
-            if not (file.EndsWith("FSharp.Core.dll", true, CultureInfo.InvariantCulture)) || ref.IsValid then 
-                 yield file ]
-    
-    // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to 
-    // resolve it and add it. We look in the directories returned by getDefaultDirectories(),
-    // where no includes are given.
+      items.GetAll<ProjectReference>() 
+      |> Seq.filter (fun ref -> ref.Reference <> "FSharp.Core") 
+      |> Seq.collect (fun ref -> ref.GetReferencedFileNames(configSelector))
+                    
+    // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to resolve it and add it. 
+    // We look in the directories returned by getDefaultDirectories(langVersion, targetFramework).
     for assumedFile in ["mscorlib"; "FSharp.Core"] do 
-      let coreRef = files |> List.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll", true, CultureInfo.InvariantCulture) || 
-                                                     fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
+      let coreRef =
+        files |> Seq.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll", true, CultureInfo.InvariantCulture) 
+                                        || fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
+    
       match coreRef with
       | None ->
-        let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
-        match FSharpEnvironment.resolveAssembly dirs assumedFile with
-        | Some fn -> yield "-r:" + wrapf(fn)
-        | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
+          //fall back to using default directories for F# Core
+          let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
+          match FSharpEnvironment.resolveAssembly dirs assumedFile with
+          | Some fn -> yield "-r:" + wrapf(fn)
+          | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
+
       | Some r -> 
         Debug.WriteLine(sprintf "Resolution: Found '%s' reference '%s'" assumedFile r)
       
@@ -195,13 +206,6 @@ module CompilerArguments =
     match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsc" with
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> None
-  
-      // Translate the target framework to an enum used by FSharp.CompilerBinding
-  let getTargetFramework targetFramework = 
-      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
-      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
-      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
-      else FSharpTargetFramework.NET_4_0
         
   // Only used when xbuild support is not enabled. When xbuild is enabled, the .targets 
   // file finds FSharp.Build.dll which finds the F# compiler.

@@ -14,20 +14,18 @@ See  [emacs/README.md](emacs/README.md) or  [monodevelop/README.md](monodevelop/
 
 ## Shared Components
 
-The core shared component is FSharp.Compiler.Editor.dll from the 
+The core shared component is FSharp.Compiler.Service.dll from the 
 community [FSharp.Compiler.Service](https://github.com/fsharp/FSharp.Compiler.Service) project. 
 This is used by both [fsautocomplete.exe](https://github.com/fsharp/fsharpbinding/tree/master/FSharp.AutoComplete), 
 a command-line utility to sit behind Emacs, Vim and other editing environments components. 
 
 Building:
 
-	./configure.sh
 	make
 
 This produces bin/fsautocomplete.exe. To understand how to use these components, see the other projects.
 
-An old component called FSharp.CompilerBinding.dll is also present, it was used as a shim to the F# compiler before
-the availability of FSharp.Compiler.Editor.dll.
+A component called FSharp.CompilerBinding.dll is also present, which is used for common functionality shared by the monodevelop binding and fsautocomplete.
 
 
 For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
