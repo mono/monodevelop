@@ -1279,7 +1279,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			long totalProgress = total;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
-				progressData.LogTimer.Close ();
+				progressData.LogTimer.Dispose ();
 				return;
 			}
 
