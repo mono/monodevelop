@@ -301,6 +301,7 @@ namespace MonoDevelop.Ide
 			
 			Runtime.Shutdown ();
 			InstrumentationService.Stop ();
+			AddinManager.AddinLoadError -= OnAddinError;
 			
 			return 0;
 		}
