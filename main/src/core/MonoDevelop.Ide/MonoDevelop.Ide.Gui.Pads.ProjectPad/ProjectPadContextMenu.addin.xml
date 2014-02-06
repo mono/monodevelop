@@ -18,6 +18,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Unload" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 	</Condition>
 	<SeparatorItem id = "BuildSectionEnd" />

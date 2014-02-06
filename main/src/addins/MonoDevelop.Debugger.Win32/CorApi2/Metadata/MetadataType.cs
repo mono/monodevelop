@@ -15,12 +15,12 @@ using System.Diagnostics;
 using Microsoft.Samples.Debugging.CorDebug; 
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi; 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Samples.Debugging.Extensions;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class MetadataType : Type
     {
-		// [Xamarin] Expression evaluator.
         internal MetadataType(IMetadataImport importer,int classToken)
         {
             Debug.Assert(importer!=null);
@@ -61,19 +61,21 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 string baseTypeName = GetTypeName(importer, ptkExtends);
                 
                 IntPtr ppvSig;
-				if (baseTypeName == "System.Enum") {
-					m_isEnum = true;
-					m_enumUnderlyingType = GetEnumUnderlyingType (importer, classToken);
+                if (baseTypeName == "System.Enum")
+                {
+                    m_isEnum = true;
+                    m_enumUnderlyingType = GetEnumUnderlyingType(importer,classToken);
 
-					// Check for flags enum by looking for FlagsAttribute
-					uint sigSize = 0;
-					ppvSig = IntPtr.Zero;
-					int hr = importer.GetCustomAttributeByName (classToken, "System.FlagsAttribute", out ppvSig, out sigSize);
-					if (hr < 0) {
-						throw new COMException ("Exception looking for flags attribute", hr);
-					}
-					m_isFlagsEnum = (hr == 0);  // S_OK means the attribute is present.
-				}
+                    // Check for flags enum by looking for FlagsAttribute
+                    uint sigSize = 0;
+                    ppvSig = IntPtr.Zero;
+                    int hr = importer.GetCustomAttributeByName(classToken,"System.FlagsAttribute",out ppvSig,out sigSize);
+                    if (hr < 0)
+                    {
+                        throw new COMException("Exception looking for flags attribute",hr);
+                    }
+                    m_isFlagsEnum = (hr == 0);  // S_OK means the attribute is present.
+                }              
             }
         }
 
@@ -223,7 +225,26 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 // token, depending on the nature and location of the base type.
                 //
                 // See ECMA Partition II for more details.
-                throw new NotImplementedException();
+				if (m_typeToken == 0)
+					throw new NotImplementedException ();
+
+				var token = new MetadataToken(m_typeToken);
+				int size;
+				TypeAttributes pdwTypeDefFlags;
+				int ptkExtends;
+
+				m_importer.GetTypeDefProps (token,
+				                            null,
+				                            0,
+				                            out size,
+				                            out pdwTypeDefFlags,
+				                            out ptkExtends
+				                            );
+
+				if (ptkExtends == 0)
+					return null;
+
+				return new MetadataType (m_importer, ptkExtends);
             }
         }
 
@@ -337,7 +358,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         public override object[] GetCustomAttributes(bool inherit)
         {
 			if (m_customAttributes == null)
-				m_customAttributes = MetadataHelperFunctions.GetDebugAttributes (m_importer, m_typeToken);
+				m_customAttributes = MetadataHelperFunctionsExtensions.GetDebugAttributes (m_importer, m_typeToken);
 			return m_customAttributes;
         }
 
@@ -411,22 +432,22 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 		// [Xamarin] Expression evaluator.
         public override PropertyInfo[] GetProperties(BindingFlags bindingAttr)
         {
-			ArrayList al = new ArrayList ();
-			IntPtr hEnum = new IntPtr ();
+			var al = new ArrayList ();
+			var hEnum = new IntPtr ();
 
 			int methodToken;
 			try {
 				while (true) {
 					uint size;
-					((IMetadataImport2)m_importer).EnumProperties (ref hEnum, (int) m_typeToken, out methodToken, 1, out size);
+					m_importer.EnumProperties (ref hEnum, (int) m_typeToken, out methodToken, 1, out size);
 					if (size == 0)
 						break;
-					MetadataPropertyInfo prop = new MetadataPropertyInfo (m_importer, methodToken, this);
+					var prop = new MetadataPropertyInfo (m_importer, methodToken, this);
 					try {
 						MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
 						if (mi == null)
 							continue;
-						if (FlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
+						if (MetadataExtensions.TypeFlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
 							al.Add (prop);
 					}
 					catch {
@@ -462,35 +483,44 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
         
+		// TODO: Implement
         public override Type[] GetInterfaces()
         {
-            throw new NotImplementedException();
+			var al = new ArrayList();
+			var hEnum = new IntPtr();
+
+			int impl;
+			try 
+			{
+				while(true)
+				{
+					uint size;
+					m_importer.EnumInterfaceImpls (ref hEnum,(int)m_typeToken,out impl,1,out size);
+					if(size==0)
+						break;
+					al.Add (new MetadataType (m_importer, impl));
+				}
+			}
+			finally 
+			{
+				m_importer.CloseEnum(hEnum);
+			}
+			return (Type[]) al.ToArray(typeof(Type));
         }
 
         public override FieldInfo GetField(String name, BindingFlags bindingAttr)
         {
-            throw new NotImplementedException();
+			foreach (var field in GetFields (bindingAttr)) {
+				if (field.Name == name)
+					return field;
+			}
+			return null;
         }
 
-		// [Xamarin] Expression evaluator.
-		bool FlagsMatch (bool ispublic, bool isstatic, BindingFlags flags)
-		{
-			if (ispublic && (flags & BindingFlags.Public) == 0)
-				return false;
-			if (!ispublic && (flags & BindingFlags.NonPublic) == 0)
-				return false;
-			if (isstatic && (flags & BindingFlags.Static) == 0)
-				return false;
-			if (!isstatic && (flags & BindingFlags.Instance) == 0)
-				return false;
-			return true;
-		}
-
-		// [Xamarin] Expression evaluator.
         public override FieldInfo[] GetFields(BindingFlags bindingAttr)
         {
-            ArrayList al = new ArrayList();
-            IntPtr hEnum = new IntPtr();
+            var al = new ArrayList();
+            var hEnum = new IntPtr();
 
             int fieldToken;
             try 
@@ -498,12 +528,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 while(true)
                 {
                     uint size;
-					// TODO: Check this. Was just m_importer.EnumFields.
-					((IMetadataImport2) m_importer).EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
+                    m_importer.EnumFields(ref hEnum,(int)m_typeToken,out fieldToken,1,out size);
                     if(size==0)
                         break;
-					MetadataFieldInfo field = new MetadataFieldInfo (m_importer, fieldToken, this);
-					if (FlagsMatch (field.IsPublic, field.IsStatic, bindingAttr))
+					// [Xamarin] Expression evaluator.
+					var field = new MetadataFieldInfo (m_importer, fieldToken, this);
+					if (MetadataExtensions.TypeFlagsMatch (field.IsPublic, field.IsStatic, bindingAttr))
 						al.Add (field);
                 }
             }
@@ -514,7 +544,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return (FieldInfo[]) al.ToArray(typeof(FieldInfo));
         }
 
-		// [Xamarin] Expression evaluator.
         public override MethodInfo[] GetMethods(BindingFlags bindingAttr)
         {
             ArrayList al = new ArrayList();
@@ -529,8 +558,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                     m_importer.EnumMethods(ref hEnum,(int)m_typeToken,out methodToken,1,out size);
                     if(size==0)
                         break;
-					MetadataMethodInfo met = new MetadataMethodInfo (m_importer, methodToken);
-					if (FlagsMatch (met.IsPublic, met.IsStatic, bindingAttr))
+					// [Xamarin] Expression evaluator.
+					var met = new MetadataMethodInfo (m_importer, methodToken);
+					if (MetadataExtensions.TypeFlagsMatch (met.IsPublic, met.IsStatic, bindingAttr))
 						al.Add (met);
                 }
             }
@@ -632,7 +662,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-		// [Xamarin] Expression evaluator.
         // returns "" for normal classes, returns prefix for nested classes
         private string GetNestedClassPrefix(IMetadataImport importer, int classToken, TypeAttributes attribs)
         {
@@ -641,86 +670,32 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 // it is a nested class
                 int enclosingClass;
                 importer.GetNestedClassProps(classToken, out enclosingClass);
+				// [Xamarin] Expression evaluator.
 				m_declaringType = new MetadataType (importer, enclosingClass);
 				return m_declaringType.FullName + "+";
+                //MetadataType mt = new MetadataType(importer,enclosingClass);
+                //return mt.Name+".";
             }
             else
                 return String.Empty;
         }
 
+        // member variables
+        private string m_name;
+        private IMetadataImport m_importer;
+        private int m_typeToken;
+        private bool m_isEnum;
+        private bool m_isFlagsEnum;
+        private CorElementType m_enumUnderlyingType;
+        private List<KeyValuePair<string,ulong>> m_enumValues;
 		// [Xamarin] Expression evaluator.
-		internal static Type MakeDelegate (Type retType, List<Type> argTypes)
-		{
-			
-			throw new NotImplementedException ();
-		}
-
-		// [Xamarin] Expression evaluator.
-		public static Type MakeArray (Type t, List<int> sizes, List<int> loBounds)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				if (sizes == null) {
-					sizes = new List<int> ();
-					sizes.Add (1);
-				}
-				mt.m_arraySizes = sizes;
-				mt.m_arrayLoBounds = loBounds;
-				return mt;
-			}
-			if (sizes == null || sizes.Count == 1)
-				return t.MakeArrayType ();
-			else
-				return t.MakeArrayType (sizes.Capacity);
-		}
-
-		// [Xamarin] Expression evaluator.
-		public static Type MakeByRef (Type t)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				mt.m_isByRef = true;
-				return mt;
-			}
-			return t.MakeByRefType ();
-		}
-
-		// [Xamarin] Expression evaluator.
-		public static Type MakePointer (Type t)
-		{
-			MetadataType mt = t as MetadataType;
-			if (mt != null) {
-				mt.m_isPtr = true;
-				return mt;
-			}
-			return t.MakeByRefType ();
-		}
-
-		// [Xamarin] Expression evaluator.
-		public static Type MakeGeneric (Type t, List<Type> typeArgs)
-		{
-			MetadataType mt = (MetadataType)t;
-			mt.m_typeArgs = typeArgs;
-			return mt;
-		}
-
-		// member variables
-		private string m_name;
-		private IMetadataImport m_importer;
-		private int m_typeToken;
-		private bool m_isEnum;
-		private bool m_isFlagsEnum;
-		private CorElementType m_enumUnderlyingType;
-		// [Xamarin] Expression evaluator.
-		private List<KeyValuePair<string, ulong>> m_enumValues;
 		private object[] m_customAttributes;
 		private Type m_declaringType;
-		private List<int> m_arraySizes;
-		private List<int> m_arrayLoBounds;
-		private bool m_isByRef, m_isPtr;
-		private List<Type> m_typeArgs;
-
-	}
+		internal List<int> m_arraySizes;
+		internal List<int> m_arrayLoBounds;
+		internal bool m_isByRef, m_isPtr;
+		internal List<Type> m_typeArgs;
+    }
 
     // Sorts KeyValuePair<string,ulong>'s in increasing order by the value
     class AscendingValueComparer<K, V> : IComparer<KeyValuePair<K,V>> where V:IComparable

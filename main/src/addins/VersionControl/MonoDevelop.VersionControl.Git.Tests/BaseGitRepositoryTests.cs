@@ -203,6 +203,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			repo2.RenameBranch ("branch2", "branch3");
 			Assert.IsTrue (repo2.GetBranches ().Any (b => b.Name == "branch3") && repo2.GetBranches ().All (b => b.Name != "branch2"), "Failed to rename branch");
+
+			// TODO: Add CreateBranchFromCommit tests.
 		}
 
 		[Test]

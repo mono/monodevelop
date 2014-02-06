@@ -262,11 +262,25 @@ namespace Mono.TextEditor
 				char* endPtr = start + text.Length;
 
 				while (p < endPtr) {
-					char* nextp = p + 1;
-					char nextChar = nextp < endPtr ? *nextp : '\0';
-					var type = NewLine.GetDelimiterType (*p, nextChar);
-					if (type != UnicodeNewline.Unknown)
-						return new Delimiter ((int)(p - start), type);
+					switch (*p) {
+					case NewLine.CR:
+						char* nextp = p + 1;
+						if (nextp < endPtr && *nextp == NewLine.LF)
+							return new Delimiter ((int)(p - start), UnicodeNewline.CRLF);
+						return new Delimiter ((int)(p - start), UnicodeNewline.CR);
+					case NewLine.LF:
+						return new Delimiter ((int)(p - start), UnicodeNewline.LF);
+					case NewLine.NEL:
+						return new Delimiter ((int)(p - start), UnicodeNewline.NEL);
+					case NewLine.VT:
+						return new Delimiter ((int)(p - start), UnicodeNewline.VT);
+					case NewLine.FF:
+						return new Delimiter ((int)(p - start), UnicodeNewline.FF);
+					case NewLine.LS:
+						return new Delimiter ((int)(p - start), UnicodeNewline.LS);
+					case NewLine.PS:
+						return new Delimiter ((int)(p - start), UnicodeNewline.PS);
+					}
 					p++;
 				}
 				return Delimiter.Invalid;

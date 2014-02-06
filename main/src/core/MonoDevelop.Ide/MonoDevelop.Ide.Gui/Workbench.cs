@@ -58,10 +58,10 @@ namespace MonoDevelop.Ide.Gui
 	/// </summary>
 	public sealed class Workbench
 	{
-		List<Document> documents = new List<Document> ();
-		PadCollection pads;
-		ProgressMonitorManager monitors = new ProgressMonitorManager ();
+		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
+		readonly List<Document> documents = new List<Document> ();
 		DefaultWorkbench workbench;
+		PadCollection pads;
 
 		public event EventHandler ActiveDocumentChanged;
 		public event EventHandler LayoutChanged;
@@ -145,8 +145,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document GetDocument (string name)
 		{
+			var fullPath = (FilePath) FileService.GetFullPath (name);
+
 			foreach (Document doc in documents) {
-				if (FileService.GetFullPath (doc.Name) == name)
+				var fullDocPath = (FilePath) FileService.GetFullPath (doc.Name);
+
+				if (fullDocPath == fullPath)
 					return doc;
 			}
 			return null;

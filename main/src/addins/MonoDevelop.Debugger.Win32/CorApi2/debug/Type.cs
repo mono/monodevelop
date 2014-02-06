@@ -91,7 +91,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 		// [Xamarin] Expression evaluator.
         // Expose IEnumerable, which can be used with for-each constructs.
         // This will provide an collection of CorType parameters.
-        public CorType[] TypeParameters
+		public CorType[] TypeParameters
         {
             get
             {
@@ -102,6 +102,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 				foreach (CorType t in new CorTypeEnumerator (etp))
 					list.Add (t);
 				return list.ToArray ();
+                //return new CorTypeEnumerator (etp);
             }
         }
     } /* class Type */

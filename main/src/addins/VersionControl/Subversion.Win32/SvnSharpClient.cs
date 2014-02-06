@@ -657,7 +657,7 @@ namespace SubversionAddinWindows
 
 			long totalProgress = e.TotalProgress;
 			if (totalProgress != -1 && currentProgress >= totalProgress) {
-				data.LogTimer.Close ();
+				data.LogTimer.Dispose ();
 				return;
 			}
 

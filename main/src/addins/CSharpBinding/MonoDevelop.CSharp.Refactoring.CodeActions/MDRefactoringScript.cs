@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (part == null)
 				return tcs.Task;
 
-			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
+			var loadedDocument = IdeApp.Workbench.OpenDocument (new FileOpenInformation (part.Region.FileName, null));
 			loadedDocument.RunWhenLoaded (delegate {
 				var editor = loadedDocument.Editor;
 				var loc = part.Region.Begin;
@@ -365,7 +365,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				project.AddFile (correctFileName);
 				IdeApp.ProjectOperations.Save (project);
 			}
-			IdeApp.Workbench.OpenDocument (correctFileName);
+			IdeApp.Workbench.OpenDocument (correctFileName, project);
 		}
 
 	}

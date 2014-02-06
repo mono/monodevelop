@@ -60,7 +60,6 @@ namespace Mono.TextEditor
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
 		bool allowTabsAfterNonTabs = true;
-		bool useAntiAliasing = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		Pango.FontDescription font, gutterFont;
@@ -444,18 +443,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual bool UseAntiAliasing {
-			get {
-				return useAntiAliasing;
-			}
-			set {
-				if (useAntiAliasing != value) {
-					useAntiAliasing = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
 		bool drawIndentationMarkers = false;
 		public virtual bool DrawIndentationMarkers {
 			get {
@@ -573,7 +560,6 @@ namespace Mono.TextEditor
 			overrideDocumentEolMarker = other.overrideDocumentEolMarker;
 			defaultEolMarker = other.defaultEolMarker;
 			enableAnimations = other.enableAnimations;
-			useAntiAliasing = other.useAntiAliasing;
 			drawIndentationMarkers = other.drawIndentationMarkers;
 			showWhitespaces = other.showWhitespaces;
 			includeWhitespaces = other.includeWhitespaces;

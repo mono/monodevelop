@@ -299,10 +299,7 @@ namespace MonoDevelop.Components.MainToolbar
 			BuildToolbar ();
 			IdeApp.CommandService.RegisterCommandBar (buttonBar);
 
-			AddinManager.ExtensionChanged += delegate(object sender, ExtensionEventArgs args) {
-				if (args.PathChanged (ToolbarExtensionPath))
-					BuildToolbar ();
-			};
+			AddinManager.ExtensionChanged += OnExtensionChanged;
 
 			contentBox.PackStart (matchEntry, false, false, 0);
 
@@ -327,6 +324,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
+		}
+			
+		void OnExtensionChanged (object sender, ExtensionEventArgs args)
+		{
+			if (args.PathChanged (ToolbarExtensionPath))
+				BuildToolbar ();
 		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
@@ -896,6 +899,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			base.OnDestroyed ();
 
+			AddinManager.ExtensionChanged -= OnExtensionChanged;
 			if (Background != null) {
 				((IDisposable)Background).Dispose ();
 				Background = null;
