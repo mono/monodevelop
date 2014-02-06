@@ -205,54 +205,81 @@ module internal TipFormatter =
         | None -> String.Empty
         | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
     | _ -> String.Empty
+        
 
+  let signatureIndenter (text:string) maximumlength= 
+    let sb = StringBuilder()
+
+    let rec formatter (piece:string) firstLine indentTo =
+        let padding = String.replicate indentTo " "
+        let pad (line:string) = 
+            if firstLine then sb.AppendLine(line) |> ignore
+            else sb.Append(padding) |> ignore
+                 sb.AppendLine(line.Trim()) |> ignore
+
+        let maxwidth = if firstLine then maximumlength 
+                       else maximumlength - indentTo
+        if piece.Length > maxwidth then
+             //get the largest index of either * or ->
+
+             let splitIndex =
+                let lastWithinBounds = max (piece.[0..maxwidth].LastIndexOf("*")) (piece.[0..maxwidth].LastIndexOf("->")-1)
+                if lastWithinBounds = -1 then
+                  match piece.[maxwidth..].IndexOf("*"), piece.[maxwidth..].IndexOf("->")-1 with
+                  | -1, -1 -> -1
+                  | first, -1 -> first
+                  | -1, second -> second
+                  | first, second -> min first second
+                else lastWithinBounds
+
+             if splitIndex = -1 then
+                pad piece
+             else
+                pad piece.[0..splitIndex]
+                formatter piece.[splitIndex+1..] false indentTo
+
+         else  pad piece
+    let lines = text.Split([|'\r';'\n'|], StringSplitOptions.None)
+    for line in lines do
+        let indexOfIndent = match line.IndexOf(':') with
+                            | -1 -> 0
+                            | foundIndex -> foundIndex+2
+        formatter line true indexOfIndent
+    sb.ToString().Trim()
 
   /// Format some of the data returned by the F# compiler
   ///
   /// If 'canAddHeader' is true (meaning that this is the only tip displayed) then we add first line 
   //  "Multiple overloads" because MD prints first int in bold (so that no overload is highlighted)
-  let private buildFormatElement canAddHeader el (sb:StringBuilder) =
+  let private buildFormatElement el =
+    let signatureB, commentB = StringBuilder(), StringBuilder()
     match el with 
     | ToolTipElementNone -> ()
     | ToolTipElement(it, comment) -> 
         Debug.WriteLine("DataTipElement: " + it)
-        sb.AppendLine(GLib.Markup.EscapeText it) |> ignore
+        signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 120)) |> ignore
         let html = buildFormatComment comment 
         if not (String.IsNullOrWhiteSpace html) then 
-            sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
-            sb.AppendLine(html) |> ignore
+            commentB.Append(html) |> ignore
     | ToolTipElementGroup(items) -> 
         let items, msg = 
           if items.Length > 10 then 
             (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
           else items, null
-        if (canAddHeader && items.Length > 1) then
-          sb.AppendLine("Multiple overloads") |> ignore
+        if (items.Length > 1) then
+          signatureB.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) -> 
-          sb.AppendLine(GLib.Markup.EscapeText it)  |> ignore
+          signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 120))  |> ignore
           if i = 0 then 
               let html = buildFormatComment comment 
               if not (String.IsNullOrWhiteSpace html) then 
-                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
-                  sb.AppendLine(html) |> ignore
-                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore )
-        if msg <> null then sb.Append(msg) |> ignore
+                  commentB.AppendLine(html) |> ignore
+                  commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
+        if msg <> null then signatureB.Append(msg) |> ignore
     | ToolTipElementCompositionError(err) -> 
-        sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
+        signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
+    signatureB.ToString(), commentB.ToString()
       
-    
-  /// Format some of the data returned by the F# compiler
-  let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
-    match tip with
-    | ToolTipText([single]) -> sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
-                               buildFormatElement true single sb
-    | ToolTipText(its) -> 
-        if canAddHeader then 
-            sb.AppendLine("Multiple items") |> ignore
-        its |> Seq.iteri (fun i item ->
-          if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
-          buildFormatElement false item sb) 
-
   let splitLine (sb:StringBuilder) (line:string) lineWidth =
       let emit (s:string) = sb.Append(s) |> ignore
       let indent = line |> Seq.takeWhile (fun c -> c = ' ') |> Seq.length
@@ -275,6 +302,8 @@ module internal TipFormatter =
       sb.AppendLine() |> ignore
 
   let wrap (text: String) lineWidth =
+      //dont wrap empty lines
+      if text.Length = 0 then text else
       let sb = StringBuilder()
       let lines = text.Split [|'\r';'\n'|]
       for line in lines  do
@@ -282,19 +311,19 @@ module internal TipFormatter =
           else splitLine sb line lineWidth
       sb.ToString()
 
-
   /// Format tool-tip that we get from the language service as string        
-  let formatTip canAddHeader tip = 
-      let sb = new StringBuilder()
-      buildFormatTip canAddHeader tip sb
-      let text = sb.ToString()
+  let formatTip tip = 
+      match tip with
+      | ToolTipText(list) ->
+        list 
+        |> List.map (fun item -> let signature, summary = buildFormatElement item
+                                 let wrappedSummary = wrap summary 120
+                                 signature, wrappedSummary)
 
       //TODO: Use the current projects policy to get line length
       // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
       // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
 
-      let wrapped = wrap text 120
-      wrapped.Trim('\n', '\r')
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
@@ -324,13 +353,6 @@ module internal TipFormatter =
   let extractParamTip paramName (ToolTipText elements) = 
       List.tryPick (extractParamTipFromElement paramName) elements
 
-  ///Formats tool-tip and turns the first line into heading.  MonoDevelop does this automatically 
-  ///for completion data, so we do the same thing explicitly for hover tool-tips
-  let formatTipWithHeader tip = 
-    let str = formatTip true tip
-    let parts = str.Split([| '\n'; '\r' |], 2, StringSplitOptions.RemoveEmptyEntries)
-    "<b>" + parts.[0] + "</b>" +
-      (if parts.Length > 1 then "\n\n" + parts.[1] else "")
 
 module MonoDevelop =
     let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
