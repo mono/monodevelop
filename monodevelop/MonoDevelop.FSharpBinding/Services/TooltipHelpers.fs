@@ -132,6 +132,6 @@ module Tooltips =
         let par = xdoc.Descendants(xn "param") 
                   |> where (fun element -> (element |> attribute "name").Value = param) 
                   |> singleOrDefault
-        if par = null then str else (elementValue addStyle par).ToString()
+        if par = null then None else Some((elementValue addStyle par).ToString())
         
         

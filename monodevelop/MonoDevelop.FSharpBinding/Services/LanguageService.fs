@@ -224,15 +224,15 @@ module internal TipFormatter =
 
              let splitIndex =
                 let lastWithinBounds = max (piece.[0..maxwidth].LastIndexOf("*")) (piece.[0..maxwidth].LastIndexOf("->")-1)
-                if lastWithinBounds = -1 then
+                if lastWithinBounds < 0 then
                   match piece.[maxwidth..].IndexOf("*"), piece.[maxwidth..].IndexOf("->")-1 with
-                  | -1, -1 -> -1
-                  | first, -1 -> first
-                  | -1, second -> second
+                  | first, second when first < 0 && second < 0 -> -1
+                  | first, second when second < 0 -> first
+                  | first, second when first < 0 -> second
                   | first, second -> min first second
                 else lastWithinBounds
 
-             if splitIndex = -1 then
+             if splitIndex < 0 then
                 pad piece
              else
                 pad piece.[0..splitIndex]
@@ -278,7 +278,7 @@ module internal TipFormatter =
         if msg <> null then signatureB.Append(msg) |> ignore
     | ToolTipElementCompositionError(err) -> 
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
-    signatureB.ToString(), commentB.ToString()
+    signatureB.ToString().Trim(), commentB.ToString().Trim()
       
   let splitLine (sb:StringBuilder) (line:string) lineWidth =
       let emit (s:string) = sb.Append(s) |> ignore
@@ -329,7 +329,7 @@ module internal TipFormatter =
   let private extractParamTipFromComment paramName comment =  
     match comment with
     | XmlCommentText(s) -> 
-        Some(Tooltips.getParameterTip Styles.simpleMarkup s paramName)
+        Tooltips.getParameterTip Styles.simpleMarkup s paramName
     // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
     | XmlCommentSignature(file,key) -> 
         match findXmlDocProviderForAssembly file with 
@@ -338,7 +338,7 @@ module internal TipFormatter =
             let doc = docReader.GetDocumentation(key)
             if String.IsNullOrEmpty(doc) then  None else
             let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
-            Some ( parameterTip )
+            parameterTip
     | _ -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
