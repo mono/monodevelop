@@ -235,11 +235,11 @@
     <EmbeddedResource Include="icons\light\step-over-16%402x.png">
       <LogicalName>step-over-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-continue-16.png">
-      <LogicalName>ico-debug-continue-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\continue-16.png">
+      <LogicalName>continue-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ico-debug-continue-16%402x.png">
-      <LogicalName>ico-debug-continue-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\continue-16%402x.png">
+      <LogicalName>continue-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\bug-16.png">
       <LogicalName>bug-light-16.png</LogicalName>
