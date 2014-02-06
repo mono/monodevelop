@@ -95,28 +95,27 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
         /// in the parameter information window.
     override x.CreateTooltipInformation (overload:int, currentParameter:int, smartWrap:bool) = 
         // Get the lower part of the text for the display of an overload
-        let description = 
-            let meth = meths.[overload]
-            let text = TipFormatter.formatTip meth.Description 
-            let body =
-                match text with
-                | [signature,comment] -> signature + "\n" + comment
-                //With multiple tips just take the head.  
-                //This shouldnt happen anyway as we split them in the resolver provider
-                | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature + "\n" + comment)
+        let meth = meths.[overload]
+        let signature, comment =
+            match TipFormatter.formatTip meth.Description with
+            | [signature,comment] -> signature,comment
+            //With multiple tips just take the head.  
+            //This shouldnt happen anyway as we split them in the resolver provider
+            | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature,comment)
 
+        let description =
             let param = 
                 meth.Parameters |> Array.mapi (fun i param -> 
                     let paramDesc = 
                         // Sometimes the parameter decription is hidden in the XML docs
-                        match TipFormatter.extractParamTip param.ParameterName meth.Description  with 
-                        | Some tip -> tip
+                        match TipFormatter.extractParamTip param.ParameterName meth.Description with 
+                        | Some(tip) -> tip
                         | None -> param.Description
                     let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
                     let text = name + ": " + GLib.Markup.EscapeText paramDesc
                     text )
-            if String.IsNullOrEmpty body then String.Join("\n", param)
-            else body + "\n\n" + String.Join("\n", param)
+            if String.IsNullOrEmpty comment then String.Join("\n", param)
+            else comment + "\n" + String.Join("\n", param)
             
         
         // Returns the text to use to represent the specified parameter
@@ -127,16 +126,8 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
             param.ParameterName 
 
         let heading = 
-            let meth = meths.[overload]
-            let tips = TipFormatter.formatTip meth.Description 
-            let text = 
-                match tips with
-                | [signature,comment] -> signature + "\n" + comment
-                //With multiple tips just take the head.  
-                //This shouldnt happen anyway as we split them in the resolver provider
-                | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature + "\n" + comment)
 
-            let lines = text.Split [| '\n';'\r' |]
+            let lines = signature.Split [| '\n';'\r' |]
 
             // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
             // put it back together again.
