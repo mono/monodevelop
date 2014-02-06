@@ -180,9 +180,9 @@ configure_packages ()
 
 create_local_config ()
 {
-	# Get the version from the version.txt file, if it exists
-	if test -a version.txt; then
-		ver=`grep ^Version version.txt|cut -d '=' -f 2|tr -d '\n'`
+	# Get the version from the version.config file, if it exists
+	if test -a version.config; then
+		ver=`grep ^Version version.config|cut -d '=' -f 2|tr -d '\n'`
 	else
 		ver=VERSION
 	fi
