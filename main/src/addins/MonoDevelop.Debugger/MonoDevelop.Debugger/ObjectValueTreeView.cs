@@ -406,8 +406,8 @@ namespace MonoDevelop.Debugger
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
-					crpButton.Image = ImageService.GetIcon (Stock.Refresh).WithBoxSize (12);
-					crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn).WithBoxSize (12);
+					crpButton.Image = ImageService.GetIcon (Stock.Refresh).WithSize (12,12);
+					crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn).WithSize (12,12);
 					ColumnsAutosize ();
 				} else {
 					newFont = Style.FontDescription;
