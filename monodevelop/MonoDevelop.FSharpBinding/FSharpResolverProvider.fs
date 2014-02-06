@@ -92,21 +92,28 @@ type FSharpLanguageItemTooltipProvider() =
             | Some(_) | None -> 
                 let line = editor.Document.OffsetToLineNumber offset
                 let segment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
-                let tti = TooltipItem (tiptext, segment)
-                lastResult <- Some(tti)
-                tti
+                let tooltipItem = TooltipItem (tiptext, segment)
+                lastResult <- Some(tooltipItem)
+                tooltipItem
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
         if (doc = null) then null else
         match item.Item with 
         | :? ToolTipText as titem ->
-            let tooltip = TipFormatter.formatTipWithHeader(titem)
+            let tooltip = TipFormatter.formatTip(titem)
+            let (signature, comment) = 
+                match tooltip with
+                | [signature,comment] -> signature,comment
+                //With multiple tips just take the head.  
+                //This shouldnt happen anyway as we split them in the resolver provider
+                | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature,comment)
             //dont show a tooltip if there is no content
-            if String.IsNullOrEmpty(tooltip) then null 
+            if String.IsNullOrEmpty(signature) then null 
             else            
                 let result = new TooltipInformationWindow(ShowArrow = true)
-                let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
+                let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
+                if not (String.IsNullOrEmpty(comment)) then toolTipInfo.SummaryMarkup <- comment
                 result.AddOverload(toolTipInfo)
                 result.RepositionWindow ()                  
                 result :> _

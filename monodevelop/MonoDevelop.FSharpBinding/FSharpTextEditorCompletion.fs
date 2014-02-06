@@ -26,7 +26,7 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, gl
                            DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
 
-    let description = lazy (TipFormatter.formatTip false datatipLazy.Value)
+    let description = lazy (TipFormatter.formatTip datatipLazy.Value)
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
 
     new (name, datatip:ToolTipText, glyph) =  new FSharpMemberCompletionData(name, lazy datatip, glyph)
@@ -66,48 +66,13 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, gl
     override x.CreateTooltipInformation (smartWrap: bool) = 
       
       Debug.WriteLine("computing tooltip for {0}", name)
-      
-      let description = description.Value
-      let lines = description.Split('\n','\r')
 
-      // We have to split the text into a 'signature' (formatted in mono-font) and
-      // a 'summary' (formatted in proportional font).  This is not ideal as the F# language
-      // service mixes elements that logically belong to each. So what is below is a heuristic reordering.
-      // Along the way we do some reformatting of the 'sections' that F# generates.
-      let isDividerLine (s:string) = s.StartsWith("-----")
-      let sections = 
-           let rec loop (xs:string[]) = 
-               seq {
-                 if xs.Length > 0 then
-                    let sect = xs |> Seq.takeWhile (isDividerLine >> not) |> Seq.filter (String.IsNullOrEmpty >> not) |> Seq.toArray
-                    let rest = xs |> Seq.skipWhile (isDividerLine >> not) |> Seq.skipWhile isDividerLine |> Seq.toArray
-                    if sect.Length > 0 then 
-                        yield sect
-                    yield! loop rest }
-           loop lines |> Seq.toArray
+      match description.Value with
+      | [signature,comment] -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature)
+      //With multiple tips just take the head.  
+      //This shouldnt happen anyway as we split them in the resolver provider
+      | multiple -> multiple |> List.head |> (fun (signature,comment) -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature))
 
-      let firstSection, otherSections = sections.[0], sections.[1..]
-
-      // Only show up to 8 sections - System.Action and System.Func get ridiculous
-      let otherSections = otherSections |> Seq.filter (fun sect -> sect.Length > 0) |> Seq.truncate 8 |> Seq.toArray
-
-      // Include the indented format of all the items in various sections in the 'signature'
-      let isSignatureLine (s:string) = s.StartsWith(" ")
-      let signatureLines = 
-         [| for sect in (firstSection :: Array.toList otherSections) do 
-                let firstLine, otherLines = sect.[0], sect.[1..]
-                yield firstLine
-                yield! otherLines |> Seq.takeWhile isSignatureLine  |]
-
-      // Only show the description of the first section
-      let summaryLines = 
-          let ls = firstSection
-          let _firstLine, otherLines = ls.[0], ls.[1..]
-          otherLines |> Seq.skipWhile isSignatureLine |> Seq.filter (String.IsNullOrEmpty >> not) 
-
-      let tooltipInfo = TooltipInformation(SummaryMarkup   = String.concat "\n" summaryLines,
-                                           SignatureMarkup = String.concat "\n" signatureLines)
-      tooltipInfo
 
 /// Completion data representing a delayed fetch of completion data
 type internal FSharpTryAgainMemberCompletionData() =
@@ -130,24 +95,27 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
         /// in the parameter information window.
     override x.CreateTooltipInformation (overload:int, currentParameter:int, smartWrap:bool) = 
         // Get the lower part of the text for the display of an overload
-        let description = 
-            let meth = meths.[overload]
-            let text = TipFormatter.formatTip false meth.Description 
-            let allLines = text.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries)
-            let body = if allLines.Length <= 1 then None else Some <| String.Join("\n", allLines.[1..])
+        let meth = meths.[overload]
+        let signature, comment =
+            match TipFormatter.formatTip meth.Description with
+            | [signature,comment] -> signature,comment
+            //With multiple tips just take the head.  
+            //This shouldnt happen anyway as we split them in the resolver provider
+            | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature,comment)
+
+        let description =
             let param = 
                 meth.Parameters |> Array.mapi (fun i param -> 
                     let paramDesc = 
                         // Sometimes the parameter decription is hidden in the XML docs
-                        match TipFormatter.extractParamTip param.ParameterName meth.Description  with 
-                        | Some tip -> tip
+                        match TipFormatter.extractParamTip param.ParameterName meth.Description with 
+                        | Some(tip) -> tip
                         | None -> param.Description
                     let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
                     let text = name + ": " + GLib.Markup.EscapeText paramDesc
                     text )
-            match body with
-            | None -> String.Join("\n", param)
-            | Some body -> body + "\n\n" + String.Join("\n", param)
+            if String.IsNullOrEmpty comment then String.Join("\n", param)
+            else comment + "\n" + String.Join("\n", param)
             
         
         // Returns the text to use to represent the specified parameter
@@ -158,9 +126,8 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
             param.ParameterName 
 
         let heading = 
-            let meth = meths.[overload]
-            let text = TipFormatter.formatTip false meth.Description 
-            let lines = text.Split [| '\n';'\r' |]
+
+            let lines = signature.Split [| '\n';'\r' |]
 
             // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
             // put it back together again.
