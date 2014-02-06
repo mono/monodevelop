@@ -9,7 +9,7 @@ namespace Application
 		public static void Main (string[] args)
 		{
 			var dir = args [0];
-			var lines = File.ReadAllLines (Path.Combine (dir, "..", "..", "..", "..", "version.config”));
+			var lines = File.ReadAllLines (Path.Combine (dir, "..", "..", "..", "..", "version.config"));
 			var txt = File.ReadAllText (Path.Combine (dir, "BuildVariables.cs.in"));
 			txt = txt.Replace ("@PACKAGE_VERSION@", GetValue (lines, "Version"));
 			txt = txt.Replace ("@PACKAGE_VERSION_LABEL@", GetValue (lines, "Label"));
