@@ -133,8 +133,7 @@ app: monostub
 	touch MonoDevelop.app
 
 	@echo ""
-	@echo "MONODEVELOP RELEASE: $(PACKAGE_UPDATE_ID)"
-	@echo "$$(cat ../../vcrevision)"
+	@cat "$(MACOS)/lib/monodevelop/bin/buildinfo"
 	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
 	@echo ""
 	@rm -f missing-stuff
