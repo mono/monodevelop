@@ -130,10 +130,10 @@
                      class="MonoDevelop.FSharp.FSharpLanguageBinding" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/Ide/ReferenceFinder">
+<!--   <Extension path = "/MonoDevelop/Ide/ReferenceFinder">
     <ReferenceFinder supportedmimetypes = "text/x-fsharp"
                      class = "MonoDevelop.FSharp.FSharpReferenceFinder" />
-  </Extension>
+  </Extension> -->
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
