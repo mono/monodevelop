@@ -889,9 +889,12 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			else if (files.Length == 1) {
 				TreePath[] rows = filelist.Selection.GetSelectedRows ();
-				int line = -1;
-				if (rows.Length == 1 && rows [0].Depth == 2)
-					line = diffRenderer.GetSelectedLine (rows[0]);
+				int line = 1;
+				if (rows.Length == 1 && rows [0].Depth == 2) {
+					line = diffRenderer.GetSelectedLine (rows [0]);
+					if (line == -1)
+						line = 1;
+				}
 				IdeApp.Workbench.OpenDocument (files [0], line, 0);
 			}
 			else {
