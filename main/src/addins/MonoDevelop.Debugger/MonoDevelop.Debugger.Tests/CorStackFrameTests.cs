@@ -29,6 +29,7 @@ namespace MonoDevelop.Debugger.Tests.Win32
 {
 	[TestFixture]
 	[Platform (Include = "Win")]
+	[Ignore ("Disabled for now")]
 	public class CorStackFrameTests : StackFrameTests
 	{
 		public CorStackFrameTests (): base ("MonoDevelop.Debugger.Win32")

@@ -95,6 +95,7 @@
     <Compile Include="Gui\ImportsOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VBNetBinding.ImportsOptionsPanelWidget.cs" />
     <Compile Include="Project\VBProjectParameters.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\EmptyVBFile.xft.xml">

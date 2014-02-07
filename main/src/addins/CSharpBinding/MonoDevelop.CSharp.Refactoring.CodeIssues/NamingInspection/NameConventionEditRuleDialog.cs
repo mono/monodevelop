@@ -82,8 +82,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		NameConventionRule rule;
 
-		TreeStore entityStore       = new TreeStore (typeof(string), typeof(AffectedEntity), typeof(bool));
-		TreeStore accessibiltyStore = new TreeStore (typeof(string), typeof(Modifiers), typeof(bool));
+		ListStore entityStore       = new ListStore (typeof(string), typeof(AffectedEntity), typeof(bool));
+		ListStore accessibiltyStore = new ListStore (typeof(string), typeof(Modifiers), typeof(bool));
 
 		public NameConventionEditRuleDialog (NameConventionRule rule)
 		{
@@ -92,7 +92,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.rule = rule;
 			this.Build ();
 
-			treeviewEntities.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			var ct1 = new CellRendererToggle ();
 			ct1.Toggled += delegate(object o, Gtk.ToggledArgs args) {
 				TreeIter iter;
@@ -101,9 +100,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				entityStore.SetValue (iter, 2, !(bool)entityStore.GetValue (iter, 2));
 			};
 			treeviewEntities.AppendColumn ("IsChecked", ct1, "active", 2);
+			treeviewEntities.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			treeviewEntities.Model = entityStore;
 			
-			treeviewAccessibility.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			var ct2 = new CellRendererToggle ();
 			ct2.Toggled += delegate(object o, Gtk.ToggledArgs args) {
 				TreeIter iter;
@@ -112,6 +111,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				accessibiltyStore.SetValue (iter, 2, !(bool)accessibiltyStore.GetValue (iter, 2));
 			};
 			treeviewAccessibility.AppendColumn ("IsChecked", ct2, "active", 2);
+			treeviewAccessibility.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			treeviewAccessibility.Model = accessibiltyStore;
 			buttonOk.Clicked += (sender, e) => Apply ();
 

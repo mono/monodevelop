@@ -1,0 +1,7 @@
+<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/NUnit/TestProviders">
+		<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
+	</Extension>
+
+</ExtensionModel>

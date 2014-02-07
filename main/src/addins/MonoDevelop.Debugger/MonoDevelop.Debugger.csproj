@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

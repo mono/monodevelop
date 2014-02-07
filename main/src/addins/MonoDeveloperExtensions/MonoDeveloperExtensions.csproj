@@ -77,6 +77,7 @@
     <Compile Include="MonoMakefileFormat.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="MonoSolutionItemHandler.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml">

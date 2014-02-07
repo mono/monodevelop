@@ -274,6 +274,7 @@
     <Compile Include="Parser\CTagsManager.cs" />
     <Compile Include="Parser\ExuberantCTagsManager.cs" />
     <Compile Include="Parser\BsdCTagsManager.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

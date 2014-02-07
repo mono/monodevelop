@@ -1,19 +1,4 @@
-<Addin id        = "VersionControl"
-       namespace   = "MonoDevelop"
-       name      = "Version Control Support"
-       author    = "Joshua Tauberer"
-       copyright = "LGPL"
-       url       = "http://taubz.for.net/code/diff"
-       description = "A MonoDevelop addin for using version control systems like Subversion"
-       category    = "Version Control"
-       flags = "Hidden"
-       version   = "4.2.3">
-
-	<Dependencies>
-	    <Addin id="Core" version="4.2.3"/>
-	    <Addin id="Ide" version="4.2.3"/>
-	    <Addin id="SourceEditor2" version="4.2.3"/>
-	</Dependencies>
+<ExtensionModel>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
 		<Description>Version control systems</Description>
@@ -345,4 +330,4 @@
 		<Migration sourceVersion="2.6+" kind="Cache" path="version-control-commit-msg" />
 		<Migration sourceVersion="2.6+" kind="Config" path="VersionControl.config" />
 	</Extension>
-</Addin>
+</ExtensionModel>

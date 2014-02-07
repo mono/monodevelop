@@ -2,6 +2,8 @@ include $(top_srcdir)/xbuild.include
 
 SUBDIRS = external . contrib src po man theme-icons build tests
 
+MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
+
 #capture aclocal flags for autoreconf
 ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)
 
@@ -11,29 +13,18 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 
 all: vcrevision
 
-all-local: sln_build
+all-local: vcrevision sln_build
 
 clean: clean-local
 
 clean-local: sln_clean
 
 vcrevision:
-	@if test -d ../.git; then \
-		version=$$(cd ..; \
-			LANG=C; export LANG; \
-			git rev-parse HEAD; \
-		); \
-		echo "$$version" > "vcrevision"; \
-	else \
-		if test ! -f ./vcrevision; then \
-			echo "unknown" > "vcrevision"; \
-		fi; \
-	fi
+	touch vcrevision
 
-$(buildinfo): vcrevision
+$(buildinfo):
 	@mkdir -p "$(top_builddir)/build/bin"
-	@echo "Git revision: $$(cat $(top_srcdir)/vcrevision)" > "$@"
-	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
+	@$(MD_CONFIGURE) gen-buildinfo "$(top_builddir)/build/bin"
 	@echo "Updated build information"
 	@cat $(buildinfo)
 
@@ -169,7 +160,7 @@ app-dir: all
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
-	monodevelop.xml $(pkgconfig_in_files) vcrevision external/Makefile.in \
+	monodevelop.xml $(pkgconfig_in_files) external/Makefile.in \
 	Main.sln \
 	md.targets
 

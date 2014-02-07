@@ -112,9 +112,15 @@
       <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetSoftDebuggerEngine.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

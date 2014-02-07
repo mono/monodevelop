@@ -216,6 +216,7 @@
     <Compile Include="MonoDevelop.GtkCore.Dialogs\GtkDesignerOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.GtkCore\Counters.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,22 +1,8 @@
-<Addin id          = "TextTemplating"
-       namespace   = "MonoDevelop"
-       name        = "Text Templating"
-       author      = "Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://monodevelop.com"
-       description = "Support for editing and running T4 text templates."
-       category    = "IDE extensions"
-       version     = "4.2.3">
+<ExtensionModel>
 	
 	<Runtime>
 		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="SourceEditor2" version="4.2.3"/>
-	</Dependencies>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="T4SyntaxMode.xml" />
@@ -53,4 +39,5 @@
 		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingFileGenerator"/>
 		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
 	</Extension>
-</Addin>
+
+</ExtensionModel>

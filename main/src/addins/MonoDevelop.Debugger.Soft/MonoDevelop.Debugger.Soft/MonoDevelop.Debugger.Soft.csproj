@@ -46,6 +46,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SoftDebuggerEngine.cs" />
     <Compile Include="CustomSoftDebuggerEngine.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">
@@ -91,6 +92,11 @@
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
       <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
       <Name>Mono.Debugger.Soft</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,12 +1,4 @@
-<Addin id          = "NUnit"
-       namespace   = "MonoDevelop"
-       name        = "NUnit support"
-       author      = "Lluis Sanchez, John Luke"
-       copyright   = "MIT X11"
-       url         = "http://monodevelop.com"
-       description = "Integrates NUnit into the MonoDevelop IDE."
-       category    = "Testing"
-       version     = "4.2.3">
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
@@ -15,11 +7,6 @@
 		<Import assembly="nunit.framework.dll" />
 		<Import assembly="nunit.util.dll" />
 	</Runtime>
-	
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-	</Dependencies>
 	
 	<!-- Extension Points -->
 
@@ -223,4 +210,4 @@
 			name = "TestRunnerArgs" type = "System.String" external="false" />
 	</Extension>
 
-</Addin>
+</ExtensionModel>

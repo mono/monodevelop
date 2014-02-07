@@ -871,14 +871,15 @@ namespace MonoDevelop.SourceEditor
 
 		internal void UpdateEolMarkerMessage (bool multiple)
 		{
+			if (UseIncorrectMarkers || DefaultSourceEditorOptions.Instance.LineEndingConversion == LineEndingConversion.LeaveAsIs)
+				return;
 			ShowIncorretEolMarkers (Document.FileName, multiple);
 		}
 
 		internal bool EnsureCorrectEolMarker (string fileName)
 		{
-			if (UseIncorrectMarkers)
+			if (UseIncorrectMarkers || DefaultSourceEditorOptions.Instance.LineEndingConversion == LineEndingConversion.LeaveAsIs)
 				return true;
-
 			if (HasIncorrectEolMarker) {
 				switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
 				case LineEndingConversion.Ask:
