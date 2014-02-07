@@ -48,8 +48,17 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
             let res = info.GetMethods(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
             Some (res.MethodName, res.Methods) 
-            
-    member x.Untyped with get() = untyped 
+
+    member x.GetSymbol(line, col, lineStr) =
+        match Parsing.findLongIdents(col, lineStr) with 
+        | Some(colu, identIsland) ->
+            //get symbol at location
+            //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
+            info.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+        | None -> None
+
+    member x.CheckFileResults with get() = info        
+    member x.ParseFileResults with get() = untyped 
 
 // --------------------------------------------------------------------------------------
 /// Represents request send to the background worker

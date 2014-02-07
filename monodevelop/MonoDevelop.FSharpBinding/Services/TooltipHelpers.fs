@@ -19,7 +19,7 @@ module Styles =
         match style with
         | Type name -> String.Format("<i>{0}</i> ", name)
         | Parameter name -> String.Format("<i>{0}</i> ", name)
-        | Code name -> String.Format("<i>{0}</i> ", name)
+        | Code name -> String.Format("<tt>{0}</tt> ", name)
         | Exception name -> String.Format("\n   <i>{0}</i>", name)
         
     let none style=
@@ -132,6 +132,6 @@ module Tooltips =
         let par = xdoc.Descendants(xn "param") 
                   |> where (fun element -> (element |> attribute "name").Value = param) 
                   |> singleOrDefault
-        if par = null then str else (elementValue addStyle par).ToString()
+        if par = null then None else Some((elementValue addStyle par).ToString())
         
         
