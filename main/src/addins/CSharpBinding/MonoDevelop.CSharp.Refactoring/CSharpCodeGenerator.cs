@@ -648,6 +648,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("'" + p.ConstantValue + "'");
 					} else if (p.ConstantValue is string)  {
 						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ConstantValue) + "\"");
+					} else if (p.ConstantValue is bool)  {
+						result.Append ((bool)p.ConstantValue ? "true" : "false");
 					} else {
 						result.Append (p.ConstantValue);
 					}
