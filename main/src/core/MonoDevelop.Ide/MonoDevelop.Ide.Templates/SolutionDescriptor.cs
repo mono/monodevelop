@@ -179,5 +179,22 @@ namespace MonoDevelop.Ide.Templates
 			
             return workspaceItem;
         }
+
+		public bool HasPackages ()
+		{
+			return entryDescriptors.OfType<ProjectDescriptor> ().Any (descriptor => descriptor.HasPackages ());
+		}
+
+		public IEnumerable<ProjectTemplatePackageReferenceCollection> GetPackageReferences ()
+		{
+			foreach (ISolutionItemDescriptor descriptor in entryDescriptors) {
+				var projectDescriptor = descriptor as ProjectDescriptor;
+				if (projectDescriptor != null) {
+					yield return new ProjectTemplatePackageReferenceCollection (projectDescriptor.GetPackageReferences ());
+				} else {
+					yield return new ProjectTemplatePackageReferenceCollection ();
+				}
+			}
+		}
 	}
 }

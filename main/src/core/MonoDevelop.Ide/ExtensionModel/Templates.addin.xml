@@ -20,6 +20,11 @@
 	<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatePackageInstallers" name = "Project template package installers">
+	<Description>Installs packages defined in the project template. Must implement MonoDevelop.Ide.Templates.IProjectTemplatePackageInstaller</Description>
+	<ExtensionNode name="Class" />
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>

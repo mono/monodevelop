@@ -46,6 +46,7 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
 using System.Reflection;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Projects {
 	/// <summary>
@@ -381,6 +382,9 @@ namespace MonoDevelop.Ide.Projects {
 			
 			if (openSolution)
 				selectedItem.OpenCreatedSolution();
+
+			InstallProjectTemplatePackages (newItem);
+
 			Respond (ResponseType.Ok);
 		}
 		
@@ -473,6 +477,16 @@ namespace MonoDevelop.Ide.Projects {
 			cinfo.ParentFolder = parentFolder;
 			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 			return cinfo;
+		}
+
+		void InstallProjectTemplatePackages (IWorkspaceFileObject item)
+		{
+			if (!selectedItem.HasPackages ())
+				return;
+
+			foreach (IProjectTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectTemplatePackageInstallers")) {
+				installer.Run (item, selectedItem.GetPackageReferences ().ToList ());
+			}
 		}
 
 		// icon view event handlers

@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -36,7 +37,9 @@ namespace ICSharpCode.PackageManagement
 	{
 		public static void Save(this Project project)
 		{
-			project.Save(new NullProgressMonitor());
+			DispatchService.GuiSyncDispatch(() => {
+				IdeApp.ProjectOperations.Save(project);
+			});
 		}
 	}
 }

@@ -309,5 +309,14 @@ namespace MonoDevelop.Ide.Templates
 			// return (SolutionItemFeatures.GetFeatures (parentFolder, sampleItem).Length > 0);
 		}
 
+		public bool HasPackages ()
+		{
+			return solutionDescriptor.HasPackages ();
+		}
+
+		public IEnumerable<ProjectTemplatePackageReferenceCollection> GetPackageReferences ()
+		{
+			return solutionDescriptor.GetPackageReferences ();
+		}
 	}
 }
