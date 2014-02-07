@@ -128,7 +128,7 @@ namespace Mono.TextEditor
 				iter = iter.GetNextNode ();
 				RemoveLine (line, lineNumber);
 			} while (line != endNode);
-			ChangeLength (startNode, startNode.LengthIncludingDelimiter - charsRemoved + charsLeft, endNode.DelimiterLength);
+			ChangeLength (startNode, startNode.LengthIncludingDelimiter - charsRemoved + charsLeft, endNode.UnicodeNewline);
 		}
 
 		public bool LineEndingMismatch {
@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 				if (delimiter.IsInvalid)
 					break;
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
-				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.Length);
+				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.UnicodeNewline);
 				nodes.Add (newLine);
 				if (offset > 0) {
 					LineEndingMismatch |= delimiterType != delimiter.UnicodeNewline;
@@ -214,8 +214,8 @@ namespace Mono.TextEditor
 				int newLineLength = lineOffset + line.LengthIncludingDelimiter - (offset + textOffset);
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
-				int oldDelimiterLength = line.DelimiterLength;
-				ChangeLength (line, curLineLength, delimiter.Length);
+				var oldDelimiterLength = line.UnicodeNewline;
+				ChangeLength (line, curLineLength, delimiter.UnicodeNewline);
 				line = InsertAfter (line, newLineLength, oldDelimiterLength);
 				textOffset = delimiterEndOffset;
 				lineOffset += curLineLength;
@@ -357,7 +357,7 @@ namespace Mono.TextEditor
 			public int Count = 1;
 			public int TotalLength;
 
-			public TreeNode (int length, int delimiterLength) : base(length, delimiterLength)
+			public TreeNode (int length, UnicodeNewline newLine) : base(length, newLine)
 			{
 			}
 
@@ -442,9 +442,9 @@ namespace Mono.TextEditor
 			tree.Count = 1;
 		}
 
-		TreeNode InsertAfter (TreeNode segment, int length, int delimiterLength)
+		TreeNode InsertAfter (TreeNode segment, int length, UnicodeNewline newLine)
 		{
-			var result = new TreeNode (length, delimiterLength) { StartSpan = segment.StartSpan };
+			var result = new TreeNode (length, newLine) { StartSpan = segment.StartSpan };
 			if (segment == null) {
 				tree.Root = result;
 				tree.Count = 1;
@@ -464,13 +464,13 @@ namespace Mono.TextEditor
 
 		void ChangeLength (TreeNode line, int newLength)
 		{
-			ChangeLength (line, newLength, line.DelimiterLength);
+			ChangeLength (line, newLength, line.UnicodeNewline);
 		}
 
-		void ChangeLength (TreeNode line, int newLength, int delimiterLength)
+		void ChangeLength (TreeNode line, int newLength, UnicodeNewline newLine)
 		{
 			line.LengthIncludingDelimiter = newLength;
-			line.DelimiterLength = delimiterLength;
+			line.UnicodeNewline = newLine;
 			OnLineChanged (new LineEventArgs (line));
 			line.UpdateAugmentedData ();
 		}

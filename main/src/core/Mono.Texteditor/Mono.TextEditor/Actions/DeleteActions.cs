@@ -28,6 +28,7 @@
 //
 
 using System;
+using ICSharpCode.NRefactory;
 
 
 namespace Mono.TextEditor
@@ -282,7 +283,7 @@ namespace Mono.TextEditor
 					if (data.Caret.Line < data.Document.LineCount) { 
 						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, line.DelimiterLength);
 						if (line.EndOffsetIncludingDelimiter == data.Document.TextLength)
-							line.DelimiterLength = 0;
+							line.UnicodeNewline = UnicodeNewline.Unknown;
 					}
 				} else {
 					data.Remove (data.Caret.Offset, 1); 

@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory;
+
+
 namespace Mono.TextEditor
 {
 	/// <summary>
@@ -37,7 +40,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public PrimitiveLineSegment (PrimitiveLineSplitter splitter, int lineNumber, int offset, int length, int delimiterLength) : base(length, delimiterLength)
+			public PrimitiveLineSegment (PrimitiveLineSplitter splitter, int lineNumber, int offset, int length, UnicodeNewline newLine) : base(length, newLine)
 			{
 				this.splitter = splitter;
 				this.lineNumber = lineNumber;
@@ -90,15 +93,15 @@ namespace Mono.TextEditor
 				return null;
 			int startOffset = number > 0 ? delimiters[number - 1].EndOffset : 0;
 			int endOffset;
-			int delimiterLength;
+			UnicodeNewline newLine;
 			if (number < delimiters.Count) {
 				endOffset = delimiters[number].EndOffset;
-				delimiterLength = delimiters[number].Length;
+				newLine = delimiters[number].UnicodeNewline;
 			} else {
 				endOffset = textLength;
-				delimiterLength = 0;
+				newLine = UnicodeNewline.Unknown;
 			}
-			return new PrimitiveLineSegment (this, number, startOffset, endOffset - startOffset, delimiterLength);
+			return new PrimitiveLineSegment (this, number, startOffset, endOffset - startOffset, newLine);
 		}
 
 		public DocumentLine GetLineByOffset (int offset)

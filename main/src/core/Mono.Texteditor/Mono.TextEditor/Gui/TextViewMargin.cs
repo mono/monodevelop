@@ -45,8 +45,6 @@ namespace Mono.TextEditor
 		readonly TextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
-		Pango.Layout eofEolLayout;
-		Pango.Rectangle eofEolLayoutRect;
 		Pango.Layout[] eolMarkerLayout;
 		Pango.Rectangle[] eolMarkerLayoutRect;
 
@@ -436,9 +434,10 @@ namespace Mono.TextEditor
 		}
 
 		static readonly string[] markerTexts = {
+			"<EOF>",
 			"\\n",
-			"\\r",
 			"\\r\\n",
+			"\\r",
 			"<NEL>",
 			"<VT>",
 			"<FF>",
@@ -446,23 +445,27 @@ namespace Mono.TextEditor
 			"<PS>"
 		};
 
-		static int GetEolMarkerIndex (char ch)
+		static int GetEolMarkerIndex (UnicodeNewline ch)
 		{
 			switch (ch) {
-			case NewLine.LF:
+			case UnicodeNewline.Unknown:
 				return 0;
-			case NewLine.CR:
+			case UnicodeNewline.LF:
 				return 1;
-			case NewLine.NEL:
+			case UnicodeNewline.CRLF:
+				return 2;
+			case UnicodeNewline.CR:
 				return 3;
-			case NewLine.VT:
+			case UnicodeNewline.NEL:
 				return 4;
-			case NewLine.FF:
+			case UnicodeNewline.VT:
 				return 5;
-			case NewLine.LS:
+			case UnicodeNewline.FF:
 				return 6;
-			case NewLine.PS:
+			case UnicodeNewline.LS:
 				return 7;
+			case UnicodeNewline.PS:
+				return 8;
 			}
 			return 0;
 		}
@@ -491,11 +494,10 @@ namespace Mono.TextEditor
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
 			if (eolMarkerLayout == null) {
-				eolMarkerLayout = new Pango.Layout[8];
-				eolMarkerLayoutRect = new Pango.Rectangle[8];
+				eolMarkerLayout = new Pango.Layout[markerTexts.Length];
+				eolMarkerLayoutRect = new Pango.Rectangle[markerTexts.Length];
 				for (int i = 0; i < eolMarkerLayout.Length; i++)
 					eolMarkerLayout[i] = PangoUtil.CreateLayout (textEditor);
-				eofEolLayout = PangoUtil.CreateLayout (textEditor);
 			}
 
 			var font = textEditor.Options.Font.Copy ();
@@ -512,11 +514,6 @@ namespace Mono.TextEditor
 				layout.GetPixelExtents (out logRect, out tRect);
 				eolMarkerLayoutRect [i] = tRect;
 			}
-
-
-			eofEolLayout.FontDescription = font;
-			eofEolLayout.SetText ("<EOF>");
-			eofEolLayout.GetPixelExtents (out logRect, out eofEolLayoutRect);
 
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
@@ -581,7 +578,6 @@ namespace Mono.TextEditor
 				foreach (var marker in eolMarkerLayout)
 					marker.Dispose ();
 				eolMarkerLayout = null;
-				eofEolLayout.Dispose ();
 			}
 			
 			DisposeLayoutDict ();
@@ -1852,24 +1848,10 @@ namespace Mono.TextEditor
 
 			Pango.Layout layout;
 			Pango.Rectangle rect;
-			switch (line.DelimiterLength) {
-			case 0:
-				// an emty line end should only happen at eof
-				layout = eofEolLayout;
-				rect = eofEolLayoutRect;
-				break;
-			case 1:
-				var eolIndex = GetEolMarkerIndex (Document.GetCharAt (line.Offset + line.Length));
-				layout = eolMarkerLayout[eolIndex];
-				rect = eolMarkerLayoutRect[eolIndex];
-				break;
-			case 2:
-				layout = eolMarkerLayout[2];
-				rect = eolMarkerLayoutRect[2];
-				break;
-			default:
-				throw new InvalidOperationException (); // other line endings are not known.
-			}
+
+			var index = GetEolMarkerIndex (line.UnicodeNewline);
+			layout = eolMarkerLayout [index];
+			rect = eolMarkerLayoutRect [index];
 			cr.Save ();
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
 			var col = ColorStyle.PlainText.Foreground;

@@ -30,6 +30,7 @@ using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using System.Linq;
+using ICSharpCode.NRefactory;
 
 namespace Mono.TextEditor
 {
@@ -63,12 +64,28 @@ namespace Mono.TextEditor
 		}
 
 		/// <summary>
+		/// Gets the unicode newline for this line. Returns UnicodeNewline.Unknown for no new line (in the last line of the document)
+		/// </summary>
+		public UnicodeNewline UnicodeNewline {
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Gets the length of the line terminator.
 		/// Returns 1 or 2; or 0 at the end of the document.
 		/// </summary>
 		public int DelimiterLength {
-			get;
-			set;
+			get { 
+				switch (UnicodeNewline) {
+				case UnicodeNewline.Unknown:
+					return 0;
+				case UnicodeNewline.CRLF:
+					return 2;
+				default:
+					return 1;
+				}
+			}
 		}
 
 		public bool WasChanged {
@@ -172,10 +189,10 @@ namespace Mono.TextEditor
 		/// </summary>
 		public abstract DocumentLine PreviousLine { get; }
 
-		protected DocumentLine (int length, int delimiterLength)
+		protected DocumentLine (int length, UnicodeNewline unicodeNewline)
 		{
-			LengthIncludingDelimiter          = length;
-			DelimiterLength = delimiterLength;
+			LengthIncludingDelimiter = length;
+			UnicodeNewline = unicodeNewline;
 		}
 
 		internal void AddMarker (TextLineMarker marker)
