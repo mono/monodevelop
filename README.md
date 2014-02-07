@@ -55,10 +55,10 @@ Bear in mind that if you are installing under a custom prefix, you may need to m
 *(It's possible that you need to install for your locale to be
 correctly set.)*
 
-Packaging for OSX
+Packaging for OS X
 -----------------
 
-To package MonoDevelop for OSX in a convenient MonoDevelop.app
+To package MonoDevelop for OS X in a convenient MonoDevelop.app
 file, just do this after MonoDevelop has finished building (with
 `make`):
 `cd main/build/MacOSX ; make MonoDevelop.app`
