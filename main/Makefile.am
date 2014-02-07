@@ -13,7 +13,7 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 
 all: vcrevision
 
-all-local: sln_build
+all-local: vcrevision sln_build
 
 clean: clean-local
 
