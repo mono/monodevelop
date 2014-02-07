@@ -127,8 +127,6 @@ app: monostub
 	@echo "Updating build information"
 	@echo ""
 
-	pushd ../..; make buildinfo; popd
-
 	$(MD_CONFIGURE) gen-buildinfo "$(MACOS)/lib/monodevelop/bin"
 
 # touch the directory so that update dependencies work
