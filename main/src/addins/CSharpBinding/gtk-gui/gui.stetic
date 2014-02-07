@@ -2064,11 +2064,13 @@ None</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox3">
             <property name="MemberName" />
             <property name="Spacing">6</property>
+            <property name="BorderWidth">6</property>
             <child>
               <widget class="Gtk.HBox" id="hbox3">
                 <property name="MemberName" />
@@ -2086,6 +2088,7 @@ None</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
+                    <property name="Padding">6</property>
                   </packing>
                 </child>
                 <child>
@@ -2141,6 +2144,7 @@ None</property>
                         <property name="TopAttach">1</property>
                         <property name="BottomAttach">2</property>
                         <property name="RightAttach">2</property>
+                        <property name="YPadding">6</property>
                         <property name="AutoSize">True</property>
                         <property name="XOptions">Fill</property>
                         <property name="XExpand">False</property>
@@ -2167,6 +2171,8 @@ None</property>
                       <packing>
                         <property name="TopAttach">3</property>
                         <property name="BottomAttach">4</property>
+                        <property name="XPadding">6</property>
+                        <property name="YPadding">6</property>
                         <property name="AutoSize">False</property>
                         <property name="XExpand">True</property>
                         <property name="XFill">True</property>
