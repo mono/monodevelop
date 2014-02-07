@@ -1,5 +1,5 @@
-﻿// 
-// RegisteredProjectTemplatePackageSources.cs
+//
+// PackageRepositoryNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,34 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using NuGet;
+using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide.Templates;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.Ide.Templates
 {
-	public class RegisteredProjectTemplatePackageSources
+	public class PackageRepositoryNode : ExtensionNode
 	{
-		RegisteredPackageSources packageSources = new RegisteredPackageSources();
+		#pragma warning disable 0649
 
-		public RegisteredProjectTemplatePackageSources ()
-		{
-			packageSources = new RegisteredPackageSources (GetPackageSources ());
-		}
-		
-		List<PackageSource> GetPackageSources()
-		{
-			var addinPackageSources = new List<PackageSource> ();
-			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
-				addinPackageSources.Add (node.GetPackageSource ());
+		[NodeAttribute ("path", Required=true)]
+		string directoryPath;
+
+		#pragma warning restore 0649
+
+		public FilePath DirectoryPath {
+			get {
+				return Addin.GetFilePath (directoryPath);
 			}
-			return addinPackageSources;
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return packageSources; }
 		}
 	}
 }
+

@@ -39,6 +39,24 @@ namespace MonoDevelop.PackageManagement
 {
 	public class ProjectTemplatePackageInstaller : IProjectTemplatePackageInstaller
 	{
+		IPackageManagementSolution packageManagementSolution;
+		IPackageRepositoryCache packageRepositoryCache;
+
+		public ProjectTemplatePackageInstaller ()
+			: this(
+				PackageManagementServices.Solution,
+				PackageManagementServices.ProjectTemplatePackageRepositoryCache)
+		{
+		}
+
+		public ProjectTemplatePackageInstaller (
+			IPackageManagementSolution solution,
+			IPackageRepositoryCache packageRepositoryCache)
+		{
+			this.packageManagementSolution = solution;
+			this.packageRepositoryCache = packageRepositoryCache;
+		}
+
 		public void Run (IWorkspaceFileObject item, IList<ProjectTemplatePackageReferenceCollection> packageReferences)
 		{
 			DispatchService.BackgroundDispatch (() => InstallPackages (item, packageReferences));
@@ -80,7 +98,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InstallPackagesIntoProject (DotNetProject dotNetProject, ProjectTemplatePackageReferenceCollection packageReferences)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetProject (PackageManagementServices.RegisteredPackageRepositories.ActiveRepository, dotNetProject);
+			IPackageManagementProject project = CreatePackageManagementProject (dotNetProject);
 			foreach (ProjectTemplatePackageReference packageReference in packageReferences) {
 				InstallPackageAction action = project.CreateInstallPackageAction ();
 				action.PackageId = packageReference.Id;
@@ -96,6 +114,11 @@ namespace MonoDevelop.PackageManagement
 			var dotNetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == project.Name) as DotNetProject;
 
 			InstallPackagesIntoProject (dotNetProject, packageReferences);
+		}
+
+		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
+		{
+			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateRepository (), dotNetProject);
 		}
 	}
 }

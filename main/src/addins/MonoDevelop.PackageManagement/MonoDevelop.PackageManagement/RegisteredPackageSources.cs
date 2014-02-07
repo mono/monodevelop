@@ -41,7 +41,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public static readonly PackageSource DefaultPackageSource = 
 			new PackageSource(DefaultPackageSourceUrl, DefaultPackageSourceName);
-		
+
+		public RegisteredPackageSources()
+			: this(new PackageSource[0])
+		{
+		}
+
 		public RegisteredPackageSources(IEnumerable<PackageSource> packageSources)
 			: this(packageSources, DefaultPackageSource)
 		{
