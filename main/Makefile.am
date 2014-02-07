@@ -11,11 +11,16 @@ bin_SCRIPTS = monodevelop mdtool
 
 buildinfo = $(top_builddir)/build/bin/buildinfo
 
+all: vcrevision
+
 all-local: sln_build
 
 clean: clean-local
 
 clean-local: sln_clean
+
+vcrevision:
+	touch vcrevision
 
 $(buildinfo):
 	@mkdir -p "$(top_builddir)/build/bin"
@@ -178,4 +183,4 @@ distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required 
 distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
 distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
 
-.PHONY: buildinfo
+.PHONY: vcrevision buildinfo
