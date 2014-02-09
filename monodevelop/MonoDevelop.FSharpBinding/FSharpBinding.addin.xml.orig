@@ -34,17 +34,16 @@
     <Addin id="Refactoring" version="INSERT_FSPROJ_MDVERSION4"/>
   </Dependencies>
 
-  <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->
+  <!-- By default projects use the F# 3.0 targets file. -->
   <!-- For Mono F# 3.0 and beyond, this targets file is also installed and it points to the F# 3.0 compiler -->
-  <!-- New projects will be created with this targets file. When opened with Visual Studio 2012, it will ask for a project -->
-  <!-- upgrade and replace with the F# 3.0 targets file. Project files with the F# 3.0 targets file will also work on Mono if F# 3.0 is -->
-  <!-- available. -->
+  <!-- New projects will be created with this targets file. When opened with Visual Studio 2013, it will ask for a project -->
+  <!-- upgrade but keep referencing the F# 3.0 targets file in when used on Mono. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
     <DotNetProject language="F#" extension="fsproj"
 			guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}"
-			import="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets"
-			resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-  </Extension>
+      import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"
+      resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+    </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />

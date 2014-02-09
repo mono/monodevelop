@@ -38,6 +38,9 @@
     <DocumentationFile>bin\Release\FSharp.InteractiveAutocomplete.XML</DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <!--
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
@@ -45,6 +48,8 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  -->
+
   <ItemGroup>
     <Compile Include="Debug.fs" />
     <Compile Include="Options.fs" />
