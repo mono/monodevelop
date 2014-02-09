@@ -113,10 +113,10 @@
     <Compile Include="FSharpResourceIdBuilder.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
-    <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
     <Compile Include="FSharpHighlightUsagesExtension.fs" />
+    <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
     <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Helpers.dll">
       <Link>System.Web.Helpers.dll</Link>
@@ -214,7 +214,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Editor">
-      <HintPath>packages\FSharp.Compiler.Service.0.0.11-alpha\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>packages\FSharp.Compiler.Service.0.0.17\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -57,8 +57,8 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
             info.GetSymbolAtLocation(line, colu, lineStr, identIsland)
         | None -> None
 
-    member x.CheckFileResults with get() = info        
-    member x.ParseFileResults with get() = untyped 
+    member x.CheckFileResults = info        
+    member x.ParseFileResults = untyped 
 
 // --------------------------------------------------------------------------------------
 /// Represents request send to the background worker
@@ -87,6 +87,9 @@ type internal LanguageServiceMessage =
 
 /// Provides functionality for working with the F# interactive checker running in background
 type LanguageService(dirtyNotify) =
+  let tryGetSymbolRange (range: Range.range option) = 
+        range |> Option.map (fun dec -> dec.FileName, ((dec.StartLine-1, dec.StartColumn), (dec.EndLine-1, dec.EndColumn)))
+
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
   let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
@@ -226,7 +229,7 @@ type LanguageService(dirtyNotify) =
           
       // We are in a project - construct options using current properties
       else
-        Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFilename )
+        Debug.WriteLine (sprintf "GetCheckerOptions: Creating for file '%s' in project '%s'" fileName projFilename )
 
         {ProjectFileName = projFilename
          ProjectFileNames = files
@@ -237,7 +240,7 @@ type LanguageService(dirtyNotify) =
          UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
-    Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    Debug.WriteLine(sprintf "GetCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
                          opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
                          opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
@@ -268,35 +271,40 @@ type LanguageService(dirtyNotify) =
            // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
            mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
 
-  member x.GetReferences(projectFilename, file, source, files, line:int, col, lineStr, args, framework) =
+  member x.GetUsesOfSymbolAtLocation(projectFilename, file, source, files, line:int, col, lineStr, args, framework) =
+   async { 
     let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
 
     //parse and retrieve Checked Project results, this has the entity graph and errors etc
-    let projectResults = checker.ParseAndCheckProject(projectOptions) |> Async.RunSynchronously
+    let! projectResults = checker.ParseAndCheckProject(projectOptions) 
   
     //get the parse results for the current file
-    let backgroundParseResults, backgroundTypedParse = //Note this operates on the file system so the file needs to be current
+    let! backgroundParseResults, backgroundTypedParse = //Note this operates on the file system so the file needs to be current
         checker.GetBackgroundCheckResultsForFileInProject(file, projectOptions) 
-        |> Async.RunSynchronously
-
-    let tryGetRange (dec: Microsoft.FSharp.Compiler.Range.range) = 
-       dec.FileName, ((dec.StartLine-1, dec.StartColumn), (dec.EndLine-1, dec.EndColumn))
-
-    let tryGetSymbolRange (range :Microsoft.FSharp.Compiler.Range.range option) = 
-        range |> Option.map tryGetRange
 
     match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
         //get symbol at location
         //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
         match backgroundTypedParse.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
-        | Some(currentSymbol) ->
-            let currentSymbolName = Seq.last identIsland
-            let currentSymbolRange = tryGetSymbolRange currentSymbol.DeclarationLocation
-            let refs = projectResults.GetUsesOfSymbol(currentSymbol)
-            Some(currentSymbolName, currentSymbolRange, refs)
-        | _ -> None
-    | _ -> None
+        | Some(symbol) ->
+            let lastIdent = Seq.last identIsland
+            let symRangeOpt = tryGetSymbolRange symbol.DeclarationLocation
+            let refs = projectResults.GetUsesOfSymbol(symbol)
+            return Some(symbol, lastIdent, symRangeOpt, refs)
+        | _ -> return None
+    | _ -> return None }
 
-  member x.Checker with get() = checker
+  member x.GetUsesOfSymbol(projectFilename, file, source, files, args, framework, symbol:FSharpSymbol) =
+   async { 
+    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
+
+    //parse and retrieve Checked Project results, this has the entity graph and errors etc
+    let! projectResults = checker.ParseAndCheckProject(projectOptions) 
+  
+    let symDeclRangeOpt = tryGetSymbolRange symbol.DeclarationLocation
+    let refs = projectResults.GetUsesOfSymbol(symbol)
+    return (symDeclRangeOpt, refs) }
+
+  member x.Checker = checker
 

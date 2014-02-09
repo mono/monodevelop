@@ -94,11 +94,11 @@ type FSharpProjectNodeCommandHandler() =
 type FSharpProjectFileNodeExtension() =
   inherit NodeBuilderExtension()
 
-  let (|SupportedProjectFile|SupportedProjectFolder|None|) (item:obj) =
+  let (|SupportedProjectFile|SupportedProjectFolder|NotSupported|) (item:obj) =
     match item with
     | :? ProjectFile as projfile when projfile.Project <> null-> SupportedProjectFile(projfile)
     | :? ProjectFolder as projfolder when projfolder.Project <> null-> SupportedProjectFolder(projfolder)
-    | _ -> None
+    | _ -> NotSupported
 
   override x.CanBuildNode(dataType:Type) =
     // Extend any file or folder belonging to a F# project

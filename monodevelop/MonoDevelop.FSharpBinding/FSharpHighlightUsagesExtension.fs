@@ -15,31 +15,146 @@ open MonoDevelop.SourceEditor.QuickTasks
 open ICSharpCode.NRefactory
 open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
+open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Cairo
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<RequireQualifiedAccess>]
 module NRefactory = 
-    let createIVariable name region =
-            let entity(name, region) = 
-                { new IVariable with 
-                    member x.Name = name
-                    member x.Region = region
-                    member x.Type = (SpecialType.UnknownType :> _)
-                    member x.IsConst = false
-                    member x.ConstantValue = Unchecked.defaultof<_>
-                  interface ISymbol with
-                    member x.SymbolKind = SymbolKind.Variable 
-                    member x.Name = name}
-            entity
+    type IHasFSharpSymbol = 
+        abstract FSharpSymbol : FSharpSymbol
+        /// Last identifier used in the resolution that produced this symbol
+        abstract LastIdent : string
 
-    ///Create a MemberReference using a filename, name, and range.  
-    ///symbolDeclaration is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(filename, range, name, symbolDeclaration) =
-         let ((beginLine, beginCol), (endLine, endCol)) = range
+    type FSharpResolvedTypeDefinition(context,unresolvedTypeDef,symbol, lastIdent) = 
+        inherit DefaultResolvedTypeDefinition(context, [| unresolvedTypeDef |])
+        interface IHasFSharpSymbol with 
+            member x.FSharpSymbol = symbol
+            member x.LastIdent = lastIdent
 
-         let document = IdeApp.Workbench.GetDocument(filename)
+    type FSharpResolvedMethod(unresolvedMember, context, symbol, lastIdent) = 
+        inherit DefaultResolvedMethod(unresolvedMember, context)
+        interface IHasFSharpSymbol with 
+            member x.FSharpSymbol = symbol
+            member x.LastIdent = lastIdent
+
+    type FSharpUnresolvedMethod(unresolvedTypeDef, name, symbol, lastIdent) =
+        inherit DefaultUnresolvedMethod(unresolvedTypeDef, name)
+        interface IHasFSharpSymbol with 
+            member x.FSharpSymbol = symbol
+            member x.LastIdent = lastIdent
+
+    type FSharpResolvedVariable(name, region, symbol, lastIdent) = 
+        interface IHasFSharpSymbol with 
+            member x.FSharpSymbol = symbol
+            member x.LastIdent = lastIdent
+        interface ISymbol with
+            member x.SymbolKind = SymbolKind.Variable 
+            member x.Name = name
+        interface IVariable with 
+            member x.Name = name
+            member x.Region = region
+            member x.Type = (SpecialType.UnknownType :> _)
+            member x.IsConst = false
+            member x.ConstantValue = null 
+   
+    let createSymbol (projectContent: IProjectContent, fsSymbol: FSharpSymbol, lastIdent, region) = 
+        match fsSymbol with 
+        // Type Definitions, Type Abbreviations, Exception Definitions and Modules
+        | :? FSharpEntity as fsEntity -> 
+
+           // The accessibility used here can influence the scope of a renaming operation.
+           // For now we just use 'public' to rename across the whole solution (though really it will just be
+           // across the whole project because of the limits of the range of symbols returned by F.C.S).
+           let access = Accessibility.Public
+
+           // The 'DefaultUnresolvedTypeDefinition' has an UnresolvedFile property. However it doesn't seem needed.
+           // let unresolvedFile = MonoDevelop.Ide.TypeSystem.DefaultParsedDocument(e.DeclarationLocation.FileName)
+           
+           // Create a resolution context for the resolved type definition.
+           let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
+           let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, Region=region, Name=lastIdent, Accessibility=access (* , UnresolvedFile=unresolvedFile *) )
+
+           // TODO: Add base type references, this will allow 'Go To Base' to work. 
+           // It may also allow 'Find Derived Types' to work. This would require generating 
+           // ITypeReference nodes to reference other type definitions in the assembly being edited.
+           // That is not easy.
+           //
+           //unresolvedTypeDef.BaseTypes <- [ for x in fsEntity.DeclaredInterfaces -> Def ]
+
+           // Create an IUnresolveAssembly holding the type definition.
+           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location=projectContent.Location)
+           unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
+
+           // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
+           //
+           // TODO; this is surely not correct, we should be using the compilation retrieved from the 
+           // appropriate document.  However it doesn't seem to matter in practice.
+           let comp = SimpleCompilation(unresolvedAssembly, projectContent.AssemblyReferences)
+
+           // Create a resolution context for the resolved type definition.
+           let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)
+           let context = SimpleTypeResolveContext(resolvedAssembly)
+
+           // Finally, create the resolved type definition, which wraps the unresolved one
+           let resolvedTypeDef = FSharpResolvedTypeDefinition(context, unresolvedTypeDef, fsSymbol, lastIdent)
+           resolvedTypeDef :> ISymbol
+
+        // Members, Module-defined functions and Module-definned values
+        | :? FSharpMemberFunctionOrValue as fsMember when fsMember.IsModuleValueOrMember -> 
+
+           // This is more or less like the case above for entities.
+           let access = Accessibility.Public
+           let fsEntity = fsMember.EnclosingEntity
+
+           // We create a fake 'Compilation', 'TypeDefinition' and 'Assembly' for the symbol 
+           let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
+           let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, fsEntity.DisplayName, Accessibility=access)
+
+           // We use an IUnresolvedMethod for the symbol regardless of whether it is a property, event, 
+           // method or function. For the operations we're implementing (Find-all references and rename refactoring)
+           // it doesn't seem to matter.
+           let unresolvedMember = FSharpUnresolvedMethod(unresolvedTypeDef, fsMember.DisplayName, fsSymbol, lastIdent, Region=region, Accessibility=access)
+           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location=projectContent.Location)
+           unresolvedTypeDef.Members.Add(unresolvedMember)
+           unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
+
+           // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
+           //
+           // TODO; this is surely not correct, we should be using the compilation retrieved from the 
+           // appropriate document.  However it doesn't seem to matter in practice.
+           let comp = SimpleCompilation(unresolvedAssembly, projectContent.AssemblyReferences)
+
+           // Create a resolution context for the resolved method definition.
+           let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)
+           let context = SimpleTypeResolveContext(resolvedAssembly)
+           let resolvedTypeDef = DefaultResolvedTypeDefinition(context, unresolvedTypeDef)
+           let context = context.WithCurrentTypeDefinition(resolvedTypeDef)
+
+           // Finally, create the resolved method definition, which wraps the unresolved one
+           let resolvedMember = FSharpResolvedMethod(unresolvedMember, context, fsSymbol, lastIdent)
+           resolvedMember :> ISymbol
+
+        | _ -> 
+            FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent) :> ISymbol
+
+    ///Create a MemberReference.  
+    ///symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
+    let createMemberReference(projectContent, fsSymbol: FSharpSymbol, fileNameOfRef, rangeOfRef, lastIdentAtLoc:string, symbolDeclLocOpt) =
+         let ((beginLine, beginCol), (endLine, endCol)) = rangeOfRef
+         
+         // We always know the text of the identifier that resolved to symbol.
+         // Trim the range of the referring text to only include this identifier.
+         // This means references like A.B.C are trimmed to "C".  This allows renaming to just
+         // rename "C". 
+         let (beginLine, beginCol) = 
+             if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
+                 (endLine,endCol-lastIdentAtLoc.Length)
+             else
+                 (beginLine, beginCol) 
+
+         let document = IdeApp.Workbench.OpenDocument(FilePath(fileNameOfRef), project=null, bringToFront=false)
 
          let offset = document.Editor.LocationToOffset(beginLine+1, beginCol+1)
          let endOffset = document.Editor.LocationToOffset(endLine+1, endCol+1)
@@ -47,20 +162,36 @@ module NRefactory =
          let textSegment = TextSegment.FromBounds(offset, endOffset)
          let region = textSegment.GetRegion(document.Editor.Document)
 
-         let domRegion = DomRegion(filename, region.BeginLine, region.BeginColumn, region.EndLine, region.EndColumn)
+         let domRegion = DomRegion(fileNameOfRef, region.BeginLine, region.BeginColumn, region.EndLine, region.EndColumn)
 
-         let entity = createIVariable name domRegion
-         let memberRef = MemberReference(entity, domRegion, offset, textSegment.Length)
-         //if the current range is a symbol range and the filenames match change the ReferenceUsageType
-         symbolDeclaration 
-         |> Option.iter (fun (decFilename, decRange) -> if filename = decFilename && decRange = range then
-                                                            memberRef.ReferenceUsageType <- ReferenceUsageType.Write)
+         let symbol = createSymbol(projectContent, fsSymbol, lastIdentAtLoc, domRegion)
+         let memberRef = MemberReference(symbol, domRegion, offset, textSegment.Length)
+
+         //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
+         match symbolDeclLocOpt with
+         | None -> ()
+         | Some (fileNameOfDecl, rangeOfDecl) ->
+             if fileNameOfRef = fileNameOfDecl && rangeOfDecl = rangeOfRef then
+                memberRef.ReferenceUsageType <- ReferenceUsageType.Write
+
          memberRef
+
+    let createResolveResult(projectContent, fsSymbol: FSharpSymbol, lastIdent, region) =
+        let sym = createSymbol(projectContent, fsSymbol, lastIdent, region)
+        match sym with 
+        | :? IType as ty -> TypeResolveResult(ty) :> ResolveResult
+        | :? IMember as memb -> 
+            let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
+            let thisRes = LocalResolveResult(sym) :> ResolveResult
+            MemberResolveResult(thisRes, memb) :> ResolveResult
+        | _ -> 
+            let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
+            LocalResolveResult(sym) :> ResolveResult
 
 type UsageSegment( usageType: ReferenceUsageType, offset, length) =
     let textSegment = TextSegment (offset, length)
-    member x.UsageType with get() = usageType
-    member x.TextSegment with get() = textSegment
+    member x.UsageType = usageType
+    member x.TextSegment = textSegment
 
 type UsageMarker() =
     inherit TextLineMarker()
@@ -118,7 +249,7 @@ type UsageMarker() =
                 context.Stroke()
         true
 
-    member x.Usages with get() = usages
+    member x.Usages = usages
             
     member x.Contains(offset) =
         usages.Any (fun u -> u.TextSegment.Offset <= offset && offset <= u.TextSegment.EndOffset)
@@ -193,19 +324,19 @@ type HighlightUsagesExtension() as this =
         
         usagesUpdated.Trigger(this, EventArgs.Empty)
 
-    let ShowHighlightAsync(projectFilename, currentFile, source, files, line, col, lineStr, args, framework) =
+    let ShowHighlightAsync(projectContent, projectFilename, currentFile, source, files, line, col, lineStr, args, framework) =
         let token = cts.Token
         let asyncOperation = 
-            async{let symbolReferences =
-                    MDLanguageService.Instance.GetReferences(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
+            async{let! symbolReferences =
+                    MDLanguageService.Instance.GetUsesOfSymbolAtLocation(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
-                  | Some(currentSymbolName, currentSymbolRange, references) -> 
+                  | Some(fsSymbol, fsSymbolName, fsSymbolRange, references) -> 
                       let memberReferences =
-                          references
-                          //We only want symbol refs from the current file as we are highlighting text
-                          |> Seq.filter (fun (fileName, range) -> fileName = currentFile)
-                          |> Seq.map (fun (filename, range) -> NRefactory.createMemberReference(filename, range, currentSymbolName, currentSymbolRange))
+                          [| for (fileName, range) in references do
+                              //We only want symbol refs from the current file as we are highlighting text
+                              if fileName = currentFile then 
+                                  yield NRefactory.createMemberReference(projectContent, fsSymbol, fileName, range, fsSymbolName, fsSymbolRange) |]
                       if not token.IsCancellationRequested then
                           Gtk.Application.Invoke(fun _ _ -> showReferences(memberReferences))
                   | _ -> () }
@@ -224,7 +355,7 @@ type HighlightUsagesExtension() as this =
 
                                         //cancel any current highlights
                                         cancelHighlight()
-                                        ShowHighlightAsync(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
+                                        ShowHighlightAsync(doc.ProjectContent, projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                                     with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
 
@@ -261,20 +392,19 @@ type HighlightUsagesExtension() as this =
         cancelHighlight()
     
     //These three members will be used by 'move to next reference'
-    member x.IsTimerOnQueue
-        with get() = !popupTimer <> 0u
+    member x.IsTimerOnQueue = 
+        !popupTimer <> 0u
 
     member x.ForceUpdate () =
         removeTimer()
         delayedHighight.Invoke()
 
-    member x.UsagesSegments
-        with get() = usagesSegments
+    member x.UsagesSegments = 
+        usagesSegments
 
     interface IUsageProvider with
-        member x.Usages with get() = usages.AsEnumerable()
+        member x.Usages = usages.AsEnumerable()
         member x.add_UsagesUpdated(handler)    = usagesUpdated.Publish.AddHandler(handler)
         member x.remove_UsagesUpdated(handler) = usagesUpdated.Publish.RemoveHandler(handler)
 
     
-        

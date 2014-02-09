@@ -18,29 +18,49 @@ open MonoDevelop.Projects
 type FSharpReferenceFinder() =
     inherit ReferenceFinder()
 
-    override x.FindReferences(project, projectContent, files, progressMonitor, members) =
-        let ref = members |> Seq.head
-        match ref with
-        | null -> Seq.empty
-        | :? IVariable as variable ->
-            let filename, line, col = variable.Region.FileName, variable.Region.BeginLine, variable.Region.BeginColumn
+    let (|SymbolWithRegion|_|) (x:obj) =
+        match x with 
+        | :? IVariable as e -> Some e.Region
+        | :? IEntity as e -> Some e.Region
+        | _ -> None
+
+    let (|SymbolWithFSharpSymbol|_|) (x:obj) =
+        match x with 
+        | :? NRefactory.IHasFSharpSymbol as e -> Some e
+        | :? IMember as e -> 
+            match e.UnresolvedMember with 
+            | :? NRefactory.IHasFSharpSymbol as e -> Some e
+            | _ -> None
+        | _ -> None
+
+    override x.FindReferences(project, projectContent, files, progressMonitor, symbols) =
+      seq { 
+        for symbol in symbols do 
+          match symbol with
+          | SymbolWithRegion(region) & SymbolWithFSharpSymbol(fsSymbol) ->
+           //let filename, line, col = region.FileName, region.BeginLine, region.BeginColumn
+           
+           // A null filename can be present for symbols outside the solution
+           //if filename <> null then 
+            
+            
             let activeDoc = IdeApp.Workbench.ActiveDocument
+            let activeDocFileName = activeDoc.FileName.FileName
 
             //save if dirty, real file refs are needed to resolve effectively
             if activeDoc.IsDirty then activeDoc.Save()
 
             let source = activeDoc.Editor.Text
-            let lineStr = activeDoc.Editor.GetLineText(line)
+            //let lineStr = activeDoc.Editor.GetLineText(line)
             let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
-            let references = MDLanguageService.Instance.GetReferences(projectFilename, filename, source, files, line-1, col-1, lineStr, args, framework)
+            let references = 
+                try Some(MDLanguageService.Instance.GetUsesOfSymbol(projectFilename, activeDocFileName, source, files, args, framework, fsSymbol.FSharpSymbol) |> Async.RunSynchronously)
+                with _ -> None
             match references with
-            | Some(currentSymbolName, currentSymbolRange, references) -> 
-                let memberRefs = 
-                    references
-                    |> Seq.map (fun (filename, range) -> NRefactory.createMemberReference(filename, range, currentSymbolName, currentSymbolRange))
-                let debug = memberRefs |> Seq.toArray
-                memberRefs
-            | _ -> Seq.empty
+            | Some(symbolDeclLocOpt, references) -> 
+                let memberRefs = [| for (filename, range) in references -> NRefactory.createMemberReference(projectContent, fsSymbol.FSharpSymbol, filename, range, fsSymbol.LastIdent, symbolDeclLocOpt) |]
+                yield! memberRefs
+            | None -> ()
 
-        | _ -> Seq.empty
-            
+          | _ -> () }
+             

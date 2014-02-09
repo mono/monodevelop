@@ -278,7 +278,7 @@ type FSharpTextEditorCompletion() =
       let framework = CompilerArguments.getTargetFramework( (x.Document.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, ServiceSettings.blockingTimeout, framework)
-      context.TriggerOffset
+      
       // Get declarations and generate list for MonoDevelop
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
       match tyRes.GetDeclarations(line, col, lineStr) with

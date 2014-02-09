@@ -190,31 +190,33 @@ type FSharpResolverProvider() =
         // Get the declaration location from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
         let loc = tyRes.GetDeclarationLocation(line, col, lineStr)
-        let reg = match loc with
-                  | FindDeclResult.DeclFound((line, col), file) -> 
-                       Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
-                       DomRegion(file,line+1,col+1)
-                  | FindDeclResult.DeclNotFound(notfound) -> 
-                       match notfound with 
-                       | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
-                       | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
-                       | FindDeclFailureReason.ProvidedType(t)   -> Debug.WriteLine("DeclNotFound: ProvidedType")
-                       | FindDeclFailureReason.ProvidedMember(m) -> Debug.WriteLine("DeclNotFound: ProvidedMember")
-                       DomRegion.Empty
-        region <- reg
-        // This is the NRefactory symbol for the item - the Region is used for goto-definition
-        let ivar = 
-            { new IVariable with 
-                member x.Name = "item--item"
-                member x.Region = reg
-                member x.Type = (SpecialType.UnknownType :> _)
-                member x.IsConst = false
-                member x.ConstantValue = Unchecked.defaultof<_>
-              interface ISymbol with
-                member x.SymbolKind = SymbolKind.Variable 
-                member x.Name = "item--item"}
-                
-        new LocalResolveResult(ivar) :> ResolveResult
+        let lastIdent = 
+            match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
+            | Some(_, identIsland) -> Seq.last identIsland
+            | None -> ""
+
+        let fsSymbolOpt = tyRes.GetSymbol(line, col, lineStr)
+
+        match fsSymbolOpt with 
+        | None ->  null
+        | Some fsSymbol -> 
+            let reg = 
+                match loc with
+                | FindDeclResult.DeclFound((line, col), file) -> 
+                    Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
+                    DomRegion(file,line+1,col+1)
+                | FindDeclResult.DeclNotFound(notfound) -> 
+                    match notfound with 
+                    | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")
+                    | FindDeclFailureReason.NoSourceCode      -> Debug.WriteLine("DeclNotFound: No Source Code")
+                    | FindDeclFailureReason.ProvidedType(t)   -> Debug.WriteLine("DeclNotFound: ProvidedType")
+                    | FindDeclFailureReason.ProvidedMember(m) -> Debug.WriteLine("DeclNotFound: ProvidedMember")
+                    DomRegion.Empty
+            region <- reg
+            // This is the NRefactory symbol for the item - the Region is used for goto-definition
+            let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbol, lastIdent, reg)
+            resolveResult
+
       with exn -> 
         Debug.WriteLine (sprintf "Resolver: Exception: '%s'" (exn.ToString()))
         null
