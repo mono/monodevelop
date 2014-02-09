@@ -122,13 +122,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				slnData.UpdateVersion (format);
 
 				sw.WriteLine ();
+
 				//Write Header
 				sw.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + slnData.VersionString);
 				sw.WriteLine (slnData.HeaderComment);
 				if (slnData.VisualStudioVersion != null)
-					sw.WriteLine ("VisualStudioVersion = {0}");
+					sw.WriteLine ("VisualStudioVersion = {0}", slnData.VisualStudioVersion);
 				if (slnData.MinimumVisualStudioVersion != null)
-					sw.WriteLine ("MinimumVisualStudioVersion = {0}");
+					sw.WriteLine ("MinimumVisualStudioVersion = {0}", slnData.MinimumVisualStudioVersion);
 
 				//Write the projects
 				monitor.BeginTask (GettextCatalog.GetString ("Saving projects"), 1);
