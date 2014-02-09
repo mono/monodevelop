@@ -62,8 +62,10 @@ module internal TipFormatter =
 
   /// Memoize the objects that manage access to XML files.
   // @todo consider if this needs to be a weak table in some way
-  let xmlDocProvider = memoize (fun x -> try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
-                                         with exn -> null)
+  let xmlDocProvider = 
+      memoize (fun x -> 
+          try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
+          with exn -> null)
 
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  = 
@@ -155,13 +157,15 @@ module internal TipFormatter =
   ///check helpxml exist
   let tryGetDoc key = 
     let helpTree = MonoDevelop.Projects.HelpService.HelpTree
-    if helpTree = null then None 
-    else try 
-            let helpxml = helpTree.GetHelpXml(key)
-            if helpxml = null then None else Some(helpxml)
-         with ex -> Debug.WriteLine (sprintf "GetHelpXml failed for key %s:\r\n\t%A" key ex)
-                    None  
+    if helpTree = null then None else 
+    try 
+        let helpxml = helpTree.GetHelpXml(key)
+        if helpxml = null then None else Some(helpxml)
+    with ex -> 
+        Debug.WriteLine (sprintf "GetHelpXml failed for key %s:\r\n\t%A" key ex)
+        None  
                   
+  /// Try to find the MonoDoc documentation for a file/key pair representing an entity with documentation
   let findMonoDocProviderForEntity (file, key) = 
       Debug.WriteLine (sprintf "key= %A, File= %A" key file) 
       let typeMemberFormatter name = "/Type/Members/Member[@MemberName='" + name + "']" 
@@ -191,6 +195,7 @@ module internal TipFormatter =
       | _ -> Debug.WriteLine (sprintf "**No match for key = %s" key)
              None
       
+  /// Find the documentation for a file/key pair representing an entity with documentation
   let findDocForEntity (file, key)  = 
       match findXmlDocProviderForEntity (file, key) with 
       | Some doc -> Some doc
@@ -207,6 +212,7 @@ module internal TipFormatter =
     | _ -> String.Empty
         
 
+  /// Indent the text produced by FSharp.Compiler.Service for an F# type signature nicely.
   let signatureIndenter (text:string) maximumlength= 
     let sb = StringBuilder()
 
@@ -241,16 +247,14 @@ module internal TipFormatter =
          else  pad piece
     let lines = text.Split([|'\r';'\n'|], StringSplitOptions.None)
     for line in lines do
-        let indexOfIndent = match line.IndexOf(':') with
-                            | -1 -> 0
-                            | foundIndex -> foundIndex+2
+        let indexOfIndent = 
+            match line.IndexOf(':') with
+            | -1 -> 0
+            | foundIndex -> foundIndex+2
         formatter line true indexOfIndent
     sb.ToString().Trim()
 
   /// Format some of the data returned by the F# compiler
-  ///
-  /// If 'canAddHeader' is true (meaning that this is the only tip displayed) then we add first line 
-  //  "Multiple overloads" because MD prints first int in bold (so that no overload is highlighted)
   let private buildFormatElement el =
     let signatureB, commentB = StringBuilder(), StringBuilder()
     match el with 
@@ -280,6 +284,7 @@ module internal TipFormatter =
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
       
+  /// Split a line so it fits to a line width
   let splitLine (sb:StringBuilder) (line:string) lineWidth =
       let emit (s:string) = sb.Append(s) |> ignore
       let indent = line |> Seq.takeWhile (fun c -> c = ' ') |> Seq.length
@@ -301,7 +306,8 @@ module internal TipFormatter =
               first <- true
       sb.AppendLine() |> ignore
 
-  let wrap (text: String) lineWidth =
+  /// Wrap text so it fits to a line width
+  let wrapText (text: String) lineWidth =
       //dont wrap empty lines
       if text.Length = 0 then text else
       let sb = StringBuilder()
@@ -312,17 +318,15 @@ module internal TipFormatter =
       sb.ToString()
 
   /// Format tool-tip that we get from the language service as string        
-  let formatTip tip = 
-      match tip with
-      | ToolTipText(list) ->
-        list 
-        |> List.map (fun item -> let signature, summary = buildFormatElement item
-                                 let wrappedSummary = wrap summary 120
-                                 signature, wrappedSummary)
-
-      //TODO: Use the current projects policy to get line length
-      // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
-      // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
+  //
+  //TODO: Use the current projects policy to get line length
+  // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
+  // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
+  let formatTip (ToolTipText(list)) =
+      [ for item in list -> 
+          let signature, summary = buildFormatElement item
+          let wrappedSummary = wrapText summary 120
+          signature, wrappedSummary ]
 
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
@@ -354,7 +358,7 @@ module internal TipFormatter =
       List.tryPick (extractParamTipFromElement paramName) elements
 
 
-module MonoDevelop =
+module internal MonoDevelop =
     let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
         let line, col = max (loc.Line - 1) 0, loc.Column-1
@@ -378,12 +382,11 @@ module MonoDevelop =
                 
 
 /// Provides functionality for working with the F# interactive checker running in background
-type internal MDLanguageService private () =
+module MDLanguageService =
 
-  // Single instance of the language service, this used to be lazy but the initialization code for the file will be run
-  // when "Instance" is first evalauted anyway, and I don't think there is any substantive cost to creating an instance of LanguageService.
-  static let instance =
-    FSharp.CompilerBinding.LanguageService(
+  /// Single instance of the language service.
+  let Instance =
+    new FSharp.CompilerBinding.LanguageService(
         (fun changedfile ->
             DispatchService.GuiDispatch(fun () -> 
                 try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
@@ -393,8 +396,6 @@ type internal MDLanguageService private () =
                         doc.ReparseDocument()
                 with exn  -> () )))
                 
-  //Single instance of the language service
-  static member Instance = instance
     
 // --------------------------------------------------------------------------------------
 /// Various utilities for working with F# language service

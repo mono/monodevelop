@@ -9,26 +9,19 @@ open System.Xml.Linq
 open System.Diagnostics
 
 type Style = 
-| Type of string 
-| Parameter of string 
-| Code of string
-| Exception of string
+    | Type of string 
+    | Parameter of string 
+    | Code of string
+    | Exception of string
 
 module Styles =
-    let simpleMarkup style=
+    let simpleMarkup style =
         match style with
         | Type name -> String.Format("<i>{0}</i> ", name)
         | Parameter name -> String.Format("<i>{0}</i> ", name)
         | Code name -> String.Format("<tt>{0}</tt> ", name)
         | Exception name -> String.Format("\n   <i>{0}</i>", name)
         
-    let none style=
-        match style with
-        | Type name -> name
-        | Parameter name -> name
-        | Code name -> name
-        | Exception name -> name
-
 module Linq2Xml =
     let xn = XName.op_Implicit
     let xs ns local = XName.Get(local, ns)

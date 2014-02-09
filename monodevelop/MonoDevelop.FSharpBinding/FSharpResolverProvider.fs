@@ -26,27 +26,13 @@ open ICSharpCode.NRefactory.TypeSystem
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-/// Result of F# identifier resolution at the specified location stores the data tip that we 
-/// get from the language service (this is passed to MonoDevelop, which asks about tooltip later)
+/// Resolves locations to tooltip items, and orchestrates their display.
 ///
-/// We resolve language items to an under-specified LocalResolveResult (with an additional field for
-/// the data tip text). Goto-definition can operate on the LocalResolveResult.
-// 
-// Other interesting ResolveResult's we may one day want to return are:
-// 
-// -- MemberResolveResult
-// -- MethodGroupResolveResult
-// -- TypeResolveResult
-//
-// or to return complete IEntity data.
-//
-// Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and renaming.
-
-//TODO: Implement windows caching so we only rebuild a TooltipInformationWindow if it differs from the last shown one.
+/// We resolve language items to an NRefactory symbol.
 type FSharpLanguageItemTooltipProvider() = 
     inherit Mono.TextEditor.TooltipProvider()
 
-    //keep the last result and tooltip window cached
+    // Keep the last result and tooltip window cached
     let mutable lastResult = None : TooltipItem option
     static let mutable lastWindow = None
 
@@ -148,14 +134,10 @@ type FSharpLanguageItemTooltipProvider() =
     interface IDisposable with
         member x.Dispose() = killTooltipWindow()
 
-    
-/// Implements "resolution" - looks for tool-tips at current locations
+/// Resolves locations to NRefactory symbols and ResolveResult objects.
 type FSharpResolverProvider() =
   do Debug.WriteLine ("Resolver: Creating FSharpResolverProvider")
-  // TODO: ITextEditorMemberPositionProvider
-  // TODO: ITextEditorExtension
-  // TODO: MonoDevelop.Ide.Gui.Content.CompletionTextEditorExtension (Parameter completion etc.)
-  
+
   interface ITextEditorResolverProvider with
   
     /// Get tool-tip at the specified offset (from the start of the file)

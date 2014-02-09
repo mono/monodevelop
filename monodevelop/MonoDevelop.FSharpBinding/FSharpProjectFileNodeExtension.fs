@@ -15,13 +15,12 @@ open System.Xml
 open System.Xml.Linq
 open Linq2Xml
 
+/// The command handler type for nodes in F# projects in the solution explorer.
 type FSharpProjectNodeCommandHandler() =
   inherit NodeCommandHandler()
 
-  let cachedPosition = ref Unchecked.defaultof<_>
-
+  /// Reload project causing the node tree up refresh with new ordering
   let reloadProject (currentNode: ITreeNavigator) =
-    //reload project causing the node tree up refresh with new ordering
     use monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor(true)
     monitor.BeginTask("Reloading Project", 1)
     let file = currentNode.DataItem :?> ProjectFile
@@ -71,6 +70,7 @@ type FSharpProjectNodeCommandHandler() =
         reloadProject currentNode
     | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
 
+  /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.OnNodeDrop(dataObject, dragOperation, position) =
     match dataObject, dragOperation with
     | :? ProjectFile as movingNode, DragOperation.Move ->
@@ -79,10 +79,13 @@ type FSharpProjectNodeCommandHandler() =
     | _ -> //otherwise use the base behaviour
            base.OnNodeDrop(dataObject, dragOperation, position) 
         
+  /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.CanDragNode() = DragOperation.Move
 
+  /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.CanDropNode(dataObject, dragOperation) = true
 
+  /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.CanDropNode(dataObject, dragOperation, position) =
       //currently we are going to only support dropping project files from the same parent project
       match (dataObject, x.CurrentNode.DataItem) with
@@ -91,9 +94,11 @@ type FSharpProjectNodeCommandHandler() =
       | _ -> false
 
 
+/// MD/XS extension for the F# project nodes in the solution explorer.
 type FSharpProjectFileNodeExtension() =
   inherit NodeBuilderExtension()
 
+  /// Check if an item in the project model is recognized by this extension.
   let (|SupportedProjectFile|SupportedProjectFolder|NotSupported|) (item:obj) =
     match item with
     | :? ProjectFile as projfile when projfile.Project <> null-> SupportedProjectFile(projfile)

@@ -20,31 +20,38 @@ open Cairo
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-[<RequireQualifiedAccess>]
+/// Utilities to produce NRefactory ISymbol, IEntity, IVariable etc. implementations based on FSharpSymbol
+/// objects returned by FSharp.Compiler.Service.
 module NRefactory = 
+    /// If an NRefactory symbol implements this, it indicates it is associated with an FSharpSymbol from the
+    /// F# compiler.
     type IHasFSharpSymbol = 
         abstract FSharpSymbol : FSharpSymbol
         /// Last identifier used in the resolution that produced this symbol
         abstract LastIdent : string
 
+    /// An NRefactory symbol for an F# type definition, module or exception declaration.
     type FSharpResolvedTypeDefinition(context,unresolvedTypeDef,symbol, lastIdent) = 
         inherit DefaultResolvedTypeDefinition(context, [| unresolvedTypeDef |])
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
             member x.LastIdent = lastIdent
 
+    /// An NRefactory symbol for an F# method, property or other member definition.
     type FSharpResolvedMethod(unresolvedMember, context, symbol, lastIdent) = 
         inherit DefaultResolvedMethod(unresolvedMember, context)
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
             member x.LastIdent = lastIdent
 
+    /// An NRefactory symbol for an unresolved F# method, property or other member definition.
     type FSharpUnresolvedMethod(unresolvedTypeDef, name, symbol, lastIdent) =
         inherit DefaultUnresolvedMethod(unresolvedTypeDef, name)
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
             member x.LastIdent = lastIdent
 
+    /// An NRefactory symbol for a local F# symbol.
     type FSharpResolvedVariable(name, region, symbol, lastIdent) = 
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
@@ -59,8 +66,10 @@ module NRefactory =
             member x.IsConst = false
             member x.ConstantValue = null 
    
+    /// Build an NRefactory symbol for an F# symbol.
     let createSymbol (projectContent: IProjectContent, fsSymbol: FSharpSymbol, lastIdent, region) = 
         match fsSymbol with 
+
         // Type Definitions, Type Abbreviations, Exception Definitions and Modules
         | :? FSharpEntity as fsEntity -> 
 
@@ -137,10 +146,12 @@ module NRefactory =
            resolvedMember :> ISymbol
 
         | _ -> 
+            // All other cases are treated as 'local variables'. This will not be renamed across files.
             FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent) :> ISymbol
 
-    ///Create a MemberReference.  
-    ///symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
+    /// Create an NRefactory MemberReference for an F# symbol.
+    ///
+    /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
     let createMemberReference(projectContent, fsSymbol: FSharpSymbol, fileNameOfRef, rangeOfRef, lastIdentAtLoc:string, symbolDeclLocOpt) =
          let ((beginLine, beginCol), (endLine, endCol)) = rangeOfRef
          
@@ -176,6 +187,7 @@ module NRefactory =
 
          memberRef
 
+    /// Create an NRefactory ResolveResult for an F# symbol.
     let createResolveResult(projectContent, fsSymbol: FSharpSymbol, lastIdent, region) =
         let sym = createSymbol(projectContent, fsSymbol, lastIdent, region)
         match sym with 
@@ -188,11 +200,13 @@ module NRefactory =
             let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
             LocalResolveResult(sym) :> ResolveResult
 
+/// Used by HighlightUsagesExtension.
 type UsageSegment( usageType: ReferenceUsageType, offset, length) =
     let textSegment = TextSegment (offset, length)
     member x.UsageType = usageType
     member x.TextSegment = textSegment
 
+/// Used by HighlightUsagesExtension.
 type UsageMarker() =
     inherit TextLineMarker()
 
@@ -255,6 +269,7 @@ type UsageMarker() =
         usages.Any (fun u -> u.TextSegment.Offset <= offset && offset <= u.TextSegment.EndOffset)
 
 
+/// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() as this =
     inherit TextEditorExtension()
         
