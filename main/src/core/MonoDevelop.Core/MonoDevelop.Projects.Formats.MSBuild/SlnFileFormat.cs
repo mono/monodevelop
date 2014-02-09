@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public bool CanReadFile (string file, MSBuildFileFormat format)
 		{
-			if (String.Compare (Path.GetExtension (file), ".sln", true) == 0) {
+			if (String.Compare (Path.GetExtension (file), ".sln", StringComparison.OrdinalIgnoreCase) == 0) {
 				string tmp;
 				string version = GetSlnFileVersion (file, out tmp);
 				return format.SupportsSlnVersion (version);
