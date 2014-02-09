@@ -705,13 +705,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 
 					if (s.StartsWith ("VisualStudioVersion = ", StringComparison.Ordinal)) {
-						var v = Version.Parse (s.Substring ("VisualStudioVersion = ".Length));
-						data.VisualStudioVersion = v;
+						Version v;
+						if (Version.TryParse (s.Substring ("VisualStudioVersion = ".Length), out v))
+							data.VisualStudioVersion = v;
+						else
+							monitor.Log.WriteLine ("Ignoring unparseable VisualStudioVersion value in sln file");
 					}
 
 					if (s.StartsWith ("MinimumVisualStudioVersion = ", StringComparison.Ordinal)) {
-						var v = Version.Parse (s.Substring ("MinimumVisualStudioVersion = ".Length));
-						data.MinimumVisualStudioVersion = v;
+						Version v;
+						if (Version.TryParse (s.Substring ("MinimumVisualStudioVersion = ".Length), out v))
+							data.MinimumVisualStudioVersion = v;
+						else
+							monitor.Log.WriteLine ("Ignoring unparseable MinimumVisualStudioVersion value in sln file");
 					}
 				}
 			}
