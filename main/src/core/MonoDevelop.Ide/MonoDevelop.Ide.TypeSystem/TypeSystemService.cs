@@ -1572,7 +1572,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var contexts = new List<IAssemblyReference> ();
 					var nonCyclicCache = new HashSet<Project> ();
 					foreach (var referencedWrapper in referencedWrappers) {
-						referencedWrapper.Loaded += HandleReferencedProjectInLoadChange;
+						referencedWrapper.Loaded -= HandleReferencedProjectInLoadChange;
 					}
 					var newReferencedWrappers = new List<ProjectContentWrapper>();
 					foreach (var referencedProject in ReferencedProjects) {
