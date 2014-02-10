@@ -19,7 +19,7 @@ open MonoDevelop.Projects
 type FSharpReferenceFinder() =
     inherit ReferenceFinder()
 
-    /// Detect a symbol that has comeregion information
+    /// Detect a symbol that has some region information
     let (|SymbolWithRegion|_|) (x:obj) =
         match x with 
         | :? IVariable as e -> Some e.Region
