@@ -205,12 +205,17 @@ namespace MonoDevelop.VersionControl
 		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			try {
-				if (recursive)
-					return OnGetDirectoryVersionInfo (localDirectory, getRemoteStatus, recursive);
+				var viList = new List<VersionInfo> ();
+				if (recursive) {
+					foreach (var subdir in Directory.GetDirectories (localDirectory))
+						viList.AddRange (OnGetDirectoryVersionInfo (subdir, getRemoteStatus, recursive));
+				}
 
 				var status = infoCache.GetDirectoryStatus (localDirectory);
-				if (status != null && !status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
-					return status.FileInfo;
+				if (status != null && !status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus)) {
+					viList.AddRange (status.FileInfo);
+					return viList.ToArray ();
+				}
 
 				// If there is no cached status, query it asynchronously
 				DirectoryInfoQuery q = new DirectoryInfoQuery () {
@@ -222,8 +227,10 @@ namespace MonoDevelop.VersionControl
 				// If we have a status value but the value was invalidated (RequiresRefresh == true)
 				// then we return the invalidated value while we start an async query to get the new one
 
-				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
-					return status.FileInfo;
+				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus)) {
+					viList.AddRange (status.FileInfo);
+					return viList.ToArray ();
+				}
 				return new VersionInfo[0];
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
