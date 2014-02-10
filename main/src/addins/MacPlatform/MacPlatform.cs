@@ -122,6 +122,8 @@ namespace MonoDevelop.MacIntegration
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
+			NSApplication.Init ();
+
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
