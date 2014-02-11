@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.Commands
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.SetSourceColor ((HslColor)Style.Light (StateType.Normal));
+				context.SetSourceColor (Style.Light (StateType.Normal).ToCairoColor ());
 				context.Paint ();
 			}
 

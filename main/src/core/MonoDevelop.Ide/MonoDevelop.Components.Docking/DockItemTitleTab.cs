@@ -410,9 +410,9 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = new HslColor (VisualStyle.PadBackgroundColor.Value);
-			c.L *= 0.7;
-			bgc.RgbFgColor = c;
+			var c = VisualStyle.PadBackgroundColor.Value.ToXwtColor ();
+			c.Light *= 0.7;
+			bgc.RgbFgColor = c.ToGdkColor ();
 			bool first = true;
 			bool last = true;
 			TabStrip tabStrip = null;

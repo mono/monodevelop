@@ -161,7 +161,7 @@ namespace MonoDevelop.Components
 			
 			if (GradientBackround) {
 				rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-				HslColor gcol = Style.Background (Gtk.StateType.Normal);
+				var gcol = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 					cr.NewPath ();
@@ -172,12 +172,11 @@ namespace MonoDevelop.Components
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Bottom)) {
-						Cairo.Color color1 = gcol;
-						pat.AddColorStop (0, color1);
-						gcol.L -= 0.1;
-						if (gcol.L < 0)
-							gcol.L = 0;
-						pat.AddColorStop (1, gcol);
+						pat.AddColorStop (0, gcol.ToCairoColor ());
+						gcol.Light -= 0.1;
+						if (gcol.Light < 0)
+							gcol.Light = 0;
+						pat.AddColorStop (1, gcol.ToCairoColor ());
 						cr.SetSource (pat);
 						cr.FillPreserve ();
 					}

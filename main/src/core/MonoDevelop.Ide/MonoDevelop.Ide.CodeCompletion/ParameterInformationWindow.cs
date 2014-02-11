@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.SetSchemeColors (scheme);
 
 			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
 
@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			catLabel.Text = categoryName;
-			catLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			
 			vbox.PackStart (catLabel, false, true, 0);
 			
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.BreakOnCamelCasing = true;
 			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
-			contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			
 			vbox.PackStart (contentLabel, true, true, 0);
 			

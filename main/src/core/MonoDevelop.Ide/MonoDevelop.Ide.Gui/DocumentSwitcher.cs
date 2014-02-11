@@ -33,12 +33,9 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using Mono.TextEditor;
 using MonoDevelop.Components;
-using HslColor = MonoDevelop.Components.HslColor;
 
 namespace MonoDevelop.Ide
 {
@@ -178,7 +175,7 @@ namespace MonoDevelop.Ide
 					yPos = padding;
 					cr.MoveTo (xPos, yPos);
 					layout.SetMarkup ("<b>" + cat.Title + "</b>");
-					cr.SetSourceColor ((HslColor)Style.Text (StateType.Normal));
+					cr.SetSourceColor (Style.Text (StateType.Normal).ToCairoColor ());
 					cr.ShowLayout (layout);
 					
 					if (cat.Items.Count == 0)
@@ -229,16 +226,16 @@ namespace MonoDevelop.Ide
 							int itemWidth = w + (int)item.Icon.Width + 2 + itemPadding * 2;
 							cr.Rectangle (xPos, yPos, itemWidth, iconHeight);
 							cr.LineWidth = 1;
-							cr.SetSourceColor ((HslColor)Style.Base (StateType.Selected));
+							cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
 							cr.Fill ();
 						} else if (item == hoverItem) {
 							int itemWidth = w + (int)item.Icon.Width + 2 + itemPadding * 2;
 							cr.Rectangle (xPos + 0.5, yPos + 0.5, itemWidth - 1, iconHeight);
 							cr.LineWidth = 1;
-							cr.SetSourceColor ((HslColor)Style.Base (StateType.Selected));
+							cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
 							cr.Stroke ();
 						}
-						cr.SetSourceColor ((HslColor)Style.Text (item == ActiveItem? StateType.Selected : StateType.Normal));
+						cr.SetSourceColor (Style.Text (item == ActiveItem? StateType.Selected : StateType.Normal).ToCairoColor ());
 						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);

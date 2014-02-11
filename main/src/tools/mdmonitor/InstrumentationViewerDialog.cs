@@ -73,9 +73,9 @@ namespace Mono.Instrumentation.Monitor
 		{
 			base.OnRealized ();
 			
-			MonoDevelop.Components.HslColor c = Style.Background (Gtk.StateType.Normal);
-			c.L -= 0.1;
-			headerBox.ModifyBg (Gtk.StateType.Normal, c);
+			var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
+			c.Light -= 0.1;
+			headerBox.ModifyBg (Gtk.StateType.Normal, c.ToGdkColor ());
 		}
 
 
@@ -323,15 +323,12 @@ namespace Mono.Instrumentation.Monitor
 			Gdk.Color cachedColor;
 			if (colors.TryGetValue (c, out cachedColor))
 				return cachedColor;
-			
+
 			Random r = new Random (c.Name.GetHashCode ());
-			HslColor col = new HslColor ();
 			int nc = c.Name.GetHashCode ();
 			if (nc < 0) nc = -nc;
-			col.H = r.NextDouble ();
-			col.S = r.NextDouble ();
-			col.L = 0.3 + (r.NextDouble () * 0.3);
-			Gdk.Color gc = col;
+			Xwt.Drawing.Color col = Xwt.Drawing.Color.FromHsl (r.NextDouble (), r.NextDouble (), 0.3 + (r.NextDouble () * 0.3));
+			Gdk.Color gc = col.ToGdkColor ();
 			colors [c] = gc;
 			return gc;
 		}

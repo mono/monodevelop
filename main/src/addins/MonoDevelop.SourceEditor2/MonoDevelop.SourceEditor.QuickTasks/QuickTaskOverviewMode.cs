@@ -396,8 +396,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
 			
-			var darkColor = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.SearchResult.Color;
-			darkColor.L *= 0.5;
+			var darkColor = TextEditor.ColorStyle.SearchResult.Color.ToXwtColor ();
+			darkColor.Light *= 0.5;
 
 			if (flatStyle) {
 				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.Color)) {
@@ -406,14 +406,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			} else {
 				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
-					pattern.AddColorStop (0, darkColor);
+					pattern.AddColorStop (0, darkColor.ToCairoColor ());
 					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.Color);
 					cr.SetSource (pattern);
 					cr.FillPreserve ();
 				}
 			}
 			
-			cr.SetSourceColor (darkColor);
+			cr.SetSourceColor (darkColor.ToCairoColor ());
 			cr.Stroke ();
 		}
 
@@ -502,11 +502,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
-				var col = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.PlainText.Background;
+				var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
 				if (!flatStyle) {
-					col.L *= 0.88;
+					col.Light *= 0.88;
 				}
-				cr.SetSourceColor (col);
+				cr.SetSourceColor (col.ToCairoColor ());
 			}
 			cr.Stroke ();
 		}
@@ -535,11 +535,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, barWidth / 2);
 			}
 			
-			var color = (MonoDevelop.Components.HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
-			color.L = flatStyle? 0.7 : 0.5;
-			var c = (Cairo.Color)color;
-			c.A = 0.6;
-			cr.SetSourceColor (c);
+			var color = ((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground.ToXwtColor () : Xwt.Drawing.Colors.Black);
+			color.Light = flatStyle? 0.7 : 0.5;
+			color.Alpha = 0.6;
+			cr.SetSourceColor (color.ToCairoColor ());
 			cr.Fill ();
 		}
 		
@@ -566,17 +565,17 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					var col = (MonoDevelop.Components.HslColor)TextEditor.ColorStyle.PlainText.Background;
-					col.L *= 0.95;
+					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
+					col.Light *= 0.95;
 					if (flatStyle) {
-						using (var pattern = new Cairo.SolidPattern (col)) {
+						using (var pattern = new Cairo.SolidPattern (col.ToCairoColor ())) {
 							cr.SetSource (pattern);
 						}
 					} else {
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-							grad.AddColorStop (0, col);
+							grad.AddColorStop (0, col.ToCairoColor ());
 							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-							grad.AddColorStop (1, col);
+							grad.AddColorStop (1, col.ToCairoColor ());
 							cr.SetSource (grad);
 						}
 					}

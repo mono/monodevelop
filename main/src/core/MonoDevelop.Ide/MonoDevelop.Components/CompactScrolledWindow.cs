@@ -140,7 +140,7 @@ namespace MonoDevelop.Components
 				Gdk.CairoHelper.Region (cr, evnt.Region);
 				cr.Clip ();
 				
-				cr.SetSourceColor ((HslColor)Style.Dark (Gtk.StateType.Normal));
+				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
 				cr.LineWidth = lineWidth;
 				cr.Translate (rect.X, rect.Y);
 

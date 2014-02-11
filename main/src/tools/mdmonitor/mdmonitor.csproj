@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -95,6 +95,11 @@
     <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

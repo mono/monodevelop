@@ -136,9 +136,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 //			fbox.GradientBackround = true;
 //			fbox.BackgroundColor = new Gdk.Color (255, 255, 255);
 			Realized += delegate {
-				var c = new HslColor (Style.Background (Gtk.StateType.Normal));
-				c.L += 0.09;
-				fboxHeader.BackgroundColor = c;
+				var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
+				c.Light += 0.09;
+				fboxHeader.BackgroundColor = c.ToGdkColor ();
 			};
 			vbox.PackStart (fboxHeader, false, false, 0);
 

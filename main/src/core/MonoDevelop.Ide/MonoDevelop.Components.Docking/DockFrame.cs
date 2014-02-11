@@ -992,15 +992,6 @@ namespace MonoDevelop.Components.Docking
 				callback (overlayWidget);
 		}
 		
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			HslColor cLight = new HslColor (Style.Background (Gtk.StateType.Normal));
-			HslColor cDark = cLight;
-			cLight.L *= 0.9;
-			cDark.L *= 0.8;
-		}
-
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			MinimizeAllAutohidden ();

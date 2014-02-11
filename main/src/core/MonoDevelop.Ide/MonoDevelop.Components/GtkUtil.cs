@@ -44,11 +44,33 @@ namespace MonoDevelop.Components
 			                        (double)color.Blue / ushort.MaxValue);
 		}
 		
+		public static Xwt.Drawing.Color ToXwtColor (this Gdk.Color color)
+		{
+			return new Xwt.Drawing.Color ((double)color.Red / ushort.MaxValue,
+				(double)color.Green / ushort.MaxValue,
+				(double)color.Blue / ushort.MaxValue);
+		}
+
 		public static Gdk.Color ToGdkColor (this Cairo.Color color)
 		{
 			return new Gdk.Color ((byte)(color.R * 255d), (byte)(color.G * 255d), (byte)(color.B * 255d));
 		}
 		
+		public static Gdk.Color ToGdkColor (this Xwt.Drawing.Color color)
+		{
+			return new Gdk.Color ((byte)(color.Red * 255d), (byte)(color.Green * 255d), (byte)(color.Blue * 255d));
+		}
+
+		public static Cairo.Color ToCairoColor (this Xwt.Drawing.Color color)
+		{
+			return new Cairo.Color (color.Red, color.Green, color.Blue, color.Alpha);
+		}
+
+		public static Xwt.Drawing.Color ToXwtColor (this Cairo.Color color)
+		{
+			return new Xwt.Drawing.Color (color.R, color.G, color.B, color.A);
+		}
+
 		/// <summary>
 		/// Makes a color lighter or darker
 		/// </summary>
@@ -58,16 +80,16 @@ namespace MonoDevelop.Components
 		/// </param>
 		public static Gdk.Color AddLight (this Gdk.Color color, double lightAmount)
 		{
-			HslColor c = color;
-			c.L += lightAmount;
-			return c;
+			var c = color.ToXwtColor ();
+			c.Light += lightAmount;
+			return c.ToGdkColor ();
 		}
 
 		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
 		{
-			HslColor c = color;
-			c.L += lightAmount;
-			return c;
+			var c = color.ToXwtColor ();
+			c.Light += lightAmount;
+			return c.ToCairoColor ();
 		}
 
 		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)

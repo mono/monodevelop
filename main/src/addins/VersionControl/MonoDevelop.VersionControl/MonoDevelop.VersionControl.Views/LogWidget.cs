@@ -242,9 +242,9 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			var c = new HslColor (Style.Base (StateType.Normal));
-			c.L *= 0.8;
-			commitBox.ModifyBg (StateType.Normal, c);
+			var c = Style.Base (StateType.Normal).ToXwtColor ();
+			c.Light *= 0.8;
+			commitBox.ModifyBg (StateType.Normal, c.ToGdkColor ());
 
 			var tcol = new Gdk.Color (255, 251, 242);
 			textviewDetails.ModifyBase (StateType.Normal, tcol);

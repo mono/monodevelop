@@ -797,8 +797,8 @@ namespace MonoDevelop.Components.MainToolbar
 				} else {
 					context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
-						lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
-						lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
+						lg.AddColorStop (0, Style.Light (StateType.Normal).ToCairoColor ());
+						lg.AddColorStop (1, Style.Mid (StateType.Normal).ToCairoColor ());
 						context.SetSource (lg);
 					}
 					context.Fill ();

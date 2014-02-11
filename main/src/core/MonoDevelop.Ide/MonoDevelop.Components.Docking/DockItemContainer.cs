@@ -277,11 +277,11 @@ namespace MonoDevelop.Components.Docking
 					cr.ClosePath ();
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
 						pat.AddColorStop (0, bcolor.ToCairoColor ());
-						HslColor gcol = bcolor;
-						gcol.L -= 0.1;
-						if (gcol.L < 0)
-							gcol.L = 0;
-						pat.AddColorStop (1, gcol);
+						Xwt.Drawing.Color gcol = bcolor.ToXwtColor ();
+						gcol.Light -= 0.1;
+						if (gcol.Light < 0)
+							gcol.Light = 0;
+						pat.AddColorStop (1, gcol.ToCairoColor ());
 						cr.SetSource (pat);
 						cr.Fill ();
 					}
@@ -298,7 +298,7 @@ namespace MonoDevelop.Components.Docking
 			base.OnExposeEvent (evnt);
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.SetSourceColor ((HslColor) Style.Dark (Gtk.StateType.Normal));
+				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;

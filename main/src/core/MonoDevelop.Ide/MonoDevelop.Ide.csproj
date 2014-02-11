@@ -1859,7 +1859,6 @@
     <Compile Include="MonoDevelop.Ide.Extensions\CustomToolExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\CustomTool.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\CustomToolService.cs" />
-    <Compile Include="MonoDevelop.Components\DataGrid.cs" />
     <Compile Include="MonoDevelop.Components\FileSelector.cs" />
     <Compile Include="MonoDevelop.Components\BaseFileEntry.cs" />
     <Compile Include="MonoDevelop.Components\FileEntry.cs" />
@@ -1874,14 +1873,12 @@
     <Compile Include="MonoDevelop.Components\MenuButton.cs" />
     <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
     <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
-    <Compile Include="MonoDevelop.Components\ListView.cs" />
     <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
     <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
     <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
     <Compile Include="MonoDevelop.Components\InfoBar.cs" />
     <Compile Include="MonoDevelop.Components\GtkUtil.cs" />
     <Compile Include="MonoDevelop.Components\MiniButton.cs" />
-    <Compile Include="MonoDevelop.Components\HslColor.cs" />
     <Compile Include="MonoDevelop.Components\SearchEntry.cs" />
     <Compile Include="MonoDevelop.Components\HoverImageButton.cs" />
     <Compile Include="MonoDevelop.Components\PathBar.cs" />

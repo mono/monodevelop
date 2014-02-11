@@ -302,7 +302,7 @@ namespace MonoDevelop.Components
 				cr.MoveTo (x, rectangle.Y + 0.5 + 2);
 				cr.RelLineTo (0, rectangle.Height - 1 - 4);
 				cr.ClosePath ();
-				cr.SetSourceColor ((HslColor)parent.Style.Dark (StateType.Normal));
+				cr.SetSourceColor (parent.Style.Dark (StateType.Normal).ToCairoColor ());
 				cr.LineWidth = 1;
 				cr.Stroke ();
 				return;

@@ -165,16 +165,16 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static Cairo.Color ReduceLight (Cairo.Color color, double factor)
 		{
-			var c = new HslColor (color);
-			c.L *= factor;
-			return c;
+			var c = color.ToXwtColor ();
+			c.Light *= factor;
+			return c.ToCairoColor ();
 		}
 
 		internal static Cairo.Color IncreaseLight (Cairo.Color color, double factor)
 		{
-			var c = new HslColor (color);
-			c.L += (1 - c.L) * factor;
-			return c;
+			var c = color.ToXwtColor ();
+			c.Light += (1 - c.Light) * factor;
+			return c.ToCairoColor ();
 		}
 
 		internal static Gdk.Color ReduceLight (Gdk.Color color, double factor)
