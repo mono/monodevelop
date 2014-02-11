@@ -1230,7 +1230,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Remove old items
 			Dictionary<string,ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
 			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.Include + (!String.IsNullOrEmpty(item.Condition) ? "<"+item.Condition: String.Empty)] = new ItemInfo () { Item=item };
+				oldItems [item.Name + "<" + item.Include + "<" + item.Condition] = new ItemInfo () { Item=item };
 			
 			// Add the new items
 			foreach (object ob in ((SolutionEntityItem)Item).Items.Concat (((SolutionEntityItem)Item).WildcardItems))
@@ -1603,7 +1603,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,ItemInfo> oldItems, string name, string include, string condition)
 		{
 			ItemInfo itemInfo;
-			string key = name + "<" + include + (!String.IsNullOrEmpty(condition) ? "<" + condition : String.Empty);
+			string key = name + "<" + include + "<" + condition;
 			if (oldItems.TryGetValue (key, out itemInfo)) {
 				if (!itemInfo.Added) {
 					itemInfo.Added = true;
