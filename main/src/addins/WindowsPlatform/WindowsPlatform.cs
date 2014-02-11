@@ -91,34 +91,6 @@ namespace MonoDevelop.Platform
 			}
 		}
 		
-		protected override Gdk.Pixbuf OnGetIconForType (string type, Gtk.IconSize size)
-		{
-			return base.OnGetIconForType (type, size);
-		}
-		
-		Dictionary<string, Gdk.Pixbuf> icons = new Dictionary<string, Gdk.Pixbuf> ();
-
-		// http://msdn.microsoft.com/en-us/library/windows/desktop/bb762179(v=vs.85).aspx
-		// FIXME: You should call this function from a background thread. Failure to do so could cause the UI to stop responding.
-		protected override Gdk.Pixbuf OnGetIconForFile (string filename, Gtk.IconSize size)
-		{
-			SHFILEINFO shinfo = new SHFILEINFO();
-			Win32.SHGetFileInfoW (filename, Win32.FILE_ATTRIBUTES_NORMAL, ref shinfo, (uint)Marshal.SizeOf (shinfo),  Win32.SHGFI_USEFILEATTRIBUTES | Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_ICONLOCATION | Win32.SHGFI_TYPENAME);
-			if (shinfo.iIcon == 0) {
-				Win32.DestroyIcon (shinfo.hIcon);
-				return null;
-			}
-			string key = shinfo.iIcon + " - " + shinfo.szDisplayName;
-			Gdk.Pixbuf pix;
-			if (!icons.TryGetValue (key, out pix)) {
-				var icon = Icon.FromHandle (shinfo.hIcon);
-				pix = CreateFromResource (icon.ToBitmap ());
-				icons[key] = pix;
-			}
-			Win32.DestroyIcon (shinfo.hIcon);
-			return pix;
-		}
-
 		protected override string OnGetMimeTypeDescription (string mimeType)
 		{
 			if (mimeType == "text/plain")
