@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Database.Sql;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Database.Components
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Database.Components
 			toggleRenderer.Toggled += new ToggledHandler (ItemToggled);
 			col.PackStart (toggleRenderer, false);
 			
-			var pixbufRenderer = new CellRendererPixbuf ();
+			var pixbufRenderer = new CellRendererImage ();
 			col.PackStart (pixbufRenderer, false);
 
 			CellRendererText textRenderer = new CellRendererText ();
@@ -149,7 +150,7 @@ namespace MonoDevelop.Database.Components
 		
 		private void PixbufDataFunc (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var pixbufRenderer = (CellRendererPixbuf) cell;
+			var pixbufRenderer = (CellRendererImage) cell;
 			var schema = (ISchemaContainer) model.GetValue (iter, columnObj);
 			
 			string iconString = null;
@@ -169,7 +170,7 @@ namespace MonoDevelop.Database.Components
 			}
 
 			if (iconString != null)
-				pixbufRenderer.Pixbuf = ImageService.GetPixbuf (iconString);
+				pixbufRenderer.Image = ImageService.GetIcon (iconString, IconSize.Menu);
 		}
 		
 		private void ItemToggled (object sender, ToggledArgs args)

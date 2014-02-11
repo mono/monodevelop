@@ -85,7 +85,7 @@ namespace MonoDevelop.Database.Components
 				} catch {}
 			}
 			
-			image.Pixbuf = ImageService.GetPixbuf ("gtk-missing-image", IconSize.Dialog);
+			image.Pixbuf = ImageService.GetIcon ("gtk-missing-image", IconSize.Dialog).ToPixbuf ();
 		}
 	}
 }

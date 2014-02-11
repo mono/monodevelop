@@ -24,13 +24,10 @@
 //
 
 using Gtk;
-using System;
 using System.IO;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Database.Components
 {
@@ -42,14 +39,14 @@ namespace MonoDevelop.Database.Components
 		
 		public ProjectDirectoryComboBox ()
 		{
-			store = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Project), typeof (string));
+			store = new TreeStore (typeof (Xwt.Drawing.Image), typeof (string), typeof (Project), typeof (string));
 			
-			var pixbuf = new CellRendererPixbuf ();
+			var pixbuf = new CellRendererImage ();
 			CellRendererText text = new CellRendererText ();
 
 			this.PackStart (pixbuf, false);
 			this.PackStart (text, false);
-			this.AddAttribute (pixbuf, "pixbuf", 0);
+			this.AddAttribute (pixbuf, "image", 0);
 			this.AddAttribute (text, "markup", 1);
 			
 			this.Model = store;
@@ -88,12 +85,12 @@ namespace MonoDevelop.Database.Components
 						continue;
 				
 					DotNetProject proj = (DotNetProject)entry;
-					Gdk.Pixbuf pixbuf = null;
+					Xwt.Drawing.Image pixbuf = null;
 					
 					if (proj is DotNetProject && (proj as DotNetProject).LanguageBinding == null) {
-						pixbuf = ImageService.GetPixbuf (Gtk.Stock.DialogError);
+						pixbuf = ImageService.GetIcon (Gtk.Stock.DialogError, IconSize.Menu);
 					} else {
-						pixbuf = ImageService.GetPixbuf (proj.StockIcon, IconSize.Menu);
+						pixbuf = ImageService.GetIcon (proj.StockIcon, IconSize.Menu);
 					}
 					
 					TreeIter iter = store.AppendValues (pixbuf, "<b>" + proj.Name + "</b>", proj, proj.BaseDirectory);
@@ -123,7 +120,7 @@ namespace MonoDevelop.Database.Components
 				if (name == "gtk-gui" || name == "bin" || info.Attributes.ToString ().Contains ("Hidden"))
 					continue;
 				
-				Gdk.Pixbuf pixbuf = ImageService.GetPixbuf (Gtk.Stock.Directory);
+				var pixbuf = ImageService.GetIcon (Gtk.Stock.Directory, IconSize.Menu);
 				TreeIter iter = store.AppendValues (parent, pixbuf, name, project, dir);
 						
 				PopulateCombo (iter, dir, project);
