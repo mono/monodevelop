@@ -56,21 +56,6 @@ namespace MonoDevelop.Components
 			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static Pango.Layout CreateLayout (Gtk.Widget widget, Cairo.Context cairo_context)
-        {
-            Pango.Layout layout = PangoCairoHelper.CreateLayout (cairo_context);
-            layout.FontDescription = widget.PangoContext.FontDescription.Copy ();
-
-            double resolution = widget.Screen.Resolution;
-            if (resolution != -1) {
-                Pango.Context context = PangoCairoHelper.LayoutGetContext (layout);
-                PangoCairoHelper.ContextSetResolution (context, resolution);
-                context.Dispose ();
-            }
-
-            return layout;
-        }
-
         public static Surface CreateSurfaceForPixbuf (Context cr, Pixbuf pixbuf)
         {
 			Surface surface;

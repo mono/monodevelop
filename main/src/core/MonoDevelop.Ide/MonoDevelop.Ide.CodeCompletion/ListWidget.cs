@@ -443,7 +443,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
 					context.SetSourceColor (textColor);
 					context.MoveTo ((width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight);
-					PangoCairoHelper.ShowLayout (context, noMatchLayout);
+					Pango.CairoHelper.ShowLayout (context, noMatchLayout);
 					return false;
 				}
 
@@ -474,7 +474,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					categoryLayout.GetPixelSize (out px, out py);
 					context.MoveTo (x, ypos + (rowHeight - py) / 2);
 					context.SetSourceColor (textColor);
-					PangoCairoHelper.ShowLayout (context, categoryLayout);
+					Pango.CairoHelper.ShowLayout (context, categoryLayout);
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
 					if (ypos >= height)
 						return false;
@@ -551,7 +551,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
 					layout.Ellipsize = EllipsizeMode.End;
-					PangoCairoHelper.ShowLayout (context, layout);
+					Pango.CairoHelper.ShowLayout (context, layout);
 					layout.Width = -1;
 					layout.Ellipsize = EllipsizeMode.None;
 
@@ -569,7 +569,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						wi += w;
 						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
 						context.MoveTo (Allocation.Width - w, typos);
-						PangoCairoHelper.ShowLayout (context, layout);
+						Pango.CairoHelper.ShowLayout (context, layout);
 					}
 
 					if (Math.Min (maxListWidth,  wi + xpos + iconWidth + 2) > listWidth) {

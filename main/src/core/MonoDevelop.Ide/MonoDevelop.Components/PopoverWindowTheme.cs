@@ -417,7 +417,7 @@ namespace MonoDevelop.Components
 			context.MoveTo (bounds.X + (bounds.Width - w) / 2, bounds.Y + (bounds.Height - h) / 2);
 
 			context.SetSourceColor (PagerTextColor);
-			PangoCairoHelper.ShowLayout (context, layout);
+			Pango.CairoHelper.ShowLayout (context, layout);
 
 			layout.Dispose ();
 		}

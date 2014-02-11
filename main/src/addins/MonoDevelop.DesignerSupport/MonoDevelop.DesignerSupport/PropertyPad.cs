@@ -48,7 +48,7 @@ namespace MonoDevelop.DesignerSupport
 	public class PropertyPad : AbstractPadContent, ICommandDelegator
 	{
 		pg.PropertyGrid grid;
-		MonoDevelop.Components.InvisibleFrame frame;
+		InvisibleFrame frame;
 		bool customWidget;
 		IPadWindow container;
 		DockToolbarProvider toolbarProvider = new DockToolbarProvider ();
@@ -58,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 		public PropertyPad ()
 		{
 			grid = new pg.PropertyGrid ();
-			frame = new MonoDevelop.Components.InvisibleFrame ();
+			frame = new InvisibleFrame ();
 			frame.Add (grid);
 			
 			frame.ShowAll ();
@@ -212,5 +212,22 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		#endregion
+	}
+
+	class InvisibleFrame : Gtk.Alignment
+	{
+		public InvisibleFrame ()
+			: base (0, 0, 1, 1)
+		{
+		}
+
+		public Gtk.Widget ReplaceChild (Gtk.Widget widget)
+		{
+			Gtk.Widget old = Child;
+			if (old != null)
+				Remove (old);
+			Add (widget);
+			return old;
+		}
 	}
 }

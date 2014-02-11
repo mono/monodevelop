@@ -114,7 +114,9 @@ namespace MonoDevelop.Refactoring
 			if (treeviewPreview.Selection.IterIsSelected (iter)) {
 				cellRendererText.Text = text;
 			} else {
-				cellRendererText.Markup = "<span foreground=\"" + MonoDevelop.Components.PangoCairoHelper.GetColorString (Style.Text (StateType.Insensitive)) + "\">" + text + "</span>";
+				var color = Style.Text (StateType.Insensitive);
+				var c = string.Format ("#{0:X02}{1:X02}{2:X02}", color.Red / 256, color.Green / 256, color.Blue / 256);
+				cellRendererText.Markup = "<span foreground=\"" + c + "\">" + text + "</span>";
 			}
 		}
 		

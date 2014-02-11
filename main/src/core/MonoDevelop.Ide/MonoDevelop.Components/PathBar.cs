@@ -291,7 +291,7 @@ namespace MonoDevelop.Components
 						// Text
 						ctx.SetSourceColor (Styles.BreadcrumbTextColor.ToCairoColor ());
 						ctx.MoveTo (x + textOffset, textTopPadding);
-						PangoCairoHelper.ShowLayout (ctx, layout);
+						Pango.CairoHelper.ShowLayout (ctx, layout);
 					}
 					ctx.Restore ();
 
@@ -349,7 +349,7 @@ namespace MonoDevelop.Components
 						// Text
 						ctx.SetSourceColor (Styles.BreadcrumbTextColor.ToCairoColor ());
 						ctx.MoveTo (x + textOffset, textTopPadding);
-						PangoCairoHelper.ShowLayout (ctx, layout);
+						Pango.CairoHelper.ShowLayout (ctx, layout);
 					}
 
 					ctx.Restore ();

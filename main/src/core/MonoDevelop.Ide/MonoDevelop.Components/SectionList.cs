@@ -344,7 +344,7 @@ namespace MonoDevelop.Components
 						layout.Ellipsize = Pango.EllipsizeMode.End;
 						layout.Width = (int) ((w - headerPadding - headerPadding) * Pango.Scale.PangoScale);
 						cr.MoveTo (headerPadding, headerPadding);
-						PangoCairoHelper.ShowLayout (cr, layout);
+						Pango.CairoHelper.ShowLayout (cr, layout);
 						
 						cr.MoveTo (-halfLineWidth, i > activeIndex? -halfLineWidth : headerHeight + halfLineWidth);
 						cr.RelLineTo (w + borderLineWidth, 0.0);

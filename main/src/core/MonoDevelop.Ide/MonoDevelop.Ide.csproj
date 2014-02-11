@@ -1864,15 +1864,12 @@
     <Compile Include="MonoDevelop.Components\FileEntry.cs" />
     <Compile Include="MonoDevelop.Components\FolderDialog.cs" />
     <Compile Include="MonoDevelop.Components\FolderEntry.cs" />
-    <Compile Include="MonoDevelop.Components\Navbar.cs" />
     <Compile Include="MonoDevelop.Components\TabLabel.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
-    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs" />
     <Compile Include="MonoDevelop.Components\MenuButton.cs" />
     <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
-    <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
     <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
     <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
     <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
@@ -1886,7 +1883,6 @@
     <Compile Include="MonoDevelop.Components\SelectFolderDialog.cs" />
     <Compile Include="MonoDevelop.Components\RoundedFrame.cs" />
     <Compile Include="MonoDevelop.Components\CairoExtensions.cs" />
-    <Compile Include="MonoDevelop.Components\PangoCairoHelper.cs" />
     <Compile Include="MonoDevelop.Components.Chart\Axis.cs" />
     <Compile Include="MonoDevelop.Components.Chart\AxisDimension.cs" />
     <Compile Include="MonoDevelop.Components.Chart\AxisPosition.cs" />
@@ -2175,7 +2171,6 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSession.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestClientSession.cs" />
     <Compile Include="MonoDevelop.Components\DropDownBoxListWindow.cs" />
-    <Compile Include="MonoDevelop.Components\DropDownBox.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionMatcher.cs" />
     <Compile Include="MonoDevelop.Components\Tabstrip.cs" />
     <Compile Include="MonoDevelop.Ide.Fonts\FontChooserPanelWidget.cs" />
@@ -2313,7 +2308,6 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
-    <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
     <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\AnimatedIcon.cs" />
     <Compile Include="MonoDevelop.Ide\DefaultWebCertificateProvider.cs" />
@@ -2390,6 +2384,7 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CombineMSBuildOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadCollection.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
+    <Compile Include="MonoDevelop.Components\DropDownBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

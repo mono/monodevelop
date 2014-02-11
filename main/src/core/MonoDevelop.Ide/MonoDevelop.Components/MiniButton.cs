@@ -30,7 +30,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
-	public class MiniButton: Gtk.EventBox
+	class MiniButton: Gtk.EventBox
 	{
 		public event EventHandler Clicked;
 		Gdk.Color normalColor;

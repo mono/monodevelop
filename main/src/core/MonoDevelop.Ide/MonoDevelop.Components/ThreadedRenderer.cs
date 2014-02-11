@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
-	public class ThreadedRenderer : IDisposable
+	class ThreadedRenderer : IDisposable
 	{
 		Gtk.Widget owner;
 		SurfaceWrapper surface;
