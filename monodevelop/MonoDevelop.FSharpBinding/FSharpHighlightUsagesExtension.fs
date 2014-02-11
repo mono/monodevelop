@@ -31,8 +31,15 @@ module NRefactory =
         abstract LastIdent : string
 
     /// An NRefactory symbol for an F# type definition, module or exception declaration.
-    type FSharpResolvedTypeDefinition(context,unresolvedTypeDef,symbol, lastIdent) = 
+    type FSharpResolvedTypeDefinition(context,unresolvedTypeDef,symbol:FSharpSymbol, lastIdent) = 
         inherit DefaultResolvedTypeDefinition(context, [| unresolvedTypeDef |])
+
+        //by default the kind will always be class because unresolvedTypeDef.Kind is used in the DefaultResolvedTypeDefinition.
+        //The rename UI only makes a ditinction between class and interface, others such as Enum are seperate entities
+        override x.Kind =
+            match symbol with
+            | :? FSharpEntity as fse when fse.IsInterface -> TypeKind.Interface
+            | _ -> base.Kind
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
             member x.LastIdent = lastIdent
@@ -159,24 +166,19 @@ module NRefactory =
          // Trim the range of the referring text to only include this identifier.
          // This means references like A.B.C are trimmed to "C".  This allows renaming to just
          // rename "C". 
-         let (beginLine, beginCol) = 
+         let (beginLine, beginCol) =
              if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
                  (endLine,endCol-lastIdentAtLoc.Length)
              else
-                 (beginLine, beginCol) 
-
-         let document = IdeApp.Workbench.OpenDocument(FilePath(fileNameOfRef), project=null, bringToFront=false)
-
-         let offset = document.Editor.LocationToOffset(beginLine+1, beginCol+1)
-         let endOffset = document.Editor.LocationToOffset(endLine+1, endCol+1)
-
-         let textSegment = TextSegment.FromBounds(offset, endOffset)
-         let region = textSegment.GetRegion(document.Editor.Document)
-
-         let domRegion = DomRegion(fileNameOfRef, region.BeginLine, region.BeginColumn, region.EndLine, region.EndColumn)
+                 (beginLine, beginCol)
+             
+         let text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText(fileNameOfRef)
+         let document = TextDocument(text)
+         let offset = document.LocationToOffset(beginLine+1, beginCol+1)
+         let domRegion = DomRegion(fileNameOfRef, beginLine+1, beginCol+1, endLine+1, endCol+1)
 
          let symbol = createSymbol(projectContent, fsSymbol, lastIdentAtLoc, domRegion)
-         let memberRef = MemberReference(symbol, domRegion, offset, textSegment.Length)
+         let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
 
          //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
          match symbolDeclLocOpt with
