@@ -1,5 +1,5 @@
 //
-// IProjectTemplatePostProcessor.cs
+// PackageReferencesForCreatedProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,14 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public interface IProjectTemplatePackageInstaller
+	public class PackageReferencesForCreatedProject
 	{
-		void Run(IWorkspaceFileObject item, IList<ProjectTemplatePackageReferenceCollection> packageReferences);
+		List<ProjectTemplatePackageReference> packageReferences;
+
+		public PackageReferencesForCreatedProject (string projectName, IEnumerable<ProjectTemplatePackageReference> packageReferences)
+		{
+			ProjectName = projectName;
+			this.packageReferences = packageReferences.ToList ();
+		}
+
+		public string ProjectName { get; private set; }
+
+		public IList<ProjectTemplatePackageReference> PackageReferences {
+			get { return packageReferences; }
+		}
 	}
 }
 

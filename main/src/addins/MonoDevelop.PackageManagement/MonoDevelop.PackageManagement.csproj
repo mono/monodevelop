@@ -250,8 +250,8 @@
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PagedResultsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PagedResultsWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageInstaller.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryNodeExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateNuGetPackageInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

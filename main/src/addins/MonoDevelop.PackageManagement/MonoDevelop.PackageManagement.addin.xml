@@ -81,6 +81,6 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageInstallers">
-		<Class id="NuGet" class="MonoDevelop.PackageManagement.ProjectTemplatePackageInstaller" />
+		<Class id="NuGet" class="MonoDevelop.PackageManagement.ProjectTemplateNuGetPackageInstaller" />
 	</Extension>
 </Addin>

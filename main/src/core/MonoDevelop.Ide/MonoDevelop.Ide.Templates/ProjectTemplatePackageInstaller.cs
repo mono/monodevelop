@@ -1,5 +1,5 @@
 //
-// ProjectTemplatePackageReferenceCollection.cs
+// ProjectTemplatePackageInstaller.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,24 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.ObjectModel;
+using MonoDevelop.Projects;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class ProjectTemplatePackageReferenceCollection
-		: Collection<ProjectTemplatePackageReference>
+	public abstract class ProjectTemplatePackageInstaller
 	{
-		public ProjectTemplatePackageReferenceCollection ()
-		{
-		}
-
-		public ProjectTemplatePackageReferenceCollection (IEnumerable<ProjectTemplatePackageReference> items)
-		{
-			foreach (ProjectTemplatePackageReference item in items) {
-				Add (item);
-			}
-		}
+		public abstract void Run(IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects);
 	}
 }
 

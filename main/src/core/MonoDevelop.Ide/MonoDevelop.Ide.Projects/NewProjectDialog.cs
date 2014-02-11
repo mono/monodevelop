@@ -383,7 +383,7 @@ namespace MonoDevelop.Ide.Projects {
 			if (openSolution)
 				selectedItem.OpenCreatedSolution();
 
-			InstallProjectTemplatePackages (newItem);
+			InstallProjectTemplatePackages ();
 
 			Respond (ResponseType.Ok);
 		}
@@ -479,13 +479,13 @@ namespace MonoDevelop.Ide.Projects {
 			return cinfo;
 		}
 
-		void InstallProjectTemplatePackages (IWorkspaceFileObject item)
+		void InstallProjectTemplatePackages ()
 		{
 			if (!selectedItem.HasPackages ())
 				return;
 
-			foreach (IProjectTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectTemplatePackageInstallers")) {
-				installer.Run (item, selectedItem.GetPackageReferences ().ToList ());
+			foreach (ProjectTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectTemplatePackageInstallers")) {
+				installer.Run (selectedItem.PackageReferencesForCreatedProjects);
 			}
 		}
 

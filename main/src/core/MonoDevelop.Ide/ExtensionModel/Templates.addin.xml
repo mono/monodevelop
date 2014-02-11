@@ -21,7 +21,7 @@
 </ExtensionPoint>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatePackageInstallers" name = "Project template package installers">
-	<Description>Installs packages defined in the project template. Must implement MonoDevelop.Ide.Templates.IProjectTemplatePackageInstaller</Description>
+	<Description>Installs packages defined in the project template. Must implement MonoDevelop.Ide.Templates.ProjectTemplatePackageInstaller</Description>
 	<ExtensionNode name="Class" />
 </ExtensionPoint>
 

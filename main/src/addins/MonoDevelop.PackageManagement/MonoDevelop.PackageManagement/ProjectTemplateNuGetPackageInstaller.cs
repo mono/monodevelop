@@ -1,5 +1,5 @@
 //
-// ProjectTemplatePackageInstaller.cs
+// ProjectTemplateNuGetPackageInstaller.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -37,19 +37,19 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTemplatePackageInstaller : IProjectTemplatePackageInstaller
+	public class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
 
-		public ProjectTemplatePackageInstaller ()
+		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
 				PackageManagementServices.Solution,
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache)
 		{
 		}
 
-		public ProjectTemplatePackageInstaller (
+		public ProjectTemplateNuGetPackageInstaller (
 			IPackageManagementSolution solution,
 			IPackageRepositoryCache packageRepositoryCache)
 		{
@@ -57,21 +57,15 @@ namespace MonoDevelop.PackageManagement
 			this.packageRepositoryCache = packageRepositoryCache;
 		}
 
-		public void Run (IWorkspaceFileObject item, IList<ProjectTemplatePackageReferenceCollection> packageReferences)
+		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			DispatchService.BackgroundDispatch (() => InstallPackages (item, packageReferences));
+			DispatchService.BackgroundDispatch (() => InstallPackages (packageReferencesForCreatedProjects));
 		}
 
-		void InstallPackages (IWorkspaceFileObject item, IList<ProjectTemplatePackageReferenceCollection> packageReferences)
+		void InstallPackages (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
-				var solution = item as Solution;
-				var project = item as DotNetProject;
-				if (solution != null) {
-					InstallPackagesIntoSolution (packageReferences);
-				} else if (project != null) {
-					InstallPackagesIntoProject (item, packageReferences [0]);
-				}
+				InstallPackagesIntoSolution (packageReferencesForCreatedProjects);
 			}
 		}
 
@@ -85,35 +79,27 @@ namespace MonoDevelop.PackageManagement
 				false);
 		}
 
-		void InstallPackagesIntoSolution (IList<ProjectTemplatePackageReferenceCollection> packageReferences)
+		void InstallPackagesIntoSolution (IList<PackageReferencesForCreatedProject> projectsPackageReferences)
 		{
 			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			for (int i = 0; i < solution.RootFolder.Items.Count; ++i) {
-				var project = solution.RootFolder.Items [i] as DotNetProject;
+			foreach (PackageReferencesForCreatedProject packageReferences in projectsPackageReferences) {
+				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {
-					InstallPackagesIntoProject (project, packageReferences [i]);
+					InstallPackagesIntoProject (project, packageReferences);
 				}
 			}
 		}
 
-		void InstallPackagesIntoProject (DotNetProject dotNetProject, ProjectTemplatePackageReferenceCollection packageReferences)
+		void InstallPackagesIntoProject (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)
 		{
 			IPackageManagementProject project = CreatePackageManagementProject (dotNetProject);
-			foreach (ProjectTemplatePackageReference packageReference in packageReferences) {
+			foreach (ProjectTemplatePackageReference packageReference in projectPackageReferences.PackageReferences) {
 				InstallPackageAction action = project.CreateInstallPackageAction ();
 				action.PackageId = packageReference.Id;
 				action.PackageVersion = new SemanticVersion (packageReference.Version);
 
 				action.Execute ();
 			}
-		}
-
-		void InstallPackagesIntoProject (IWorkspaceFileObject project, ProjectTemplatePackageReferenceCollection packageReferences)
-		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			var dotNetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == project.Name) as DotNetProject;
-
-			InstallPackagesIntoProject (dotNetProject, packageReferences);
 		}
 
 		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
