@@ -88,19 +88,23 @@ namespace MonoDevelop.PackageManagement
 			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
 				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
 					try {
-						InstallPackages (installPackageActions);
+						monitor.BeginTask (null, installPackageActions.Count);
+						InstallPackages (monitor, installPackageActions);
 					} catch (Exception ex) {
 						monitor.Log.WriteLine (ex.Message);
 						monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
+					} finally {
+						monitor.EndTask ();
 					}
 				}
 			}
 		}
 
-		void InstallPackages (IList<InstallPackageAction> installPackageActions)
+		void InstallPackages (IProgressMonitor monitor, IList<InstallPackageAction> installPackageActions)
 		{
 			foreach (InstallPackageAction action in installPackageActions) {
 				action.Execute ();
+				monitor.Step (1);
 			}
 		}
 
