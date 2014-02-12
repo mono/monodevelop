@@ -59,13 +59,31 @@ namespace MonoDevelop.PackageManagement
 
 		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			DispatchService.BackgroundDispatch (() => InstallPackages (packageReferencesForCreatedProjects));
+			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
+			DispatchService.BackgroundDispatch (() => InstallPackages (installPackageActions));
 		}
 
-		void InstallPackages (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		{
+			var installPackageActions = new List<InstallPackageAction> ();
+
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
+				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
+				if (project != null) {
+					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences));
+				}
+			}
+
+			return installPackageActions;
+		}
+
+		void InstallPackages (IList<InstallPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
-				InstallPackagesIntoSolution (packageReferencesForCreatedProjects);
+				foreach (InstallPackageAction action in installPackageActions) {
+					action.Execute ();
+				}
 			}
 		}
 
@@ -79,18 +97,7 @@ namespace MonoDevelop.PackageManagement
 				false);
 		}
 
-		void InstallPackagesIntoSolution (IList<PackageReferencesForCreatedProject> projectsPackageReferences)
-		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			foreach (PackageReferencesForCreatedProject packageReferences in projectsPackageReferences) {
-				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
-				if (project != null) {
-					InstallPackagesIntoProject (project, packageReferences);
-				}
-			}
-		}
-
-		void InstallPackagesIntoProject (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)
+		IEnumerable<InstallPackageAction> CreateInstallPackageActions (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)
 		{
 			IPackageManagementProject project = CreatePackageManagementProject (dotNetProject);
 			foreach (ProjectTemplatePackageReference packageReference in projectPackageReferences.PackageReferences) {
@@ -98,7 +105,7 @@ namespace MonoDevelop.PackageManagement
 				action.PackageId = packageReference.Id;
 				action.PackageVersion = new SemanticVersion (packageReference.Version);
 
-				action.Execute ();
+				yield return action;
 			}
 		}
 
