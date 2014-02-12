@@ -252,6 +252,7 @@
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PagedResultsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryNodeExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateNuGetPackageInstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventsMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

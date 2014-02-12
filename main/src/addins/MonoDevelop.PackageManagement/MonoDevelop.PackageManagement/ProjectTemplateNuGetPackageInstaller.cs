@@ -42,19 +42,23 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
+		IPackageManagementEvents packageManagementEvents;
 
 		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
 				PackageManagementServices.Solution,
+				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache)
 		{
 		}
 
 		public ProjectTemplateNuGetPackageInstaller (
 			IPackageManagementSolution solution,
+			IPackageManagementEvents packageManagementEvents,
 			IPackageRepositoryCache packageRepositoryCache)
 		{
 			this.packageManagementSolution = solution;
+			this.packageManagementEvents = packageManagementEvents;
 			this.packageRepositoryCache = packageRepositoryCache;
 		}
 
@@ -82,11 +86,13 @@ namespace MonoDevelop.PackageManagement
 		void InstallPackagesWithProgressMonitor (IList<InstallPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
-				try {
-					InstallPackages (installPackageActions);
-				} catch (Exception ex) {
-					monitor.Log.WriteLine (ex.Message);
-					monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
+				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
+					try {
+						InstallPackages (installPackageActions);
+					} catch (Exception ex) {
+						monitor.Log.WriteLine (ex.Message);
+						monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
+					}
 				}
 			}
 		}
