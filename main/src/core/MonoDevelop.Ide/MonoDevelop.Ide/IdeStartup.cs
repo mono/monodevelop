@@ -50,6 +50,7 @@ using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -103,9 +104,11 @@ namespace MonoDevelop.Ide
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
+			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
