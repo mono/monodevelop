@@ -289,6 +289,7 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					IsInSelectionSearchMode = true;
 					SelectionSegment = textEditor.SelectionRange;
+					SetSearchOptions ();
 				}
 			}
 			SetSearchPattern (SearchAndReplaceOptions.SearchPattern);

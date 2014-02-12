@@ -41,27 +41,34 @@ namespace MonoDevelop.Refactoring
 {
 	class FindDerivedSymbolsHandler 
 	{
-		//Ide.Gui.Document doc;
+		Ide.Gui.Document doc;
 		readonly IMember entity;
 
 
 		public FindDerivedSymbolsHandler (Ide.Gui.Document doc, IMember entity)
 		{
-			//this.doc = doc;
+			this.doc = doc;
 			this.entity = entity;
 		}
 
-		Task<HashSet<IAssembly>> GetAllAssemblies ()
+		static bool IsReferenced (Project project, Project referencedProject)
+		{
+			return project == referencedProject || 
+				project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).Contains (referencedProject);
+		}
+
+		Task<HashSet<IAssembly>> GetAllAssemblies (Project referencedProject)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			return Task.Factory.StartNew (delegate {
 				var assemblies = new HashSet<IAssembly> ();
 				foreach (var project in solution.GetAllProjects ()) {
+					if (!IsReferenced (project, referencedProject))
+						continue;
 					var comp = TypeSystemService.GetCompilation (project);
 					if (comp == null)
 						continue;
-					foreach (var asm in comp.Assemblies)
-						assemblies.Add (asm);
+					assemblies.Add (comp.MainAssembly);
 				}
 				return assemblies;
 			});
@@ -75,7 +82,7 @@ namespace MonoDevelop.Refactoring
 
 		public void Run ()
 		{
-			var assemblies = GetAllAssemblies ();
+			var assemblies = GetAllAssemblies (doc.Project);
 			assemblies.ContinueWith (delegate(Task<HashSet<IAssembly>> arg) {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 

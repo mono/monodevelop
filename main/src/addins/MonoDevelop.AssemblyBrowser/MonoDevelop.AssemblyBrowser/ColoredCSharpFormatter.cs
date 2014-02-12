@@ -132,7 +132,24 @@ namespace MonoDevelop.AssemblyBrowser
 			WriteIndent ();
 			sb.Append (text);
 		}
-		
+
+		void ITextOutput.WritePrimitiveValue (object value, string literalValue)
+		{
+			WriteIndent ();
+			if (value == null) {
+				sb.Append ("null");
+			} else if (value is string) {
+				sb.Append ("\"" + value + "\"");
+			} else if (value is char) {
+				sb.Append ("'" + value + "'");
+			} else if (value is bool) {
+				sb.Append ((bool)value ? "true" : "false");
+			} else {
+				sb.Append (value.ToString());
+			}
+
+		}
+
 		void WriteIndent ()
 		{
 			if (!write_indent)
@@ -172,7 +189,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			foldSegmentStarts.Push (Tuple.Create (sb.Length, collapsedText, defaultCollapsed));
 		}
-		
+
 		public void MarkFoldEnd ()
 		{
 			var curFold = foldSegmentStarts.Pop ();
