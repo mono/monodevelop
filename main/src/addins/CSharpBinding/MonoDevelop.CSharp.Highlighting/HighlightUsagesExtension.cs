@@ -204,9 +204,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (r == null)
 							continue;
 						var marker = GetMarker (r.Region.BeginLine);
-						
-						usages.Add (r.Region.Begin);
-						
+
+						usages.Add (new Usage (r.Region.Begin, r.ReferenceUsageType));
+
 						int offset = r.Offset;
 						int endOffset = offset + r.Length;
 						if (!alphaBlend && editor.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (endOffset) ||
@@ -365,8 +365,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				handler (this, e);
 		}
 
-		List<DocumentLocation> usages = new List<DocumentLocation> ();
-		IEnumerable<DocumentLocation> IUsageProvider.Usages {
+		readonly List<Usage> usages = new List<Usage> ();
+		IEnumerable<Usage> IUsageProvider.Usages {
 			get {
 				return usages;
 			}
