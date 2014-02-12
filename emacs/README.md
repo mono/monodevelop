@@ -199,6 +199,10 @@ If you set the variable `fsharp-ac-debug` to a non-`nil` value, e.g. `(setq fsha
 
 This is probably the result of the background intellisense process crashing and printing a stacktrace in plain text. Please report the crash, preferably with how to reproduce, and the contents of the `*fsharp-complete*` buffer.
 
+### Windows completion menu performance
+
+There are some issues with the `pos-tip` library used to display the documentation tooltips for completions. This can cause sluggish performance when scrolling through the list if you try to move up or down just before the tooltip is displayed. We are looking into proper solutions for this with the `pos-tip` maintainer. For now you can work around the issue with `(setq ac-quick-help-prefer-pos-tip nil)`. This will use an alternative method for displaying these tooltips that is faster but uglier.
+
 ### Installing from Git
 
 If you installed by cloning the git repository and you are having problem, please sanity check by running `make test-all` in the `emacs` folder.
