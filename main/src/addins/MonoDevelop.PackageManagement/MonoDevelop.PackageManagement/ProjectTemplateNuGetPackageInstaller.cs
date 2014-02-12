@@ -34,6 +34,7 @@ using NuGet;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
-			DispatchService.BackgroundDispatch (() => InstallPackages (installPackageActions));
+			DispatchService.BackgroundDispatch (() => InstallPackagesWithProgressMonitor (installPackageActions));
 		}
 
 		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
@@ -78,23 +79,47 @@ namespace MonoDevelop.PackageManagement
 			return installPackageActions;
 		}
 
-		void InstallPackages (IList<InstallPackageAction> installPackageActions)
+		void InstallPackagesWithProgressMonitor (IList<InstallPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
-				foreach (InstallPackageAction action in installPackageActions) {
-					action.Execute ();
+				try {
+					InstallPackages (installPackageActions);
+				} catch (Exception ex) {
+					monitor.Log.WriteLine (ex.Message);
+					monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
 				}
+			}
+		}
+
+		void InstallPackages (IList<InstallPackageAction> installPackageActions)
+		{
+			foreach (InstallPackageAction action in installPackageActions) {
+				action.Execute ();
 			}
 		}
 
 		IProgressMonitor CreateProgressMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Installing Packages..."),
-				Stock.StatusSolutionOperation,
-				true,
+			IProgressMonitor consoleMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				"PackageConsole",
+				GettextCatalog.GetString ("Package Console"),
+				Stock.Console,
 				false,
-				false);
+				true);
+
+			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
+
+			IProgressMonitor statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Installing packages..."),
+				Stock.StatusSolutionOperation,
+				false,
+				false,
+				false,
+				pad);
+
+			var monitor = new AggregatedProgressMonitor (consoleMonitor);
+			monitor.AddSlaveMonitor (statusMonitor);
+			return monitor;
 		}
 
 		IEnumerable<InstallPackageAction> CreateInstallPackageActions (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)
