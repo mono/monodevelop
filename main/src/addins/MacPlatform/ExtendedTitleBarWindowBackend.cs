@@ -119,7 +119,7 @@ namespace MonoDevelop.MacIntegration
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;
 		}
 
-		public void SetToolbarContent (Xwt.Backends.IWidgetBackend backend)
+		public void SetHeaderContent (Xwt.Backends.IWidgetBackend backend)
 		{
 			if (toolbar.Child != null) {
 				WidgetBackend.RemoveChildPlacement (toolbar.Child);

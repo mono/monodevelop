@@ -31,7 +31,7 @@ namespace MonoDevelop.Components.Extensions
 {
 	public interface IExtendedTitleBarWindowBackend: IWindowBackend
 	{
-		void SetToolbarContent (IWidgetBackend backend);
+		void SetHeaderContent (IWidgetBackend backend);
 	}
 
 	class GtkExtendedTitleBarWindowBackend: WindowBackend, IExtendedTitleBarWindowBackend
@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Extensions
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;
 		}
 
-		public void SetToolbarContent (IWidgetBackend backend)
+		public void SetHeaderContent (IWidgetBackend backend)
 		{
 			if (toolbar.Child != null) {
 				WidgetBackend.RemoveChildPlacement (toolbar.Child);

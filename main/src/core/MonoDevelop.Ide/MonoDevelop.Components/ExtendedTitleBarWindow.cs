@@ -43,11 +43,11 @@ namespace MonoDevelop.Components
 			get { return (IExtendedTitleBarWindowBackend) BackendHost.Backend; } 
 		}
 
-		public Widget ToolbarContent {
+		public Widget HeaderContent {
 			get { return content; }
 			set {
 				content = value;
-				Backend.SetToolbarContent (content.GetBackend ());
+				Backend.SetHeaderContent (content.GetBackend ());
 			}
 		}
 	}
