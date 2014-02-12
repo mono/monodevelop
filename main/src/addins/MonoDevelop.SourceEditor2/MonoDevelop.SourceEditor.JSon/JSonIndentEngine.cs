@@ -38,6 +38,7 @@ namespace MonoDevelop.SourceEditor.JSon
 		internal Indent thisLineIndent, nextLineIndent;
 		StringBuilder currentIndent;
 		char previousNewline = '\0';
+		char previousChar = '\0';
 		bool isLineStart;
 		bool isInString;
 
@@ -165,12 +166,15 @@ namespace MonoDevelop.SourceEditor.JSon
 				if (ch == '{' || ch == '[') {
 					nextLineIndent.Push (IndentType.Block);
 				} else if (ch == '}' || ch == ']') {
-					thisLineIndent.Pop ();
-					nextLineIndent.Pop ();
+					if (thisLineIndent.Count > 0)
+						thisLineIndent.Pop ();
+					if (nextLineIndent.Count > 0)
+						nextLineIndent.Pop ();
 				} 
 			} else {
-				if (ch == NewLine.LF && previousNewline == NewLine.CR) {
+				if (ch == NewLine.LF && previousChar == NewLine.CR) {
 					offset++;
+					previousChar = ch;
 					return;
 				}
 			}
@@ -192,16 +196,13 @@ namespace MonoDevelop.SourceEditor.JSon
 				}
 			} else {
 				previousNewline = ch;
-				// there can be more than one chars that determine the EOL,
-				// the engine uses only one of them defined with newLineChar
-				if (ch != '\n')
-					return;
 				currentIndent.Length = 0;
 				isLineStart = true;
 				column = 1;
 				line++;
 				thisLineIndent = nextLineIndent.Clone ();
 			}
+			previousChar = ch;
 		}
 
 		public void Reset ()
@@ -212,6 +213,7 @@ namespace MonoDevelop.SourceEditor.JSon
 			nextLineIndent = new Indent (CreateNRefactoryTextEditorOptions (data));
 			currentIndent = new StringBuilder ();
 			previousNewline = '\0';
+			previousChar = '\0';
 			isLineStart = true;
 			isInString = false;
 		}

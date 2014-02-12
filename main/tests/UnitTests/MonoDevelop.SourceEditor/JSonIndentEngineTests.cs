@@ -95,6 +95,14 @@ $
 			Assert.AreEqual ("\t\t", engine.ThisLineIndent);
 			Assert.AreEqual ("\t\t", engine.NextLineIndent);
 		}
+
+		[Test]
+		public void TestWindowsEOL ()
+		{
+			var engine = CreateEngine ("\r\n{\r\n$\r\n");
+			Assert.AreEqual ("\t", engine.ThisLineIndent);
+			Assert.AreEqual ("\t", engine.NextLineIndent);
+		}
 	}
 }
 
