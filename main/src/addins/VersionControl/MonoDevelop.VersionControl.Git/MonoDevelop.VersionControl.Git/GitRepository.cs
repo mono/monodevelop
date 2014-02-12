@@ -1301,19 +1301,22 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		public void CreateBranchFromCommit (string name, RevCommit id)
+		{
+			var create = new NGit.Api.Git (RootRepository).BranchCreate ();
+			if (id != null)
+				create.SetStartPoint (id);
+			create.SetName (name);
+			create.Call ();
+		}
+
 		public void CreateBranch (string name, string trackSource)
 		{
-			// If the user did not specify a branch to base the new local
-			// branch off, assume they want to create the new branch based
-			// on the current HEAD.
-			if (string.IsNullOrEmpty (trackSource))
-				trackSource = Constants.HEAD;
-
-			ObjectId headId = RootRepository.Resolve (trackSource);
-			RefUpdate updateRef = RootRepository.UpdateRef (Constants.R_HEADS + name);
-			updateRef.SetNewObjectId(headId);
-			updateRef.Update();
-			GitUtil.SetUpstreamSource (RootRepository, name, trackSource);
+			var create = new NGit.Api.Git (RootRepository).BranchCreate ();
+			if (!String.IsNullOrEmpty (trackSource))
+				create.SetStartPoint (trackSource);
+			create.SetName (name);
+			create.Call ();
 		}
 
 		public void SetBranchTrackSource (string name, string trackSource)

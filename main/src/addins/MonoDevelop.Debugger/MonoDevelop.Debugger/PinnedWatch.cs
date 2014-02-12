@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
@@ -53,7 +54,6 @@ namespace MonoDevelop.Debugger
 		bool liveUpdate;
 		
 		ObjectValue value;
-		PinnedWatchStore store;
 		bool evaluated;
 		
 		internal Breakpoint BoundTracer;
@@ -63,8 +63,7 @@ namespace MonoDevelop.Debugger
 		}
 		
 		internal PinnedWatchStore Store {
-			get { return this.store; }
-			set { this.store = value; }
+			get; set;
 		}
 		
 		internal void Evaluate (bool notify)
@@ -100,33 +99,33 @@ namespace MonoDevelop.Debugger
 		}
 		
 		public FilePath File {
-			get { return this.file; }
-			set { this.file = value; NotifyChanged (); }
+			get { return file; }
+			set { file = value; NotifyChanged (); }
 		}
 		
 		public bool LiveUpdate {
-			get { return this.liveUpdate; }
-			internal set { this.liveUpdate = value; }
+			get { return liveUpdate; }
+			internal set { liveUpdate = value; }
 		}
 
 		public int Line {
-			get { return this.line; }
-			set { this.line = value; NotifyChanged (); }
+			get { return line; }
+			set { line = value; NotifyChanged (); }
 		}
 
 		public int OffsetX {
-			get { return this.offsetX; }
-			set { this.offsetX = value; NotifyChanged (); }
+			get { return offsetX; }
+			set { offsetX = value; NotifyChanged (); }
 		}
 
 		public int OffsetY {
-			get { return this.offsetY; }
-			set { this.offsetY = value; NotifyChanged (); }
+			get { return offsetY; }
+			set { offsetY = value; NotifyChanged (); }
 		}
 		
 		internal void LoadValue (ObjectValue val)
 		{
-			this.value = val;
+			value = val;
 			value.Name = expression;
 			evaluated = true;
 		}
@@ -146,7 +145,7 @@ namespace MonoDevelop.Debugger
 		}
 		
 		public string Expression {
-			get { return this.expression; }
+			get { return expression; }
 			set {
 				if (expression != value) {
 					evaluated = false;
@@ -158,8 +157,8 @@ namespace MonoDevelop.Debugger
 		
 		void NotifyChanged ()
 		{
-			if (store != null)
-				store.NotifyWatchChanged (this);
+			if (Store != null)
+				Store.NotifyWatchChanged (this);
 		}
 	}
 }

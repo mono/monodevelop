@@ -120,6 +120,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Deployment.Linux\LinuxDeploymentSetup.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

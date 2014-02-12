@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7525BB88-6142-4A26-93B9-A30C6983390A}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -11,6 +11,7 @@
     <RootNamespace>MonoDevelop.Core</RootNamespace>
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
+    <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
   </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
@@ -559,4 +560,9 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Core.Web\" />
   </ItemGroup>
+  <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.txt" Outputs="BuildVariables.cs">
+    <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
+    <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)"/>
+    <Delete Files="BuildVariables.gen.exe" />
+  </Target>
 </Project>

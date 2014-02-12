@@ -25,19 +25,16 @@ namespace MonoDevelop.VersionControl
 				|| typeof(ProjectFolder).IsAssignableFrom (dataType)
 				|| typeof(IWorkspaceObject).IsAssignableFrom (dataType);
 		}
-		
-		public VersionControlNodeExtension ()
-		{
-			VersionControlService.FileStatusChanged += Monitor;
-		}
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			VersionControlService.FileStatusChanged += Monitor;
 		}
 
 		public override void Dispose ()
 		{
+			VersionControlService.FileStatusChanged -= Monitor;
 			base.Dispose ();
 		}
 

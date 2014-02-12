@@ -57,7 +57,7 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the current activated node.</param> 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return false;
+			return true;
 		}
 		
 		/// <summary>Add entries for all the web references in the project to the tree builder.</summary>
@@ -65,11 +65,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="dataObject">An object containing the data for the current node in the tree.</param>
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			/*
-			WebReferenceItem item = (WebReferenceItem) dataObject;
-			builder.AddChild(item.ProxyFile);
-			builder.AddChild(item.MapFile);
-			*/
+			var item = (WebReferenceItem) dataObject;
+			treeBuilder.AddChild(item.MapFile);
 		}
 	}
 }

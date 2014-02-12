@@ -1,22 +1,5 @@
-<Addin id          = "MonoDeveloperExtensions"
-       namespace   = "MonoDevelop"
-       name        = "IDE Extensions for developers of the Mono framework"
-       author      = "Lluis Sanchez Gual"
-       copyright   = "(c) 2005 Novell, Inc."
-       url         = "http://www.monodevelop.com"
-       description = "Provides some IDE extensions useful for developing and building the Mono class libraries."
-       category    = "Project Import and Export"
-       version     = "4.2.3">
+<ExtensionModel>
     
-    <Runtime>
-        <Import assembly="MonoDeveloperExtensions.dll"/>
-    </Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-	</Dependencies>
-
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id = "MonoMakefile" name="Mono Makefile"
 						class = "MonoDeveloper.MonoMakefileFormat" />
@@ -46,15 +29,4 @@
 		</Condition>
 	</Extension>
 
-	<Module>
-	    <Runtime>
-	        <Import assembly="MonoDeveloperExtensions_nunit.dll"/>
-	    </Runtime>
-		<Dependencies>
-			<Addin id="NUnit" version="4.2.3"/>
-		</Dependencies>
-		<Extension path = "/MonoDevelop/NUnit/TestProviders">
-			<Class id = "MonoTestProvider" class = "MonoDeveloper.MonoTestProvider"/>
-		</Extension>
-	</Module>
-</Addin>
+</ExtensionModel>

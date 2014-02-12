@@ -10,6 +10,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorSymbolStore;
+using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
@@ -143,7 +144,7 @@ namespace MonoDevelop.Debugger.Win32
 				int flags = 0;
 				if (!startInfo.UseExternalConsole) {
 					flags = (int)CreationFlags.CREATE_NO_WINDOW;
-					flags |= CorDebugger.CREATE_REDIRECT_STD;
+						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
 				}
 
 				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
@@ -167,8 +168,9 @@ namespace MonoDevelop.Debugger.Win32
 				process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
 				process.OnEvalException += new EvalEventHandler (OnEvalException);
 				process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
-				process.OnStdOutput += new CorTargetOutputEventHandler (OnStdOutput);
 				process.OnException2 += new CorException2EventHandler (OnException2);
+
+				process.RegisterStdOutput (OnStdOutput);
 
 				process.Continue (false);
 			});
@@ -932,7 +934,7 @@ namespace MonoDevelop.Debugger.Win32
 			mc.OnGetDescription = delegate {
 				MethodInfo met = function.GetMethodInfo (ctx.Session);
 				if (met != null)
-					return met.Name;
+					return met.DeclaringType.FullName + "." + met.Name;
 				else
 					return "<Unknown>";
 			};
@@ -1263,7 +1265,7 @@ namespace MonoDevelop.Debugger.Win32
 		public static Type GetTypeInfo (this CorType type, CorDebuggerSession session)
 		{
 			Type t;
-			if (CorMetadataImport.CoreTypes.TryGetValue (type.Type, out t))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
 				return t;
 
 			if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
@@ -1273,14 +1275,14 @@ namespace MonoDevelop.Debugger.Win32
 					sizes.Add (1);
 					loBounds.Add (0);
 				}
-				return MetadataType.MakeArray (type.FirstTypeParameter.GetTypeInfo (session), sizes, loBounds);
+				return MetadataExtensions.MakeArray (type.FirstTypeParameter.GetTypeInfo (session), sizes, loBounds);
 			}
 
 			if (type.Type == CorElementType.ELEMENT_TYPE_BYREF)
-				return MetadataType.MakeByRef (type.FirstTypeParameter.GetTypeInfo (session));
+				return MetadataExtensions.MakeByRef (type.FirstTypeParameter.GetTypeInfo (session));
 
 			if (type.Type == CorElementType.ELEMENT_TYPE_PTR)
-				return MetadataType.MakePointer (type.FirstTypeParameter.GetTypeInfo (session));
+				return MetadataExtensions.MakePointer (type.FirstTypeParameter.GetTypeInfo (session));
 
 			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module.Name);
 			if (mi != null) {
@@ -1290,7 +1292,7 @@ namespace MonoDevelop.Debugger.Win32
 					List<Type> types = new List<Type> ();
 					foreach (CorType ct in targs)
 						types.Add (ct.GetTypeInfo (session));
-					return MetadataType.MakeGeneric (t, types);
+					return MetadataExtensions.MakeGeneric (t, types);
 				}
 				else
 					return t;

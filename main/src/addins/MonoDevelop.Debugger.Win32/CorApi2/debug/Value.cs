@@ -739,9 +739,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             Debug.Assert(Rank!=0);
             uint[] dims = new uint[Rank];
-            m_arrayVal.GetDimensions((uint)dims.Length, dims);
+            m_arrayVal.GetDimensions((uint)dims.Length,dims);
 
-            int[] sdims = Array.ConvertAll<uint,int>(dims, delegate(uint u) { return (int)u; });
+            int[] sdims = Array.ConvertAll<uint,int>( dims, delegate(uint u) { return (int)u; } );
             return sdims;
         }
 

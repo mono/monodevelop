@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.MacIntegration.MacMenu;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -88,6 +89,7 @@ namespace MonoDevelop.MacIntegration
 
 			CheckGtkVersion (2, 24, 14);
 
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,ExtendedTitleBarWindowBackend> ();
 		}
 
 		static void CheckGtkVersion (uint major, uint minor, uint micro)
@@ -643,7 +645,7 @@ namespace MonoDevelop.MacIntegration
 			return new Cairo.Color (r, g, b, a);
 		}
 
-		static int GetTitleBarHeight ()
+		internal static int GetTitleBarHeight ()
 		{
 			var frame = new RectangleF (0, 0, 100, 100);
 			var rect = NSWindow.ContentRectFor (frame, NSWindowStyle.Titled);
@@ -651,20 +653,12 @@ namespace MonoDevelop.MacIntegration
 		}
 
 
-		static NSImage LoadImage (string resource)
+		internal static NSImage LoadImage (string resource)
 		{
-			byte[] buffer;
-			using (var stream = typeof (MacPlatformService).Assembly.GetManifestResourceStream (resource)) {
-				buffer = new byte [stream.Length];
-				stream.Read (buffer, 0, (int)stream.Length);
+			using (var stream = typeof (MacPlatformService).Assembly.GetManifestResourceStream (resource))
+			using (NSData data = NSData.FromStream (stream)) {
+				return new NSImage (data);
 			}
-
-			// Workaround: loading from file name.
-			var tmp = Path.GetTempFileName ();
-			File.WriteAllBytes (tmp, buffer);
-			var img = new NSImage (tmp);
-			File.Delete (tmp);
-			return img;
 		}
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)

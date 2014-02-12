@@ -1,20 +1,4 @@
-<Addin id          = "Deployment"
-       namespace   = "MonoDevelop"
-       name        = "Deployment Services Core"
-       author      = "Lluis Sanchez, Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com"
-       description = "Provides basic deployment services"
-       category    = "Deployment"
-       version     = "4.2.3"
-       flags       = "Hidden"
-       compatVersion = "4.0">
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="DesignerSupport" version="4.2.3"/>
-	</Dependencies>
+<ExtensionModel>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Deployment" id = "Deployment">
@@ -196,4 +180,4 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 <!--		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" /> -->
 	</Extension>
-</Addin>
+</ExtensionModel>

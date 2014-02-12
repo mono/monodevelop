@@ -131,6 +131,12 @@ namespace MonoDevelop.AssemblyBrowser
 			var exe = Path.Combine (path, name.Name + ".exe");
 			if (File.Exists (exe))
 				return exe;
+
+			foreach (var asm in Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblies ()) {
+				if (asm.Name.ToLowerInvariant () == fullAssemblyName.ToLowerInvariant ())
+					return asm.Location;
+			}
+
 			return null;
 		}
 

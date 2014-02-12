@@ -1,17 +1,4 @@
-<Addin id = "Debugger"
-       namespace = "MonoDevelop"
-       name	= "Debugger support for MonoDevelop"
-       author = "Ankit Jain, Lluis Sanchez"
-       url = "http://www.monodevelop.com"
-       description = "Support for Debugging projects"
-       copyright = "MIT X11"
-       flags = "Hidden"
-       version = "4.2.3">
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-	</Dependencies>
+<ExtensionModel>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
 		<Description>Debug session factories. Specified classes must implement MonoDevelop.Debugger.IDebuggerEngine</Description>
@@ -249,4 +236,5 @@
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class="MonoDevelop.Debugger.ExceptionCaughtTextEditorExtension" />
 	</Extension>
-</Addin>
+</ExtensionModel>
+

@@ -500,7 +500,15 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (options.ImplementingType.Properties.Any ()) 
 						result.Append (": ");
 					int i = 0;
+					var properties = new List<IProperty> ();
+
 					foreach (IProperty property in options.ImplementingType.Properties) {
+						if (properties.Any (p => p.Name == property.Name))
+							continue;
+						properties.Add (property); 
+					}
+
+					foreach (IProperty property in properties) {
 						if (property.IsStatic || !property.IsPublic)
 							continue;
 						if (i > 0)
@@ -511,7 +519,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("}");
 					}
 					result.Append ("]\"");
-					foreach (IProperty property in options.ImplementingType.Properties) {
+					foreach (IProperty property in properties) {
 						if (property.IsStatic || !property.IsPublic)
 							continue;
 						result.Append (", ");
@@ -648,6 +656,8 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("'" + p.ConstantValue + "'");
 					} else if (p.ConstantValue is string)  {
 						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ConstantValue) + "\"");
+					} else if (p.ConstantValue is bool)  {
+						result.Append ((bool)p.ConstantValue ? "true" : "false");
 					} else {
 						result.Append (p.ConstantValue);
 					}
@@ -1033,7 +1043,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var fixer = new ConstructFixer (doc.GetFormattingOptions ());
+			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
 			int newOffset;
 			if (fixer.TryFix (doc.Editor.Document, doc.Editor.Caret.Offset, out newOffset)) {
 				doc.Editor.Caret.Offset = newOffset;
