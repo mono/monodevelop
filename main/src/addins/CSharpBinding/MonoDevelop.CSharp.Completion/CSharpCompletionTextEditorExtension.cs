@@ -166,12 +166,21 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+
+		void StopPositionChangedTask ()
 		{
 			src.Cancel ();
 			src = new CancellationTokenSource ();
+		}
+
+		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			StopPositionChangedTask ();
 			Task.Factory.StartNew (delegate {
-				var ctx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location, src.Token);
+				var doc = Document;
+				if (doc == null || doc.Editor == null)
+					return;
+				var ctx = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token);
 				if (ctx != null)
 					MDRefactoringCtx = ctx;
 			});
@@ -195,6 +204,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
+			StopPositionChangedTask ();
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
