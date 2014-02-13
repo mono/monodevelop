@@ -1248,8 +1248,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateBreakpoints (bool forceUpdate = false)
 		{
+			var document = widget.TextEditor.Document;
+			if (document == null)
+				return;
 			FilePath fp = Name;
-			
+	
 			if (!forceUpdate) {
 				int i = 0, count = 0;
 				bool mismatch = false;
@@ -1258,7 +1261,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 						count++;
 						if (i < breakpointSegments.Count) {
-							int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments [i].Offset);
+							int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].Offset);
 							if (lineNumber != bp.Line) {
 								mismatch = true;
 								break;
@@ -1276,9 +1279,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			HashSet<int> lineNumbers = new HashSet<int> ();
-			var document = widget.TextEditor.Document;
-			if (document == null)
-				return;
 			foreach (var line in breakpointSegments) {
 				if (line == null)
 					continue;
