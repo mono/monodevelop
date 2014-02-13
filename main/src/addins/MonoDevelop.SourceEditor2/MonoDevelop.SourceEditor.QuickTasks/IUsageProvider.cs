@@ -27,26 +27,12 @@
 using System;
 using System.Collections.Generic;
 using Mono.TextEditor;
-using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-
-	public struct Usage
-	{
-		public DocumentLocation Location;
-		public ReferenceUsageType UsageType;
-
-		public Usage (DocumentLocation location, ReferenceUsageType usageType)
-		{
-			this.Location = location;
-			this.UsageType = usageType;
-		}
-	}
-
 	public interface IUsageProvider
 	{
-		IEnumerable<Usage> Usages {
+		IEnumerable<DocumentLocation> Usages {
 			get;
 		}
 		

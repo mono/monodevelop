@@ -59,7 +59,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		public IEnumerable<Usage> AllUsages {
+		public IEnumerable<TextLocation> AllUsages {
 			get {
 				return parentStrip.AllUsages;
 			}
@@ -475,29 +475,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
 			Severity severity = Severity.None;
-
+			/*
 			foreach (var usage in AllUsages) {
-				double y = GetYPosition (usage.Location.Line);
+				double y = GetYPosition (usage.Line);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
-				HslColor color;
-				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
-					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
-				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0) {
-					color = TextEditor.ColorStyle.UsagesRectangle.Color;
-				} else {
-					color = usageColor;
-				}
-				color.L = 0.5;
-				cr.Color = color;
+				cr.Color = usageColor;
 				cr.MoveTo (0, y - 3);
 				cr.LineTo (5, y);
 				cr.LineTo (0, y + 3);
-				cr.LineTo (0, y - 3);
 				cr.ClosePath ();
 				cr.Fill ();
 			}
-
+*/
 			foreach (var task in AllTasks) {
 				double y = GetYPosition (task.Location.Line);
 
