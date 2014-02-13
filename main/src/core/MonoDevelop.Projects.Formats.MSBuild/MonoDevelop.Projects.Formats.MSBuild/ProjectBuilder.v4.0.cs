@@ -95,8 +95,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					project.Build (target);
 					
 					result = logger.BuildResult.ToArray ();
-		//		} catch (InvalidProjectFileException ex) {
-		//			result = new MSBuildResult[] { new MSBuildResult (false, ex.ProjectFile ?? file, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message) };
+				} catch (Microsoft.Build.Exceptions.InvalidProjectFileException ex) {
+						var r = new MSBuildResult (
+							file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
+							ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
+							ex.BaseMessage, ex.HelpKeyword);
+						result = new [] { r };
 				} finally {
 					currentLogWriter = null;
 				}
