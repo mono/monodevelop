@@ -40,8 +40,10 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (DotNetProject) dataObject;
-			if (WebReferencesService.GetWebReferenceItems (project).Any ())
-				treeBuilder.AddChild (new WebReferenceFolder (project));
+			if (WebReferencesService.GetWebReferenceItemsWS (project).Any ())
+				treeBuilder.AddChild (new WebReferenceFolder (project, false));
+			if (WebReferencesService.GetWebReferenceItemsWCF (project).Any ())
+				treeBuilder.AddChild (new WebReferenceFolder (project, true));
 		}
 
 		void HandleWebReferencesServiceWebReferencesChanged (object sender, WebReferencesChangedEventArgs e)

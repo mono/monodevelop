@@ -36,7 +36,19 @@ namespace MonoDevelop.WebReferences
 	{
 		public static WebServiceEngineWS WsEngine = new WebServiceEngineWS ();
 		public static WebServiceEngineWCF WcfEngine = new WebServiceEngineWCF ();
-		
+
+		public static IEnumerable<WebReferenceItem> GetWebReferenceItemsWS (DotNetProject project)
+		{
+			foreach (WebReferenceItem item in WsEngine.GetReferenceItems (project))
+				yield return item;
+		}
+
+		public static IEnumerable<WebReferenceItem> GetWebReferenceItemsWCF (DotNetProject project)
+		{
+			foreach (WebReferenceItem item in WcfEngine.GetReferenceItems (project))
+				yield return item;
+		}
+
 		public static IEnumerable<WebReferenceItem> GetWebReferenceItems (DotNetProject project)
 		{
 			foreach (WebReferenceItem item in WcfEngine.GetReferenceItems (project))
