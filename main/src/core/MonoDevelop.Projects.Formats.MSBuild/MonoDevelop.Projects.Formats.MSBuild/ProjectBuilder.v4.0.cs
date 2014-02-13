@@ -38,11 +38,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
-		ProjectCollection engine;
-		string file;
+		readonly ProjectCollection engine;
+		readonly string file;
 		ILogWriter currentLogWriter;
-		ConsoleLogger consoleLogger;
-		BuildEngine buildEngine;
+		readonly ConsoleLogger consoleLogger;
+		readonly BuildEngine buildEngine;
 
 		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
 		{
@@ -133,7 +133,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// an xbuild bug which causes references to not be resolved after the project has been built once.
 				var pi = project.CreateProjectInstance ();
 				pi.Build ("ResolveAssemblyReferences", null);
-				List<string> refs = new List<string> ();
+				var refs = new List<string> ();
 				foreach (ProjectItemInstance item in pi.GetItems ("ReferencePath"))
 					refs.Add (UnescapeString (item.EvaluatedInclude));
 				refsArray = refs.ToArray ();

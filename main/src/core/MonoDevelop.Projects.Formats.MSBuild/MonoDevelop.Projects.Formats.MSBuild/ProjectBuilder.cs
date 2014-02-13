@@ -39,33 +39,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
-		Engine engine;
-		string file;
+		readonly string file;
 		ILogWriter currentLogWriter;
-		MDConsoleLogger consoleLogger;
-		BuildEngine buildEngine;
+		readonly MDConsoleLogger consoleLogger;
+		readonly BuildEngine buildEngine;
 
-		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file)
+		public ProjectBuilder (BuildEngine buildEngine, string file)
 		{
 			this.file = file;
-			this.engine = engine;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 		}
 
 		public void Dispose ()
 		{
-			buildEngine.UnloadProject (engine, file, true);
+			buildEngine.UnloadProject (file);
 		}
 		
 		public void Refresh ()
 		{
-			buildEngine.UnloadProject (engine, file, false);
+			buildEngine.UnloadProject (file);
 		}
 		
 		public void RefreshWithContent (string projectContent)
 		{
-			buildEngine.UnloadProject (engine, file, false);
+			buildEngine.UnloadProject (file);
 			buildEngine.SetUnsavedProjectContent (file, projectContent);
 		}
 
@@ -86,15 +84,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					currentLogWriter = logWriter;
 
 					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
-					engine.UnregisterAllLoggers ();
-					engine.RegisterLogger (logger);
-					engine.RegisterLogger (consoleLogger);
+					buildEngine.Engine.UnregisterAllLoggers ();
+					buildEngine.Engine.RegisterLogger (logger);
+					buildEngine.Engine.RegisterLogger (consoleLogger);
 
 					consoleLogger.Verbosity = GetVerbosity (verbosity);
 
 					// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 					// an xbuild bug which causes references to not be resolved after the project has been built once.
-					engine.BuildProject (project, new string[] { target }, new Hashtable (), BuildSettings.None);
+					buildEngine.Engine.BuildProject (project, new [] { target }, new Hashtable (), BuildSettings.None);
 					
 					result = logger.BuildResult.ToArray ();
 				} catch (InvalidProjectFileException ex) {
@@ -113,7 +111,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return LoggerVerbosity.Quiet;
 			case MSBuildVerbosity.Minimal:
 				return LoggerVerbosity.Minimal;
-			case MSBuildVerbosity.Normal:
 			default:
 				return LoggerVerbosity.Normal;
 			case MSBuildVerbosity.Detailed:
@@ -133,9 +130,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 				// an xbuild bug which causes references to not be resolved after the project has been built once.
-				engine.BuildProject (project, new string[] { "ResolveAssemblyReferences" }, new Hashtable (), BuildSettings.None);
+				buildEngine.Engine.BuildProject (project, new [] { "ResolveAssemblyReferences" }, new Hashtable (), BuildSettings.None);
 				BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
-				List<string> refs = new List<string> ();
+				var refs = new List<string> ();
 				foreach (BuildItem item in grp)
 					refs.Add (UnescapeString (item.Include));
 				refsArray = refs.ToArray ();
@@ -148,9 +145,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Project project = null;
 
 			foreach (var pc in configurations) {
-				var p = engine.GetLoadedProject (pc.ProjectFile);
+				var p = buildEngine.Engine.GetLoadedProject (pc.ProjectFile);
 				if (p == null) {
-					p = new Project (engine);
+					p = new Project (buildEngine.Engine);
 					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
 					if (content == null)
 						p.Load (pc.ProjectFile);
@@ -185,7 +182,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool HasXbuildFileBug ()
 		{
 			if (hasXbuildFileBug == null) {
-				Project p = new Project ();
+				var p = new Project ();
 				p.FullFileName = "foo";
 				p.LoadXml ("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"/>");
 				hasXbuildFileBug = p.FullFileName.Length == 0;

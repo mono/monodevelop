@@ -259,7 +259,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
-					BuildResult br = new BuildResult ();
+					var br = new BuildResult ();
 					foreach (MSBuildResult res in results) {
 						if (res.IsWarning)
 							br.AddWarning (res.File, res.Line, res.Column, res.Code, res.Message);

@@ -27,11 +27,8 @@
 using System;
 using System.Threading;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
-using System.Collections;
-using Microsoft.Build.Framework;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Construction;
 using System.Linq;
@@ -41,15 +38,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
 		static ThreadStart workDelegate;
-		static object workLock = new object ();
+		static readonly object workLock = new object ();
 		static Thread workThread;
 		static CultureInfo uiCulture;
 		static Exception workError;
 
-		ManualResetEvent doneEvent = new ManualResetEvent (false);
-		Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
+		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
+		readonly Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
 
 		ProjectCollection engine;
 
@@ -170,13 +167,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						// Awaken the existing thread
 						Monitor.Pulse (threadLock);
 				}
-				wordDoneEvent.WaitOne ();
+				workDoneEvent.WaitOne ();
 			}
 			if (workError != null)
 				throw new Exception ("MSBuild operation failed", workError);
 		}
 
-		static object threadLock = new object ();
+		static readonly object threadLock = new object ();
 		
 		static void STARunner ()
 		{
@@ -188,7 +185,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					catch (Exception ex) {
 						workError = ex;
 					}
-					wordDoneEvent.Set ();
+					workDoneEvent.Set ();
 				}
 				while (Monitor.Wait (threadLock, 60000));
 				

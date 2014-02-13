@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class LocalLogger: Logger
 	{
 		IEventSource eventSource;
-		List<MSBuildResult> results = new List<MSBuildResult> ();
+		readonly List<MSBuildResult> results = new List<MSBuildResult> ();
 		string basePath;
 		
 		public LocalLogger (string basePath)
