@@ -250,6 +250,11 @@
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PagedResultsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PagedResultsWidget.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
+      <DependentUpon>AddPackagesDialog.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -273,6 +278,10 @@
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

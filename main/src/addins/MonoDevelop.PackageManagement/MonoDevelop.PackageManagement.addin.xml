@@ -26,10 +26,15 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Command
+			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
+			_description = "Add Packages"
+			_label = "Add _Packages..."
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
+		<!---<Command
 			id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
 			_description = "Manage NuGet packages"
 			_label = "_Manage NuGet Packages..."
-			defaultHandler = "MonoDevelop.PackageManagement.Commands.ManagePackagesHandler" />
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.ManagePackagesHandler" />-->
 		<Command
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
 			_description = "Restore NuGet packages"
@@ -39,9 +44,13 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
 			insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			insertbefore = "ExportSeparator" />
+		<!---<CommandItem
+			id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+			insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+			insertbefore = "ExportSeparator" />-->
 		<CommandItem
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
 			insertafter = "MonoDevelop.PackageManagement.Commands.ManagePackages"
@@ -49,11 +58,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<Condition id="ItemType" value="Solution|Project|ProjectReferenceCollection">
+		<Condition id="ItemType" value="Project">
 			<CommandItem
-				id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+				id = "MonoDevelop.PackageManagement.Commands.AddPackages"
 				insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 				insertbefore = "AddSectionEnd" />
+			<!---<CommandItem
+				id = "MonoDevelop.PackageManagement.Commands.ManagePackages"
+				insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore = "AddSectionEnd" />-->
 			<CommandItem
 				id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
 				insertafter = "MonoDevelop.PackageManagement.Commands.ManagePackages"
