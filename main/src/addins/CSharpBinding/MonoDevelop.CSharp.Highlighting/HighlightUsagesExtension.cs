@@ -25,20 +25,17 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
-using System.Threading.Tasks;
 using System.Threading;
-using Gtk;
 using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	class HighlightUsagesExtension : AbstractUsagesExtension
+	class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
 	{
 		CSharpSyntaxMode syntaxMode;
 
@@ -46,54 +43,50 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			base.Initialize ();
 
-			textEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
+			TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
 			syntaxMode = new CSharpSyntaxMode (Document);
-			textEditorData.Document.SyntaxMode = syntaxMode;
+			TextEditorData.Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				textEditorData.Document.SyntaxMode = null;
+				TextEditorData.Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
 			base.Dispose ();
 		}
 
-		protected override bool TryResolve (out object resolveResult)
+		protected override bool TryResolve (out ResolveResult resolveResult)
 		{
-			ResolveResult result;
 			AstNode node;
 			resolveResult = null;
-			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out result, out node)) {
+			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out resolveResult, out node)) {
 				return false;
 			}
 			if (node is PrimitiveType) {
 				return false;
 			}
-			resolveResult = result;
 			return true;
 		}
 
 
-		protected override IEnumerable<MemberReference> GetReferences (object resolveResult, CancellationToken token)
+		protected override IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult, CancellationToken token)
 		{
-			var result = (ResolveResult)resolveResult;
-
 			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
-			if (result is MemberResolveResult) {
-				finder.SetSearchedMembers (new [] { ((MemberResolveResult)result).Member });
-			} else if (result is TypeResolveResult) {
-				finder.SetSearchedMembers (new [] { result.Type });
-			} else if (result is MethodGroupResolveResult) { 
-				finder.SetSearchedMembers (((MethodGroupResolveResult)result).Methods);
-			} else if (result is NamespaceResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)result).Namespace });
-			} else if (result is LocalResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((LocalResolveResult)result).Variable });
-			} else if (result is NamedArgumentResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)result).Parameter });
+			if (resolveResult is MemberResolveResult) {
+				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
+			} else if (resolveResult is TypeResolveResult) {
+				finder.SetSearchedMembers (new [] { resolveResult.Type });
+			} else if (resolveResult is MethodGroupResolveResult) { 
+				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
+			} else if (resolveResult is NamespaceResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
+			} else if (resolveResult is LocalResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
+			} else if (resolveResult is NamedArgumentResolveResult) { 
+				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)resolveResult).Parameter });
 			} else {
 				return EmptyList;
 			}

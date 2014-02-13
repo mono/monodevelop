@@ -35,77 +35,65 @@ using Cairo;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor
 {
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.
 	/// </summary>
-	public abstract class AbstractUsagesExtension : TextEditorExtension, IUsageProvider
+	public abstract class AbstractUsagesExtension<T> : TextEditorExtension, IUsageProvider
 	{
-		public class UsageSegment
-		{
-			public readonly ReferenceUsageType UsageType;
-			public readonly TextSegment TextSegment;
+		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
+		protected static readonly List<MemberReference> EmptyList = new List<MemberReference> ();
 
-			public UsageSegment (ReferenceUsageType usageType, int offset, int length)
-			{
-				UsageType = usageType;
-				TextSegment = new TextSegment (offset, length);
-			}
-
-			public static implicit operator TextSegment (UsageSegment usage)
-			{
-				return usage.TextSegment;
-			}
+		public Dictionary<int, UsageMarker> Markers {
+			get { return markers; }
 		}
 
 		public readonly List<UsageSegment> UsagesSegments = new List<UsageSegment> ();
 
-		protected TextEditorData textEditorData;
+		protected TextEditorData TextEditorData;
+
+		CancellationTokenSource tooltipCancelSrc = new CancellationTokenSource ();
+		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
+		uint popupTimer;
 
 		public override void Initialize ()
 		{
 			base.Initialize ();
 
-			textEditorData = Document.Editor;
-			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
-			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
-			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
+			TextEditorData = Document.Editor;
+			TextEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
+			TextEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
+			TextEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
 		}
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
 		{
-			RemoveMarkers (false);
+			RemoveMarkers ();
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			RemoveMarkers (false);
+			RemoveMarkers ();
 		}
 
 		public override void Dispose ()
 		{
 			CancelTooltip ();
 
-			textEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
-			textEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
-			textEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;
+			TextEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
+			TextEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
+			TextEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;
 			base.Dispose ();
 			RemoveTimer ();
 		}
-
-		uint popupTimer;
 
 		public bool IsTimerOnQueue {
 			get {
 				return popupTimer != 0;
 			}
-		}
-
-		void ResetPopupTimer ()
-		{
-			popupTimer = 0;
 		}
 
 		public void ForceUpdate ()
@@ -114,52 +102,12 @@ namespace MonoDevelop.SourceEditor
 			DelayedTooltipShow ();
 		}
 
-		void RemoveTimer ()
-		{
-			if (popupTimer != 0) {
-				GLib.Source.Remove (popupTimer);
-				popupTimer = 0;
-			}
-		}
-
-		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
-		{
-			if (!DefaultSourceEditorOptions.Instance.EnableHighlightUsages)
-				return;
-			if (!textEditorData.IsSomethingSelected && markers.Values.Any (m => m.Contains (textEditorData.Caret.Offset)))
-				return;
-			RemoveMarkers (textEditorData.IsSomethingSelected);
-			RemoveTimer ();
-			if (!textEditorData.IsSomethingSelected)
-				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
-		}
-
-		void ClearQuickTasks ()
-		{
-			UsagesSegments.Clear ();
-			if (usages.Count > 0) {
-				usages.Clear ();
-				OnUsagesUpdated (EventArgs.Empty);
-			}
-		}
-
-		CancellationTokenSource tooltipCancelSrc = new CancellationTokenSource ();
-
-		void CancelTooltip ()
-		{
-			tooltipCancelSrc.Cancel ();
-			tooltipCancelSrc = new CancellationTokenSource ();
-		}
-
-		#region implementor API
-		protected static readonly List<MemberReference> EmptyList = new List<MemberReference> ();
-
 		/// <summary>
 		/// Tries to resolve inside the current location inside tho document.
 		/// </summary>
 		/// <returns><c>true</c>, if resolve was successful, <c>false</c> otherwise.</returns>
 		/// <param name="resolveResult">The resolve result.</param>
-		protected abstract bool TryResolve(out object resolveResult);
+		protected abstract bool TryResolve(out T resolveResult);
 
 		/// <summary>
 		/// Gets all references from a given resolve result. Note that this method is called on a background thread.
@@ -167,14 +115,12 @@ namespace MonoDevelop.SourceEditor
 		/// <returns>The references.</returns>
 		/// <param name="resolveResult">The resolve result given in 'TryResolve'.</param>
 		/// <param name="token">A cancellation token to cancel the operation.</param>
-		protected abstract IEnumerable<MemberReference> GetReferences (object resolveResult, CancellationToken token);
-
-		#endregion
+		protected abstract IEnumerable<MemberReference> GetReferences (T resolveResult, CancellationToken token);
 
 		bool DelayedTooltipShow ()
 		{
 			try {
-				object result;
+				T result;
 
 				if (!TryResolve(out result)) {
 					ClearQuickTasks ();
@@ -196,18 +142,75 @@ namespace MonoDevelop.SourceEditor
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
 			} finally {
-				ResetPopupTimer ();
+				popupTimer = 0;
 			}
 			return false;
 		}
 
+		void RemoveTimer ()
+		{
+			if (popupTimer != 0) {
+				GLib.Source.Remove (popupTimer);
+				popupTimer = 0;
+			}
+		}
+
+		void HandleTextEditorDataCaretPositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			if (!DefaultSourceEditorOptions.Instance.EnableHighlightUsages)
+				return;
+			if (!TextEditorData.IsSomethingSelected && markers.Values.Any (m => m.Contains (TextEditorData.Caret.Offset)))
+				return;
+			RemoveMarkers ();
+			RemoveTimer ();
+			if (!TextEditorData.IsSomethingSelected)
+				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
+		}
+
+		void ClearQuickTasks ()
+		{
+			UsagesSegments.Clear ();
+			if (usages.Count > 0) {
+				usages.Clear ();
+				OnUsagesUpdated (EventArgs.Empty);
+			}
+		}
+
+		void CancelTooltip ()
+		{
+			tooltipCancelSrc.Cancel ();
+			tooltipCancelSrc = new CancellationTokenSource ();
+		}
+
+		UsageMarker GetMarker (int line)
+		{
+			UsageMarker result;
+			if (!markers.TryGetValue (line, out result)) {
+				result = new UsageMarker ();
+				TextEditorData.Document.AddMarker (line, result);
+				markers.Add (line, result);
+			}
+			return result;
+		}
+
+		void RemoveMarkers ()
+		{
+			if (markers.Count == 0)
+				return;
+			TextEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
+			foreach (var pair in markers) {
+				TextEditorData.Document.RemoveMarker (pair.Value, true);
+			}
+			markers.Clear ();
+		}
+
 		void ShowReferences (IEnumerable<MemberReference> references)
 		{
-			RemoveMarkers (false);
+			RemoveMarkers ();
 			var lineNumbers = new HashSet<int> ();
 			usages.Clear ();
 			UsagesSegments.Clear ();
-			var editor = textEditorData.Parent;
+			var editor = TextEditorData.Parent;
 			if (editor != null && editor.TextViewMargin != null) {
 				if (references != null) {
 					bool alphaBlend = false;
@@ -231,38 +234,10 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				foreach (int line in lineNumbers)
-					textEditorData.Document.CommitLineUpdate (line);
+					TextEditorData.Document.CommitLineUpdate (line);
 				UsagesSegments.Sort ((x, y) => x.TextSegment.Offset.CompareTo (y.TextSegment.Offset));
 			}
 			OnUsagesUpdated (EventArgs.Empty);
-		}
-
-		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
-
-		public Dictionary<int, UsageMarker> Markers {
-			get { return markers; }
-		}
-
-		void RemoveMarkers (bool updateLine)
-		{
-			if (markers.Count == 0)
-				return;
-			textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
-			foreach (var pair in markers) {
-				textEditorData.Document.RemoveMarker (pair.Value, true);
-			}
-			markers.Clear ();
-		}
-
-		UsageMarker GetMarker (int line)
-		{
-			UsageMarker result;
-			if (!markers.TryGetValue (line, out result)) {
-				result = new UsageMarker ();
-				textEditorData.Document.AddMarker (line, result);
-				markers.Add (line, result);
-			}
-			return result;
 		}
 
 		public class UsageMarker : TextLineMarker
@@ -335,6 +310,23 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				return true;
+			}
+		}
+
+		public class UsageSegment
+		{
+			public readonly ReferenceUsageType UsageType;
+			public readonly TextSegment TextSegment;
+
+			public UsageSegment (ReferenceUsageType usageType, int offset, int length)
+			{
+				UsageType = usageType;
+				TextSegment = new TextSegment (offset, length);
+			}
+
+			public static implicit operator TextSegment (UsageSegment usage)
+			{
+				return usage.TextSegment;
 			}
 		}
 
