@@ -100,6 +100,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
+					logWriter.WriteLine (r.ToString ());
 					result = new [] { r };
 				} finally {
 					currentLogWriter = null;

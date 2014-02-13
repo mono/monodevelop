@@ -61,5 +61,54 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public int EndColumnNumber { get; set; }
 		public string Message { get; set; }
 		public string HelpKeyword { get; set; }
+
+		public override string ToString ()
+		{
+			var sb = new StringBuilder ();
+			if (!string.IsNullOrEmpty (File)) {
+				sb.Append (File);
+				if (LineNumber > 0) {
+					//(line)
+					sb.Append ("(");
+					sb.Append (LineNumber);
+					if (ColumnNumber > 0) {
+						//(line,col)
+						sb.Append (",");
+						sb.Append (ColumnNumber);
+						if (EndColumnNumber > 0) {
+							if (EndLineNumber > 0) {
+								//(line,col,line,col)
+								sb.Append (",");
+								sb.Append (EndLineNumber);
+								sb.Append (",");
+								sb.Append (EndColumnNumber);
+							} else {
+								//(line,col-col)
+								sb.Append ("-");
+								sb.Append (EndColumnNumber);
+							}
+						}
+					} else if (EndLineNumber > 0) {
+						//(line-line)
+						sb.Append ("-");
+						sb.Append (EndLineNumber);
+					}
+					sb.Append (")");
+				}
+				sb.Append (": ");
+			}
+			if (!string.IsNullOrEmpty (Subcategory)) {
+				sb.Append (Subcategory);
+				sb.Append (" ");
+			}
+			sb.Append (IsWarning ? "warning" : "error");
+			if (!string.IsNullOrEmpty (Code)) {
+				sb.Append (" ");
+				sb.Append (Code);
+			}
+			sb.Append (": ");
+			sb.Append (Message);
+			return sb.ToString ();
+		}
 	}
 }
