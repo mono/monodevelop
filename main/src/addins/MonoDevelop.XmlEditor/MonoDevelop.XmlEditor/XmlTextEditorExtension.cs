@@ -670,43 +670,6 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		/*
-		[CommandUpdateHandler (CodeFormattingCommands.FormatSelection)]
-		internal void UpdateFormatSelection (CommandInfo info)
-		{
-			info.Enabled = false;
-		}
-		
-		[CommandHandler (CodeFormattingCommands.FormatSelection)]
-		internal void FormatSelection (CommandInfo info)
-		{
-			throw new NotImplementedException ();
-		}
-		*/
-		
-		[CommandUpdateHandler (CodeFormattingCommands.FormatBuffer)]
-		internal void UpdateFormatDocument (CommandInfo info)
-		{
-			//we know there is an XML formatter because this addin registers it
-			info.Enabled = true;
-		}
-		
-		//we have to implement the command here simply to force the document mimetype
-		//FIXME: instead we should register the XML mimetype additions to the desktopservice
-		[CommandHandler (CodeFormattingCommands.FormatBuffer)]
-		internal void FormatDocument ()
-		{
-			var formatter = CodeFormatterService.GetFormatter (TextXmlMimeType);
-			using (var undo = Editor.OpenUndoGroup ()) {
-				var loc = Editor.Caret.Location;
-				var text = formatter.FormatText (Document.Project != null ? Document.Project.Policies : null, Editor.Text);
-				if (text != null) {
-					Editor.Replace (0, Editor.Length, text);
-					Editor.Caret.Location = loc;
-				}
-			}
-		}
-		
 		string GetFileContent (string fileName)
 		{
 			MonoDevelop.Projects.Text.IEditableTextFile tf =
