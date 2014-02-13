@@ -627,10 +627,7 @@ namespace MonoDevelop.VersionControl
 			set { GetConfiguration ().Disabled = value; }
 		}
 
-		internal static bool SessionSolutionDisabled {
-			get;
-			private set;
-		}
+		public static bool SessionSolutionDisabled;
 		
 		static public IEnumerable<Repository> GetRepositories ()
 		{

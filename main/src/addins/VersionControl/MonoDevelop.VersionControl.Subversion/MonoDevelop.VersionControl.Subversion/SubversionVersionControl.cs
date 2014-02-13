@@ -247,6 +247,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return ClientCertificatePasswordDialog.Show (realm, may_save, out password, out save);
 		}
+
+		static protected void WorkingCopyFormatPrompt (bool isOld, Action action)
+		{
+			WorkingCopyFormatDialog.Show (isOld, action);
+		}
 		
 		/// <summary>
 		/// Get annotations for a versioned file.
