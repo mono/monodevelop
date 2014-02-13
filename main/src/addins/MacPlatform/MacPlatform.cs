@@ -90,6 +90,7 @@ namespace MonoDevelop.MacIntegration
 			CheckGtkVersion (2, 24, 14);
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,ExtendedTitleBarWindowBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,ExtendedTitleBarDialogBackend> ();
 		}
 
 		static void CheckGtkVersion (uint major, uint minor, uint micro)

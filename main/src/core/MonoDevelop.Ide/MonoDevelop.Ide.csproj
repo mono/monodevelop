@@ -1907,6 +1907,8 @@
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedTitleBarWindow.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarWindowBackend.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarDialogBackend.cs" />
+    <Compile Include="MonoDevelop.Components\ExtendedTitleBarDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
