@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
 
-					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
+					var logger = new LocalLogger (Path.GetDirectoryName (file));
 					buildEngine.Engine.UnregisterAllLoggers ();
 					buildEngine.Engine.RegisterLogger (logger);
 					buildEngine.Engine.RegisterLogger (consoleLogger);
@@ -96,7 +96,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					result = logger.BuildResult.ToArray ();
 				} catch (InvalidProjectFileException ex) {
-					result = new MSBuildResult[] { new MSBuildResult (false, ex.ProjectFile ?? file, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message) };
+					var r = new MSBuildResult (
+						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
+						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
+						ex.BaseMessage, ex.HelpKeyword);
+					result = new [] { r };
 				} finally {
 					currentLogWriter = null;
 				}

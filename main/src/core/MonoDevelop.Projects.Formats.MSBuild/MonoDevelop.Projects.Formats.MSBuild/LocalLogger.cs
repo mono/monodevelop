@@ -36,11 +36,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		IEventSource eventSource;
 		readonly List<MSBuildResult> results = new List<MSBuildResult> ();
-		string basePath;
+		readonly string projectFile;
 		
-		public LocalLogger (string basePath)
+		public LocalLogger (string projectFile)
 		{
-			this.basePath = basePath;
+			this.projectFile = projectFile;
 		}
 		
 		public List<MSBuildResult> BuildResult {
@@ -62,18 +62,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EventSourceWarningRaised (object sender, BuildWarningEventArgs e)
 		{
-			string file = e.File;
-			if (file != null)
-				file = Path.GetFullPath (Path.Combine (basePath, file));
-			results.Add (new MSBuildResult (true, file, e.LineNumber, e.ColumnNumber, e.Code, e.Message));
+			results.Add (new MSBuildResult (
+				e.ProjectFile ?? projectFile, true, e.Subcategory, e.Code, e.File,
+				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
+				e.Message, e.HelpKeyword)
+			);
 		}
 
 		void EventSourceErrorRaised (object sender, BuildErrorEventArgs e)
 		{
-			string file = e.File;
-			if (file != null)
-				file = Path.GetFullPath (Path.Combine (basePath, file));
-			results.Add (new MSBuildResult (false, file, e.LineNumber, e.ColumnNumber, e.Code, e.Message));
+			results.Add (new MSBuildResult (
+				e.ProjectFile ?? projectFile, false, e.Subcategory, e.Code, e.File,
+				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
+				e.Message, e.HelpKeyword)
+			);;
 		}
 	}
 }

@@ -261,10 +261,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					var br = new BuildResult ();
 					foreach (MSBuildResult res in results) {
+						FilePath file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
 						if (res.IsWarning)
-							br.AddWarning (res.File, res.Line, res.Column, res.Code, res.Message);
+							br.AddWarning (res.File, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
 						else
-							br.AddError (res.File, res.Line, res.Column, res.Code, res.Message);
+							br.AddError (res.File, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
 					}
 					return br;
 				}

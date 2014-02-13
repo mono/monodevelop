@@ -25,56 +25,41 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	[Serializable]
 	public class MSBuildResult
 	{
-		public MSBuildResult (bool isWarning, string file, int line, int column, string code, string message)
+		public MSBuildResult (
+			string projectFile, bool isWarning, string subcategory, string code, string file,
+			int lineNumber, int columnNumber, int endLineNumber, int endColumnNumber,
+			string message, string helpKeyword)
 		{
+			ProjectFile = projectFile;
 			IsWarning = isWarning;
-			File = file;
-			Line = line;
-			Column = column;
+			Subcategory = subcategory;
 			Code = code;
+			File = file;
+			LineNumber = lineNumber;
+			ColumnNumber = columnNumber;
+			EndLineNumber = endLineNumber;
+			EndColumnNumber = endColumnNumber;
 			Message = message;
+			HelpKeyword = helpKeyword;
 		}
 		
-		public bool IsWarning { 
-			get{ return isWarning; }
-			set{ isWarning = value; }
-		}
-		bool isWarning;
-		
-		public string File {
-			get{ return file; }
-			set{ file = value; }
-		}
-		string file;
-		
-		public int Line {
-			get{ return line; }
-			set{ line = value; }
-		}
-		int line;
-		
-		public int Column {
-			get{ return column; }
-			set{ column = value; }
-		}
-		int column;
-		
-		public string Code {
-			get{ return code; }
-			set{ code = value; }
-		}
-		string code;
-		
-		public string Message {
-			get{ return message; }
-			set{ message = value; }
-		}
-		string message;
+		public string ProjectFile { get; set; }
+		public bool IsWarning { get; set; }
+		public string Subcategory { get; set; }
+		public string Code { get; set; }
+		public string File { get; set; }
+		public int LineNumber { get; set; }
+		public int ColumnNumber { get; set; }
+		public int EndLineNumber { get; set; }
+		public int EndColumnNumber { get; set; }
+		public string Message { get; set; }
+		public string HelpKeyword { get; set; }
 	}
 }
