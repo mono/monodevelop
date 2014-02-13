@@ -25,14 +25,204 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using NuGet;
+using Xwt;
+using Xwt.Drawing;
+using Xwt.Formats;
+using ICSharpCode.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
 	public partial class AddPackagesDialog
 	{
-		public AddPackagesDialog ()
+		PackagesViewModel viewModel;
+		List<PackageSource> packageSources;
+		DataField<Image> packageIconField = new DataField<Image> ();
+		DataField<string> packageDescriptionField = new DataField<string> ();
+		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
+		ListStore packageStore;
+		Image defaultPackageImage;
+
+		public AddPackagesDialog (PackagesViewModel viewModel)
 		{
+			this.viewModel = viewModel;
 			Build ();
+
+			InitializeListView ();
+			LoadViewModel ();
+
+			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
+			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
+			this.addPackagesButton.Clicked += AddToProjectButtonClicked;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			viewModel.Dispose ();
+			base.Dispose (disposing);
+		}
+
+		void InitializeListView ()
+		{
+			packageStore = new ListStore (packageIconField, packageDescriptionField, packageViewModelField);
+			packagesListView.DataSource = packageStore;
+			packagesListView.Columns.Add ("Icon", packageIconField);
+
+			var textCellView = new TextCellView {
+				MarkupField = packageDescriptionField,
+			};
+			var textColumn = new ListViewColumn ("Text", textCellView);
+			packagesListView.Columns.Add (textColumn);
+
+			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
+
+			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
+		}
+
+		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
+		{
+			viewModel.IncludePrerelease = !viewModel.IncludePrerelease;
+		}
+
+		void LoadViewModel ()
+		{
+			ClearSelectedPackageInformation ();
+			PopulatePackageSources ();
+			viewModel.PropertyChanged += ViewModelPropertyChanged;
+
+			viewModel.ReadPackages ();
+		}
+
+		void ClearSelectedPackageInformation ()
+		{
+			this.packageInfoVBox.Visible = false;
+		}
+
+		List<PackageSource> PackageSources {
+			get {
+				if (packageSources == null) {
+					packageSources = viewModel.PackageSources.ToList ();
+				}
+				return packageSources;
+			}
+		}
+
+		void PopulatePackageSources ()
+		{
+			foreach (PackageSource packageSource in PackageSources) {
+				packageSourceComboBox.Items.Add (packageSource, packageSource.Name);
+			}
+
+			this.packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
+		}
+
+		void PackageSourceChanged (object sender, EventArgs e)
+		{
+			viewModel.SelectedPackageSource = (PackageSource)packageSourceComboBox.SelectedItem;
+		}
+		
+		void PackagesListViewSelectionChanged (object sender, EventArgs e)
+		{
+			ShowSelectedPackage ();
+		}
+
+		void ShowSelectedPackage ()
+		{
+			PackageViewModel packageViewModel = GetSelectedPackageViewModel ();
+			if (packageViewModel != null) {
+				ShowPackageInformation (packageViewModel);
+			} else {
+				ClearSelectedPackageInformation ();
+			}
+		}
+
+		PackageViewModel GetSelectedPackageViewModel ()
+		{
+			if (packagesListView.SelectedRow != -1) {
+				return packageStore.GetValue (packagesListView.SelectedRow, packageViewModelField);
+			}
+			return null;
+		}
+
+		void ShowPackageInformation (PackageViewModel packageViewModel)
+		{
+			this.packageNameLabel.Markup = GetBoldText (packageViewModel.Name);
+			this.packageVersionLabel.Markup = GetBoldText (packageViewModel.Version.ToString ());
+			this.packageAuthor.Text = packageViewModel.GetAuthors ();
+			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
+			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
+			this.packageDescription.LoadText (packageViewModel.Description, TextFormat.Plain);
+			this.packageId.Text = packageViewModel.Id;
+			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
+			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
+			ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
+			ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
+			this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
+			this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
+			this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
+
+			this.packageInfoVBox.Visible = true;
+		}
+
+		string GetBoldText (string text)
+		{
+			return String.Format ("<b>{0}</b>", text);
+		}
+
+		void ShowUri (LinkLabel linkLabel, Uri uri, string label)
+		{
+			linkLabel.Text = label;
+			ShowUri (linkLabel, uri);
+		}
+
+		void ShowUri (LinkLabel linkLabel, Uri uri)
+		{
+			if (uri == null) {
+				linkLabel.Visible = false;
+			} else {
+				linkLabel.Visible = true;
+				linkLabel.Uri = uri;
+			}
+		}
+
+		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			this.packageStore.Clear ();
+
+			if (viewModel.HasError) {
+				//	AddErrorToTreeView ();
+			}
+
+			if (viewModel.IsReadingPackages) {
+				//	AddSearchingMessageToTreeView ();
+			}
+
+			foreach (PackageViewModel packageViewModel in viewModel.PackageViewModels) {
+				AppendPackageToTreeView (packageViewModel);
+			}
+
+			if (viewModel.PackageViewModels.Any ()) {
+				packagesListView.SelectRow (0);
+			}
+		}
+
+		void AppendPackageToTreeView (PackageViewModel packageViewModel)
+		{
+			int row = packageStore.AddRow ();
+			packageStore.SetValue (row, packageIconField, defaultPackageImage);
+			packageStore.SetValue (row, packageDescriptionField, packageViewModel.GetDisplayTextMarkup ());
+			packageStore.SetValue (row, packageViewModelField, packageViewModel);
+		}
+
+		void AddToProjectButtonClicked (object sender, EventArgs e)
+		{
+			PackageViewModel packageViewModel = GetSelectedPackageViewModel ();
+			if (packageViewModel != null) {
+				packageViewModel.AddPackage ();
+			}
 		}
 	}
 }

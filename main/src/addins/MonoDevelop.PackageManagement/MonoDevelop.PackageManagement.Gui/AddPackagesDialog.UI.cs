@@ -25,36 +25,205 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components;
+using Mono.Unix;
+using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
 using Xwt;
 
 namespace MonoDevelop.PackageManagement
 {
 	public partial class AddPackagesDialog : ExtendedTitleBarDialog
 	{
+		ComboBox packageSourceComboBox;
+		TextEntry packageSearchEntry;
+		ListView packagesListView;
+		VBox packageInfoVBox;
+		Label packageNameLabel;
+		Label packageVersionLabel;
+		LinkLabel packageIdLink;
+		RichTextView packageDescription;
+		Label packageAuthor;
+		Label packagePublishedDate;
+		Label packageDownloads;
+		LinkLabel packageLicenseLink;
+		LinkLabel packageProjectPageLink;
+		Label packageDependenciesList;
+		HBox packageDependenciesListHBox;
+		Label packageDependenciesNoneLabel;
+		CheckBox showPrereleaseCheckBox;
+		Label packageId;
+		Button addPackagesButton;
+
 		void Build ()
 		{
-			var hbox = new HBox ();
-			var comboBox = new ComboBox ();
-			comboBox.MinWidth = 200;
-			hbox.PackStart (comboBox);
+			Title = Catalog.GetString ("Add Packages");
+			Width = 640;
+			Height = 480;
+			Padding = new WidgetSpacing ();
 
-			var searchEntry = new TextEntry ();
-			hbox.PackEnd (searchEntry);
+			// Top part of dialog:
+			// Package sources and search.
+			var topHBox = new HBox ();
+			topHBox.Margin = new WidgetSpacing (5, 5, 5, 5);
 
-			this.HeaderContent = hbox;
+			packageSourceComboBox = new ComboBox ();
+			packageSourceComboBox.MinWidth = 200;
+			topHBox.PackStart (packageSourceComboBox);
 
-			this.Height = 480;
-			this.Width = 640;
+			packageSearchEntry = new TextEntry ();
+			topHBox.PackEnd (packageSearchEntry);
 
-			var listView = new Xwt.ListView ();
+			this.HeaderContent = topHBox;
 
-			var vbox = new VBox ();
-			vbox.PackStart (listView, true, true);
+			// Middle of dialog:
+			// Packages and package information.
+			var mainVBox = new VBox ();
+			Content = mainVBox;
 
-			this.Content = vbox;
-			this.Padding = new WidgetSpacing ();
-			this.Title = "Add Packages";
+			var middleHBox = new HBox ();
+			mainVBox.PackStart (middleHBox, true, true);
+
+			// Packages list.
+			packagesListView = new ListView ();
+			packagesListView.HeadersVisible = false;
+			middleHBox.PackStart (packagesListView, true, true);
+
+			// Package information
+			packageInfoVBox = new VBox ();
+			packageInfoVBox.Margin = new WidgetSpacing (5, 10, 10, 10);
+
+			var packageInfoScrollView = new ScrollView ();
+			packageInfoScrollView.MinWidth = 200;
+			packageInfoScrollView.BorderVisible = false;
+			packageInfoScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
+			packageInfoScrollView.Content = packageInfoVBox;
+			middleHBox.PackEnd (packageInfoScrollView);
+
+			// Package name and version.
+			var packageNameHBox = new HBox ();
+			packageInfoVBox.PackStart (packageNameHBox);
+
+			packageNameLabel = new Label ();
+			packageNameHBox.PackStart (packageNameLabel);
+
+			packageVersionLabel = new Label ();
+			packageNameHBox.PackEnd (packageVersionLabel);
+
+			// Package description.
+			packageDescription = new RichTextView ();
+			packageDescription.Sensitive = false;
+			packageInfoVBox.PackStart (packageDescription);
+
+			// Package id.
+			var packageIdHBox = new HBox ();
+			packageInfoVBox.PackStart (packageIdHBox);
+
+			var packageIdLabel = new Label ();
+			packageIdLabel.Markup = Catalog.GetString ("<b>Id</b>");
+			packageIdHBox.PackStart (packageIdLabel);
+
+			packageId = new Label ();
+			packageIdLink = new LinkLabel ();
+			packageIdHBox.PackEnd (packageIdLink);
+			packageIdHBox.PackEnd (packageId);
+
+			// Package author
+			var packageAuthorHBox = new HBox ();
+			packageInfoVBox.PackStart (packageAuthorHBox);
+
+			var packageAuthorLabel = new Label ();
+			packageAuthorLabel.Markup = Catalog.GetString ("<b>Author</b>");
+			packageAuthorHBox.PackStart (packageAuthorLabel);
+
+			packageAuthor = new Label ();
+			packageAuthorHBox.PackEnd (packageAuthor);
+
+			// Package published
+			var packagePublishedHBox = new HBox ();
+			packageInfoVBox.PackStart (packagePublishedHBox);
+
+			var packagePublishedLabel = new Label ();
+			packagePublishedLabel.Markup = Catalog.GetString ("<b>Published</b>");
+			packagePublishedHBox.PackStart (packagePublishedLabel);
+
+			packagePublishedDate = new Label ();
+			packagePublishedHBox.PackEnd (packagePublishedDate);
+
+			// Package downloads
+			var packageDownloadsHBox = new HBox ();
+			packageInfoVBox.PackStart (packageDownloadsHBox);
+
+			var packageDownloadsLabel = new Label ();
+			packageDownloadsLabel.Markup = Catalog.GetString ("<b>Downloads</b>");
+			packageDownloadsHBox.PackStart (packageDownloadsLabel);
+
+			packageDownloads = new Label ();
+			packageDownloadsHBox.PackEnd (packageDownloads);
+
+			// Package license.
+			var packageLicenseHBox = new HBox ();
+			packageInfoVBox.PackStart (packageLicenseHBox);
+
+			var packageLicenseLabel = new Label ();
+			packageLicenseLabel.Markup = Catalog.GetString ("<b>License</b>");
+			packageLicenseHBox.PackStart (packageLicenseLabel);
+
+			packageLicenseLink = new LinkLabel ();
+			packageLicenseLink.Text = Catalog.GetString ("View License");
+			packageLicenseHBox.PackEnd (packageLicenseLink);
+
+			// Package project page.
+			var packageProjectPageHBox = new HBox ();
+			packageInfoVBox.PackStart (packageProjectPageHBox);
+
+			var packageProjectPageLabel = new Label ();
+			packageProjectPageLabel.Markup = Catalog.GetString ("<b>Project Page</b>");
+			packageProjectPageHBox.PackStart (packageProjectPageLabel);
+
+			packageProjectPageLink = new LinkLabel ();
+			packageProjectPageLink.Text = Catalog.GetString ("Visit Page");
+			packageProjectPageHBox.PackEnd (packageProjectPageLink);
+
+			// Package dependencies
+			var packageDependenciesHBox = new HBox ();
+			packageInfoVBox.PackStart (packageDependenciesHBox);
+
+			var packageDependenciesLabel = new Label ();
+			packageDependenciesLabel.Markup = Catalog.GetString ("<b>Dependencies</b>");
+			packageDependenciesHBox.PackStart (packageDependenciesLabel);
+
+			packageDependenciesNoneLabel = new Label ();
+			packageDependenciesNoneLabel.Text = Catalog.GetString ("None");
+			packageDependenciesHBox.PackEnd (packageDependenciesNoneLabel);
+
+			// Package dependencies list.
+			packageDependenciesListHBox = new HBox ();
+			packageDependenciesListHBox.Visible = false;
+			packageInfoVBox.PackStart (packageDependenciesListHBox);
+
+			packageDependenciesList = new Label ();
+			packageDependenciesListHBox.PackEnd (packageDependenciesList);
+
+			// Bottom part of dialog:
+			// Show pre-release packages and Close/Add to Project buttons.
+			var bottomHBox = new HBox ();
+			bottomHBox.Margin = new WidgetSpacing (5, 5, 5, 5);
+			mainVBox.PackStart (bottomHBox);
+
+			showPrereleaseCheckBox = new CheckBox ();
+			showPrereleaseCheckBox.Label = Catalog.GetString ("Show pre-release packages");
+			bottomHBox.PackStart (showPrereleaseCheckBox);
+
+			addPackagesButton = new Button ();
+			addPackagesButton.Label = Catalog.GetString ("Add Package");
+			bottomHBox.PackEnd (addPackagesButton);
+
+			var closeButton = new Button ();
+			closeButton.Label = Catalog.GetString ("Close");
+			closeButton.Clicked += (sender, e) => Close ();
+			bottomHBox.PackEnd (closeButton);
+
+			packageSearchEntry.SetFocus ();
+			packageInfoVBox.Visible = false;
 		}
 	}
 }

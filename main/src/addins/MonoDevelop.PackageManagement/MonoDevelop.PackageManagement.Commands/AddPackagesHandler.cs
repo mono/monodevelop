@@ -35,8 +35,10 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
-				var dialog = new AddPackagesDialog ();
-				dialog.Show ();
+				var viewModels = new PackageManagementViewModels ();
+				using (var dialog = new AddPackagesDialog (viewModels.ManagePackagesViewModel.AvailablePackagesViewModel)) {
+					dialog.Run ();
+				}
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
 			}
