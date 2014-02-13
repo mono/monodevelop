@@ -216,7 +216,8 @@ namespace MonoDevelop.SourceEditor
 							continue;
 						var marker = GetMarker (r.Region.BeginLine);
 
-						usages.Add (new Usage (r.Region.Begin, r.ReferenceUsageType));
+						//usages.Add (new Usage (r.Region.Begin, r.ReferenceUsageType));
+						usages.Add (r.Region.Begin);
 
 						int offset = r.Offset;
 						int endOffset = offset + r.Length;
@@ -347,8 +348,8 @@ namespace MonoDevelop.SourceEditor
 				handler (this, e);
 		}
 
-		readonly List<Usage> usages = new List<Usage> ();
-		IEnumerable<Usage> IUsageProvider.Usages {
+		readonly List<DocumentLocation> usages = new List<DocumentLocation> ();
+		IEnumerable<DocumentLocation> IUsageProvider.Usages {
 			get {
 				return usages;
 			}
