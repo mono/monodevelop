@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using NuGet;
+using System.Runtime.Versioning;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -44,6 +45,7 @@ namespace ICSharpCode.PackageManagement
 		string Name { get; }
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
+		FrameworkName TargetFramework { get; }
 		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);
