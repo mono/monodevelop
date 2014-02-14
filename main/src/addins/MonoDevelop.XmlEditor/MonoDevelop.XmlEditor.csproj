@@ -178,6 +178,8 @@
     <Compile Include="MonoDevelop.XmlEditor.Completion\EmptyXmlCompletionProvider.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlNamespacePrefixMap.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\MSBuildTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\MSBuildDocumentParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml">

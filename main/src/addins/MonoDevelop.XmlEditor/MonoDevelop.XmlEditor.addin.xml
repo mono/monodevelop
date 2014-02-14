@@ -40,6 +40,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class id="MSBuildTextEditorExtension" mimeTypes="application/x-msbuild" class = "MonoDevelop.XmlEditor.MSBuildTextEditorExtension" />
 		<Class id="MonoDevelop.XmlEditor.XmlTextEditorExtension" class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
 
@@ -117,6 +118,7 @@
 	</Extension>-->
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.XmlEditor.MSBuildDocumentParser" mimeType = "application/x-msbuild" id = "XmlParser"/>
 		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
 	</Extension>
 
