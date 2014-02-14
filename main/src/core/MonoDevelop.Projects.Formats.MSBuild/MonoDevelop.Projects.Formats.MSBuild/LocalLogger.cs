@@ -62,8 +62,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EventSourceWarningRaised (object sender, BuildWarningEventArgs e)
 		{
+			//NOTE: as of Mono 3.2.7, e.ProjectFile does not exist, so we use our projectFile variable instead
 			results.Add (new MSBuildResult (
-				e.ProjectFile ?? projectFile, true, e.Subcategory, e.Code, e.File,
+				projectFile, true, e.Subcategory, e.Code, e.File,
 				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
 				e.Message, e.HelpKeyword)
 			);
@@ -71,8 +72,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EventSourceErrorRaised (object sender, BuildErrorEventArgs e)
 		{
+			//NOTE: as of Mono 3.2.7, e.ProjectFile does not exist, so we use our projectFile variable instead
 			results.Add (new MSBuildResult (
-				e.ProjectFile ?? projectFile, false, e.Subcategory, e.Code, e.File,
+				projectFile, false, e.Subcategory, e.Code, e.File,
 				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
 				e.Message, e.HelpKeyword)
 			);;
