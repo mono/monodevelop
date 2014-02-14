@@ -1481,9 +1481,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 
 		bool Upgrading;
+		bool TooOld;
 		internal string GetDirectoryDotSvnInternal (FilePath path)
 		{
-			if (Upgrading)
+			if (Upgrading || TooOld)
 				return String.Empty;
 
 			IntPtr result;
@@ -1497,12 +1498,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					// SVN_ERR_SVN_ERR_WC_UPGRADE_REQUIRED
 					Upgrading = e.ErrorCode == 155036;
 
+					// SVN_ERR_WC_UNSUPPORTED_FORMAT
+					TooOld = e.ErrorCode == 155021;
+
 					// We are not in a working copy.
 					switch (e.ErrorCode) {
 					// SVN_ERR_WC_NOT_DIRECTORY
 					case 155007:
 					// SVN_ERR_WC_NOT_FILE
 					case 155008:
+					// SVN_ERR_WC_UNSUPPORTED_FORMAT
+					case 155021:
 					// SVN_ERR_SVN_ERR_WC_UPGRADE_REQUIRED
 					case 155036:
 						return String.Empty;
@@ -1515,11 +1521,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				apr.pool_destroy (scratch);
 				TryEndOperation ();
 
-				if (Upgrading) {
+				if (TooOld)
+					WorkingCopyFormatPrompt (false, null);
+
+				if (Upgrading)
 					WorkingCopyFormatPrompt (true, delegate {
 						Upgrade (path);
 					});
-				}
 			}
 		}
 
