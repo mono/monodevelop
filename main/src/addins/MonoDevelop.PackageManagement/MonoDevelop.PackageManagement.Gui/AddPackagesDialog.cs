@@ -42,6 +42,8 @@ namespace MonoDevelop.PackageManagement
 		IPackageActionRunner backgroundActionRunner;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
+		DataField<bool> packageCheckBoxActiveField = new DataField<bool> ();
+		DataField<bool> packageCheckBoxVisibleField = new DataField<bool> ();
 		DataField<Image> packageIconField = new DataField<Image> ();
 		DataField<string> packageDescriptionField = new DataField<string> ();
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
@@ -81,21 +83,39 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageIconField, packageDescriptionField, packageViewModelField);
+			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, packageDescriptionField, packageViewModelField);
 			packagesListView.DataSource = packageStore;
-			packagesListView.Columns.Add ("Icon", packageIconField);
 
-			var textCellView = new TextCellView {
-				MarkupField = packageDescriptionField,
-			};
-			var textColumn = new ListViewColumn ("Text", textCellView);
-			packagesListView.Columns.Add (textColumn);
+			AddPackageCheckBoxColumnToListView ();
+			packagesListView.Columns.Add ("Icon", packageIconField);
+			AddPackageDescriptionColumnToListView ();
 
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 
 			AddSearchingMessageToListView ();
+		}
+
+		void AddPackageCheckBoxColumnToListView ()
+		{
+			var checkBoxCellView = new CheckBoxCellView {
+				ActiveField = packageCheckBoxActiveField,
+				Editable = true,
+				VisibleField = packageCheckBoxVisibleField
+			};
+			//checkBoxCellView.Toggled
+			var checkBoxColumn = new ListViewColumn ("Checked", checkBoxCellView);
+			packagesListView.Columns.Add (checkBoxColumn);
+		}
+
+		void AddPackageDescriptionColumnToListView ()
+		{
+			var textCellView = new TextCellView {
+				MarkupField = packageDescriptionField,
+			};
+			var textColumn = new ListViewColumn ("Text", textCellView);
+			packagesListView.Columns.Add (textColumn);
 		}
 
 		void AddSearchingMessageToListView ()
@@ -230,7 +250,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			foreach (PackageViewModel packageViewModel in viewModel.PackageViewModels) {
-				AppendPackageToTreeView (packageViewModel);
+				AppendPackageToListView (packageViewModel);
 			}
 
 			if (viewModel.PackageViewModels.Any ()) {
@@ -243,9 +263,11 @@ namespace MonoDevelop.PackageManagement
 			AddMessageToListView (StockIcons.Error, viewModel.ErrorMessage);
 		}
 
-		void AppendPackageToTreeView (PackageViewModel packageViewModel)
+		void AppendPackageToListView (PackageViewModel packageViewModel)
 		{
 			int row = packageStore.AddRow ();
+			packageStore.SetValue (row, packageCheckBoxVisibleField, true);
+			packageStore.SetValue (row, packageCheckBoxActiveField, false);
 			packageStore.SetValue (row, packageIconField, defaultPackageImage);
 			packageStore.SetValue (row, packageDescriptionField, packageViewModel.GetDisplayTextMarkup ());
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
@@ -253,11 +275,51 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
-			PackageViewModel packageViewModel = GetSelectedPackageViewModel ();
-			if (packageViewModel != null) {
-				backgroundActionRunner.Run (packageViewModel.CreateInstallPackageAction ());
+			List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
+			if (packageActions.Count > 0) {
+				backgroundActionRunner.Run (packageActions);
 				Close ();
 			}
+		}
+
+		List<IPackageAction> CreateInstallPackageActionsForSelectedPackages ()
+		{
+			List<PackageViewModel> packageViewModels = GetSelectedPackageViewModels ();
+			if (packageViewModels.Count > 0) {
+				return CreateInstallPackageActions (packageViewModels);
+			}
+			return new List<IPackageAction> ();
+		}
+
+		List<PackageViewModel> GetSelectedPackageViewModels ()
+		{
+			List<PackageViewModel> packageViewModels = GetCheckedPackageViewModels ();
+			if (packageViewModels.Count > 0) {
+				return packageViewModels;
+			}
+
+			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
+			if (selectedPackageViewModel != null) {
+				packageViewModels.Add (selectedPackageViewModel);
+			}
+			return packageViewModels;
+		}
+
+		List<PackageViewModel> GetCheckedPackageViewModels ()
+		{
+			var packageViewModels = new List<PackageViewModel> ();
+			for (int row = 0; row < viewModel.PackageViewModels.Count; ++row) {
+				PackageViewModel packageViewModel = viewModel.PackageViewModels [row];
+				if (packageStore.GetValue (row, packageCheckBoxActiveField)) {
+					packageViewModels.Add (packageViewModel);
+				}
+			}
+			return packageViewModels;
+		}
+
+		List<IPackageAction> CreateInstallPackageActions (List<PackageViewModel> packageViewModels)
+		{
+			return packageViewModels.Select (viewModel => viewModel.CreateInstallPackageAction ()).ToList ();
 		}
 
 		void PackageSearchEntryChanged (object sender, EventArgs e)
