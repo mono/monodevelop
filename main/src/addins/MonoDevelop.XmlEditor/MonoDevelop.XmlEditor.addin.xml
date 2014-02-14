@@ -133,11 +133,14 @@
 		<Panel id = "XmlFormatting" _label = "XML Format" mimeType="application/xml" class = "MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanel" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete language="Xml" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="schemas" targetPath="XmlSchemas" isDirectory="true" />
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="XmlSchemas" isDirectory="true" />
 	</Extension>
-
 </ExtensionModel>

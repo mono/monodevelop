@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static CompletionCharacters ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CompletionCharacters", OnCompletionCharsAdded);
-
 		}
 
 		static void OnCompletionCharsAdded (object sender, ExtensionNodeEventArgs args)

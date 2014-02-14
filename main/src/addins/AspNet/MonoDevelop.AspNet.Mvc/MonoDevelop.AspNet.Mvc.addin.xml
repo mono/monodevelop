@@ -192,7 +192,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
-		<Complete id="Razor" insertbefore="Other" insertafter="Html" language="Razor" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+		<Complete language="Razor" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">

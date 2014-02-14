@@ -57,16 +57,6 @@ namespace MonoDevelop.XmlEditor
 		bool inferenceQueued = false;
 		
 //		bool showSchemaAnnotation;
-
-		public override string CompletionLanguage {
-			get {
-				return "Html";
-			}
-		}
-
-		public XmlTextEditorExtension() : base ()
-		{
-		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{

@@ -153,6 +153,10 @@ namespace MonoDevelop.XmlEditor.Gui
 		}
 		
 		#endregion
+
+		public override string CompletionLanguage {
+			get { return "Xml"; }
+		}
 		
 		protected XDocType DocType {
 			get { return docType; }

@@ -260,7 +260,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
-		<Complete id="C#" insertbefore="Html" language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+		<Complete language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-
 </ExtensionModel>
