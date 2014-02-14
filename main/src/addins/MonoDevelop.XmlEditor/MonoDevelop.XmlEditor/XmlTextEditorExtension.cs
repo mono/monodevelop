@@ -74,7 +74,6 @@ namespace MonoDevelop.XmlEditor
 			SetDefaultSchema ();
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			Document.UpdateParseDocument ();
 			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
 				view.Document.MimeType = ApplicationXmlMimeType;
 				Document.ReparseDocument ();
@@ -434,7 +433,7 @@ namespace MonoDevelop.XmlEditor
 		/// Determines whether the file can be displayed by
 		/// the xml editor.
 		/// </summary>
-		public static bool IsFileNameHandled (string fileName)
+		static bool IsFileNameHandled (string fileName)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return false;
@@ -446,11 +445,14 @@ namespace MonoDevelop.XmlEditor
 			return XmlFileAssociationManager.IsXmlFileName (fileName);
 		}
 		
-		public static bool IsMimeTypeHandled (string mimeType)
+		static bool IsMimeTypeHandled (string mimeType)
 		{
-			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType))
+			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
+				if (m == MSBuildTextEditorExtension.MSBuildMimeType)
+					return false;
+			}
 			return false;
 		}
 			
