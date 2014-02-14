@@ -39,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public partial class AddPackagesDialog
 	{
+		IPackageActionRunner backgroundActionRunner;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
 		DataField<Image> packageIconField = new DataField<Image> ();
@@ -50,8 +51,15 @@ namespace MonoDevelop.PackageManagement
 		IDisposable searchTimer;
 
 		public AddPackagesDialog (PackagesViewModel viewModel)
+			: this (viewModel, PackageManagementServices.BackgroundPackageActionRunner)
+		{
+		}
+
+		public AddPackagesDialog (PackagesViewModel viewModel, IPackageActionRunner backgroundActionRunner)
 		{
 			this.viewModel = viewModel;
+			this.backgroundActionRunner = backgroundActionRunner;
+
 			Build ();
 
 			InitializeListView ();
@@ -59,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
-			this.addPackagesButton.Clicked += AddToProjectButtonClicked;
+			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
 		}
 
@@ -243,11 +251,12 @@ namespace MonoDevelop.PackageManagement
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
 		}
 
-		void AddToProjectButtonClicked (object sender, EventArgs e)
+		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
 			PackageViewModel packageViewModel = GetSelectedPackageViewModel ();
 			if (packageViewModel != null) {
-				packageViewModel.AddPackage ();
+				backgroundActionRunner.Run (packageViewModel.CreateInstallPackageAction ());
+				Close ();
 			}
 		}
 

@@ -299,12 +299,18 @@ namespace ICSharpCode.PackageManagement
 		
 		void InstallPackage(IEnumerable<PackageOperation> packageOperations)
 		{
-			IPackageManagementProject project = GetSingleProjectSelected();
-			ProcessPackageOperationsAction action = CreateInstallPackageAction(project);
-			action.AllowPrereleaseVersions = parent.IncludePrerelease;
-			action.Package = package;
+			var action = CreateInstallPackageAction () as ProcessPackageOperationsAction;
 			action.Operations = packageOperations;
 			actionRunner.Run(action);
+		}
+
+		public IPackageAction CreateInstallPackageAction ()
+		{
+			IPackageManagementProject project = GetSingleProjectSelected ();
+			ProcessPackageOperationsAction action = CreateInstallPackageAction (project);
+			action.AllowPrereleaseVersions = parent.IncludePrerelease;
+			action.Package = package;
+			return action;
 		}
 		
 		protected virtual ProcessPackageOperationsAction CreateInstallPackageAction(

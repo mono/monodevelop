@@ -56,8 +56,6 @@ namespace ICSharpCode.PackageManagement
 			
 			packageManagementEvents.PackageOperationError += PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
-			
-			packagesViewModels.ReadPackages();
 		}
 		
 		public AvailablePackagesViewModel AvailablePackagesViewModel {

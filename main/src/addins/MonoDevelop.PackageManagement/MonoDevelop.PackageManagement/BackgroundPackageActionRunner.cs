@@ -48,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (IPackageAction action)
 		{
+			Run (new IPackageAction [] { action });
 		}
 
 		public void Run (IEnumerable<IPackageAction> actions)
@@ -63,6 +64,7 @@ namespace MonoDevelop.PackageManagement
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
 					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
 						monitor.Log.WriteLine (ex.Message);
 						monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
 					} finally {
