@@ -21,3 +21,12 @@ clean:
 	-rm -fr FSharp.CompilerBinding/bin
 
 autocomplete: bin/fsautocomplete.exe
+
+
+unit-test: all
+	FSharp.AutoComplete/test/unit/runtests.sh
+
+integration-test: all
+	FSharp.AutoComplete/test/integration/runtests.sh
+
+test: unit-test integration-test
