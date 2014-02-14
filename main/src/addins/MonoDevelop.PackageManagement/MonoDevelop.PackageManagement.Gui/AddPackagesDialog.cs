@@ -162,10 +162,18 @@ namespace MonoDevelop.PackageManagement
 		void PopulatePackageSources ()
 		{
 			foreach (PackageSource packageSource in PackageSources) {
-				packageSourceComboBox.Items.Add (packageSource, packageSource.Name);
+				packageSourceComboBox.Items.Add (packageSource, GetPackageSourceName (packageSource));
 			}
 
 			this.packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
+		}
+
+		string GetPackageSourceName (PackageSource packageSource)
+		{
+			if (packageSource.IsAggregate ()) {
+				return Catalog.GetString ("All Sources");
+			}
+			return packageSource.Name;
 		}
 
 		void PackageSourceChanged (object sender, EventArgs e)
