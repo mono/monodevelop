@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.hpaned1 = new global::Gtk.HPaned ();
 			this.hpaned1.CanFocus = true;
 			this.hpaned1.Name = "hpaned1";
-			this.hpaned1.Position = 424;
+			this.hpaned1.Position = 380;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.notebookCategories.SetTabLabel (this.GtkScrolledWindow1, this.label9);
 			this.label9.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
-			this.table4 = new global::Gtk.Table (((uint)(12)), ((uint)(2)), false);
+			this.table4 = new global::Gtk.Table (((uint)(12)), ((uint)(3)), false);
 			this.table4.Name = "table4";
 			this.table4.RowSpacing = ((uint)(6));
 			this.table4.ColumnSpacing = ((uint)(6));
@@ -162,6 +162,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.entryAfterUsings.CanFocus = true;
 			this.entryAfterUsings.Name = "entryAfterUsings";
 			this.entryAfterUsings.IsEditable = true;
+			this.entryAfterUsings.WidthChars = 5;
 			this.entryAfterUsings.InvisibleChar = '●';
 			this.table4.Add (this.entryAfterUsings);
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryAfterUsings]));
@@ -169,12 +170,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w10.BottomAttach = ((uint)(3));
 			w10.LeftAttach = ((uint)(1));
 			w10.RightAttach = ((uint)(2));
+			w10.XOptions = ((global::Gtk.AttachOptions)(2));
 			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryAroundRegion = new global::Gtk.Entry ();
 			this.entryAroundRegion.CanFocus = true;
 			this.entryAroundRegion.Name = "entryAroundRegion";
 			this.entryAroundRegion.IsEditable = true;
+			this.entryAroundRegion.WidthChars = 5;
 			this.entryAroundRegion.InvisibleChar = '●';
 			this.table4.Add (this.entryAroundRegion);
 			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryAroundRegion]));
@@ -182,12 +185,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w11.BottomAttach = ((uint)(11));
 			w11.LeftAttach = ((uint)(1));
 			w11.RightAttach = ((uint)(2));
+			w11.XOptions = ((global::Gtk.AttachOptions)(0));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBeforeFirstDeclaration = new global::Gtk.Entry ();
 			this.entryBeforeFirstDeclaration.CanFocus = true;
 			this.entryBeforeFirstDeclaration.Name = "entryBeforeFirstDeclaration";
 			this.entryBeforeFirstDeclaration.IsEditable = true;
+			this.entryBeforeFirstDeclaration.WidthChars = 5;
 			this.entryBeforeFirstDeclaration.InvisibleChar = '●';
 			this.table4.Add (this.entryBeforeFirstDeclaration);
 			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBeforeFirstDeclaration]));
@@ -195,12 +200,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w12.BottomAttach = ((uint)(5));
 			w12.LeftAttach = ((uint)(1));
 			w12.RightAttach = ((uint)(2));
+			w12.XOptions = ((global::Gtk.AttachOptions)(0));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBeforUsings = new global::Gtk.Entry ();
 			this.entryBeforUsings.CanFocus = true;
 			this.entryBeforUsings.Name = "entryBeforUsings";
 			this.entryBeforUsings.IsEditable = true;
+			this.entryBeforUsings.WidthChars = 5;
 			this.entryBeforUsings.InvisibleChar = '●';
 			this.table4.Add (this.entryBeforUsings);
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBeforUsings]));
@@ -208,12 +215,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w13.BottomAttach = ((uint)(2));
 			w13.LeftAttach = ((uint)(1));
 			w13.RightAttach = ((uint)(2));
+			w13.XOptions = ((global::Gtk.AttachOptions)(2));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBetweenEvents = new global::Gtk.Entry ();
 			this.entryBetweenEvents.CanFocus = true;
 			this.entryBetweenEvents.Name = "entryBetweenEvents";
 			this.entryBetweenEvents.IsEditable = true;
+			this.entryBetweenEvents.WidthChars = 5;
 			this.entryBetweenEvents.InvisibleChar = '●';
 			this.table4.Add (this.entryBetweenEvents);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBetweenEvents]));
@@ -221,12 +230,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w14.BottomAttach = ((uint)(9));
 			w14.LeftAttach = ((uint)(1));
 			w14.RightAttach = ((uint)(2));
+			w14.XOptions = ((global::Gtk.AttachOptions)(0));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBetweenFields = new global::Gtk.Entry ();
 			this.entryBetweenFields.CanFocus = true;
 			this.entryBetweenFields.Name = "entryBetweenFields";
 			this.entryBetweenFields.IsEditable = true;
+			this.entryBetweenFields.WidthChars = 5;
 			this.entryBetweenFields.InvisibleChar = '●';
 			this.table4.Add (this.entryBetweenFields);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBetweenFields]));
@@ -234,12 +245,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w15.BottomAttach = ((uint)(8));
 			w15.LeftAttach = ((uint)(1));
 			w15.RightAttach = ((uint)(2));
+			w15.XOptions = ((global::Gtk.AttachOptions)(0));
 			w15.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBetweenMembers = new global::Gtk.Entry ();
 			this.entryBetweenMembers.CanFocus = true;
 			this.entryBetweenMembers.Name = "entryBetweenMembers";
 			this.entryBetweenMembers.IsEditable = true;
+			this.entryBetweenMembers.WidthChars = 5;
 			this.entryBetweenMembers.InvisibleChar = '●';
 			this.table4.Add (this.entryBetweenMembers);
 			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBetweenMembers]));
@@ -247,12 +260,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w16.BottomAttach = ((uint)(10));
 			w16.LeftAttach = ((uint)(1));
 			w16.RightAttach = ((uint)(2));
+			w16.XOptions = ((global::Gtk.AttachOptions)(0));
 			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryBetweenTypes = new global::Gtk.Entry ();
 			this.entryBetweenTypes.CanFocus = true;
 			this.entryBetweenTypes.Name = "entryBetweenTypes";
 			this.entryBetweenTypes.IsEditable = true;
+			this.entryBetweenTypes.WidthChars = 5;
 			this.entryBetweenTypes.InvisibleChar = '●';
 			this.table4.Add (this.entryBetweenTypes);
 			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryBetweenTypes]));
@@ -260,12 +275,14 @@ namespace MonoDevelop.CSharp.Formatting
 			w17.BottomAttach = ((uint)(6));
 			w17.LeftAttach = ((uint)(1));
 			w17.RightAttach = ((uint)(2));
+			w17.XOptions = ((global::Gtk.AttachOptions)(0));
 			w17.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.entryInsideRegion = new global::Gtk.Entry ();
 			this.entryInsideRegion.CanFocus = true;
 			this.entryInsideRegion.Name = "entryInsideRegion";
 			this.entryInsideRegion.IsEditable = true;
+			this.entryInsideRegion.WidthChars = 5;
 			this.entryInsideRegion.InvisibleChar = '●';
 			this.table4.Add (this.entryInsideRegion);
 			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryInsideRegion]));
@@ -273,39 +290,43 @@ namespace MonoDevelop.CSharp.Formatting
 			w18.BottomAttach = ((uint)(12));
 			w18.LeftAttach = ((uint)(1));
 			w18.RightAttach = ((uint)(2));
+			w18.XOptions = ((global::Gtk.AttachOptions)(0));
 			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.GtkLabel8 = new global::Gtk.Label ();
 			this.GtkLabel8.Name = "GtkLabel8";
 			this.GtkLabel8.Xalign = 0F;
-			this.GtkLabel8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Blank lines in namespaces</b>");
+			this.GtkLabel8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Minimum blank lines in namespaces</b>");
 			this.GtkLabel8.UseMarkup = true;
 			this.table4.Add (this.GtkLabel8);
 			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table4 [this.GtkLabel8]));
 			w19.TopAttach = ((uint)(3));
 			w19.BottomAttach = ((uint)(4));
+			w19.RightAttach = ((uint)(3));
 			w19.XOptions = ((global::Gtk.AttachOptions)(4));
 			w19.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.GtkLabel9 = new global::Gtk.Label ();
 			this.GtkLabel9.Name = "GtkLabel9";
 			this.GtkLabel9.Xalign = 0F;
-			this.GtkLabel9.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Blank lines in types</b>");
+			this.GtkLabel9.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Minimum blank lines in types</b>");
 			this.GtkLabel9.UseMarkup = true;
 			this.table4.Add (this.GtkLabel9);
 			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table4 [this.GtkLabel9]));
 			w20.TopAttach = ((uint)(6));
 			w20.BottomAttach = ((uint)(7));
+			w20.RightAttach = ((uint)(3));
 			w20.XOptions = ((global::Gtk.AttachOptions)(4));
 			w20.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Blank lines in compilation unit</b>");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Minimum blank lines in compilation unit</b>");
 			this.label1.UseMarkup = true;
 			this.table4.Add (this.label1);
 			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table4 [this.label1]));
+			w21.RightAttach = ((uint)(3));
 			w21.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.label15 = new global::Gtk.Label ();
@@ -539,7 +560,7 @@ namespace MonoDevelop.CSharp.Formatting
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 880;
-			this.DefaultHeight = 551;
+			this.DefaultHeight = 555;
 			this.Hide ();
 		}
 	}
