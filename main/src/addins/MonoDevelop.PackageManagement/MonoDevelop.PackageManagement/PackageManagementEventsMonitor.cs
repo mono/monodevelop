@@ -1,5 +1,5 @@
-﻿// 
-// RegisteredProjectTemplatePackageSources.cs
+//
+// PackageManagementEventsMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,34 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
 using NuGet;
-using Mono.Addins;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide.Templates;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredProjectTemplatePackageSources
+	public class PackageManagementEventsMonitor : IDisposable
 	{
-		RegisteredPackageSources packageSources = new RegisteredPackageSources();
+		IProgressMonitor progressMonitor;
+		IPackageManagementEvents packageManagementEvents;
 
-		public RegisteredProjectTemplatePackageSources ()
+		public PackageManagementEventsMonitor (
+			IProgressMonitor progressMonitor,
+			IPackageManagementEvents packageManagementEvents)
 		{
-			packageSources = new RegisteredPackageSources (GetPackageSources ());
+			this.progressMonitor = progressMonitor;
+			this.packageManagementEvents = packageManagementEvents;
+
+			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
+		}
+
+		public void Dispose ()
+		{
+			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 		}
 		
-		List<PackageSource> GetPackageSources()
+		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
-			var addinPackageSources = new List<PackageSource> ();
-			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
-				addinPackageSources.Add (node.GetPackageSource ());
-			}
-			return addinPackageSources;
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return packageSources; }
+			progressMonitor.Log.WriteLine (e.Message.ToString ());
 		}
 	}
 }
+

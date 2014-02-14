@@ -1,5 +1,5 @@
-﻿// 
-// RegisteredProjectTemplatePackageSources.cs
+//
+// WorkspaceItemCreatedInformation.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,34 +25,32 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Projects;
 using System.Collections.Generic;
-using NuGet;
-using Mono.Addins;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide.Templates;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.Ide.Templates
 {
-	public class RegisteredProjectTemplatePackageSources
+	class WorkspaceItemCreatedInformation
 	{
-		RegisteredPackageSources packageSources = new RegisteredPackageSources();
+		List<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = 
+			new List<PackageReferencesForCreatedProject> ();
 
-		public RegisteredProjectTemplatePackageSources ()
+		public WorkspaceItemCreatedInformation (WorkspaceItem item)
 		{
-			packageSources = new RegisteredPackageSources (GetPackageSources ());
+			WorkspaceItem = item;
 		}
-		
-		List<PackageSource> GetPackageSources()
+
+		public WorkspaceItem WorkspaceItem { get; private set; }
+
+		public IList<PackageReferencesForCreatedProject> PackageReferencesForCreatedProjects {
+			get { return packageReferencesForCreatedProjects; }
+		}
+
+		public void AddPackageReferenceForCreatedProject (Project project, ProjectDescriptor projectDescriptor)
 		{
-			var addinPackageSources = new List<PackageSource> ();
-			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
-				addinPackageSources.Add (node.GetPackageSource ());
-			}
-			return addinPackageSources;
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return packageSources; }
+			var packageReference = new PackageReferencesForCreatedProject (project.Name, projectDescriptor.GetPackageReferences ());
+			packageReferencesForCreatedProjects.Add (packageReference);
 		}
 	}
 }
+

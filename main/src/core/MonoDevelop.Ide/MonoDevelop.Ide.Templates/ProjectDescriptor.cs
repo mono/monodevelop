@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Templates
 		private List<ProjectReference> references = new List<ProjectReference> ();
 
 		private XmlElement projectOptions = null;
-
+		private List<ProjectTemplatePackageReference> packageReferences = new List<ProjectTemplatePackageReference> ();
 
 		protected ProjectDescriptor ()
 		{
@@ -104,6 +104,15 @@ namespace MonoDevelop.Ide.Templates
 			projectDescriptor.projectOptions = xmlElement ["Options"];
 			if (projectDescriptor.projectOptions == null)
 				projectDescriptor.projectOptions = xmlElement.OwnerDocument.CreateElement ("Options");
+
+			if (xmlElement ["Packages"] != null) {
+				foreach (XmlNode xmlNode in xmlElement["Packages"].ChildNodes) {
+					if (xmlNode is XmlElement) {
+						var packageReference = ProjectTemplatePackageReference.Create ((XmlElement)xmlNode);
+						projectDescriptor.packageReferences.Add (packageReference);
+					}
+				}
+			}
 
 			return projectDescriptor;
 		}
@@ -209,6 +218,16 @@ namespace MonoDevelop.Ide.Templates
 				Directory.CreateDirectory (projectCreateInformation.ProjectBasePath);
 
 			return projectCreateInformation;
+		}
+
+		public bool HasPackages ()
+		{
+			return packageReferences.Any ();
+		}
+
+		public IList<ProjectTemplatePackageReference> GetPackageReferences ()
+		{
+			return packageReferences;
 		}
 	}
 }

@@ -1,5 +1,5 @@
-﻿// 
-// RegisteredProjectTemplatePackageSources.cs
+//
+// PackageReferencesForCreatedProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,33 +26,25 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
-using Mono.Addins;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide.Templates;
+using System.Linq;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.Ide.Templates
 {
-	public class RegisteredProjectTemplatePackageSources
+	public class PackageReferencesForCreatedProject
 	{
-		RegisteredPackageSources packageSources = new RegisteredPackageSources();
+		List<ProjectTemplatePackageReference> packageReferences;
 
-		public RegisteredProjectTemplatePackageSources ()
+		public PackageReferencesForCreatedProject (string projectName, IEnumerable<ProjectTemplatePackageReference> packageReferences)
 		{
-			packageSources = new RegisteredPackageSources (GetPackageSources ());
+			ProjectName = projectName;
+			this.packageReferences = packageReferences.ToList ();
 		}
-		
-		List<PackageSource> GetPackageSources()
-		{
-			var addinPackageSources = new List<PackageSource> ();
-			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
-				addinPackageSources.Add (node.GetPackageSource ());
-			}
-			return addinPackageSources;
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return packageSources; }
+
+		public string ProjectName { get; private set; }
+
+		public IList<ProjectTemplatePackageReference> PackageReferences {
+			get { return packageReferences; }
 		}
 	}
 }
+

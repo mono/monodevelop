@@ -92,4 +92,8 @@
 				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" />
 		</Section>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplatePackageInstallers">
+		<Class id="NuGet" class="MonoDevelop.PackageManagement.ProjectTemplateNuGetPackageInstaller" />
+	</Extension>
 </Addin>

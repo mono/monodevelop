@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Templates
             return solutionDescriptor;
         }
 
-        public WorkspaceItem CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public WorkspaceItemCreatedInformation CreateEntry (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
         {
             WorkspaceItem workspaceItem = null;
 
@@ -137,6 +137,8 @@ namespace MonoDevelop.Ide.Templates
             else
                 localProjectCI = projectCreateInformation;
 
+			var workspaceItemCreatedInfo = new WorkspaceItemCreatedInformation (workspaceItem);
+
             Solution solution = workspaceItem as Solution;
             if (solution != null) {
                 for ( int i = 0; i < entryDescriptors.Count; i++ ) {
@@ -165,6 +167,9 @@ namespace MonoDevelop.Ide.Templates
                         }
                     }
 
+					if ((info is Project) && (solutionItem is ProjectDescriptor)) {
+						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItem);
+					}
                     solution.RootFolder.Items.Add (info);
 					if (startupProject == info.Name)
 						solution.StartupItem = info;
@@ -177,7 +182,12 @@ namespace MonoDevelop.Ide.Templates
 				workspaceItem.ConvertToFormat (f, true);
 			}
 			
-            return workspaceItem;
+			return workspaceItemCreatedInfo;
         }
+
+		public bool HasPackages ()
+		{
+			return entryDescriptors.OfType<ProjectDescriptor> ().Any (descriptor => descriptor.HasPackages ());
+		}
 	}
 }

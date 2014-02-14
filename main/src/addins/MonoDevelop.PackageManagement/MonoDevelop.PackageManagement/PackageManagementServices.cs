@@ -51,8 +51,8 @@ namespace ICSharpCode.PackageManagement
 			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-			//projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			//projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(packageRepositoryCache, projectTemplatePackageSources);
+			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
+			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
 			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);

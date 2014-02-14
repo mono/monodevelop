@@ -1909,6 +1909,11 @@
     <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarWindowBackend.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarDialogBackend.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedTitleBarDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageReference.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PackageRepositoryNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
