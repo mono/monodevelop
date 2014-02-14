@@ -630,8 +630,9 @@ namespace MonoDevelop.Ide.Gui
 			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			editorExtension = null;
 			TextEditorExtension last = null;
+			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			foreach (TextEditorExtensionNode extNode in extensions) {
-				if (!extNode.Supports (FileName))
+				if (!extNode.Supports (FileName, mimetypeChain))
 					continue;
 				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
 				if (ext.ExtendsEditor (this, editor)) {

@@ -48,18 +48,18 @@ namespace MonoDevelop.Ide.Extensions
 			set { this.mimeTypes = value; }
 		}
 		
-		public bool Supports (string fileName)
+		public bool Supports (string fileName, string[] mimetypeChain)
 		{
 			if (fileExtensions != null && fileExtensions.Length > 0) {
 				string ext = System.IO.Path.GetExtension (fileName);
 				return fileExtensions.Any (fe => string.Compare (fe, ext, StringComparison.OrdinalIgnoreCase) == 0);
 			}
+
 			if (mimeTypes != null && mimeTypes.Length > 0) {
-				string mt = DesktopService.GetMimeTypeForUri (fileName);
-				foreach (string t in mimeTypes) {
-					if (DesktopService.GetMimeTypeIsSubtype (mt, t))
-						return true;
-				}
+				foreach (string t in mimeTypes)
+					foreach (string m in mimetypeChain)
+						if (m == t)
+							return true;
 				return false;
 			}
 			
