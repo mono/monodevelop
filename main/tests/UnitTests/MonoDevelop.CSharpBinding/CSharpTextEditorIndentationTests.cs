@@ -40,6 +40,8 @@ using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -371,5 +373,39 @@ namespace MonoDevelop.CSharpBinding
 
 			CheckOutput (data, "namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
 		}
+
+		/// <summary>
+		/// Bug 17766 - Decreasing tab on single line bounces back to formatting spot.
+		/// </summary>
+		[Test]
+		public void TestBug17766 ()
+		{
+			var data = Create (@"
+class Foo 
+{
+	$void Bar ()
+	{
+	}
+}
+");
+			var engine = new CSharpTextEditorIndentation ();
+
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent (data);
+			tww.ViewContent = content;
+			content.ContentName = "a.cs";
+			engine.Initialize (new Document (tww)); 
+			MiscActions.RemoveTab (data); 
+			engine.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.ShiftMask); 
+			CheckOutput (data, @"
+class Foo 
+{
+$void Bar ()
+	{
+	}
+}
+", engine);
+		}
+
 	}
 }
