@@ -65,6 +65,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void Dispose (bool disposing)
 		{
+			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			viewModel.Dispose ();
 			DisposeExistingTimer ();
 			base.Dispose (disposing);
