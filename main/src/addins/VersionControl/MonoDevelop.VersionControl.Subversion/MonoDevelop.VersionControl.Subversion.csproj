@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -70,6 +70,11 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Mono.Posix" />
@@ -106,6 +111,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion\SvnRevision.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Gui\WorkingCopyFormatDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
