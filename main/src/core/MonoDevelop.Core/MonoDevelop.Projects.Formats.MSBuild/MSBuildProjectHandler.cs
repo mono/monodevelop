@@ -1401,6 +1401,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
 				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+			else
+				buildItem.UnsetMetadata ("DependentUpon");
+
 			if (!string.IsNullOrEmpty (file.ContentType))
 				buildItem.SetMetadata ("SubType", file.ContentType);
 			
