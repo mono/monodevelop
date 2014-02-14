@@ -28,6 +28,7 @@
 
 using System;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -44,6 +45,8 @@ namespace ICSharpCode.PackageManagement
 		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
+		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
+		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		
 		static PackageManagementServices()
 		{
@@ -57,7 +60,10 @@ namespace ICSharpCode.PackageManagement
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
-			
+
+			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
+			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents);
+
 			InitializeCredentialProvider();
 		}
 		
@@ -108,6 +114,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public static RegisteredPackageSources ProjectTemplatePackageSources {
 			get { return projectTemplatePackageSources.PackageSources; }
+		}
+
+		public static IPackageActionRunner BackgroundPackageActionRunner {
+			get { return backgroundPackageActionRunner; }
+		}
+
+		public static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
+			get { return progressMonitorFactory; }
 		}
 	}
 }

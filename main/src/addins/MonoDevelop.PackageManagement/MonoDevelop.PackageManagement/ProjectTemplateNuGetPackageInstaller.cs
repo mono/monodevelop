@@ -24,17 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using System.Linq;
-using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -43,29 +39,33 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
 		IPackageManagementEvents packageManagementEvents;
+		IPackageActionRunner backgroundPackageActionRunner;
 
 		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
 				PackageManagementServices.Solution,
 				PackageManagementServices.PackageManagementEvents,
-				PackageManagementServices.ProjectTemplatePackageRepositoryCache)
+				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
+				PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public ProjectTemplateNuGetPackageInstaller (
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
-			IPackageRepositoryCache packageRepositoryCache)
+			IPackageRepositoryCache packageRepositoryCache,
+			IPackageActionRunner backgroundPackageActionRunner)
 		{
 			this.packageManagementSolution = solution;
 			this.packageManagementEvents = packageManagementEvents;
 			this.packageRepositoryCache = packageRepositoryCache;
+			this.backgroundPackageActionRunner = backgroundPackageActionRunner;
 		}
 
 		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
-			DispatchService.BackgroundDispatch (() => InstallPackagesWithProgressMonitor (installPackageActions));
+			backgroundPackageActionRunner.Run (installPackageActions);
 		}
 
 		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
@@ -81,55 +81,6 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return installPackageActions;
-		}
-
-		void InstallPackagesWithProgressMonitor (IList<InstallPackageAction> installPackageActions)
-		{
-			using (IProgressMonitor monitor = CreateProgressMonitor ()) {
-				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
-					try {
-						monitor.BeginTask (null, installPackageActions.Count);
-						InstallPackages (monitor, installPackageActions);
-					} catch (Exception ex) {
-						monitor.Log.WriteLine (ex.Message);
-						monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
-					} finally {
-						monitor.EndTask ();
-					}
-				}
-			}
-		}
-
-		void InstallPackages (IProgressMonitor monitor, IList<InstallPackageAction> installPackageActions)
-		{
-			foreach (InstallPackageAction action in installPackageActions) {
-				action.Execute ();
-				monitor.Step (1);
-			}
-		}
-
-		IProgressMonitor CreateProgressMonitor ()
-		{
-			IProgressMonitor consoleMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				"PackageConsole",
-				GettextCatalog.GetString ("Package Console"),
-				Stock.Console,
-				false,
-				true);
-
-			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
-
-			IProgressMonitor statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Installing packages..."),
-				Stock.StatusSolutionOperation,
-				false,
-				false,
-				false,
-				pad);
-
-			var monitor = new AggregatedProgressMonitor (consoleMonitor);
-			monitor.AddSlaveMonitor (statusMonitor);
-			return monitor;
 		}
 
 		IEnumerable<InstallPackageAction> CreateInstallPackageActions (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)

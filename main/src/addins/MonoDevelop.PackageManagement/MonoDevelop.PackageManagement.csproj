@@ -47,9 +47,7 @@
   <ItemGroup>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -258,6 +256,9 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryNodeExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateNuGetPackageInstaller.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventsMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\BackgroundPackageActionRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProgressMonitorFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitorFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
