@@ -28,11 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ICSharpCode.PackageManagement;
+using Mono.Unix;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
 using Xwt.Formats;
-using ICSharpCode.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -45,6 +46,8 @@ namespace MonoDevelop.PackageManagement
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
 		ListStore packageStore;
 		Image defaultPackageImage;
+		TimeSpan searchDelayTimeSpan = TimeSpan.FromMilliseconds (500);
+		IDisposable searchTimer;
 
 		public AddPackagesDialog (PackagesViewModel viewModel)
 		{
@@ -57,11 +60,13 @@ namespace MonoDevelop.PackageManagement
 			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			this.addPackagesButton.Clicked += AddToProjectButtonClicked;
+			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			viewModel.Dispose ();
+			DisposeExistingTimer ();
 			base.Dispose (disposing);
 		}
 
@@ -80,6 +85,21 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
+
+			AddSearchingMessageToListView ();
+		}
+
+		void AddSearchingMessageToListView ()
+		{
+			AddMessageToListView (StockIcons.Information, Catalog.GetString ("Searching..."));
+		}
+
+		void AddMessageToListView (Image image, string message)
+		{
+			int row = packageStore.AddRow ();
+			packageStore.SetValue (row, packageIconField, defaultPackageImage);
+			//packageStore.SetValue (row, packageIconField, image);
+			packageStore.SetValue (row, packageDescriptionField, message);
 		}
 
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
@@ -193,11 +213,11 @@ namespace MonoDevelop.PackageManagement
 			this.packageStore.Clear ();
 
 			if (viewModel.HasError) {
-				//	AddErrorToTreeView ();
+				AddErrorToTreeView ();
 			}
 
 			if (viewModel.IsReadingPackages) {
-				//	AddSearchingMessageToTreeView ();
+				AddSearchingMessageToListView ();
 			}
 
 			foreach (PackageViewModel packageViewModel in viewModel.PackageViewModels) {
@@ -207,6 +227,11 @@ namespace MonoDevelop.PackageManagement
 			if (viewModel.PackageViewModels.Any ()) {
 				packagesListView.SelectRow (0);
 			}
+		}
+
+		void AddErrorToTreeView ()
+		{
+			AddMessageToListView (StockIcons.Error, viewModel.ErrorMessage);
 		}
 
 		void AppendPackageToTreeView (PackageViewModel packageViewModel)
@@ -224,6 +249,31 @@ namespace MonoDevelop.PackageManagement
 				packageViewModel.AddPackage ();
 			}
 		}
+
+		void PackageSearchEntryChanged (object sender, EventArgs e)
+		{
+			SearchAfterDelay ();
+		}
+
+		void SearchAfterDelay ()
+		{
+			DisposeExistingTimer ();
+			searchTimer = Application.TimeoutInvoke (searchDelayTimeSpan, Search);
+		}
+
+		void DisposeExistingTimer ()
+		{
+			if (searchTimer != null) {
+				searchTimer.Dispose ();
+			}
+		}
+
+		bool Search ()
+		{
+			viewModel.SearchTerms = this.packageSearchEntry.Text;
+			viewModel.SearchCommand.Execute (null);
+
+			return false;
+		}
 	}
 }
-
