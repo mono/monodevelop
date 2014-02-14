@@ -26,13 +26,14 @@
 using System;
 using Xwt;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Subversion.Gui
 {
-	public static class WorkingCopyFormatDialog
+	static class WorkingCopyFormatDialog
 	{
-		static readonly Command UpgradeCommand = new Command ("Upgrade working copy");
-		static readonly Command DisableCommand = new Command ("Disable version control");
+		static readonly Command UpgradeCommand = new Command (GettextCatalog.GetString ("Upgrade working copy"));
+		static readonly Command DisableCommand = new Command (GettextCatalog.GetString ("Disable version control"));
 
 		internal static void Show (bool isOld, Action action)
 		{
@@ -41,15 +42,16 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 				string secondary;
 				Command[] commands;
 				if (isOld) {
-					primary = "The subversion working copy format is too old.";
-					secondary = "Would you like to upgrade the working copy or Disable subversion integration for this solution?";
+					primary = GettextCatalog.GetString ("The subversion working copy format is too old.");
+					secondary = GettextCatalog.GetString ("Would you like to upgrade the working copy or" +
+						" disable subversion integration for this solution?");
 					commands = new [] {
 						UpgradeCommand,
 						DisableCommand
 					};
 				} else {
-					primary = "The subversion working copy format is too new.";
-					secondary = "Subversion integration will be disabled for this solution.";
+					primary = GettextCatalog.GetString ("The subversion working copy format is too new.");
+					secondary = GettextCatalog.GetString ("Subversion integration will be disabled for this solution.");
 					commands = new [] {
 						DisableCommand
 					};
