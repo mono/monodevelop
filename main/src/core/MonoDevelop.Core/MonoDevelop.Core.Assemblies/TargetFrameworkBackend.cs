@@ -48,8 +48,11 @@ namespace MonoDevelop.Core.Assemblies
 				if (framework.Assemblies.Length == 0)
 					return false;
 
-				foreach (string dir in runtime.GetFrameworkFolders (framework)) {
+				foreach (string dir in GetFrameworkFolders ()) {
 					if (Directory.Exists (dir)) {
+						string manifest = Path.Combine (dir, "RedistList", "FrameworkList.xml");
+						if (File.Exists (manifest))
+							return true;
 						string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
 						if (File.Exists (firstAsm))
 							return true;
