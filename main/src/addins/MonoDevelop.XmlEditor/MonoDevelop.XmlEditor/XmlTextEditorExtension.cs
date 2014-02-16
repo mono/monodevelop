@@ -685,12 +685,16 @@ namespace MonoDevelop.XmlEditor
 			{
 				inferenceQueued = true;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
-					newData.Populate (doc.XDocument);
-					newData.TimeStampUtc = DateTime.UtcNow;
-					newData.ErrorCount = doc.Errors.Count;
-					this.inferenceQueued = false;
-					this.inferredCompletionData = newData;
+					try {
+						InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
+						newData.Populate (doc.XDocument);
+						newData.TimeStampUtc = DateTime.UtcNow;
+						newData.ErrorCount = doc.Errors.Count;
+						this.inferenceQueued = false;
+						this.inferredCompletionData = newData;
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Unhandled error in XML inference", ex);
+					}
 				});
 			}	
 		}
@@ -699,6 +703,6 @@ namespace MonoDevelop.XmlEditor
 		{
 			QueueInference ();
 			base.OnParsedDocumentUpdated ();
-		}		
+		}
 	}
 }
