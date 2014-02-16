@@ -31,6 +31,7 @@ using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.XmlEditor.Completion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -76,22 +77,142 @@ namespace MonoDevelop.XmlEditor
 			//then that gives us information to identify the type of its children
 			MSBuildElement el = null;
 			for (int i = 0; i < path.Count; i++) {
+				//if children of parent is known to be arbitrary data, give up on completion
+				if (el != null && el.SpecialChildName == "Data")
+					return null;
+				//code completion is forgiving, all we care about best guess resolve for deepest child
 				var xel = path [i] as XElement;
-				if (xel == null)
-					continue;
-				string name = xel.Name.FullName;
-				//if not in parent's known children, and parent has special children, then it's special child
-				if (el != null && el.SpecialChildName != null && !el.HasChild (name)) {
-					name = el.SpecialChildName;
-					//if children of parent is known to be arbitrary data, give up on completion
-					if (name == "Data")
-						return null;
-				}
-				el = Elements [name];
+				el = xel != null && xel.Name.Prefix != null ? ResolveBuiltinElement (xel.Name.Name, el) : null;
 			}
 
 			return el;
 		}
+
+		bool inferenceQueued = false;
+		MSBuildResolveInfo inferredCompletionData;
+
+		void QueueInference ()
+		{
+			XmlParsedDocument doc = this.CU as XmlParsedDocument;
+			if (doc == null || doc.XDocument == null || inferenceQueued)
+				return;
+			if (inferredCompletionData != null) {
+				if ((doc.LastWriteTimeUtc - inferredCompletionData.TimeStampUtc).TotalSeconds < 5)
+					return;
+			}
+			inferenceQueued = true;
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					var newData = new MSBuildResolveInfo ();
+					newData.Populate (doc.XDocument);
+					newData.TimeStampUtc = DateTime.UtcNow;
+					if (doc.Errors.Count > 0)
+						newData.Merge (inferredCompletionData);
+					inferredCompletionData = newData;
+					inferenceQueued = false;
+				} catch (Exception ex) {
+					LoggingService.LogInternalError ("Unhandled error in XML inference", ex);
+				}
+			});
+		}
+
+		protected override void OnParsedDocumentUpdated ()
+		{
+			QueueInference ();
+			base.OnParsedDocumentUpdated ();
+		}
+
+		//expected to be immutable except via Populate and Merge
+		class MSBuildResolveInfo
+		{
+			public DateTime TimeStampUtc;
+			public readonly Dictionary<string,HashSet<string>> Items = new Dictionary<string, HashSet<string>> ();
+			public readonly Dictionary<string,HashSet<string>> Tasks = new Dictionary<string, HashSet<string>> ();
+			public readonly HashSet<string> Properties = new HashSet<string> ();
+			public readonly HashSet<string> Imports = new HashSet<string> ();
+
+			public void Merge (MSBuildResolveInfo other)
+			{
+				foreach (var otherItem in other.Items) {
+					HashSet<string> item;
+					if (Items.TryGetValue (otherItem.Key, out item)) {
+						foreach (var att in otherItem.Value)
+							item.Add (att);
+					} else {
+						Items [otherItem.Key] = otherItem.Value;
+					}
+				}
+				foreach (var otherTask in other.Tasks) {
+					HashSet<string> task;
+					if (Tasks.TryGetValue (otherTask.Key, out task)) {
+						foreach (var att in otherTask.Value)
+							task.Add (att);
+					} else {
+						Tasks [otherTask.Key] = otherTask.Value;
+					}
+				}
+				foreach (var prop in other.Properties) {
+					Properties.Add (prop);
+				}
+				foreach (var imp in other.Imports) {
+					Imports.Add (imp);
+				}
+			}
+
+			public void Populate (XDocument doc)
+			{
+				var project = doc.Nodes.OfType<XElement> ().FirstOrDefault (x => x.Name == xnProject);
+				if (project == null)
+					return;
+				var pel = BuiltinElements ["Project"];
+				foreach (var el in project.Nodes.OfType<XElement> ())
+					Populate (el, pel);
+			}
+
+			void Populate (XElement el, MSBuildElement parent)
+			{
+				if (el.Name.Prefix != null)
+					return;
+				var name = el.Name.Name;
+				var bi = ResolveBuiltinElement (name, parent);
+				if (bi == null || !bi.IsSpecial) {
+					foreach (var child in el.Nodes.OfType<XElement> ())
+						Populate (child, bi);
+					return;
+				}
+				switch (parent.SpecialChildName) {
+				case "Item":
+					HashSet<string> item;
+					if (!Items.TryGetValue (name, out item))
+						Items [name] = item = new HashSet<string> ();
+					foreach (var metadata in el.Nodes.OfType<XElement> ())
+						if (!metadata.Name.HasPrefix)
+							item.Add (metadata.Name.Name);
+					break;
+				case "Property":
+					Properties.Add (name);
+					break;
+				case "Import":
+					var import = el.Attributes [xnProject];
+					if (import != null && string.IsNullOrEmpty (import.Value))
+						Imports.Add (import.Value);
+					break;
+				case "Task":
+					HashSet<string> task;
+					if (!Tasks.TryGetValue (name, out task))
+						Tasks [name] = task = new HashSet<string> ();
+					foreach (var att in el.Attributes)
+						if (!att.Name.HasPrefix)
+							task.Add (att.Name.Name);
+					break;
+				case "Parameter":
+					//TODO: Parameter
+					break;
+				}
+			}
+		}
+
+		static readonly XName xnProject = new XName ("Project");
 
 		class MSBuildElement
 		{
@@ -106,7 +227,17 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 
-		readonly Dictionary<string,MSBuildElement> Elements = new Dictionary<string, MSBuildElement> {
+		static MSBuildElement ResolveBuiltinElement (string name, MSBuildElement parent)
+		{
+			//if not in parent's known children, and parent has special children, then it's a special child
+			if (parent != null && parent.SpecialChildName != null && !parent.HasChild (name))
+				name = parent.SpecialChildName;
+			MSBuildElement result;
+			BuiltinElements.TryGetValue (name, out result);
+			return result;
+		}
+
+		static readonly Dictionary<string,MSBuildElement> BuiltinElements = new Dictionary<string, MSBuildElement> {
 			{
 				"Choose", new MSBuildElement {
 					Children = new[] { "Otherwise", "When" },
