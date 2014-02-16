@@ -47,49 +47,128 @@ namespace MonoDevelop.XmlEditor
 
 			if (path.Count == 0) {
 				list.Add (new XmlCompletionData ("Project", XmlCompletionData.DataType.XmlElement));
-			} else {
-				var el = GetMSBuildElement (path);
-				if (el != null && el.Children != null)
-					foreach (var c in el.Children)
-						list.Add (new XmlCompletionData (c, XmlCompletionData.DataType.XmlElement));
+				return;
 			}
+
+			var rr = ResolveElement (path);
+			if (rr == null)
+				return;
+
+			if (rr.BuiltinChildren != null)
+				foreach (var c in rr.BuiltinChildren)
+					list.Add (new XmlCompletionData (c, XmlCompletionData.DataType.XmlElement));
+
+			var inferredChildren = GetInferredChildren (rr);
+			if (inferredChildren != null)
+				foreach (var c in inferredChildren)
+					list.Add (new XmlCompletionData (c, XmlCompletionData.DataType.XmlElement));
 		}
 
-		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-			Dictionary<string, string> existingAtts)
+		IEnumerable<string> GetInferredChildren (ResolveResult rr)
 		{
-			var el = GetMSBuildElement (GetCurrentPath ());
+			if (inferredCompletionData == null)
+				return null;
 
-			if (el != null && el.Attributes != null) {
-				var list = new CompletionDataList ();
-				foreach (var a in el.Attributes)
-					if (!existingAtts.ContainsKey (a))
-						list.Add (new XmlCompletionData (a, XmlCompletionData.DataType.XmlElement));
-				return list;
+			if (rr.ElementType == "Item") {
+				HashSet<string> metadata;
+				inferredCompletionData.Items.TryGetValue (rr.ElementName, out metadata);
+				return metadata;
+			}
+
+			if (rr.ChildType != null) {
+				switch (rr.ChildType) {
+				case "Item":
+					return inferredCompletionData.Items.Keys;
+				case "Task":
+					return inferredCompletionData.Tasks.Keys;
+				case "Property":
+					return inferredCompletionData.Properties;
+				}
 			}
 
 			return null;
 		}
 
-		MSBuildElement GetMSBuildElement (IList<XObject> path)
+		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts)
+		{
+			var path = GetCurrentPath ();
+
+			var rr = ResolveElement (path);
+			if (rr == null)
+				return null;
+
+			var list = new CompletionDataList ();
+			if (rr.BuiltinAttributes != null)
+				foreach (var a in rr.BuiltinAttributes)
+					if (!existingAtts.ContainsKey (a))
+						list.Add (new XmlCompletionData (a, XmlCompletionData.DataType.XmlAttribute));
+
+			var inferredAttributes = GetInferredChildren (rr);
+			if (inferredAttributes != null)
+				foreach (var a in inferredAttributes)
+					if (!existingAtts.ContainsKey (a))
+						list.Add (new XmlCompletionData (a, XmlCompletionData.DataType.XmlAttribute));
+
+			return list;
+		}
+
+		IEnumerable<string> GetInferredAttributes (ResolveResult rr)
+		{
+			if (inferredCompletionData == null || rr.ElementType != "Task")
+				return null;
+
+			HashSet<string> attributes;
+			inferredCompletionData.Items.TryGetValue (rr.ElementName, out attributes);
+			return attributes;
+		}
+
+		static ResolveResult ResolveElement (IList<XObject> path)
 		{
 			//need to look up element by walking how the path, since at each level, if the parent has special children,
 			//then that gives us information to identify the type of its children
 			MSBuildElement el = null;
+			string elName = null, elType = null;
 			for (int i = 0; i < path.Count; i++) {
 				//if children of parent is known to be arbitrary data, give up on completion
 				if (el != null && el.SpecialChildName == "Data")
 					return null;
 				//code completion is forgiving, all we care about best guess resolve for deepest child
 				var xel = path [i] as XElement;
-				el = xel != null && xel.Name.Prefix != null ? ResolveBuiltinElement (xel.Name.Name, el) : null;
+				if (xel != null && xel.Name.Prefix == null) {
+					if (el != null)
+						elType = el.SpecialChildName;
+					elName = xel.Name.Name;
+					el = ResolveBuiltinElement (elName, el);
+					if (el != null)
+						continue;
+				}
+				el = null;
+				elName = elType = null;
 			}
+			if (el == null)
+				return null;
 
-			return el;
+			return new ResolveResult {
+				ElementName = elName,
+				ElementType = elType,
+				ChildType = el.SpecialChildName,
+				BuiltinAttributes = el.Attributes,
+				BuiltinChildren = el.Children,
+			};
+		}
+
+		class ResolveResult
+		{
+			public string ElementName;
+			public string ElementType;
+			public string ChildType;
+			public string[] BuiltinAttributes;
+			public string[] BuiltinChildren;
 		}
 
 		bool inferenceQueued = false;
-		MSBuildResolveInfo inferredCompletionData;
+		ResolveContext inferredCompletionData;
 
 		void QueueInference ()
 		{
@@ -103,7 +182,7 @@ namespace MonoDevelop.XmlEditor
 			inferenceQueued = true;
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					var newData = new MSBuildResolveInfo ();
+					var newData = new ResolveContext ();
 					newData.Populate (doc.XDocument);
 					newData.TimeStampUtc = DateTime.UtcNow;
 					if (doc.Errors.Count > 0)
@@ -123,7 +202,7 @@ namespace MonoDevelop.XmlEditor
 		}
 
 		//expected to be immutable except via Populate and Merge
-		class MSBuildResolveInfo
+		class ResolveContext
 		{
 			public DateTime TimeStampUtc;
 			public readonly Dictionary<string,HashSet<string>> Items = new Dictionary<string, HashSet<string>> ();
@@ -131,7 +210,7 @@ namespace MonoDevelop.XmlEditor
 			public readonly HashSet<string> Properties = new HashSet<string> ();
 			public readonly HashSet<string> Imports = new HashSet<string> ();
 
-			public void Merge (MSBuildResolveInfo other)
+			public void Merge (ResolveContext other)
 			{
 				foreach (var otherItem in other.Items) {
 					HashSet<string> item;
