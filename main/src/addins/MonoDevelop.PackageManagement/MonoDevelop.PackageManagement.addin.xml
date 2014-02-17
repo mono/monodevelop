@@ -48,6 +48,11 @@
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update"
 			_label="_Update" />
+		<Command
+			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject"
+			_description="Update all packages in a project"
+			_label="_Update"
+			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProjectHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
@@ -77,6 +82,8 @@
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.Restore" />
 		</Condition>
