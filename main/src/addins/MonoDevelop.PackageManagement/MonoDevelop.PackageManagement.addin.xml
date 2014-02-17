@@ -62,15 +62,17 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="Solution">
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.RestorePackages"
+				insertafter="MonoDevelop.PackageManagement.Commands.AddReference"
+				insertbefore="AddSectionEnd" />
+		</Condition>
 		<Condition id="ItemType" value="Project">
 			<CommandItem
-				id = "MonoDevelop.PackageManagement.Commands.AddPackages"
-				insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-				insertbefore = "AddSectionEnd" />
-			<CommandItem
-				id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-				insertafter = "MonoDevelop.PackageManagement.Commands.AddReference"
-				insertbefore = "AddSectionEnd" />
+				id="MonoDevelop.PackageManagement.Commands.AddPackages"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+				insertbefore="AddSectionEnd" />
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
@@ -115,7 +117,7 @@
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
-		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
+		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 </Addin>
