@@ -47,7 +47,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using Mono.TextEditor;
 using System.Linq;
@@ -1450,21 +1449,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				TypeNodeBuilder tb2 = (TypeNodeBuilder) chain2[0];
 				object o1 = store.GetValue (a, DataItemColumn);
 				object o2 = store.GetValue (b, DataItemColumn);
-				string name1 = tb1.GetNodeName (compareNode1, o1);
-				string name2 = tb2.GetNodeName (compareNode2, o2);
-				if (!(a is ProjectFile) || !(b is ProjectFile))
-					return string.Compare (name1, name2, true);
-
-				//Compare filenames without extension
-				string path1 = System.IO.Path.GetFileNameWithoutExtension (name1);
-				string path2 = System.IO.Path.GetFileNameWithoutExtension (name2);
-				int cmp = string.Compare (path1, path2, true);
-				if (cmp != 0)
-					return cmp;
-				//Compare with extension
-				string ext1 = System.IO.Path.GetExtension (name1);
-				string ext2 = System.IO.Path.GetExtension (name2);
-				return string.Compare (ext1, ext2, true);
+				return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 			} finally {
 				sorting = false;
 			}
