@@ -111,11 +111,10 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringTypeDefinition;
 			}
 
-			memberStartOffset = sb.Length;
 			var segmentLine = data.Editor.GetLineByOffset (seg.Offset);
+			memberStartOffset = sb.Length + seg.Offset - segmentLine.Offset;
 			var text = data.Editor.GetTextBetween (Math.Max (0, segmentLine.Offset), endOffset);
 			sb.Append (text);
-
 			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
 			lex.Parse (ch => {
 				if (lex.IsInString || lex.IsInChar || lex.IsInVerbatimString || lex.IsInSingleComment || lex.IsInMultiLineComment || lex.IsInPreprocessorDirective)
