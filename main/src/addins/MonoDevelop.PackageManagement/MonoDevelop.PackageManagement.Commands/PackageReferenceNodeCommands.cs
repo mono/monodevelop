@@ -1,5 +1,5 @@
 ﻿//
-// PackageReferenceNodeBuilder.cs
+// PackageReferenceNodeCommands.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageReferenceNodeBuilder : TypeNodeBuilder
+	public enum PackageReferenceNodeCommands
 	{
-		public override Type NodeDataType {
-			get { return typeof(PackageReferenceNode); }
-		}
-
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
-		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			return packageReferenceNode.Name;
-		}
-
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference"; }
-		}
-
-		public override Type CommandHandlerType {
-			get { return typeof(PackageReferenceNodeCommandHandler); }
-		}
-
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
-		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			label = packageReferenceNode.Name;
-			icon = Context.GetIcon (Stock.Package);
-		}
+		UpdatePackage
 	}
 }
 

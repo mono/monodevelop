@@ -264,6 +264,8 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectPackagesFolderNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -1,5 +1,5 @@
 ﻿//
-// PackageReferenceNodeBuilder.cs
+// PackageReferenceNodeCommandHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,39 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using Gdk;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.Commands;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageReferenceNodeBuilder : TypeNodeBuilder
+	public class PackageReferenceNodeCommandHandler : NodeCommandHandler
 	{
-		public override Type NodeDataType {
-			get { return typeof(PackageReferenceNode); }
-		}
-
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		public override void DeleteItem ()
 		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			return packageReferenceNode.Name;
+			Ide.MessageService.ShowMessage ("Deleting...");
 		}
 
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference"; }
-		}
-
-		public override Type CommandHandlerType {
-			get { return typeof(PackageReferenceNodeCommandHandler); }
-		}
-
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
+		[CommandUpdateHandler (EditCommands.Delete)]
+		public void UpdateRemoveItem (CommandInfo info)
 		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			label = packageReferenceNode.Name;
-			icon = Context.GetIcon (Stock.Package);
+			info.Enabled = CanDeleteMultipleItems ();
+			info.Text = GettextCatalog.GetString ("Remove");
+		}
+
+		public override bool CanDeleteMultipleItems ()
+		{
+			return !MultipleSelectedNodes;
+		}
+
+		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
+		public void UpdatePackage ()
+		{
+			Ide.MessageService.ShowMessage ("Updating...");
 		}
 	}
 }
