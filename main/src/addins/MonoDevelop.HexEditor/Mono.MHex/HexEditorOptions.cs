@@ -31,7 +31,6 @@ namespace Mono.MHex
 {
 	class HexEditorOptions : IHexEditorOptions, IDisposable
 	{
-		public const string DEFAULT_FONT = "Mono 10";
 		static HexEditorOptions options = new HexEditorOptions ();
 		public static HexEditorOptions DefaultOptions {
 			get {
@@ -98,7 +97,7 @@ namespace Mono.MHex
 				OnChanged (EventArgs.Empty);
 			}
 		}
-		string fontName = DEFAULT_FONT;
+		string fontName;
 		public virtual string FontName {
 			get {
 				return fontName;
@@ -106,7 +105,7 @@ namespace Mono.MHex
 			set {
 				if (fontName != value) {
 					DisposeFont ();
-					fontName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
+					fontName = value;
 					OnChanged (EventArgs.Empty);
 				}
 			}
@@ -133,8 +132,8 @@ namespace Mono.MHex
 					catch {
 						Console.WriteLine ("Could not load font: {0}", FontName);
 					}
-					if (font == null || String.IsNullOrEmpty (font.Family))
-						font = Font.FromName (DEFAULT_FONT);
+					if (font == null || FontName.IndexOf (font.Family, StringComparison.Ordinal) < 0)
+						font = Font.SystemMonospaceFont;
 					if (font != null)
 						font = font.WithSize (font.Size * Zoom);
 				}

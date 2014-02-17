@@ -60,7 +60,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		RazorSyntaxMode syntaxMode;
 
-		UnderlyingDocument HiddenDoc	{
+		UnderlyingDocument HiddenDoc {
 			get { return hiddenInfo.UnderlyingDocument; }
 		}
 

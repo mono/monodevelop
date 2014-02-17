@@ -1383,90 +1383,90 @@ namespace MonoDevelop.CSharp.Formatting
 		[ItemProperty]
 		public int BlankLinesBeforeUsings {
 			get {
-				return options.BlankLinesBeforeUsings;
+				return options.MinimumBlankLinesBeforeUsings;
 			}
 			set {
-				options.BlankLinesBeforeUsings = value;
+				options.MinimumBlankLinesBeforeUsings = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesAfterUsings {
 			get {
-				return options.BlankLinesAfterUsings;
+				return options.MinimumBlankLinesAfterUsings;
 			}
 			set {
-				options.BlankLinesAfterUsings = value;
+				options.MinimumBlankLinesAfterUsings = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesBeforeFirstDeclaration {
 			get {
-				return options.BlankLinesBeforeFirstDeclaration;
+				return options.MinimumBlankLinesBeforeFirstDeclaration;
 			}
 			set {
-				options.BlankLinesBeforeFirstDeclaration = value;
+				options.MinimumBlankLinesBeforeFirstDeclaration = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesBetweenTypes {
 			get {
-				return options.BlankLinesBetweenTypes;
+				return options.MinimumBlankLinesBetweenTypes;
 			}
 			set {
-				options.BlankLinesBetweenTypes = value;
+				options.MinimumBlankLinesBetweenTypes = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesBetweenFields {
 			get {
-				return options.BlankLinesBetweenFields;
+				return options.MinimumBlankLinesBetweenFields;
 			}
 			set {
-				options.BlankLinesBetweenFields = value;
+				options.MinimumBlankLinesBetweenFields = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesBetweenEventFields {
 			get {
-				return options.BlankLinesBetweenEventFields;
+				return options.MinimumBlankLinesBetweenEventFields;
 			}
 			set {
-				options.BlankLinesBetweenEventFields = value;
+				options.MinimumBlankLinesBetweenEventFields = value;
 			}
 		}
 		
 		[ItemProperty]
 		public int BlankLinesBetweenMembers {
 			get {
-				return options.BlankLinesBetweenMembers;
+				return options.MinimumBlankLinesBetweenMembers;
 			}
 			set {
-				options.BlankLinesBetweenMembers = value;
+				options.MinimumBlankLinesBetweenMembers = value;
 			}
 		}
 
 		[ItemProperty]
 		public int BlankLinesAroundRegion {
 			get {
-				return options.BlankLinesAroundRegion;
+				return options.MinimumBlankLinesAroundRegion;
 			}
 			set {
-				options.BlankLinesAroundRegion = value;
+				options.MinimumBlankLinesAroundRegion = value;
 			}
 		}
 
 		[ItemProperty]
 		public int BlankLinesInsideRegion {
 			get {
-				return options.BlankLinesInsideRegion;
+				return options.MinimumBlankLinesInsideRegion;
 			}
 			set {
-				options.BlankLinesInsideRegion = value;
+				options.MinimumBlankLinesInsideRegion = value;
 			}
 		}
 		#endregion

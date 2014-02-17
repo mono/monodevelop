@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
@@ -1104,7 +1103,7 @@ None</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog" design-size="880 551">
+  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog" design-size="880 555">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -1125,7 +1124,7 @@ None</property>
               <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Position">424</property>
+                <property name="Position">380</property>
                 <child>
                   <widget class="Gtk.VBox" id="vbox2">
                     <property name="MemberName" />
@@ -1232,9 +1231,27 @@ None</property>
                           <widget class="Gtk.Table" id="table4">
                             <property name="MemberName" />
                             <property name="NRows">12</property>
-                            <property name="NColumns">2</property>
+                            <property name="NColumns">3</property>
                             <property name="RowSpacing">6</property>
                             <property name="ColumnSpacing">6</property>
+                            <child>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
+                            </child>
+                            <child>
+                              <placeholder />
+                            </child>
                             <child>
                               <placeholder />
                             </child>
@@ -1249,6 +1266,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1256,11 +1274,12 @@ None</property>
                                 <property name="BottomAttach">3</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">Shrink</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
-                                <property name="XShrink">False</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
+                                <property name="XShrink">True</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
                                 <property name="YShrink">False</property>
@@ -1271,6 +1290,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1278,10 +1298,11 @@ None</property>
                                 <property name="BottomAttach">11</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1293,6 +1314,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1300,10 +1322,11 @@ None</property>
                                 <property name="BottomAttach">5</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1315,6 +1338,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1322,11 +1346,12 @@ None</property>
                                 <property name="BottomAttach">2</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">Shrink</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
-                                <property name="XShrink">False</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
+                                <property name="XShrink">True</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
                                 <property name="YShrink">False</property>
@@ -1337,6 +1362,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1344,10 +1370,11 @@ None</property>
                                 <property name="BottomAttach">9</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1359,6 +1386,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1366,10 +1394,11 @@ None</property>
                                 <property name="BottomAttach">8</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1381,6 +1410,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1388,10 +1418,11 @@ None</property>
                                 <property name="BottomAttach">10</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1403,6 +1434,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1410,10 +1442,11 @@ None</property>
                                 <property name="BottomAttach">6</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1425,6 +1458,7 @@ None</property>
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                                 <property name="IsEditable">True</property>
+                                <property name="WidthChars">5</property>
                                 <property name="InvisibleChar">●</property>
                               </widget>
                               <packing>
@@ -1432,10 +1466,11 @@ None</property>
                                 <property name="BottomAttach">12</property>
                                 <property name="LeftAttach">1</property>
                                 <property name="RightAttach">2</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
+                                <property name="XOptions">0</property>
                                 <property name="YOptions">Fill</property>
-                                <property name="XExpand">True</property>
-                                <property name="XFill">True</property>
+                                <property name="XExpand">False</property>
+                                <property name="XFill">False</property>
                                 <property name="XShrink">False</property>
                                 <property name="YExpand">False</property>
                                 <property name="YFill">True</property>
@@ -1446,12 +1481,13 @@ None</property>
                               <widget class="Gtk.Label" id="GtkLabel8">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">&lt;b&gt;Blank lines in namespaces&lt;/b&gt;</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;Minimum blank lines in namespaces&lt;/b&gt;</property>
                                 <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
                                 <property name="TopAttach">3</property>
                                 <property name="BottomAttach">4</property>
+                                <property name="RightAttach">3</property>
                                 <property name="AutoSize">True</property>
                                 <property name="XOptions">Fill</property>
                                 <property name="YOptions">Fill</property>
@@ -1467,12 +1503,13 @@ None</property>
                               <widget class="Gtk.Label" id="GtkLabel9">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">&lt;b&gt;Blank lines in types&lt;/b&gt;</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;Minimum blank lines in types&lt;/b&gt;</property>
                                 <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
                                 <property name="TopAttach">6</property>
                                 <property name="BottomAttach">7</property>
+                                <property name="RightAttach">3</property>
                                 <property name="AutoSize">True</property>
                                 <property name="XOptions">Fill</property>
                                 <property name="YOptions">Fill</property>
@@ -1488,10 +1525,11 @@ None</property>
                               <widget class="Gtk.Label" id="label1">
                                 <property name="MemberName" />
                                 <property name="Xalign">0</property>
-                                <property name="LabelProp" translatable="yes">&lt;b&gt;Blank lines in compilation unit&lt;/b&gt;</property>
+                                <property name="LabelProp" translatable="yes">&lt;b&gt;Minimum blank lines in compilation unit&lt;/b&gt;</property>
                                 <property name="UseMarkup">True</property>
                               </widget>
                               <packing>
+                                <property name="RightAttach">3</property>
                                 <property name="AutoSize">False</property>
                                 <property name="YOptions">Fill</property>
                                 <property name="XExpand">True</property>

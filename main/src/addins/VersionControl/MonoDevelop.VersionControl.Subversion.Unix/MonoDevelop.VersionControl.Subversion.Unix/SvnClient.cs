@@ -11,8 +11,6 @@ using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
 using off_t = System.Int64;
 using MonoDevelop.Projects.Text;
-using System.Timers;
-using System.Threading;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -1482,8 +1480,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
+		bool Upgrading;
+		bool TooOld;
 		internal string GetDirectoryDotSvnInternal (FilePath path)
 		{
+			if (Upgrading || TooOld)
+				return String.Empty;
+
 			IntPtr result;
 			IntPtr scratch = newpool (pool);
 			var localpool = TryStartOperation (null);
@@ -1492,13 +1495,23 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				try {
 					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
 				} catch (SubversionException e) {
+					// SVN_ERR_SVN_ERR_WC_UPGRADE_REQUIRED
+					Upgrading = e.ErrorCode == 155036;
+
+					// SVN_ERR_WC_UNSUPPORTED_FORMAT
+					TooOld = e.ErrorCode == 155021;
+
 					// We are not in a working copy.
 					switch (e.ErrorCode) {
 					// SVN_ERR_WC_NOT_DIRECTORY
 					case 155007:
-						// SVN_ERR_WC_NOT_FILE
+					// SVN_ERR_WC_NOT_FILE
 					case 155008:
-						return "";
+					// SVN_ERR_WC_UNSUPPORTED_FORMAT
+					case 155021:
+					// SVN_ERR_SVN_ERR_WC_UPGRADE_REQUIRED
+					case 155036:
+						return String.Empty;
 					}
 					throw;
 				}
@@ -1507,7 +1520,37 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				apr.pool_destroy (localpool);
 				apr.pool_destroy (scratch);
 				TryEndOperation ();
+
+				if (TooOld)
+					WorkingCopyFormatPrompt (false, null);
+
+				if (Upgrading)
+					WorkingCopyFormatPrompt (true, delegate {
+						Upgrade (path);
+					});
 			}
+		}
+
+		public void Upgrade (FilePath path)
+		{
+			if (!Upgrading || path.IsNullOrEmpty)
+				return;
+
+			var localpool = TryStartOperation (null);
+			bool tryParent = false;
+			try {
+				CheckError (svn.client_upgrade (path, ctx, localpool));
+			} catch (Exception e) {
+				tryParent = true;
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+
+			if (tryParent)
+				Upgrade (path.ParentDirectory);
+			else
+				Upgrading = false;
 		}
 
 		public class StatusCollector {

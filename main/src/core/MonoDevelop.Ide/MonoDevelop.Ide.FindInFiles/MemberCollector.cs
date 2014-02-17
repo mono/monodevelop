@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		/// in the inheritance tree
 		/// </summary>
 		public static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, ReferenceFinder.RefactoryScope scope,
-														   bool includeOverloads = true, bool matchDeclaringType = false)
+			bool includeOverloads = true, bool matchDeclaringType = false)
 		{
 			if (solution == null || member.SymbolKind == SymbolKind.Destructor || member.SymbolKind == SymbolKind.Operator)
 				return new [] { member };
@@ -128,10 +128,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				return GetMembers (declaringType, member, false, memberFilter);
 
 			var searchTypes = new List<ITypeDefinition> ();
-			var interfaces = from t in declaringType.GetAllBaseTypeDefinitions ()
-							 where t.Kind == TypeKind.Interface && GetMembers (t, member, true, memberFilter).Any ()
-							 select t;
-			searchTypes.AddRange (GetBaseTypes (interfaces));
+			if (includeOverloads) {
+				var interfaces = from t in declaringType.GetAllBaseTypeDefinitions ()
+								 where t.Kind == TypeKind.Interface && GetMembers (t, member, true, memberFilter).Any ()
+								 select t;
+				searchTypes.AddRange (GetBaseTypes (interfaces));
+			}
 
 			if (member.DeclaringType.Kind == TypeKind.Class) {
 				var members = GetMembers (declaringType, member, false, memberFilter).ToList ();

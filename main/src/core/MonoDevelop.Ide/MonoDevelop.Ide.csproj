@@ -2384,7 +2384,8 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CombineMSBuildOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadCollection.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
-    <Compile Include="MonoDevelop.Components\DropDownBox.cs" />
+    <Compile Include="MonoDevelop.Components\ExtendedTitleBarWindow.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarWindowBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

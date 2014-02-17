@@ -38,11 +38,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
-		ProjectCollection engine;
-		string file;
+		readonly ProjectCollection engine;
+		readonly string file;
 		ILogWriter currentLogWriter;
-		ConsoleLogger consoleLogger;
-		BuildEngine buildEngine;
+		readonly ConsoleLogger consoleLogger;
+		readonly BuildEngine buildEngine;
 
 		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
 		{
@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
 
-					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
+					var logger = new LocalLogger (file);
 					engine.UnregisterAllLoggers ();
 					engine.RegisterLogger (logger);
 					engine.RegisterLogger (consoleLogger);
@@ -95,8 +95,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					project.Build (target);
 					
 					result = logger.BuildResult.ToArray ();
-		//		} catch (InvalidProjectFileException ex) {
-		//			result = new MSBuildResult[] { new MSBuildResult (false, ex.ProjectFile ?? file, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message) };
+				} catch (Microsoft.Build.Exceptions.InvalidProjectFileException ex) {
+						var r = new MSBuildResult (
+							file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
+							ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
+							ex.BaseMessage, ex.HelpKeyword);
+						logWriter.WriteLine (r.ToString ());
+						result = new [] { r };
 				} finally {
 					currentLogWriter = null;
 				}
@@ -133,7 +138,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// an xbuild bug which causes references to not be resolved after the project has been built once.
 				var pi = project.CreateProjectInstance ();
 				pi.Build ("ResolveAssemblyReferences", null);
-				List<string> refs = new List<string> ();
+				var refs = new List<string> ();
 				foreach (ProjectItemInstance item in pi.GetItems ("ReferencePath"))
 					refs.Add (UnescapeString (item.EvaluatedInclude));
 				refsArray = refs.ToArray ();

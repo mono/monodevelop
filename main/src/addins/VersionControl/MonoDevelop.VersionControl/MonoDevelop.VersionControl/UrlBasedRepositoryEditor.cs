@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl
 		
 		void Fill ()
 		{
-			if (repo.Uri != null) {
+			if (repo.Uri != null && repo.Uri.IsAbsoluteUri) {
 				if (repo.Name == repositoryServerEntry.Text)
 					repo.Name = repo.Uri.Host;
 				repositoryServerEntry.Text = repo.Uri.Host;

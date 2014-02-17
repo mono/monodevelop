@@ -57,6 +57,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 			data = new TextEditorData (document);
 			Name = "";
 		}
+
+		public TestViewContent (TextEditorData data)
+		{
+			this.document = data.Document;
+			this.data = data;
+			Name = "";
+		}
 		
 		public override void Load(string fileName)
 		{

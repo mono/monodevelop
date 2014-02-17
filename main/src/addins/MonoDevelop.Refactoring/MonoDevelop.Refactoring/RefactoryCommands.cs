@@ -216,6 +216,9 @@ namespace MonoDevelop.Refactoring
 
 		static bool HasOverloads (Solution solution, object item)
 		{
+			var member = item as IMember;
+			if (member != null && member.ImplementedInterfaceMembers.Any ())
+				return true;
 			var method = item as IMethod;
 			if (method == null)
 				return false;

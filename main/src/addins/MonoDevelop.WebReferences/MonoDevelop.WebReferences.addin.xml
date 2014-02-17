@@ -48,6 +48,7 @@
 	<Extension path = "/MonoDevelop/WebReferences/ContextMenu/ProjectPad/WebReferenceFolder">
 		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll" />
+		<CommandItem id = "MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/WebReferences/ContextMenu/ProjectPad/WebReferenceItem">

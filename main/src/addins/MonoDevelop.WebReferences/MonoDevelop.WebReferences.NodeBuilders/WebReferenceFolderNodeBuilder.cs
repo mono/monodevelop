@@ -49,7 +49,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		/// <param name="closedIcon">A Pixbif containing the closed icon for the node.</param>
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			nodeInfo.Label = GettextCatalog.GetString ("Web References");
+			var folder = (WebReferenceFolder) dataObject;
+			nodeInfo.Label = folder.IsWCF ? GettextCatalog.GetString ("Web Services") : GettextCatalog.GetString ("Web References");
 			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
 			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
 			
@@ -69,8 +70,12 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var folder = (WebReferenceFolder) dataObject;
-			foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItems (folder.Project))
-				treeBuilder.AddChild(item);
+			if (folder.IsWCF)
+				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWCF (folder.Project))
+					treeBuilder.AddChild(item);
+			else
+				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWS (folder.Project))
+					treeBuilder.AddChild(item);
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>

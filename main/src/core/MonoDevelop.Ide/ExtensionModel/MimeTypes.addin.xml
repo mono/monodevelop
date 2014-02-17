@@ -77,6 +77,9 @@
 		<File pattern="*.fs" />
 		<File pattern="*.fsx" />
 	</MimeType>
+	<MimeType id="application/x-msbuild" _description="MSBuild targets file" baseType="application/xml">
+		<File pattern="*.targets" />
+	</MimeType>
 </Extension>
 
 </ExtensionModel>

@@ -512,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				if (reIndent || key != Gdk.Key.Return && automaticReindent) {
+				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}

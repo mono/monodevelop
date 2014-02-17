@@ -170,6 +170,11 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
 		}
+
+		public static IEnumerable<string> GetMimeTypeInheritanceChainForFile (string filename)
+		{
+			return GetMimeTypeInheritanceChain (GetMimeTypeForUri (filename));
+		}
 		
 		public static Xwt.Drawing.Image GetIconForFile (string filename)
 		{

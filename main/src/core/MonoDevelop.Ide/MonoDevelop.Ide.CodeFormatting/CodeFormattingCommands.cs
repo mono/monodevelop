@@ -26,10 +26,9 @@
 
 using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -40,26 +39,31 @@ namespace MonoDevelop.Ide.CodeFormatting
 	
 	public class FormatBufferHandler : CommandHandler
 	{
+		internal static CodeFormatter GetFormatter (out Document doc)
+		{
+			doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
+			var editor = doc.Editor;
+			if (editor == null)
+				return null;
+			return editor == null ? null : CodeFormatterService.GetFormatter (editor.MimeType);
+		}
+
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
-				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
-				var formatter = CodeFormatterService.GetFormatter (mt);
-				if (formatter != null)
-					return;
-			}
-			info.Enabled = false;
+			Document doc;
+			var formatter = GetFormatter (out doc);
+			info.Enabled = formatter != null;
 		}
 		
 		protected override void Run (object tool)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return;
-			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
-			var formatter = CodeFormatterService.GetFormatter (mt);
+			Document doc;
+			var formatter = GetFormatter (out doc);
 			if (formatter == null)
 				return;
+
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
 					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
@@ -74,27 +78,19 @@ namespace MonoDevelop.Ide.CodeFormatting
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
-				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
-				var formatter = CodeFormatterService.GetFormatter (mt);
-				if (formatter != null && !formatter.IsDefault) {
-					info.Enabled = true;
-					return;
-				}
-			}
-			info.Enabled = false;
+			Document doc;
+			var formatter = FormatBufferHandler.GetFormatter (out doc);
+			info.Enabled = formatter != null && !formatter.IsDefault;
 		}
 		
 		protected override void Run (object tool)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return;
-			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
-			var formatter = CodeFormatterService.GetFormatter (mt);
+			Document doc;
+			var formatter = FormatBufferHandler.GetFormatter (out doc);
 			if (formatter == null)
 				return;
-			Mono.TextEditor.TextSegment selection;
+
+			TextSegment selection;
 			var editor = doc.Editor;
 			if (editor.IsSomethingSelected) {
 				selection = editor.SelectionRange;

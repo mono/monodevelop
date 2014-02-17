@@ -74,8 +74,12 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandHandler (WebReferenceCommands.UpdateAll)]
 		public void UpdateAll()
 		{
-			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-			UpdateReferences (WebReferencesService.GetWebReferenceItems (project).ToArray ());
+			var folder = (WebReferenceFolder)CurrentNode.DataItem;
+			DotNetProject project = folder.Project;
+			if (folder.IsWCF)
+				UpdateReferences (WebReferencesService.GetWebReferenceItemsWCF (project).ToArray ());
+			else
+				UpdateReferences (WebReferencesService.GetWebReferenceItemsWS (project).ToArray ());
 		}
 		
 		void UpdateReferences (IList<WebReferenceItem> items)
@@ -137,9 +141,16 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandHandler (WebReferenceCommands.DeleteAll)]
 		public void DeleteAll()
 		{
-			DotNetProject project = ((WebReferenceFolder) CurrentNode.DataItem).Project;
-			var items = new List<WebReferenceItem> (WebReferencesService.GetWebReferenceItems (project));
-			foreach (var item in items)
+			var folder = (WebReferenceFolder)CurrentNode.DataItem;
+			DotNetProject project = folder.Project;
+			IEnumerable<WebReferenceItem> items;
+
+			if (folder.IsWCF)
+				items = WebReferencesService.GetWebReferenceItemsWCF (project);
+			else
+				items = WebReferencesService.GetWebReferenceItemsWS (project);
+
+			foreach (var item in items.ToList ())
 				item.Delete();
 
 			IdeApp.ProjectOperations.Save(project);

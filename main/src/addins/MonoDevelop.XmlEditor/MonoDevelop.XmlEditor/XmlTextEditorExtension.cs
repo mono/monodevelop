@@ -57,16 +57,6 @@ namespace MonoDevelop.XmlEditor
 		bool inferenceQueued = false;
 		
 //		bool showSchemaAnnotation;
-
-		public override string CompletionLanguage {
-			get {
-				return "Html";
-			}
-		}
-
-		public XmlTextEditorExtension() : base ()
-		{
-		}
 		
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
@@ -84,7 +74,6 @@ namespace MonoDevelop.XmlEditor
 			SetDefaultSchema ();
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			Document.UpdateParseDocument ();
 			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
 				view.Document.MimeType = ApplicationXmlMimeType;
 				Document.ReparseDocument ();
@@ -444,7 +433,7 @@ namespace MonoDevelop.XmlEditor
 		/// Determines whether the file can be displayed by
 		/// the xml editor.
 		/// </summary>
-		public static bool IsFileNameHandled (string fileName)
+		static bool IsFileNameHandled (string fileName)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return false;
@@ -456,11 +445,14 @@ namespace MonoDevelop.XmlEditor
 			return XmlFileAssociationManager.IsXmlFileName (fileName);
 		}
 		
-		public static bool IsMimeTypeHandled (string mimeType)
+		static bool IsMimeTypeHandled (string mimeType)
 		{
-			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType))
+			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
+				if (m == MonoDevelop.XmlEditor.MSBuild.MSBuildTextEditorExtension.MSBuildMimeType)
+					return false;
+			}
 			return false;
 		}
 			
@@ -670,43 +662,6 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		/*
-		[CommandUpdateHandler (CodeFormattingCommands.FormatSelection)]
-		internal void UpdateFormatSelection (CommandInfo info)
-		{
-			info.Enabled = false;
-		}
-		
-		[CommandHandler (CodeFormattingCommands.FormatSelection)]
-		internal void FormatSelection (CommandInfo info)
-		{
-			throw new NotImplementedException ();
-		}
-		*/
-		
-		[CommandUpdateHandler (CodeFormattingCommands.FormatBuffer)]
-		internal void UpdateFormatDocument (CommandInfo info)
-		{
-			//we know there is an XML formatter because this addin registers it
-			info.Enabled = true;
-		}
-		
-		//we have to implement the command here simply to force the document mimetype
-		//FIXME: instead we should register the XML mimetype additions to the desktopservice
-		[CommandHandler (CodeFormattingCommands.FormatBuffer)]
-		internal void FormatDocument ()
-		{
-			var formatter = CodeFormatterService.GetFormatter (TextXmlMimeType);
-			using (var undo = Editor.OpenUndoGroup ()) {
-				var loc = Editor.Caret.Location;
-				var text = formatter.FormatText (Document.Project != null ? Document.Project.Policies : null, Editor.Text);
-				if (text != null) {
-					Editor.Replace (0, Editor.Length, text);
-					Editor.Caret.Location = loc;
-				}
-			}
-		}
-		
 		string GetFileContent (string fileName)
 		{
 			MonoDevelop.Projects.Text.IEditableTextFile tf =
@@ -730,12 +685,16 @@ namespace MonoDevelop.XmlEditor
 			{
 				inferenceQueued = true;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
-					newData.Populate (doc.XDocument);
-					newData.TimeStampUtc = DateTime.UtcNow;
-					newData.ErrorCount = doc.Errors.Count;
-					this.inferenceQueued = false;
-					this.inferredCompletionData = newData;
+					try {
+						InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
+						newData.Populate (doc.XDocument);
+						newData.TimeStampUtc = DateTime.UtcNow;
+						newData.ErrorCount = doc.Errors.Count;
+						this.inferenceQueued = false;
+						this.inferredCompletionData = newData;
+					} catch (Exception ex) {
+						LoggingService.LogInternalError ("Unhandled error in XML inference", ex);
+					}
 				});
 			}	
 		}
@@ -744,6 +703,6 @@ namespace MonoDevelop.XmlEditor
 		{
 			QueueInference ();
 			base.OnParsedDocumentUpdated ();
-		}		
+		}
 	}
 }

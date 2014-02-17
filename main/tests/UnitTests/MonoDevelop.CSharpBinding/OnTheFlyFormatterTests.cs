@@ -58,14 +58,41 @@ namespace MonoDevelop.CSharpBinding
 
 			Document doc = new Document (tww);
 
-			var text = input;
-			int endPos = text.IndexOf ('$');
-			if (endPos >= 0)
-				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
+			var sb = new StringBuilder ();
+			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
 
-			content.Text = text;
-			content.CursorPosition = System.Math.Max (0, endPos);
-
+			for (int i = 0; i < input.Length; i++) {
+				var ch = input [i];
+				switch (ch) {
+				case '$':
+					cursorPosition = sb.Length;
+					break;
+				case '<':
+					if (i + 1 < input.Length) {
+						if (input [i + 1] == '-') {
+							selectionStart = sb.Length;
+							i++;
+							break;
+						}
+					}
+					goto default;
+				case '-':
+					if (i + 1 < input.Length) {
+						var next = input [i + 1];
+						if (next == '>') {
+							selectionEnd = sb.Length;
+							i++;
+							break;
+						}
+					}
+					goto default;
+				default:
+					sb.Append (ch);
+					break;
+				}
+			}
+			content.Text = sb.ToString ();
+			content.CursorPosition = cursorPosition;
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc);
@@ -77,6 +104,8 @@ namespace MonoDevelop.CSharpBinding
 			content.Contents.Add (ext);
 			
 			doc.UpdateParseDocument ();
+			if (selectionStart >= 0 && selectionEnd >= 0)
+				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
 			return ext;
 		}
 
@@ -288,6 +317,41 @@ class Foo
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\\dev\null {0}\"", newText);
 		}
+
+		/// <summary>
+		/// Bug 17765 - Format selection adding extra leading whitespace on function
+		/// </summary>
+		[Test]
+		public void TestBug17765 ()
+		{
+			TestViewContent content;
+			var ext = Setup (@"
+namespace FormatSelectionTest
+{
+	public class EmptyClass
+	{
+		<-public EmptyClass ()
+		{
+		}->
 	}
+}", out content);
+
+			OnTheFlyFormatter.Format (ext.document, ext.document.Editor.SelectionRange.Offset, ext.document.Editor.SelectionRange.EndOffset); 
+
+
+			Assert.AreEqual (@"
+namespace FormatSelectionTest
+{
+	public class EmptyClass
+	{
+		public EmptyClass ()
+		{
+		}
+	}
+}", ext.document.Editor.Text);
+		}
+
+	}
+
 }
 

@@ -12,19 +12,33 @@ namespace MonoDevelop.WebReferences
 		{
 			get { return project; }
 		}
+
+		/// <summary>Gets whether the project contains WCF services.</summary>
+		/// <value>A boolean which determines whether we have WCF services or WS services.</value>
+		public bool IsWCF {
+			get;
+			private set;
+		}
 		#endregion
 		
 		#region Member Variables
 		readonly DotNetProject project;
 		#endregion
-		
+
 		/// <summary>Initializes a new instance of the WebReferenceFolder class by specifying the parent project.</summary>
 		/// <param name="project">A Project containing the parent project for the WebReferenceFolder.</param>
-		public WebReferenceFolder (DotNetProject project)
+		/// <param name="isWCF">Whether the folder contains WCF services.</param>
+		public WebReferenceFolder (DotNetProject project, bool isWCF)
 		{
 			this.project = project;
+			IsWCF = isWCF;
 		}
-		
+		/// <summary>Initializes a new instance of the WebReferenceFolder class by specifying the parent project.</summary>
+		/// <param name="project">A Project containing the parent project for the WebReferenceFolder.</param>
+		public WebReferenceFolder (DotNetProject project) : this (project, false)
+		{
+		}
+
 		/// <summary>Checks if the specified other object is equal to the current object.</summary>
 		/// <param name="obj">An object containing the object that needs to be compared to the current object.</param>
 		/// <returns>True of the other object is equal to the current object, otherwise false.</returns>

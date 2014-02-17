@@ -1249,8 +1249,11 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateBreakpoints (bool forceUpdate = false)
 		{
+			var document = widget.TextEditor.Document;
+			if (document == null)
+				return;
 			FilePath fp = Name;
-			
+	
 			if (!forceUpdate) {
 				int i = 0, count = 0;
 				bool mismatch = false;
@@ -1259,7 +1262,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 						count++;
 						if (i < breakpointSegments.Count) {
-							int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments [i].Offset);
+							int lineNumber = document.OffsetToLineNumber (breakpointSegments [i].Offset);
 							if (lineNumber != bp.Line) {
 								mismatch = true;
 								break;
@@ -1277,9 +1280,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			HashSet<int> lineNumbers = new HashSet<int> ();
-			var document = widget.TextEditor.Document;
-			if (document == null)
-				return;
 			foreach (var line in breakpointSegments) {
 				if (line == null)
 					continue;
@@ -1313,14 +1313,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (DebuggingService.PinnedWatches.IsWatcherBreakpoint (bp))
 				return;
+			var textEditor = widget.TextEditor;
+			if (textEditor == null)
+				return;
+			var document = textEditor.Document;
+			if (document == null)
+				return;
 
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
-				if (bp.Line <= 0 || bp.Line > widget.TextEditor.Document.LineCount) {
+				if (bp.Line <= 0 || bp.Line > textEditor.Document.LineCount) {
 					LoggingService.LogWarning ("Invalid breakpoint :" + bp +" in line " + bp.Line); 
 					return;
 				}
-				DocumentLine line = widget.TextEditor.Document.GetLine (bp.Line);
+				DocumentLine line = document.GetLine (bp.Line);
 				var status = bp.GetStatus (DebuggingService.DebuggerSession);
 				bool tracepoint = bp.HitAction != HitAction.Break;
 
@@ -1328,14 +1334,14 @@ namespace MonoDevelop.SourceEditor
 					return;
 
 				if (!bp.Enabled) {
-					widget.TextEditor.Document.AddMarker (line, new DisabledBreakpointTextMarker (widget.TextEditor, tracepoint));
+					document.AddMarker (line, new DisabledBreakpointTextMarker (textEditor, tracepoint));
 				} else if (status == BreakEventStatus.Bound || status == BreakEventStatus.Disconnected) {
-					widget.TextEditor.Document.AddMarker (line, new BreakpointTextMarker (widget.TextEditor, tracepoint));
+					document.AddMarker (line, new BreakpointTextMarker (textEditor, tracepoint));
 				} else {
-					widget.TextEditor.Document.AddMarker (line, new InvalidBreakpointTextMarker (widget.TextEditor, tracepoint));
+					document.AddMarker (line, new InvalidBreakpointTextMarker (textEditor, tracepoint));
 				}
 
-				widget.TextEditor.QueueDraw ();
+				textEditor.QueueDraw ();
 				breakpointSegments.Add (line);
 			}
 		}

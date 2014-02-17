@@ -31,6 +31,7 @@ using Mono.MHex;
 using Mono.MHex.Data;
 using MonoDevelop.Ide.Gui.Content;
 using Xwt;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.HexEditor
 {
@@ -60,7 +61,8 @@ namespace MonoDevelop.HexEditor
 		
 		void SetOptions ()
 		{
-			hexEditor.Options.FontName = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.FontName;
+			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+			hexEditor.Options.FontName = name;
 			hexEditor.PurgeLayoutCaches ();
 			hexEditor.Repaint ();
 		}

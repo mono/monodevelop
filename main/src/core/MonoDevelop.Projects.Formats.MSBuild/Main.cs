@@ -37,25 +37,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class MainClass
 	{
-		static ManualResetEvent exitEvent = new ManualResetEvent (false);
+		static readonly ManualResetEvent exitEvent = new ManualResetEvent (false);
 		
 		[STAThread]
-		public static void Main (string[] args)
+		public static void Main ()
 		{
 			try {
 				RegisterRemotingChannel ();
 				WatchProcess (Console.ReadLine ());
 				
-				BuildEngine builderEngine = new BuildEngine ();
-				BinaryFormatter bf = new BinaryFormatter ();
+				var builderEngine = new BuildEngine ();
+				var bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (builderEngine);
-				MemoryStream ms = new MemoryStream ();
+				var ms = new MemoryStream ();
 				bf.Serialize (ms, oref);
 				Console.Error.WriteLine (Convert.ToBase64String (ms.ToArray ()));
 				
 				if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
 					// Wait before exiting, so that the remote call that disposed the builder can be completed
-					System.Threading.Thread.Sleep (400);
+					Thread.Sleep (400);
 				}
 				
 			} catch (Exception ex) {
@@ -66,8 +66,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static void RegisterRemotingChannel ()
 		{
 			IDictionary dict = new Hashtable ();
-			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
+			var clientProvider = new BinaryClientFormatterSinkProvider();
+			var serverProvider = new BinaryServerFormatterSinkProvider();
 			dict ["port"] = 0;
 			dict ["rejectRemoteRequests"] = true;
 			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static void WatchProcess (string procId)
 		{
 			int id = int.Parse (procId);
-			Thread t = new Thread (delegate () {
+			var t = new Thread (delegate () {
 				while (true) {
 					Thread.Sleep (1000);
 					try {

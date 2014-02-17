@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl
 			if (url == null)
 				return;
 
-			Uri.TryCreate (url, UriKind.RelativeOrAbsolute, out uri);
+			Uri.TryCreate (url, UriKind.Absolute, out uri);
 		}
 		
 		public override void CopyConfigurationFrom (Repository other)

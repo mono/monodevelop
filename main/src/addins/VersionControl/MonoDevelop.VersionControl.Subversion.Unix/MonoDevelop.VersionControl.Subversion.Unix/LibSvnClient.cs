@@ -150,6 +150,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);
 		
 		public abstract IntPtr path_internal_style (string path, IntPtr pool);
+
+		public abstract IntPtr client_upgrade (string wcroot_dir, IntPtr ctx, IntPtr scratch_pool);
 		
 		public class DirEnt {
 			public readonly string Name;
