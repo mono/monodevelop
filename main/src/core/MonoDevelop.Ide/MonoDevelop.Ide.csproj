@@ -1599,11 +1599,17 @@
     <EmbeddedResource Include="icons\light\add-16%402x.png">
       <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-error-16.png">
-      <LogicalName>bubble-error-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-16.png">
+      <LogicalName>bubble-error-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\bubble-warning-16.png">
-      <LogicalName>bubble-warning-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-16%402x.png">
+      <LogicalName>bubble-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\bubble-warning-16.png">
+      <LogicalName>bubble-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
+      <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
