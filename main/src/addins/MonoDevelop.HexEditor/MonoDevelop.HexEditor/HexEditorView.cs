@@ -61,7 +61,8 @@ namespace MonoDevelop.HexEditor
 		
 		void SetOptions ()
 		{
-			hexEditor.Options.FontName = FontService.GetUnderlyingFontName ("Editor");
+			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+			hexEditor.Options.FontName = name;
 			hexEditor.PurgeLayoutCaches ();
 			hexEditor.Repaint ();
 		}
