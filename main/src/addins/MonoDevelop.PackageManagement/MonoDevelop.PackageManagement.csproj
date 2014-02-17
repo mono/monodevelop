@@ -259,6 +259,11 @@
     <Compile Include="MonoDevelop.PackageManagement\BackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProgressMonitorFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitorFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectPackagesProjectNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectPackagesFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectPackagesFolderNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -302,5 +307,8 @@
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
   </ItemGroup>
 </Project>

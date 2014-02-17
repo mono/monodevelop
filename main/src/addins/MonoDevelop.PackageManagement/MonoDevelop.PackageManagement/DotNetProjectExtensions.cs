@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
+using System.IO;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -107,6 +108,16 @@ namespace ICSharpCode.PackageManagement
 			msbuildProject.Load (project.FileName);
 			msbuildProject.RemoveImportIfExists (importedProjectFile);
 			msbuildProject.Save (project.FileName);
+		}
+
+		public static bool HasPackages (this DotNetProject project)
+		{
+			return File.Exists (project.GetPackagesConfigFilePath ());
+		}
+
+		public static string GetPackagesConfigFilePath (this DotNetProject project)
+		{
+			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
 		}
 	}
 }
