@@ -13,15 +13,14 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Projects
 open MonoDevelop.FSharp
-open FSharp.CompilerBinding
 
 [<AutoOpen>]
 module ColorHelpers =
     let strToColor s = 
-        let c = ref (new Color())
+        let c = ref (Color())
         match Color.Parse (s, c) with
         | true -> !c
-        | false -> new Color() // black is as good a guess as any here
+        | false -> Color() // black is as good a guess as any here
         
     let colorToStr (c:Color) =
         sprintf "#%04X%04X%04X" c.Red c.Green c.Blue
@@ -30,7 +29,6 @@ module ColorHelpers =
     let gdkToHsl (c:Gdk.Color) = HslColor.op_Implicit(c)
     let hslToCairo (c:HslColor) : Cairo.Color = HslColor.op_Implicit(c)
     let hslToGdk (c:HslColor) : Gdk.Color = HslColor.op_Implicit(c)
-     
     let cairoToGdk = cairoToHsl >> hslToGdk
 
 [<AutoOpen>]
@@ -136,6 +134,11 @@ type FSharpInteractivePad() =
   do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
   #endif
 
+  static let interactive = new FSharpInteractivePad()
+  static let pad = IdeApp.Workbench.AddPad(interactive, "FSharp.MonoDevelop.FSharpInteractivePad", 
+                                                         "F# Interactive", 
+                                                         "Center Bottom", 
+                                                         IconId("md-fs-project"))
   member x.Shutdown()  = 
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     resetFsi Kill
@@ -162,7 +165,7 @@ type FSharpInteractivePad() =
       
       match view.Child with
       | :? Gtk.TextView as v -> 
-            v.PopulatePopup.Add(fun (args) -> 
+            v.PopulatePopup.Add(fun args -> 
                                     let item = new Gtk.MenuItem(GettextCatalog.GetString("Reset"))
                                     item.Activated.Add(fun _ -> x.RestartFsi())
                                     item.Show()
@@ -203,9 +206,9 @@ type FSharpInteractivePad() =
               v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
           else
               let textColour = PropertyService.Get<string>("FSharpBinding.TextColorPropName", "#000000") 
-                                  |> ColorHelpers.strToColor
+                               |> ColorHelpers.strToColor
               let backColour = PropertyService.Get<string>("FSharpBinding.BaseColorPropName", "#FFFFFF") 
-                                  |> ColorHelpers.strToColor
+                               |> ColorHelpers.strToColor
               v.ModifyText(Gtk.StateType.Normal, textColour)
               v.ModifyBase(Gtk.StateType.Normal, backColour)
     | _ -> ()
@@ -267,27 +270,15 @@ type FSharpInteractivePad() =
         |> Seq.append projRefAssemblies
         |> Seq.filter (fun ref ->  not (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll") )
         |> Seq.distinct
-        |> Seq.toArray
-    
+        |> Seq.toArray 
+     
     let orderAssemblyReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
     let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
     sendCommand orderedreferences
-      
-  static member CurrentPad =  
-    let existing = 
-      try IdeApp.Workbench.GetPad<FSharpInteractivePad>()
-      with _ -> 
-        Debug.WriteLine (sprintf "Interactive: GetPad<FSharpInteractivePad>() failed, silently ignoring")
-        null // It throws after addin is loaded (before restart)
-    if existing <> null then existing
-    else IdeApp.Workbench.AddPad
-          ( new FSharpInteractivePad(), "FSharp.MonoDevelop.FSharpInteractivePad", 
-            "F# Interactive", "Center Bottom", IconId("md-fs-project"))
-
-  static member CurrentFsi = 
-    FSharpInteractivePad.CurrentPad.Content :?> FSharpInteractivePad
-
+  
+  static member CurrentFsi = interactive
+  static member CurrentPad = pad
 
 type ShowFSharpInteractive() =
   inherit CommandHandler()
