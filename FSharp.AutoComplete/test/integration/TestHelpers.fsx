@@ -54,4 +54,6 @@ let installNuGetPkg s =
       + " install -ExcludeVersion "
       + s
   p.Start () |> ignore
+  if not (p.WaitForExit(10000)) then
+    p.Kill()
   

@@ -1,8 +1,19 @@
 #I "FSharp.Data/lib/net40/"
 #r "FSharp.Data.dll"
 
-let data = FSharp.Data.FreebaseData.GetDataContext()
+open FSharp.Data
 
-data.``Arts and Ent
+type TestType = CsvProvider<"data.csv">
 
-data.``Arts and Entertainment``.
+let data = TestType.Load("data.csv")
+
+let row = data.Data |> Seq.head
+
+row.
+
+row.``Column T
+
+row.``Another`C
+
+
+

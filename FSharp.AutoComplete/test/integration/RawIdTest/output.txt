@@ -1,44 +1,20 @@
 INFO: Background parsing started
 <<EOF>>
 DATA: completion
-Afval.nl
-Arts and Entertainment
-Author
-Businessperson
-Commons
-DataContext
-Entrepreneur
-Gutter Company Owner
-Marketing
-Online advertising
-Products and Services
-Science and Technology
-Search Engine Optimization
-SoLoMo Consultant
-Society
-Special Interests
-Sports
-System
-Time and Space
-Transportation
-Waste
-afval
-afvalnl
+Another`Column
+AsTuple
+Column Two
+Column1
 <<EOF>>
 DATA: completion
-Books
-Broadcast
-Comics
-Fictional Universes
-Film
-Games
-Media
-Music
-Opera
-Periodicals
-Radio
-TV
-Theater
-Video Games
-Visual Art
+Another`Column
+AsTuple
+Column Two
+Column1
+<<EOF>>
+DATA: completion
+Another`Column
+AsTuple
+Column Two
+Column1
 <<EOF>>
