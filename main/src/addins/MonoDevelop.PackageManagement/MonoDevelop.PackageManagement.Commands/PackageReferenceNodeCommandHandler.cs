@@ -62,7 +62,12 @@ namespace MonoDevelop.PackageManagement.Commands
 		[CommandHandler (PackageReferenceNodeCommands.UpdatePackage)]
 		public void UpdatePackage ()
 		{
-			Ide.MessageService.ShowMessage ("Updating...");
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+			UpdatePackageAction action = project.CreateUpdatePackageAction ();
+			action.PackageId = packageReferenceNode.Id;
+
+			PackageManagementServices.BackgroundPackageActionRunner.Run (action);
 		}
 	}
 }
