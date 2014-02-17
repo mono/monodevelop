@@ -132,7 +132,7 @@ namespace Mono.MHex
 					catch {
 						Console.WriteLine ("Could not load font: {0}", FontName);
 					}
-					if (font == null || String.IsNullOrEmpty (font.Family))
+					if (font == null || FontName.IndexOf (font.Family, StringComparison.Ordinal) < 0)
 						font = Font.SystemMonospaceFont;
 					if (font != null)
 						font = font.WithSize (font.Size * Zoom);
