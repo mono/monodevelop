@@ -196,5 +196,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			packageManager.UpdatePackageReference(package, settings);
 		}
+
+		public IPackage FindPackage(string packageId)
+		{
+			return projectManager.LocalRepository.FindPackage (packageId);
+		}
 	}
 }

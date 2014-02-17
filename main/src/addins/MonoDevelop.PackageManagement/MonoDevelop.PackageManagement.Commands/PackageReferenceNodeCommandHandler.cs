@@ -29,6 +29,9 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.Projects;
+using ICSharpCode.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -36,7 +39,12 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		public override void DeleteItem ()
 		{
-			Ide.MessageService.ShowMessage ("Deleting...");
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+			UninstallPackageAction action = project.CreateUninstallPackageAction ();
+			action.Package = project.FindPackage (packageReferenceNode.Id);
+
+			PackageManagementServices.BackgroundPackageActionRunner.Run (action);
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]

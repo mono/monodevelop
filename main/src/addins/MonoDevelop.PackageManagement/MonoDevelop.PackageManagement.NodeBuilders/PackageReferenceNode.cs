@@ -33,31 +33,35 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class PackageReferenceNode
 	{
-		PackageReference packageReference;
-
 		public PackageReferenceNode (PackageReference packageReference)
 		{
-			this.packageReference = packageReference;
+			PackageReference = packageReference;
 		}
-			
+
+		public PackageReference PackageReference { get; private set; }
+
 		public string Name {
-			get { return packageReference.Id; }
+			get { return PackageReference.Id; }
+		}
+
+		public string Id {
+			get { return PackageReference.Id; }
 		}
 
 		public SemanticVersion Version {
-			get { return packageReference.Version; }
+			get { return PackageReference.Version; }
 		}
 
 		public bool IsDevelopmentDependency {
-			get { return packageReference.IsDevelopmentDependency; }
+			get { return PackageReference.IsDevelopmentDependency; }
 		}
 
 		public FrameworkName TargetFramework {
-			get { return packageReference.TargetFramework; }
+			get { return PackageReference.TargetFramework; }
 		}
 
 		public IVersionSpec VersionConstraint {
-			get { return packageReference.VersionConstraint; }
+			get { return PackageReference.VersionConstraint; }
 		}
 	}
 }

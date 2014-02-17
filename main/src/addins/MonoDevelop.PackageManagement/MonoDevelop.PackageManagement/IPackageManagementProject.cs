@@ -53,6 +53,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
+		IPackage FindPackage(string packageId);
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
 		IEnumerable<PackageOperation> GetUpdatePackagesOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
