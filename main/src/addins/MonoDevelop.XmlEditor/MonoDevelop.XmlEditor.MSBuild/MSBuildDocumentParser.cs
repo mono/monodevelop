@@ -27,7 +27,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace MonoDevelop.XmlEditor
+namespace MonoDevelop.XmlEditor.MSBuild
 {
 	class MSBuildDocumentParser : XmlDocumentParser
 	{

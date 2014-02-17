@@ -178,8 +178,10 @@
     <Compile Include="MonoDevelop.XmlEditor.Completion\EmptyXmlCompletionProvider.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlNamespacePrefixMap.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\MSBuildTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\MSBuildDocumentParser.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildDocumentParser.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildResolveContext.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml">
@@ -235,4 +237,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.XmlEditor.MSBuild\" />
+  </ItemGroup>
 </Project>

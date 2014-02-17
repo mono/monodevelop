@@ -450,7 +450,7 @@ namespace MonoDevelop.XmlEditor
 			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
-				if (m == MSBuildTextEditorExtension.MSBuildMimeType)
+				if (m == MonoDevelop.XmlEditor.MSBuild.MSBuildTextEditorExtension.MSBuildMimeType)
 					return false;
 			}
 			return false;
