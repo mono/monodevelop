@@ -28,11 +28,58 @@ using System;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class ProjectPackagesProjectNodeBuilderExtension : NodeBuilderExtension
 	{
+		IPackageManagementEvents packageManagementEvents;
+
+		public ProjectPackagesProjectNodeBuilderExtension ()
+		{
+			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+
+			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
+			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
+			packageManagementEvents.ParentPackagesUpdated += ParentPackagesUpdated;
+		}
+
+		void ParentPackageInstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			RefreshChildNodes ();
+		}
+
+		void ParentPackageUninstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			RefreshChildNodes ();
+		}
+
+		void ParentPackagesUpdated (object sender, ParentPackagesOperationEventArgs e)
+		{
+			RefreshChildNodes ();
+		}
+
+		void RefreshChildNodes ()
+		{
+			DispatchService.GuiDispatch (() => {
+				var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+				if (project != null) {
+					ITreeBuilder builder = Context.GetTreeBuilder (project);
+					if (builder != null) {
+						builder.UpdateChildren ();
+					}
+				}
+			});
+		}
+
+		public override void Dispose ()
+		{
+			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
+			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
+			packageManagementEvents.ParentPackagesUpdated -= ParentPackagesUpdated;
+		}
+
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(DotNetProject).IsAssignableFrom (dataType);
