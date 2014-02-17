@@ -22,6 +22,7 @@
 	<Dependencies>
 		<Addin id="Core" version="4.2.3"/>
 		<Addin id="Ide" version="4.2.3"/>
+		<Addin id="DesignerSupport" version="4.2.3"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -126,5 +127,9 @@
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
+		<Class class="MonoDevelop.PackageManagement.NodeBuilders.PackageReferenceNodePropertyProvider" />
 	</Extension>
 </Addin>
