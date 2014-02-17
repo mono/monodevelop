@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core.Serialization;
 using NuGet;
 using System.Runtime.Versioning;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -62,6 +63,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IVersionSpec VersionConstraint {
 			get { return PackageReference.VersionConstraint; }
+		}
+
+		public string GetPackageVersionLabel ()
+		{
+			return GettextCatalog.GetString ("Version") + " " + Version.ToString ();
 		}
 	}
 }

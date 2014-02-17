@@ -41,6 +41,10 @@
 			_label="_Restore"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
 		<Command
+			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
+			_description="Show package version"
+			_label="Version" />
+		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update"
 			_label="_Update" />
@@ -110,6 +114,7 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 	</Extension>
