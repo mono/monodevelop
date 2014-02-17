@@ -32,26 +32,33 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
 	public class RestorePackagesHandler : PackagesCommandHandler
 	{
 		IPackageManagementSolution solution;
+		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		
 		public RestorePackagesHandler()
-			: this(PackageManagementServices.Solution)
+			: this(
+				PackageManagementServices.Solution,
+				PackageManagementServices.ProgressMonitorFactory)
 		{
 		}
 		
-		public RestorePackagesHandler(IPackageManagementSolution solution)
+		public RestorePackagesHandler(
+			IPackageManagementSolution solution,
+			IPackageManagementProgressMonitorFactory progressMonitorFactory)
 		{
 			this.solution = solution;
+			this.progressMonitorFactory = progressMonitorFactory;
 		}
 		
 		protected override void Run ()
 		{
-			IProgressMonitor progressMonitor = GetRunProcessMonitor();
+			IProgressMonitor progressMonitor = CreateProgressMonitor ();
 			
 			try {
 				RestorePackages(progressMonitor);
@@ -60,14 +67,10 @@ namespace MonoDevelop.PackageManagement.Commands
 				progressMonitor.Dispose();
 			}
 		}
-		
-		IProgressMonitor GetRunProcessMonitor()
+
+		IProgressMonitor CreateProgressMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor(
-				"NuGet",
-				Stock.RunProgramIcon,
-				true,
-				true);
+			return progressMonitorFactory.CreateProgressMonitor (GettextCatalog.GetString ("Restoring packages..."));
 		}
 		
 		void RestorePackages(IProgressMonitor progressMonitor)
@@ -81,11 +84,13 @@ namespace MonoDevelop.PackageManagement.Commands
 		
 		void RestorePackages(IProgressMonitor progressMonitor, NuGetPackageRestoreCommandLine commandLine)
 		{
+			var aggregatedMonitor = (AggregatedProgressMonitor)progressMonitor;
+
 			Runtime.ProcessService.StartConsoleProcess(
 				commandLine.Command,
 				commandLine.Arguments,
 				commandLine.WorkingDirectory,
-				progressMonitor as IConsole,
+				aggregatedMonitor.MasterMonitor as IConsole,
 				(e, sender) => progressMonitor.Dispose()
 			);
 		}

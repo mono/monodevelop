@@ -58,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 
 		void RunActionsWithProgressMonitor (IList<IPackageAction> installPackageActions)
 		{
-			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor ()) {
+			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (GettextCatalog.GetString ("Installing packages..."))) {
 				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);

@@ -34,19 +34,14 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProgressMonitorFactory : IPackageManagementProgressMonitorFactory
 	{
-		public IProgressMonitor CreateProgressMonitor ()
+		public IProgressMonitor CreateProgressMonitor (string title)
 		{
-			IProgressMonitor consoleMonitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				"PackageConsole",
-				GettextCatalog.GetString ("Package Console"),
-				Stock.Console,
-				false,
-				true);
+			IProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
 
 			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
 
 			IProgressMonitor statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
-				GettextCatalog.GetString ("Installing packages..."),
+				title,
 				Stock.StatusSolutionOperation,
 				false,
 				false,
@@ -56,6 +51,16 @@ namespace MonoDevelop.PackageManagement
 			var monitor = new AggregatedProgressMonitor (consoleMonitor);
 			monitor.AddSlaveMonitor (statusMonitor);
 			return monitor;
+		}
+
+		IProgressMonitor CreatePackageConsoleOutputMonitor ()
+		{
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				"PackageConsole",
+				GettextCatalog.GetString ("Package Console"),
+				Stock.Console,
+				false,
+				true);
 		}
 	}
 }
