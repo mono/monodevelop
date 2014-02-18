@@ -1,5 +1,5 @@
 ﻿//
-// UpdateAllPackagesInProjectHandler.cs
+// ProgressMonitorStatusMessages.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,22 +25,21 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using ICSharpCode.PackageManagement;
-using System.Collections.Generic;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
+	public class ProgressMonitorStatusMessage
 	{
-		protected override void Run ()
+		public ProgressMonitorStatusMessage (string status, string success, string error)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-			var updateAllPackages = new UpdateAllPackagesInProject (project);
-			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+			Status = status;
+			Success = success;
+			Error = error;
 		}
+
+		public string Status { get; private set; }
+		public string Success { get; private set; }
+		public string Error { get; private set; }
 	}
 }
 

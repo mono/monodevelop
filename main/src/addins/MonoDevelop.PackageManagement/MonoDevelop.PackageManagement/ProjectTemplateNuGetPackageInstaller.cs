@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
 		IPackageManagementEvents packageManagementEvents;
-		IPackageActionRunner backgroundPackageActionRunner;
+		IBackgroundPackageActionRunner backgroundPackageActionRunner;
 
 		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementSolution solution,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageRepositoryCache packageRepositoryCache,
-			IPackageActionRunner backgroundPackageActionRunner)
+			IBackgroundPackageActionRunner backgroundPackageActionRunner)
 		{
 			this.packageManagementSolution = solution;
 			this.packageManagementEvents = packageManagementEvents;
@@ -65,7 +65,8 @@ namespace MonoDevelop.PackageManagement
 		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
-			backgroundPackageActionRunner.Run (installPackageActions);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
+			backgroundPackageActionRunner.Run (progressMessage, installPackageActions);
 		}
 
 		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)

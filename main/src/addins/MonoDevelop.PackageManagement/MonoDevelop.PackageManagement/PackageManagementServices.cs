@@ -116,7 +116,7 @@ namespace ICSharpCode.PackageManagement
 			get { return projectTemplatePackageSources.PackageSources; }
 		}
 
-		public static IPackageActionRunner BackgroundPackageActionRunner {
+		public static IBackgroundPackageActionRunner BackgroundPackageActionRunner {
 			get { return backgroundPackageActionRunner; }
 		}
 

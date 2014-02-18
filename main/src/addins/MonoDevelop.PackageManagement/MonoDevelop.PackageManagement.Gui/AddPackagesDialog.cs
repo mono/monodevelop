@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public partial class AddPackagesDialog
 	{
-		IPackageActionRunner backgroundActionRunner;
+		IBackgroundPackageActionRunner backgroundActionRunner;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
 		DataField<bool> packageCheckBoxActiveField = new DataField<bool> ();
@@ -57,7 +57,7 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public AddPackagesDialog (PackagesViewModel viewModel, IPackageActionRunner backgroundActionRunner)
+		public AddPackagesDialog (PackagesViewModel viewModel, IBackgroundPackageActionRunner backgroundActionRunner)
 		{
 			this.viewModel = viewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
@@ -285,7 +285,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
 			if (packageActions.Count > 0) {
-				backgroundActionRunner.Run (packageActions);
+				ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (packageActions);
+				backgroundActionRunner.Run (progressMessage, packageActions);
 				Close ();
 			}
 		}
@@ -297,6 +298,16 @@ namespace MonoDevelop.PackageManagement
 				return CreateInstallPackageActions (packageViewModels);
 			}
 			return new List<IPackageAction> ();
+		}
+
+		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<IPackageAction> packageActions)
+		{
+			if (packageActions.Count == 1) {
+				return ProgressMonitorStatusMessageFactory.CreateInstallingSinglePackageMessage (
+					packageActions.OfType<ProcessPackageAction> ().First ().Package.Id
+				);
+			}
+			return ProgressMonitorStatusMessageFactory.CreateInstallingMultiplePackagesMessage (packageActions.Count);
 		}
 
 		List<PackageViewModel> GetSelectedPackageViewModels ()

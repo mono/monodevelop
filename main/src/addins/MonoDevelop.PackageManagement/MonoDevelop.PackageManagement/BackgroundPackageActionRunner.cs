@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class BackgroundPackageActionRunner : IPackageActionRunner
+	public class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
@@ -46,27 +46,28 @@ namespace MonoDevelop.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 
-		public void Run (IPackageAction action)
+		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
-			Run (new IPackageAction [] { action });
+			Run (progressMessage, new IPackageAction [] { action });
 		}
 
-		public void Run (IEnumerable<IPackageAction> actions)
+		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
-			DispatchService.BackgroundDispatch (() => RunActionsWithProgressMonitor (actions.ToList ()));
+			DispatchService.BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
 		}
 
-		void RunActionsWithProgressMonitor (IList<IPackageAction> installPackageActions)
+		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
-			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (GettextCatalog.GetString ("Installing packages..."))) {
+			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
 				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
+						monitor.ReportSuccess (progressMessage.Success);
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (ex);
 						monitor.Log.WriteLine (ex.Message);
-						monitor.ReportError (GettextCatalog.GetString ("Packages could not be installed."), null);
+						monitor.ReportError (progressMessage.Error, null);
 					} finally {
 						monitor.EndTask ();
 					}

@@ -58,38 +58,37 @@ namespace MonoDevelop.PackageManagement.Commands
 		
 		protected override void Run ()
 		{
-			IProgressMonitor progressMonitor = CreateProgressMonitor ();
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
+			IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage);
 
 			try {
-				RestorePackages(progressMonitor);
+				RestorePackages(progressMonitor, progressMessage);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 				progressMonitor.Log.WriteLine(ex.Message);
-				ReportError (progressMonitor);
+				progressMonitor.ReportError (progressMessage.Error, null);
 				progressMonitor.Dispose();
 			}
 		}
 
-		IProgressMonitor CreateProgressMonitor ()
+		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
-			return progressMonitorFactory.CreateProgressMonitor (GettextCatalog.GetString ("Restoring packages for solution..."));
+			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 		
-		void RestorePackages(IProgressMonitor progressMonitor)
+		void RestorePackages(IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
 			var commandLine = new NuGetPackageRestoreCommandLine(solution);
 			
 			progressMonitor.Log.WriteLine(commandLine.ToString());
 			
-			RestorePackages(progressMonitor, commandLine);
-		}
-
-		void ReportError (IProgressMonitor progressMonitor)
-		{
-			progressMonitor.ReportError (GettextCatalog.GetString ("Could not restore packages. Please see Package Console for details."), null);
+			RestorePackages(progressMonitor, progressMessage, commandLine);
 		}
 		
-		void RestorePackages(IProgressMonitor progressMonitor, NuGetPackageRestoreCommandLine commandLine)
+		void RestorePackages(
+			IProgressMonitor progressMonitor,
+			ProgressMonitorStatusMessage progressMessage,
+			NuGetPackageRestoreCommandLine commandLine)
 		{
 			var aggregatedMonitor = (AggregatedProgressMonitor)progressMonitor;
 
@@ -100,18 +99,21 @@ namespace MonoDevelop.PackageManagement.Commands
 				aggregatedMonitor.MasterMonitor as IConsole,
 				(sender, e) => {
 					using (progressMonitor) {
-						ReportOutcome ((IAsyncOperation)sender, progressMonitor);
+						ReportOutcome ((IAsyncOperation)sender, progressMonitor, progressMessage);
 					}
 				}
 			);
 		}
 
-		void ReportOutcome (IAsyncOperation operation, IProgressMonitor progressMonitor)
+		void ReportOutcome (
+			IAsyncOperation operation,
+			IProgressMonitor progressMonitor,
+			ProgressMonitorStatusMessage progressMessage)
 		{
 			if (operation.Success) {
-				progressMonitor.ReportSuccess (GettextCatalog.GetString ("Packages successfully restored."));
+				progressMonitor.ReportSuccess (progressMessage.Success);
 			} else {
-				ReportError (progressMonitor);
+				progressMonitor.ReportError (progressMessage.Error, null);
 			}
 		}
 	}

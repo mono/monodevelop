@@ -1,5 +1,5 @@
 ﻿//
-// UpdateAllPackagesInProjectHandler.cs
+// IBackgroundPackageActionRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,22 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using ICSharpCode.PackageManagement;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
+	public interface IBackgroundPackageActionRunner
 	{
-		protected override void Run ()
-		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-			var updateAllPackages = new UpdateAllPackagesInProject (project);
-			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
-		}
+		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
+		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
 	}
 }
 

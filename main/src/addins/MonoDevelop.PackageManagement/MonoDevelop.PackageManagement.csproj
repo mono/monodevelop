@@ -273,6 +273,9 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeDescriptor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInSolutionHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IBackgroundPackageActionRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

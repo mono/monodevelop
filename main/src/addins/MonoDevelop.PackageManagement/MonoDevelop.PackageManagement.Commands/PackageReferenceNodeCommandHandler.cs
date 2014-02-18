@@ -44,7 +44,8 @@ namespace MonoDevelop.PackageManagement.Commands
 			UninstallPackageAction action = project.CreateUninstallPackageAction ();
 			action.Package = project.FindPackage (packageReferenceNode.Id);
 
-			PackageManagementServices.BackgroundPackageActionRunner.Run (action);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageReferenceNode.Id);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -67,7 +68,8 @@ namespace MonoDevelop.PackageManagement.Commands
 			UpdatePackageAction action = project.CreateUpdatePackageAction ();
 			action.PackageId = packageReferenceNode.Id;
 
-			PackageManagementServices.BackgroundPackageActionRunner.Run (action);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
 		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]

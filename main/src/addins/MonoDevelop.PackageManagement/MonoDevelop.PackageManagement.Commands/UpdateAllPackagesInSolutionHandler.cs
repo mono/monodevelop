@@ -37,7 +37,8 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
 			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-			PackageManagementServices.BackgroundPackageActionRunner.Run (updateActions);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 		}
 
 		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution ()
