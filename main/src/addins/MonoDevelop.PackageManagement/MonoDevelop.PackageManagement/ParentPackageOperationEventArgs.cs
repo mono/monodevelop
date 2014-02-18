@@ -33,11 +33,13 @@ namespace ICSharpCode.PackageManagement
 {
 	public class ParentPackageOperationEventArgs : EventArgs
 	{
-		public ParentPackageOperationEventArgs(IPackage package)
+		public ParentPackageOperationEventArgs(IPackage package, IPackageManagementProject project)
 		{
 			this.Package = package;
+			this.Project = project;
 		}
 		
 		public IPackage Package { get; private set; }
+		public IPackageManagementProject Project { get; private set; }
 	}
 }

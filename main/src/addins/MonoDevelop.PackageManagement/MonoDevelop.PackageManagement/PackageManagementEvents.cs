@@ -68,19 +68,19 @@ namespace ICSharpCode.PackageManagement
 		
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
 		
-		public void OnParentPackageInstalled(IPackage package)
+		public void OnParentPackageInstalled(IPackage package, IPackageManagementProject project)
 		{
 			if (ParentPackageInstalled != null) {
-				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package));
+				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
 		
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		
-		public void OnParentPackageUninstalled(IPackage package)
+		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
 			if (ParentPackageUninstalled != null) {
-				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package));
+				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
 		

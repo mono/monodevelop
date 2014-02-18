@@ -62,6 +62,10 @@ namespace ICSharpCode.PackageManagement
 			get { return msbuildProject.Name; }
 		}
 
+		public DotNetProject DotNetProject {
+			get { return msbuildProject; }
+		}
+
 		public FrameworkName TargetFramework {
 			get { return GetTargetFramework(); }
 		}

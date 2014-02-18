@@ -47,8 +47,8 @@ namespace ICSharpCode.PackageManagement
 		void OnPackageOperationsStarting();
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
-		void OnParentPackageInstalled(IPackage package);
-		void OnParentPackageUninstalled(IPackage package);
+		void OnParentPackageInstalled(IPackage package, IPackageManagementProject project);
+		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
 		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
 		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);

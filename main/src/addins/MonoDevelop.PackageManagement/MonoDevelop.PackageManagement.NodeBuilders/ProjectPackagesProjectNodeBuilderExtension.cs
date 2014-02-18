@@ -47,28 +47,24 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void ParentPackageInstalled (object sender, ParentPackageOperationEventArgs e)
 		{
-			RefreshChildNodes ();
+			RefreshChildNodes (e.Project);
 		}
 
 		void ParentPackageUninstalled (object sender, ParentPackageOperationEventArgs e)
 		{
-			RefreshChildNodes ();
+			RefreshChildNodes (e.Project);
 		}
 
 		void ParentPackagesUpdated (object sender, ParentPackagesOperationEventArgs e)
 		{
-			RefreshChildNodes ();
 		}
 
-		void RefreshChildNodes ()
+		void RefreshChildNodes (IPackageManagementProject packageManagementProject)
 		{
 			DispatchService.GuiDispatch (() => {
-				var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-				if (project != null) {
-					ITreeBuilder builder = Context.GetTreeBuilder (project);
-					if (builder != null) {
-						builder.UpdateChildren ();
-					}
+				ITreeBuilder builder = Context.GetTreeBuilder (packageManagementProject.DotNetProject);
+				if (builder != null) {
+					builder.UpdateChildren ();
 				}
 			});
 		}

@@ -32,6 +32,7 @@ using System.Linq;
 
 using NuGet;
 using System.Runtime.Versioning;
+using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -46,6 +47,8 @@ namespace ICSharpCode.PackageManagement
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		FrameworkName TargetFramework { get; }
+
+		DotNetProject DotNetProject { get; }
 		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);

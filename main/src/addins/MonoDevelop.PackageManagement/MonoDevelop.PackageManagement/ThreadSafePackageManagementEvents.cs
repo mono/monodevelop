@@ -155,14 +155,14 @@ namespace ICSharpCode.PackageManagement
 			return unsafeEvents.OnAcceptLicenses(packages);
 		}
 		
-		public void OnParentPackageInstalled(IPackage package)
+		public void OnParentPackageInstalled(IPackage package, IPackageManagementProject project)
 		{
-			unsafeEvents.OnParentPackageInstalled(package);
+			unsafeEvents.OnParentPackageInstalled(package, project);
 		}
 		
-		public void OnParentPackageUninstalled(IPackage package)
+		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
-			unsafeEvents.OnParentPackageUninstalled(package);
+			unsafeEvents.OnParentPackageUninstalled(package, project);
 		}
 		
 		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
