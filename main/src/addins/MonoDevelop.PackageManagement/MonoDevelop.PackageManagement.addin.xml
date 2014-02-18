@@ -54,24 +54,33 @@
 			_description="Update all packages in a project"
 			_label="_Update"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProjectHandler" />
+		<Command
+			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
+			_description="Update all packages in a solution"
+			_label="_Update Packages"
+			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
-			insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-			insertbefore = "ExportSeparator" />
+			id="MonoDevelop.PackageManagement.Commands.AddPackages"
+			insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
+			insertbefore="ExportSeparator" />
 		<CommandItem
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			insertafter = "MonoDevelop.PackageManagement.Commands.ManagePackages"
-			insertbefore = "ExportSeparator" />
+			insertafter="MonoDevelop.PackageManagement.Commands.AddPackages"
+			insertbefore="ExportSeparator" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="Solution">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.RestorePackages"
+				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
 				insertafter="MonoDevelop.PackageManagement.Commands.AddReference"
+				insertbefore="AddSectionEnd" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.RestorePackages"
+				insertafter="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
 				insertbefore="AddSectionEnd" />
 		</Condition>
 		<Condition id="ItemType" value="Project">

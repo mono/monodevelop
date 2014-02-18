@@ -271,6 +271,8 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackageActions.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodePropertyProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeDescriptor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInSolutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
