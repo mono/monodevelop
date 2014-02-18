@@ -600,11 +600,6 @@ namespace MonoDevelop.Ide
 				Gtk.Application.Invoke (delegate {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
 					Items.Add (item);
-
-					// We must call SearchForNewFiles on the main loop as it iterates over the 'Items'
-					// collection which we are modifying on the main loop
-					timer.Trace ("Searching for new files");
-					SearchForNewFiles ();
 				});
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
@@ -636,103 +631,7 @@ namespace MonoDevelop.Ide
 				}
 			});
 		}
-		
-		void SearchForNewFiles ()
-		{
-			foreach (Project p in GetAllProjects ()) {
-				if (p.NewFileSearch != NewFileSearch.None)
-					SearchNewFiles (p);
-			}
-		}
-		
-		static void SearchNewFiles (Project project)
-		{
-			var newFiles = new List<string> ();
-			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
-			
-			var projectFileNames = new HashSet<string> ();
-			foreach (var file in project.GetItemFiles (true))
-				projectFileNames.Add (file);
-			
-			//also ignore files that would conflict with links
-			foreach (var f in project.Files)
-				projectFileNames.Add (f.ProjectVirtualPath.ToAbsolute (project.BaseDirectory));
 
-			foreach (string sfile in collection) {
-				if (projectFileNames.Contains (Path.GetFullPath (sfile)))
-					continue;
-				if (IdeApp.Services.ProjectService.IsSolutionItemFile (sfile) || IdeApp.Services.ProjectService.IsWorkspaceItemFile (sfile))
-					continue;
-				if (IgnoreFileInSearch (sfile))
-					continue;
-				newFiles.Add (sfile);
-			}
-			
-			if (newFiles.Count == 0)
-				return;
-			
-			if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
-				foreach (string file in newFiles) {
-					project.AddFile (file);
-				}
-				
-				return;
-			}
-			
-			DispatchService.GuiDispatch (delegate {
-				var dialog = new IncludeNewFilesDialog (
-					GettextCatalog.GetString ("Found new files in {0}", project.Name),
-					project.BaseDirectory
-				);
-				dialog.AddFiles (newFiles);
-				if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
-					return;
-				
-				foreach (var file in dialog.IgnoredFiles) {
-					var projectFile = project.AddFile (file, BuildAction.None);
-					if (projectFile != null)
-						projectFile.Visible = false;
-				}
-				foreach (var file in dialog.SelectedFiles) {
-					project.AddFile (file);
-				}
-				IdeApp.ProjectOperations.Save (project);
-			});
-		}
-		
-		static bool IgnoreFileInSearch (string sfile)
-		{
-			string extension = Path.GetExtension (sfile).ToUpper();
-			string file = Path.GetFileName (sfile);
-			
-			if (file.StartsWith (".", StringComparison.Ordinal) || file.EndsWith ("~", StringComparison.Ordinal))
-				return true;
-			
-			string[] ignoredExtensions = new string [] {
-				".SCC", ".DLL", ".PDB", ".MDB", ".EXE", ".SLN", ".CMBX", ".PRJX",
-				".SWP", ".MDSX", ".MDS", ".MDP", ".PIDB", ".PIDB-JOURNAL",
-			};
-			if (ignoredExtensions.Contains (extension))
-				return true;
-			
-			string directory = Path.GetDirectoryName (sfile);
-			if (directory.IndexOf (".svn", StringComparison.Ordinal) != -1 ||
-				directory.IndexOf (".git", StringComparison.Ordinal) != -1 ||
-				directory.IndexOf ("CVS", StringComparison.Ordinal) != -1)
-				return true;
-			
-			if (directory.IndexOf (Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal) != -1 ||
-				directory.IndexOf (Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal) != -1)
-				return true;
-			
-			if (file.EndsWith ("make.sh", StringComparison.Ordinal) ||
-				file.StartsWith ("Makefile", StringComparison.Ordinal) ||
-				directory.EndsWith ("ProjectDocumentation", StringComparison.Ordinal))
-				return true;
-			
-			return false;
-		}
-		
 		void RestoreWorkspacePreferences (WorkspaceItem item)
 		{
 			// Restore local configuration data

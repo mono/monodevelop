@@ -41,13 +41,6 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects
 {
-	public enum NewFileSearch
-	{
-		None,
-		OnLoad,
-		OnLoadAutoInsert
-	}
-	
 	/// <summary>
 	/// A project
 	/// </summary>
@@ -103,18 +96,6 @@ namespace MonoDevelop.Projects
 			get { return files; }
 		}
 		private ProjectFileCollection files;
-		
-		
-		[ItemProperty("newfilesearch", DefaultValue = NewFileSearch.None)]
-		protected NewFileSearch newFileSearch = NewFileSearch.None;
-		public NewFileSearch NewFileSearch {
-			get { return newFileSearch; }
-
-			set {
-				newFileSearch = value;
-				NotifyModified ("NewFileSearch");
-			}
-		}
 
 		[ProjectPathItemProperty ("BaseIntermediateOutputPath")]
 		FilePath baseIntermediateOutputPath;
