@@ -37,20 +37,25 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IsDotNetProjectSelected () || IsDotNetSolutionSelected()) {
+			if (IsEnabled ()) {
 				info.Bypass = false;
 			} else {
 				info.Enabled = false;
 				info.Bypass = true;
 			}
 		}
+
+		protected virtual bool IsEnabled ()
+		{
+			return IsDotNetProjectSelected () || IsDotNetSolutionSelected ();
+		}
 		
-		bool IsDotNetProjectSelected ()
+		protected bool IsDotNetProjectSelected ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedProject is DotNetProject;
 		}
 		
-		bool IsDotNetSolutionSelected ()
+		protected bool IsDotNetSolutionSelected ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedSolution != null;
 		}

@@ -43,6 +43,11 @@ namespace MonoDevelop.PackageManagement.Commands
 				MessageService.ShowException (ex);
 			}
 		}
+
+		protected override bool IsEnabled ()
+		{
+			return IsDotNetProjectSelected ();
+		}
 	}
 }
 
