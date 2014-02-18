@@ -1068,10 +1068,9 @@ namespace MonoDevelop.CSharp.Completion
 				if (project == null)
 					yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-				if (par == null)
+				if (configuration == null)
 					yield break;
-				foreach (var define in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
+				foreach (var define in configuration.GetDefineSymbols ())
 					yield return new CompletionData (define, "md-keyword");
 					
 			}

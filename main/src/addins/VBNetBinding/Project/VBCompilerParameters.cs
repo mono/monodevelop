@@ -103,31 +103,19 @@ namespace MonoDevelop.VBNetBinding
 		
 		[ItemProperty ("AdditionalParameters")]
 		string additionalParameters = String.Empty;
-		
+
+		[Obsolete]
 		public override void AddDefineSymbol (string symbol)
 		{
-			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
-			
+			var symbols = new List<string> (GetDefineSymbols ());
 			symbols.Add (symbol);
-			
 			definesymbols = string.Join (";", symbols) + ";";
 		}
 		
-		public override bool HasDefineSymbol (string symbol)
-		{
-			var symbols = definesymbols.Split (new char[] { ';' });
-			
-			foreach (var sym in symbols) {
-				if (sym == symbol)
-					return true;
-			}
-			
-			return false;
-		}
-		
+		[Obsolete]
 		public override void RemoveDefineSymbol (string symbol)
 		{
-			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+			var symbols = new List<string> (GetDefineSymbols ());
 			
 			symbols.Remove (symbol);
 			
@@ -135,6 +123,13 @@ namespace MonoDevelop.VBNetBinding
 				definesymbols = string.Join (";", symbols) + ";";
 			else
 				definesymbols = string.Empty;
+		}
+
+		public override IEnumerable<string> GetDefineSymbols ()
+		{
+			foreach (var s in definesymbols.Split (new [] { ';' }))
+				if (!string.IsNullOrEmpty (s))
+					yield return s;
 		}
 		
 		public bool DefineDebug {

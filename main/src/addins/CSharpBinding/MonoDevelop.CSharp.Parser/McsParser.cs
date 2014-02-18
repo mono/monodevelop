@@ -96,8 +96,8 @@ namespace MonoDevelop.CSharp.Parser
 					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 					if (par != null) {
-						if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s))));
+						foreach (var define in configuration.GetDefineSymbols ()) {
+							compilerArguments.Add ("-define:" + define);
 						}
 						if (par.UnsafeCode)
 							compilerArguments.Add ("-unsafe");
