@@ -1,29 +1,11 @@
-﻿<Addin name        = "NuGet Package Management"
-       id          = "PackageManagement"
-       namespace   = "MonoDevelop"
-       author      = "Matt Ward"
-       copyright   = "MIT X11"
-       url         = "https://github.com/mrward/monodevelop-nuget-addin"
-       description = "Provides support for adding and maintaining NuGet packages in your project. Updated to use NuGet 2.7.2"
-       category    = "IDE extensions"
-       version     = "4.2.3">
+﻿<ExtensionModel>
 
-	<Header>
-		<ReleaseNotesFile>ReleaseNotes.txt</ReleaseNotesFile>
-	</Header>
-	
 	<Runtime>
 		<Import assembly="MonoDevelop.PackageManagement.dll" />
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
 		<Import assembly="NuGet.Core.dll" />
 		<Import file="NuGet.exe" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="DesignerSupport" version="4.2.3"/>
-	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command
@@ -141,4 +123,4 @@
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.PackageManagement.NodeBuilders.PackageReferenceNodePropertyProvider" />
 	</Extension>
-</Addin>
+</ExtensionModel>
