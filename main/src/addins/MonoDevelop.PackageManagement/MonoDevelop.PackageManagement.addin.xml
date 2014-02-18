@@ -123,4 +123,8 @@
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class="MonoDevelop.PackageManagement.NodeBuilders.PackageReferenceNodePropertyProvider" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.PackageManagement.Commands.PackageRestoreStartupHandler" />
+	</Extension>
 </ExtensionModel>

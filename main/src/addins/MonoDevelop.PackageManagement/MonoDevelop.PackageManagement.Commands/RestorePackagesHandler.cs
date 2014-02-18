@@ -38,83 +38,10 @@ namespace MonoDevelop.PackageManagement.Commands
 {
 	public class RestorePackagesHandler : PackagesCommandHandler
 	{
-		IPackageManagementSolution solution;
-		IPackageManagementProgressMonitorFactory progressMonitorFactory;
-		
-		public RestorePackagesHandler()
-			: this(
-				PackageManagementServices.Solution,
-				PackageManagementServices.ProgressMonitorFactory)
-		{
-		}
-		
-		public RestorePackagesHandler(
-			IPackageManagementSolution solution,
-			IPackageManagementProgressMonitorFactory progressMonitorFactory)
-		{
-			this.solution = solution;
-			this.progressMonitorFactory = progressMonitorFactory;
-		}
-		
 		protected override void Run ()
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
-			IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage);
-
-			try {
-				RestorePackages(progressMonitor, progressMessage);
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-				progressMonitor.Log.WriteLine(ex.Message);
-				progressMonitor.ReportError (progressMessage.Error, null);
-				progressMonitor.Dispose();
-			}
-		}
-
-		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
-		{
-			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
-		}
-		
-		void RestorePackages(IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
-		{
-			var commandLine = new NuGetPackageRestoreCommandLine(solution);
-			
-			progressMonitor.Log.WriteLine(commandLine.ToString());
-			
-			RestorePackages(progressMonitor, progressMessage, commandLine);
-		}
-		
-		void RestorePackages(
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage,
-			NuGetPackageRestoreCommandLine commandLine)
-		{
-			var aggregatedMonitor = (AggregatedProgressMonitor)progressMonitor;
-
-			Runtime.ProcessService.StartConsoleProcess(
-				commandLine.Command,
-				commandLine.Arguments,
-				commandLine.WorkingDirectory,
-				aggregatedMonitor.MasterMonitor as IConsole,
-				(sender, e) => {
-					using (progressMonitor) {
-						ReportOutcome ((IAsyncOperation)sender, progressMonitor, progressMessage);
-					}
-				}
-			);
-		}
-
-		void ReportOutcome (
-			IAsyncOperation operation,
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage)
-		{
-			if (operation.Success) {
-				progressMonitor.ReportSuccess (progressMessage.Success);
-			} else {
-				progressMonitor.ReportError (progressMessage.Error, null);
-			}
+			var runner = new PackageRestoreRunner ();
+			runner.Run ();
 		}
 	}
 }
