@@ -2083,7 +2083,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
 			{
-				return Ctx.Resolve (context);
+				var ctx = Ctx;
+				if (ctx == null)
+					return null;
+				return ctx.Resolve (context);
 			}
 
 			#endregion
