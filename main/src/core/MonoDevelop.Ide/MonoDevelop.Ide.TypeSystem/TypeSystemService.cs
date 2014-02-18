@@ -2321,7 +2321,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				} catch (Exception) {
 				}
-
 				IUnresolvedAssembly result;
 				try {
 					var loader = new IkvmLoader ();
@@ -2674,15 +2673,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
+					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (filesSkippedInParseThread.Any (f => f == fileName))
+						if (file.BuildAction != BuildAction.Compile || filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
+						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-							node = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
-							parser = node != null ? node.Parser : null;
+							var newNode = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							var newParser = newNode != null ? newNode.Parser : null;
+							if (newParser == null)
+								continue;
+							node = newNode;
+							parser = newParser;
 						}
 
 						if (parser == null || !File.Exists (fileName))
@@ -2700,11 +2705,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
 						if (token.IsCancellationRequested)
 							return;
-						var oldFile = Context.Content.GetFile (fileName);
-						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
-						if (oldFile != null)
-							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
+						parsedFiles.Add (Tuple.Create (parsedDocument, Context.Content.GetFile (fileName))); 
+					}
+					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Select (p => p.Item1.ParsedFile)));
+					foreach (var file in parsedFiles) {
+						if (token.IsCancellationRequested)
+							return;
+						if (file.Item2 != null)
+							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
+						Context.InformFileAdded (new ParsedFileEventArgs (file.Item1.ParsedFile));
 					}
 				} finally {
 					if (!token.IsCancellationRequested)
