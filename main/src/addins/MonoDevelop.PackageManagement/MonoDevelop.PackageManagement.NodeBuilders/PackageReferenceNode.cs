@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetPackageVersionLabel ()
 		{
-			return GettextCatalog.GetString ("Version") + " " + Version.ToString ();
+			return GettextCatalog.GetString ("Version {0}", Version);
 		}
 	}
 }
