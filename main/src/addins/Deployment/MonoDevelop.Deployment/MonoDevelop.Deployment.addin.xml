@@ -4,7 +4,7 @@
 		<Category _name = "Deployment" id = "Deployment">
 		<Command id = "MonoDevelop.Deployment.Commands.CreatePackage"
 				defaultHandler = "MonoDevelop.Deployment.CreatePackageHandler"
-				icon = "md-package"	
+				icon = "md-package"
 				_label = "Create Package..." />
 		<Command id = "MonoDevelop.Deployment.Commands.AddPackage"
 				defaultHandler = "MonoDevelop.Deployment.AddPackageHandler"
@@ -13,16 +13,16 @@
 				defaultHandler = "MonoDevelop.Deployment.InstallHandler"
 				_label = "Install..." />
 		</Category>
-	</Extension>	
+	</Extension>
 
 
 	<!-- Extension Points -->
-	
+
 	<ExtensionPoint path = "/MonoDevelop/DeployService/PackageBuilders">
 		<Description>Deployment handlers. Specified classes must implement IDeployHandler.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployFileCopiers" name = "File copiers">
 		<Description>File copiers for deployment handlers. Specified classes must implement IDeployFileCopier.</Description>
 		<ExtensionNode name="Class" />
@@ -31,21 +31,21 @@
 	<ExtensionPoint path = "/MonoDevelop/Deployment/DeployServiceExtensions" name="Deploy service extensions">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Deployment/PackageBuilderEditors" description="Package builder editors">
 		<Description>Editors for package builders. Specified classes must implement IPackageBuilderEditor.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors" name = "Editors for file copy congigurations">
 		<Description>Editors for file copy congigurations. Specified classes must implement IFileCopyConfigurationEditor.</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/Package" name="Package context menu">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/PackagingProject" name="Packaging project context menu">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
@@ -69,7 +69,7 @@
 			<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
 			<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
 		</Condition>
-	</Extension>	
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
@@ -88,7 +88,7 @@
 		<Class class = "MonoDevelop.Deployment.Targets.SourcesZipPackageBuilder" />
 		<Class class = "MonoDevelop.Deployment.Targets.BinariesZipPackageBuilder" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers">
 		<Class class = "MonoDevelop.Deployment.Targets.LocalFileCopyHandler" />
 		<Condition id="Platform" value="!windows">
@@ -100,19 +100,19 @@
 		<Class id="PrepareDeploy" class = "MonoDevelop.Deployment.DeployServiceExtension" />
 		<Class id="DefaultDeploy" class = "MonoDevelop.Deployment.DefaultDeployServiceExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/PackageBuilderEditors">
 		<Class class = "MonoDevelop.Deployment.Gui.SourcesZipDeployEditor" />
 		<Class class = "MonoDevelop.Deployment.Gui.BinariesZipDeployEditor" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors">
 		<Class class = "MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditor" />
 		<Condition id="Platform" value="!windows">
 			<Class class = "MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditor" />
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Class class = "MonoDevelop.Deployment.Gui.PropertyProvider"/>
 	</Extension>
@@ -133,12 +133,12 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "PackagingProject" resource = "PackagingProject.xpt.xml"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/Package">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
@@ -146,23 +146,23 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
 		<SeparatorItem />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/ContextMenu/ProjectPad/PackagingProject">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
 		<CommandItem id = "MonoDevelop.Deployment.Commands.AddPackage" />
 		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-32.png" size = "Dnd" />
-		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:packaging-16.png" size = "Menu" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-light-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-light-16.png" size = "Menu" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id = "Deployment" _label = "Deployment" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
 		<DeployDirectory id="ProgramFiles" _label="Program files" />
 		<DeployDirectory id="ProgramFilesRoot" _label="Program files root folder" />
@@ -176,7 +176,7 @@
 		<DeployPlatform id="Linux" _label="Linux" />
 		<DeployPlatform id="Windows" _label="Microsoft Windows" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 <!--		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" /> -->
 	</Extension>

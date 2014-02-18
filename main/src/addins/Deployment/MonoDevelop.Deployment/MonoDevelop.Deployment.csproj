@@ -166,23 +166,32 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="icons\light\package-16.png">
+      <LogicalName>package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-16%402x.png">
+      <LogicalName>package-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-32.png">
+      <LogicalName>package-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-32%402x.png">
+      <LogicalName>package-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-48.png">
+      <LogicalName>package-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-48%402x.png">
+      <LogicalName>package-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic.png">
-      <LogicalName>package-x-generic.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\PackagingProject.xpt.xml">
       <LogicalName>PackagingProject.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
       <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\packaging-32.png">
-      <LogicalName>packaging-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\packaging-16.png">
-      <LogicalName>packaging-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

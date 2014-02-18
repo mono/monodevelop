@@ -239,7 +239,7 @@
                 <child>
                   <widget class="Gtk.Image" id="image2">
                     <property name="MemberName" />
-                    <property name="Pixbuf">resource:package-x-generic.png</property>
+                    <property name="Pixbuf">resource:package-light-48.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>

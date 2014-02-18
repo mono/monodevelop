@@ -548,14 +548,23 @@
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic-22.png">
-      <LogicalName>package-x-generic-22.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-22.png">
+      <LogicalName>package-light-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic-32.png">
-      <LogicalName>package-x-generic-32.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-22%402x.png">
+      <LogicalName>package-light-22@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\package-x-generic-48.png">
-      <LogicalName>package-x-generic-48.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-32.png">
+      <LogicalName>package-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-32%402x.png">
+      <LogicalName>package-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-48.png">
+      <LogicalName>package-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-48%402x.png">
+      <LogicalName>package-light-48@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\task-list-16.png">
       <LogicalName>task-list-light-16.png</LogicalName>
