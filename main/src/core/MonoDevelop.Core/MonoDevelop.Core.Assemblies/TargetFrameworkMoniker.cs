@@ -91,7 +91,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			TargetFrameworkMoniker moniker;
 			if (!TryParse (value, out moniker)) {
-				throw new FormatException (string.Format ("Invalid framewokr moniker '{0}'", value));
+				throw new FormatException (string.Format ("Invalid framework moniker '{0}'", value));
 			}
 			return moniker;
 		}
@@ -152,13 +152,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 
 			Version v;
-			if (!System.Version.TryParse (version, out v)) {
-				identifier = ID_NET_FRAMEWORK;
-				version = value;
-				return false;
-			}
-
-			return true;
+			return System.Version.TryParse (version, out v);
 		}
 		
 		internal string ToLegacyIdString ()
