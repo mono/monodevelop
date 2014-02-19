@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using Xwt;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -37,11 +38,17 @@ namespace MonoDevelop.PackageManagement.Commands
 			try {
 				var viewModels = new PackageManagementViewModels ();
 				using (var dialog = new AddPackagesDialog (viewModels.ManagePackagesViewModel.AvailablePackagesViewModel)) {
-					dialog.Run ();
+					ShowDialog (dialog);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
 			}
+		}
+
+		static void ShowDialog (Dialog dialog)
+		{
+			WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+			dialog.Run (parent);
 		}
 
 		protected override bool IsEnabled ()
