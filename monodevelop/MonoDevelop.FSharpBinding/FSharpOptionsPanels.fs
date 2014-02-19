@@ -134,9 +134,10 @@ type FSharpSettingsPanel() =
     
     let matchWithTheme = if widget.MatchThemeCheckBox.Active then "true" else "false"
     PropertyService.Set(fsiMatchWitThemePropName, matchWithTheme)
-    
-    FSharpInteractivePad.CurrentFsi.UpdateFont()    
-    FSharpInteractivePad.CurrentFsi.UpdateColors()
+
+    FSharpInteractivePad.Fsi |> Option.iter (fun fsi -> fsi.UpdateFont()    
+                                                        fsi.UpdateColors())
+
     
     
 // --------------------------------------------------------------------------------------
@@ -148,7 +149,7 @@ type FSharpSettingsPanel() =
 type CodeGenerationPanel() = 
   inherit MultiConfigItemOptionsPanel()
   let mutable widget : FSharpCompilerOptionsWidget = null
-  
+
   override x.Dispose() =
     if widget <> null then
       widget.Dispose()
