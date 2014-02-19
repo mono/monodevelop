@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -47,12 +48,11 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return null;
 		}
-		
-		
-		public void ExecuteCommand (object cmd)
+
+		public bool ExecuteCommand (object cmd)
 		{
-			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, CurrentObject);
+			return (bool) Sync (delegate {
+				return AutoTestService.CommandManager.DispatchCommand (cmd, null, CurrentObject);
 			});
 		}
 		
@@ -121,8 +121,13 @@ namespace MonoDevelop.Components.AutoTest
 		public void TypeText (string text)
 		{
 			foreach (char c in text) {
-				uint key = Gdk.Global.UnicodeToKeyval ((uint)c);
-				SendKeyPress ((Gdk.Key)key, Gdk.ModifierType.None);
+				Gdk.Key key;
+				if (c == '\n')
+					key = Gdk.Key.Return;
+				else
+					key = (Gdk.Key) Gdk.Global.UnicodeToKeyval ((uint)c);
+
+				SendKeyPress (key, Gdk.ModifierType.None);
 			}
 		}
 		
@@ -224,6 +229,9 @@ namespace MonoDevelop.Components.AutoTest
 				return ob;
 			if (ob is string)
 				return ob;
+			var op = ob as IAsyncOperation;
+			if (op != null)
+				return new AutoTestOperation (op);
 			return null;
 		}
 		
@@ -360,6 +368,25 @@ namespace MonoDevelop.Components.AutoTest
 		public IntPtr device; 
 		public double x_root; 
 		public double y_root; 
-	} 
+	}
+
+	public class AutoTestOperation : MarshalByRefObject
+	{
+		readonly IAsyncOperation op;
+
+		public AutoTestOperation (IAsyncOperation op)
+		{
+			this.op = op;
+		}
+
+		public void WaitForCompleted ()
+		{
+			op.WaitForCompleted ();
+		}
+
+		public bool Success {
+			get { return op.Success; }
+		}
+	}
 }
 
