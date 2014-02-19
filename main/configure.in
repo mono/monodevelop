@@ -335,6 +335,8 @@ src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
 src/addins/MonoDevelop.HexEditor/Makefile
 src/addins/MonoDevelop.DocFood/Makefile
+src/addins/MonoDevelop.PackageManagement/Makefile
+src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Makefile
 tests/Makefile
 tests/UnitTests/Makefile
 tests/UserInterfaceTests/Makefile

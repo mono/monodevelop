@@ -311,7 +311,9 @@ namespace MonoDevelop.Ide.Projects
 			this.label4.WidthRequest = 632;
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>This list shows a set of features you can enable in the new project. After creating the project those features can be enabled or disabled in the Project Options dialog, or by adding new projects to the solution.</small>");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>This list shows a set of features you can enable in the new project. After" +
+			" creating the project those features can be enabled or disabled in the Project O" +
+			"ptions dialog, or by adding new projects to the solution.</small>");
 			this.label4.UseMarkup = true;
 			this.label4.Wrap = true;
 			this.vbox5.Add (this.label4);

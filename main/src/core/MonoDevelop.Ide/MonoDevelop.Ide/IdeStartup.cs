@@ -109,6 +109,7 @@ namespace MonoDevelop.Ide
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
 
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {

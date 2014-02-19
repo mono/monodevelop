@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Templates
 		private List<string> actions = new List<string> ();
 
 		private string createdSolutionName;
+		IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 		private ProjectCreateInformation createdProjectInformation = null;
 
 		private SolutionDescriptor solutionDescriptor = null;
@@ -229,12 +230,13 @@ namespace MonoDevelop.Ide.Templates
 
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
-			WorkspaceItem workspaceItem = solutionDescriptor.CreateEntry (cInfo, this.languagename);
+			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
-			this.createdSolutionName = workspaceItem.FileName;
+			this.createdSolutionName = workspaceItemInfo.WorkspaceItem.FileName;
 			this.createdProjectInformation = cInfo;
+			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
-			return workspaceItem;
+			return workspaceItemInfo.WorkspaceItem;
 		}
 
 		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
@@ -242,14 +244,24 @@ namespace MonoDevelop.Ide.Templates
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			SolutionEntityItem solutionEntryItem = solutionDescriptor.EntryDescriptors [0].CreateItem (cInfo, this.languagename);
-			solutionDescriptor.EntryDescriptors [0].InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
+			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
+			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
+			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
 
+			SavePackageReferences (solutionEntryItem, descriptor);
 
 			this.createdProjectInformation = cInfo;
 
-
 			return solutionEntryItem;
+		}
+
+		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
+		{
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
+			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
+				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
+				packageReferencesForCreatedProjects.Add (projectPackageReferences);
+			}
 		}
 
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
@@ -309,5 +321,13 @@ namespace MonoDevelop.Ide.Templates
 			// return (SolutionItemFeatures.GetFeatures (parentFolder, sampleItem).Length > 0);
 		}
 
+		public bool HasPackages ()
+		{
+			return solutionDescriptor.HasPackages ();
+		}
+
+		public IList<PackageReferencesForCreatedProject> PackageReferencesForCreatedProjects {
+			get { return packageReferencesForCreatedProjects; }
+		}
 	}
 }

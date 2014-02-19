@@ -170,6 +170,9 @@ main/external/Makefile
 /main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/UserInterfaceTests/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/Makefile
+/main/src/addins/MonoDevelop.PackageManagement/Makefile
+/main/src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/Makefile
+/main/src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL

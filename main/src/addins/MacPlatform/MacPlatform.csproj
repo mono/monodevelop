@@ -127,6 +127,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MacProxyCredentialProvider.cs" />
     <Compile Include="ExtendedTitleBarWindowBackend.cs" />
+    <Compile Include="ExtendedTitleBarDialogBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
