@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 		DataField<bool> packageCheckBoxActiveField = new DataField<bool> ();
 		DataField<bool> packageCheckBoxVisibleField = new DataField<bool> ();
 		DataField<Image> packageIconField = new DataField<Image> ();
-		DataField<string> packageDescriptionField = new DataField<string> ();
+		DataField<string> errorField = new DataField<string> ();
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
 		ListStore packageStore;
 		Image defaultPackageImage;
@@ -84,7 +84,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, packageDescriptionField, packageViewModelField);
+			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, errorField, packageViewModelField);
 			packagesListView.DataSource = packageStore;
 
 			AddPackageCheckBoxColumnToListView ();
@@ -107,12 +107,21 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.Columns.Add (checkBoxColumn);
 		}
 
-		void AddPackageDescriptionColumnToListView ()
+		void AddErrorDescriptionColumnToListView ()
 		{
 			var textCellView = new TextCellView {
-				MarkupField = packageDescriptionField,
+				MarkupField = errorField,
 			};
-			var textColumn = new ListViewColumn ("Text", textCellView);
+			var textColumn = new ListViewColumn ("Error", textCellView);
+			packagesListView.Columns.Add (textColumn);
+		}
+
+		void AddPackageDescriptionColumnToListView ()
+		{
+			var packageCellView = new PackageCellView {
+				PackageField = packageViewModelField
+			};
+			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);
 		}
 
@@ -133,7 +142,7 @@ namespace MonoDevelop.PackageManagement
 			int row = packageStore.AddRow ();
 			packageStore.SetValue (row, packageIconField, defaultPackageImage);
 			//packageStore.SetValue (row, packageIconField, image);
-			packageStore.SetValue (row, packageDescriptionField, message);
+			packageStore.SetValue (row, errorField, message);
 		}
 
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
@@ -211,8 +220,8 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowPackageInformation (PackageViewModel packageViewModel)
 		{
-			this.packageNameLabel.Markup = GetBoldText (packageViewModel.Name);
-			this.packageVersionLabel.Markup = GetBoldText (packageViewModel.Version.ToString ());
+			this.packageNameLabel.Markup = packageViewModel.GetNameMarkup ();
+			this.packageVersionLabel.Markup = packageViewModel.GetVersionMarkup ();
 			this.packageAuthor.Text = packageViewModel.GetAuthors ();
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
@@ -227,11 +236,6 @@ namespace MonoDevelop.PackageManagement
 			this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
 
 			this.packageInfoVBox.Visible = true;
-		}
-
-		string GetBoldText (string text)
-		{
-			return String.Format ("<b>{0}</b>", text);
 		}
 
 		void ShowUri (LinkLabel linkLabel, Uri uri, string label)
@@ -284,7 +288,8 @@ namespace MonoDevelop.PackageManagement
 			packageStore.SetValue (row, packageCheckBoxVisibleField, true);
 			packageStore.SetValue (row, packageCheckBoxActiveField, false);
 			packageStore.SetValue (row, packageIconField, defaultPackageImage);
-			packageStore.SetValue (row, packageDescriptionField, packageViewModel.GetDisplayTextMarkup ());
+			//packageStore.SetValue (row, packageDescriptionField, packageViewModel.GetDisplayTextMarkup ());
+			packageStore.SetValue (row, errorField, "");
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
 		}
 

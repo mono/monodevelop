@@ -541,5 +541,20 @@ namespace ICSharpCode.PackageManagement
 			}
 			return displayText.ToString ();
 		}
+
+		public string GetNameMarkup ()
+		{
+			return GetBoldText (Name);
+		}
+			
+		static string GetBoldText (string text)
+		{
+			return String.Format ("<b>{0}</b>", text);
+		}
+
+		public string GetVersionMarkup ()
+		{
+			return GetBoldText (Version.ToString ());
+		}
 	}
 }

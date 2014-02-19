@@ -281,6 +281,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
