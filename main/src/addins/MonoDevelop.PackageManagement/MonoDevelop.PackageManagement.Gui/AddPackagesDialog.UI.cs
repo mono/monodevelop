@@ -28,6 +28,7 @@ using System;
 using Mono.Unix;
 using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
 using Xwt;
+using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.PackageManagement
 		CheckBox showPrereleaseCheckBox;
 		Label packageId;
 		Button addPackagesButton;
+		Frame loadingSpinnerFrame;
 
 		void Build ()
 		{
@@ -83,9 +85,28 @@ namespace MonoDevelop.PackageManagement
 			mainVBox.PackStart (middleHBox, true, true);
 
 			// Packages list.
+			var packagesListVBox = new VBox ();
+			middleHBox.PackStart (packagesListVBox, true, true);
 			packagesListView = new ListView ();
 			packagesListView.HeadersVisible = false;
-			middleHBox.PackStart (packagesListView, true, true);
+			packagesListVBox.PackStart (packagesListView, true, true);
+
+			// Loading spinner.
+			var loadingSpinnerHBox = new HBox ();
+			loadingSpinnerHBox.HorizontalPlacement = WidgetPlacement.Center;
+			var loadingSpinner = new Spinner ();
+			loadingSpinner.Animate = true;
+			loadingSpinnerHBox.PackStart (loadingSpinner);
+
+			var loadingLabel = new Label ();
+			loadingLabel.Text = Catalog.GetString ("Loading package list...");
+			loadingSpinnerHBox.PackEnd (loadingLabel);
+
+			loadingSpinnerFrame = new Frame ();
+			loadingSpinnerFrame.Visible = false;
+			loadingSpinnerFrame.BackgroundColor = Colors.White;
+			loadingSpinnerFrame.Content = loadingSpinnerHBox;
+			packagesListVBox.PackStart (loadingSpinnerFrame, true, true);
 
 			// Package information
 			packageInfoVBox = new VBox ();

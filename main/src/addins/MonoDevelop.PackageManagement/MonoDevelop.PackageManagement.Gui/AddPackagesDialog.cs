@@ -65,6 +65,7 @@ namespace MonoDevelop.PackageManagement
 			Build ();
 
 			InitializeListView ();
+			ShowLoadingMessage ();
 			LoadViewModel ();
 
 			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
@@ -93,8 +94,6 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
-
-			AddSearchingMessageToListView ();
 		}
 
 		void AddPackageCheckBoxColumnToListView ()
@@ -104,7 +103,6 @@ namespace MonoDevelop.PackageManagement
 				Editable = true,
 				VisibleField = packageCheckBoxVisibleField
 			};
-			//checkBoxCellView.Toggled
 			var checkBoxColumn = new ListViewColumn ("Checked", checkBoxCellView);
 			packagesListView.Columns.Add (checkBoxColumn);
 		}
@@ -118,9 +116,16 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.Columns.Add (textColumn);
 		}
 
-		void AddSearchingMessageToListView ()
+		void ShowLoadingMessage ()
 		{
-			AddMessageToListView (StockIcons.Information, Catalog.GetString ("Searching..."));
+			packagesListView.Visible = false;
+			loadingSpinnerFrame.Visible = true;
+		}
+
+		void HideLoadingMessage ()
+		{
+			loadingSpinnerFrame.Visible = false;
+			packagesListView.Visible = true;
 		}
 
 		void AddMessageToListView (Image image, string message)
@@ -254,7 +259,9 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			if (viewModel.IsReadingPackages) {
-				AddSearchingMessageToListView ();
+				ShowLoadingMessage ();
+			} else {
+				HideLoadingMessage ();
 			}
 
 			foreach (PackageViewModel packageViewModel in viewModel.PackageViewModels) {
