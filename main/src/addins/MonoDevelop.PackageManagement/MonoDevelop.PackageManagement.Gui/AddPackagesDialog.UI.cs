@@ -54,6 +54,8 @@ namespace MonoDevelop.PackageManagement
 		Label packageId;
 		Button addPackagesButton;
 		Frame loadingSpinnerFrame;
+		HBox errorMessageHBox;
+		Label errorMessageLabel;
 
 		void Build ()
 		{
@@ -84,8 +86,20 @@ namespace MonoDevelop.PackageManagement
 			var middleHBox = new HBox ();
 			mainVBox.PackStart (middleHBox, true, true);
 
-			// Packages list.
+			// Error information.
 			var packagesListVBox = new VBox ();
+			errorMessageHBox = new HBox ();
+			errorMessageHBox.Margin = new WidgetSpacing ();
+			errorMessageHBox.BackgroundColor = Colors.Orange;
+			errorMessageHBox.Visible = false;
+			errorMessageLabel = new Label ();
+			errorMessageLabel.TextColor = Colors.White;
+			errorMessageLabel.Margin = new WidgetSpacing (5, 5, 5, 5);
+			errorMessageLabel.Wrap = WrapMode.Word;
+			errorMessageHBox.PackStart (errorMessageLabel, true);
+			packagesListVBox.PackStart (errorMessageHBox);
+
+			// Packages list.
 			middleHBox.PackStart (packagesListVBox, true, true);
 			packagesListView = new ListView ();
 			packagesListView.HeadersVisible = false;

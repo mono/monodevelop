@@ -45,7 +45,6 @@ namespace MonoDevelop.PackageManagement
 		DataField<bool> packageCheckBoxActiveField = new DataField<bool> ();
 		DataField<bool> packageCheckBoxVisibleField = new DataField<bool> ();
 		DataField<Image> packageIconField = new DataField<Image> ();
-		DataField<string> errorField = new DataField<string> ();
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
 		ListStore packageStore;
 		Image defaultPackageImage;
@@ -84,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, errorField, packageViewModelField);
+			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, packageViewModelField);
 			packagesListView.DataSource = packageStore;
 
 			AddPackageCheckBoxColumnToListView ();
@@ -107,15 +106,6 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.Columns.Add (checkBoxColumn);
 		}
 
-		void AddErrorDescriptionColumnToListView ()
-		{
-			var textCellView = new TextCellView {
-				MarkupField = errorField,
-			};
-			var textColumn = new ListViewColumn ("Error", textCellView);
-			packagesListView.Columns.Add (textColumn);
-		}
-
 		void AddPackageDescriptionColumnToListView ()
 		{
 			var packageCellView = new PackageCellView {
@@ -135,14 +125,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			loadingSpinnerFrame.Visible = false;
 			packagesListView.Visible = true;
-		}
-
-		void AddMessageToListView (Image image, string message)
-		{
-			int row = packageStore.AddRow ();
-			packageStore.SetValue (row, packageIconField, defaultPackageImage);
-			//packageStore.SetValue (row, packageIconField, image);
-			packageStore.SetValue (row, errorField, message);
 		}
 
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
@@ -259,7 +241,9 @@ namespace MonoDevelop.PackageManagement
 			this.packageStore.Clear ();
 
 			if (viewModel.HasError) {
-				AddErrorToTreeView ();
+				ShowErrorMessage ();
+			} else {
+				ClearErrorMessage ();
 			}
 
 			if (viewModel.IsReadingPackages) {
@@ -277,9 +261,16 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void AddErrorToTreeView ()
+		void ShowErrorMessage ()
 		{
-			AddMessageToListView (StockIcons.Error, viewModel.ErrorMessage);
+			errorMessageLabel.Text = viewModel.ErrorMessage;
+			errorMessageHBox.Visible = true;
+		}
+
+		void ClearErrorMessage ()
+		{
+			errorMessageHBox.Visible = false;
+			errorMessageLabel.Text = "";
 		}
 
 		void AppendPackageToListView (PackageViewModel packageViewModel)
@@ -288,8 +279,6 @@ namespace MonoDevelop.PackageManagement
 			packageStore.SetValue (row, packageCheckBoxVisibleField, true);
 			packageStore.SetValue (row, packageCheckBoxActiveField, false);
 			packageStore.SetValue (row, packageIconField, defaultPackageImage);
-			//packageStore.SetValue (row, packageDescriptionField, packageViewModel.GetDisplayTextMarkup ());
-			packageStore.SetValue (row, errorField, "");
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
 		}
 
