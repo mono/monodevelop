@@ -194,9 +194,6 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-file-manager-16.png">
-      <LogicalName>system-file-manager-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pin-down-16.png">
       <LogicalName>pin-down-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -464,9 +461,6 @@
     <EmbeddedResource Include="icons\empty-category-22.png">
       <LogicalName>empty-category-22.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\execution-marker-16.png">
-      <LogicalName>execution-marker-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-addin-16.png">
       <LogicalName>file-addin-16.png</LogicalName>
     </EmbeddedResource>
@@ -514,15 +508,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\formatting-24.png">
       <LogicalName>formatting-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pin-green-up-16.png">
-      <LogicalName>pin-green-up-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pin-green-down-16.png">
-      <LogicalName>pin-green-down-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pin-gray-up-16.png">
-      <LogicalName>pin-gray-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16.png">
       <LogicalName>element-keyword-16.png</LogicalName>
@@ -715,9 +700,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-visibility-static-overlay-16%402x.png">
       <LogicalName>element-visibility-static-overlay-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\visual-studio-16.png">
-      <LogicalName>visual-studio-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visual-style-16.png">
       <LogicalName>visual-style-16.png</LogicalName>
@@ -992,9 +974,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\misc-files-16.png">
       <LogicalName>misc-files-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-project-16.png">
-      <LogicalName>open-project-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\application-output-16.png">
       <LogicalName>application-output-light-16.png</LogicalName>

@@ -56,7 +56,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Enum = "md-enum";
 		public static readonly IconId Error = "md-error";
 		public static readonly IconId Event = "md-event";
-		public static readonly IconId ExecutionMarker = "md-execution-marker";
 		public static readonly IconId Field = "md-field";
 		public static readonly IconId FileXmlIcon = "md-file-xml-icon";
 		public static readonly IconId FindIcon = "md-magnify";
@@ -86,7 +85,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId NextWindowIcon = Gtk.Stock.GoForward;
 		public static readonly IconId OpenFileIcon = Gtk.Stock.Open;
 		public static readonly IconId OpenFolder = "md-open-folder";
-		public static readonly IconId OpenProjectIcon = "md-open-project-icon";
 		public static readonly IconId OpenReferenceFolder = "md-open-reference-folder";
 		public static readonly IconId OpenResourceFolder = "md-open-resource-folder";
 		public static readonly IconId Options = "md-preferences";
