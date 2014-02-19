@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -40,6 +41,9 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
+			if (!PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled)
+				return;
+
 			var restorer = new PackageRestorer (e.Solution);
 			DispatchService.BackgroundDispatch (() => restorer.Restore ());
 		}

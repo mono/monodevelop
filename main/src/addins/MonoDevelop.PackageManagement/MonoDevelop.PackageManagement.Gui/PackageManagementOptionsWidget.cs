@@ -45,36 +45,13 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeWidget ()
 		{
-			this.restorePackagesCheckBox.Active = viewModel.IsPackageRestoreEnabled;
-			EnableButtons ();
+			this.automaticPackageRestoreOnOpeningSolutionCheckBox.Active = viewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
+			this.automaticPackageRestoreOnOpeningSolutionCheckBox.Toggled += AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled;
 		}
 
-		void EnableButtons ()
+		protected void AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled (object sender, EventArgs e)
 		{
-			this.clearRecentPackagesButton.Sensitive = !viewModel.HasNoRecentPackages;
-			this.clearPackagesCacheButton.Sensitive = !viewModel.HasNoCachedPackages;
-		}
-
-		protected void RestorePackagesCheckBoxToggled (object sender, EventArgs e)
-		{
-			viewModel.IsPackageRestoreEnabled = this.restorePackagesCheckBox.Active;
-		}
-
-		protected void ClearRecentPackagesButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.ClearRecentPackages ();
-			EnableButtons ();
-		}
-
-		protected void ClearPackagesCacheButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.ClearCachedPackages ();
-			EnableButtons ();
-		}
-
-		protected void BrowseButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.BrowseCachedPackages ();
+			viewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = this.automaticPackageRestoreOnOpeningSolutionCheckBox.Active;
 		}
 	}
 }

@@ -5,8 +5,9 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../lib/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../bin/MonoDevelop.PackageManagement.dll" internal="true" />
+    <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.PackageManagement.ManagePackagesDialog" design-size="581 446">
     <property name="MemberName" />
@@ -1377,7 +1378,7 @@ If you do not agree to the license terms click "Cancel".</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.PackageManagement.PackageManagementOptionsWidget" design-size="355 307">
+  <widget class="Gtk.Bin" id="MonoDevelop.PackageManagement.PackageManagementOptionsWidget" design-size="368 307">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1385,177 +1386,13 @@ If you do not agree to the license terms click "Cancel".</property>
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.HBox" id="recentPackagesLabelHBox">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="recentPackagesFrameLabel">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Recent Packages&lt;/b&gt;</property>
-                <property name="UseMarkup">True</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="recentPackagesPaddingLabel">
-                <property name="MemberName" />
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HButtonBox" id="recentPackagesButtonBox">
-            <property name="MemberName" />
-            <property name="BorderWidth">8</property>
-            <property name="Size">1</property>
-            <property name="LayoutStyle">Start</property>
-            <child>
-              <widget class="Gtk.Button" id="clearRecentPackagesButton">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Clear _Recent Packages</property>
-                <property name="UseUnderline">True</property>
-                <signal name="Clicked" handler="ClearRecentPackagesButtonClicked" />
-              </widget>
-              <packing>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="packagesCacheLabelHBox">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="packagesCacheLabel">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Packages Cache&lt;/b&gt;</property>
-                <property name="UseMarkup">True</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Label" id="packagesCachePaddingLabel">
-                <property name="MemberName" />
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="packagesCacheHBox">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.HButtonBox" id="packagesCacheButtonBox">
-                <property name="MemberName" />
-                <property name="BorderWidth">8</property>
-                <property name="Size">1</property>
-                <property name="LayoutStyle">Start</property>
-                <child>
-                  <widget class="Gtk.Button" id="clearPackagesCacheButton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">Clear Package _Cache</property>
-                    <property name="UseUnderline">True</property>
-                    <signal name="Clicked" handler="ClearPackagesCacheButtonClicked" />
-                  </widget>
-                  <packing>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.HBox" id="browseButtonHBox">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.Button" id="browseButton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">_Browse...</property>
-                    <property name="UseUnderline">True</property>
-                    <property name="BorderWidth">8</property>
-                    <signal name="Clicked" handler="BrowseButtonClicked" />
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.HBox" id="restorePackagesLabelHBox">
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.Label" id="restorePackagesLabel">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;Restore Packages&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;Package Restore&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -1576,25 +1413,25 @@ If you do not agree to the license terms click "Cancel".</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">0</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.CheckButton" id="restorePackagesCheckBox">
+          <widget class="Gtk.CheckButton" id="automaticPackageRestoreOnOpeningSolutionCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">_Enable package restore</property>
+            <property name="Label" translatable="yes">_Automatically restore packages when opening a solution.</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
             <property name="BorderWidth">10</property>
-            <signal name="Toggled" handler="RestorePackagesCheckBoxToggled" />
+            <signal name="Toggled" handler="AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled" />
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1605,7 +1442,7 @@ If you do not agree to the license terms click "Cancel".</property>
             <property name="MemberName" />
           </widget>
           <packing>
-            <property name="Position">6</property>
+            <property name="Position">2</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>

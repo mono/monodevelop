@@ -86,7 +86,7 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id="NuGetPackageManagement" _label="NuGet">
+		<Section id="NuGetPackageManagement" _label="Packages">
 			<Section
 				id="General"
 				_label="General"
