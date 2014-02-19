@@ -262,10 +262,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var br = new BuildResult ();
 					foreach (MSBuildResult res in results) {
 						FilePath file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
+
 						if (res.IsWarning)
-							br.AddWarning (res.File, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+							br.AddWarning (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
 						else
-							br.AddError (res.File, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+							br.AddError (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
 					}
 					return br;
 				}
@@ -1400,6 +1401,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
 				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+			else
+				buildItem.UnsetMetadata ("DependentUpon");
+
 			if (!string.IsNullOrEmpty (file.ContentType))
 				buildItem.SetMetadata ("SubType", file.ContentType);
 			

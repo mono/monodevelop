@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -161,29 +162,26 @@ namespace MonoDevelop.CSharp.Project
 				langVersion = v;
 			}
 		}
-		
+
+#region Code Generation
+
+		[Obsolete]
 		public override void AddDefineSymbol (string symbol)
 		{
-			var symbols = new List<string>(AllDefineSymbols);
+			var symbols = new List<string> (GetDefineSymbols ());
 			symbols.Add (symbol);
 			definesymbols = string.Join (";", symbols) + ";";
 		}
 
-		public override bool HasDefineSymbol (string symbol)
+		public override IEnumerable<string> GetDefineSymbols ()
 		{
-			var symbols = new List<string> (AllDefineSymbols);
-
-			foreach (var sym in symbols) {
-				if (sym == symbol)
-					return true;
-			}
-
-			return false;
+			return definesymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s));
 		}
 
+		[Obsolete]
 		public override void RemoveDefineSymbol (string symbol)
 		{
-			var symbols = new List<string> (AllDefineSymbols);
+			var symbols = new List<string> (GetDefineSymbols ());
 			symbols.Remove (symbol);
 
 			if (symbols.Count > 0)
@@ -191,13 +189,12 @@ namespace MonoDevelop.CSharp.Project
 			else
 				definesymbols = string.Empty;
 		}
-		
-#region Code Generation
 
+		[Obsolete ("Use GetDefineSymbols")]
 		public ReadOnlyCollection<string> AllDefineSymbols
 		{ 
 			get { 
-				return new ReadOnlyCollection<string> (definesymbols.Split (new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)); 
+				return new ReadOnlyCollection<string> (GetDefineSymbols ().ToArray ());
 			} 
 		}
 		

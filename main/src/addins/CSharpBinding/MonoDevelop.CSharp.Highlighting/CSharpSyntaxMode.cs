@@ -130,15 +130,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				yield break;
 			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			if (configuration != null) {
-				var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
-				if (cparams != null) {
-					string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
-					foreach (string s in syms) {
-						string ss = s.Trim ();
-						if (ss.Length > 0)
-							yield return ss;
-					}
-				}
+				foreach (string s in configuration.GetDefineSymbols ())
+					yield return s;
 				// Workaround for mcs defined symbol
 				if (configuration.TargetRuntime.RuntimeId == "Mono") 
 					yield return "__MonoCS__";

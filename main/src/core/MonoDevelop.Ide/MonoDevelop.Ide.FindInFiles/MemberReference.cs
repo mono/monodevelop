@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -74,6 +75,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				return ((INamespace)EntityOrVariable).Name;
 			} 
 			return ((IVariable)EntityOrVariable).Name;
+		}
+
+		public override AmbientColor GetBackgroundMarkerColor (ColorScheme style)
+		{
+			return (ReferenceUsageType & ReferenceUsageType.Write) != 0 ?
+				style.ChangingUsagesRectangle :
+				style.UsagesRectangle;
 		}
 	}
 }

@@ -72,35 +72,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				projectDefaultNamespaceEntry.Visible = false;
 			}
 			
-			switch (project.NewFileSearch) 
-			{
-			case NewFileSearch.None:
-				newFilesOnLoadCheckButton.Active = false; 
-				autoInsertNewFilesCheckButton.Active = false;
-				break;
-			case NewFileSearch.OnLoad:
-				newFilesOnLoadCheckButton.Active = true; 
-				autoInsertNewFilesCheckButton.Active = false;
-				break;
-			default:
-				newFilesOnLoadCheckButton.Active = true; 
-				autoInsertNewFilesCheckButton.Active = true;
-				break;
-			}
-			
 			entryVersion.Text = project.Version;
 			checkSolutionVersion.Active = project.SyncVersionWithSolution;
 			entryVersion.Sensitive = !project.SyncVersionWithSolution;
-			
-			newFilesOnLoadCheckButton.Clicked += new EventHandler(AutoLoadCheckBoxCheckedChangeEvent);
-			AutoLoadCheckBoxCheckedChangeEvent(null, null);
-		}			
-
-		void AutoLoadCheckBoxCheckedChangeEvent(object sender, EventArgs e)
-		{
-			autoInsertNewFilesCheckButton.Sensitive = newFilesOnLoadCheckButton.Active;
-			if (newFilesOnLoadCheckButton.Active == false) 
-				autoInsertNewFilesCheckButton.Active = false;
 		}
 		
 		public void Store ()
@@ -115,12 +89,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
 			}
-			
-			if (newFilesOnLoadCheckButton.Active) {
-				project.NewFileSearch = autoInsertNewFilesCheckButton.Active ?  NewFileSearch.OnLoadAutoInsert : NewFileSearch.OnLoad;
-			} else {
-				project.NewFileSearch = NewFileSearch.None;
-			}
+
 			if (checkSolutionVersion.Active)
 				project.SyncVersionWithSolution = true;
 			else {

@@ -196,26 +196,18 @@ namespace MonoDevelop.Projects
 		public new DotNetProject ParentItem {
 			get { return (DotNetProject) base.ParentItem; }
 		}
+
+		public virtual IEnumerable<string> GetDefineSymbols ()
+		{
+			if (CompilationParameters != null)
+				return CompilationParameters.GetDefineSymbols ();
+			return new string[0];
+		}
 	}
 	
 	public class UnknownCompilationParameters: ConfigurationParameters, IExtendedDataItem
 	{
-		Hashtable table = new Hashtable ();
-		
-		public override void AddDefineSymbol (string symbol)
-		{
-			// Do nothing
-		}
-
-		public override bool HasDefineSymbol (string symbol)
-		{
-			return false;
-		}
-
-		public override void RemoveDefineSymbol (string symbol)
-		{
-			// Do nothing
-		}
+		readonly Hashtable table = new Hashtable ();
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }
@@ -224,7 +216,7 @@ namespace MonoDevelop.Projects
 	
 	public class UnknownProjectParameters: ProjectParameters, IExtendedDataItem
 	{
-		Hashtable table = new Hashtable ();
+		readonly Hashtable table = new Hashtable ();
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }

@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -85,6 +86,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		public override string ToString ()
 		{
 			return string.Format("[SearchResult: FileProvider={0}, Offset={1}, Length={2}]", FileProvider, Offset, Length);
+		}
+
+		public virtual AmbientColor GetBackgroundMarkerColor (ColorScheme style)
+		{
+			return style.SearchResult;
 		}
 	}
 }

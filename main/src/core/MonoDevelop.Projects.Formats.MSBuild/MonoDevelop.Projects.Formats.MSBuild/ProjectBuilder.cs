@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
 
-					var logger = new LocalLogger (Path.GetDirectoryName (file));
+					var logger = new LocalLogger (file);
 					buildEngine.Engine.UnregisterAllLoggers ();
 					buildEngine.Engine.RegisterLogger (logger);
 					buildEngine.Engine.RegisterLogger (consoleLogger);

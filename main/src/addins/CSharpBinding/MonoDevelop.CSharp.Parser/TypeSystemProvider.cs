@@ -385,15 +385,15 @@ namespace MonoDevelop.CSharp.Parser
 			}
 
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-			
+			if (configuration == null)
+				return compilerArguments;
+
+			foreach (var sym in configuration.GetDefineSymbols ())
+				compilerArguments.ConditionalSymbols.Add (sym);
+
+			var par = configuration.CompilationParameters as CSharpCompilerParameters;
 			if (par == null)
 				return compilerArguments;
-				
-			if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-				foreach (var sym in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
-					compilerArguments.ConditionalSymbols.Add (sym);
-			}
 			
 			compilerArguments.AllowUnsafeBlocks = par.UnsafeCode;
 			compilerArguments.LanguageVersion = ConvertLanguageVersion (par.LangVersion);
