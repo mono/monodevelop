@@ -102,8 +102,23 @@ type FSharpParser() =
         for er in activeResults.[fileName] do 
             doc.Errors.Add(er)  
 
-    if storeAst then
-        doc.Ast <- typedParsedResult
+        //Set code folding regions
+        //GetNavigationItems may throw in some situations
+        try
+          let regions =
+            let processDecl (decl:SourceCodeServices.DeclarationItem) =
+              let (sc,sl), (fc,fl) = decl.Range
+              FoldingRegion(decl.Name, DomRegion(sl,sc+1, fl,fc+1))
+                  
+            seq{for toplevel in typedParsedResult.ParseFileResults.GetNavigationItems().Declarations do
+                  yield processDecl toplevel.Declaration
+                  for next in toplevel.Nested do yield processDecl next}
+          doc.Add(regions)
+        with _ -> Debug.Assert(false, "couldn't update navigation items, ignoring")  
+        
+        //also store the AST of active results if applicable                
+        if storeAst then
+            doc.Ast <- typedParsedResult
     
     doc.LastWriteTimeUtc <- (try File.GetLastWriteTimeUtc (fileName) with _ -> DateTime.UtcNow) 
     doc :> ParsedDocument
