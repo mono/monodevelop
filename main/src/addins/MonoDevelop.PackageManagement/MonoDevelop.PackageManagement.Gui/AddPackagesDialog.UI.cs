@@ -90,12 +90,14 @@ namespace MonoDevelop.PackageManagement
 			// Package information
 			packageInfoVBox = new VBox ();
 			packageInfoVBox.Margin = new WidgetSpacing (5, 10, 10, 10);
+			var packageInfoContainerVBox = new VBox ();
+			packageInfoContainerVBox.WidthRequest = 260;
+			packageInfoContainerVBox.PackStart (packageInfoVBox, true, true);
 
 			var packageInfoScrollView = new ScrollView ();
-			packageInfoScrollView.MinWidth = 200;
 			packageInfoScrollView.BorderVisible = false;
 			packageInfoScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
-			packageInfoScrollView.Content = packageInfoVBox;
+			packageInfoScrollView.Content = packageInfoContainerVBox;
 			middleHBox.PackEnd (packageInfoScrollView);
 
 			// Package name and version.
