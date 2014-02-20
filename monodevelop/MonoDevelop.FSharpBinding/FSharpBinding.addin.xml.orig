@@ -11,6 +11,7 @@
 
     <Import file = "templates.EmptyFSharpSource.xft.xml" />
     <Import file = "templates.EmptyFSharpScript.xft.xml" />
+    <Import file = "templates.EmptyFSharpSignature.xft.xml" />
     <Import file = "templates.FSharpConsoleProject.xpt.xml" />
     <Import file = "templates.FSharpLibraryProject.xpt.xml" />
     <Import file = "templates.FSharpTutorialProject.xpt.xml" />
@@ -18,6 +19,7 @@
     <Import file = "templates.AssemblyInfo.xft.xml" />
     <Import file = "templates.FSharpProjectMvc4Razor.xpt.xml" />
     <Import file = "templates.FSharpProjectMvc4Razor.windows.xpt.xml" />
+    <Import file = "templates.PortableLibrary.xpt.xml" />
     <Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
@@ -43,6 +45,15 @@
 			guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}"
       import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"
       resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
+      <DotNetProjectSubtype
+        guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
+        type="MonoDevelop.Projects.PortableDotNetProject"
+        useXBuild="true">
+        <AddImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />
+        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </DotNetProjectSubtype>
+    </Condition>
     </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
@@ -72,6 +83,7 @@
   <Extension path="/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id="EmptyFSharpSource" file="templates.EmptyFSharpSource.xft.xml"/>
     <FileTemplate id="EmptyFSharpScript" file="templates.EmptyFSharpScript.xft.xml"/>
+    <FileTemplate id="EmptyFSharpSignature" file="templates.EmptyFSharpSignature.xft.xml"/>
     <FileTemplate id="FSharpAssemblyInfo" file="templates.AssemblyInfo.xft.xml" />
   </Extension>
 
@@ -86,6 +98,7 @@
     <Condition id="Platform" value="!windows">
       <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.xpt.xml"/>
     </Condition>
+    <ProjectTemplate id="FSharpPortableProject" file="templates.PortableLibrary.xpt.xml"/>
 
   </Extension>
 

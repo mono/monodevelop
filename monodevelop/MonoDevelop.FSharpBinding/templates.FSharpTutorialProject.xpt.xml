@@ -3,9 +3,9 @@
 
   <!-- Template Header -->
   <TemplateConfiguration>
-    <_Name>F# 3.0 Tutorial Project</_Name>
+    <_Name>F# Tutorial</_Name>
     <!--<Icon>md-project-console|res:fsharp-icon-32.png</Icon>-->
-    <_Description>A tutorial project for learning F# 3.0. NOTE: you may have to manually set the target framework after creating the project. This is a known bug.</_Description>
+    <_Description>A tutorial project providing a walkthrough of the F# language</_Description>
     <_Category>F#</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
@@ -31,12 +31,12 @@
       </References>
       <Files>
         <File name = "Tutorial.fs" AddStandardHeader="True">
-  <![CDATA[
-// This sample will guide you through elements of the F# language. 
+  <![CDATA[// This sample will guide you through elements of the F# language. 
 //
 // *******************************************************************************************************
-//   To execute the code in F# Interactive, highlight a section of code and press Alt-Enter or right-click
-//   and select "Execute in Interactive".  You can open the F# Interactive Window from the "View" menu.
+//   To execute the code in F# Interactive, highlight a section of code and press Alt-Enter in Windows or 
+//   Ctrl-Enter Mac, or right-click and select "Send Selection to F# Interactive".  
+//   You can open the F# Interactive Window from the "View" menu.
 // *******************************************************************************************************
 //
 // For more about F#, see:
