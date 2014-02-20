@@ -91,6 +91,7 @@ namespace MonoDevelop.PackageManagement
 			AddPackageDescriptionColumnToListView ();
 
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
+			packagesListView.RowActivated += PackagesListRowActivated;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 		}
@@ -285,6 +286,11 @@ namespace MonoDevelop.PackageManagement
 		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
 			List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
+			InstallPackages (packageActions);
+		}
+
+		void InstallPackages (List<IPackageAction> packageActions)
+		{
 			if (packageActions.Count > 0) {
 				ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (packageActions);
 				backgroundActionRunner.Run (progressMessage, packageActions);
@@ -337,7 +343,7 @@ namespace MonoDevelop.PackageManagement
 			return packageViewModels;
 		}
 
-		List<IPackageAction> CreateInstallPackageActions (List<PackageViewModel> packageViewModels)
+		List<IPackageAction> CreateInstallPackageActions (IEnumerable<PackageViewModel> packageViewModels)
 		{
 			return packageViewModels.Select (viewModel => viewModel.CreateInstallPackageAction ()).ToList ();
 		}
@@ -366,6 +372,15 @@ namespace MonoDevelop.PackageManagement
 			viewModel.SearchCommand.Execute (null);
 
 			return false;
+		}
+
+		void PackagesListRowActivated (object sender, ListViewRowEventArgs e)
+		{
+			PackageViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
+			if (packageViewModel != null) {
+				List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
+				InstallPackages (packageActions);
+			}
 		}
 	}
 }
