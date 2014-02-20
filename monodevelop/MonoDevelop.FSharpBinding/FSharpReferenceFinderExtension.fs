@@ -65,12 +65,13 @@ type FSharpReferenceFinder() =
             
             let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
             let references = 
-                try Some(MDLanguageService.Instance.GetUsesOfSymbol(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) |> Async.RunSynchronously)
+                try Some(MDLanguageService.Instance.GetUsesOfSymbol(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
+                    |> Async.RunSynchronously)
                 with _ -> None
 
             match references with
-            | Some(symbolDeclLocOpt, references) -> 
-                let memberRefs = [| for (filename, range) in references -> NRefactory.createMemberReference(projectContent, fsSymbol.FSharpSymbol, filename, range, fsSymbol.LastIdent, symbolDeclLocOpt) |]
+            | Some(references) -> 
+                let memberRefs = [| for symbolUse in references -> NRefactory.createMemberReference(projectContent, symbolUse, symbolUse.FileName, fsSymbol.LastIdent) |]
                 yield! memberRefs
             | None -> ()
 
