@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{07F55155-51A8-4072-9F80-FA473666F086}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -32,8 +32,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.core">
+      <HintPath>..\..\external\mdtestharness\lib\nunit.core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdeApi.cs" />
@@ -43,6 +47,7 @@
     <Compile Include="SimpleTest.cs" />
     <Compile Include="ProcessUtils.cs" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
@@ -55,5 +60,4 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
