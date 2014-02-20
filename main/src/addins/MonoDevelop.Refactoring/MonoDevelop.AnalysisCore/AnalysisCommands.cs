@@ -149,7 +149,7 @@ namespace MonoDevelop.AnalysisCore
 			if (codeActionExtension != null) {
 				var fixes = codeActionExtension.GetCurrentFixes ();
 				if (fixes != null)
-					return fixes.Any (CodeActionWidget.IsAnalysisOrErrorFix);
+					return fixes.Any (CodeActionEditorExtension.IsAnalysisOrErrorFix);
 			} 
 			return false;
 		}
@@ -170,7 +170,7 @@ namespace MonoDevelop.AnalysisCore
 			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
 			var fixes = codeActionExtension.GetCurrentFixes ();
 			if (fixes != null) {
-				foreach (var _fix in fixes.Where (CodeActionWidget.IsAnalysisOrErrorFix)) {
+				foreach (var _fix in fixes.Where (CodeActionEditorExtension.IsAnalysisOrErrorFix)) {
 					var fix = _fix;
 					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
 						continue;
