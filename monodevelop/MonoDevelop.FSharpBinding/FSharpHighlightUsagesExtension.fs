@@ -159,8 +159,8 @@ module NRefactory =
     /// Create an NRefactory MemberReference for an F# symbol.
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(projectContent, fsSymbol: FSharpSymbol, fileNameOfRef, rangeOfRef, lastIdentAtLoc:string, symbolDeclLocOpt) =
-         let ((beginLine, beginCol), (endLine, endCol)) = rangeOfRef
+    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, lastIdentAtLoc:string) =
+         let ((beginLine, beginCol), (endLine, endCol)) = symbolUse.Range
          
          // We always know the text of the identifier that resolved to symbol.
          // Trim the range of the referring text to only include this identifier.
@@ -177,15 +177,12 @@ module NRefactory =
          let offset = document.LocationToOffset(beginLine+1, beginCol+1)
          let domRegion = DomRegion(fileNameOfRef, beginLine+1, beginCol+1, endLine+1, endCol+1)
 
-         let symbol = createSymbol(projectContent, fsSymbol, lastIdentAtLoc, domRegion)
+         let symbol = createSymbol(projectContent, symbolUse.Symbol, lastIdentAtLoc, domRegion)
          let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
 
          //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
-         match symbolDeclLocOpt with
-         | None -> ()
-         | Some (fileNameOfDecl, rangeOfDecl) ->
-             if fileNameOfRef = fileNameOfDecl && rangeOfDecl = rangeOfRef then
-                memberRef.ReferenceUsageType <- ReferenceUsageType.Write
+         if symbolUse.FileName = fileNameOfRef && symbolUse.IsDefinition then
+            memberRef.ReferenceUsageType <- ReferenceUsageType.Write
 
          memberRef
 
@@ -348,12 +345,12 @@ type HighlightUsagesExtension() as this =
                     MDLanguageService.Instance.GetUsesOfSymbolAtLocation(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
-                  | Some(fsSymbol, fsSymbolName, fsSymbolRange, references) -> 
+                  | Some(fsSymbolName, references) -> 
                       let memberReferences =
-                          [| for (fileName, range) in references do
+                          [| for symbolUse in references do
                               //We only want symbol refs from the current file as we are highlighting text
-                              if fileName = currentFile then 
-                                  yield NRefactory.createMemberReference(projectContent, fsSymbol, fileName, range, fsSymbolName, fsSymbolRange) |]
+                              if symbolUse.FileName = currentFile then 
+                                  yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, fsSymbolName) |]
                       if not token.IsCancellationRequested then
                           Gtk.Application.Invoke(fun _ _ -> showReferences(memberReferences))
                   | _ -> () }
