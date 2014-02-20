@@ -38,8 +38,16 @@ namespace MonoDevelop.PackageManagement.Commands
 			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
 			var updateAllPackages = new UpdateAllPackagesInProject (project);
 			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
+			ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
 			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+		}
+
+		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions)
+		{
+			if (updateActions.Count == 1) {
+				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId);
+			}
+			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
 		}
 	}
 }
