@@ -100,7 +100,7 @@ namespace MonoDevelop.XmlEditor.MSBuild
 				if (!existingAtts.ContainsKey (a))
 					list.Add (new XmlCompletionData (a, XmlCompletionData.DataType.XmlAttribute));
 
-			var inferredAttributes = GetInferredChildren (rr);
+			var inferredAttributes = GetInferredAttributes (rr);
 			if (inferredAttributes != null)
 				foreach (var a in inferredAttributes)
 					if (!existingAtts.ContainsKey (a))
