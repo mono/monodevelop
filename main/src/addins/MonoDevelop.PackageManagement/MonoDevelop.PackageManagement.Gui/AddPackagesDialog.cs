@@ -71,6 +71,7 @@ namespace MonoDevelop.PackageManagement
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
 			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
+			this.packageSearchEntry.Activated += PackageSearchEntryActivated;
 		}
 
 		protected override void Dispose (bool disposing)
@@ -377,10 +378,21 @@ namespace MonoDevelop.PackageManagement
 		void PackagesListRowActivated (object sender, ListViewRowEventArgs e)
 		{
 			PackageViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
+			InstallPackage (packageViewModel);
+		}
+
+		void InstallPackage (PackageViewModel packageViewModel)
+		{
 			if (packageViewModel != null) {
 				List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
 				InstallPackages (packageActions);
 			}
+		}
+
+		void PackageSearchEntryActivated (object sender, EventArgs e)
+		{
+			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
+			InstallPackage (selectedPackageViewModel);
 		}
 	}
 }
