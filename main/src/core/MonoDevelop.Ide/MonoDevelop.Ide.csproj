@@ -1236,18 +1236,6 @@
     <EmbeddedResource Include="icons\light\status-opening-6-14%402x.png">
       <LogicalName>status-opening-6-light-14@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-16.png">
-      <LogicalName>error-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-16%402x.png">
-      <LogicalName>error-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\warning-16.png">
-      <LogicalName>warning-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\warning-16%402x.png">
-      <LogicalName>warning-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\information-16.png">
       <LogicalName>information-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1598,6 +1586,60 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
       <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-16.png">
+      <LogicalName>warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-16%402x.png">
+      <LogicalName>warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-24.png">
+      <LogicalName>warning-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-24%402x.png">
+      <LogicalName>warning-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-32.png">
+      <LogicalName>warning-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-32%402x.png">
+      <LogicalName>warning-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-48.png">
+      <LogicalName>warning-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-48%402x.png">
+      <LogicalName>warning-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-16.png">
+      <LogicalName>error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-16%402x.png">
+      <LogicalName>error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-24.png">
+      <LogicalName>error-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-24%402x.png">
+      <LogicalName>error-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-32.png">
+      <LogicalName>error-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-32%402x.png">
+      <LogicalName>error-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-48.png">
+      <LogicalName>error-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\error-48%402x.png">
+      <LogicalName>error-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-16.png">
+      <LogicalName>done-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-16%402x.png">
+      <LogicalName>done-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
