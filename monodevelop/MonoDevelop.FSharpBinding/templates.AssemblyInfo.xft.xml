@@ -25,7 +25,6 @@
 open System.Reflection
 open System.Runtime.CompilerServices
 
-
 [<assembly: AssemblyTitle("${ProjectName}")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]

@@ -3,9 +3,9 @@
 
   <!-- Template Header -->
   <TemplateConfiguration>
-    <_Name>F# 3.0 Console Project</_Name>
+    <_Name>F# Application</_Name>
     <Icon>md-project-console|res:fsharp-icon-32.png</Icon>
-    <_Description>Create an F# 3.0 console project for .NET 4.5. NOTE: you may have to manually set the target framework after creating the project. This is a known bug.</_Description>
+    <_Description>A project for creating a command line application</_Description>
     <_Category>F#</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
@@ -32,21 +32,14 @@
       </References>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[
-// NOTE: If warnings appear, you may need to retarget this project to .NET 4.0. Show the Solution
-// Pad, right-click on the project node, choose 'Options --> Build --> General' and change the target
-// framework to .NET 4.0 or .NET 4.5.
-
-module ${ProjectName}.Main
-
-open System
-
-let someFunction x y = x + y
+        <File name = "Program.fs" AddStandardHeader="True">
+        <![CDATA[// Learn more about F# at http://fsharp.net
+// See the 'F# Tutorial' project for more help.
 
 [<EntryPoint>]
-let main args = 
-    Console.WriteLine("Hello world!")
-    0
+let main argv = 
+    printfn "%A" argv
+    0 // return an integer exit code
 ]]></File>
       </Files>
     </Project>
