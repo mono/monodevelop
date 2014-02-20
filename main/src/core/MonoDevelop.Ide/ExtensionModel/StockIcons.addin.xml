@@ -283,6 +283,17 @@
 	<StockIcon stockid = "md-error" resource = "error-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-error" resource = "error-light-48.png" size="Dialog" />
 	<StockIcon stockid = "md-done" resource = "done-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="Button" />
+	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-32.png" size="Dnd" />
+	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-48.png" size="Dialog" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-16.png" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-24.png" size="Button" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-32.png" size="Dnd" />
+	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-48.png" size="Dialog" />
 </Extension>
 
 </ExtensionModel>
