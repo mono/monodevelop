@@ -3,7 +3,7 @@
 
   <!-- Template Header -->
   <TemplateConfiguration>
-    <_Name>F# Application</_Name>
+    <_Name>F# Console Application</_Name>
     <Icon>md-project-console|res:fsharp-icon-32.png</Icon>
     <_Description>A project for creating a command line application</_Description>
     <_Category>F#</_Category>
