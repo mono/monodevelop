@@ -46,13 +46,10 @@
 	<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-clear-all-light-16.png" size="Menu"/>
-	<StockIcon stockid = "md-build-combine" resource = "build-solution-22.png" />
 	<StockIcon stockid = "md-build-combine" resource = "build-solution-16.png" size="Menu"/>
-	<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-22.png" />
 	<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-16.png" size="Menu"/>
 	<StockIcon stockid = "md-class" resource = "element-class-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-clear-all-bookmarks" resource = "clear-all-bookmarks-16.png" size="Menu"/>
-	<StockIcon stockid = "md-clear-all-bookmarks" resource = "clear-all-bookmarks-22.png" />
 	<StockIcon stockid = "md-close-all-documents" resource = "close-all-documents-16.png" size="Menu" />
 	<StockIcon stockid = "md-close-combine-icon" resource = "close-solution-16.png" size="Menu" />
 	<StockIcon stockid = "md-solution" resource = "solution-light-16.png" size = "Menu" />
@@ -69,13 +66,10 @@
 	<StockIcon stockid = "md-static-field" icon = "res:element-field-light-16.png|res:element-visibility-static-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-find-in-files" resource = "find-in-files-16.png" size="Menu" />
 	<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-16.png" size="Menu"/>
-	<StockIcon stockid = "md-find-next-icon" resource = "edit-find-next-24.png" />
 	<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen.png"  size = "Menu" />
 	<StockIcon stockid = "md-fullscreen" resource = "view-fullscreen_22.png" />
 	<StockIcon stockid = "md-goto-nextbookmark" resource = "goto-next-bookmark-16.png" size="Menu"/>
-	<StockIcon stockid = "md-goto-nextbookmark" resource = "goto-next-bookmark-22.png"/>
 	<StockIcon stockid = "md-goto-prevbookmark" resource = "goto-prev-bookmark-16.png" size="Menu"/>
-	<StockIcon stockid = "md-goto-prevbookmark" resource = "goto-prev-bookmark-22.png" />
 	<StockIcon stockid = "md-interface" resource = "element-interface-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-internal-class" icon = "res:element-class-light-16.png|res:element-visibility-internal-overlay-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-internal-delegate" icon = "res:element-delegate-light-16.png|res:element-visibility-internal-overlay-light-16.png" size="Menu" />
@@ -169,12 +163,10 @@
 	<StockIcon stockid = "md-reference-package" icon = "md-reference" size="Menu" />
 	<StockIcon stockid = "md-reference-folder" icon = "md-reference|md-folder-overlay" size="Menu" />
 	<StockIcon stockid = "md-reference-project" icon = "md-reference|md-project-overlay" size="Menu" />
-	<StockIcon stockid = "md-remove-namespace" resource = "remove-namespace-16.png" size="Menu" />
 	<StockIcon stockid = "md-replace-in-files" resource = "replace-in-files-16.png" size="Menu" />
 	<StockIcon stockid = "md-resource-file-icon" resource = "file-resource-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-resource-file-icon" resource = "file-resource-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-save-all-icon" resource = "save-all-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-save-all-icon" resource = "save-all-24.png" />
 	<StockIcon stockid = "md-searchbox-clear" resource = "searchbox-clear-16.png" size = "Menu" />
 	<StockIcon stockid = "md-searchbox-search" resource = "searchbox-search-16.png" size = "Menu" />
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-16.png" size="Menu"/>
@@ -186,13 +178,10 @@
 	<StockIcon stockid = "md-project" resource = "project-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-console" icon = "md-project|res:project-console-overlay-light-32.png" size="Dnd" />
-	<StockIcon stockid = "md-project-item-group" resource = "project-item-group-16.png" size="Menu" />
 	<StockIcon stockid = "md-library-overlay" resource = "project-library-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-web-overlay" resource = "project-web-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-library" icon = "md-project|md-library-overlay" size="Dnd" />
 	<StockIcon stockid = "md-project-web" icon = "md-project|md-web-overlay" size="Dnd" />
-	<StockIcon stockid = "md-sort-namespace" resource = "sort-namespace-16.png" size="Menu" />
-	<StockIcon stockid = "md-split-window" resource = "split-window-16.png" size="Menu" />
 	<StockIcon stockid = "md-struct" resource = "element-structure-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-task-list-icon" resource = "task-list-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-text-file-icon" resource = "file-text-light-16.png" size = "Menu" />
@@ -204,28 +193,17 @@
 	<StockIcon stockid = "md-enum-file" resource = "file-enumeration-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-struct-file" resource = "file-struct-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-gui-file" resource = "file-gtk-light-32.png" size = "Dnd" />
-	<StockIcon stockid = "md-tip-of-the-day" resource = "tip-of-the-day-16.png" size="Menu" />
 	<StockIcon stockid = "md-toggle-bookmark" resource = "toggle-bookmark-16.png" size="Menu"/>
-	<StockIcon stockid = "md-toggle-bookmark" resource = "toggle-bookmark-22.png" />
 	<StockIcon stockid = "md-web-search-icon" resource = "web-search-16.png" size="Menu" />
 	<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-light-32.png" size = "Dnd" />
-	<StockIcon stockid = "md-addin-file" resource = "file-addin-16.png" size = "Menu" />
 	<StockIcon stockid = "md-package" resource = "package-light-22.png" />
 	<StockIcon stockid = "md-package" resource = "package-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-package" resource = "package-light-48.png" size = "Dialog" />
-	<StockIcon stockid = "md-select-all" resource = "edit-select-all_22.png" />
 	<StockIcon stockid = "md-select-all" resource = "edit-select-all-16.png" size = "Menu" />
 	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" />
 	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" size = "Button" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update-48.png" size = "Dialog" />
-	<StockIcon stockid = "md-user-package" resource = "user-package-22.png" />
 	<StockIcon stockid = "md-comment" resource = "comment-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-uncomment" resource = "uncomment-16.png" size="Menu" />
-	<StockIcon stockid = "md-addin" resource = "plugin-16.png" />
-	<StockIcon stockid = "md-addin" resource = "plugin-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-addin" resource = "plugin-22.png" size = "Button"/>
-	<StockIcon stockid = "md-addin" resource = "plugin-32.png" size = "LargeToolbar"/>
 	<StockIcon stockid = "md-workspace" resource = "workspace-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-workspace" resource = "workspace-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-new-solution-folder" resource = "solution-folder-new-16.png" size="Menu"/>
@@ -235,41 +213,24 @@
 	<StockIcon stockid = "md-template" resource = "element-template-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-template-surroundwith" resource = "element-template-surroundwith-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-compiler-options" resource = "compiler-options-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-compiler-options" resource = "compiler-options-24.png" />
 	<StockIcon stockid = "md-custom-commands" resource = "custom-commands-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-custom-commands" resource = "custom-commands-24.png" />
 	<StockIcon stockid = "md-formatting" resource = "formatting-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-formatting" resource = "formatting-24.png" />
 	<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-markers-rulers" resource = "markers-rulers-24.png" />
 	<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-24.png" />
 	<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-24.png" />
 	<StockIcon stockid = "md-text-quickfix" resource = "text-quickfix-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-message-log" resource = "immediate-light-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-visual-style" resource = "visual-style-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-visual-style" resource = "visual-style-24.png" />
 	<StockIcon stockid = "md-assembly-project" resource = "assembly-project-16.png" size="Menu" />
 	<StockIcon stockid = "md-parser" resource = "parser-16.png" size="Menu" />
 	<!-- for some reason both pairs next/previous and forward/back are in use -->
 	<StockIcon stockid = "md-navigate-forward" resource = "navigate-next-16.png" size="Menu" />
-	<StockIcon stockid = "md-navigate-forward" resource = "navigate-next-24.png" />
 	<StockIcon stockid = "md-navigate-back" resource = "navigate-previous-16.png" size="Menu" />
-	<StockIcon stockid = "md-navigate-back" resource = "navigate-previous-24.png" />
-	<StockIcon stockid = "md-navigate-next" resource = "navigate-next-16.png" size="Menu" />
-	<StockIcon stockid = "md-navigate-next" resource = "navigate-next-24.png" />
-	<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous-16.png" size="Menu" />
-	<StockIcon stockid = "md-navigate-previous" resource = "navigate-previous-24.png" />
 	<StockIcon stockid = "md-pin-up" resource = "pin-up-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-pin-down" resource = "pin-down-light-16.png" size="Menu" />
 	<StockIcon stockid = "sdk-locations" resource = "sdk-locations-16.png" size="Menu" />
 	<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-16.png" size="Menu"/>
-	<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-22.png" />
 	<StockIcon stockid = "md-text-editor" resource = "text-editor-16.png" size="Menu"/>
-	<StockIcon stockid = "md-text-editor" resource = "text-editor-22.png" />
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-16.png" size="Menu" />
-	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-24.png"/>
 	<StockIcon stockid = "md-feedback" resource = "feedback-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-software-update-available" resource = "updates-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-disclose-arrow-up" resource = "disclose-arrow-up-16.png" size="Menu" />

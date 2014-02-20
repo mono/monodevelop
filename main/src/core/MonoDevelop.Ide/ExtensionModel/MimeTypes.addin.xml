@@ -12,7 +12,7 @@
 	<MimeType id="text/microsoft-resx" _description=".NET XML resource" icon="md-resource-file-icon" baseType="application/xml">
 		<File pattern="*.resx" />
 	</MimeType>
-	<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">
+	<MimeType id="application/x-addin+xml" _description="Add-in manifest" baseType="application/xml">
 		<File pattern="*.addin.xml" />
 		<File pattern="*.addin" />
 	</MimeType>

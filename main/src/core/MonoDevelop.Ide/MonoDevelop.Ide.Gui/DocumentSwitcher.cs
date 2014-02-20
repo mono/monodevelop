@@ -613,7 +613,7 @@ namespace MonoDevelop.Ide
 				if (!pad.Visible)
 					continue;
 				var item = new DocumentList.Item () {
-					Icon = ImageService.GetIcon (pad.Icon.Name ?? MonoDevelop.Ide.Gui.Stock.MiscFiles, IconSize.Menu),
+					Icon = ImageService.GetIcon (pad.Icon.Name ?? MonoDevelop.Ide.Gui.Stock.GenericFile, IconSize.Menu),
 					Title = pad.Title,
 					Tag = pad
 				};
@@ -687,7 +687,7 @@ namespace MonoDevelop.Ide
 			if (!string.IsNullOrEmpty (document.Window.ViewContent.StockIconId))
 				return ImageService.GetIcon (document.Window.ViewContent.StockIconId, iconSize);
 			if (string.IsNullOrEmpty (document.FileName)) 
-				return ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.MiscFiles, iconSize);
+				return ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.GenericFile, iconSize);
 			
 			return DesktopService.GetIconForFile (document.FileName, iconSize);
 		}

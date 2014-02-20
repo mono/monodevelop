@@ -51,7 +51,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var reference = (ModuleReference)dataObject;
 			nodeInfo.Label = reference.Name;
-			nodeInfo.Icon = Context.GetIcon (Stock.MiscFiles);
+			nodeInfo.Icon = Context.GetIcon (Stock.GenericFile);
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
