@@ -289,9 +289,8 @@ type LanguageService(dirtyNotify) =
         match backgroundTypedParse.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
         | Some(symbol) ->
             let lastIdent = Seq.last identIsland
-            let symRangeOpt = tryGetSymbolRange symbol.DeclarationLocation
             let refs = projectResults.GetUsesOfSymbol(symbol)
-            return Some(symbol, lastIdent, symRangeOpt, refs)
+            return Some(lastIdent, refs)
         | _ -> return None
     | _ -> return None }
 
@@ -302,9 +301,8 @@ type LanguageService(dirtyNotify) =
     //parse and retrieve Checked Project results, this has the entity graph and errors etc
     let! projectResults = checker.ParseAndCheckProject(projectOptions) 
   
-    let symDeclRangeOpt = tryGetSymbolRange symbol.DeclarationLocation
     let refs = projectResults.GetUsesOfSymbol(symbol)
-    return (symDeclRangeOpt, refs) }
+    return refs }
 
   member x.Checker = checker
 
