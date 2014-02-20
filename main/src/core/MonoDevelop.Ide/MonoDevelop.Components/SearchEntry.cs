@@ -236,7 +236,7 @@ namespace MonoDevelop.Components
 			GdkWindow.GetOrigin (out tmp, out origin_y);
 			
 			x = origin_x + filter_button.Allocation.X;
-			y = origin_y + SizeRequest ().Height;
+			y = origin_y + Allocation.Y + SizeRequest ().Height;
 			push_in = true;
 		}
 
