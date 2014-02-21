@@ -157,8 +157,12 @@ namespace MonoDevelop.CSharpBinding
 			int idx = output.IndexOf ('$');
 			if (idx > 0)
 				output = output.Substring (0, idx) + output.Substring (idx + 1);
-			if (output != data.Text)
+			if (output != data.Text) {
+				Console.WriteLine ("expected:");
+				Console.WriteLine (output.Replace ("\t", "\\t").Replace (" ", "."));
+				Console.WriteLine ("was:");
 				Console.WriteLine (data.Text.Replace ("\t", "\\t").Replace (" ", "."));
+			}
 			Assert.AreEqual (output, data.Text);
 			Assert.AreEqual (idx, data.Caret.Offset, "Caret offset mismatch.");
 		}
@@ -237,14 +241,30 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestStringContination ()
 		{
-			var data = Create ("\t\t\"Hello$ World\"");
+			var data = Create ("\t\t\"Hello$World\"");
 			MiscActions.InsertNewLine (data);
 
-			var engine = new CSharpTextEditorIndentation () {
+			var engine = new CSharpTextEditorIndentation {
 				wasInStringLiteral = true
 			};
 			CheckOutput (data, "\t\t\"Hello\" +" + eolMarker + "\t\t\"$World\"", engine);
 		}
+
+		/// <summary>
+		/// Bug 17896 - Adding line break inside string removes forward whitespace.
+		/// </summary>
+		[Test]
+		public void TestBug17896 ()
+		{
+			var data = Create ("\t\t\"This is a long test string.$        It contains spaces.\"");
+			MiscActions.InsertNewLine (data);
+
+			var engine = new CSharpTextEditorIndentation {
+				wasInStringLiteral = true
+			};
+			CheckOutput (data, "\t\t\"This is a long test string.\" +" + eolMarker + "\t\t\"$        It contains spaces.\"", engine);
+		}
+
 
 		/// <summary>
 		/// Bug 3214 - Unclosed String causes 'Enter' key to produce appended String line.
