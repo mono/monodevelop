@@ -94,6 +94,7 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 			packagesListView.RowActivated += PackagesListRowActivated;
 			packagesListView.VerticalScrollControl.ValueChanged += PackagesListViewScrollValueChanged;
+			packagesListView.BoundsChanged += PackagesListViewBoundsChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 		}
@@ -113,7 +114,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var packageCellView = new PackageCellView {
 				PackageField = packageViewModelField,
-				CellWidth = 420
+				CellWidth = 440
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);
@@ -435,6 +436,11 @@ namespace MonoDevelop.PackageManagement
 			double pageSize = scrollControl.PageSize;
 
 			return (currentValue / (maxValue - pageSize)) > 0.7;
+		}
+
+		void PackagesListViewBoundsChanged (object sender, EventArgs e)
+		{
+			Console.WriteLine (packagesListView.Size);
 		}
 	}
 }

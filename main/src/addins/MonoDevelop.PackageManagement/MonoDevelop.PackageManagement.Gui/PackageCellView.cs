@@ -48,18 +48,18 @@ namespace MonoDevelop.PackageManagement
 				return;
 			}
 
-			double packageIdWidth = cellArea.Width;
+			double packageIdWidth = cellArea.Width - padding.HorizontalSpacing;
 
 			// Package download count.
 			if (packageViewModel.HasDownloadCount) {
 				var downloadCountTextLayout = new TextLayout ();
 				downloadCountTextLayout.Text = packageViewModel.GetDownloadCountDisplayText ();
 				Size size = downloadCountTextLayout.GetSize ();
-				Point location = new Point (cellArea.Right, cellArea.Top);
+				Point location = new Point (cellArea.Right - padding.Right, cellArea.Top + padding.Top);
 				Point downloadLocation = location.Offset (-size.Width, 0);
 				ctx.DrawTextLayout (downloadCountTextLayout, downloadLocation);
 
-				packageIdWidth = downloadLocation.X - cellArea.Left - packageIdRightHandPaddingWidth;
+				packageIdWidth = downloadLocation.X - cellArea.Left - packageIdRightHandPaddingWidth - padding.HorizontalSpacing;
 			}
 
 			// Package Id.
@@ -68,16 +68,16 @@ namespace MonoDevelop.PackageManagement
 			packageIdTextLayout.Trimming = TextTrimming.WordElipsis;
 			Size packageIdTextSize = packageIdTextLayout.GetSize ();
 			packageIdTextLayout.Width = packageIdWidth;
-			ctx.DrawTextLayout (packageIdTextLayout, cellArea.Left, cellArea.Top);
+			ctx.DrawTextLayout (packageIdTextLayout, cellArea.Left + padding.Left, cellArea.Top + padding.Top);
 
 			// Package description.
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Width = cellArea.Width;
-			descriptionTextLayout.Height = cellArea.Height - packageIdTextSize.Height;
+			descriptionTextLayout.Width = cellArea.Width - padding.HorizontalSpacing;
+			descriptionTextLayout.Height = cellArea.Height - packageIdTextSize.Height - padding.VerticalSpacing;
 			descriptionTextLayout.Text = packageViewModel.Description;
 			descriptionTextLayout.Trimming = TextTrimming.Word;
 
-			ctx.DrawTextLayout (descriptionTextLayout, cellArea.Left, cellArea.Top + packageIdTextSize.Height + packageDescriptionPaddingHeight);
+			ctx.DrawTextLayout (descriptionTextLayout, cellArea.Left + padding.Left, cellArea.Top + packageIdTextSize.Height + packageDescriptionPaddingHeight + padding.Top);
 		}
 
 		protected override Size OnGetRequiredSize()
@@ -85,11 +85,14 @@ namespace MonoDevelop.PackageManagement
 			var layout = new TextLayout ();
 			layout.Text = "W";
 			Size size = layout.GetSize ();
-			return new Size (CellWidth, size.Height * 3 + packageDescriptionPaddingHeight);
+			return new Size (CellWidth - padding.HorizontalSpacing, size.Height * linesDisplayedCount + packageDescriptionPaddingHeight + padding.VerticalSpacing);
 		}
-			
+
 		const int packageDescriptionPaddingHeight = 5;
 		const int packageIdRightHandPaddingWidth = 5;
+		const int linesDisplayedCount = 4;
+
+		WidgetSpacing padding = new WidgetSpacing (5, 5, 5, 5);
 	}
 }
 

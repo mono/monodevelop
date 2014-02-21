@@ -253,7 +253,8 @@ namespace MonoDevelop.PackageManagement
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.
 			var bottomHBox = new HBox ();
-			bottomHBox.Margin = new WidgetSpacing (5, 5, 5, 5);
+			bottomHBox.Margin = new WidgetSpacing (10, 5, 10, 10);
+			bottomHBox.Spacing = 3;
 			mainVBox.PackStart (bottomHBox);
 
 			showPrereleaseCheckBox = new CheckBox ();
@@ -261,10 +262,14 @@ namespace MonoDevelop.PackageManagement
 			bottomHBox.PackStart (showPrereleaseCheckBox);
 
 			addPackagesButton = new Button ();
+			addPackagesButton.MinWidth = 100;
+			addPackagesButton.MinHeight = 25;
 			addPackagesButton.Label = Catalog.GetString ("Add Package");
 			bottomHBox.PackEnd (addPackagesButton);
 
 			var closeButton = new Button ();
+			closeButton.MinWidth = 100;
+			closeButton.MinHeight = 25;
 			closeButton.Label = Catalog.GetString ("Close");
 			closeButton.Clicked += (sender, e) => Close ();
 			bottomHBox.PackEnd (closeButton);
