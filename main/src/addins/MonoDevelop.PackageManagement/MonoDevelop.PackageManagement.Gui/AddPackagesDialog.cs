@@ -252,7 +252,7 @@ namespace MonoDevelop.PackageManagement
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
 				packageStore.Clear ();
-				packagesListView.VerticalScrollControl.Value = 0;
+				ResetPackagesListViewScroll ();
 				ShowLoadingMessage ();
 			} else {
 				HideLoadingMessage ();
@@ -261,6 +261,11 @@ namespace MonoDevelop.PackageManagement
 			if (!viewModel.IsLoadingNextPage) {
 				AppendPackagesToListView ();
 			}
+		}
+
+		void ResetPackagesListViewScroll ()
+		{
+			packagesListView.VerticalScrollControl.Value = 0;
 		}
 
 		void ShowErrorMessage ()
@@ -411,6 +416,10 @@ namespace MonoDevelop.PackageManagement
 
 		void PackagesListViewScrollValueChanged (object sender, EventArgs e)
 		{
+			if (viewModel.IsLoadingNextPage) {
+				return;
+			}
+
 			if (IsScrollBarNearEnd (packagesListView.VerticalScrollControl)) {
 				if (viewModel.HasNextPage) {
 					viewModel.ShowNextPage ();
