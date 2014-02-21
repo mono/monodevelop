@@ -36,12 +36,26 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
-				var viewModels = new PackageManagementViewModels ();
-				using (var dialog = new AddPackagesDialog (viewModels.ManagePackagesViewModel.AvailablePackagesViewModel)) {
-					ShowDialog (dialog);
-				}
+
+				bool configurePackageSources = false;
+				do {
+					configurePackageSources = ShowAddPackagesDialog ();
+					if (configurePackageSources) {
+						ShowPreferencesForPackageSources ();
+					}
+				} while (configurePackageSources);
+
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
+			}
+		}
+
+		bool ShowAddPackagesDialog ()
+		{
+			var viewModels = new PackageManagementViewModels ();
+			using (var dialog = new AddPackagesDialog (viewModels.ManagePackagesViewModel.AvailablePackagesViewModel)) {
+				ShowDialog (dialog);
+				return dialog.ShowPreferencesForPackageSources;
 			}
 		}
 
@@ -49,6 +63,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
 			dialog.Run (parent);
+		}
+
+		void ShowPreferencesForPackageSources ()
+		{
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "PackageSources");
 		}
 
 		protected override bool IsEnabled ()

@@ -50,6 +50,8 @@ namespace MonoDevelop.PackageManagement
 		Image defaultPackageImage;
 		TimeSpan searchDelayTimeSpan = TimeSpan.FromMilliseconds (500);
 		IDisposable searchTimer;
+		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
+			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 
 		public AddPackagesDialog (PackagesViewModel viewModel)
 			: this (viewModel, PackageManagementServices.BackgroundPackageActionRunner)
@@ -73,6 +75,8 @@ namespace MonoDevelop.PackageManagement
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
 			this.packageSearchEntry.Activated += PackageSearchEntryActivated;
 		}
+
+		public bool ShowPreferencesForPackageSources { get; private set; }
 
 		protected override void Dispose (bool disposing)
 		{
@@ -173,10 +177,17 @@ namespace MonoDevelop.PackageManagement
 		void PopulatePackageSources ()
 		{
 			foreach (PackageSource packageSource in PackageSources) {
-				packageSourceComboBox.Items.Add (packageSource, GetPackageSourceName (packageSource));
+				AddPackageSourceToComboBox (packageSource);
 			}
 
+			AddPackageSourceToComboBox (dummyPackageSourceRepresentingConfigureSettingsItem);
+
 			this.packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
+		}
+
+		void AddPackageSourceToComboBox (PackageSource packageSource)
+		{
+			packageSourceComboBox.Items.Add (packageSource, GetPackageSourceName (packageSource));
 		}
 
 		string GetPackageSourceName (PackageSource packageSource)
@@ -189,7 +200,13 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSourceChanged (object sender, EventArgs e)
 		{
-			viewModel.SelectedPackageSource = (PackageSource)packageSourceComboBox.SelectedItem;
+			var selectedPackageSource = (PackageSource)packageSourceComboBox.SelectedItem;
+			if (selectedPackageSource == dummyPackageSourceRepresentingConfigureSettingsItem) {
+				ShowPreferencesForPackageSources = true;
+				Close ();
+			} else {
+				viewModel.SelectedPackageSource = selectedPackageSource;
+			}
 		}
 		
 		void PackagesListViewSelectionChanged (object sender, EventArgs e)

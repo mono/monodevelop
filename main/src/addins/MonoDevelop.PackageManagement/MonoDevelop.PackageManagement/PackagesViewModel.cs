@@ -372,11 +372,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<PackageSource> PackageSources {
 			get {
-				foreach (PackageSource packageSource in registeredPackageRepositories.PackageSources.GetEnabledPackageSources()) {
-					yield return packageSource;
-				}
 				if (registeredPackageRepositories.PackageSources.HasMultipleEnabledPackageSources) {
 					yield return RegisteredPackageSourceSettings.AggregatePackageSource;
+				}
+				foreach (PackageSource packageSource in registeredPackageRepositories.PackageSources.GetEnabledPackageSources()) {
+					yield return packageSource;
 				}
 			}
 		}
