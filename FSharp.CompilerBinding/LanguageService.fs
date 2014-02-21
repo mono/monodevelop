@@ -100,7 +100,7 @@ type LanguageService(dirtyNotify) =
   // and its time to re-typecheck the current file.
   let checker = 
     let checker = InteractiveChecker.Create()
-    checker.FileTypeCheckStateIsDirty.Add dirtyNotify
+    checker.BeforeBackgroundFileCheck.Add dirtyNotify
     checker
 
   /// When creating new script file on Mac, the filename we get sometimes 
