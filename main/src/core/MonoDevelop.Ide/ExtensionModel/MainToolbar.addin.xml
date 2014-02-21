@@ -8,4 +8,12 @@
 <Extension path = "/MonoDevelop/Ide/CommandBar">
 </Extension>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/SearchCategories" name = "Search categories for quick launch">
+	<Description>Search categories for quick launch. Must implement MonoDevelop.Components.MainToolbar SearchCategory.</Description>
+	<ExtensionNode name="Class" />
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/Ide/SearchCategories">
+</Extension>
+
 </ExtensionModel>

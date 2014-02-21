@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	abstract class SearchCategory 
+	public abstract class SearchCategory 
 	{
 		internal class DataItemComparer : IComparer<SearchResult>
 		{

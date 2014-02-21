@@ -32,7 +32,7 @@ using MonoDevelop.Ide.CodeCompletion;
 namespace MonoDevelop.Components.MainToolbar
 {
 
-	interface ISearchDataSource
+	public interface ISearchDataSource
 	{
 		int ItemCount { get; }
 

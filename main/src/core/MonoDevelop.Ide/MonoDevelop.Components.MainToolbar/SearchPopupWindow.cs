@@ -33,6 +33,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
+using Mono.Addins;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
@@ -120,6 +121,8 @@ namespace MonoDevelop.Components.MainToolbar
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
 			categories.Add (new SearchInSolutionSearchCategory ());
+			categories.AddRange (AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories"));
+
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 
@@ -143,6 +146,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			};*/
 		}
+
 		bool inResize = false;
 
 		public bool SearchForMembers {
