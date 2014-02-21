@@ -51,6 +51,7 @@ type KillIntent =
   | NoIntent // Unexpected kill, or from #q/#quit, so we prompt  
 
 type FSharpInteractivePad() =
+  inherit MonoDevelop.Ide.Gui.AbstractPadContent()
   let view = new ConsoleView()
   let mutable killIntent = NoIntent
   let mutable isPrompting = false
@@ -133,25 +134,21 @@ type FSharpInteractivePad() =
   do IdeApp.Exiting.Add (fun _ -> Debug.WriteLine ("Interactive: app exiting!!"))
   do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
   #endif
-
-  static let interactive = new FSharpInteractivePad()
-  static let pad = IdeApp.Workbench.AddPad(interactive, "FSharp.MonoDevelop.FSharpInteractivePad", 
-                                                         "F# Interactive", 
-                                                         "Center Bottom", 
-                                                         IconId("md-fs-project"))
+             
   member x.Shutdown()  = 
+
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     resetFsi Kill
  
-  interface MonoDevelop.Ide.Gui.IPadContent with
-    member x.Dispose() =
+  override x.Dispose() =
       Debug.WriteLine ("Interactive: disposing pad...")
       activeDoc |> Option.iter (fun ad -> ad.Dispose())
       x.Shutdown()
+      view.Dispose()
 
-    member x.Control : Gtk.Widget = view :> Gtk.Widget
+  override x.Control : Gtk.Widget = view :> Gtk.Widget
   
-    member x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
+  override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
       view.ConsoleInput.Add consoleInputHandler
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
@@ -187,10 +184,9 @@ type FSharpInteractivePad() =
       toolbar.Add(buttonRestart)
       
       toolbar.ShowAll()
-      
-    member x.RedrawContent() = ()
-  
+
   member x.RestartFsi() = resetFsi Restart
+
   member x.ClearFsi() = view.Clear()
     
   member x.UpdateColors() =
@@ -276,48 +272,68 @@ type FSharpInteractivePad() =
     let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
     sendCommand orderedreferences
-  
-  static member CurrentFsi = interactive
-  static member CurrentPad = pad
+
+  static member private Pad =
+    try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad>()
+        if pad <> null then Some(pad)
+        else
+            //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
+            let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad(), 
+                                              "FSharp.MonoDevelop.FSharpInteractivePad", 
+                                              "F# Interactive", 
+                                              "Center Bottom", 
+                                              IconId("md-fs-project"))
+            if pad <> null then Some(pad)
+            else None
+    with exn -> None
+
+  static member IsInteractiveAvailable =
+    FSharpInteractivePad.Pad |> Option.isSome
+
+  static member BringToFront(grabfocus) =
+    FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
+
+  static member Fsi =
+     FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
+
+type InteractiveCommand(command) =
+  inherit CommandHandler()
+  //If FSharpInteractivePad is not available e.g. reinstall/update issues/fresh install
+  //then the various commands are visible but disabled.
+  override x.Update(info:CommandInfo) =
+    if FSharpInteractivePad.IsInteractiveAvailable then
+        info.Enabled <- true
+        info.Visible <- match FSharpInteractivePad.Fsi with
+                        | Some(fsi) -> fsi.IsInsideFSharpFile 
+                        | None -> false
+    else info.Enabled <- false     
+  override x.Run() =
+    FSharpInteractivePad.Fsi
+    |> Option.iter (fun fsi -> command fsi
+                               FSharpInteractivePad.BringToFront(false))
 
 type ShowFSharpInteractive() =
-  inherit CommandHandler()
-  override x.Run() = 
-    let pad = FSharpInteractivePad.CurrentPad
-    pad.BringToFront(true)
+  inherit InteractiveCommand(ignore)
   override x.Update(info:CommandInfo) =
-    info.Enabled <- true
-    info.Visible <- true
-
-type InteractiveCommand(desription, command, ?bringToFront) =
-  inherit CommandHandler()
-  let toFront = defaultArg bringToFront false
-  override x.Update(info:CommandInfo) =
-    let fsi = FSharpInteractivePad.CurrentFsi
-    info.Enabled <- true
-    info.Visible <- fsi.IsInsideFSharpFile
-  override x.Run() =
-    Debug.WriteLine(desription)
-    command()
-    FSharpInteractivePad.CurrentPad.BringToFront(toFront)
-
-  
-type SendSelection() =
-  inherit InteractiveCommand("Interactive: Send selection to F# interactive invoked!",
-                             FSharpInteractivePad.CurrentFsi.SendSelection)
+    if FSharpInteractivePad.IsInteractiveAvailable then
+        info.Enabled <- true
+        info.Visible <- true
+    else
+        info.Enabled <- false
+        info.Visible <- false
+            
+type SendSelection() = 
+  inherit InteractiveCommand(fun fsi -> fsi.SendSelection())
 
 type SendLine() =
-  inherit InteractiveCommand("Interactive: Send line to F# interactive invoked!",
-                             FSharpInteractivePad.CurrentFsi.SendLine)
-
+  inherit InteractiveCommand(fun fsi -> fsi.SendLine())
+  
 type SendReferences() =
-  inherit InteractiveCommand("Interactive: Load references in F# interactive invoked!",
-                             FSharpInteractivePad.CurrentFsi.LoadReferences)
+  inherit InteractiveCommand(fun fsi -> fsi.LoadReferences())
 
 type RestartFsi() =
-  inherit InteractiveCommand("Interactive: Restart invoked!",
-                             FSharpInteractivePad.CurrentFsi.RestartFsi)
-
+  inherit InteractiveCommand(fun fsi -> fsi.RestartFsi())
+  
 type ClearFsi() =
-  inherit InteractiveCommand("Interactive: Clear invoked!",
-                             FSharpInteractivePad.CurrentFsi.ClearFsi)
+  inherit InteractiveCommand(fun fsi -> fsi.ClearFsi())
+
