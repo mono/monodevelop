@@ -42,3 +42,6 @@
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git
+[submodule "main/external/jurassic"]
+	path = main/external/jurassic
+	url = git@github.com:mono/jurassic.git

@@ -1,0 +1,30 @@
+<ExtensionModel>
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "TypeScriptConsoleProject" resource = "TypeScriptConsoleProject.xpt.xml"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "TypeScript Files" _label = "TypeScript Files" extensions = "*.ts"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id = "JavaScript" supportedextensions = ".js,.ts" class = "JavaScriptBinding.JavaScriptLanguageBinding"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "JavaScriptBinding.JavaScriptProject" />
+		<DataType class = "JavaScriptBinding.JavaScriptCompilerParameters" />
+		<DataType class = "JavaScriptBinding.JavaScriptProjectConfiguration" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "JavaScript" class = "JavaScriptBinding.JavaScriptProjectBinding"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<SolutionItem
+			type="JavaScriptBinding.JavaScriptProject" 
+			extension="jsproj"
+			guid="{262852C6-CD72-467D-83FE-5EEB1973A190}"/>
+	</Extension>
+</ExtensionModel>

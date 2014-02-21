@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<Template
+	originator   = "Mike Krüger"
+	created      = "02/21/2014"
+	lastModified = "02/21/2014">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>TypeScript Project</_Name>
+		<_Category>TypeScript</_Category>
+		<Icon>md-project</Icon>
+		<LanguageName>JavaScript</LanguageName>
+		<_Description>TypeScript Console Project</_Description>
+		<DefaultFilename>TypeScriptConsoleProject</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "greeter.ts"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "JavaScript">
+			<Options/>
+			<Files>
+			<File name="greeter.html"><![CDATA[
+<html>
+  <head><title> TypeScript Greeter </title></head>
+  <body>
+    <script src='greeter.js'></script>
+  </body>
+</html>
+]]></File>
+
+			<File name="greeter.ts" AddStandardHeader="True" BuildAction="Compile"><![CDATA[
+class Greeter {
+    constructor(public greeting: string) { }
+    greet() {
+        return "<h1>" + this.greeting + "</h1>";
+    }
+};
+var greeter = new Greeter("Hello, world!");
+var str = greeter.greet();
+document.body.innerHTML = str;
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
