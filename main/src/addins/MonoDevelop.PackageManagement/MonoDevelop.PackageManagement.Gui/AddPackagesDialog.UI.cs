@@ -140,9 +140,11 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageNameHBox);
 
 			packageNameLabel = new Label ();
-			packageNameHBox.PackStart (packageNameLabel);
+			packageNameLabel.Ellipsize = EllipsizeMode.End;
+			packageNameHBox.PackStart (packageNameLabel, true);
 
 			packageVersionLabel = new Label ();
+			packageVersionLabel.TextAlignment = Alignment.End;
 			packageNameHBox.PackEnd (packageVersionLabel);
 
 			// Package description.
@@ -159,9 +161,13 @@ namespace MonoDevelop.PackageManagement
 			packageIdHBox.PackStart (packageIdLabel);
 
 			packageId = new Label ();
+			packageId.Ellipsize = EllipsizeMode.End;
+			packageId.TextAlignment = Alignment.End;
 			packageIdLink = new LinkLabel ();
-			packageIdHBox.PackEnd (packageIdLink);
-			packageIdHBox.PackEnd (packageId);
+			packageIdLink.Ellipsize = EllipsizeMode.End;
+			packageIdLink.TextAlignment = Alignment.End;
+			packageIdHBox.PackEnd (packageIdLink, true);
+			packageIdHBox.PackEnd (packageId, true);
 
 			// Package author
 			var packageAuthorHBox = new HBox ();
@@ -172,7 +178,9 @@ namespace MonoDevelop.PackageManagement
 			packageAuthorHBox.PackStart (packageAuthorLabel);
 
 			packageAuthor = new Label ();
-			packageAuthorHBox.PackEnd (packageAuthor);
+			packageAuthor.TextAlignment = Alignment.End;
+			packageAuthor.Ellipsize = EllipsizeMode.End;
+			packageAuthorHBox.PackEnd (packageAuthor, true);
 
 			// Package published
 			var packagePublishedHBox = new HBox ();
@@ -238,7 +246,9 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox.PackStart (packageDependenciesListHBox);
 
 			packageDependenciesList = new Label ();
-			packageDependenciesListHBox.PackEnd (packageDependenciesList);
+			packageDependenciesList.Wrap = WrapMode.WordAndCharacter;
+			packageDependenciesList.Margin = new WidgetSpacing (5);
+			packageDependenciesListHBox.PackStart (packageDependenciesList, true);
 
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.
