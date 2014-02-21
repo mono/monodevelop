@@ -60,6 +60,7 @@ namespace ICSharpCode.PackageManagement
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
 			ErrorMessage = String.Empty;
+			ClearPackagesOnPaging = true;
 
 			CreateCommands();
 		}
@@ -107,14 +108,17 @@ namespace ICSharpCode.PackageManagement
 			allPackages = null;
 			pages.SelectedPageNumber = 1;
 			UpdateRepositoryBeforeReadPackagesTaskStarts();
+			IsLoadingNextPage = false;
 			StartReadPackagesTask();
 		}
 		
-		void StartReadPackagesTask()
+		void StartReadPackagesTask(bool clearPackages = true)
 		{
 			IsReadingPackages = true;
 			HasError = false;
-			ClearPackages();
+			if (clearPackages) {
+				ClearPackages ();
+			}
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			task.Start();
@@ -147,6 +151,7 @@ namespace ICSharpCode.PackageManagement
 		void OnPackagesReadForSelectedPage(ITask<PackagesForSelectedPageResult> task)
 		{
 			IsReadingPackages = false;
+			IsLoadingNextPage = false;
 			if (task.IsFaulted) {
 				SaveError(task.Exception);
 			} else if (task.IsCancelled) {
@@ -175,12 +180,6 @@ namespace ICSharpCode.PackageManagement
 			pages.TotalItems = result.TotalPackages;
 			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
 			UpdatePackageViewModels(result.Packages);
-		}
-		
-		void PagesChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			StartReadPackagesTask();
-			base.OnPropertyChanged(null);
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage()
@@ -273,7 +272,9 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageViewModels(IEnumerable<PackageViewModel> newPackageViewModels)
 		{
-			ClearPackages();
+			if (ClearPackagesOnPaging) {
+				ClearPackages ();
+			}
 			PackageViewModels.AddRange(newPackageViewModels);
 		}
 		
@@ -301,7 +302,8 @@ namespace ICSharpCode.PackageManagement
 			set {
 				if (pages.SelectedPageNumber != value) {
 					pages.SelectedPageNumber = value;
-					StartReadPackagesTask();
+					IsLoadingNextPage = true;
+					StartReadPackagesTask(ClearPackagesOnPaging);
 					base.OnPropertyChanged(null);
 				}
 			}
@@ -443,5 +445,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool ShowPrerelease { get; set; }
+		public bool ClearPackagesOnPaging { get; set; }
+		public bool IsLoadingNextPage { get; private set; }
 	}
 }

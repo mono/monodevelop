@@ -93,6 +93,7 @@ namespace MonoDevelop.PackageManagement
 
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 			packagesListView.RowActivated += PackagesListRowActivated;
+			packagesListView.VerticalScrollControl.ValueChanged += PackagesListViewScrollValueChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 		}
@@ -136,6 +137,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LoadViewModel ()
 		{
+			viewModel.ClearPackagesOnPaging = false;
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
 			viewModel.PropertyChanged += ViewModelPropertyChanged;
@@ -240,26 +242,24 @@ namespace MonoDevelop.PackageManagement
 
 		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
-			this.packageStore.Clear ();
-
 			if (viewModel.HasError) {
 				ShowErrorMessage ();
 			} else {
 				ClearErrorMessage ();
 			}
 
-			if (viewModel.IsReadingPackages) {
+			if (viewModel.IsLoadingNextPage) {
+				// Show spinner?
+			} else if (viewModel.IsReadingPackages) {
+				packageStore.Clear ();
+				packagesListView.VerticalScrollControl.Value = 0;
 				ShowLoadingMessage ();
 			} else {
 				HideLoadingMessage ();
 			}
 
-			foreach (PackageViewModel packageViewModel in viewModel.PackageViewModels) {
-				AppendPackageToListView (packageViewModel);
-			}
-
-			if (viewModel.PackageViewModels.Any ()) {
-				packagesListView.SelectRow (0);
+			if (!viewModel.IsLoadingNextPage) {
+				AppendPackagesToListView ();
 			}
 		}
 
@@ -273,6 +273,20 @@ namespace MonoDevelop.PackageManagement
 		{
 			errorMessageHBox.Visible = false;
 			errorMessageLabel.Text = "";
+		}
+
+		void AppendPackagesToListView ()
+		{
+			bool packagesListViewWasEmpty = (packageStore.RowCount == 0);
+
+			for (int i = packageStore.RowCount; i < viewModel.PackageViewModels.Count; ++i) {
+				PackageViewModel packageViewModel = viewModel.PackageViewModels [i];
+				AppendPackageToListView (packageViewModel);
+			}
+
+			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
+				packagesListView.SelectRow (0);
+			}
 		}
 
 		void AppendPackageToListView (PackageViewModel packageViewModel)
@@ -393,6 +407,24 @@ namespace MonoDevelop.PackageManagement
 		{
 			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
 			InstallPackage (selectedPackageViewModel);
+		}
+
+		void PackagesListViewScrollValueChanged (object sender, EventArgs e)
+		{
+			if (IsScrollBarNearEnd (packagesListView.VerticalScrollControl)) {
+				if (viewModel.HasNextPage) {
+					viewModel.ShowNextPage ();
+				}
+			}
+		}
+
+		bool IsScrollBarNearEnd (ScrollControl scrollControl)
+		{
+			double currentValue = scrollControl.Value;
+			double maxValue = scrollControl.UpperValue;
+			double pageSize = scrollControl.PageSize;
+
+			return (currentValue / (maxValue - pageSize)) > 0.7;
 		}
 	}
 }
