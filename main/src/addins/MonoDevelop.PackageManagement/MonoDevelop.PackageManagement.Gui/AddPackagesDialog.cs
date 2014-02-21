@@ -112,7 +112,8 @@ namespace MonoDevelop.PackageManagement
 		void AddPackageDescriptionColumnToListView ()
 		{
 			var packageCellView = new PackageCellView {
-				PackageField = packageViewModelField
+				PackageField = packageViewModelField,
+				CellWidth = 420
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);

@@ -33,7 +33,13 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageCellView : CanvasCellView
 	{
+		public PackageCellView ()
+		{
+			CellWidth = 260;
+		}
+
 		public IDataField<PackageViewModel> PackageField { get; set; }
+		public double CellWidth { get; set; }
 
 		protected override void OnDraw(Context ctx, Rectangle cellArea)
 		{
@@ -79,10 +85,9 @@ namespace MonoDevelop.PackageManagement
 			var layout = new TextLayout ();
 			layout.Text = "W";
 			Size size = layout.GetSize ();
-			return new Size (packageCellWidth, size.Height * 3 + packageDescriptionPaddingHeight);
+			return new Size (CellWidth, size.Height * 3 + packageDescriptionPaddingHeight);
 		}
-
-		const int packageCellWidth = 260;
+			
 		const int packageDescriptionPaddingHeight = 5;
 		const int packageIdRightHandPaddingWidth = 5;
 	}

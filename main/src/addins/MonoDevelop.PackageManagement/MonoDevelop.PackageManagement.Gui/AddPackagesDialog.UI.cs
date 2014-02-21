@@ -60,8 +60,8 @@ namespace MonoDevelop.PackageManagement
 		void Build ()
 		{
 			Title = Catalog.GetString ("Add Packages");
-			Width = 640;
-			Height = 480;
+			Width = 800;
+			Height = 520;
 			Padding = new WidgetSpacing ();
 
 			// Top part of dialog:
