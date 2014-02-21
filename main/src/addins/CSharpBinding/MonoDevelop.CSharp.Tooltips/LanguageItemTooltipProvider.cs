@@ -328,7 +328,10 @@ namespace MonoDevelop.SourceEditor
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 					sig.BreakLineAfterReturnType = false;
 					try {
-						tooltipInfo.SignatureMarkup = sig.GetMarkup (or.UserDefinedOperatorMethod);
+						var method = or.UserDefinedOperatorMethod;
+						if (method == null)
+							return null;
+						tooltipInfo.SignatureMarkup = sig.GetMarkup (method);
 					} catch (Exception e) {
 						LoggingService.LogError ("Got exception while creating markup for :" + result, e);
 						return new TooltipInformation ();
