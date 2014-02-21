@@ -259,12 +259,13 @@ namespace MonoDevelop.CodeActions
 			menu.SelectFirst (true);
 			menu.Hidden += delegate {
 				document.Editor.SuppressTooltips = false;
-				menu.Destroy ();
 			};
 			var container = document.Editor.Parent;
 
 			var p = container.LocationToPoint (currentSmartTagBegin);
-			var rect = new Gdk.Rectangle (p.X + container.Allocation.X , p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
+			var rect = new Gdk.Rectangle (
+				p.X + container.Allocation.X , 
+				p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 
@@ -537,9 +538,8 @@ namespace MonoDevelop.CodeActions
 				currentSmartTag.fixes = fixes;
 				return;
 			}
-			currentSmartTagBegin = smartTagLocBegin;
-
 			RemoveWidget ();
+			currentSmartTagBegin = smartTagLocBegin;
 			var line = document.Editor.GetLine (smartTagLocBegin.Line);
 			currentSmartTag = new SmartTagMarker ((line.NextLine ?? line).Offset, this, fixes, smartTagLocBegin);
 			document.Editor.Document.AddMarker (currentSmartTag);
