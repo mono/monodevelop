@@ -526,7 +526,7 @@ namespace ICSharpCode.PackageManagement
 		public string GetDownloadCountDisplayText()
 		{
 			if (HasDownloadCount) {
-				return DownloadCount.ToString ();
+				return DownloadCount.ToString ("N0");
 			}
 			return String.Empty;
 		}
