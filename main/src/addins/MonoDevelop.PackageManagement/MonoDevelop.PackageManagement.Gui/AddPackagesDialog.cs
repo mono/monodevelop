@@ -53,12 +53,15 @@ namespace MonoDevelop.PackageManagement
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 
-		public AddPackagesDialog (PackagesViewModel viewModel)
-			: this (viewModel, PackageManagementServices.BackgroundPackageActionRunner)
+		public AddPackagesDialog (PackagesViewModel viewModel, string initialSearch = null)
+			: this (viewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
-		public AddPackagesDialog (PackagesViewModel viewModel, IBackgroundPackageActionRunner backgroundActionRunner)
+		public AddPackagesDialog (
+			PackagesViewModel viewModel,
+			string initialSearch,
+			IBackgroundPackageActionRunner backgroundActionRunner)
 		{
 			this.viewModel = viewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
@@ -67,7 +70,7 @@ namespace MonoDevelop.PackageManagement
 
 			InitializeListView ();
 			ShowLoadingMessage ();
-			LoadViewModel ();
+			LoadViewModel (initialSearch);
 
 			this.showPrereleaseCheckBox.Clicked += ShowPrereleaseCheckBoxClicked;
 			this.packageSourceComboBox.SelectionChanged += PackageSourceChanged;
@@ -150,9 +153,12 @@ namespace MonoDevelop.PackageManagement
 			viewModel.IncludePrerelease = !viewModel.IncludePrerelease;
 		}
 
-		void LoadViewModel ()
+		void LoadViewModel (string initialSearch)
 		{
 			viewModel.ClearPackagesOnPaging = false;
+			viewModel.SearchTerms = initialSearch;
+			packageSearchEntry.Text = initialSearch;
+
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
 			viewModel.PropertyChanged += ViewModelPropertyChanged;

@@ -282,6 +282,9 @@
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SearchPackagesDataSource.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -320,6 +323,10 @@
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

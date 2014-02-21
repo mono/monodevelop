@@ -1,5 +1,5 @@
-//
-// AddPackagesHandler.cs
+﻿//
+// SearchPackagesSearchCategory.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,20 +25,28 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement
 {
-	public class AddPackagesHandler : PackagesCommandHandler
+	public class SearchPackagesSearchCategory : SearchCategory
 	{
-		protected override void Run ()
+		public SearchPackagesSearchCategory ()
+			: base (GettextCatalog.GetString("Search"))
 		{
-			var runner = new AddPackagesDialogRunner ();
-			runner.Run ();
 		}
 
-		protected override bool IsEnabled ()
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
-			return IsDotNetProjectSelected ();
+			return Task.Factory.StartNew (() => (ISearchDataSource)new SearchPackagesDataSource (searchPattern));
+		}
+
+		public override bool IsValidTag (string tag)
+		{
+			return tag == "search";
 		}
 	}
 }
