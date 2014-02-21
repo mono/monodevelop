@@ -57,6 +57,8 @@ namespace MonoDevelop.PackageManagement
 		HBox errorMessageHBox;
 		Label errorMessageLabel;
 
+		Label loadingSpinnerLabel;
+
 		void Build ()
 		{
 			Title = Catalog.GetString ("Add Packages");
@@ -112,9 +114,9 @@ namespace MonoDevelop.PackageManagement
 			loadingSpinner.Animate = true;
 			loadingSpinnerHBox.PackStart (loadingSpinner);
 
-			var loadingLabel = new Label ();
-			loadingLabel.Text = Catalog.GetString ("Loading package list...");
-			loadingSpinnerHBox.PackEnd (loadingLabel);
+			loadingSpinnerLabel = new Label ();
+			loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
+			loadingSpinnerHBox.PackEnd (loadingSpinnerLabel);
 
 			loadingSpinnerFrame = new Frame ();
 			loadingSpinnerFrame.Visible = false;

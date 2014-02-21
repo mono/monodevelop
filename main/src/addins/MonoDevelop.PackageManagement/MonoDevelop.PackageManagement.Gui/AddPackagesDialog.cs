@@ -94,7 +94,6 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 			packagesListView.RowActivated += PackagesListRowActivated;
 			packagesListView.VerticalScrollControl.ValueChanged += PackagesListViewScrollValueChanged;
-			packagesListView.BoundsChanged += PackagesListViewBoundsChanged;
 
 			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 		}
@@ -122,6 +121,7 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowLoadingMessage ()
 		{
+			UpdateSpinnerLabel ();
 			packagesListView.Visible = false;
 			loadingSpinnerFrame.Visible = true;
 		}
@@ -130,6 +130,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			loadingSpinnerFrame.Visible = false;
 			packagesListView.Visible = true;
+		}
+
+		void UpdateSpinnerLabel ()
+		{
+			if (String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
+				loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
+			} else {
+				loadingSpinnerLabel.Text = Catalog.GetString ("Searching packages...");
+			}
 		}
 
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
@@ -436,11 +445,6 @@ namespace MonoDevelop.PackageManagement
 			double pageSize = scrollControl.PageSize;
 
 			return (currentValue / (maxValue - pageSize)) > 0.7;
-		}
-
-		void PackagesListViewBoundsChanged (object sender, EventArgs e)
-		{
-			Console.WriteLine (packagesListView.Size);
 		}
 	}
 }
