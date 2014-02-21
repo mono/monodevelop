@@ -207,7 +207,7 @@ namespace MonoDevelop.Refactoring
 				out node);
 		}
 
-		public static HashSet<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ref ResolveResult resolveResult)
+		public static List<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ref ResolveResult resolveResult)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -223,8 +223,13 @@ namespace MonoDevelop.Refactoring
 				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
 				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Namespace));
 			}
-
-			return new HashSet<PossibleNamespace> (foundNamespaces);
+			var result = new List<PossibleNamespace> ();
+			foreach (var ns in foundNamespaces) {
+				if (result.Any (n => n.Namespace == ns.Namespace))
+					continue;
+				result.Add (ns); 
+			}
+			return result;
 		}
 
 		static int GetTypeParameterCount (AstNode node)
