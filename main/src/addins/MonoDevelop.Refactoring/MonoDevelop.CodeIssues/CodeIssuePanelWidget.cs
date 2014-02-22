@@ -175,16 +175,18 @@ namespace MonoDevelop.CodeIssues
 
 			var toggleRenderer = new CellRendererToggle ();
 			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
-				Gtk.TreeIter iter;
+				TreeIter iter;
 				if (treeStore.GetIterFromString (out iter, args.Path)) {
 					var provider = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
 					enableState[provider] = !enableState[provider];
 				}
 			};
 
-			var isEnabledCol = treeviewInspections.AppendColumn ("Enabled", toggleRenderer);
-			isEnabledCol.Sizing = TreeViewColumnSizing.Autosize;
-			isEnabledCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
+			var titleCol = new TreeViewColumn ();
+			treeviewInspections.AppendColumn (titleCol);
+			titleCol.PackStart (toggleRenderer, false);
+			titleCol.Sizing = TreeViewColumnSizing.Autosize;
+			titleCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
 				var provider = (BaseCodeIssueProvider)model.GetValue (iter, 1);
 				if (provider == null) {
 					toggleRenderer.Visible = false;
@@ -198,8 +200,9 @@ namespace MonoDevelop.CodeIssues
 			var cellRendererText = new CellRendererText {
 				Ellipsize = Pango.EllipsizeMode.End
 			};
-			var col1 = treeviewInspections.AppendColumn ("Title", cellRendererText, "markup", 0);
-			col1.Expand = true;
+			titleCol.PackStart (cellRendererText, true);
+			titleCol.AddAttribute (cellRendererText, "markup", 0);
+			titleCol.Expand = true;
 
 			searchentryFilter.ForceFilterButtonVisible = true;
 			searchentryFilter.RoundedShape = true;
