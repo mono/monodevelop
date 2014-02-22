@@ -1104,18 +1104,6 @@
     <EmbeddedResource Include="icons\bubble-warning-icon.png">
       <LogicalName>bubble-warning-icon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-error-16.png">
-      <LogicalName>issuestatus-error-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-ok-16.png">
-      <LogicalName>issuestatus-ok-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-updating-16.png">
-      <LogicalName>issuestatus-updating-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-warning-16.png">
-      <LogicalName>issuestatus-warning-16.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

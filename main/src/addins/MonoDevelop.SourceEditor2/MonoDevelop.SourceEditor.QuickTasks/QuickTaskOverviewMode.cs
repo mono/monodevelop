@@ -311,18 +311,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		Gdk.Pixbuf GetIndicatorIcon (Severity severity)
-		{
-			switch (severity) {
-			case Severity.Error:
-				return ImageService.GetPixbuf ("md-issuestatus-error", IconSize.Menu);
-			case Severity.Warning:
-				return ImageService.GetPixbuf ("md-issuestatus-warning", IconSize.Menu);
-			default:
-				return ImageService.GetPixbuf ("md-issuestatus-ok", IconSize.Menu);
-			}
-		}
-
 		protected virtual double IndicatorHeight  {
 			get {
 				return Allocation.Width;
@@ -374,25 +362,34 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
 			button &= ~evnt.Button;
+			QueueDraw (); 
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Save ();
-			var pixbuf = GetIndicatorIcon (severity);
-			cr.Translate (
-				1 + (Allocation.Width - pixbuf.Width) / 2,
-				1
-			);
+			cr.Arc (3 + 4, 3 + 4, 4, 0, Math.PI * 2);
+			Mono.TextEditor.Highlighting.AmbientColor color;
+			switch (severity) {
+			case Severity.Error:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusErrorsIcon;
+				break;
+			case Severity.Warning:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusWarningsIcon;
+				break;
+			case Severity.Suggestion:
+			case Severity.Hint:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusSuggestionsIcon;
+				break;
+			default:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusAllGoodIcon;
+				break;
+			}
 
-			CairoHelper.SetSourcePixbuf (
-				cr,
-				pixbuf,
-				0, 0
-			);
-			cr.Paint ();
-			cr.Restore ();
+			cr.Color = color.Color;
+			cr.FillPreserve ();
+			cr.Color = color.BorderColor;
+			cr.Stroke ();
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
@@ -431,7 +428,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = 17;
+			requisition.Width = 14;
 		}
 		
 		double LineToY (int logicalLine)
@@ -492,7 +489,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				double y = GetYPosition (task.Location.Line);
 
 				cr.SetSourceColor (GetBarColor (task.Severity));
-				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
+				cr.Rectangle (0, Math.Round (y) - 1, Allocation.Width, 2);
 				cr.Fill ();
 
 				switch (task.Severity) {
@@ -543,13 +540,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (flatStyle) {
 				cr.Rectangle (barPadding, barY, barWidth, barH);
 			} else {
-				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, barWidth / 2);
+				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, 4);
 			}
 			
-			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
-			color.L = flatStyle? 0.7 : 0.5;
-			var c = (Cairo.Color)color;
-			c.A = 0.6;
+			var c = new Cairo.Color (0, 0, 0, (button == 1 ? 50.0 : 22.0) / 255);
 			cr.SetSourceColor (c);
 			cr.Fill ();
 		}
@@ -577,31 +571,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-					col.L *= 0.95;
-					if (flatStyle) {
-						using (var pattern = new Cairo.SolidPattern (col)) {
-							cr.SetSource (pattern);
-						}
-					} else {
-						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-							grad.AddColorStop (0, col);
-							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-							grad.AddColorStop (1, col);
-							cr.SetSource (grad);
-						}
+					using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+						grad.AddColorStop (0, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+						grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
+						grad.AddColorStop (1, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+						cr.SetSource (grad);
 					}
 				}
 				cr.Fill ();
-
-				/*
-				cr.Color = (HslColor)Style.Dark (State);
-				cr.MoveTo (-0.5, 0.5);
-				cr.LineTo (Allocation.Width, 0.5);
-
-				cr.MoveTo (-0.5, Allocation.Height - 0.5);
-				cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
-				cr.Stroke ();*/
 
 				if (TextEditor == null)
 					return true;
