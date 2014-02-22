@@ -39,9 +39,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public class QuickTaskOverviewMode : DrawingArea
 	{
+		//TODO: find a way to look these up from the theme
+		static readonly Cairo.Color win81Background = new Cairo.Color (240/255d, 240/255d, 240/255d);
+		static readonly Cairo.Color win81Slider = new Cairo.Color (205/255d, 205/255d, 205/255d);
+		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166/255d, 166/255d, 166/255d);
+		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96/255d, 96/255d, 96/255d);
+
 		const int indicatorPadding = 3;
-		bool flatStyle = Platform.IsWindows;
-		int barPadding = Platform.IsWindows? 1 : 3;
+		readonly int barPadding = Platform.IsWindows? 1 : 3;
 
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
@@ -127,20 +132,28 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		internal CodeSegmentPreviewWindow previewWindow;
 
-
 		bool hoverOverIndicator;
 		QuickTaskStrip.HoverMode currentHoverMode;
+
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
-			if (button != 0)
-				MouseMove (evnt.Y);
+
+			if ((evnt.State & ModifierType.Button1Mask) != 0)
+				MovePosition (evnt.Y);
+
+			var newState = StateType.Normal;
+			double barX, barY, barW, barH;
+			GetBarDimensions (out barX, out barY, out barW, out barH);
+			if (evnt.X >= barX && evnt.X <= barX + barW && evnt.Y >= barY && evnt.Y <= barY + barH)
+				newState = StateType.Prelight;
+			UpdateState (newState);
 			
 			var h = IndicatorHeight;
 			if (TextEditor.HighlightSearchPattern) {
 				hoverOverIndicator = false;
 				if (evnt.Y < h)
-					this.TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
+					TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
 			} else {
 				hoverOverIndicator = evnt.Y < h;
 				if (hoverOverIndicator) {
@@ -195,8 +208,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
 				}
 			}
-			
-			if (button == 0 && evnt.State.HasFlag (ModifierType.ShiftMask)) {
+
+			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
+				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
+
+			if ((evnt.State & buttonMask & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				int line = YToLine (evnt.Y);
 				
 				line = Math.Max (1, line - 2);
@@ -220,6 +236,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				DestroyPreviewWindow ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
+		}
+
+		void UpdateState (StateType state)
+		{
+			if (State != state) {
+				State = state;
+				QueueDraw ();
+			}
 		}
 		
 		class PreviewPopup {
@@ -285,6 +309,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
+			UpdateState (StateType.Normal);
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			return base.OnLeaveNotifyEvent (evnt);
@@ -317,25 +342,20 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 		
-		protected virtual void MouseMove (double y)
+		protected virtual void MovePosition (double y)
 		{
-			if ((button & 1) == 0)
-				return;
 			double position = ((y - IndicatorHeight) / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
 			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 			vadjustment.Value = position;
 		}
 
-		QuickTask hoverTask = null;
-		
-		protected uint button;
-
+		QuickTask hoverTask;
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			button |= evnt.Button;
+			uint button = evnt.Button;
 
-			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && evnt.Type == EventType.ButtonPress) {
+			if (!evnt.TriggersContextMenu () && button == 1 && evnt.Type == EventType.ButtonPress) {
 				if (hoverOverIndicator) {
 					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
 					return base.OnButtonPressEvent (evnt);
@@ -353,22 +373,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				} 
 			}
 
-			if (evnt.Type == EventType.ButtonPress)
-				MouseMove (evnt.Y);
+			if (evnt.Type == EventType.ButtonPress && evnt.Button == 1 && !evnt.IsContextMenuButton ())
+				MovePosition (evnt.Y);
 			
 			return base.OnButtonPressEvent (evnt);
-		}
-		
-		protected override bool OnButtonReleaseEvent (EventButton evnt)
-		{
-			button &= ~evnt.Button;
-			QueueDraw (); 
-			return base.OnButtonReleaseEvent (evnt);
 		}
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Arc (3 + 4, 3 + 4, 4, 0, Math.PI * 2);
 			Mono.TextEditor.Highlighting.AmbientColor color;
 			switch (severity) {
 			case Severity.Error:
@@ -386,16 +398,22 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				break;
 			}
 
-			cr.Color = color.Color;
-			cr.FillPreserve ();
-			cr.Color = color.BorderColor;
-			cr.Stroke ();
+			DrawIndicator (cr, color.Color, color.BorderColor);
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
 		{
-			int diameter = Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2;
-			var x1 = Math.Round (Allocation.Width / 2d);
+			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.Color;
+			darkColor.L *= 0.5;
+			DrawIndicator (cr, TextEditor.ColorStyle.SearchResultMain.Color, darkColor);
+		}
+
+		void DrawIndicator (Cairo.Context cr, Cairo.Color color, Cairo.Color borderColor)
+		{
+			var width = Allocation.Width;
+
+			int diameter = Math.Min (width, (int)IndicatorHeight) - indicatorPadding * 2;
+			var x1 = Math.Round (width / 2d);
 			double y1 = indicatorPadding + diameter / 2;
 			if (diameter % 2 == 0) {
 				x1 += 0.5;
@@ -403,32 +421,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 
 			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
-			
-			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.Color;
-			darkColor.L *= 0.5;
 
-			if (flatStyle) {
-				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.Color)) {
+			if (Platform.IsWindows) {
+				using (var pattern = new Cairo.SolidPattern (color)) {
 					cr.SetSource (pattern);
 					cr.FillPreserve ();
 				}
 			} else {
-				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
-					pattern.AddColorStop (0, darkColor);
-					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.Color);
+				using (var pattern = new Cairo.RadialGradient (x1, y1, width / 2, x1 - width, y1 - width, width)) {
+					pattern.AddColorStop (0, borderColor);
+					pattern.AddColorStop (1, color);
 					cr.SetSource (pattern);
 					cr.FillPreserve ();
 				}
 			}
 			
-			cr.SetSourceColor (darkColor);
+			cr.SetSourceColor (borderColor);
 			cr.Stroke ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = 14;
+			requisition.Width = Platform.IsWindows? 17 : 14;
 		}
 		
 		double LineToY (int logicalLine)
@@ -511,7 +526,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
 				var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-				if (!flatStyle) {
+				if (!Platform.IsWindows) {
 					col.L *= 0.88;
 				}
 				cr.SetSourceColor (col);
@@ -525,29 +540,62 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			base.OnSizeAllocated (allocation);
 		}
 
+		void GetBarDimensions (out double x, out double y, out double w, out double h)
+		{
+			var alloc = Allocation;
+
+			x = barPadding;
+			var adjUpper = vadjustment.Upper;
+			var allocH = alloc.Height - (int) IndicatorHeight;
+			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
+			w = alloc.Width - barPadding - barPadding;
+			const int minBarHeight = 16;
+			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
+		}
+
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
 			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 				return;
 
-			int barWidth = Allocation.Width - barPadding - barPadding;
-			var allocH = Allocation.Height - (int) IndicatorHeight;
-			var adjUpper = vadjustment.Upper;
-			var barY = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
-			const int minBarHeight = 16;
-			var barH = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
+			double x, y, w, h;
+			GetBarDimensions (out x, out y, out w, out h);
 
-			if (flatStyle) {
-				cr.Rectangle (barPadding, barY, barWidth, barH);
+			if (Platform.IsWindows) {
+				cr.Rectangle (x, y, w, h);
 			} else {
-				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, 4);
+				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, x, y, w, h, 4);
 			}
-			
-			var c = new Cairo.Color (0, 0, 0, (button == 1 ? 50.0 : 22.0) / 255);
+
+			bool prelight = State == StateType.Prelight;
+
+			Cairo.Color c;
+			if (Platform.IsWindows) {
+				c = prelight ? win81SliderPrelight : win81Slider;
+				//compute new color such that it will produce same color when blended with bg
+				c = AddAlpha (win81Background, c, 0.5d);
+			} else {
+				c = new Cairo.Color (0, 0, 0, (prelight ? 50.0 : 22.0) / 255);
+			}
 			cr.SetSourceColor (c);
 			cr.Fill ();
 		}
-		
+
+		static Cairo.Color AddAlpha (Cairo.Color bg, Cairo.Color final, double alpha)
+		{
+			return new Cairo.Color (
+				ReverseAlpha (final.R, final.A, bg.R, bg.A, alpha),
+				ReverseAlpha (final.G, final.A, bg.G, bg.A, alpha),
+				ReverseAlpha (final.B, final.A, bg.B, bg.A, alpha),
+				alpha
+			);
+		}
+
+		static double ReverseAlpha (double c0, double a0, double cb, double ab, double aa)
+		{
+			return (c0 * a0 - cb * ab * (1 - aa)) / aa;
+		}
+
 		protected void DrawSearchResults (Cairo.Context cr)
 		{
 			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
@@ -571,17 +619,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					if (flatStyle) {
-						var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-						col.L *= 0.95;
-						using (var pattern = new Cairo.SolidPattern (col)) {
+					if (Platform.IsWindows) {
+						using (var pattern = new Cairo.SolidPattern (win81Background)) {
 							cr.SetSource (pattern);
 						}
 					} else {
+						var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-							grad.AddColorStop (0, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+							grad.AddColorStop (0, col);
 							grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
-							grad.AddColorStop (1, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+							grad.AddColorStop (1, col);
 							cr.SetSource (grad);
 						}
 					}
