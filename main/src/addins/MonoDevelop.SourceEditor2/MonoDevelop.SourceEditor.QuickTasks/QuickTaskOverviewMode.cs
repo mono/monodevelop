@@ -86,6 +86,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
 			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
+			HasTooltip = true;
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -129,11 +130,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			QueueDraw ();
 		}
+
+		bool IsOverIndicator (double y)
+		{
+			return y < IndicatorHeight;
+		}
 		
 		internal CodeSegmentPreviewWindow previewWindow;
-
-		bool hoverOverIndicator;
-		QuickTaskStrip.HoverMode currentHoverMode;
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
@@ -148,66 +151,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (evnt.X >= barX && evnt.X <= barX + barW && evnt.Y >= barY && evnt.Y <= barY + barH)
 				newState = StateType.Prelight;
 			UpdateState (newState);
-			
-			var h = IndicatorHeight;
-			if (TextEditor.HighlightSearchPattern) {
-				hoverOverIndicator = false;
-				if (evnt.Y < h)
-					TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
-			} else {
-				hoverOverIndicator = evnt.Y < h;
-				if (hoverOverIndicator) {
-					int errors = 0, warnings = 0, hints = 0, suggestions = 0;
-					foreach (var task in AllTasks) {
-						switch (task.Severity) {
-						case Severity.Error:
-							errors++;
-							break;
-						case Severity.Warning:
-							warnings++;
-							break;
-						case Severity.Hint:
-							hints++;
-							break;
-						case Severity.Suggestion:
-							suggestions++;
-							break;
-						}
-					}
-					string text = null;
-					if (errors == 0 && warnings == 0) {
-						text = GettextCatalog.GetString ("No errors or warnings");
-					} else if (errors == 0) {
-						text = string.Format (GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings), warnings);
-					} else if (warnings == 0) {
-						text = string.Format (GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors), errors);
-					} else {
-						text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
-					}
-
-					if (errors > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextError;
-					} else if (warnings > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextWarning;
-					} else if (warnings + hints > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextMessage;
-					}
-
-					TooltipText = text;
-				} else {
-//					TextEditorData editorData = TextEditor.GetTextEditorData ();
-					foreach (var task in AllTasks) {
-						double y = GetYPosition (task.Location.Line);
-						if (Math.Abs (y - evnt.Y) < 3) {
-							hoverTask = task;
-						}
-					}
-					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
-				}
-			}
 
 			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
 				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
@@ -236,6 +179,85 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				DestroyPreviewWindow ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
+		}
+
+		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
+		{
+			if (TextEditor.HighlightSearchPattern) {
+				if (IsOverIndicator (y)) {
+					var matches = TextEditor.TextViewMargin.SearchResultMatchCount;
+					tooltip.Text = GettextCatalog.GetPluralString ("{0} match", "{0} matches", matches, matches);
+					return true;
+				}
+				return false;
+			}
+
+			if (IsOverIndicator (y)) {
+				int errors, warnings, hints, suggestions;
+				CountTasks (out errors, out warnings, out hints, out suggestions);
+				string text = null;
+				if (errors == 0 && warnings == 0) {
+					text = GettextCatalog.GetString ("No errors or warnings");
+				} else if (errors == 0) {
+					text = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings, warnings);
+				} else if (warnings == 0) {
+					text = GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors, errors);
+				} else {
+					text = GettextCatalog.GetString ("{0} errors and {1} warnings", errors, warnings);
+				}
+
+				if (errors > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
+				} else if (warnings > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
+				} else if (warnings + hints > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
+				}
+
+				tooltip.Text = text;
+				return true;
+			}
+
+			var hoverTask = GetHoverTask (y);
+			if (hoverTask != null) {
+				tooltip.Text = hoverTask.Description;
+				return true;
+			}
+
+			return false;
+		}
+
+		void CountTasks (out int errors, out int warnings, out int hints, out int suggestions)
+		{
+			errors = warnings = hints = suggestions = 0;
+			foreach (var task in AllTasks) {
+				switch (task.Severity) {
+				case Severity.Error:
+					errors++;
+					break;
+				case Severity.Warning:
+					warnings++;
+					break;
+				case Severity.Hint:
+					hints++;
+					break;
+				case Severity.Suggestion:
+					suggestions++;
+					break;
+				}
+			}
+		}
+
+		QuickTask GetHoverTask (double y)
+		{
+			QuickTask hoverTask = null;
+			foreach (var task in AllTasks) {
+				double ty = GetYPosition (task.Location.Line);
+				if (Math.Abs (ty - y) < 3) {
+					hoverTask = task;
+				}
+			}
+			return hoverTask;
 		}
 
 		void UpdateState (StateType state)
@@ -349,18 +371,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.Value = position;
 		}
 
-		QuickTask hoverTask;
-
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			uint button = evnt.Button;
 
 			if (!evnt.TriggersContextMenu () && button == 1 && evnt.Type == EventType.ButtonPress) {
-				if (hoverOverIndicator) {
-					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
+				if (IsOverIndicator (evnt.Y)) {
+					parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));
 					return base.OnButtonPressEvent (evnt);
 				}
-
+				var hoverTask = GetHoverTask (evnt.Y);
 				if (hoverTask != null) {
 					if (hoverTask.Location.IsEmpty) {
 						Console.WriteLine ("empty:"+ hoverTask.Description);
@@ -370,13 +390,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					TextEditor.CenterToCaret ();
 					TextEditor.StartCaretPulseAnimation ();
 					TextEditor.GrabFocus ();
-				} 
-			}
+				}
 
-			if (evnt.Type == EventType.ButtonPress && evnt.Button == 1 && !evnt.IsContextMenuButton ())
 				MovePosition (evnt.Y);
+			}
 			
 			return base.OnButtonPressEvent (evnt);
+		}
+
+		QuickTaskStrip.HoverMode GetHoverMode ()
+		{
+			int errors, warnings, hints, suggestions;
+			CountTasks (out errors, out warnings, out hints, out suggestions);
+			if (errors > 0)
+				return QuickTaskStrip.HoverMode.NextError;
+			if (warnings > 0)
+				return QuickTaskStrip.HoverMode.NextWarning;
+			return QuickTaskStrip.HoverMode.NextMessage;
 		}
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
