@@ -571,11 +571,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
-						grad.AddColorStop (0, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
-						grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
-						grad.AddColorStop (1, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
-						cr.SetSource (grad);
+					if (flatStyle) {
+						var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
+						col.L *= 0.95;
+						using (var pattern = new Cairo.SolidPattern (col)) {
+							cr.SetSource (pattern);
+						}
+					} else {
+						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+							grad.AddColorStop (0, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+							grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
+							grad.AddColorStop (1, new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0));
+							cr.SetSource (grad);
+						}
 					}
 				}
 				cr.Fill ();
