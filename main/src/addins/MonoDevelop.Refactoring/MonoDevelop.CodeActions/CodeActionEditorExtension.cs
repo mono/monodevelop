@@ -349,7 +349,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				if (inspector.CanDisableOnce) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable once with comment"));
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable Once"));
 					menuItem.Activated += delegate {
 						inspector.DisableOnce (document, arbitraryFixInGroup.DocumentRegion); 
 					};
@@ -357,7 +357,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				if (inspector.CanDisableAndRestore) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and restore with comments"));
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
 					menuItem.Activated += delegate {
 						inspector.DisableAndRestore (document, arbitraryFixInGroup.DocumentRegion); 
 					};
@@ -366,7 +366,7 @@ namespace MonoDevelop.CodeActions
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
 				var subMenuItem = new Gtk.MenuItem (label);
 
-				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure inspection"));
+				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure Rule"));
 				optionsMenuItem.Activated += arbitraryFixInGroup.ShowOptions;
 
 				optionsMenuItem.Activated += delegate {

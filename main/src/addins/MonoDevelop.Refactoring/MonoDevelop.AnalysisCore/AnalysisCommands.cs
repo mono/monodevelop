@@ -228,19 +228,19 @@ namespace MonoDevelop.AnalysisCore
 						}
 
 						if (inspector.CanDisableOnce) {
-							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable once with comment"), new System.Action(delegate {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable Once"), new System.Action(delegate {
 								inspector.DisableOnce (doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableAndRestore) {
-							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and restore with comments"), new System.Action(delegate {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and Restore"), new System.Action(delegate {
 								inspector.DisableAndRestore (doc, ir.Region); 
 							}));
 						}
 					}
 
-					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection"), result);
+					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure Rule"), result);
 
 					infos.Add (declSet);
 				}
