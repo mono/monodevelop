@@ -752,7 +752,27 @@ namespace MonoDevelop.CSharp.Formatting
 				options.SpaceWithinConstructorDeclarationParentheses = value;
 			}
 		}
-		
+
+		[ItemProperty]
+		public NewLinePlacement NewLineBeforeConstructorInitializerColon {
+			get {
+				return options.NewLineBeforeConstructorInitializerColon;
+			}
+			set {
+				options.NewLineBeforeConstructorInitializerColon = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement NewLineAfterConstructorInitializerColon {
+			get {
+				return options.NewLineAfterConstructorInitializerColon;
+			}
+			set {
+				options.NewLineAfterConstructorInitializerColon = value;
+			}
+		}
+
 		// indexer
 		[ItemProperty]
 		public bool BeforeIndexerDeclarationBracket {
