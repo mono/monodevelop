@@ -55,7 +55,7 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Bin
 	{
 		readonly string mimeType;
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(BaseCodeIssueProvider));
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(BaseCodeIssueProvider), typeof (string));
 		readonly Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
 		readonly Dictionary<BaseCodeIssueProvider, bool> enableState = new Dictionary<BaseCodeIssueProvider, bool> ();
 
@@ -120,18 +120,18 @@ namespace MonoDevelop.CodeIssues
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
-				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>");
+				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, "");
 				categories [g.Key] = categoryIter;
 
 				foreach (var node in g.OrderBy (n => n.Title, StringComparer.Ordinal)) {
 					var title = node.Title;
 					MarkupSearchResult (filter, ref title);
-					var nodeIter = treeStore.AppendValues (categoryIter, title, node);
+					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Description);
 					if (node.HasSubIssues) {
 						foreach (var subIssue in node.SubIssues) {
 							title = subIssue.Title;
 							MarkupSearchResult (filter, ref title);
-							treeStore.AppendValues (nodeIter, title, subIssue);
+							treeStore.AppendValues (nodeIter, title, subIssue, subIssue.Description);
 						}
 					}
 				}
@@ -162,14 +162,6 @@ namespace MonoDevelop.CodeIssues
 			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			Build ();
 
-			// lock description label to allocated width so it can wrap
-			labelDescription.Wrap = true;
-			labelDescription.WidthRequest = 100;
-			labelDescription.SizeAllocated += (o, args) => {
-				if (labelDescription.WidthRequest != args.Allocation.Width)
-					labelDescription.WidthRequest = args.Allocation.Width;
-			};
-
 			// ensure selected row remains visible
 			treeviewInspections.SizeAllocated += (o, args) => {
 				TreeIter iter;
@@ -178,16 +170,8 @@ namespace MonoDevelop.CodeIssues
 					treeviewInspections.ScrollToCell (path, treeviewInspections.Columns[0], false, 0f, 0f);
 				}
 			};
-
-			var cellRendererText = new CellRendererText {
-				Ellipsize = Pango.EllipsizeMode.End
-			};
-			var col1 = treeviewInspections.AppendColumn ("Title", cellRendererText, "markup", 0);
-			col1.Expand = true;
-
-			searchentryFilter.Ready = true;
-			searchentryFilter.Visible = true;
-			searchentryFilter.Entry.Changed += ApplyFilter;
+			treeviewInspections.TooltipColumn = 2;
+			treeviewInspections.HasTooltip = true;
 
 			var toggleRenderer = new CellRendererToggle ();
 			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
@@ -210,6 +194,21 @@ namespace MonoDevelop.CodeIssues
 				toggleRenderer.Active = enableState[provider];
 			});
 
+
+			var cellRendererText = new CellRendererText {
+				Ellipsize = Pango.EllipsizeMode.End
+			};
+			var col1 = treeviewInspections.AppendColumn ("Title", cellRendererText, "markup", 0);
+			col1.Expand = true;
+
+			searchentryFilter.ForceFilterButtonVisible = true;
+			searchentryFilter.RoundedShape = true;
+			searchentryFilter.HasFrame = true;
+			searchentryFilter.Ready = true;
+			searchentryFilter.Visible = true;
+			searchentryFilter.Entry.Changed += ApplyFilter;
+
+
 			var comboRenderer = new CellRendererCombo {
 				Alignment = Pango.Alignment.Center
 			};
@@ -219,7 +218,7 @@ namespace MonoDevelop.CodeIssues
 			col.Expand = false;
 
 			var comboBoxStore = new ListStore (typeof(string), typeof(Severity));
-			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
+//			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
 			comboBoxStore.AppendValues (GetDescription (Severity.Error), Severity.Error);
 			comboBoxStore.AppendValues (GetDescription (Severity.Warning), Severity.Warning);
 			comboBoxStore.AppendValues (GetDescription (Severity.Hint), Severity.Hint);
@@ -262,7 +261,6 @@ namespace MonoDevelop.CodeIssues
 			});
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
-			treeviewInspections.Selection.Changed += HandleSelectionChanged;
 			GetAllSeverities ();
 			FillInspectors (null);
 		}
@@ -274,22 +272,6 @@ namespace MonoDevelop.CodeIssues
 
 		readonly Dictionary<string, TreeIter> categories = new Dictionary<string, TreeIter> ();
 
-		void HandleSelectionChanged (object sender, EventArgs e)
-		{
-			labelDescription.Visible = false;
-			TreeIter iter;
-			if (!treeviewInspections.Selection.GetSelected (out iter))
-				return;
-			var actionNode = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
-			if (actionNode == null)
-				return;
-			labelDescription.Visible = true;
-			labelDescription.Markup = string.Format (
-				"<b>{0}</b>\n{1}",
-				Markup.EscapeText (actionNode.Title),
-				Markup.EscapeText (actionNode.Description)
-			);
-		}
 
 		public void ApplyChanges ()
 		{
