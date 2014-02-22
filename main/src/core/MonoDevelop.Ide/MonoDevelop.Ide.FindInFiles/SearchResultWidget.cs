@@ -633,6 +633,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			DocumentLine line = doc.GetLine (lineNr);
+			if (line == null)
+				return DocumentLocation.Empty;
 			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
 		}
 		
