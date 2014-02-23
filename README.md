@@ -1,4 +1,4 @@
-# F# Language Support for Open Editors
+# F# Language Support for Open Editors [![Build Status](https://travis-ci.org/fsharp/fsharpbinding.png)](https://travis-ci.org/fsharp/fsharpbinding)
 
 This project contains advanced editing support for F# for a number of open editors. It is made up of the following projects:
 * [F# mode for Emacs](emacs/README.md)
@@ -9,7 +9,7 @@ See the [F# Cross-Platform Development Guide](http://fsharp.org/guides/mac-linux
 
 ## Building and Using
 
-See  [emacs/README.md](emacs/README.md) or  [monodevelop/README.md](monodevelop/README.md)
+See [emacs/README.md](emacs/README.md) or  [monodevelop/README.md](monodevelop/README.md)
 
 
 ## Shared Components
