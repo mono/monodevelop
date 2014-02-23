@@ -73,7 +73,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		public QuickTaskOverviewMode (QuickTaskStrip parent)
 		{
 			this.parentStrip = parent;
-			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
+			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask |
+				EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			vadjustment = this.parentStrip.VAdjustment;
 
 			vadjustment.ValueChanged += RedrawOnUpdate;
@@ -142,15 +143,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			RemovePreviewPopupTimeout ();
 
-			if ((evnt.State & ModifierType.Button1Mask) != 0)
-				MovePosition (evnt.Y);
-
-			var newState = StateType.Normal;
-			double barX, barY, barW, barH;
-			GetBarDimensions (out barX, out barY, out barW, out barH);
-			if (evnt.X >= barX && evnt.X <= barX + barW && evnt.Y >= barY && evnt.Y <= barY + barH)
-				newState = StateType.Prelight;
-			UpdateState (newState);
+			if (IsInGrab ()) {
+				var yDelta = evnt.Y - grabY;
+				MovePosition (grabCenter + yDelta);
+			} else {
+				UpdatePrelightState (evnt.X, evnt.Y);
+			}
 
 			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
 				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
@@ -179,6 +177,27 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				DestroyPreviewWindow ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
+		}
+
+		bool IsInGrab ()
+		{
+			return grabY >= 0;
+		}
+
+		void UpdatePrelightState (double x, double y)
+		{
+			var newState = StateType.Normal;
+			if (IsInsideBar (x, y))
+				newState = StateType.Prelight;
+			UpdateState (newState);
+		}
+
+		bool IsInsideBar (double x, double y)
+		{
+			double barX, barY, barW, barH;
+			GetBarDimensions (out barX, out barY, out barW, out barH);
+			var isInsideBar = x >= barX && x <= barX + barW && y >= barY && y <= barY + barH;
+			return isInsideBar;
 		}
 
 		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
@@ -331,7 +350,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
-			UpdateState (StateType.Normal);
+			if (!IsInGrab ())
+				UpdateState (StateType.Normal);
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			return base.OnLeaveNotifyEvent (evnt);
@@ -371,31 +391,74 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.Value = position;
 		}
 
+		double GetSliderCenter ()
+		{
+			var height = Allocation.Height - IndicatorHeight;
+			var fraction = (vadjustment.Value + vadjustment.PageSize / 2) / (vadjustment.Upper - vadjustment.Lower);
+			return IndicatorHeight + height * fraction;
+		}
+
+		double grabY = -1, grabCenter;
+
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			uint button = evnt.Button;
+			if (evnt.Button != 1 || evnt.IsContextMenuButton ())
+				return base.OnButtonPressEvent (evnt);
 
-			if (!evnt.TriggersContextMenu () && button == 1 && evnt.Type == EventType.ButtonPress) {
-				if (IsOverIndicator (evnt.Y)) {
-					parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));
-					return base.OnButtonPressEvent (evnt);
-				}
-				var hoverTask = GetHoverTask (evnt.Y);
-				if (hoverTask != null) {
-					if (hoverTask.Location.IsEmpty) {
-						Console.WriteLine ("empty:"+ hoverTask.Description);
-					}
-					var loc = new DocumentLocation (Math.Max (DocumentLocation.MinLine, hoverTask.Location.Line), Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
-					TextEditor.Caret.Location = loc;
-					TextEditor.CenterToCaret ();
-					TextEditor.StartCaretPulseAnimation ();
-					TextEditor.GrabFocus ();
-				}
+			if (IsOverIndicator (evnt.Y)) {
+				parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));
+				return base.OnButtonPressEvent (evnt);
+			}
 
+			var hoverTask = GetHoverTask (evnt.Y);
+			if (hoverTask != null)
+				MoveToTask (hoverTask);
+
+			if (IsInsideBar (evnt.X, evnt.Y)) {
+				Grab.Add (this);
+				grabCenter = GetSliderCenter ();
+				grabY = evnt.Y;
+			} else {
 				MovePosition (evnt.Y);
 			}
-			
+
 			return base.OnButtonPressEvent (evnt);
+		}
+
+		void ClearGrab ()
+		{
+			if (IsInGrab ()) {
+				Grab.Remove (this);
+				grabY = -1;
+			}
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			ClearGrab ();
+			UpdatePrelightState (evnt.X, evnt.Y);
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnGrabBrokenEvent (EventGrabBroken evnt)
+		{
+			ClearGrab ();
+			return base.OnGrabBrokenEvent (evnt);
+		}
+
+		void MoveToTask (QuickTask task)
+		{
+			if (task.Location.IsEmpty) {
+				Console.WriteLine ("empty:" + task.Description);
+			}
+			var loc = new DocumentLocation (
+				Math.Max (DocumentLocation.MinLine, task.Location.Line),
+				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
+			);
+			TextEditor.Caret.Location = loc;
+			TextEditor.CenterToCaret ();
+			TextEditor.StartCaretPulseAnimation ();
+			TextEditor.GrabFocus ();
 		}
 
 		QuickTaskStrip.HoverMode GetHoverMode ()
