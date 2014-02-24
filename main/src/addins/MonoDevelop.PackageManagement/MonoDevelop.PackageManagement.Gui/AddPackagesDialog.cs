@@ -52,6 +52,7 @@ namespace MonoDevelop.PackageManagement
 		IDisposable searchTimer;
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
+		int packagesCheckedCount;
 
 		public AddPackagesDialog (PackagesViewModel viewModel, string initialSearch = null)
 			: this (viewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
@@ -69,6 +70,7 @@ namespace MonoDevelop.PackageManagement
 			Build ();
 
 			InitializeListView ();
+			UpdateAddPackagesButton ();
 			ShowLoadingMessage ();
 			LoadViewModel (initialSearch);
 
@@ -112,6 +114,7 @@ namespace MonoDevelop.PackageManagement
 				Editable = true,
 				VisibleField = packageCheckBoxVisibleField
 			};
+			checkBoxCellView.Toggled += PackageCheckBoxToggled;
 			var checkBoxColumn = new ListViewColumn ("Checked", checkBoxCellView);
 			packagesListView.Columns.Add (checkBoxColumn);
 		}
@@ -286,6 +289,7 @@ namespace MonoDevelop.PackageManagement
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
 				packageStore.Clear ();
+				packagesCheckedCount = 0;
 				ResetPackagesListViewScroll ();
 				ShowLoadingMessage ();
 			} else {
@@ -295,6 +299,8 @@ namespace MonoDevelop.PackageManagement
 			if (!viewModel.IsLoadingNextPage) {
 				AppendPackagesToListView ();
 			}
+
+			UpdateAddPackagesButton ();
 		}
 
 		void ResetPackagesListViewScroll ()
@@ -468,6 +474,35 @@ namespace MonoDevelop.PackageManagement
 			double pageSize = scrollControl.PageSize;
 
 			return (currentValue / (maxValue - pageSize)) > 0.7;
+		}
+
+		void PackageCheckBoxToggled (object sender, WidgetEventArgs e)
+		{
+			var checkBoxCell = (CheckBoxCellView)sender;
+			if (checkBoxCell.Active) {
+				// About to be unchecked.
+				packagesCheckedCount--;
+			} else {
+				// About to be checked.
+				packagesCheckedCount++;
+			}
+
+			UpdateAddPackagesButton ();
+		}
+
+		void UpdateAddPackagesButton ()
+		{
+			if (packagesCheckedCount > 1) {
+				addPackagesButton.Label = Catalog.GetString ("Add Packages");
+			} else {
+				addPackagesButton.Label = Catalog.GetString ("Add Package");
+			}
+			addPackagesButton.Sensitive = IsAtLeastOnePackageSelected ();
+		}
+
+		bool IsAtLeastOnePackageSelected ()
+		{
+			return (packagesCheckedCount) >= 1 || (packagesListView.SelectedRow != -1);
 		}
 	}
 }
