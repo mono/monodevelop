@@ -231,6 +231,7 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				ClearSelectedPackageInformation ();
 			}
+			UpdateAddPackagesButton ();
 		}
 
 		PackageViewModel GetSelectedPackageViewModel ()
@@ -370,9 +371,11 @@ namespace MonoDevelop.PackageManagement
 		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateInstallingSinglePackageMessage (
-					packageActions.OfType<ProcessPackageAction> ().First ().Package.Id
-				);
+				string packageId = packageActions.OfType<ProcessPackageAction> ().First ().Package.Id;
+				if (OlderPackageInstalledThanPackageSelected ()) {
+					return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
+				}
+				return ProgressMonitorStatusMessageFactory.CreateInstallingSinglePackageMessage (packageId);
 			}
 			return ProgressMonitorStatusMessageFactory.CreateInstallingMultiplePackagesMessage (packageActions.Count);
 		}
@@ -495,9 +498,26 @@ namespace MonoDevelop.PackageManagement
 			if (packagesCheckedCount > 1) {
 				addPackagesButton.Label = Catalog.GetString ("Add Packages");
 			} else {
-				addPackagesButton.Label = Catalog.GetString ("Add Package");
+				if (OlderPackageInstalledThanPackageSelected ()) {
+					addPackagesButton.Label = Catalog.GetString ("Update Package");
+				} else {
+					addPackagesButton.Label = Catalog.GetString ("Add Package");
+				}
 			}
 			addPackagesButton.Sensitive = IsAtLeastOnePackageSelected ();
+		}
+
+		bool OlderPackageInstalledThanPackageSelected ()
+		{
+			if (packagesCheckedCount != 0) {
+				return false;
+			}
+
+			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
+			if (selectedPackageViewModel != null) {
+				return selectedPackageViewModel.IsOlderPackageInstalled ();
+			}
+			return false;
 		}
 
 		bool IsAtLeastOnePackageSelected ()

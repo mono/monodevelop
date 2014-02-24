@@ -264,13 +264,13 @@ namespace MonoDevelop.PackageManagement
 			bottomHBox.PackStart (showPrereleaseCheckBox);
 
 			addPackagesButton = new Button ();
-			addPackagesButton.MinWidth = 100;
+			addPackagesButton.MinWidth = 120;
 			addPackagesButton.MinHeight = 25;
 			addPackagesButton.Label = Catalog.GetString ("Add Package");
 			bottomHBox.PackEnd (addPackagesButton);
 
 			var closeButton = new Button ();
-			closeButton.MinWidth = 100;
+			closeButton.MinWidth = 120;
 			closeButton.MinHeight = 25;
 			closeButton.Label = Catalog.GetString ("Close");
 			closeButton.Clicked += (sender, e) => Close ();

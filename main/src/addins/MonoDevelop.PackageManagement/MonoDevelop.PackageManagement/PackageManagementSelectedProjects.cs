@@ -177,5 +177,14 @@ namespace ICSharpCode.PackageManagement
 			}
 			return null;
 		}
+
+		public bool HasOlderPackageInstalled (IPackageFromRepository package)
+		{
+			if (HasSingleProjectSelected ()) {
+				IPackageManagementProject project = GetSingleProjectSelected(package.Repository);
+				return project.HasOlderPackageInstalled(package);
+			}
+			return false;
+		}
 	}
 }

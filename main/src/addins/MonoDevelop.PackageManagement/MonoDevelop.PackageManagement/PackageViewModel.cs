@@ -556,5 +556,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return GetBoldText (Version.ToString ());
 		}
+
+		public bool IsOlderPackageInstalled ()
+		{
+			return selectedProjects.HasOlderPackageInstalled (package);
+		}
 	}
 }
