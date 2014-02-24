@@ -286,6 +286,11 @@
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesDataSource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\ProjectPackagesFolderNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferenceNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesFromPackagesFolderNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesFromPackagesFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesNodeBuilderExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

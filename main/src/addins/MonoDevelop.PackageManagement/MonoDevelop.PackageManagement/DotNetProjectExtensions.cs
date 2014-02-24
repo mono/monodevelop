@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.PackageManagement
 {

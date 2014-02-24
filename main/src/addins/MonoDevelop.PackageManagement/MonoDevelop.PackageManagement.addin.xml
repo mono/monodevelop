@@ -108,6 +108,9 @@
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesProjectNodeBuilderExtension" />
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.PackageReferenceNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferenceNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferencesNodeBuilderExtension" />
+		<NodeBuilder class="MonoDevelop.PackageManagement.NodeBuilders.ProjectReferencesFromPackagesFolderNodeBuilder" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
