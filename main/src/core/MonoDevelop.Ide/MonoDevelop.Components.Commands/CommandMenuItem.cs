@@ -219,7 +219,9 @@ namespace MonoDevelop.Components.Commands
 					label.Text = overrideLabel ?? cmdInfo.Text;
 					label.UseMarkup = false;
 				}
-				
+
+				if (!string.IsNullOrEmpty (cmdInfo.Description) && label.TooltipText != cmdInfo.Description)
+					label.TooltipText = cmdInfo.Description;
 				label.UseUnderline = true;
 				
 				this.Sensitive = cmdInfo.Enabled;
