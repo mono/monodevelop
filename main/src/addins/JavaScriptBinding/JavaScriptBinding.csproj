@@ -50,6 +50,7 @@
     <Compile Include="TypeScript\Hosting\ResolvedFile.cs" />
     <Compile Include="TypeScript\Hosting\ScriptingHost.cs" />
     <Compile Include="TypeScript\Hosting\TextWriterWrapper.cs" />
+    <Compile Include="TypeScript\Hosting\LanguageServiceHost.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
