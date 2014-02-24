@@ -536,7 +536,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = Platform.IsWindows? 17 : 14;
+			requisition.Width = Platform.IsWindows? 17 : 15;
 		}
 		
 		double LineToY (int logicalLine)
@@ -637,11 +637,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var alloc = Allocation;
 
-			x = barPadding;
+			x = Platform.IsWindows ? barPadding : 1 + barPadding;
 			var adjUpper = vadjustment.Upper;
 			var allocH = alloc.Height - (int) IndicatorHeight;
 			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
-			w = alloc.Width - barPadding - barPadding;
+			w = Platform.IsWindows ? alloc.Width - barPadding - barPadding : 8;
 			const int minBarHeight = 16;
 			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
 		}
@@ -717,13 +717,22 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 							cr.SetSource (pattern);
 						}
 					} else {
+						var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
+						col.L *= 0.948;
+						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+							grad.AddColorStop (0, col);
+							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
+							grad.AddColorStop (1, col);
+							cr.SetSource (grad);
+						}
+						/*
 						var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
 							grad.AddColorStop (0, col);
 							grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
 							grad.AddColorStop (1, col);
 							cr.SetSource (grad);
-						}
+						}*/
 					}
 				}
 				cr.Fill ();
