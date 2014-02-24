@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			return doc;
 		}
 
-		HashSet<MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespace> GetResult (string input)
+		List<MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespace> GetResult (string input)
 		{
 			var doc = Setup (input);
 			var location = doc.Editor.Caret.Location;

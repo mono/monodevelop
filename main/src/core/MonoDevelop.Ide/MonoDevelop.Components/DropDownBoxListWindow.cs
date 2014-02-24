@@ -101,23 +101,6 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		protected override void OnMapped ()
-		{
-			base.OnMapped ();
-			Gdk.Pointer.Grab (GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Global.CurrentEventTime);
-			Grab.Add (this);
-			GrabBrokenEvent += delegate {
-				Destroy ();
-			};
-		}
-
-		protected override void OnUnmapped ()
-		{
-			Grab.Remove (this);
-			Gdk.Pointer.Ungrab (Global.CurrentEventTime);
-			base.OnUnmapped ();
-		}
-
 		void SwitchToSeletedWord ()
 		{
 			string selection = list.WordSelection.ToString ();

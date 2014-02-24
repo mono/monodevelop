@@ -42,7 +42,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			//get the ResultsEditorExtension from the editor
-			var ed = (ExtensibleTextEditor) editor;
+			var ed =  editor as ExtensibleTextEditor;
+			if (ed == null)
+				return null;
 			var ext = ed.Extension;
 			while (ext != null && !(ext is ResultsEditorExtension))
 				ext = ext.Next;

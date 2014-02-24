@@ -1026,7 +1026,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
 			{
-				return new CompletionData (name.Name, AstStockIcons.Namespace);
+				return new CompletionData (name.Name, AstStockIcons.Namespace, "", CSharpAmbience.FilterName (name.Name));
 			}
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)

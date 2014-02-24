@@ -421,6 +421,7 @@ namespace MonoDevelop.Components
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			HideMenu ();
 			if (hovering) {
 				pressed = true;
 				QueueDraw ();

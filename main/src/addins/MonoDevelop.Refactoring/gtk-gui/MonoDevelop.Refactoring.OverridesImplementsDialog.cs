@@ -5,13 +5,21 @@ namespace MonoDevelop.Refactoring
 	internal partial class OverridesImplementsDialog
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView treeview;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Button buttonSelectAll;
+		
 		private global::Gtk.Button buttonUnselectAll;
+		
 		private global::Gtk.HSeparator hseparator1;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()

@@ -5,22 +5,39 @@ namespace MonoDevelop.Refactoring
 	public partial class EncapsulateFieldDialog
 	{
 		private global::Gtk.VBox vbox;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView treeview;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Button buttonSelectAll;
+		
 		private global::Gtk.Button buttonUnselectAll;
+		
 		private global::Gtk.HSeparator hseparator2;
+		
 		private global::Gtk.Label labelUpdateRefs;
+		
 		private global::Gtk.HBox hboxUpdateRefs;
+		
 		private global::Gtk.Label labelSpacer;
+		
 		private global::Gtk.VBox vboxUpdateChoices;
+		
 		private global::Gtk.RadioButton radioUpdateExternal;
+		
 		private global::Gtk.RadioButton radioUpdateAll;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Image imageError;
+		
 		private global::Gtk.Label labelError;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()

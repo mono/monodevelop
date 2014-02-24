@@ -1290,18 +1290,6 @@
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-error-16.png">
-      <LogicalName>issuestatus-error-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-ok-16.png">
-      <LogicalName>issuestatus-ok-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-updating-16.png">
-      <LogicalName>issuestatus-updating-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-warning-16.png">
-      <LogicalName>issuestatus-warning-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
     </EmbeddedResource>

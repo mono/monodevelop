@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeActions
 	{
 		readonly string mimeType;
 		
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionProvider));
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionProvider), typeof(string));
 		readonly Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
 
 		void GetAllProviderStates ()
@@ -71,14 +71,6 @@ namespace MonoDevelop.CodeActions
 			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			this.Build ();
 
-			// lock description label to allocated width so it can wrap
-			labelDescription.Wrap = true;
-			labelDescription.WidthRequest = 100;
-			labelDescription.SizeAllocated += (o, args) => {
-				if (labelDescription.WidthRequest != args.Allocation.Width)
-					labelDescription.WidthRequest = args.Allocation.Width;
-			};
-
 			// ensure selected row remains visible
 			treeviewContextActions.SizeAllocated += (o, args) => {
 				TreeIter iter;
@@ -90,6 +82,9 @@ namespace MonoDevelop.CodeActions
 
 			var col = new TreeViewColumn ();
 			
+			searchentryFilter.ForceFilterButtonVisible = true;
+			searchentryFilter.RoundedShape = true;
+			searchentryFilter.HasFrame = true;
 			searchentryFilter.Ready = true;
 			searchentryFilter.Visible = true;
 			searchentryFilter.Entry.Changed += ApplyFilter;
@@ -117,7 +112,8 @@ namespace MonoDevelop.CodeActions
 			treeviewContextActions.Model = treeStore;
 			GetAllProviderStates ();
 			FillTreeStore (null);
-			treeviewContextActions.Selection.Changed += HandleTreeviewContextActionsSelectionChanged;
+			treeviewContextActions.TooltipColumn = 3;
+			treeviewContextActions.HasTooltip = true;
 		}
 
 		void ApplyFilter (object sender, EventArgs e)
@@ -134,23 +130,8 @@ namespace MonoDevelop.CodeActions
 			foreach (var node in sortedAndFiltered) {
 				var title = node.Title;
 				MonoDevelop.CodeIssues.CodeIssuePanelWidget.MarkupSearchResult (filter, ref title);
-				treeStore.AppendValues (title, providerStates [node], node);
+				treeStore.AppendValues (title, providerStates [node], node, node.Description);
 			}
-		}
-
-		void HandleTreeviewContextActionsSelectionChanged (object sender, EventArgs e)
-		{
-			labelDescription.Visible = false;
-			TreeIter iter;
-			if (!treeviewContextActions.Selection.GetSelected (out iter))
-				return;
-			var actionNode = (CodeActionProvider)treeStore.GetValue (iter, 2);
-			labelDescription.Visible = true;
-			labelDescription.Markup = string.Format (
-				"<b>{0}</b>\n{1}",
-				Markup.EscapeText (actionNode.Title),
-				Markup.EscapeText (actionNode.Description)
-				);
 		}
 
 		public void ApplyChanges ()

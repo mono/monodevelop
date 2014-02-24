@@ -5,16 +5,27 @@ namespace MonoDevelop.CodeIssues
 	internal partial class CodeIssueOptionsDialog
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label labelInspectionTitle;
+		
 		private global::Gtk.CheckButton isEnabledCheckbutton;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.RadioButton radiobuttonHide;
+		
 		private global::Gtk.RadioButton radiobuttonHint;
+		
 		private global::Gtk.RadioButton radiobuttonSuggestion;
+		
 		private global::Gtk.RadioButton radiobuttonWarning;
+		
 		private global::Gtk.RadioButton radiobuttonError;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()

@@ -104,7 +104,12 @@
 		{ "name": "Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100"},
 		{ "name": "Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00"},
 		{ "name": "Message Bubble Warning Line", "color":"#fff1da"},
-		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B"}
+		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B"},
+
+		{ "name": "Code Analysis Status All Good", "color":"#7ED3213C", "bordercolor":"#7CCD2F64"},
+		{ "name": "Code Analysis Status Suggestions", "color":"#4A90E24B", "bordercolor":"#4A90E264"},
+		{ "name": "Code Analysis Status Warnings", "color":"#F5A62341", "bordercolor":"#F5A62364"},
+		{ "name": "Code Analysis Status Errors", "color":"#D522203C", "bordercolor":"#D522203C32"}
 	],
 
 	"text":[

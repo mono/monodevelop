@@ -692,6 +692,35 @@ class Test {
 		foreach (var o in col) DoSomething (o);
 	}
 }");
+			string constructorInitializer=@"class Test
+{
+
+	public Test () : base ()
+	{
+
+	}
+
+	public Test ()
+		: base ()
+	{
+
+	}
+
+	public Test () :
+		base ()
+	{
+
+	}
+
+	public Test ()
+		:
+		base ()
+	{
+
+	}
+}";
+			AddOption (newLineOptions, "NewLineBeforeConstructorInitializerColon", GettextCatalog.GetString("Place constructor initializer ':' on new line"), constructorInitializer);
+			AddOption (newLineOptions, "NewLineAfterConstructorInitializerColon", GettextCatalog.GetString("Place constructor initializer 'base/this' on new line"), constructorInitializer);
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			
