@@ -285,6 +285,7 @@
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesDataSource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ProjectPackagesFolderNodeCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Components;
+using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
-using Gdk;
 using NuGet;
+using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -43,6 +44,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return "Packages";
+		}
+
+		public override Type CommandHandlerType {
+			get { return typeof(ProjectPackagesFolderNodeCommandHandler); }
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
