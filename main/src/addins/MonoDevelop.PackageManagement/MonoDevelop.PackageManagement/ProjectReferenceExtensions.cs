@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
 		{
-			if (projectReference.ReferenceType != ReferenceType.Assembly)
+			if (!IsAssemblyReference (projectReference))
 				return false;
 
 			var project = projectReference.OwnerProject as DotNetProject;
@@ -46,8 +46,28 @@ namespace MonoDevelop.PackageManagement
 			var packagesPath = new SolutionPackageRepositoryPath (project);
 			var packagesFilePath = new FilePath (packagesPath.PackageRepositoryPath);
 
-			var assemblyFilePath = new FilePath (Path.GetFullPath (projectReference.Reference));
+			var assemblyFilePath = new FilePath (projectReference.GetFullAssemblyPath ());
 			return assemblyFilePath.IsChildPathOf (packagesFilePath);
+		}
+
+		static bool IsAssemblyReference (ProjectReference reference)
+		{
+			return (reference.ReferenceType == ReferenceType.Assembly)
+				|| ((reference.ReferenceType == ReferenceType.Package) && !reference.IsValid);
+		}
+
+		static string GetFullAssemblyPath (this ProjectReference projectReference)
+		{
+			if (projectReference.IsValid) {
+				return Path.GetFullPath (projectReference.Reference);
+			}
+
+			string hintPath = projectReference.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] as string;
+			if (!String.IsNullOrEmpty (hintPath)) {
+				return Path.GetFullPath (Path.Combine (projectReference.OwnerProject.BaseDirectory, hintPath));
+			}
+
+			return projectReference.Reference;
 		}
 	}
 }
