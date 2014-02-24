@@ -106,10 +106,10 @@
 		{ "name": "Message Bubble Warning Line", "color":"#fff1da"},
 		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B"},
 
-		{ "name": "Code Analysis Status All Good", "color":"#7ED3213C", "bordercolor":"#7CCD2F64"},
-		{ "name": "Code Analysis Status Suggestions", "color":"#4A90E24B", "bordercolor":"#4A90E264"},
-		{ "name": "Code Analysis Status Warnings", "color":"#F5A62341", "bordercolor":"#F5A62364"},
-		{ "name": "Code Analysis Status Errors", "color":"#D522203C", "bordercolor":"#D522203C32"}
+		{ "name": "Code Analysis Status All Good", "color":"#7ED32199", "bordercolor":"#7CCD2FFF"},
+		{ "name": "Code Analysis Status Suggestions", "color":"#4A90E2BF", "bordercolor":"#4A90E2FF"},
+		{ "name": "Code Analysis Status Warnings", "color":"#F5A623A5", "bordercolor":"#F5A623FF"},
+		{ "name": "Code Analysis Status Errors", "color":"#D5222099", "bordercolor":"#D522203C80"}
 	],
 
 	"text":[
