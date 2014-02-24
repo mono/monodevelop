@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
-			packageManagementEvents.ParentPackagesUpdated += ParentPackagesUpdated;
+			packageManagementEvents.PackagesRestored += PackagesRestored;
 		}
 
 		void ParentPackageInstalled (object sender, ParentPackageOperationEventArgs e)
@@ -55,25 +55,38 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			RefreshChildNodes (e.Project);
 		}
 
-		void ParentPackagesUpdated (object sender, ParentPackagesOperationEventArgs e)
+		void PackagesRestored (object sender, EventArgs e)
 		{
+			RefreshAllChildNodes ();
 		}
 
-		void RefreshChildNodes (IPackageManagementProject packageManagementProject)
+		void RefreshAllChildNodes ()
 		{
 			DispatchService.GuiDispatch (() => {
-				ITreeBuilder builder = Context.GetTreeBuilder (packageManagementProject.DotNetProject);
-				if (builder != null) {
-					builder.UpdateChildren ();
+				foreach (DotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
+					RefreshChildNodes (project);
 				}
 			});
+		}
+
+		void RefreshChildNodes (IPackageManagementProject project)
+		{
+			DispatchService.GuiDispatch (() => RefreshChildNodes (project.DotNetProject));
+		}
+
+		void RefreshChildNodes (DotNetProject project)
+		{
+			ITreeBuilder builder = Context.GetTreeBuilder (project);
+			if (builder != null) {
+				builder.UpdateChildren ();
+			}
 		}
 
 		public override void Dispose ()
 		{
 			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
-			packageManagementEvents.ParentPackagesUpdated -= ParentPackagesUpdated;
+			packageManagementEvents.PackagesRestored -= PackagesRestored;
 		}
 
 		public override bool CanBuildNode (Type dataType)

@@ -38,20 +38,24 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
+		IPackageManagementEvents packageManagementEvents;
 
 		public PackageRestoreRunner()
 			: this(
 				PackageManagementServices.Solution,
-				PackageManagementServices.ProgressMonitorFactory)
+				PackageManagementServices.ProgressMonitorFactory,
+				PackageManagementServices.PackageManagementEvents)
 		{
 		}
 
 		public PackageRestoreRunner(
 			IPackageManagementSolution solution,
-			IPackageManagementProgressMonitorFactory progressMonitorFactory)
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.solution = solution;
 			this.progressMonitorFactory = progressMonitorFactory;
+			this.packageManagementEvents = packageManagementEvents;
 		}
 
 		public void Run ()
@@ -110,6 +114,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (operation.Success) {
 				progressMonitor.ReportSuccess (progressMessage.Success);
+				packageManagementEvents.OnPackagesRestored ();
 			} else {
 				progressMonitor.ReportError (progressMessage.Error, null);
 			}

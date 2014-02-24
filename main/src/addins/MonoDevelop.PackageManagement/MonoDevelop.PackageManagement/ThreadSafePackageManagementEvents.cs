@@ -203,5 +203,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			ParentPackagesUpdated(sender, e);
 		}
+
+		public event EventHandler PackagesRestored;
+
+		public void OnPackagesRestored()
+		{
+		}
 	}
 }

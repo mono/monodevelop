@@ -126,5 +126,14 @@ namespace ICSharpCode.PackageManagement
 				ParentPackagesUpdated(this, new ParentPackagesOperationEventArgs(packages));
 			}
 		}
+
+		public event EventHandler PackagesRestored;
+
+		public void OnPackagesRestored()
+		{
+			if (PackagesRestored != null) {
+				PackagesRestored(this, new EventArgs());
+			}
+		}
 	}
 }

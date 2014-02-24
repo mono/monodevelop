@@ -43,7 +43,8 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
-		
+		event EventHandler PackagesRestored;
+
 		void OnPackageOperationsStarting();
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
@@ -53,5 +54,6 @@ namespace ICSharpCode.PackageManagement
 		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
 		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
 		FileConflictResolution OnResolveFileConflict(string message);
+		void OnPackagesRestored();
 	}
 }
