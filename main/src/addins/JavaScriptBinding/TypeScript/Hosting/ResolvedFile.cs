@@ -1,5 +1,5 @@
-﻿//
-// IEnvironment.cs
+//
+// IOImpl.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,27 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.IO;
+using Mono.TextEditor.Utils;
+using System.Text;
 using Jurassic.Library;
+using Jurassic;
 
 namespace TypeScriptBinding.Hosting
 {
-	interface IEnvironment
+	class ResolvedFile : ObjectInstance
 	{
-		bool supportsCodePage();
-		FileInformation readFile(string path, int codepage);
-		void writeFile(string path, string contents, bool writeByteOrderMark);
-		void deleteFile(string path);
-		bool fileExists(string path);
-		bool directoryExists(string path);
-		string[] listFiles(string path, object re, object options);
+		public ResolvedFile (ScriptEngine engine, string path) : base (engine)
+		{
+			Path = path;
+			PopulateFunctions ();
+		}
+		
+		#region IResolvedFile implementation
+		FileInformation fileInformation;
 
-		ArrayInstance arguments { get; }
-		ObjectInstance standardOut { get; }
+		[JSProperty]
+		public FileInformation FileInformation {
+			get {
+				if (fileInformation == null)
+					fileInformation = FileInformation.Read (Engine, Path, Encoding.UTF8.CodePage);
+				return fileInformation;
+			}
+		}
 
-		string currentDirectory();
-		string newLine { get; }
+		[JSProperty(Name="path")]
+		public string Path {
+			get;
+			private set;
+		}
+		#endregion
 	}
+
 }
 

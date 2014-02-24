@@ -1,5 +1,5 @@
 ﻿//
-// ITextWriter.cs
+// IO.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,14 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Jurassic.Library;
 
-namespace TypeScriptBinding
+
+namespace TypeScriptBinding.Hosting
 {
-	interface ITextWriter
+	interface IFileWatcher
 	{
-		void Write(string s);
-		void WriteLine(string s);
-		void Close();
+		void close ();
 	}
 }
-

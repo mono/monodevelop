@@ -33,11 +33,11 @@ using Jurassic;
 
 namespace TypeScriptBinding.Hosting
 {
-	public class TextWriterImpl : ObjectInstance, ITextWriter
+	public class TextWriterWrapper : ObjectInstance
 	{
 		TextWriter writer;
 
-		public TextWriterImpl (ScriptEngine engine, TextWriter writer) : base(engine)
+		public TextWriterWrapper (ScriptEngine engine, TextWriter writer) : base(engine)
 		{
 			this.writer = writer;
 			this.PopulateFunctions ();
@@ -47,12 +47,14 @@ namespace TypeScriptBinding.Hosting
 		[JSFunction]
 		public void Write (string s)
 		{
+			Console.Write (s);
 			writer.Write (s);
 		}
 
 		[JSFunction]
 		public void WriteLine (string s)
 		{
+			Console.WriteLine (s);
 			writer.WriteLine (s);
 		}
 
@@ -63,6 +65,4 @@ namespace TypeScriptBinding.Hosting
 		}
 		#endregion
 	}
-
 }
-

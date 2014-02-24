@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using System.Text.RegularExpressions;
 
 namespace JavaScriptBinding
 {
@@ -59,29 +61,33 @@ namespace JavaScriptBinding
 
 		Jurassic.ScriptEngine engine;
 
-		IOImpl host;
+		ScriptingHost host;
 
 		protected override BuildResult DoBuild (MonoDevelop.Core.IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			if (engine == null) {
-				engine = new Jurassic.ScriptEngine ();
-				engine.EnableExposedClrTypes = true;
 
-				host = new IOImpl (engine, this.BaseIntermediateOutputPath);
-				engine.SetGlobalValue ("host", host); 
+				using (var operation = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (GettextCatalog.GetString ("Prepare type script engine"), null)) {
+					operation.BeginTask (GettextCatalog.GetString ("Prepare type script engine"), 1);
+					engine = new Jurassic.ScriptEngine ();
+					engine.EnableExposedClrTypes = true;
 
-				using (var stream = new StreamReader (typeof(JavaScriptProject).Assembly.GetManifestResourceStream ("tsc.js"))) {
-					engine.Execute (stream.ReadToEnd ());
+					host = new ScriptingHost (engine, this.BaseIntermediateOutputPath);
+					engine.SetGlobalValue ("host", host); 
+
+					using (var stream = new StreamReader (typeof(JavaScriptProject).Assembly.GetManifestResourceStream ("tsc.js"))) {
+						engine.Execute (stream.ReadToEnd ());
+					}
+					operation.EndTask ();
 				}
 			}
 			host.ResetIO ();
 			foreach (var file in Files) {
-				Console.WriteLine (file.FilePath.FileName);
 				if (file.BuildAction == BuildAction.Compile) {
 					if (file.FilePath.Extension != ".ts")
 						continue;
 					host.ExecutingFilePath = file.FilePath.ParentDirectory;
-					host.arguments = engine.Array.New (new string[] {
+					host.Arguments = engine.Array.New (new string[] {
 						file.FilePath.FileName
 					});
 					engine.Execute (@"
@@ -93,7 +99,25 @@ batch.batchCompile();
 			}
 
 			var result = new BuildResult ();
+
 			result.CompilerOutput = host.OutWriter + Environment.NewLine + host.ErrorWriter;
+			using (var sr = new StringReader (result.CompilerOutput)) {
+				while (true) {
+					string curLine = sr.ReadLine ();
+				
+					if (curLine == null)
+						break;
+
+					curLine = curLine.Trim ();
+					if (curLine.Length == 0)
+						continue;
+
+					var error = CreateErrorFromString ("", curLine);
+
+					if (error != null)
+						result.Append (error);
+				}
+			}
 			return result;
 		}
 
@@ -101,6 +125,35 @@ batch.batchCompile();
 		{
 			return new JavaScriptProjectConfiguration (name);
 		}
+
+		static readonly Regex regexError = new Regex (@"^(\s*(?<file>.+[^)])(\((?<line>\d*)(,(?<column>\d*[\+]*))?\))?:\s+)*(?<level>\w+)\s+(?<number>..\d+):\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		static BuildError CreateErrorFromString (string basePath, string error_string)
+		{
+			Match match = regexError.Match(error_string);
+			if (!match.Success) 
+				return null;
+
+			BuildError error = new BuildError ();
+			FilePath filename = match.Result ("${file}");
+			if (filename.IsNullOrEmpty) {
+				filename = FilePath.Empty;
+			} else if (!filename.IsAbsolute && basePath != null) {
+				filename = filename.ToAbsolute (basePath);
+			}
+			error.FileName = filename;
+
+			string line = match.Result ("${line}");
+			error.Line = !string.IsNullOrEmpty (line) ? Int32.Parse (line) : 0;
+
+			string col = match.Result ("${column}");
+			if (!string.IsNullOrEmpty (col)) 
+				error.Column = col == "255+" ? -1 : Int32.Parse (col);
+
+			error.IsWarning   = match.Result ("${level}") == "warning";
+			error.ErrorNumber = match.Result ("${number}");
+			error.ErrorText   = match.Result ("${message}");
+			return error;
+		}
 	}
 }
-

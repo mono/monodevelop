@@ -33,7 +33,7 @@ using Jurassic;
 
 namespace TypeScriptBinding.Hosting
 {
-	class IOImpl : ObjectInstance, IIO, IEnvironment
+	class ScriptingHost : ObjectInstance
 	{
 		string executingFilePath;
 
@@ -58,11 +58,11 @@ namespace TypeScriptBinding.Hosting
 
 		public void ResetIO ()
 		{
-			stderr = new TextWriterImpl (Engine, ErrorWriter = new StringWriter ());
-			stdout = new TextWriterImpl (Engine, OutWriter = new StringWriter ());
+			Stderr = new TextWriterWrapper (Engine, ErrorWriter = new StringWriter ());
+			Stdout = new TextWriterWrapper (Engine, OutWriter = new StringWriter ());
 		}
 
-		public IOImpl (ScriptEngine engine, string executingFilePath) : base (engine)
+		public ScriptingHost (ScriptEngine engine, string executingFilePath) : base (engine)
 		{
 			this.executingFilePath = executingFilePath;
 			ResetIO ();
@@ -78,154 +78,154 @@ namespace TypeScriptBinding.Hosting
 
 		#region IIO implementation
 
-		[JSFunction]
-		public FileInformation readFile (string path, int codepage)
+		[JSFunction(Name="readFile")]
+		public FileInformation ReadFile (string path, int codepage)
 		{
 			return FileInformation.Read (Engine, path, codepage);
 		}
 
-		[JSFunction]
-		public void writeFile (string path, string contents, bool writeByteOrderMark)
+		[JSFunction(Name="writeFile")]
+		public void WriteFile (string path, string contents, bool writeByteOrderMark)
 		{
 			TextFileUtility.WriteText (path, contents, Encoding.UTF8, writeByteOrderMark); 
 		}
 
-		[JSFunction]
-		public void deleteFile (string path)
+		[JSFunction(Name="deleteFile")]
+		public void DeleteFile (string path)
 		{
 			File.Delete (path); 
 		}
 
-		[JSFunction]
-		public string[] dir (string path, object re, object options)
+		[JSFunction(Name="dir")]
+		public string[] Dir (string path, object re, object options)
 		{
 			return Directory.GetFiles (path);
 		}
 
-		[JSFunction]
-		public bool fileExists (string path)
+		[JSFunction(Name="fileExists")]
+		public bool FileExists (string path)
 		{
 			return File.Exists (path);
 		}
 
-		[JSFunction]
-		public bool directoryExists (string path)
+		[JSFunction(Name="directoryExists")]
+		public bool DirectoryExists (string path)
 		{
 			return Directory.Exists (path);
 		}
 
-		[JSFunction]
-		public void createDirectory (string path)
+		[JSFunction(Name="createDirectory")]
+		public void CreateDirectory (string path)
 		{
 			Directory.CreateDirectory (path);
 		}
 
-		[JSFunction]
-		public string resolvePath (string path)
+		[JSFunction(Name="resolvePath")]
+		public string ResolvePath (string path)
 		{
-			return System.IO.Path.IsPathRooted (path) ? path : Path.Combine (getExecutingFilePath (), path);
+			return System.IO.Path.IsPathRooted (path) ? path : Path.Combine (GetExecutingFilePath (), path);
 		}
 
-		[JSFunction]
-		public string dirName (string path)
+		[JSFunction(Name="dirName")]
+		public string DirName (string path)
 		{
 			return Path.GetDirectoryName(path);
 		}
 
-		[JSFunction]
-		public IResolvedFile findFile (string rootPath, string partialFilePath)
+		[JSFunction(Name="findFile")]
+		public ResolvedFile FindFile (string rootPath, string partialFilePath)
 		{
 			Console.WriteLine ("FIND: " + partialFilePath);
 			var file = Directory.GetFiles (rootPath, partialFilePath, SearchOption.AllDirectories).FirstOrDefault (); 
 			if (file == null)
 				return null;
-			return new ResolvedFileImpl (Engine, file);
+			return new ResolvedFile (Engine, file);
 		}
 
-		[JSFunction]
-		public void print (string str)
+		[JSFunction(Name="print")]
+		public void Print (string str)
 		{
 			Console.Write (str);
 		}
 
-		[JSFunction]
-		public void printLine (string str)
+		[JSFunction(Name="printLine")]
+		public void PrintLine (string str)
 		{
 			Console.WriteLine (str);
 		}
 
-		//[JSFunction]
-		public IFileWatcher watchFile (string fileName, Action<string> callback)
+		//[JSFunction(Name="watchFile")]
+		public IFileWatcher WatchFile (string fileName, Action<string> callback)
 		{
 			return null;
 		}
 
-		[JSFunction]
-		public void run (string source, string filename)
+		[JSFunction(Name="run")]
+		public void Run (string source, string filename)
 		{
 			Console.WriteLine ("RUN");
 		}
 
-		[JSFunction]
-		public string getExecutingFilePath ()
+		[JSFunction(Name="getExecutingFilePath")]
+		public string GetExecutingFilePath ()
 		{
 			return executingFilePath;
 		}
 
-		[JSFunction]
-		public void quit (int exitCode)
+		[JSFunction(Name="quit")]
+		public void Quit (int exitCode)
 		{
 			// TODO
 		}
 
-		[JSProperty]
-		public ArrayInstance arguments {
+		[JSProperty(Name="arguments")]
+		public ArrayInstance Arguments {
 			get;
 			set;
 		}
 
-		[JSProperty]
-		public ObjectInstance stderr {
+		[JSProperty(Name="stderr")]
+		public ObjectInstance Stderr {
 			get;
 			set;
 		}
 
-		[JSProperty]
-		public ObjectInstance stdout {
+		[JSProperty(Name="stdout")]
+		public ObjectInstance Stdout {
 			get;
 			set;
 		}
 		#endregion
 
 		#region IEnvironment implementation
-		[JSFunction]
-		public bool supportsCodePage ()
+		[JSFunction(Name="supportsCodePage")]
+		public bool SupportsCodePage ()
 		{
 			return true;
 		}
 
-		[JSFunction]
-		public string[] listFiles (string path, object re, object options)
+		[JSFunction(Name="listFiles")]
+		public string[] ListFiles (string path, object re, object options)
 		{
 			return null;
 		}
 
-		[JSFunction]
-		public string currentDirectory ()
+		[JSFunction(Name="currentDirectory")]
+		public string CurrentDirectory ()
 		{
 			return this.executingFilePath;
 
 		}
 
-		[JSProperty]
-		public ObjectInstance standardOut {
+		[JSProperty(Name="standardOut")]
+		public ObjectInstance StandardOut {
 			get {
-				return stdout;
+				return Stdout;
 			}
 		}
 
-		[JSProperty]
-		public string newLine {
+		[JSProperty(Name="newLine")]
+		public string NewLine {
 			get {
 				return System.Environment.NewLine;
 			}

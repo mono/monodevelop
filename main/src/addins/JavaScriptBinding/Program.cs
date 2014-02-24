@@ -36,9 +36,9 @@ namespace TypeScriptBinding
 			var engine = new Jurassic.ScriptEngine ();
 			engine.EnableExposedClrTypes = true;
 
-			var host = new IOImpl (engine, "/home/mkrueger");
+			var host = new ScriptingHost (engine, "/home/mkrueger");
 
-			host.arguments = engine.Array.New (new [] {
+			host.Arguments = engine.Array.New (new [] {
 				"test.ts"
 			});
 

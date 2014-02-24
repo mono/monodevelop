@@ -63,7 +63,7 @@ namespace TypeScriptBinding.Hosting
 						bom = ByteOrderMark.Utf16LittleEndian;
 				}
 			} else {
-				var stream = typeof(IOImpl).Assembly.GetManifestResourceStream (Path.GetFileName (path));
+				var stream = typeof(ScriptingHost).Assembly.GetManifestResourceStream (Path.GetFileName (path));
 				if (stream != null) {
 					contents = new StreamReader (stream).ReadToEnd ();
 				}
