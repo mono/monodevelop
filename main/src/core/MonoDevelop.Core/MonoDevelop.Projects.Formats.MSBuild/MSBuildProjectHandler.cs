@@ -72,6 +72,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string productVersion;
 		string schemaVersion;
 
+		public bool ProjectTypeIsUnsupported { get; set; }
+
 		public List<string> TargetImports {
 			get { return targetImports; }
 		}
@@ -400,8 +402,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language,
 			string itemType, Type itemClass)
 		{
-			SolutionItem item = null;
-			
+			if (ProjectTypeIsUnsupported)
+				return new UnknownProject (fileName);
+
 			if (subtypeGuids.Any ()) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (subtypeGuids);
 				if (st != null) {
@@ -429,35 +432,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						p.Save (fileName);
 					}
 
-					item = st.CreateInstance (language);
+					var item = st.CreateInstance (language);
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
-				} else
-					throw new UnknownSolutionItemTypeException (string.Join (";", subtypeGuids));
+					return item;
+				} else {
+					var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (subtypeGuids.ToArray ());
+					if (projectInfo != null && projectInfo.LoadFiles) {
+						ProjectTypeIsUnsupported = true;
+						return new UnknownProject (fileName);
+					}
+					throw new UnknownSolutionItemTypeException (ProjectTypeIsUnsupported ? TypeGuid : string.Join (";", subtypeGuids));
+				}
 			}
 
-			if (item == null && itemClass != null)
-				item = (SolutionItem) Activator.CreateInstance (itemClass);
+			if (itemClass != null)
+				return (SolutionItem) Activator.CreateInstance (itemClass);
 			
-			if (item == null && !string.IsNullOrEmpty (language)) {
-				item = new DotNetAssemblyProject (language);
-
+			if (!string.IsNullOrEmpty (language)) {
 				//enable msbuild by default .NET assembly projects
 				UseMSBuildEngineByDefault = true;
 				RequireMSBuildEngine = false;
+				return new DotNetAssemblyProject (language);
 			}
 			
-			if (item == null) {
-				if (string.IsNullOrEmpty (itemType))
-					throw new UnknownSolutionItemTypeException ();
-					
-				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (itemType);
-				if (dt == null)
-					throw new UnknownSolutionItemTypeException (itemType);
-					
-				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
-			}
-
-			return item;
+			if (string.IsNullOrEmpty (itemType))
+				throw new UnknownSolutionItemTypeException ();
+				
+			DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (itemType);
+			if (dt == null)
+				throw new UnknownSolutionItemTypeException (itemType);
+				
+			return (SolutionItem) Activator.CreateInstance (dt.ValueType);
 		}
 
 		Type MigrateProject (IProgressMonitor monitor, DotNetProjectSubtypeNode st, MSBuildProject p, string fileName, string language)
@@ -606,7 +611,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (it is ProjectFile) {
 					var file = (ProjectFile)it;
 
-					if (file.Name.IndexOf ('*') > -1)  {
+					if (file.Name.IndexOf ('*') > -1) {
 						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
 						foreach (var expandedItem in ResolveWildcardItems (file))
 							EntityItem.Items.Add (expandedItem);
@@ -616,7 +621,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						EntityItem.WildcardItems.Add (it);
 						continue;
 					}
-				}
+					if (ProjectTypeIsUnsupported && !File.Exists (file.FilePath))
+						continue;
+				} else if (ProjectTypeIsUnsupported)
+					continue;
 
 				EntityItem.Items.Add (it);
 			}

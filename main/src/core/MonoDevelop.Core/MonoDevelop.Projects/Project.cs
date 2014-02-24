@@ -987,30 +987,6 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 	}
 
-	public class UnknownProject : Project
-	{
-		public override string ProjectType {
-			get { return ""; }
-		}
-
-		public override SolutionItemConfiguration CreateConfiguration (string name)
-		{
-			return null;
-		}
-		
-		internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
-		{
-			return false;
-		}
-		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			BuildResult res = new BuildResult ();
-			res.AddError ("Unknown project type");
-			return res;
-		}
-	}
-
 	public delegate void ProjectEventHandler (Object sender, ProjectEventArgs e);
 	public class ProjectEventArgs : EventArgs
 	{

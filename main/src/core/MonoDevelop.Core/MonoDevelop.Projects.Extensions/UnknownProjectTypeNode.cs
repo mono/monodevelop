@@ -52,12 +52,19 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("product")]
 		string requiresProduct { get; set; }
 
+		[NodeAttribute ("loadFiles")]
+		bool loadFiles = true;
+
 		#pragma warning restore 649
 
 		public bool IsSolvable {
 			get {
 				return requiresProduct != null || requiresAddin != null;
 			}
+		}
+
+		public bool LoadFiles {
+			get { return loadFiles; }
 		}
 
 		public bool MatchesGuid (string guid)
