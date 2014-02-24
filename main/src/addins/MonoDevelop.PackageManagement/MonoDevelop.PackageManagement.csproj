@@ -291,6 +291,7 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesFromPackagesFolderNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesFromPackagesFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

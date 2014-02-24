@@ -1,5 +1,5 @@
 ﻿//
-// ProjectPackageReferenceFile.cs
+// PackageReferenceExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,32 +26,31 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
-using ICSharpCode.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectPackageReferenceFile : PackageReferenceFile
+	public static class PackageReferenceExtensions
 	{
-		public ProjectPackageReferenceFile (DotNetProject project)
-			: base(project.GetPackagesConfigFilePath ())
+		public static bool IsPackageInstalled (this PackageReference packageReference, DotNetProject project)
 		{
-			Project = project;
+			var packagesPath = new SolutionPackageRepositoryPath (project);
+			var fileSystem = new PhysicalFileSystem (packagesPath.PackageRepositoryPath);
+			return packageReference.IsPackageInstalled (fileSystem);
 		}
 
-		public DotNetProject Project { get; private set; }
-
-		public bool AnyMissingPackages ()
+		public static bool IsPackageInstalled (this PackageReference packageReference, PhysicalFileSystem fileSystem)
 		{
-			var packagesPath = new SolutionPackageRepositoryPath (Project);
-			var fileSystem = new PhysicalFileSystem (packagesPath.PackageRepositoryPath);
-			foreach (PackageReference packageReference in GetPackageReferences ()) {
-				if (!packageReference.IsPackageInstalled (fileSystem)) {
-					return true;
-				}
+			if (packageReference.Version == null) {
+				return false;
 			}
-			return false;
+
+			var repository = new LocalPackageRepository (new DefaultPackagePathResolver (fileSystem), fileSystem);
+			return repository
+				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
+				.Any ();
 		}
 	}
 }

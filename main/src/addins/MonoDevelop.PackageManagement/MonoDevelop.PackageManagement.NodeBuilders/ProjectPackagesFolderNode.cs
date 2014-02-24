@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
@@ -41,13 +42,23 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			this.project = project;
 		}
 
-		public IEnumerable<PackageReference> GetPackageReferences ()
+		IEnumerable<PackageReference> GetPackageReferences ()
 		{
 			if (project.HasPackages ()) {
 				var packageReferenceFile = new PackageReferenceFile (project.GetPackagesConfigFilePath ());
 				return packageReferenceFile.GetPackageReferences ();
 			}
 			return new PackageReference [0];
+		}
+
+		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
+		{
+			return GetPackageReferences ().Select (reference => CreatePackageReferenceNode (reference));
+		}
+
+		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference)
+		{
+			return new PackageReferenceNode (reference, reference.IsPackageInstalled (project));
 		}
 	}
 }

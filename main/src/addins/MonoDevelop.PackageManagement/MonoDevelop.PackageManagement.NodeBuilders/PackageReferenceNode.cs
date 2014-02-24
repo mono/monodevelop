@@ -34,12 +34,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class PackageReferenceNode
 	{
-		public PackageReferenceNode (PackageReference packageReference)
+		public PackageReferenceNode (PackageReference packageReference, bool installed)
 		{
 			PackageReference = packageReference;
+			Installed = installed;
 		}
 
 		public PackageReference PackageReference { get; private set; }
+		public bool Installed { get; private set; }
 
 		public string Name {
 			get { return PackageReference.Id; }

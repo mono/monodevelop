@@ -58,6 +58,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			var packageReferenceNode = (PackageReferenceNode)dataObject;
 			nodeInfo.Label = packageReferenceNode.Name;
 			nodeInfo.Icon = Context.GetIcon (Stock.Package);
+
+			if (!packageReferenceNode.Installed) {
+				nodeInfo.Label = "<span color='red'>" + packageReferenceNode.Name + "</span>";
+			}
 		}
 	}
 }
