@@ -34,6 +34,8 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using GLib;
+using MonoDevelop.Components;
+using Gdk;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -97,13 +99,13 @@ namespace MonoDevelop.CodeIssues
 			case Severity.None:
 				return Style.Base (StateType.Normal);
 			case Severity.Error:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
+				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
 			case Severity.Warning:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
+				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
 			case Severity.Hint:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
+				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
 			case Severity.Suggestion:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
+				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -155,7 +157,35 @@ namespace MonoDevelop.CodeIssues
 			}
 			title = Markup.EscapeText (title);
 		}
-		
+
+
+		class CustomCellRenderer : CellRendererCombo
+		{
+			public Gdk.Color Color {
+				get;
+				set;
+			}
+
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				int w = 10;
+				var newCellArea = new Gdk.Rectangle (cell_area.X + w, cell_area.Y, cell_area.Width - w, cell_area.Height);
+				using (var ctx = CairoHelper.Create (window)) {
+					var r = 4;
+					ctx.Arc (
+						cell_area.X + r, 
+						cell_area.Y + cell_area.Height / 2 + 1,
+						r,
+						0,
+						Math.PI * 2); 
+					ctx.SetSourceColor ((Mono.TextEditor.HslColor)Color); 
+					ctx.Fill ();
+				}
+
+				base.Render (window, widget, background_area, newCellArea, expose_area, flags);
+			}
+		}
+
 		public CodeIssuePanelWidget (string mimeType)
 		{
 			this.mimeType = mimeType;
@@ -212,7 +242,7 @@ namespace MonoDevelop.CodeIssues
 			searchentryFilter.Entry.Changed += ApplyFilter;
 
 
-			var comboRenderer = new CellRendererCombo {
+			var comboRenderer = new CustomCellRenderer {
 				Alignment = Pango.Alignment.Center
 			};
 			var col = treeviewInspections.AppendColumn ("Severity", comboRenderer);
@@ -260,7 +290,7 @@ namespace MonoDevelop.CodeIssues
 				var severity = severities[provider];
 				comboRenderer.Visible = true;
 				comboRenderer.Text = GetDescription (severity);
-				comboRenderer.BackgroundGdk = GetColor (severity);
+				comboRenderer.Color = GetColor (severity);
 			});
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
