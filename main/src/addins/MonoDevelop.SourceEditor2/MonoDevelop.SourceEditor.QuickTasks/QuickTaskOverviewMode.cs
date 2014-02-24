@@ -668,7 +668,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				//compute new color such that it will produce same color when blended with bg
 				c = AddAlpha (win81Background, c, 0.5d);
 			} else {
-				c = new Cairo.Color (0, 0, 0, (prelight ? 50.0 : 22.0) / 255);
+				c = new Cairo.Color (0, 0, 0, (prelight ? 0.5 : 0.22));
 			}
 			cr.SetSourceColor (c);
 			cr.Fill ();
