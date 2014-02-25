@@ -204,7 +204,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void UpdatePrelightState (double x, double y)
 		{
-			UpdateState (StateType.Prelight);
+			var newState = StateType.Normal;
+			if (IsInsideBar (x, y))
+				newState = StateType.Prelight;
+			UpdateState (newState);
 		}
 
 		bool IsInsideBar (double x, double y)
@@ -398,6 +401,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void StartFadeOutAnimation ()
 		{
 			CancelFadeInTimeout ();
+			UpdateState (StateType.Normal);
 			if (this.barColorValue == 0.0)
 				return;
 			fadeInStage.Pause ();
@@ -408,7 +412,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
 			isPointerInside = false;
-			if (!IsInGrab ())
+			if (!IsInGrab ()) 
 				StartFadeOutAnimation ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
@@ -439,7 +443,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected virtual double IndicatorHeight  {
 			get {
-				return Platform.IsWindows ? Allocation.Height : 3 + 8 + 3;
+				return Platform.IsWindows ? Allocation.Width : 3 + 8 + 3;
 			}
 		}
 		
