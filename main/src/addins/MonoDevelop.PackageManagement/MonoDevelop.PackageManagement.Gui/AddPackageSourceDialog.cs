@@ -26,6 +26,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -37,12 +38,30 @@ namespace MonoDevelop.PackageManagement
 		{
 			Build ();
 			this.viewModel = viewModel;
+			LoadViewModel ();
 
 			addPackageSourceButton.Clicked += AddPackageSourceButtonClicked;
+			savePackageSourceButton.Clicked += SavePackageSourceButtonClicked;
+
 			packageSourceNameTextEntry.Changed += PackageSourceNameTextBoxChanged;
 			packageSourceNameTextEntry.Activated += TextEntryActivated;
 			packageSourceUrlTextEntry.Changed += PackageSourceUrlTextBoxChanged;
 			packageSourceUrlTextEntry.Activated += TextEntryActivated;
+		}
+
+		void LoadViewModel ()
+		{
+			packageSourceNameTextEntry.Text = viewModel.NewPackageSourceName;
+			packageSourceUrlTextEntry.Text = viewModel.NewPackageSourceUrl;
+
+			addPackageSourceButton.Sensitive = viewModel.CanAddPackageSource;
+			addPackageSourceButton.Visible = !viewModel.IsEditingSelectedPackageSource;
+			savePackageSourceButton.Sensitive = viewModel.CanUpdatePackageSource;
+			savePackageSourceButton.Visible = viewModel.IsEditingSelectedPackageSource;
+
+			if (viewModel.IsEditingSelectedPackageSource) {
+				Title = GettextCatalog.GetString ("Edit Package Source");
+			}
 		}
 
 		void AddPackageSourceButtonClicked (object sender, EventArgs e)
@@ -77,7 +96,24 @@ namespace MonoDevelop.PackageManagement
 
 		void TextEntryActivated (object sender, EventArgs e)
 		{
-			AddPackageSourceAndCloseDialog ();
+			if (viewModel.IsEditingSelectedPackageSource) {
+				UpdatePackageSourceAndCloseDialog ();
+			} else {
+				AddPackageSourceAndCloseDialog ();
+			}
+		}
+
+		void SavePackageSourceButtonClicked (object sender, EventArgs e)
+		{
+			UpdatePackageSourceAndCloseDialog ();
+		}
+
+		void UpdatePackageSourceAndCloseDialog ()
+		{
+			if (viewModel.CanUpdatePackageSource) {
+				viewModel.UpdatePackageSource ();
+				Close ();
+			}
 		}
 	}
 }

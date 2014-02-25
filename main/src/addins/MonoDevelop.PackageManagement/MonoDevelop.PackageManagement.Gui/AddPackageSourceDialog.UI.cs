@@ -37,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 		TextEntry packageSourceUserNameTextEntry;
 		PasswordEntry packageSourcePasswordTextEntry;
 		DialogButton addPackageSourceButton;
+		DialogButton savePackageSourceButton;
 
 		void Build ()
 		{
@@ -111,6 +112,11 @@ namespace MonoDevelop.PackageManagement
 			addPackageSourceButton.Label = GettextCatalog.GetString ("Add Source");
 			addPackageSourceButton.Sensitive = false;
 			Buttons.Add (addPackageSourceButton);
+
+			savePackageSourceButton = new DialogButton (Command.Apply);
+			savePackageSourceButton.Label = GettextCatalog.GetString ("Save");
+			savePackageSourceButton.Visible = false;
+			Buttons.Add (savePackageSourceButton);
 		}
 	}
 }

@@ -40,6 +40,14 @@ namespace MonoDevelop.PackageManagement
 			this.addButton.Clicked += AddButtonClicked;
 
 			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
+			this.viewModel.SelectedPackageSourceUpdated += SelectedPackageSourceUpdated;
+		}
+
+		public override void Dispose ()
+		{
+			this.viewModel.PackageSourceViewModels.CollectionChanged -= PackageSourceViewModelsCollectionChanged;
+			this.viewModel.SelectedPackageSourceUpdated -= SelectedPackageSourceUpdated;
+			base.Dispose ();
 		}
 		
 		void InitializeTreeView ()
@@ -48,6 +56,7 @@ namespace MonoDevelop.PackageManagement
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
+			packageSourcesTreeView.RowActivated += PackageSourcesTreeViewRowActivated;
 		}
 		
 		TreeViewColumn CreateTreeViewColumn ()
@@ -222,9 +231,30 @@ namespace MonoDevelop.PackageManagement
 		
 		void AddButtonClicked (object sender, EventArgs e)
 		{
+			viewModel.IsEditingSelectedPackageSource = false;
 			using (var dialog = new AddPackageSourceDialog (viewModel)) {
 				dialog.ShowWithParent ();
 				UpdateEnabledButtons ();
+			}
+		}
+
+		void PackageSourcesTreeViewRowActivated (object o, RowActivatedArgs args)
+		{
+			viewModel.IsEditingSelectedPackageSource = true;
+			using (var dialog = new AddPackageSourceDialog (viewModel)) {
+				dialog.ShowWithParent ();
+				UpdateEnabledButtons ();
+			}
+		}
+
+		void SelectedPackageSourceUpdated (object sender, EventArgs e)
+		{
+			TreeIter iter;
+			if (packageSourcesTreeView.Selection.GetSelected (out iter)) {
+				packageSourcesStore.SetValue (
+					iter,
+					PackageSourceDescriptionColumn,
+					GetPackageSourceDescriptionMarkup (viewModel.SelectedPackageSourceViewModel));
 			}
 		}
 	}

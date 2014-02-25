@@ -47,9 +47,11 @@ namespace ICSharpCode.PackageManagement
 		DelegateCommand movePackageSourceUpCommand;
 		DelegateCommand movePackageSourceDownCommand;
 		DelegateCommand browsePackageFolderCommand;
+		DelegateCommand updatePackageSourceCommand;
 		
 		RegisteredPackageSource newPackageSource = new RegisteredPackageSource();
 		PackageSourceViewModel selectedPackageSourceViewModel;
+		bool isEditingSelectedPackageSource;
 		
 		public RegisteredPackageSourcesViewModel(
 			RegisteredPackageSources packageSources)
@@ -75,7 +77,11 @@ namespace ICSharpCode.PackageManagement
 			removePackageSourceCommand =
 				new DelegateCommand(param => RemovePackageSource(),
 					param => CanRemovePackageSource);
-			
+
+			updatePackageSourceCommand =
+				new DelegateCommand(param => UpdatePackageSource(),
+					param => CanUpdatePackageSource);
+
 			movePackageSourceUpCommand =
 				new DelegateCommand(param => MovePackageSourceUp(),
 					param => CanMovePackageSourceUp);
@@ -178,7 +184,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool CanAddPackageSource {
-			get { return NewPackageSourceHasUrl && NewPackageSourceHasName; }
+			get { return !IsEditingSelectedPackageSource && NewPackageSourceHasUrl && NewPackageSourceHasName; }
 		}
 		
 		bool NewPackageSourceHasUrl {
@@ -281,6 +287,45 @@ namespace ICSharpCode.PackageManagement
 		string GetPackageSourceNameFromFolder(string folder)
 		{
 			return Path.GetFileName(folder);
+		}
+
+		public bool IsEditingSelectedPackageSource {
+			get { return isEditingSelectedPackageSource; }
+			set {
+				isEditingSelectedPackageSource = value;
+				if (isEditingSelectedPackageSource) {
+					NewPackageSourceName = selectedPackageSourceViewModel.Name;
+					NewPackageSourceUrl = selectedPackageSourceViewModel.SourceUrl;
+				} else {
+					NewPackageSourceUrl = String.Empty;
+					NewPackageSourceName = String.Empty;
+				}
+			}
+		}
+
+		public bool CanUpdatePackageSource {
+			get {
+				return IsEditingSelectedPackageSource &&
+					NewPackageSourceHasUrl &&
+					NewPackageSourceHasName;
+			}
+		}
+
+		public void UpdatePackageSource ()
+		{
+			selectedPackageSourceViewModel.Name = NewPackageSourceName;
+			selectedPackageSourceViewModel.SourceUrl = NewPackageSourceUrl;
+
+			OnSelectedPackageSourceUpdated ();
+		}
+
+		public event EventHandler SelectedPackageSourceUpdated;
+
+		void OnSelectedPackageSourceUpdated ()
+		{
+			if (SelectedPackageSourceUpdated != null) {
+				SelectedPackageSourceUpdated (this, new EventArgs ());
+			}
 		}
 	}
 }
