@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide;
 using System.Linq;
+using Mono.TextEditor.Theatrics;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -73,7 +74,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			this.parentStrip = parent;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask |
-				EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
+				EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
 			vadjustment = this.parentStrip.VAdjustment;
 
 			vadjustment.ValueChanged += RedrawOnUpdate;
@@ -87,6 +88,20 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
 			HasTooltip = true;
+
+			fadeInStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+				barColorValue = actor.Percent;
+				return true;
+			};
+			fadeInStage.Iteration += (sender, e) => QueueDraw ();
+
+			fadeOutStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+				barColorValue = 1 - actor.Percent;
+				return true;
+			};
+			fadeOutStage.Iteration += (sender, e) => QueueDraw ();
+
+			fadeInStage.UpdateFrequency = fadeOutStage.UpdateFrequency = 10;
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -111,6 +126,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			CancelFadeInTimeout ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
@@ -182,13 +198,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			return grabY >= 0;
 		}
+		const uint FadeDuration = 90;
+		Stage<QuickTaskOverviewMode> fadeInStage = new Stage<QuickTaskOverviewMode> ();
+		Stage<QuickTaskOverviewMode> fadeOutStage = new Stage<QuickTaskOverviewMode> ();
 
 		void UpdatePrelightState (double x, double y)
 		{
-			var newState = StateType.Normal;
-			if (IsInsideBar (x, y))
-				newState = StateType.Prelight;
-			UpdateState (newState);
+			UpdateState (StateType.Prelight);
 		}
 
 		bool IsInsideBar (double x, double y)
@@ -346,13 +362,57 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				previewWindow = null;
 			}
 		}
-		
+
+		bool isPointerInside;
+		uint fadeTimeOutHandler;
+
+		void CancelFadeInTimeout ()
+		{
+			if (fadeTimeOutHandler == 0)
+				return;
+			GLib.Source.Remove (fadeTimeOutHandler); 
+			fadeTimeOutHandler = 0;
+		}
+
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			isPointerInside = true;
+			if (!IsInGrab ()) {
+				CancelFadeInTimeout ();
+				fadeTimeOutHandler = GLib.Timeout.Add (250, delegate {
+					StartFadeInAnimation ();
+					fadeTimeOutHandler = 0;
+					return false;
+				});
+			}
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		void StartFadeInAnimation ()
+		{
+			fadeOutStage.Pause ();
+			fadeInStage.AddOrReset (this, FadeDuration);
+			fadeInStage.Play ();
+		}
+
+		void StartFadeOutAnimation ()
+		{
+			CancelFadeInTimeout ();
+			if (this.barColorValue == 0.0)
+				return;
+			fadeInStage.Pause ();
+			fadeOutStage.AddOrReset (this, FadeDuration);
+			fadeOutStage.Play ();
+		}
+
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
+			isPointerInside = false;
 			if (!IsInGrab ())
-				UpdateState (StateType.Normal);
+				StartFadeOutAnimation ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
+
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
@@ -435,7 +495,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
 			ClearGrab ();
-			UpdatePrelightState (evnt.X, evnt.Y);
+			if (!isPointerInside)
+				StartFadeOutAnimation ();
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
@@ -631,6 +692,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			const int minBarHeight = 16;
 			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
 		}
+		double barColorValue = 0.0;
+		const double barAlphaMax = 0.5;
+		const double barAlphaMin = 0.22;
+
 
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
@@ -654,7 +719,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				//compute new color such that it will produce same color when blended with bg
 				c = AddAlpha (win81Background, c, 0.5d);
 			} else {
-				c = new Cairo.Color (0, 0, 0, (prelight ? 0.5 : 0.22));
+				c = new Cairo.Color (0, 0, 0, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
 			}
 			cr.SetSourceColor (c);
 			cr.Fill ();
