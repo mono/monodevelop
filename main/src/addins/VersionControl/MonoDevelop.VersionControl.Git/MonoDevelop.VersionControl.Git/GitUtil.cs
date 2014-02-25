@@ -24,55 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.IO;
-using NGit;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using NGit.Errors;
-using NGit.Api.Errors;
-using NGit.Dircache;
-using NGit.Revwalk;
-using NGit.Treewalk;
-using NGit.Api;
-using NGit.Merge;
-using NGit.Transport;
-using NGit.Diff;
-using NGit.Internal;
+using org.eclipse.jgit.api;
+using org.eclipse.jgit.api.errors;
+using org.eclipse.jgit.errors;
+using org.eclipse.jgit.diff;
+using org.eclipse.jgit.dircache;
+using org.eclipse.jgit.@internal;
+using org.eclipse.jgit.lib;
+using org.eclipse.jgit.merge;
+using org.eclipse.jgit.revwalk;
+using org.eclipse.jgit.transport;
+using org.eclipse.jgit.treewalk;
+using JRepository = org.eclipse.jgit.lib.Repository;
 using System;
+using System.Linq;
+using java.lang;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	internal static class GitUtil
 	{
-		public static string ToGitPath (this NGit.Repository repo, FilePath filePath)
+		public static string ToGitPath (this JRepository repo, FilePath filePath)
 		{
-			return filePath.FullPath.ToRelative (repo.WorkTree.ToString ()).ToString ().Replace ('\\', '/');
+			return filePath.FullPath.ToRelative (repo.getWorkTree().toString ()).ToString ().Replace ('\\', '/');
 		}
 
-		public static IEnumerable<string> ToGitPath (this NGit.Repository repo, IEnumerable<FilePath> filePaths)
+		public static IEnumerable<string> ToGitPath (this JRepository repo, IEnumerable<FilePath> filePaths)
 		{
 			foreach (var p in filePaths)
 				yield return ToGitPath (repo, p);
 		}
 
-		public static FilePath FromGitPath (this NGit.Repository repo, string filePath)
+		public static FilePath FromGitPath (this JRepository repo, string filePath)
 		{
 			filePath = filePath.Replace ('/', Path.DirectorySeparatorChar);
-			return Path.Combine (repo.WorkTree, filePath);
+			return Path.Combine (repo.getWorkTree().toString (), filePath);
 		}
 		
-		public static List<string> GetConflictedFiles (NGit.Repository repo)
+		public static List<string> GetConflictedFiles (JRepository repo)
 		{
 			List<string> list = new List<string> ();
 			TreeWalk treeWalk = new TreeWalk (repo);
-			treeWalk.Reset ();
-			treeWalk.Recursive = true;
-			DirCache dc = repo.ReadDirCache ();
-			treeWalk.AddTree (new DirCacheIterator (dc));
-			while (treeWalk.Next()) {
-				DirCacheIterator dirCacheIterator = treeWalk.GetTree<DirCacheIterator>(0);
-				var ce = dirCacheIterator.GetDirCacheEntry ();
-				if (ce != null && ce.Stage == 1)
-					list.Add (ce.PathString);
+			treeWalk.reset ();
+			treeWalk.setRecursive (true);
+			DirCache dc = repo.readDirCache ();
+			treeWalk.addTree (new DirCacheIterator (dc));
+			while (treeWalk.next()) {
+				DirCacheIterator dirCacheIterator = (DirCacheIterator)treeWalk.getTree(0, (Class)typeof(DirCacheIterator));
+				var ce = dirCacheIterator.getDirCacheEntry ();
+				if (ce != null && ce.getStage() == 1)
+					list.Add (ce.getPathString());
 			}
 			return list;
 		}
@@ -80,61 +83,61 @@ namespace MonoDevelop.VersionControl.Git
 		/// <summary>
 		/// Compares two commits and returns a list of files that have changed
 		/// </summary>
-		public static IEnumerable<DiffEntry> CompareCommits (NGit.Repository repo, RevCommit reference, RevCommit compared)
+		public static java.util.List CompareCommits (JRepository repo, RevCommit reference, RevCommit compared)
 		{
-			var changes = new List<DiffEntry>();
+			var changes = new java.util.ArrayList ();
 			if (reference == null && compared == null)
 				return changes;
-			ObjectId refTree = (reference != null ? reference.Tree.Id : ObjectId.ZeroId);
-			ObjectId comparedTree = (compared != null ? compared.Tree.Id : ObjectId.ZeroId);
+			ObjectId refTree = (reference != null ? reference.getTree().getId() : ObjectId.zeroId ());
+			ObjectId comparedTree = (compared != null ? compared.getTree().getId() : ObjectId.zeroId ());
 			return CompareCommits (repo, refTree, comparedTree);
 		}
 		
 		/// <summary>
 		/// Returns a list of files that have changed in a commit
 		/// </summary>
-		public static IEnumerable<DiffEntry> GetCommitChanges (NGit.Repository repo, RevCommit commit)
+		public static java.util.List GetCommitChanges (JRepository repo, RevCommit commit)
 		{
-			var rev = commit.ToObjectId ();
-			var prev = repo.Resolve (commit.Name + "^") ?? ObjectId.ZeroId;
+			var rev = commit.toObjectId ();
+			var prev = repo.resolve (commit.getName () + "^") ?? ObjectId.zeroId ();
 			return CompareCommits (repo, rev, prev);
 		}
 		
-		public static IEnumerable<DiffEntry> CompareCommits (NGit.Repository repo, AnyObjectId reference, ObjectId compared)
+		public static java.util.List CompareCommits (JRepository repo, AnyObjectId reference, ObjectId compared)
 		{
 			var diff = new MyersDiff (repo);
 
 			var firstTree = new CanonicalTreeParser ();
-			firstTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (reference));
-			diff.SetNewTree (firstTree);
+			firstTree.reset (repo.newObjectReader (), new RevWalk (repo).parseTree (reference));
+			diff.setNewTree (firstTree);
 			
-			if (compared != ObjectId.ZeroId) {
+			if (compared != ObjectId.zeroId ()) {
 				var secondTree = new CanonicalTreeParser ();
-				secondTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (compared));
+				secondTree.reset (repo.newObjectReader (), new RevWalk (repo).parseTree (compared));
 
-				if (compared != ObjectId.ZeroId)
-					diff.SetOldTree (secondTree);
+				if (compared != ObjectId.zeroId ())
+					diff.setOldTree (secondTree);
 			}
-			return diff.Call ();
+			return (java.util.List)diff.call ();
 		}
 
-		public static ObjectId CreateCommit (NGit.Repository rep, string message, IList<ObjectId> parents, ObjectId indexTreeId, PersonIdent author, PersonIdent committer)
+		public static ObjectId CreateCommit (JRepository rep, string message, IList<ObjectId> parents, ObjectId indexTreeId, PersonIdent author, PersonIdent committer)
 		{
 			try {
-				ObjectInserter odi = rep.NewObjectInserter ();
+				ObjectInserter odi = rep.newObjectInserter ();
 				try {
 					// Create a Commit object, populate it and write it
-					NGit.CommitBuilder commit = new NGit.CommitBuilder ();
-					commit.Committer = committer;
-					commit.Author = author;
-					commit.Message = message;
-					commit.SetParentIds (parents);
-					commit.TreeId = indexTreeId;
-					ObjectId commitId = odi.Insert (commit);
-					odi.Flush ();
+					CommitBuilder commit = new CommitBuilder ();
+					commit.setCommitter (committer);
+					commit.setAuthor (author);
+					commit.setMessage (message);
+					commit.setParentIds (parents.ToArray ());
+					commit.setTreeId (indexTreeId);
+					ObjectId commitId = odi.insert (commit);
+					odi.flush ();
 					return commitId;
 				} finally {
-					odi.Release ();
+					odi.release ();
 				}
 			} catch (UnmergedPathException) {
 				// since UnmergedPathException is a subclass of IOException
@@ -146,77 +149,67 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public static void HardReset (NGit.Repository repo, string toRef)
+		public static void HardReset (JRepository repo, string toRef)
 		{
-			ObjectId newHead = repo.Resolve (toRef);
+			ObjectId newHead = repo.resolve (toRef);
 			HardReset (repo, newHead);
 		}
 		
-		public static void HardReset (NGit.Repository repo, ObjectId newHead)
+		public static void HardReset (JRepository repo, ObjectId newHead)
 		{
 			DirCache dc = null;
 			
 			try {
 				// Reset head to upstream
-				RefUpdate ru = repo.UpdateRef (Constants.HEAD);
-				ru.SetNewObjectId (newHead);
-				ru.SetForceUpdate (true);
-				RefUpdate.Result rc = ru.Update ();
+				RefUpdate ru = repo.updateRef (Constants.HEAD);
+				ru.setNewObjectId (newHead);
+				ru.setForceUpdate (true);
+				RefUpdate.Result rc = ru.update ();
 	
-				switch (rc) {
-				case RefUpdate.Result.NO_CHANGE:
-				case RefUpdate.Result.NEW:
-				case RefUpdate.Result.FAST_FORWARD:
-				case RefUpdate.Result.FORCED:
-					break;
-				
-				case RefUpdate.Result.REJECTED:
-				case RefUpdate.Result.LOCK_FAILURE:
-					throw new ConcurrentRefUpdateException (JGitText.Get ().couldNotLockHEAD, ru.GetRef (), rc);
-	
-				default:
+				if (rc == RefUpdate.Result.REJECTED || rc == RefUpdate.Result.LOCK_FAILURE)
+					throw new ConcurrentRefUpdateException (JGitText.get ().couldNotLockHEAD, ru.getRef (), rc);
+				if (rc != RefUpdate.Result.NO_CHANGE && rc != RefUpdate.Result.NEW && rc != RefUpdate.Result.FAST_FORWARD && rc != RefUpdate.Result.FORCED)
 					throw new JGitInternalException ("Reference update failed: " + rc);
-				}
 				
-				dc = repo.LockDirCache ();
+				dc = repo.lockDirCache ();
 				RevWalk rw = new RevWalk (repo);
-				RevCommit c = rw.ParseCommit (newHead);
-				DirCacheCheckout checkout = new DirCacheCheckout (repo, null, dc, c.Tree);
-				checkout.Checkout ();
+				RevCommit c = rw.parseCommit (newHead);
+				DirCacheCheckout checkout = new DirCacheCheckout (repo, null, dc, c.getTree ());
+				checkout.checkout ();
 			} catch {
 				if (dc != null)
-					dc.Unlock ();
+					dc.unlock ();
 				throw;
 			}
 		}
 		
-		public static StashCollection GetStashes (NGit.Repository repo)
+		public static StashCollection GetStashes (JRepository repo)
 		{
 			return new StashCollection (repo);
 		}
 		
-		public static IEnumerable<DiffEntry> GetChangedFiles (NGit.Repository repo, string refRev)
+		public static java.util.List GetChangedFiles (JRepository repo, string refRev)
 		{
 			// Get a list of files that are different in the target branch
 			RevWalk rw = new RevWalk (repo);
-			ObjectId remCommitId = repo.Resolve (refRev);
+			ObjectId remCommitId = repo.resolve (refRev);
 			if (remCommitId == null)
 				return null;
-			RevCommit remCommit = rw.ParseCommit (remCommitId);
+			RevCommit remCommit = rw.parseCommit (remCommitId);
 			
-			ObjectId headId = repo.Resolve (Constants.HEAD);
+			ObjectId headId = repo.resolve (Constants.HEAD);
 			if (headId == null)
 				return null;
-			RevCommit headCommit = rw.ParseCommit (headId);
+			RevCommit headCommit = rw.parseCommit (headId);
 			
 			return GitUtil.CompareCommits (repo, headCommit, remCommit);
 		}
 		
-		public static string GetUpstreamSource (NGit.Repository repo, string branch)
+		public static string GetUpstreamSource (JRepository repo, string branch)
 		{
-			StoredConfig config = repo.GetConfig ();
-			string remote = config.GetString ("branch", branch, "remote");
-			string rbranch = config.GetString ("branch", branch, "merge");
+			StoredConfig config = repo.getConfig ();
+			string remote = config.getString ("branch", branch, "remote");
+			string rbranch = config.getString ("branch", branch, "merge");
 			if (string.IsNullOrEmpty (rbranch))
 				return null;
 			if (rbranch.StartsWith (Constants.R_HEADS, System.StringComparison.Ordinal))
@@ -229,141 +222,142 @@ namespace MonoDevelop.VersionControl.Git
 				return rbranch;
 		}
 		
-		public static void SetUpstreamSource (NGit.Repository repo, string branch, string remoteBranch)
+		public static void SetUpstreamSource (JRepository repo, string branch, string remoteBranch)
 		{
-			StoredConfig config = repo.GetConfig ();
+			StoredConfig config = repo.getConfig ();
 			if (string.IsNullOrEmpty (remoteBranch)) {
-				config.UnsetSection ("branch", branch);
-				config.Save ();
+				config.unsetSection ("branch", branch);
+				config.save ();
 				return;
 			}
 			
 			int i = remoteBranch.IndexOf ('/');
 			string upBranch;
 			if (i == -1) {
-				var tags = repo.GetTags ();
-				if (tags.ContainsKey (remoteBranch))
+				var tags = repo.getTags ();
+				if (tags.containsKey (remoteBranch))
 					upBranch = Constants.R_TAGS + remoteBranch;
 				else
 					upBranch = Constants.R_HEADS + remoteBranch;
-				config.SetString ("branch", branch, "remote", ".");
+				config.setString ("branch", branch, "remote", ".");
 			} else {
 				upBranch = Constants.R_HEADS + remoteBranch.Substring (i + 1);
-				config.SetString ("branch", branch, "remote", remoteBranch.Substring (0, i));
+				config.setString ("branch", branch, "remote", remoteBranch.Substring (0, i));
 			}
-			config.SetString ("branch", branch, "merge", upBranch);
-			config.Save ();
+			config.setString ("branch", branch, "merge", upBranch);
+			config.save ();
 		}
 		
 		public static LocalGitRepository Init (string targetLocalPath, string url)
 		{
 			InitCommand ci = new InitCommand ();
-			ci.SetDirectory (targetLocalPath);
-			ci.Call ();
+			ci.setDirectory (new java.io.File (targetLocalPath));
+			ci.call ();
 			LocalGitRepository repo = new LocalGitRepository (Path.Combine (targetLocalPath, Constants.DOT_GIT));
 			
 			string branch = Constants.R_HEADS + "master";
 			
-			RefUpdate head = repo.UpdateRef (Constants.HEAD);
-			head.DisableRefLog ();
-			head.Link (branch);
+			RefUpdate head = repo.updateRef (Constants.HEAD);
+			head.disableRefLog ();
+			head.link (branch);
 			
 			if (url != null) {
-				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), "origin");
-				remoteConfig.AddURI (new URIish (url));
+				RemoteConfig remoteConfig = new RemoteConfig (repo.getConfig (), "origin");
+				remoteConfig.addURI (new URIish (url));
 				
-				string dst = Constants.R_REMOTES + remoteConfig.Name;
+				string dst = Constants.R_REMOTES + remoteConfig.getName ();
 				RefSpec wcrs = new RefSpec();
-				wcrs = wcrs.SetForceUpdate (true);
-				wcrs = wcrs.SetSourceDestination (Constants.R_HEADS	+ "*", dst + "/*");
+				wcrs = wcrs.setForceUpdate (true);
+				wcrs = wcrs.setSourceDestination (Constants.R_HEADS	+ "*", dst + "/*");
 				
-				remoteConfig.AddFetchRefSpec (wcrs);
-				remoteConfig.Update (repo.GetConfig());
+				remoteConfig.addFetchRefSpec (wcrs);
+				remoteConfig.update (repo.getConfig());
 			}
 	
 			// we're setting up for a clone with a checkout
-			repo.GetConfig().SetBoolean ("core", null, "bare", false);
+			repo.getConfig().setBoolean ("core", null, "bare", false);
 	
-			repo.GetConfig().Save();
+			repo.getConfig().save();
 			return repo;
 		}
 
-		public static MergeCommandResult MergeTrees (ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
+		public static org.eclipse.jgit.api.MergeResult MergeTrees (ProgressMonitor monitor, JRepository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
 			RevCommit newHead;
 			RevWalk revWalk = new RevWalk(repo);
 			try
 			{
 				// get the head commit
-				Ref headRef = repo.GetRef(Constants.HEAD);
+				Ref headRef = repo.getRef(Constants.HEAD);
 				if (headRef == null)
 				{
-					throw new NoHeadException(JGitText.Get().commitOnRepoWithoutHEADCurrentlyNotSupported
+					throw new NoHeadException(JGitText.get().commitOnRepoWithoutHEADCurrentlyNotSupported
 						);
 				}
-				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
+				RevCommit headCommit = revWalk.parseCommit(headRef.getObjectId());
 				
-				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.NewMerger
+				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.newMerger
 					(repo));
 				
-				merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+				merger.setWorkingTreeIterator(new FileTreeIterator(repo));
 				
-				merger.SetBase(srcBase);
+				merger.setBase(srcBase);
 				
 				bool noProblems;
-				IDictionary<string, MergeResult<Sequence>> lowLevelResults = null;
-				IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
-				IList<string> modifiedFiles = null;
-				
+
+				java.util.Map lowLevelResults = null;
+				java.util.Map failingPaths = null;
+				java.util.List modifiedFiles = null;
+
 				ResolveMerger resolveMerger = merger;
-				resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", sourceDisplayName });
-				noProblems = merger.Merge(headCommit, srcCommit);
-				lowLevelResults = resolveMerger.GetMergeResults();
-				modifiedFiles = resolveMerger.GetModifiedFiles();
-				failingPaths = resolveMerger.GetFailingPaths();
+				resolveMerger.setCommitNames(new string[] { "BASE", "HEAD", sourceDisplayName });
+				noProblems = merger.merge(headCommit, srcCommit);
+				lowLevelResults = resolveMerger.getMergeResults();
+				modifiedFiles = resolveMerger.getModifiedFiles();
+				failingPaths = resolveMerger.getFailingPaths();
 				
 				if (monitor != null)
-					monitor.Update (50);
+					monitor.update (50);
 				
 				if (noProblems)
 				{
-					if (modifiedFiles != null && modifiedFiles.Count == 0) {
-						return new MergeCommandResult(headCommit, null, new ObjectId[] { headCommit.Id, srcCommit
-							.Id }, MergeStatus.ALREADY_UP_TO_DATE, MergeStrategy.RESOLVE, null, null);
+					if (modifiedFiles != null && modifiedFiles.size () == 0) {
+						return new org.eclipse.jgit.api.MergeResult(headCommit, null, new ObjectId[] { headCommit.getId (), srcCommit.getId ()
+								}, org.eclipse.jgit.api.MergeResult.MergeStatus.ALREADY_UP_TO_DATE, MergeStrategy.RESOLVE, null, null);
 					}
-					DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
-						(), merger.GetResultTreeId());
-					dco.SetFailOnConflict(true);
-					dco.Checkout();
+					DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.getTree (), repo.lockDirCache (), 
+						merger.getResultTreeId());
+					dco.setFailOnConflict(true);
+					dco.checkout();
 					if (commitResult) {
-						newHead = new NGit.Api.Git(repo).Commit().SetMessage(srcCommit.GetFullMessage()
-							).SetAuthor(srcCommit.GetAuthorIdent()).Call();
-						return new MergeCommandResult(newHead.Id, null, new ObjectId[] { headCommit.Id, srcCommit
-							.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+						newHead = new org.eclipse.jgit.api.Git(repo).commit().setMessage(srcCommit.getFullMessage()
+						).setAuthor(srcCommit.getAuthorIdent()).call();
+						return new org.eclipse.jgit.api.MergeResult (newHead.getId (), null, new ObjectId[] { headCommit.getId (),
+							srcCommit.getId () }, org.eclipse.jgit.api.MergeResult.MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
 					} else {
-						return new MergeCommandResult(headCommit, null, new ObjectId[] { headCommit.Id, srcCommit
-							.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+						return new org.eclipse.jgit.api.MergeResult(headCommit, null, new ObjectId[] { headCommit.getId(), srcCommit.getId () },
+							org.eclipse.jgit.api.MergeResult.MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
 					}
 				}
 				else
 				{
 					if (failingPaths != null)
 					{
-						return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
-							headCommit.Id, srcCommit.Id }, MergeStatus.FAILED, MergeStrategy.RESOLVE, lowLevelResults
-							, failingPaths, null);
+						return new org.eclipse.jgit.api.MergeResult(null, merger.getBaseCommit(0, 1), new ObjectId[] { 
+							headCommit.getId (), srcCommit.getId () }, org.eclipse.jgit.api.MergeResult.MergeStatus.FAILED,
+							MergeStrategy.RESOLVE, lowLevelResults, failingPaths, null);
 					}
 					else
 					{
-						return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
-							headCommit.Id, srcCommit.Id }, MergeStatus.CONFLICTING, MergeStrategy.RESOLVE, lowLevelResults
-							, null);
+						return new org.eclipse.jgit.api.MergeResult(null, merger.getBaseCommit(0, 1), new ObjectId[] { 
+							headCommit.getId (), srcCommit.getId () }, org.eclipse.jgit.api.MergeResult.MergeStatus.CONFLICTING,
+							MergeStrategy.RESOLVE, lowLevelResults, null);
 					}
 				}
 			}
 			finally
 			{
-				revWalk.Release();
+				revWalk.release();
 			}
 		}
 

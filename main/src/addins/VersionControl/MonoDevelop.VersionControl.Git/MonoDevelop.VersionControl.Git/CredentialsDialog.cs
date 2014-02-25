@@ -26,7 +26,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Gtk;
-using NGit.Transport;
+using org.eclipse.jgit.transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Git
 			uint r = 0;
 			Widget firstEditor = null;
 			foreach (CredentialItem c in credentials) {
-				Label lab = new Label (c.GetPromptText () + ":");
+				Label lab = new Label (c.getPromptText () + ":");
 				lab.Xalign = 0;
 				table.Attach (lab, 0, 1, r, r + 1);
 				Table.TableChild tc = (Table.TableChild) table [lab];
@@ -69,7 +69,7 @@ namespace MonoDevelop.VersionControl.Git
 						CheckButton btn = new CheckButton ();
 						editor = btn;
 						btn.Toggled += delegate {
-							cred.SetValue (btn.Active);
+							cred.setValue (btn.Active);
 						};
 					}
 				}
@@ -78,17 +78,17 @@ namespace MonoDevelop.VersionControl.Git
 					Entry e = new Entry ();
 					editor = e;
 					e.ActivatesDefault = true;
-					if (cred.IsValueSecure ())
+					if (cred.isValueSecure ())
 						e.Visibility = false;
 					e.Changed += delegate {
 						if (cred is CredentialItem.StringType)
-							((CredentialItem.StringType)cred).SetValue (e.Text);
+							((CredentialItem.StringType)cred).setValue (e.Text);
 						else
-							((CredentialItem.CharArrayType)cred).SetValue (e.Text.ToCharArray ());
+							((CredentialItem.CharArrayType)cred).setValue (e.Text.ToCharArray ());
 					};
 					
 					if (c is CredentialItem.Username)
-						e.Text = uri.GetUser () ?? "";
+						e.Text = uri.getUser () ?? "";
 				}
 				if (editor != null) {
 					table.Attach (editor, 1, 2, r, r + 1);
@@ -107,13 +107,13 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonYesClicked (object sender, System.EventArgs e)
 		{
-			singleYesNoCred.SetValue (true);
+			singleYesNoCred.setValue (true);
 			Respond (ResponseType.Ok);
 		}
 		
 		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
 		{
-			singleYesNoCred.SetValue (false);
+			singleYesNoCred.setValue (false);
 			Respond (ResponseType.Cancel);
 		}
 	}

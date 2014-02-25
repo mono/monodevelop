@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl.Git
 		static GitVersionControl ()
 		{
 			// Initialize the credentials provider, to be used in all git operations
-			NGit.Transport.CredentialsProvider.SetDefault (new GitCredentials ());
+			org.eclipse.jgit.transport.CredentialsProvider.setDefault (new GitCredentials ());
 		}
 		
 		public override string Name {

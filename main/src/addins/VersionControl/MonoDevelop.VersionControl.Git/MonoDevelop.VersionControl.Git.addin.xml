@@ -1,7 +1,23 @@
 <ExtensionModel>
  
 	<Runtime>
-		<Import assembly="NGit.dll"/>
+		<Import assembly="jgit.dll"/>
+		<Import assembly="IKVM.AWT.WinForms.dll"/>
+		<Import assembly="IKVM.OpenJDK.Beans.dll"/>
+		<Import assembly="IKVM.OpenJDK.Charsets.dll"/>
+		<Import assembly="IKVM.OpenJDK.Corba.dll"/>
+		<Import assembly="IKVM.OpenJDK.Core.dll"/>
+		<Import assembly="IKVM.OpenJDK.Management.dll"/>
+		<Import assembly="IKVM.OpenJDK.Media.dll"/>
+		<Import assembly="IKVM.OpenJDK.Misc.dll"/>
+		<Import assembly="IKVM.OpenJDK.Naming.dll"/>
+		<Import assembly="IKVM.OpenJDK.Remoting.dll"/>
+		<Import assembly="IKVM.OpenJDK.Security.dll"/>
+		<Import assembly="IKVM.OpenJDK.SwingAWT.dll"/>
+		<Import assembly="IKVM.OpenJDK.Text.dll"/>
+		<Import assembly="IKVM.OpenJDK.XML.API.dll"/>
+		<Import assembly="IKVM.Runtime.dll"/>
+		<Import assembly="IKVM.Runtime.JNI.dll"/>
 	</Runtime>
 
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">

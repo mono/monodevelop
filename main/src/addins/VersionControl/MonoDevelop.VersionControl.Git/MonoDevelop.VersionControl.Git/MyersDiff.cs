@@ -24,22 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using NGit.Api;
-using System.Collections.Generic;
-using NGit.Diff;
-using NGit.Treewalk;
-using NGit.Treewalk.Filter;
-using Sharpen;
-using NGit.Util.IO;
-using NGit;
-using NGit.Api.Errors;
-using NGit.Internal;
-using NGit.Dircache;
-using System.IO;
+using org.eclipse.jgit.api;
+using org.eclipse.jgit.api.errors;
+using org.eclipse.jgit.diff;
+using org.eclipse.jgit.dircache;
+using org.eclipse.jgit.lib;
+using org.eclipse.jgit.treewalk;
+using org.eclipse.jgit.treewalk.filter;
+using org.eclipse.jgit.util.io;
+
+using java.io;
+using org.eclipse.jgit.@internal;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	sealed class MyersDiff : GitCommand<IList<DiffEntry>>
+	sealed class MyersDiff : GitCommand
 	{
 		AbstractTreeIterator oldTree;
 
@@ -59,9 +58,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		string destinationPrefix;
 
-		NGit.ProgressMonitor monitor = NGit.NullProgressMonitor.INSTANCE;
+		ProgressMonitor monitor = NullProgressMonitor.INSTANCE;
 
-		protected internal MyersDiff (NGit.Repository repo) : base (repo)
+		protected internal MyersDiff (org.eclipse.jgit.lib.Repository repo) : base (repo)
 		{
 		}
 
@@ -77,7 +76,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// </summary>
 		/// <returns>a DiffEntry for each path which is different</returns>
 		/// <exception cref="NGit.Api.Errors.GitAPIException"></exception>
-		public override IList<DiffEntry> Call()
+		public override object call()
 		{
 			DiffFormatter diffFmt;
 			if (@out != null && !showNameAndStatusOnly)
@@ -90,52 +89,52 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			try {
-				diffFmt.SetRepository(repo);
+				diffFmt.setRepository(repo);
 			} catch (ArgumentException) {
 				// This means diff algorithm is not supported.
 			} finally {
-				diffFmt.SetDiffAlgorithm (DiffAlgorithm.GetAlgorithm (DiffAlgorithm.SupportedAlgorithm.MYERS));
+				diffFmt.setDiffAlgorithm (DiffAlgorithm.getAlgorithm (DiffAlgorithm.SupportedAlgorithm.MYERS));
 			}
 
-			diffFmt.SetProgressMonitor(monitor);
+			diffFmt.setProgressMonitor(monitor);
 			try
 			{
 				if (cached)
 				{
 					if (oldTree == null)
 					{
-						ObjectId head = repo.Resolve(Constants.HEAD + "^{tree}");
+						ObjectId head = repo.resolve(Constants.HEAD + "^{tree}");
 						if (head == null)
 						{
-							throw new NoHeadException(JGitText.Get().cannotReadTree);
+							throw new NoHeadException(JGitText.get().cannotReadTree);
 						}
 						CanonicalTreeParser p = new CanonicalTreeParser();
-						ObjectReader reader = repo.NewObjectReader();
+						ObjectReader reader = repo.newObjectReader();
 						try
 						{
-							p.Reset(reader, head);
+							p.reset(reader, head);
 						}
 						finally
 						{
-							reader.Release();
+							reader.release();
 						}
 						oldTree = p;
 					}
-					newTree = new DirCacheIterator(repo.ReadDirCache());
+					newTree = new DirCacheIterator(repo.readDirCache());
 				}
 				else
 				{
 					if (oldTree == null)
 					{
-						oldTree = new DirCacheIterator(repo.ReadDirCache());
+						oldTree = new DirCacheIterator(repo.readDirCache());
 					}
 					if (newTree == null)
 					{
 						newTree = new FileTreeIterator(repo);
 					}
 				}
-				diffFmt.SetPathFilter(pathFilter);
-				IList<DiffEntry> result = diffFmt.Scan(oldTree, newTree);
+				diffFmt.setPathFilter(pathFilter);
+				java.util.List result = diffFmt.scan(oldTree, newTree);
 				if (showNameAndStatusOnly)
 				{
 					return result;
@@ -144,34 +143,37 @@ namespace MonoDevelop.VersionControl.Git
 				{
 					if (contextLines >= 0)
 					{
-						diffFmt.SetContext(contextLines);
+						diffFmt.setContext(contextLines);
 					}
 					if (destinationPrefix != null)
 					{
-						diffFmt.SetNewPrefix(destinationPrefix);
+						diffFmt.setNewPrefix(destinationPrefix);
 					}
 					if (sourcePrefix != null)
 					{
-						diffFmt.SetOldPrefix(sourcePrefix);
+						diffFmt.setOldPrefix(sourcePrefix);
 					}
-					diffFmt.Format(result);
-					diffFmt.Flush();
+					diffFmt.format(result);
+					diffFmt.flush();
 					return result;
 				}
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
-				throw new JGitInternalException(e.Message, e);
+				e = ikvm.runtime.Util.mapException (e);
+				if (e is IOException)
+					throw new JGitInternalException(e.Message, e);
+				throw;
 			}
 			finally
 			{
-				diffFmt.Release();
+				diffFmt.release();
 			}
 		}
 
 		/// <param name="cached">whether to view the changes you staged for the next commit</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetCached(bool cached)
+		public MyersDiff setCached(bool cached)
 		{
 			this.cached = cached;
 			return this;
@@ -179,7 +181,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="pathFilter">parameter, used to limit the diff to the named path</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetPathFilter(TreeFilter pathFilter)
+		public MyersDiff setPathFilter(TreeFilter pathFilter)
 		{
 			this.pathFilter = pathFilter;
 			return this;
@@ -187,7 +189,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="oldTree">the previous state</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetOldTree(AbstractTreeIterator oldTree)
+		public MyersDiff setOldTree(AbstractTreeIterator oldTree)
 		{
 			this.oldTree = oldTree;
 			return this;
@@ -195,7 +197,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="newTree">the updated state</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetNewTree(AbstractTreeIterator newTree)
+		public MyersDiff setNewTree(AbstractTreeIterator newTree)
 		{
 			this.newTree = newTree;
 			return this;
@@ -204,7 +206,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <param name="showNameAndStatusOnly">whether to return only names and status of changed files
 		/// 	</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetShowNameAndStatusOnly(bool showNameAndStatusOnly
+		public MyersDiff setShowNameAndStatusOnly(bool showNameAndStatusOnly
 		                                                             )
 		{
 			this.showNameAndStatusOnly = showNameAndStatusOnly;
@@ -213,7 +215,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		/// <param name="out">the stream to write line data</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetOutputStream(OutputStream @out)
+		public MyersDiff setOutputStream(OutputStream @out)
 		{
 			this.@out = @out;
 			return this;
@@ -223,7 +225,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set number of context lines instead of the usual three.</remarks>
 		/// <param name="contextLines">the number of context lines</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetContextLines(int contextLines)
+		public MyersDiff setContextLines(int contextLines)
 		{
 			this.contextLines = contextLines;
 			return this;
@@ -233,7 +235,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set the given source prefix instead of "a/".</remarks>
 		/// <param name="sourcePrefix">the prefix</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetSourcePrefix(string sourcePrefix)
+		public MyersDiff setSourcePrefix(string sourcePrefix)
 		{
 			this.sourcePrefix = sourcePrefix;
 			return this;
@@ -243,7 +245,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <remarks>Set the given destination prefix instead of "b/".</remarks>
 		/// <param name="destinationPrefix">the prefix</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetDestinationPrefix(string destinationPrefix
+		public MyersDiff setDestinationPrefix(string destinationPrefix
 		                                                         )
 		{
 			this.destinationPrefix = destinationPrefix;
@@ -258,7 +260,7 @@ namespace MonoDevelop.VersionControl.Git
 		/// <seealso cref="NGit.NullProgressMonitor">NGit.NullProgressMonitor</seealso>
 		/// <param name="monitor">a progress monitor</param>
 		/// <returns>this instance</returns>
-		public MyersDiff SetProgressMonitor(ProgressMonitor monitor)
+		public MyersDiff setProgressMonitor(ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
 			return this;

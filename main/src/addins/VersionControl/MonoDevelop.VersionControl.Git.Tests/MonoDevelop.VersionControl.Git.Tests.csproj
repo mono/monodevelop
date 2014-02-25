@@ -58,24 +58,6 @@
       <Name>MonoDevelop.VersionControl</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\ngit\NGit\NGit.csproj">
-      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
-      <Name>NGit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\ngit\NSch\NSch.csproj">
-      <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
-      <Name>NSch</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\ngit\Sharpen\Sharpen.csproj">
-      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
-      <Name>Sharpen</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
-      <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
-      <Name>Sharpen.Unix</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
       <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_0</Name>

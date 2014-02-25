@@ -28,12 +28,12 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Git;
 using MonoDevelop.VersionControl.Tests;
-using NGit;
-using NGit.Api;
+using org.eclipse.jgit.lib;
+using org.eclipse.jgit.api;
 using NUnit.Framework;
 using System.IO;
-using NGit.Storage.File;
-using NGit.Revwalk;
+using org.eclipse.jgit.@internal.storage.file;
+using org.eclipse.jgit.revwalk;
 using System.Linq;
 
 namespace MonoDevelop.VersionControl.Git.Tests
@@ -52,15 +52,15 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			// Initialize the bare repo.
 			var ci = new InitCommand ();
-			ci.SetDirectory (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
-			ci.SetBare (true);
-			ci.Call ();
-			var bare = new FileRepository (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
+			ci.setDirectory (new java.io.File (RootUrl.FullPath + "repo.git"));
+			ci.setBare (true);
+			ci.call ();
+			var bare = new FileRepository (new java.io.File (RootUrl.FullPath + "repo.git"));
 			string branch = Constants.R_HEADS + "master";
 
-			RefUpdate head = bare.UpdateRef (Constants.HEAD);
-			head.DisableRefLog ();
-			head.Link (branch);
+			RefUpdate head = bare.updateRef (Constants.HEAD);
+			head.disableRefLog ();
+			head.link (branch);
 
 			// Check out the repository.
 			Checkout (RootCheckout, RepoLocation);
@@ -134,12 +134,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			var repo2 = (GitRepository)Repo;
 			var rw = new RevWalk (repo2.RootRepository);
-			ObjectId headId = repo2.RootRepository.Resolve (Constants.HEAD);
+			ObjectId headId = repo2.RootRepository.resolve (Constants.HEAD);
 			if (headId == null)
 				return null;
 
-			RevCommit commit = rw.ParseCommit (headId);
-			var rev = new GitRevision (Repo, repo2.RootRepository, commit.Id.Name);
+			RevCommit commit = rw.parseCommit (headId);
+			var rev = new GitRevision (Repo, repo2.RootRepository, commit.getId().getName ());
 			rev.Commit = commit;
 			return rev;
 		}
@@ -168,9 +168,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file2", "nothing", true, true);
 			AddFile ("file1", "text", true, false);
-			repo2.GetStashes ().Create (new NullProgressMonitor ());
+			repo2.GetStashes ().Create (NullProgressMonitor.INSTANCE);
 			Assert.IsTrue (!File.Exists (RootCheckout + "file1"), "Stash creation failure");
-			repo2.GetStashes ().Pop (new NullProgressMonitor ());
+			repo2.GetStashes ().Pop (NullProgressMonitor.INSTANCE);
 
 			VersionInfo vi = repo2.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd, "Stash pop failure");
@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.CreateBranch ("branch2", null);
 			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch2");
 			Assert.IsTrue (!File.Exists (RootCheckout + "file2"), "Uncommitted changes were not stashed");
-			repo2.GetStashes ().Pop (new NullProgressMonitor ());
+			repo2.GetStashes ().Pop (NullProgressMonitor.INSTANCE);
 
 			Assert.IsTrue (File.Exists (RootCheckout + "file2"), "Uncommitted changes were not stashed correctly");
 
