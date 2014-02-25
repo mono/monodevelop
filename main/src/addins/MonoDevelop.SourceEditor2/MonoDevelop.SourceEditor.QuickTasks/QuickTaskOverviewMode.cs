@@ -379,7 +379,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected virtual double IndicatorHeight  {
 			get {
-				return Platform.IsWindows ? Allocation.Height : 3 + 8;
+				return Platform.IsWindows ? Allocation.Height : 3 + 8 + 3;
 			}
 		}
 		
@@ -527,7 +527,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var h = Allocation.Height - IndicatorHeight;
 			var p = TextEditor.LocationToPoint (logicalLine, 1, true).Y;
-			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height - IndicatorHeight);
+			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height) 
+				+ TextEditor.Allocation.Height
+				- TextEditor.LineHeight;
 
 			return IndicatorHeight  + h * p / q;
 		}
@@ -624,7 +626,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			x = Platform.IsWindows ? barPadding : 1 + barPadding;
 			var adjUpper = vadjustment.Upper;
 			var allocH = alloc.Height - (int) IndicatorHeight;
-			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
+			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper);
 			w = Platform.IsWindows ? alloc.Width - barPadding - barPadding : 8;
 			const int minBarHeight = 16;
 			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
