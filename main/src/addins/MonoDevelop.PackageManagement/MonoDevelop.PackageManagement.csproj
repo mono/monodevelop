@@ -292,11 +292,19 @@
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesFromPackagesFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferencesNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReferenceExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackageSourceDialog.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackageSourceDialog.UI.cs">
+      <DependentUpon>AddPackageSourceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.PackageManagement.Gui\DialogExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\PackageSourceIcon.png">
+      <LogicalName>PackageSourceIcon.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

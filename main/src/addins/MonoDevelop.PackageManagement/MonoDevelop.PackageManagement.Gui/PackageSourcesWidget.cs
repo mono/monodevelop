@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
+using Gdk;
 using Gtk;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -14,8 +18,9 @@ namespace MonoDevelop.PackageManagement
 		RegisteredPackageSourcesViewModel viewModel;
 		ListStore packageSourcesStore;
 		const int IsEnabledCheckBoxColumn = 0;
-		const int PackageSourceDescriptionColumn = 1;
-		const int PackageSourceViewModelColumn = 2;
+		const int PackageSourceIconColumn = 1;
+		const int PackageSourceDescriptionColumn = 2;
+		const int PackageSourceViewModelColumn = 3;
 		
 		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel)
 		{
@@ -23,13 +28,23 @@ namespace MonoDevelop.PackageManagement
 			this.viewModel = viewModel;
 			this.InitializeTreeView ();
 			this.LoadPackageSources ();
-			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
+			AddEventHandlers ();
 			UpdateEnabledButtons ();
+		}
+
+		void AddEventHandlers ()
+		{
+			this.moveUpButton.Clicked += MoveUpButtonClicked;
+			this.moveDownButton.Clicked += MoveDownButtonClicked;
+			this.removeButton.Clicked += RemoveButtonClicked;
+			this.addButton.Clicked += AddButtonClicked;
+
+			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
 		}
 		
 		void InitializeTreeView ()
 		{
-			packageSourcesStore = new ListStore (typeof (bool), typeof (string), typeof (PackageSourceViewModel));
+			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (string), typeof (PackageSourceViewModel));
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
@@ -38,13 +53,20 @@ namespace MonoDevelop.PackageManagement
 		TreeViewColumn CreateTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
+			column.Spacing = 5;
 			
 			var checkBoxRenderer = new CellRendererToggle ();
 			checkBoxRenderer.Toggled += PackageSourceCheckBoxToggled;
 			column.PackStart (checkBoxRenderer, false);
 			column.AddAttribute (checkBoxRenderer, "active", IsEnabledCheckBoxColumn);
-			
+
+			var iconRenderer = new CellRendererImage ();
+			iconRenderer.StockSize = IconSize.LargeToolbar;
+			column.PackStart (iconRenderer, false);
+			column.AddAttribute (iconRenderer, "icon-id", PackageSourceIconColumn);
+
 			var textRenderer = new CellRendererText ();
+			textRenderer.Mode = CellRendererMode.Activatable;
 			column.PackStart (textRenderer, true);
 			column.AddAttribute (textRenderer, "markup", PackageSourceDescriptionColumn);
 			
@@ -65,12 +87,16 @@ namespace MonoDevelop.PackageManagement
 		
 		void AddPackageSourceToTreeView (PackageSourceViewModel packageSourceViewModel)
 		{
-			packageSourcesStore.AppendValues (packageSourceViewModel.IsEnabled, GetPackageSourceDescriptionMarkup (packageSourceViewModel), packageSourceViewModel);
+			packageSourcesStore.AppendValues (
+				packageSourceViewModel.IsEnabled,
+				new IconId ("md-nuget-package-source"),
+				GetPackageSourceDescriptionMarkup (packageSourceViewModel),
+				packageSourceViewModel);
 		}
 		
 		string GetPackageSourceDescriptionMarkup (PackageSourceViewModel packageSourceViewModel)
 		{
-			string format = "{0}\n<span foreground='blue' underline='single'>{1}</span>";
+			string format = "<b>{0}</b>\n<span foreground='grey'>{1}</span>";
 			return MarkupString.Format (format, packageSourceViewModel.Name, packageSourceViewModel.SourceUrl);
 		}
 		
@@ -105,7 +131,6 @@ namespace MonoDevelop.PackageManagement
 		
 		void UpdateEnabledButtons ()
 		{
-			this.addButton.Sensitive = viewModel.CanAddPackageSource;
 			this.moveUpButton.Sensitive = viewModel.CanMovePackageSourceUp;
 			this.moveDownButton.Sensitive= viewModel.CanMovePackageSourceDown;
 			this.removeButton.Sensitive = viewModel.CanRemovePackageSource;
@@ -197,28 +222,10 @@ namespace MonoDevelop.PackageManagement
 		
 		void AddButtonClicked (object sender, EventArgs e)
 		{
-			viewModel.AddPackageSource ();
-			UpdateEnabledButtons ();
-		}
-		
-		void BrowseButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.BrowsePackageFolder ();
-			this.packageSourceNameTextBox.Text = viewModel.NewPackageSourceName;
-			this.packageSourceTextBox.Text = viewModel.NewPackageSourceUrl;
-			UpdateEnabledButtons ();
-		}
-		
-		void PackageSourceNameTextBoxChanged (object sender, EventArgs e)
-		{
-			viewModel.NewPackageSourceName = this.packageSourceNameTextBox.Text;
-			UpdateEnabledButtons ();
-		}
-		
-		void PackageSourceTextBoxChanged (object sender, EventArgs e)
-		{
-			viewModel.NewPackageSourceUrl = this.packageSourceTextBox.Text;
-			UpdateEnabledButtons ();
+			using (var dialog = new AddPackageSourceDialog (viewModel)) {
+				dialog.ShowWithParent ();
+				UpdateEnabledButtons ();
+			}
 		}
 	}
 }

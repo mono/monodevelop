@@ -168,6 +168,7 @@ namespace ICSharpCode.PackageManagement
 		void AddNewPackageSourceToViewModel()
 		{
 			var packageSource = newPackageSource.ToPackageSource();
+			packageSource.IsEnabled = true;
 			AddPackageSourceToViewModel(packageSource);
 		}
 		

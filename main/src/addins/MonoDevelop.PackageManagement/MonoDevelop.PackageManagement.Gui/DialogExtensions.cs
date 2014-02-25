@@ -1,5 +1,5 @@
 ﻿//
-// AddPackagesDialogRunner.cs
+// DialogExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,50 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
 using Xwt;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AddPackagesDialogRunner
+	public static class DialogExtensions
 	{
-		public void Run (string initialSearch = null)
+		public static Command ShowWithParent (this Dialog dialog)
 		{
-			try {
-
-				bool configurePackageSources = false;
-				do {
-					configurePackageSources = ShowAddPackagesDialog (initialSearch);
-					if (configurePackageSources) {
-						ShowPreferencesForPackageSources ();
-					}
-				} while (configurePackageSources);
-
-			} catch (Exception ex) {
-				MessageService.ShowException (ex);
-			}
-		}
-
-		bool ShowAddPackagesDialog (string initialSearch)
-		{
-			using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {
-				dialog.ShowWithParent ();
-				return dialog.ShowPreferencesForPackageSources;
-			}
-		}
-
-		AddPackagesDialog CreateDialog (string initialSearch)
-		{
-			var viewModels = new PackageManagementViewModels ();
-			return new AddPackagesDialog (
-				viewModels.ManagePackagesViewModel.AvailablePackagesViewModel,
-				initialSearch);
-		}
-
-		void ShowPreferencesForPackageSources ()
-		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "PackageSources");
+			WindowFrame parent = Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
+			return dialog.Run (parent);
 		}
 	}
 }

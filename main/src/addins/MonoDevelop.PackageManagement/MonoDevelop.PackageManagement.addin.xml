@@ -83,6 +83,7 @@
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid="md-nuget-package" resource="packageicon.png" />
+		<StockIcon stockid="md-nuget-package-source" resource="PackageSourceIcon.png" size="Dnd" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
@@ -94,7 +95,7 @@
 				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" />
 			<Section
 				id="PackageSources"
-				_label="Package Sources"
+				_label="Sources"
 				fill="true"
 				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" />
 		</Section>
