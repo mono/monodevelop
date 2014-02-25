@@ -111,8 +111,9 @@ namespace MonoDevelop.Projects
 		public override SolutionItemConfiguration FindBestMatch (SolutionItemConfigurationCollection configurations)
 		{
 			// Get all configurations with the same value for the 'DEBUG' symbol
+			var isDebug = compilationParameters.GetDefineSymbols ().Contains ("DEBUG");
 			var matches = configurations.OfType<DotNetProjectConfiguration> ().Where (c =>
-				c.CompilationParameters.HasDefineSymbol ("DEBUG") == compilationParameters.HasDefineSymbol ("DEBUG")
+				c.CompilationParameters.GetDefineSymbols ().Contains ("DEBUG") == isDebug
 			).ToArray ();
 
 			// If the base method can't find a direct match then try to match based on finding a configuration
