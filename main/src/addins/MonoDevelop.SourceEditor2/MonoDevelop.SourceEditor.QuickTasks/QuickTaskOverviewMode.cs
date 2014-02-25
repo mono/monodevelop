@@ -45,7 +45,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166/255d, 166/255d, 166/255d);
 		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96/255d, 96/255d, 96/255d);
 
-		const int indicatorPadding = 3;
 		readonly int barPadding = Platform.IsWindows? 1 : 3;
 
 		readonly QuickTaskStrip parentStrip;
@@ -380,7 +379,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected virtual double IndicatorHeight  {
 			get {
-				return Allocation.Width;
+				return Platform.IsWindows ? Allocation.Height : 3 + 8;
 			}
 		}
 		
@@ -505,30 +504,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var width = Allocation.Width;
 
-			int diameter = Math.Min (width, (int)IndicatorHeight) - indicatorPadding * 2;
+			const int indicatorPadding = 3;
+			int indicatorDiameter = Platform.IsWindows ? Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2 : 8;
 			var x1 = Math.Round (width / 2d);
-			double y1 = indicatorPadding + diameter / 2;
-			if (diameter % 2 == 0) {
-				x1 += 0.5;
-				y1 += 0.5;
-			}
+			double y1 = indicatorPadding + indicatorDiameter / 2;
 
-			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 
-			if (Platform.IsWindows) {
-				using (var pattern = new Cairo.SolidPattern (color)) {
-					cr.SetSource (pattern);
-					cr.FillPreserve ();
-				}
-			} else {
-				using (var pattern = new Cairo.RadialGradient (x1, y1, width / 2, x1 - width, y1 - width, width)) {
-					pattern.AddColorStop (0, borderColor);
-					pattern.AddColorStop (1, color);
-					cr.SetSource (pattern);
-					cr.FillPreserve ();
-				}
-			}
-			
+			cr.SetSourceColor (color);
+			cr.FillPreserve ();
 			cr.SetSourceColor (borderColor);
 			cr.Stroke ();
 		}
