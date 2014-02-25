@@ -1,5 +1,5 @@
-﻿//
-// TestService.cs
+//
+// Gui.cs
 //
 // Author:
 //       Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -25,35 +25,34 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Commands;
+using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
-using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
-	public static class TestService
+
+	static class Gui
 	{
-		public static AutoTestClientSession Session { get; private set; }
-
-		public static void StartSession ()
-		{
-			Console.WriteLine ("Starting application");
-
-			Session = new AutoTestClientSession ();
-
-			//TODO: support for testing the installed app
-
-			Session.StartApplication (environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
-			});
-
-			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
+		static AutoTestClientSession Session {
+			get { return TestService.Session; }
 		}
 
-		public static void EndSession ()
+		public static void PressButton (string buttonName)
 		{
-			Console.WriteLine ("Stopping application");
-			Session.Stop ();
+			Assert.IsTrue (Session.SelectWidget (buttonName));
+			Session.Invoke ("Activate");
+		}
+
+		public static void EnterText (string widgetName, string text, bool replace = true)
+		{
+			Assert.IsTrue (Session.SelectWidget (widgetName));
+			if (replace)
+				Session.ExecuteCommand (EditCommands.SelectAll);
+			Session.TypeText (text);
 		}
 	}
 }

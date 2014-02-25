@@ -31,6 +31,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -61,6 +62,7 @@ namespace MonoDevelop.Components.AutoTest
 
 			var pi = new ProcessStartInfo (file, args) { UseShellExecute = false };
 			pi.EnvironmentVariables ["MONO_AUTOTEST_CLIENT"] = sref;
+			pi.EnvironmentVariables ["GTK_MODULES"] = "gail:atk-bridge";
 			if (environment != null)
 				foreach (var e in environment)
 					pi.EnvironmentVariables [e.Key] = e.Value;
@@ -100,9 +102,9 @@ namespace MonoDevelop.Components.AutoTest
 				process.Kill ();
 		}
 
-		public bool ExecuteCommand (object cmd)
+		public void ExecuteCommand (object cmd)
 		{
-			return session.ExecuteCommand (cmd);
+			session.ExecuteCommand (cmd);
 		}
 
 		public void SelectObject (string name)
@@ -115,6 +117,12 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			ClearEventQueue ();
 			session.SelectActiveWidget ();
+		}
+
+		public bool SelectWidget (string name, bool focus = true)
+		{
+			ClearEventQueue ();
+			return session.SelectWidget (name, focus);
 		}
 
 		public object GlobalInvoke (string name, params object[] args)
@@ -156,6 +164,19 @@ namespace MonoDevelop.Components.AutoTest
 			session.TypeText (text);
 		}
 
+		public void SelectTreeviewItem (string name)
+		{
+			ClearEventQueue ();
+			session.SelectTreeviewItem (name);
+		}
+
+		public string[] GetTreeviewCells ()
+		{
+
+			ClearEventQueue ();
+			return session.GetTreeviewCells ();
+		}
+
 		public void PressKey (Gdk.Key key)
 		{
 			ClearEventQueue ();
@@ -189,6 +210,11 @@ namespace MonoDevelop.Components.AutoTest
 				if (!Monitor.Wait (eventQueue, timeout))
 					throw new Exception ("Expected event '" + name + "' not received");
 			}
+		}
+
+		public void WaitForWindow (string windowName, int timeout = 10000)
+		{
+			session.WaitForWindow (windowName, timeout);
 		}
 
 		void ClearEventQueue ()
