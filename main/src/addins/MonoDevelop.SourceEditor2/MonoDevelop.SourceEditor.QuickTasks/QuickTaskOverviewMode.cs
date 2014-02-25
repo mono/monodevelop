@@ -567,12 +567,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void DrawIndicator (Cairo.Context cr, Cairo.Color color, Cairo.Color borderColor)
 		{
-			var width = Allocation.Width;
-
 			const int indicatorPadding = 3;
-			int indicatorDiameter = Platform.IsWindows ? Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2 : 8;
-			var x1 = Math.Round (width / 2d);
-			double y1 = indicatorPadding + indicatorDiameter / 2;
+			const int indicatorDiameter = 8;
+			var x1 = Allocation.Width / 2d;
+			var y1 = indicatorPadding + indicatorDiameter / 2d;
 
 			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 
@@ -688,11 +686,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			var alloc = Allocation;
 
-			x = Platform.IsWindows ? barPadding : 1 + barPadding;
+			x = Platform.IsWindows ? 0 : 1 + barPadding;
 			var adjUpper = vadjustment.Upper;
 			var allocH = alloc.Height - (int) IndicatorHeight;
 			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper);
-			w = Platform.IsWindows ? alloc.Width - barPadding - barPadding : 8;
+			w = Platform.IsWindows ? alloc.Width : 8;
 			const int minBarHeight = 16;
 			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
 		}
