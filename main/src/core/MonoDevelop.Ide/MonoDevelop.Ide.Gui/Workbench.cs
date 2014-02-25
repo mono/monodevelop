@@ -580,7 +580,14 @@ namespace MonoDevelop.Ide.Gui
 		static Properties properties = ((Properties) PropertyService.Get (
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
+
+		[Obsolete("Will be replaced by 'ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)'")]
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
+		{
+			ShowGlobalPreferencesDialog (parentWindow, panelId, null);
+		}
+
+		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
@@ -597,7 +604,8 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				if (panelId != null)
 					ops.SelectPanel (panelId);
-				
+				if (configurationAction != null)
+					configurationAction (ops);
 				if (MessageService.RunCustomDialog (ops, parentWindow) == (int) Gtk.ResponseType.Ok) {
 					PropertyService.SaveProperties ();
 					MonoDevelop.Projects.Policies.PolicyService.SavePolicies ();
