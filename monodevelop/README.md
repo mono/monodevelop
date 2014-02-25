@@ -52,6 +52,8 @@ Now make:
 	make 
 	make install
 
+If Monodevelop is installed in an unusual prefix you will need to invoke `configure.sh` with e.g. `--prefix=/path/to/prefix/lib/monodevelop`. Use `./configure.sh --help` to see a list of the paths searched by default.
+
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 	cd monodevelop
@@ -69,7 +71,7 @@ On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DL
 
 ### Can't get it to work?  
 
-Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
+Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). Your issue will be seen by the developers.
 
 Users of Windows XP wishing to use this project are advised to read the instructions in this [fork](https://github.com/satyagraha/fsharpbinding/tree/windows-xp)
 
