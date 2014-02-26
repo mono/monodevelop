@@ -72,4 +72,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 	}
+
+	public abstract class DotNetConfigurationParameters : ConfigurationParameters
+	{
+		public abstract bool NoStdLib { get; set; }
+	}
+
 }

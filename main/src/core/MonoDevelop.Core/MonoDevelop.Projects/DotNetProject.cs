@@ -750,10 +750,21 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
+			bool noStdLib = false;
+			if (config != null) {
+				var parameters = config.CompilationParameters as DotNetConfigurationParameters;
+				if (parameters != null) {
+					noStdLib = parameters.NoStdLib;
+				}
+			}
+
 			// System.Core is an implicit reference
-			var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
-			if (sa != null)
-				yield return sa.Location;
+			if (!noStdLib) {
+				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+				if (sa != null)
+					yield return sa.Location;
+			}
 		}
 
 		protected internal override void OnSave (IProgressMonitor monitor)
