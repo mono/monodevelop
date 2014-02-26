@@ -123,7 +123,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var packageCellView = new PackageCellView {
 				PackageField = packageViewModelField,
-				CellWidth = 440
+				CellWidth = 490
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);
@@ -245,11 +245,11 @@ namespace MonoDevelop.PackageManagement
 		void ShowPackageInformation (PackageViewModel packageViewModel)
 		{
 			this.packageNameLabel.Markup = packageViewModel.GetNameMarkup ();
-			this.packageVersionLabel.Markup = packageViewModel.GetVersionMarkup ();
+			this.packageVersionLabel.Text = packageViewModel.Version.ToString ();
 			this.packageAuthor.Text = packageViewModel.GetAuthors ();
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
-			this.packageDescription.LoadText (packageViewModel.Description, TextFormat.Plain);
+			this.packageDescription.Text = packageViewModel.Description;
 			this.packageId.Text = packageViewModel.Id;
 			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
 			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);

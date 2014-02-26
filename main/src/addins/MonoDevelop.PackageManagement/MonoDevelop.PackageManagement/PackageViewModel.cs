@@ -552,11 +552,6 @@ namespace ICSharpCode.PackageManagement
 			return String.Format ("<b>{0}</b>", text);
 		}
 
-		public string GetVersionMarkup ()
-		{
-			return GetBoldText (Version.ToString ());
-		}
-
 		public bool IsOlderPackageInstalled ()
 		{
 			return selectedProjects.HasOlderPackageInstalled (package);
