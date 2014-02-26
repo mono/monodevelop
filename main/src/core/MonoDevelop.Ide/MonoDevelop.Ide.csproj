@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{27096E7F-C91C-4AC6-B289-6897A701DF21}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -1104,18 +1104,6 @@
     <EmbeddedResource Include="icons\bubble-warning-icon.png">
       <LogicalName>bubble-warning-icon.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-error-16.png">
-      <LogicalName>issuestatus-error-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-ok-16.png">
-      <LogicalName>issuestatus-ok-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-updating-16.png">
-      <LogicalName>issuestatus-updating-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\issuestatus-warning-16.png">
-      <LogicalName>issuestatus-warning-16.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1905,6 +1893,8 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CombineMSBuildOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\PadCollection.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
+    <Compile Include="MonoDevelop.Components\ExtendedTitleBarWindow.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarWindowBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

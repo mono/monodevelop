@@ -797,6 +797,15 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("act:", output);
 		}
 
+		/// <summary>
+		/// Bug 17779 - Symbol names with multiple successive letters are filtered out too early
+		/// </summary>
+		[Test]
+		public void TestBug17779 ()
+		{
+			string output = RunSimulation ("", "ID11\t", true, true, false, "ID11Tag");
+			Assert.AreEqual ("ID11Tag", output);
+		}
 
 		[TestFixtureSetUp] 
 		public void SetUp()

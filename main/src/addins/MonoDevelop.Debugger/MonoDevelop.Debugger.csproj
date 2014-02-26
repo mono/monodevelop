@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -149,6 +149,7 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

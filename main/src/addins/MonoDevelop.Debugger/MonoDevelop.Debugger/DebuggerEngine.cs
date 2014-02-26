@@ -85,10 +85,8 @@ namespace MonoDevelop.Debugger
 		public ProcessInfo[] GetAttachableProcesses ()
 		{
 			LoadEngine ();
-			if (engine != null)
-				return engine.GetAttachableProcesses ();
-			else
-				return new ProcessInfo [0];
+
+			return engine != null ? engine.GetAttachableProcesses () : new ProcessInfo [0];
 		}
 		
 		public DebuggerSession CreateSession ()

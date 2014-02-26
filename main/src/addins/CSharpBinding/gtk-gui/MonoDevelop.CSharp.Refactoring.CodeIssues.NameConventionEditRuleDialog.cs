@@ -50,11 +50,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			// Internal child MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";
+			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
+			this.vbox3.BorderWidth = ((uint)(6));
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.hbox3 = new global::Gtk.HBox ();
 			this.hbox3.Name = "hbox3";
@@ -70,6 +72,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
+			w2.Padding = ((uint)(6));
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.entryRuleName = new global::Gtk.Entry ();
 			this.entryRuleName.CanFocus = true;
@@ -90,7 +93,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(6));
@@ -110,6 +112,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.RightAttach = ((uint)(2));
+			w6.YPadding = ((uint)(6));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
@@ -125,6 +128,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.GtkScrolledWindow1]));
 			w8.TopAttach = ((uint)(3));
 			w8.BottomAttach = ((uint)(4));
+			w8.XPadding = ((uint)(6));
+			w8.YPadding = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";

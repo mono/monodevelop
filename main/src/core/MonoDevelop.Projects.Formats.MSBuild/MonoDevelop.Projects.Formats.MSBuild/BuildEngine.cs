@@ -39,16 +39,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
 		static ThreadStart workDelegate;
-		static object workLock = new object ();
+		static readonly object workLock = new object ();
 		static Thread workThread;
 		static CultureInfo uiCulture;
 		static Exception workError;
 
-		ManualResetEvent doneEvent = new ManualResetEvent (false);
-		Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
-		Engine engine;
+		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
+		readonly Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
+
+		internal Engine Engine { get; private set; }
 
 		public void Dispose ()
 		{
@@ -62,12 +63,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Initialize (string slnFile, CultureInfo uiCulture)
 		{
 			BuildEngine.uiCulture = uiCulture;
-			engine = InitializeEngine (slnFile);
+			Engine = InitializeEngine (slnFile);
 		}
 
 		public IProjectBuilder LoadProject (string file)
 		{
-			return new ProjectBuilder (this, engine, file);
+			return new ProjectBuilder (this, file);
 		}
 		
 		public void UnloadProject (IProjectBuilder pb)
@@ -106,15 +107,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return engine;
 		}
 
-		internal void UnloadProject (Engine engine, string file, bool releaseEngine)
+		internal void UnloadProject (string file)
 		{
 			lock (unsavedProjects)
 				unsavedProjects.Remove (file);
 
 			RunSTA (delegate {
-				var loadedProj = engine.GetLoadedProject (file);
+				var loadedProj = Engine.GetLoadedProject (file);
 				if (loadedProj != null)
-					engine.UnloadProject (loadedProj);
+					Engine.UnloadProject (loadedProj);
 			});
 		}
 
@@ -150,13 +151,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						// Awaken the existing thread
 						Monitor.Pulse (threadLock);
 				}
-				wordDoneEvent.WaitOne ();
+				workDoneEvent.WaitOne ();
 			}
 			if (workError != null)
 				throw new Exception ("MSBuild operation failed", workError);
 		}
 
-		static object threadLock = new object ();
+		static readonly object threadLock = new object ();
 		
 		static void STARunner ()
 		{
@@ -168,7 +169,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					catch (Exception ex) {
 						workError = ex;
 					}
-					wordDoneEvent.Set ();
+					workDoneEvent.Set ();
 				}
 				while (Monitor.Wait (threadLock, 60000));
 				

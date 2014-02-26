@@ -24,6 +24,8 @@ obj/
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
+/main/src/core/MonoDevelop.Core/BuildVariables.cs
+/scripts/configure.exe
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files

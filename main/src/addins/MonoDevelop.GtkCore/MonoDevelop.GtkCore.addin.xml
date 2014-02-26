@@ -1,12 +1,4 @@
-<Addin id = "GtkCore"
-       namespace   = "MonoDevelop"
-       name        = "GTK# Visual Designer"
-       author      = "Lluis Sanchez Gual"
-       copyright   = "X11"
-       url         = ""
-       description = "Provides support for visual design of GTK# windows, dialogs and widgets."
-       category    = "IDE extensions"
-       version     = "4.2.3">
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="libstetic.dll"/>
@@ -16,12 +8,6 @@
 		<Import assembly="MonoDevelop.GtkCore.dll"/>
 	</Runtime>
 
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="DesignerSupport" version="4.2.3"/>
-	</Dependencies>
-	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
@@ -183,4 +169,5 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
 		<Panel _label = "GTK# Designer" class = "MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionPanel" />
 	</Extension>
-</Addin>
+
+</ExtensionModel>

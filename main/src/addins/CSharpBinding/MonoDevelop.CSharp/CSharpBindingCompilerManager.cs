@@ -258,13 +258,10 @@ namespace MonoDevelop.CSharp
 				if (!string.IsNullOrEmpty (compilerParameters.WarningsNotAsErrors))
 					sb.AppendLine ("-warnaserror-:" + compilerParameters.WarningsNotAsErrors);
 			}
-			
-			if (compilerParameters.DefineSymbols.Length > 0) {
-				string define_str = string.Join (";", compilerParameters.DefineSymbols.Split (new char [] {',', ' ', ';'}, StringSplitOptions.RemoveEmptyEntries));
-				if (define_str.Length > 0) {
-					AppendQuoted (sb, "/define:", define_str);
-					sb.AppendLine ();
-				}
+
+			foreach (var define in configuration.GetDefineSymbols ()) {
+				AppendQuoted (sb, "/define:", define);
+				sb.AppendLine ();
 			}
 
 			CompileTarget ctarget = configuration.CompileTarget;

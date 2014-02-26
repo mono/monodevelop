@@ -56,13 +56,13 @@ namespace MonoDevelop.Debugger
 
 		public static bool CanDebugFile (this ProjectOperations opers, string file)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 			return opers.CanExecuteFile (file, context);
 		}
 
 		public static IAsyncOperation DebugFile (this ProjectOperations opers, string file)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
 			return opers.ExecuteFile (file, context);
 		}
 
@@ -74,9 +74,9 @@ namespace MonoDevelop.Debugger
 			string oldLayout = IdeApp.Workbench.CurrentLayout;
 			IdeApp.Workbench.CurrentLayout = "Debug";
 
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
-			IAsyncOperation oper = DebuggingService.Run (executableFile, (IConsole) monitor);
+			var oper = DebuggingService.Run (executableFile, (IConsole) monitor);
 			oper.Completed += delegate {
 				monitor.Dispose ();
 				Gtk.Application.Invoke (delegate {
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;
 
-			IAsyncOperation oper = DebuggingService.AttachToProcess (debugger, proc);
+			var oper = DebuggingService.AttachToProcess (debugger, proc);
 			SwitchToDebugLayout (oper);
 
 			opers.CurrentRunOperation = oper;

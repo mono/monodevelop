@@ -1,12 +1,4 @@
-<Addin name        = "XML Editor"
-       id          = "XmlEditor"
-       namespace   = "MonoDevelop"
-       author      = "Matt Ward, Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://md-xed.sourceforge.net"
-       description = "XML Editor"
-       category    = "IDE extensions"
-       version     = "4.2.3">
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
@@ -19,13 +11,6 @@
 		<Import file="schemas/manifest.xsd" />
 		<Import file="schemas/nant.xsd" />
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="DesignerSupport" version="4.2.3"/>
-		<Addin id="SourceEditor2" version="4.2.3"/>
-	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
 		<ExtensionNode name = "Association" type = "MonoDevelop.XmlEditor.XmlFileAssociationNode"/>
@@ -55,6 +40,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class id="MSBuildTextEditorExtension" mimeTypes="application/x-msbuild" class = "MonoDevelop.XmlEditor.MSBuild.MSBuildTextEditorExtension" />
 		<Class id="MonoDevelop.XmlEditor.XmlTextEditorExtension" class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
 
@@ -132,6 +118,7 @@
 	</Extension>-->
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.XmlEditor.MSBuild.MSBuildDocumentParser" mimeType = "application/x-msbuild" id = "XmlParser"/>
 		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
 	</Extension>
 
@@ -148,10 +135,14 @@
 		<Panel id = "XmlFormatting" _label = "XML Format" mimeType="application/xml" class = "MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanel" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete language="Xml" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="schemas" targetPath="XmlSchemas" isDirectory="true" />
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="XmlSchemas" isDirectory="true" />
 	</Extension>
-</Addin>
+</ExtensionModel>

@@ -140,8 +140,7 @@ namespace MonoDevelop.Projects
 				Configurations.Add (configRelease);
 			}
 
-			if ((projectOptions != null) && (projectOptions.Attributes["TargetFrameworkVersion"] != null))
-				newProjectTargetFrameworkId = TargetFrameworkMoniker.Parse (projectOptions.Attributes["TargetFrameworkVersion"].Value);
+			targetFramework = GetTargetFrameworkForNewProject (projectOptions, GetDefaultTargetFrameworkId ());
 
 			string binPath;
 			if (projectCreateInfo != null) {
@@ -161,6 +160,28 @@ namespace MonoDevelop.Projects
 				if (projectCreateInfo != null)
 					dotNetProjectConfig.OutputAssembly = projectCreateInfo.ProjectName;
 			}
+		}
+
+		TargetFramework GetTargetFrameworkForNewProject (XmlElement projectOptions, TargetFrameworkMoniker defaultMoniker)
+		{
+			if (projectOptions == null)
+				return Runtime.SystemAssemblyService.GetTargetFramework (defaultMoniker);
+
+			var att = projectOptions.Attributes ["TargetFrameworkVersion"];
+			if (att == null) {
+				att = projectOptions.Attributes ["TargetFramework"];
+				if (att == null)
+					return Runtime.SystemAssemblyService.GetTargetFramework (defaultMoniker);
+			}
+
+			var moniker = TargetFrameworkMoniker.Parse (att.Value);
+
+			//if the string did not include a framework identifier, use the project's default
+			var netID = TargetFrameworkMoniker.ID_NET_FRAMEWORK;
+			if (moniker.Identifier == netID && !att.Value.StartsWith (netID, StringComparison.Ordinal))
+				moniker = new TargetFrameworkMoniker (defaultMoniker.Identifier, moniker.Version, moniker.Profile);
+
+			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
 		public override string ProjectType {
@@ -288,15 +309,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		//only used for initializing new projects
-		TargetFrameworkMoniker newProjectTargetFrameworkId;
-		
 		TargetFramework targetFramework;
 
 		public TargetFramework TargetFramework {
 			get {
 				if (targetFramework == null) {
-					var id = newProjectTargetFrameworkId ?? GetDefaultTargetFrameworkId ();
+					var id = GetDefaultTargetFrameworkId ();
 					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (id);
 				}
 				return targetFramework;
@@ -732,10 +750,21 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
+			bool noStdLib = false;
+			if (config != null) {
+				var parameters = config.CompilationParameters as DotNetConfigurationParameters;
+				if (parameters != null) {
+					noStdLib = parameters.NoStdLib;
+				}
+			}
+
 			// System.Core is an implicit reference
-			var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
-			if (sa != null)
-				yield return sa.Location;
+			if (!noStdLib) {
+				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+				if (sa != null)
+					yield return sa.Location;
+			}
 		}
 
 		protected internal override void OnSave (IProgressMonitor monitor)

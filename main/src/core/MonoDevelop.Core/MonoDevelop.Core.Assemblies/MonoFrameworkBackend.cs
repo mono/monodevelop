@@ -74,7 +74,7 @@ namespace MonoDevelop.Core.Assemblies
 				case "1.1":
 					subdir = "1.0"; break;
 				case "3.0":
-					// WFC is installed in the 2.0 directory. Others (olive) in 3.0.
+					// WCF is installed in the 2.0 directory. Others (olive) in 3.0.
 					yield return Path.Combine (targetRuntime.MonoDirectory, "2.0");
 					yield return Path.Combine (targetRuntime.MonoDirectory, "3.0");
 					yield break;

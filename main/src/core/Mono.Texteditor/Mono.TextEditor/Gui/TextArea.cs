@@ -1707,7 +1707,6 @@ namespace Mono.TextEditor
 			SetAdjustments (Allocation);
 		}
 		
-		public const int EditorLineThreshold = 0;
 
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
@@ -1715,8 +1714,8 @@ namespace Mono.TextEditor
 			
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.HeightTree.TotalHeight;
-				if (maxY > allocation.Height)
-					maxY += EditorLineThreshold * this.LineHeight;
+				//				if (maxY > allocation.Height)
+				maxY += allocation.Height - LineHeight;
 
 				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);

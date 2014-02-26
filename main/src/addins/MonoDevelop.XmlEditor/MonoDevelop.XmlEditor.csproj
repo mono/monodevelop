@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -177,6 +177,11 @@
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlCompletionDataList.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\EmptyXmlCompletionProvider.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlNamespacePrefixMap.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildDocumentParser.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildResolveContext.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.MSBuild\MSBuildElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml">
@@ -232,4 +237,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.XmlEditor.MSBuild\" />
+  </ItemGroup>
 </Project>

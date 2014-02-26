@@ -1572,7 +1572,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var contexts = new List<IAssemblyReference> ();
 					var nonCyclicCache = new HashSet<Project> ();
 					foreach (var referencedWrapper in referencedWrappers) {
-						referencedWrapper.Loaded += HandleReferencedProjectInLoadChange;
+						referencedWrapper.Loaded -= HandleReferencedProjectInLoadChange;
 					}
 					var newReferencedWrappers = new List<ProjectContentWrapper>();
 					foreach (var referencedProject in ReferencedProjects) {
@@ -1590,18 +1590,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					UnresolvedAssemblyProxy ctx;
 					// Add mscorlib reference
 
-					// hack: find the NoStdLib flag
 					var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration : null;
 					bool noStdLib = false;
 					if (config != null) {
-						var parameters = config.CompilationParameters;
+						var parameters = config.CompilationParameters as DotNetConfigurationParameters;
 						if (parameters != null) {
-							var prop = parameters.GetType ().GetProperty ("NoStdLib");
-							if (prop != null) {
-								var val = prop.GetValue (parameters, null);
-								if (val is bool)
-									noStdLib = (bool)val;
-							}
+							noStdLib = parameters.NoStdLib;
 						}
 					}
 
@@ -1624,11 +1618,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
 						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-
-							// HACK: core reference get added automatically, even if no std lib is set.
-							if (noStdLib && file.Contains ("System.Core.dll"))
-								continue;
-
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
@@ -2083,7 +2072,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
 			{
-				return Ctx.Resolve (context);
+				var ctx = Ctx;
+				if (ctx == null)
+					return null;
+				return ctx.Resolve (context);
 			}
 
 			#endregion
@@ -2321,7 +2313,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				} catch (Exception) {
 				}
-
 				IUnresolvedAssembly result;
 				try {
 					var loader = new IkvmLoader ();
@@ -2674,15 +2665,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
+					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
 					foreach (var file in (FileList ?? Context.Project.Files)) {
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (filesSkippedInParseThread.Any (f => f == fileName))
+						if (file.BuildAction != BuildAction.Compile || filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
+						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-							node = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
-							parser = node != null ? node.Parser : null;
+							var newNode = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							var newParser = newNode != null ? newNode.Parser : null;
+							if (newParser == null)
+								continue;
+							node = newNode;
+							parser = newParser;
 						}
 
 						if (parser == null || !File.Exists (fileName))
@@ -2700,11 +2697,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
 						if (token.IsCancellationRequested)
 							return;
-						var oldFile = Context.Content.GetFile (fileName);
-						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
-						if (oldFile != null)
-							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
+						parsedFiles.Add (Tuple.Create (parsedDocument, Context.Content.GetFile (fileName))); 
+					}
+					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Select (p => p.Item1.ParsedFile)));
+					foreach (var file in parsedFiles) {
+						if (token.IsCancellationRequested)
+							return;
+						if (file.Item2 != null)
+							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
+						Context.InformFileAdded (new ParsedFileEventArgs (file.Item1.ParsedFile));
 					}
 				} finally {
 					if (!token.IsCancellationRequested)

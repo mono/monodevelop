@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{100568FC-F4E8-439B-94AD-41D11724E45B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -100,13 +100,10 @@
     <Compile Include="MonoDevelop.CodeActions\CodeActionProvider.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionAddinNode.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionWidget.cs" />
     <Compile Include="MonoDevelop.CodeActions\AnalysisCodeAction.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueOptionsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssueOptionsDialog.cs" />
     <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />

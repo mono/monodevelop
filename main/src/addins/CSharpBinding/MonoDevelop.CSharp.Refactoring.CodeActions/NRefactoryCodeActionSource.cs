@@ -38,6 +38,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.ContextActionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
+				if (t.Name == "AddUsingAction")
+					continue;
 				yield return new NRefactoryCodeActionProvider (
 					(ICSharpCode.NRefactory.CSharp.Refactoring.CodeActionProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.ContextActionAttribute)attr [0]);

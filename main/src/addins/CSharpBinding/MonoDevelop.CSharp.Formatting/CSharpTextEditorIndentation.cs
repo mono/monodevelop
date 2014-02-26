@@ -512,7 +512,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				if (reIndent || key != Gdk.Key.Return && automaticReindent) {
+				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
@@ -791,14 +791,14 @@ namespace MonoDevelop.CSharp.Formatting
 					textEditorData.Caret.Offset = line.Offset + insertedText.Length;
 					return true;
 				} else if (wasInStringLiteral) {
-					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.Document.GetTextAt (0, prevLine.EndOffset));
+					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.Document.GetTextAt (0, prevLine.EndOffset).TrimEnd ());
 					lexer.Parse ();
 					if (!lexer.IsInString)
 						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
 					textEditorData.Insert (prevLine.Offset + prevLine.Length, "\" +");
 
-					int indentSize = line.GetIndentation (textEditorData.Document).Length;
+					int indentSize = textEditorData.Caret.Offset - line.Offset;
 					var insertedText = prevLine.GetIndentation (textEditorData.Document) + (trimmedPreviousLine.StartsWith ("\"", StringComparison.Ordinal) ? "" : "\t") + "\"";
 					textEditorData.Replace (line.Offset, indentSize, insertedText);
 					return true;

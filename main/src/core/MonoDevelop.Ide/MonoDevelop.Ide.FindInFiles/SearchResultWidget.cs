@@ -38,12 +38,10 @@ using MonoDevelop.Core;
 using System.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using System.IO;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
-
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -505,7 +503,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				textRenderer.Markup = searchResult.Markup;
 
 				if (!isSelected) {
-					var searchColor = highlightStyle.SearchResult.Color;
+					var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle).Color;
 					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
 					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (Mono.TextEditor.HslColor)highlightStyle.PlainText.Foreground));
 					double delta = Math.Abs (b1 - b2);
@@ -635,6 +633,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			DocumentLine line = doc.GetLine (lineNr);
+			if (line == null)
+				return DocumentLocation.Empty;
 			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
 		}
 		

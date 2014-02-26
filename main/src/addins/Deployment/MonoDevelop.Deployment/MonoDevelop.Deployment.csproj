@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9BC670A8-1851-40EC-9685-279F4C98433D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -158,6 +158,7 @@
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\SshFuseFileCopyConfigurationEditor.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -26,6 +26,8 @@
 
 using System;
 using MonoDevelop.Core.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -34,12 +36,27 @@ namespace MonoDevelop.Projects
 	public abstract class ConfigurationParameters: ProjectParameters
 	{
 		DotNetProjectConfiguration configuration;
+
+		public virtual IEnumerable<string> GetDefineSymbols ()
+		{
+			yield break;
+		}
 		
-		public abstract void AddDefineSymbol (string symbol);
+		[Obsolete]
+		public virtual void AddDefineSymbol (string symbol)
+		{
+		}
 
-		public abstract bool HasDefineSymbol (string symbol);
+		[Obsolete]
+		public virtual void RemoveDefineSymbol (string symbol)
+		{
+		}
 
-		public abstract void RemoveDefineSymbol (string symbol);
+		[Obsolete]
+		public virtual bool HasDefineSymbol (string symbol)
+		{
+			return GetDefineSymbols ().Any (s => s == symbol);
+		}
 		
 		public new ConfigurationParameters Clone ()
 		{
@@ -55,4 +72,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 	}
+
+	public abstract class DotNetConfigurationParameters : ConfigurationParameters
+	{
+		public abstract bool NoStdLib { get; set; }
+	}
+
 }

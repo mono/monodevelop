@@ -416,7 +416,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				string fpath = null;
 				foreach (string e in entries) {
-					if (string.Compare (Path.GetFileName (e), names[n], true) == 0) {
+					if (string.Compare (Path.GetFileName (e), names [n], StringComparison.OrdinalIgnoreCase) == 0) {
 						fpath = e;
 						break;
 					}

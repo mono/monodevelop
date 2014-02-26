@@ -197,6 +197,18 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Message Bubble Warning IconMargin")]
 		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
+
+		[ColorDescription("Code Analysis Status All Good")]
+		public AmbientColor AnalysisStatusAllGoodIcon { get; private set; }
+
+		[ColorDescription("Code Analysis Status Suggestions")]
+		public AmbientColor AnalysisStatusSuggestionsIcon { get; private set; }
+
+		[ColorDescription("Code Analysis Status Warnings")]
+		public AmbientColor AnalysisStatusWarningsIcon { get; private set; }
+
+		[ColorDescription("Code Analysis Status Errors")]
+		public AmbientColor AnalysisStatusErrorsIcon { get; private set; }
 		#endregion
 
 		#region Text Colors
@@ -568,6 +580,13 @@ namespace Mono.TextEditor.Highlighting
 		
 		static Cairo.Color ParseColor (string value)
 		{
+			if (value.Length == 9 && value.StartsWith ("#", StringComparison.Ordinal)) {
+				double r = ((double) int.Parse (value.Substring (1,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+				double g = ((double) int.Parse (value.Substring (3,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+				double b = ((double) int.Parse (value.Substring (5,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+				double a = ((double) int.Parse (value.Substring (7,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+				return new Cairo.Color (r, g, b, a);
+			}
 			return HslColor.Parse (value);
 		}
 

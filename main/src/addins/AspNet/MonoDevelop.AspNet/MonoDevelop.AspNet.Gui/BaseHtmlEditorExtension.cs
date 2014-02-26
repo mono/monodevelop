@@ -50,6 +50,10 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		HtmlSchema schema;
 		bool resolvedDocType;
+
+		public override string CompletionLanguage {
+			get { return "Html"; }
+		}
 		
 		protected HtmlSchema Schema {
 			get {
@@ -75,11 +79,6 @@ namespace MonoDevelop.AspNet.Gui
 			}
 		}
 
-		public override string CompletionLanguage {
-			get {
-				return "Html";
-			}
-		}
 		protected override void OnDocTypeChanged ()
 		{
 			resolvedDocType = false;

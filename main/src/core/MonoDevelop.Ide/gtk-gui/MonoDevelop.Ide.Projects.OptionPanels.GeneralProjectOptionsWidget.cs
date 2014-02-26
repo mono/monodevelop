@@ -5,31 +5,44 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class GeneralProjectOptionsWidget
 	{
 		private global::Gtk.VBox vbox40;
+
 		private global::Gtk.VBox vbox47;
+
 		private global::Gtk.Label informationHeaderLabel;
+
 		private global::Gtk.HBox hbox29;
+
 		private global::Gtk.Label label55;
+
 		private global::Gtk.VBox vbox46;
+
 		private global::Gtk.Table table11;
+
 		private global::Gtk.Label defaultNamespaceLabel;
+
 		private global::Gtk.Label descriptionLabel;
+
 		private global::Gtk.HBox hbox1;
+
 		private global::Gtk.Entry entryVersion;
+
 		private global::Gtk.CheckButton checkSolutionVersion;
+
 		private global::Gtk.Label label1;
+
 		private global::Gtk.Label nameLabel;
+
 		private global::Gtk.Entry projectDefaultNamespaceEntry;
+
 		private global::Gtk.Entry projectNameEntry;
+
 		private global::Gtk.ScrolledWindow scrolledwindow5;
+
 		private global::Gtk.TextView projectDescriptionTextView;
-		private global::Gtk.VBox vbox41;
-		private global::Gtk.Label onProjectLoadHeaderLabel;
-		private global::Gtk.HBox hbox26;
-		private global::Gtk.Label label49;
-		private global::Gtk.CheckButton newFilesOnLoadCheckButton;
-		private global::Gtk.HBox hbox27;
-		private global::Gtk.Label label50;
-		private global::Gtk.CheckButton autoInsertNewFilesCheckButton;
+
+		private global::Gtk.HBox msbuildOptionsSection;
+
+		private global::Gtk.Label label51;
 
 		protected virtual void Build ()
 		{
@@ -209,82 +222,22 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w17.Expand = false;
 			w17.Fill = false;
 			// Container child vbox40.Gtk.Box+BoxChild
-			this.vbox41 = new global::Gtk.VBox ();
-			this.vbox41.Name = "vbox41";
-			this.vbox41.Spacing = 6;
-			// Container child vbox41.Gtk.Box+BoxChild
-			this.onProjectLoadHeaderLabel = new global::Gtk.Label ();
-			this.onProjectLoadHeaderLabel.Name = "onProjectLoadHeaderLabel";
-			this.onProjectLoadHeaderLabel.Xalign = 0F;
-			this.onProjectLoadHeaderLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>On Project Load</b>");
-			this.onProjectLoadHeaderLabel.UseMarkup = true;
-			this.onProjectLoadHeaderLabel.UseUnderline = true;
-			this.vbox41.Add (this.onProjectLoadHeaderLabel);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox41 [this.onProjectLoadHeaderLabel]));
+			this.msbuildOptionsSection = new global::Gtk.HBox ();
+			this.msbuildOptionsSection.Name = "msbuildOptionsSection";
+			// Container child msbuildOptionsSection.Gtk.Box+BoxChild
+			this.label51 = new global::Gtk.Label ();
+			this.label51.WidthRequest = 18;
+			this.label51.Name = "label51";
+			this.msbuildOptionsSection.Add (this.label51);
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.msbuildOptionsSection [this.label51]));
 			w18.Position = 0;
 			w18.Expand = false;
 			w18.Fill = false;
-			// Container child vbox41.Gtk.Box+BoxChild
-			this.hbox26 = new global::Gtk.HBox ();
-			this.hbox26.Name = "hbox26";
-			// Container child hbox26.Gtk.Box+BoxChild
-			this.label49 = new global::Gtk.Label ();
-			this.label49.WidthRequest = 18;
-			this.label49.Name = "label49";
-			this.hbox26.Add (this.label49);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox26 [this.label49]));
-			w19.Position = 0;
+			this.vbox40.Add (this.msbuildOptionsSection);
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox40 [this.msbuildOptionsSection]));
+			w19.Position = 1;
 			w19.Expand = false;
 			w19.Fill = false;
-			// Container child hbox26.Gtk.Box+BoxChild
-			this.newFilesOnLoadCheckButton = new global::Gtk.CheckButton ();
-			this.newFilesOnLoadCheckButton.Name = "newFilesOnLoadCheckButton";
-			this.newFilesOnLoadCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Search for new _files on load");
-			this.newFilesOnLoadCheckButton.DrawIndicator = true;
-			this.newFilesOnLoadCheckButton.UseUnderline = true;
-			this.hbox26.Add (this.newFilesOnLoadCheckButton);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox26 [this.newFilesOnLoadCheckButton]));
-			w20.Position = 1;
-			w20.Expand = false;
-			w20.Fill = false;
-			this.vbox41.Add (this.hbox26);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox41 [this.hbox26]));
-			w21.Position = 1;
-			w21.Expand = false;
-			w21.Fill = false;
-			// Container child vbox41.Gtk.Box+BoxChild
-			this.hbox27 = new global::Gtk.HBox ();
-			this.hbox27.Name = "hbox27";
-			// Container child hbox27.Gtk.Box+BoxChild
-			this.label50 = new global::Gtk.Label ();
-			this.label50.WidthRequest = 18;
-			this.label50.Name = "label50";
-			this.hbox27.Add (this.label50);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox27 [this.label50]));
-			w22.Position = 0;
-			w22.Expand = false;
-			w22.Fill = false;
-			// Container child hbox27.Gtk.Box+BoxChild
-			this.autoInsertNewFilesCheckButton = new global::Gtk.CheckButton ();
-			this.autoInsertNewFilesCheckButton.Name = "autoInsertNewFilesCheckButton";
-			this.autoInsertNewFilesCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Automatically _include found files");
-			this.autoInsertNewFilesCheckButton.DrawIndicator = true;
-			this.autoInsertNewFilesCheckButton.UseUnderline = true;
-			this.hbox27.Add (this.autoInsertNewFilesCheckButton);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox27 [this.autoInsertNewFilesCheckButton]));
-			w23.Position = 1;
-			w23.Expand = false;
-			w23.Fill = false;
-			this.vbox41.Add (this.hbox27);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox41 [this.hbox27]));
-			w24.Position = 2;
-			w24.Expand = false;
-			w24.Fill = false;
-			this.vbox40.Add (this.vbox41);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox40 [this.vbox41]));
-			w25.Position = 1;
-			w25.Expand = false;
-			w25.Fill = false;
 			this.Add (this.vbox40);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

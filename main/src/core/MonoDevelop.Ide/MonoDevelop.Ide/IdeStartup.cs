@@ -50,6 +50,7 @@ using MonoDevelop.Core.Instrumentation;
 using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide
 {
@@ -103,9 +104,11 @@ namespace MonoDevelop.Ide
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
+			// XWT initialization
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
+			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
@@ -223,7 +226,7 @@ namespace MonoDevelop.Ide
 			
 			Exception error = null;
 			int reportedFailures = 0;
-			
+
 			try {
 				Counters.Initialization.Trace ("Loading Icons");
 				//force initialisation before the workbench so that it can register stock icons for GTK before they get requested
@@ -292,17 +295,47 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.EndTiming ();
 				
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
-			
+			StartLockupTracker ();
 			IdeApp.Run ();
 			
 			// unloading services
 			if (null != socket_filename)
 				File.Delete (socket_filename);
-			
+			lockupCheckRunning = false;
 			Runtime.Shutdown ();
 			InstrumentationService.Stop ();
+			AddinManager.AddinLoadError -= OnAddinError;
 			
 			return 0;
+		}
+
+		static DateTime lastIdle;
+		static bool lockupCheckRunning = true;
+
+		static void StartLockupTracker ()
+		{
+			if (Platform.IsWindows)
+				return;
+			GLib.Timeout.Add (5000, () => {
+				lastIdle = DateTime.Now;
+				return true;
+			});
+			lastIdle = DateTime.Now;
+			var lockupCheckThread = new Thread (delegate () {
+				while (lockupCheckRunning) {
+					const int waitTimeout = 5000;
+					const int maxResponseTime = 10000;
+					Thread.Sleep (waitTimeout); 
+					if ((DateTime.Now - lastIdle).TotalMilliseconds > maxResponseTime) {
+						var pid = Process.GetCurrentProcess ().Id;
+						Mono.Unix.Native.Syscall.kill (pid, Mono.Unix.Native.Signum.SIGQUIT); 
+						return;
+					}
+				}
+			});
+			lockupCheckThread.Name = "Lockup check";
+			lockupCheckThread.IsBackground = true;
+			lockupCheckThread.Start (); 
 		}
 
 		void SetupTheme ()
@@ -520,7 +553,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		void SetupExceptionManager ()
+		static void SetupExceptionManager ()
 		{
 			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
 				HandleException (e.Exception.Flatten (), false);
@@ -537,7 +570,7 @@ namespace MonoDevelop.Ide
 			};
 		}
 		
-		void HandleException (Exception ex, bool willShutdown)
+		static void HandleException (Exception ex, bool willShutdown)
 		{
 			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
 

@@ -312,6 +312,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_path_internal_style (path, pool);
 		}
+
+		public override IntPtr client_upgrade (string wcroot_dir, IntPtr ctx, IntPtr scratch_pool)
+		{
+			return svn_client_upgrade (wcroot_dir, ctx, scratch_pool);
+		}
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_root_url_from_path (ref IntPtr url, string path_or_url, IntPtr ctx, IntPtr pool);
 		[DllImport(svnclientlib)] static extern IntPtr svn_config_ensure (string config_dir, IntPtr pool);
@@ -453,5 +458,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_strerror (int statcode, byte[] buf, int bufsize);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_path_internal_style (string path, IntPtr pool);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_upgrade (string wcroot_dir, IntPtr ctx, IntPtr scratch_pool);
 	}
 }

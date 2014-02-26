@@ -166,12 +166,21 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+
+		void StopPositionChangedTask ()
 		{
 			src.Cancel ();
 			src = new CancellationTokenSource ();
+		}
+
+		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			StopPositionChangedTask ();
 			Task.Factory.StartNew (delegate {
-				var ctx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location, src.Token);
+				var doc = Document;
+				if (doc == null || doc.Editor == null)
+					return;
+				var ctx = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token);
 				if (ctx != null)
 					MDRefactoringCtx = ctx;
 			});
@@ -195,6 +204,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
+			StopPositionChangedTask ();
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
@@ -1016,7 +1026,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
 			{
-				return new CompletionData (name.Name, AstStockIcons.Namespace);
+				return new CompletionData (name.Name, AstStockIcons.Namespace, "", CSharpAmbience.FilterName (name.Name));
 			}
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
@@ -1058,10 +1068,9 @@ namespace MonoDevelop.CSharp.Completion
 				if (project == null)
 					yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-				if (par == null)
+				if (configuration == null)
 					yield break;
-				foreach (var define in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
+				foreach (var define in configuration.GetDefineSymbols ())
 					yield return new CompletionData (define, "md-keyword");
 					
 			}

@@ -34,14 +34,19 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide;
 using System.Linq;
+using Mono.TextEditor.Theatrics;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public class QuickTaskOverviewMode : DrawingArea
 	{
-		const int indicatorPadding = 3;
-		bool flatStyle = Platform.IsWindows;
-		int barPadding = Platform.IsWindows? 1 : 3;
+		//TODO: find a way to look these up from the theme
+		static readonly Cairo.Color win81Background = new Cairo.Color (240/255d, 240/255d, 240/255d);
+		static readonly Cairo.Color win81Slider = new Cairo.Color (205/255d, 205/255d, 205/255d);
+		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166/255d, 166/255d, 166/255d);
+		static readonly Cairo.Color win81SliderActive = new Cairo.Color (96/255d, 96/255d, 96/255d);
+
+		readonly int barPadding = Platform.IsWindows? 1 : 3;
 
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
@@ -68,7 +73,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		public QuickTaskOverviewMode (QuickTaskStrip parent)
 		{
 			this.parentStrip = parent;
-			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
+			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask |
+				EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
 			vadjustment = this.parentStrip.VAdjustment;
 
 			vadjustment.ValueChanged += RedrawOnUpdate;
@@ -81,6 +87,21 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
 			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
+			HasTooltip = true;
+
+			fadeInStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+				barColorValue = actor.Percent;
+				return true;
+			};
+			fadeInStage.Iteration += (sender, e) => QueueDraw ();
+
+			fadeOutStage.ActorStep += delegate(Actor<QuickTaskOverviewMode> actor) {
+				barColorValue = 1 - actor.Percent;
+				return true;
+			};
+			fadeOutStage.Iteration += (sender, e) => QueueDraw ();
+
+			fadeInStage.UpdateFrequency = fadeOutStage.UpdateFrequency = 10;
 		}
 
 		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
@@ -105,6 +126,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			CancelFadeInTimeout ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
@@ -124,79 +146,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			QueueDraw ();
 		}
+
+		bool IsOverIndicator (double y)
+		{
+			return y < IndicatorHeight;
+		}
 		
 		internal CodeSegmentPreviewWindow previewWindow;
 
-
-		bool hoverOverIndicator;
-		QuickTaskStrip.HoverMode currentHoverMode;
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			RemovePreviewPopupTimeout ();
-			if (button != 0)
-				MouseMove (evnt.Y);
-			
-			var h = IndicatorHeight;
-			if (TextEditor.HighlightSearchPattern) {
-				hoverOverIndicator = false;
-				if (evnt.Y < h)
-					this.TooltipText = string.Format (GettextCatalog.GetPluralString ("{0} match", "{0} matches", TextEditor.TextViewMargin.SearchResultMatchCount), TextEditor.TextViewMargin.SearchResultMatchCount);
+
+			if (IsInGrab ()) {
+				var yDelta = evnt.Y - grabY;
+				MovePosition (grabCenter + yDelta);
 			} else {
-				hoverOverIndicator = evnt.Y < h;
-				if (hoverOverIndicator) {
-					int errors = 0, warnings = 0, hints = 0, suggestions = 0;
-					foreach (var task in AllTasks) {
-						switch (task.Severity) {
-						case Severity.Error:
-							errors++;
-							break;
-						case Severity.Warning:
-							warnings++;
-							break;
-						case Severity.Hint:
-							hints++;
-							break;
-						case Severity.Suggestion:
-							suggestions++;
-							break;
-						}
-					}
-					string text = null;
-					if (errors == 0 && warnings == 0) {
-						text = GettextCatalog.GetString ("No errors or warnings");
-					} else if (errors == 0) {
-						text = string.Format (GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings), warnings);
-					} else if (warnings == 0) {
-						text = string.Format (GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors), errors);
-					} else {
-						text = string.Format (GettextCatalog.GetString ("{0} errors and {1} warnings"), errors, warnings);
-					}
-
-					if (errors > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextError;
-					} else if (warnings > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextWarning;
-					} else if (warnings + hints > 0) {
-						text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
-						currentHoverMode = QuickTaskStrip.HoverMode.NextMessage;
-					}
-
-					TooltipText = text;
-				} else {
-//					TextEditorData editorData = TextEditor.GetTextEditorData ();
-					foreach (var task in AllTasks) {
-						double y = GetYPosition (task.Location.Line);
-						if (Math.Abs (y - evnt.Y) < 3) {
-							hoverTask = task;
-						}
-					}
-					base.TooltipText = hoverTask != null ? hoverTask.Description : null;
-				}
+				UpdatePrelightState (evnt.X, evnt.Y);
 			}
-			
-			if (button == 0 && evnt.State.HasFlag (ModifierType.ShiftMask)) {
+
+			const ModifierType buttonMask = ModifierType.Button1Mask | ModifierType.Button2Mask |
+				ModifierType.Button3Mask | ModifierType.Button4Mask | ModifierType.Button5Mask;
+
+			if ((evnt.State & buttonMask & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
 				int line = YToLine (evnt.Y);
 				
 				line = Math.Max (1, line - 2);
@@ -220,6 +192,117 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				DestroyPreviewWindow ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
+		}
+
+		bool IsInGrab ()
+		{
+			return grabY >= 0;
+		}
+		const uint FadeDuration = 90;
+		Stage<QuickTaskOverviewMode> fadeInStage = new Stage<QuickTaskOverviewMode> ();
+		Stage<QuickTaskOverviewMode> fadeOutStage = new Stage<QuickTaskOverviewMode> ();
+
+		void UpdatePrelightState (double x, double y)
+		{
+			var newState = StateType.Normal;
+			if (IsInsideBar (x, y))
+				newState = StateType.Prelight;
+			UpdateState (newState);
+		}
+
+		bool IsInsideBar (double x, double y)
+		{
+			double barX, barY, barW, barH;
+			GetBarDimensions (out barX, out barY, out barW, out barH);
+			var isInsideBar = x >= barX && x <= barX + barW && y >= barY && y <= barY + barH;
+			return isInsideBar;
+		}
+
+		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
+		{
+			if (TextEditor.HighlightSearchPattern) {
+				if (IsOverIndicator (y)) {
+					var matches = TextEditor.TextViewMargin.SearchResultMatchCount;
+					tooltip.Text = GettextCatalog.GetPluralString ("{0} match", "{0} matches", matches, matches);
+					return true;
+				}
+				return false;
+			}
+
+			if (IsOverIndicator (y)) {
+				int errors, warnings, hints, suggestions;
+				CountTasks (out errors, out warnings, out hints, out suggestions);
+				string text = null;
+				if (errors == 0 && warnings == 0) {
+					text = GettextCatalog.GetString ("No errors or warnings");
+				} else if (errors == 0) {
+					text = GettextCatalog.GetPluralString ("{0} warning", "{0} warnings", warnings, warnings);
+				} else if (warnings == 0) {
+					text = GettextCatalog.GetPluralString ("{0} error", "{0} errors", errors, errors);
+				} else {
+					text = GettextCatalog.GetString ("{0} errors and {1} warnings", errors, warnings);
+				}
+
+				if (errors > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next error");
+				} else if (warnings > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next warning");
+				} else if (warnings + hints > 0) {
+					text += Environment.NewLine + GettextCatalog.GetString ("Click to navigate to the next message");
+				}
+
+				tooltip.Text = text;
+				return true;
+			}
+
+			var hoverTask = GetHoverTask (y);
+			if (hoverTask != null) {
+				tooltip.Text = hoverTask.Description;
+				return true;
+			}
+
+			return false;
+		}
+
+		void CountTasks (out int errors, out int warnings, out int hints, out int suggestions)
+		{
+			errors = warnings = hints = suggestions = 0;
+			foreach (var task in AllTasks) {
+				switch (task.Severity) {
+				case Severity.Error:
+					errors++;
+					break;
+				case Severity.Warning:
+					warnings++;
+					break;
+				case Severity.Hint:
+					hints++;
+					break;
+				case Severity.Suggestion:
+					suggestions++;
+					break;
+				}
+			}
+		}
+
+		QuickTask GetHoverTask (double y)
+		{
+			QuickTask hoverTask = null;
+			foreach (var task in AllTasks) {
+				double ty = GetYPosition (task.Location.Line);
+				if (Math.Abs (ty - y) < 3) {
+					hoverTask = task;
+				}
+			}
+			return hoverTask;
+		}
+
+		void UpdateState (StateType state)
+		{
+			if (State != state) {
+				State = state;
+				QueueDraw ();
+			}
 		}
 		
 		class PreviewPopup {
@@ -282,11 +365,58 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				previewWindow = null;
 			}
 		}
-		
+
+		bool isPointerInside;
+		uint fadeTimeOutHandler;
+
+		void CancelFadeInTimeout ()
+		{
+			if (fadeTimeOutHandler == 0)
+				return;
+			GLib.Source.Remove (fadeTimeOutHandler); 
+			fadeTimeOutHandler = 0;
+		}
+
+		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+			isPointerInside = true;
+			if (!IsInGrab ()) {
+				CancelFadeInTimeout ();
+				fadeTimeOutHandler = GLib.Timeout.Add (250, delegate {
+					StartFadeInAnimation ();
+					fadeTimeOutHandler = 0;
+					return false;
+				});
+			}
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		void StartFadeInAnimation ()
+		{
+			fadeOutStage.Pause ();
+			fadeInStage.AddOrReset (this, FadeDuration);
+			fadeInStage.Play ();
+		}
+
+		void StartFadeOutAnimation ()
+		{
+			CancelFadeInTimeout ();
+			UpdateState (StateType.Normal);
+			if (this.barColorValue == 0.0)
+				return;
+			fadeInStage.Pause ();
+			fadeOutStage.AddOrReset (this, FadeDuration);
+			fadeOutStage.Play ();
+		}
+
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
+			isPointerInside = false;
+			if (!IsInGrab ()) 
+				StartFadeOutAnimation ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
+
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
@@ -311,134 +441,158 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		Gdk.Pixbuf GetIndicatorIcon (Severity severity)
-		{
-			switch (severity) {
-			case Severity.Error:
-				return ImageService.GetPixbuf ("md-issuestatus-error", IconSize.Menu);
-			case Severity.Warning:
-				return ImageService.GetPixbuf ("md-issuestatus-warning", IconSize.Menu);
-			default:
-				return ImageService.GetPixbuf ("md-issuestatus-ok", IconSize.Menu);
-			}
-		}
-
 		protected virtual double IndicatorHeight  {
 			get {
-				return Allocation.Width;
+				return Platform.IsWindows ? Allocation.Width : 3 + 8 + 3;
 			}
 		}
 		
-		protected virtual void MouseMove (double y)
+		protected virtual void MovePosition (double y)
 		{
-			if ((button & 1) == 0)
-				return;
 			double position = ((y - IndicatorHeight) / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
 			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 			vadjustment.Value = position;
 		}
 
-		QuickTask hoverTask = null;
-		
-		protected uint button;
+		double GetSliderCenter ()
+		{
+			var height = Allocation.Height - IndicatorHeight;
+			var fraction = (vadjustment.Value + vadjustment.PageSize / 2) / (vadjustment.Upper - vadjustment.Lower);
+			return IndicatorHeight + height * fraction;
+		}
 
+		double grabY = -1, grabCenter;
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			button |= evnt.Button;
+			if (evnt.Button != 1 || evnt.IsContextMenuButton ())
+				return base.OnButtonPressEvent (evnt);
 
-			if (!evnt.TriggersContextMenu () && evnt.Button == 1 && evnt.Type == EventType.ButtonPress) {
-				if (hoverOverIndicator) {
-					parentStrip.GotoTask (parentStrip.SearchNextTask (currentHoverMode));
-					return base.OnButtonPressEvent (evnt);
-				}
-
-				if (hoverTask != null) {
-					if (hoverTask.Location.IsEmpty) {
-						Console.WriteLine ("empty:"+ hoverTask.Description);
-					}
-					var loc = new DocumentLocation (Math.Max (DocumentLocation.MinLine, hoverTask.Location.Line), Math.Max (DocumentLocation.MinColumn, hoverTask.Location.Column));
-					TextEditor.Caret.Location = loc;
-					TextEditor.CenterToCaret ();
-					TextEditor.StartCaretPulseAnimation ();
-					TextEditor.GrabFocus ();
-				} 
+			if (IsOverIndicator (evnt.Y)) {
+				parentStrip.GotoTask (parentStrip.SearchNextTask (GetHoverMode ()));
+				return base.OnButtonPressEvent (evnt);
 			}
 
-			if (evnt.Type == EventType.ButtonPress)
-				MouseMove (evnt.Y);
-			
+			var hoverTask = GetHoverTask (evnt.Y);
+			if (hoverTask != null)
+				MoveToTask (hoverTask);
+
+			if (IsInsideBar (evnt.X, evnt.Y)) {
+				Grab.Add (this);
+				grabCenter = GetSliderCenter ();
+				grabY = evnt.Y;
+			} else {
+				MovePosition (evnt.Y);
+			}
+
 			return base.OnButtonPressEvent (evnt);
 		}
-		
+
+		void ClearGrab ()
+		{
+			if (IsInGrab ()) {
+				Grab.Remove (this);
+				grabY = -1;
+			}
+		}
+
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			button &= ~evnt.Button;
+			ClearGrab ();
+			if (!isPointerInside)
+				StartFadeOutAnimation ();
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnGrabBrokenEvent (EventGrabBroken evnt)
+		{
+			ClearGrab ();
+			return base.OnGrabBrokenEvent (evnt);
+		}
+
+		void MoveToTask (QuickTask task)
+		{
+			if (task.Location.IsEmpty) {
+				Console.WriteLine ("empty:" + task.Description);
+			}
+			var loc = new DocumentLocation (
+				Math.Max (DocumentLocation.MinLine, task.Location.Line),
+				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
+			);
+			TextEditor.Caret.Location = loc;
+			TextEditor.CenterToCaret ();
+			TextEditor.StartCaretPulseAnimation ();
+			TextEditor.GrabFocus ();
+		}
+
+		QuickTaskStrip.HoverMode GetHoverMode ()
+		{
+			int errors, warnings, hints, suggestions;
+			CountTasks (out errors, out warnings, out hints, out suggestions);
+			if (errors > 0)
+				return QuickTaskStrip.HoverMode.NextError;
+			if (warnings > 0)
+				return QuickTaskStrip.HoverMode.NextWarning;
+			return QuickTaskStrip.HoverMode.NextMessage;
 		}
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Save ();
-			var pixbuf = GetIndicatorIcon (severity);
-			cr.Translate (
-				1 + (Allocation.Width - pixbuf.Width) / 2,
-				1
-			);
+			Mono.TextEditor.Highlighting.AmbientColor color;
+			switch (severity) {
+			case Severity.Error:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusErrorsIcon;
+				break;
+			case Severity.Warning:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusWarningsIcon;
+				break;
+			case Severity.Suggestion:
+			case Severity.Hint:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusSuggestionsIcon;
+				break;
+			default:
+				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusAllGoodIcon;
+				break;
+			}
 
-			CairoHelper.SetSourcePixbuf (
-				cr,
-				pixbuf,
-				0, 0
-			);
-			cr.Paint ();
-			cr.Restore ();
+			DrawIndicator (cr, color.Color, color.BorderColor);
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
 		{
-			int diameter = Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2;
-			var x1 = Math.Round (Allocation.Width / 2d);
-			double y1 = indicatorPadding + diameter / 2;
-			if (diameter % 2 == 0) {
-				x1 += 0.5;
-				y1 += 0.5;
-			}
-
-			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
-			
 			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.Color;
 			darkColor.L *= 0.5;
+			DrawIndicator (cr, TextEditor.ColorStyle.SearchResultMain.Color, darkColor);
+		}
 
-			if (flatStyle) {
-				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.Color)) {
-					cr.SetSource (pattern);
-					cr.FillPreserve ();
-				}
-			} else {
-				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
-					pattern.AddColorStop (0, darkColor);
-					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.Color);
-					cr.SetSource (pattern);
-					cr.FillPreserve ();
-				}
-			}
-			
-			cr.SetSourceColor (darkColor);
+		void DrawIndicator (Cairo.Context cr, Cairo.Color color, Cairo.Color borderColor)
+		{
+			const int indicatorPadding = 3;
+			const int indicatorDiameter = 8;
+			var x1 = Allocation.Width / 2d;
+			var y1 = indicatorPadding + indicatorDiameter / 2d;
+
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
+
+			cr.SetSourceColor (color);
+			cr.FillPreserve ();
+			cr.SetSourceColor (borderColor);
 			cr.Stroke ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = 17;
+			requisition.Width = Platform.IsWindows? 17 : 15;
 		}
 		
 		double LineToY (int logicalLine)
 		{
 			var h = Allocation.Height - IndicatorHeight;
 			var p = TextEditor.LocationToPoint (logicalLine, 1, true).Y;
-			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height - IndicatorHeight);
+			var q = Math.Max (TextEditor.GetTextEditorData ().TotalHeight, TextEditor.Allocation.Height) 
+				+ TextEditor.Allocation.Height
+				- TextEditor.LineHeight;
 
 			return IndicatorHeight  + h * p / q;
 		}
@@ -492,7 +646,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				double y = GetYPosition (task.Location.Line);
 
 				cr.SetSourceColor (GetBarColor (task.Severity));
-				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
+				cr.Rectangle (0, Math.Round (y) - 1, Allocation.Width, 2);
 				cr.Fill ();
 
 				switch (task.Severity) {
@@ -514,7 +668,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
 				var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-				if (!flatStyle) {
+				if (!Platform.IsWindows) {
 					col.L *= 0.88;
 				}
 				cr.SetSourceColor (col);
@@ -528,32 +682,66 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			base.OnSizeAllocated (allocation);
 		}
 
+		void GetBarDimensions (out double x, out double y, out double w, out double h)
+		{
+			var alloc = Allocation;
+
+			x = Platform.IsWindows ? 0 : 1 + barPadding;
+			var adjUpper = vadjustment.Upper;
+			var allocH = alloc.Height - (int) IndicatorHeight;
+			y = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper);
+			w = Platform.IsWindows ? alloc.Width : 8;
+			const int minBarHeight = 16;
+			h = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
+		}
+		double barColorValue = 0.0;
+		const double barAlphaMax = 0.5;
+		const double barAlphaMin = 0.22;
+
+
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
 			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 				return;
 
-			int barWidth = Allocation.Width - barPadding - barPadding;
-			var allocH = Allocation.Height - (int) IndicatorHeight;
-			var adjUpper = vadjustment.Upper;
-			var barY = IndicatorHeight + Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
-			const int minBarHeight = 16;
-			var barH = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
+			double x, y, w, h;
+			GetBarDimensions (out x, out y, out w, out h);
 
-			if (flatStyle) {
-				cr.Rectangle (barPadding, barY, barWidth, barH);
+			if (Platform.IsWindows) {
+				cr.Rectangle (x, y, w, h);
 			} else {
-				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, barWidth / 2);
+				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, x, y, w, h, 4);
 			}
-			
-			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
-			color.L = flatStyle? 0.7 : 0.5;
-			var c = (Cairo.Color)color;
-			c.A = 0.6;
+
+			bool prelight = State == StateType.Prelight;
+
+			Cairo.Color c;
+			if (Platform.IsWindows) {
+				c = prelight ? win81SliderPrelight : win81Slider;
+				//compute new color such that it will produce same color when blended with bg
+				c = AddAlpha (win81Background, c, 0.5d);
+			} else {
+				c = new Cairo.Color (0, 0, 0, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
+			}
 			cr.SetSourceColor (c);
 			cr.Fill ();
 		}
-		
+
+		static Cairo.Color AddAlpha (Cairo.Color bg, Cairo.Color final, double alpha)
+		{
+			return new Cairo.Color (
+				ReverseAlpha (final.R, final.A, bg.R, bg.A, alpha),
+				ReverseAlpha (final.G, final.A, bg.G, bg.A, alpha),
+				ReverseAlpha (final.B, final.A, bg.B, bg.A, alpha),
+				alpha
+			);
+		}
+
+		static double ReverseAlpha (double c0, double a0, double cb, double ab, double aa)
+		{
+			return (c0 * a0 - cb * ab * (1 - aa)) / aa;
+		}
+
 		protected void DrawSearchResults (Cairo.Context cr)
 		{
 			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
@@ -577,31 +765,30 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-					col.L *= 0.95;
-					if (flatStyle) {
-						using (var pattern = new Cairo.SolidPattern (col)) {
+					if (Platform.IsWindows) {
+						using (var pattern = new Cairo.SolidPattern (win81Background)) {
 							cr.SetSource (pattern);
 						}
 					} else {
+						var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
+						col.L *= 0.948;
 						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
 							grad.AddColorStop (0, col);
 							grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
 							grad.AddColorStop (1, col);
 							cr.SetSource (grad);
 						}
+						/*
+						var col = new Cairo.Color (229 / 255.0, 229 / 255.0, 229 / 255.0);
+						using (var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0)) {
+							grad.AddColorStop (0, col);
+							grad.AddColorStop (0.5, new Cairo.Color (1, 1, 1));
+							grad.AddColorStop (1, col);
+							cr.SetSource (grad);
+						}*/
 					}
 				}
 				cr.Fill ();
-
-				/*
-				cr.Color = (HslColor)Style.Dark (State);
-				cr.MoveTo (-0.5, 0.5);
-				cr.LineTo (Allocation.Width, 0.5);
-
-				cr.MoveTo (-0.5, Allocation.Height - 0.5);
-				cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
-				cr.Stroke ();*/
 
 				if (TextEditor == null)
 					return true;

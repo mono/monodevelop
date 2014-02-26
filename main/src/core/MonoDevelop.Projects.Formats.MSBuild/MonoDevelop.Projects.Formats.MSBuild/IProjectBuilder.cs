@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public interface IProjectBuilder
+	public interface IProjectBuilder : IDisposable
 	{
 		MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
 			MSBuildVerbosity verbosity);

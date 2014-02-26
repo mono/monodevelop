@@ -1,0 +1,9 @@
+<ExtensionModel>
+	<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
+		<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
+		<ReferenceFinder supportedmimetypes = "application/x-aspx,application/x-ascx,application/x-asax,application/x-ashx,application/x-asmx,application/x-asix"
+		                 class = "MonoDevelop.CSharp.Refactoring.ASPNetReferenceFinder" />
+	</Extension>
+</ExtensionModel>

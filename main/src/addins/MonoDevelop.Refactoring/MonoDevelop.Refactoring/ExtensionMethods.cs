@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.Refactoring
 		public static TaskWrapper GetSharedResolver (this Document document)
 		{
 			var parsedDocument = document.ParsedDocument;
-			if (parsedDocument == null || document.IsProjectContextInUpdate)
+			if (parsedDocument == null || document.IsProjectContextInUpdate || document.Project != null && !(document.Project is DotNetProject))
 				return null;
 
 			var unit       = parsedDocument.GetAst<SyntaxTree> ();

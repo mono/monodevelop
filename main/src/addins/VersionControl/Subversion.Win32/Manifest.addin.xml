@@ -1,22 +1,4 @@
-<Addin id        = "SubversionAddinWindows"
-       namespace = "MonoDevelop"
-       version   = "4.2.3">
-  <Header>
-    <Name>Subversion Add-in</Name>
-    <Description>Subversion support for the Version Control Add-in</Description>
-    <Description locale="ca">Suport per a Subversion</Description>
-    <Icon32>subversion-logo.png</Icon32>
-    <Author>Lluis Sanchez</Author>
-    <Copyright>GPL</Copyright>
-    <Category>Version Control</Category>
-  </Header>
-
-	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="VersionControl" version="4.2.3"/>
-		<Addin id="VersionControl.Subversion" version="4.2.3"/>
-	</Dependencies>
+<ExtensionModel>
 
   <!-- Some files are excluded twice. This is on purpose to work around some case sensivity issues. If you change this you break addin installation on windows -->
   <Runtime>
@@ -31,4 +13,5 @@
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Class class = "SubversionAddinWindows.SvnSharpClient" />
 	</Extension>
-</Addin>
+
+</ExtensionModel>

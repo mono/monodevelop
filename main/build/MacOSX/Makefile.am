@@ -5,20 +5,10 @@ MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
+MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
 
-# In which commit did the MonoDevelop version change? 00000000 if uncommitted
-commit_of_last_version_change    := $(shell LANG=C git blame $(top_srcdir)/configure.in | grep AC_INIT | sed 's/ .*//')
-
-# How many commits have passed since $(-commit-of-last-version-change)?
-# "0" when commit hash is invalid (e.g. 00000000)
-num_commits_since_version_change := $(shell LANG=C git rev-list --count $(commit_of_last_version_change)..HEAD)
-
-PACKAGE_VERSION_MAJOR=0$(word 1, $(subst ., ,$(VERSION)))
-PACKAGE_VERSION_MINOR=$(word 2, $(subst ., ,$(VERSION)))
-PACKAGE_VERSION_REV=0$(word 3, $(subst ., ,$(VERSION)))
-PACKAGE_VERSION_BUILD=$(num_commits_since_version_change)
-PACKAGE_UPDATE_ID=$(shell echo $(PACKAGE_VERSION_MAJOR) $(PACKAGE_VERSION_MINOR) $(PACKAGE_VERSION_REV) $(PACKAGE_VERSION_BUILD) | awk '{printf "%d%02d%02d%04d",$$1,$$2,$$3,$$4}')
-BUNDLE_VERSION=$(shell echo $(PACKAGE_VERSION_MAJOR) $(PACKAGE_VERSION_MINOR) $(PACKAGE_VERSION_REV) $(PACKAGE_VERSION_BUILD) | awk '{printf "%d.%d.%d.%d",$$1,$$2,$$3,$$4}')
+PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
+BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
 
 CLEANFILES = render.exe
 #DISTCLEANFILES =
@@ -138,19 +128,13 @@ app: monostub
 	@echo "Updating build information"
 	@echo ""
 
-	pushd ../..; make buildinfo; popd
-
-	echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $(PACKAGE_UPDATE_ID)" > "$(MACOS)/updateinfo"
-
-	echo "Release ID: $(PACKAGE_UPDATE_ID)" > "$(MACOS)/lib/monodevelop/bin/buildinfo"
-	@cat ../bin/buildinfo >> "$(MACOS)/lib/monodevelop/bin/buildinfo"
+	$(MD_CONFIGURE) gen-buildinfo "$(MACOS)/lib/monodevelop/bin"
 
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app
 
 	@echo ""
-	@echo "MONODEVELOP RELEASE: $(PACKAGE_UPDATE_ID)"
-	@echo "$$(cat ../../vcrevision)"
+	@cat "$(MACOS)/lib/monodevelop/bin/buildinfo"
 	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
 	@echo ""
 	@rm -f missing-stuff

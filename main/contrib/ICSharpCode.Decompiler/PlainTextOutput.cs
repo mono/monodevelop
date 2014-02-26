@@ -106,7 +106,12 @@ namespace ICSharpCode.Decompiler
 		{
 			Write(text);
 		}
-		
+
+		public void WritePrimitiveValue (object value, string literalValue)
+		{
+			Write (value.ToString ());
+		}
+
 		void ITextOutput.MarkFoldStart(string collapsedText, bool defaultCollapsed)
 		{
 		}

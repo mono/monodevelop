@@ -430,5 +430,20 @@ namespace MonoDevelop.Projects
 		{
 			LoadBuildVSConsoleProject ("2013", "12.0");
 		}
+
+		[Test]
+		public void SaveReferenceWithCondition ()
+		{
+			string solFile = Util.GetSampleProject ("console-project-conditional-reference", "ConsoleProject.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+
+			string proj = sol.GetAllProjects ().First ().FileName;
+
+			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			sol.Save (new NullProgressMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			Assert.AreEqual (projectXml1, projectXml2);
+		}
 	}
 }

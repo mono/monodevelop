@@ -27,11 +27,8 @@
 using System;
 using System.Threading;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
-using System.Collections;
-using Microsoft.Build.Framework;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Construction;
 using System.Linq;
@@ -41,16 +38,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
 		static ThreadStart workDelegate;
-		static object workLock = new object ();
+		static readonly object workLock = new object ();
 		static Thread workThread;
 		static CultureInfo uiCulture;
 		static Exception workError;
 
-		ManualResetEvent doneEvent = new ManualResetEvent (false);
-		Dictionary<string,ProjectCollection> engines = new Dictionary<string, ProjectCollection> ();
-		Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
+		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
+		readonly Dictionary<string, string> unsavedProjects = new Dictionary<string, string> ();
 
 		ProjectCollection engine;
 
@@ -124,25 +120,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return engine;
 		}
 
-		ProjectCollection GetEngine (string binDir)
-		{
-			ProjectCollection engine = null;
-			RunSTA (delegate {
-				if (!engines.TryGetValue (binDir, out engine)) {
-					engine = new ProjectCollection ();
-					engine.DefaultToolsVersion = MSBuildConsts.Version;
-					engine.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
-					
-					//we don't have host compilers in MD, and this is set to true by some of the MS targets
-					//which causes it to always run the CoreCompile task if BuildingInsideVisualStudio is also
-					//true, because the VS in-process compiler would take care of the deps tracking
-					engine.SetGlobalProperty ("UseHostCompilerIfAvailable", "false");
-					engines [binDir] = engine;
-				}
-			});
-			return engine;
-		}
-
 		internal void UnloadProject (string file)
 		{
 			lock (unsavedProjects)
@@ -150,27 +127,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			RunSTA (delegate
 			{
-				foreach (var engine in engines.Values) {
-					//unloading projects modifies the collection, so copy it
-					var projects = engine.GetLoadedProjects (file).ToArray ();
+				//unloading projects modifies the collection, so copy it
+				var projects = engine.GetLoadedProjects (file).ToArray ();
 
-					if (projects.Length == 0) {
-						return;
-					}
+				if (projects.Length == 0) {
+					return;
+				}
 
-					var rootElement = projects[0].Xml;
+				var rootElement = projects[0].Xml;
 
-					foreach (var p in projects) {
-						engine.UnloadProject (p);
-					}
+				foreach (var p in projects) {
+					engine.UnloadProject (p);
+				}
 
-					//try to unload the projects' XML from the cache
-					try {
-						engine.UnloadProject (rootElement);
-					} catch (InvalidOperationException) {
-						// This could fail if something else is referencing the xml somehow.
-						// But not a big deal, it's just a cache.
-					}
+				//try to unload the projects' XML from the cache
+				try {
+					engine.UnloadProject (rootElement);
+				} catch (InvalidOperationException) {
+					// This could fail if something else is referencing the xml somehow.
+					// But not a big deal, it's just a cache.
 				}
 			});
 		}
@@ -192,13 +167,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						// Awaken the existing thread
 						Monitor.Pulse (threadLock);
 				}
-				wordDoneEvent.WaitOne ();
+				workDoneEvent.WaitOne ();
 			}
 			if (workError != null)
 				throw new Exception ("MSBuild operation failed", workError);
 		}
 
-		static object threadLock = new object ();
+		static readonly object threadLock = new object ();
 		
 		static void STARunner ()
 		{
@@ -210,7 +185,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					catch (Exception ex) {
 						workError = ex;
 					}
-					wordDoneEvent.Set ();
+					workDoneEvent.Set ();
 				}
 				while (Monitor.Wait (threadLock, 60000));
 				

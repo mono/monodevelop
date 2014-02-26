@@ -169,6 +169,11 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
 		}
+
+		public static IEnumerable<string> GetMimeTypeInheritanceChainForFile (string filename)
+		{
+			return GetMimeTypeInheritanceChain (GetMimeTypeForUri (filename));
+		}
 		
 		public static Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
 		{

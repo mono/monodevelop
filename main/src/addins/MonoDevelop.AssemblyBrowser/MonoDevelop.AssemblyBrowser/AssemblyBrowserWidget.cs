@@ -1396,12 +1396,12 @@ namespace MonoDevelop.AssemblyBrowser
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();
 		
-		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool selectReference = false)
+		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool selectReference = true)
 		{
 			return AddReferenceByAssemblyName (reference.Name, selectReference);
 		}
 		
-		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool selectReference = false)
+		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool selectReference = true)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
@@ -1417,11 +1417,18 @@ namespace MonoDevelop.AssemblyBrowser
 			return AddReferenceByFileName (assemblyFile, selectReference);
 		}
 		
-		public AssemblyLoader AddReferenceByFileName (string fileName, bool selectReference = false)
+		public AssemblyLoader AddReferenceByFileName (string fileName, bool selectReference = true)
 		{
 			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
-			if (result != null)
+			if (result != null) {
+				// Select the result.
+				if (selectReference) {
+					ITreeNavigator navigator = TreeView.GetNodeAtObject (result);
+					navigator.Selected = true;
+				}
+
 				return result;
+			}
 			result = new AssemblyLoader (this, fileName);
 			
 			definitions.Add (result);
@@ -1442,12 +1449,20 @@ namespace MonoDevelop.AssemblyBrowser
 			return result;
 		}
 		
-		public void AddProject (Project project, bool selectReference = false)
+		public void AddProject (Project project, bool selectReference = true)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (projects.Contains (project))
+
+			if (projects.Contains (project)) {
+				// Select the project.
+				if (selectReference) {
+					ITreeNavigator navigator = TreeView.GetNodeAtObject (project);
+					navigator.Selected = true;
+				}
+
 				return;
+			}
 			projects.Add (project);
 			ITreeBuilder builder;
 			if (definitions.Count + projects.Count == 1) {

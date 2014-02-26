@@ -5,16 +5,27 @@ namespace MonoDevelop.Refactoring.Rename
 	public partial class RenameItemDialog
 	{
 		private global::Gtk.VBox vbox;
+		
 		private global::Gtk.HBox hbox;
+		
 		private global::Gtk.Label labelNewName;
+		
 		private global::Gtk.Entry entry;
+		
 		private global::Gtk.CheckButton renameFileFlag;
+		
 		private global::Gtk.CheckButton includeOverloadsCheckbox;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Image imageWarning;
+		
 		private global::Gtk.Label labelWarning;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonPreview;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()

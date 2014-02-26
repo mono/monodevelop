@@ -190,6 +190,7 @@
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

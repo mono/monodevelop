@@ -282,7 +282,30 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			base.OnDestroyed ();
 		}
-		
+
+		/// <summary>
+		/// Gets a specific dialog panel from a given section.
+		/// </summary>
+		/// <returns>The panel, or null if the panel wasn't found.</returns>
+		/// <param name="id">The section id.</param>
+		/// <typeparam name="T">The type of the dialog panel.</typeparam>
+		public T GetPanel<T> (string id) where T : class, IOptionsPanel
+		{
+			foreach (OptionsDialogSection section in pages.Keys) {
+				if (section.Id == id) {
+					SectionPage page;
+					if (!pages.TryGetValue (section, out page))
+						return null;
+					foreach (var panel in page.Panels) {
+						var result = panel.Panel as T;
+						if (result != null)
+							return result;
+					}
+				}
+			}
+			return null;
+		}
+
 		public void SelectPanel (string id)
 		{
 			foreach (OptionsDialogSection section in pages.Keys) {

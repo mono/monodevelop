@@ -1,21 +1,21 @@
-// 
+//
 // AutoTestClientSession.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,11 +27,11 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.Remoting;
-using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -43,31 +43,32 @@ namespace MonoDevelop.Components.AutoTest
 		int defaultEventWaitTimeout = 20000;
 		Queue<string> eventQueue = new Queue<string> ();
 		IAutoTestService service;
-		
-		public AutoTestClientSession ()
+
+
+		public void StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
 		{
-		}
-		
-		public void StartApplication (string file, string args)
-		{
-			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-			
-			if (file.ToLower ().EndsWith (".exe") && Path.DirectorySeparatorChar != '\\') {
-				args = "\"" + file + "\" " + args;
-				file = "mono";
+			if (file == null) {
+				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
+				file = Path.Combine (binDir, "MonoDevelop.exe");
 			}
-			
+
+			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
+
 			BinaryFormatter bf = new BinaryFormatter ();
 			ObjRef oref = RemotingServices.Marshal (this);
 			MemoryStream ms = new MemoryStream ();
 			bf.Serialize (ms, oref);
 			string sref = Convert.ToBase64String (ms.ToArray ());
-			
-			ProcessStartInfo pi = new ProcessStartInfo (file, args);
-			pi.UseShellExecute = false;
+
+			var pi = new ProcessStartInfo (file, args) { UseShellExecute = false };
 			pi.EnvironmentVariables ["MONO_AUTOTEST_CLIENT"] = sref;
+			pi.EnvironmentVariables ["GTK_MODULES"] = "gail:atk-bridge";
+			if (environment != null)
+				foreach (var e in environment)
+					pi.EnvironmentVariables [e.Key] = e.Value;
+
 			process = Process.Start (pi);
-			
+
 			if (!waitEvent.WaitOne (15000)) {
 				try {
 					process.Kill ();
@@ -75,7 +76,7 @@ namespace MonoDevelop.Components.AutoTest
 				throw new Exception ("Could not connect to application");
 			}
 		}
-		
+
 		public void AttachApplication ()
 		{
 			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
@@ -87,12 +88,12 @@ namespace MonoDevelop.Components.AutoTest
 			service = (IAutoTestService) bf.Deserialize (ms);
 			session = service.AttachClient (this);
 		}
-		
+
 		public override object InitializeLifetimeService ()
 		{
 			return null;
 		}
-		
+
 		public void Stop ()
 		{
 			if (service != null)
@@ -100,76 +101,105 @@ namespace MonoDevelop.Components.AutoTest
 			else
 				process.Kill ();
 		}
-		
+
 		public void ExecuteCommand (object cmd)
 		{
 			session.ExecuteCommand (cmd);
 		}
-		
+
 		public void SelectObject (string name)
 		{
 			ClearEventQueue ();
 			session.SelectObject (name);
 		}
-		
+
 		public void SelectActiveWidget ()
 		{
 			ClearEventQueue ();
 			session.SelectActiveWidget ();
 		}
-		
+
+		public bool SelectWidget (string name, bool focus = true)
+		{
+			ClearEventQueue ();
+			return session.SelectWidget (name, focus);
+		}
+
 		public object GlobalInvoke (string name, params object[] args)
 		{
 			ClearEventQueue ();
 			return session.GlobalInvoke (name, args);
 		}
-		
+
+		public T GlobalInvoke<T> (string name, params object[] args)
+		{
+			return (T) GlobalInvoke (name, args);
+		}
+
 		public object GetGlobalValue (string name)
 		{
 			return session.GetGlobalValue (name);
 		}
-		
+
+		public T GetGlobalValue<T> (string name)
+		{
+			return (T) session.GetGlobalValue (name);
+		}
+
 		public void SetGlobalValue (string name, object value)
 		{
 			ClearEventQueue ();
 			session.SetGlobalValue (name, value);
 		}
-		
+
 		public object Invoke (string name, params object[] args)
 		{
 			ClearEventQueue ();
 			return session.Invoke (name, args);
 		}
-		
+
 		public void TypeText (string text)
 		{
 			ClearEventQueue ();
 			session.TypeText (text);
 		}
-		
+
+		public void SelectTreeviewItem (string name)
+		{
+			ClearEventQueue ();
+			session.SelectTreeviewItem (name);
+		}
+
+		public string[] GetTreeviewCells ()
+		{
+
+			ClearEventQueue ();
+			return session.GetTreeviewCells ();
+		}
+
 		public void PressKey (Gdk.Key key)
 		{
 			ClearEventQueue ();
 			session.SendKeyPress (key, Gdk.ModifierType.None, null);
 		}
-		
+
 		public void PressKey (Gdk.Key key, Gdk.ModifierType state)
 		{
 			ClearEventQueue ();
 			session.SendKeyPress (key, state, null);
 		}
-		
+
 		public void PressKey (Gdk.Key key, Gdk.ModifierType state, string subWindow)
 		{
 			ClearEventQueue ();
 			session.SendKeyPress (key, state, subWindow);
 		}
-		
+
 		public void WaitForEvent (string name)
 		{
 			WaitForEvent (name, defaultEventWaitTimeout);
 		}
-		
+
 		public void WaitForEvent (string name, int timeout)
 		{
 			lock (eventQueue) {
@@ -181,7 +211,12 @@ namespace MonoDevelop.Components.AutoTest
 					throw new Exception ("Expected event '" + name + "' not received");
 			}
 		}
-		
+
+		public void WaitForWindow (string windowName, int timeout = 10000)
+		{
+			session.WaitForWindow (windowName, timeout);
+		}
+
 		void ClearEventQueue ()
 		{
 			eventQueue.Clear ();

@@ -216,11 +216,15 @@ namespace MonoDevelop.Refactoring
 
 		static bool HasOverloads (Solution solution, object item)
 		{
+			var member = item as IMember;
+			if (member != null && member.ImplementedInterfaceMembers.Any ())
+				return true;
 			var method = item as IMethod;
 			if (method == null)
 				return false;
 			return method.DeclaringType.GetMethods (m => m.Name == method.Name).Count () > 1;
 		}
+
 
 		protected override void Update (CommandArrayInfo ainfo)
 		{
@@ -294,8 +298,8 @@ namespace MonoDevelop.Refactoring
 			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
 				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
-				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionWidget.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionWidget.GetUsage (i.IdString)))) {
-					if (CodeActionWidget.IsAnalysisOrErrorFix (fix_))
+				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
 						continue;
 					var fix = fix_;
 					if (first) {

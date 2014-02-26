@@ -111,8 +111,9 @@ namespace MonoDevelop.Projects
 		public override SolutionItemConfiguration FindBestMatch (SolutionItemConfigurationCollection configurations)
 		{
 			// Get all configurations with the same value for the 'DEBUG' symbol
+			var isDebug = compilationParameters.GetDefineSymbols ().Contains ("DEBUG");
 			var matches = configurations.OfType<DotNetProjectConfiguration> ().Where (c =>
-				c.CompilationParameters.HasDefineSymbol ("DEBUG") == compilationParameters.HasDefineSymbol ("DEBUG")
+				c.CompilationParameters.GetDefineSymbols ().Contains ("DEBUG") == isDebug
 			).ToArray ();
 
 			// If the base method can't find a direct match then try to match based on finding a configuration
@@ -196,26 +197,18 @@ namespace MonoDevelop.Projects
 		public new DotNetProject ParentItem {
 			get { return (DotNetProject) base.ParentItem; }
 		}
+
+		public virtual IEnumerable<string> GetDefineSymbols ()
+		{
+			if (CompilationParameters != null)
+				return CompilationParameters.GetDefineSymbols ();
+			return new string[0];
+		}
 	}
 	
 	public class UnknownCompilationParameters: ConfigurationParameters, IExtendedDataItem
 	{
-		Hashtable table = new Hashtable ();
-		
-		public override void AddDefineSymbol (string symbol)
-		{
-			// Do nothing
-		}
-
-		public override bool HasDefineSymbol (string symbol)
-		{
-			return false;
-		}
-
-		public override void RemoveDefineSymbol (string symbol)
-		{
-			// Do nothing
-		}
+		readonly Hashtable table = new Hashtable ();
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }
@@ -224,7 +217,7 @@ namespace MonoDevelop.Projects
 	
 	public class UnknownProjectParameters: ProjectParameters, IExtendedDataItem
 	{
-		Hashtable table = new Hashtable ();
+		readonly Hashtable table = new Hashtable ();
 		
 		public IDictionary ExtendedProperties { 
 			get { return table; }

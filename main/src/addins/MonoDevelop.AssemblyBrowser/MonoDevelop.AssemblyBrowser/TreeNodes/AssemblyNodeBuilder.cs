@@ -159,16 +159,22 @@ namespace MonoDevelop.AssemblyBrowser
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
 				return new List<ReferenceSegment> ();
 			}
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
-				if (b != null)
-					b.AddAssembly (compilationUnit, true);
-			});
+			return DomMethodNodeBuilder.Disassemble (data, rd => rd.WriteAssemblyHeader (compilationUnit));
 		}
 		
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
 		{
-			return Disassemble (data, navigator);
+			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
+			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			if (compilationUnit == null) {
+				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
+				return new List<ReferenceSegment> ();
+			}
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
+				if (b != null)
+					b.AddAssembly (compilationUnit, true);
+			});
 		}
 		
 		public string GetDocumentationMarkup (ITreeNavigator navigator)
