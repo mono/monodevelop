@@ -59,5 +59,15 @@ namespace ICSharpCode.PackageManagement
 			get { return packageSource.IsEnabled; }
 			set { packageSource.IsEnabled = value; }
 		}
+
+		public string UserName {
+			get { return packageSource.UserName; }
+			set { packageSource.UserName = value; }
+		}
+
+		public string Password {
+			get { return packageSource.Password; }
+			set { packageSource.Password = value; }
+		}
 	}
 }

@@ -36,6 +36,8 @@ namespace ICSharpCode.PackageManagement
 		public string Source { get; set; }
 		public string Name { get; set; }
 		public bool IsEnabled { get; set; }
+		public string UserName { get; set; }
+		public string Password { get; set; }
 		
 		public RegisteredPackageSource()
 		{
@@ -46,11 +48,16 @@ namespace ICSharpCode.PackageManagement
 			Source = packageSource.Source;
 			Name = packageSource.Name;
 			IsEnabled = packageSource.IsEnabled;
+			UserName = packageSource.UserName;
+			Password = packageSource.Password;
 		}
 		
 		public PackageSource ToPackageSource()
 		{
-			return new PackageSource(Source, Name, IsEnabled);
+			return new PackageSource (Source, Name, IsEnabled) {
+				UserName = UserName,
+				Password = Password
+			};
 		}
 	}
 }

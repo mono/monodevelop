@@ -47,12 +47,18 @@ namespace MonoDevelop.PackageManagement
 			packageSourceNameTextEntry.Activated += TextEntryActivated;
 			packageSourceUrlTextEntry.Changed += PackageSourceUrlTextBoxChanged;
 			packageSourceUrlTextEntry.Activated += TextEntryActivated;
+			packageSourceUserNameTextEntry.Changed += PackageSourceUserNameTextBoxChanged;
+			packageSourceUserNameTextEntry.Activated += TextEntryActivated;
+			packageSourcePasswordTextEntry.Changed += PackageSourcePasswordTextBoxChanged;
+			packageSourcePasswordTextEntry.Activated += TextEntryActivated;
 		}
 
 		void LoadViewModel ()
 		{
 			packageSourceNameTextEntry.Text = viewModel.NewPackageSourceName;
 			packageSourceUrlTextEntry.Text = viewModel.NewPackageSourceUrl;
+			packageSourceUserNameTextEntry.Text = viewModel.NewPackageSourceUserName;
+			packageSourcePasswordTextEntry.Password = viewModel.NewPackageSourcePassword;
 
 			addPackageSourceButton.Sensitive = viewModel.CanAddPackageSource;
 			addPackageSourceButton.Visible = !viewModel.IsEditingSelectedPackageSource;
@@ -86,6 +92,18 @@ namespace MonoDevelop.PackageManagement
 		void PackageSourceUrlTextBoxChanged (object sender, EventArgs e)
 		{
 			viewModel.NewPackageSourceUrl = packageSourceUrlTextEntry.Text;
+			UpdateAddPackageSourceButton ();
+		}
+
+		void PackageSourceUserNameTextBoxChanged (object sender, EventArgs e)
+		{
+			viewModel.NewPackageSourceUserName = packageSourceUserNameTextEntry.Text;
+			UpdateAddPackageSourceButton ();
+		}
+
+		void PackageSourcePasswordTextBoxChanged (object sender, EventArgs e)
+		{
+			viewModel.NewPackageSourcePassword = packageSourcePasswordTextEntry.Password;
 			UpdateAddPackageSourceButton ();
 		}
 

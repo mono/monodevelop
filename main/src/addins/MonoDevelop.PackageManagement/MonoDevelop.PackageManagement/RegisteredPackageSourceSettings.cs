@@ -37,36 +37,42 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RegisteredPackageSourceSettings
 	{
-		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";
-		public static readonly string DisabledPackageSourceSectionName = "disabledPackageSources";
-		
+
 		public static readonly PackageSource AggregatePackageSource = 
 			new PackageSource("(Aggregate source)", "All");
-		
+
 		ISettings settings;
+		IPackageSourceProvider packageSourceProvider;
 		PackageSource defaultPackageSource;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
 		
 		public RegisteredPackageSourceSettings(ISettings settings)
-			: this(settings, RegisteredPackageSources.DefaultPackageSource)
+			: this(
+				settings,
+				new PackageSourceProvider(settings, new [] { RegisteredPackageSources.DefaultPackageSource }),
+				RegisteredPackageSources.DefaultPackageSource)
 		{
 		}
 		
-		public RegisteredPackageSourceSettings(ISettings settings, PackageSource defaultPackageSource)
+		public RegisteredPackageSourceSettings(
+			ISettings settings,
+			IPackageSourceProvider packageSourceProvider,
+			PackageSource defaultPackageSource)
 		{
 			this.settings = settings;
+			this.packageSourceProvider = packageSourceProvider;
 			this.defaultPackageSource = defaultPackageSource;
 			ReadActivePackageSource();
 		}
-		
+
 		void ReadActivePackageSource()
 		{
 			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
 			activePackageSource = PackageSourceConverter.ConvertFromFirstKeyValuePair(packageSources);
 		}
-		
+
 		public RegisteredPackageSources PackageSources {
 			get {
 				if (packageSources == null) {
@@ -78,28 +84,13 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReadPackageSources()
 		{
-			IEnumerable<PackageSource> savedPackageSources = GetPackageSourcesFromSettings();
+			IEnumerable<PackageSource> savedPackageSources = packageSourceProvider.LoadPackageSources ();
 			packageSources = new RegisteredPackageSources(savedPackageSources, defaultPackageSource);
 			packageSources.CollectionChanged += PackageSourcesChanged;
 			
 			if (!savedPackageSources.Any()) {
 				UpdatePackageSourceSettingsWithChanges();
 			}
-		}
-		
-		IEnumerable<PackageSource> GetPackageSourcesFromSettings()
-		{
-			IList<KeyValuePair<string, string>> savedPackageSources = settings.GetValues(PackageSourcesSectionName);
-			foreach (PackageSource packageSource in PackageSourceConverter.ConvertFromKeyValuePairs(savedPackageSources)) {
-				packageSource.IsEnabled = IsPackageSourceEnabled(packageSource);
-				yield return packageSource;
-			}
-		}
-		
-		bool IsPackageSourceEnabled(PackageSource packageSource)
-		{
-			string disabled = settings.GetValue(DisabledPackageSourceSectionName, packageSource.Name);
-			return String.IsNullOrEmpty(disabled);
 		}
 		
 		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -109,44 +100,9 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageSourceSettingsWithChanges()
 		{
-			IList<KeyValuePair<string, string>> newPackageSourceSettings = GetSettingsFromPackageSources();
-			SavePackageSourceSettings(newPackageSourceSettings);
-			IList<KeyValuePair<string, string>> disabledPackageSourceSettings = GetSettingsForDisabledPackageSources();
-			SaveDisabledPackageSourceSettings(disabledPackageSourceSettings);
+			packageSourceProvider.SavePackageSources (packageSources);
 		}
-		
-		IList<KeyValuePair<string, string>> GetSettingsFromPackageSources()
-		{
-			return PackageSourceConverter.ConvertToKeyValuePairList(packageSources);
-		}
-		
-		KeyValuePair<string, string> CreateKeyValuePairFromPackageSource(PackageSource source)
-		{
-			return new KeyValuePair<string, string>(source.Name, source.Source);
-		}
-		
-		void SavePackageSourceSettings(IList<KeyValuePair<string, string>> newPackageSourceSettings)
-		{
-			settings.DeleteSection(PackageSourcesSectionName);
-			settings.SetValues(PackageSourcesSectionName, newPackageSourceSettings);
-		}
-		
-		IList<KeyValuePair<string, string>> GetSettingsForDisabledPackageSources()
-		{
-			return packageSources
-				.Where(source => !source.IsEnabled)
-				.Select(source => new KeyValuePair<string, string>(source.Name, "true"))
-				.ToList();
-		}
-		
-		void SaveDisabledPackageSourceSettings(IList<KeyValuePair<string, string>> disabledPackageSourceSettings)
-		{
-			settings.DeleteSection(DisabledPackageSourceSectionName);
-			if (disabledPackageSourceSettings.Any()) {
-				settings.SetValues(DisabledPackageSourceSectionName, disabledPackageSourceSettings);
-			}
-		}
-		
+
 		public PackageSource ActivePackageSource {
 			get {
 				if (activePackageSource != null) {

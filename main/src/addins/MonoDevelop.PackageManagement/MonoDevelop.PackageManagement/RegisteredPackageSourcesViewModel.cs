@@ -155,6 +155,22 @@ namespace ICSharpCode.PackageManagement
 				OnPropertyChanged(viewModel => viewModel.NewPackageSourceUrl);
 			}
 		}
+
+		public string NewPackageSourceUserName {
+			get { return newPackageSource.UserName; }
+			set {
+				newPackageSource.UserName = value;
+				OnPropertyChanged(viewModel => viewModel.NewPackageSourceUserName);
+			}
+		}
+
+		public string NewPackageSourcePassword {
+			get { return newPackageSource.Password; }
+			set {
+				newPackageSource.Password = value;
+				OnPropertyChanged(viewModel => viewModel.NewPackageSourcePassword);
+			}
+		}
 		
 		public PackageSourceViewModel SelectedPackageSourceViewModel {
 			get { return selectedPackageSourceViewModel; }
@@ -296,9 +312,13 @@ namespace ICSharpCode.PackageManagement
 				if (isEditingSelectedPackageSource) {
 					NewPackageSourceName = selectedPackageSourceViewModel.Name;
 					NewPackageSourceUrl = selectedPackageSourceViewModel.SourceUrl;
+					NewPackageSourceUserName = selectedPackageSourceViewModel.UserName;
+					NewPackageSourcePassword = selectedPackageSourceViewModel.Password;
 				} else {
 					NewPackageSourceUrl = String.Empty;
 					NewPackageSourceName = String.Empty;
+					NewPackageSourceUserName = String.Empty;
+					NewPackageSourcePassword = String.Empty;
 				}
 			}
 		}
@@ -315,6 +335,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			selectedPackageSourceViewModel.Name = NewPackageSourceName;
 			selectedPackageSourceViewModel.SourceUrl = NewPackageSourceUrl;
+			selectedPackageSourceViewModel.UserName = NewPackageSourceUserName;
+			selectedPackageSourceViewModel.Password = NewPackageSourcePassword;
 
 			OnSelectedPackageSourceUpdated ();
 		}

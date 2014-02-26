@@ -76,7 +76,6 @@ namespace MonoDevelop.PackageManagement
 
 			// Package source username.
 			var packageSourceUserNameHBox = new HBox ();
-			packageSourceUserNameHBox.Visible = false;
 			mainVBox.PackStart (packageSourceUserNameHBox);
 
 			var packageSourceUserNameLabel = new Label ();
@@ -91,7 +90,6 @@ namespace MonoDevelop.PackageManagement
 
 			// Package source password.
 			var packageSourcePasswordHBox = new HBox ();
-			packageSourcePasswordHBox.Visible = false;
 			mainVBox.PackStart (packageSourcePasswordHBox);
 
 			var packageSourcePasswordLabel = new Label ();
