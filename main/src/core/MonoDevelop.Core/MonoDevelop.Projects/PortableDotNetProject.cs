@@ -82,8 +82,9 @@ namespace MonoDevelop.Projects
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			// Profile136 includes .NET 4.0+, Silverlight 5, Windows Phone 8, and Xamarin.iOS/Android, so make that our default.
-			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile136");
+			// Profile78 includes .NET 4.5+, Windows Phone 8, and Xamarin.iOS/Android, so make that our default.
+			// Note: see also: PortableLibrary.xpt.xml
+			return new TargetFrameworkMoniker (".NETPortable", "4.5", "Profile78");
 		}
 
 		protected internal override IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
