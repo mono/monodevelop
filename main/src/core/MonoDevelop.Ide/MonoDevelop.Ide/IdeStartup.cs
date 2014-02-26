@@ -316,15 +316,15 @@ namespace MonoDevelop.Ide
 		{
 			if (Platform.IsWindows)
 				return;
-			GLib.Timeout.Add (500, () => {
+			GLib.Timeout.Add (5000, () => {
 				lastIdle = DateTime.Now;
 				return true;
 			});
 			lastIdle = DateTime.Now;
 			var lockupCheckThread = new Thread (delegate () {
 				while (lockupCheckRunning) {
-					const int waitTimeout = 2000;
-					const int maxResponseTime = 5000;
+					const int waitTimeout = 5000;
+					const int maxResponseTime = 10000;
 					Thread.Sleep (waitTimeout); 
 					if ((DateTime.Now - lastIdle).TotalMilliseconds > maxResponseTime) {
 						var pid = Process.GetCurrentProcess ().Id;
