@@ -67,7 +67,7 @@ namespace ICSharpCode.PackageManagement
 			InitializeCredentialProvider();
 		}
 		
-		static void InitializeCredentialProvider()
+		public static void InitializeCredentialProvider()
 		{
 			ISettings settings = Settings.LoadDefaultSettings(null, null, null);
 			var packageSourceProvider = new PackageSourceProvider(settings);
@@ -75,7 +75,7 @@ namespace ICSharpCode.PackageManagement
 			
 			HttpClient.DefaultCredentialProvider = credentialProvider;
 		}
-		
+
 		public static PackageManagementOptions Options {
 			get { return options; }
 		}

@@ -138,6 +138,7 @@ namespace ICSharpCode.PackageManagement
 				PackageSource source = packageSourceViewModel.GetPackageSource();
 				packageSources.Add(source);
 			}
+			PackageManagementServices.InitializeCredentialProvider ();
 		}
 		
 		public string NewPackageSourceName {
