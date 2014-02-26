@@ -113,7 +113,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				headlabel.BreakOnPunctuation = false;
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
-				headlabel.MaxWidth = Math.Max (Screen.Width / 5, 480);
+				int x, y;
+				GetPosition (out x, out y);
+				var geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				headlabel.MaxWidth = Math.Max (geometry.Width / 5, 480);
 
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headlabel.WidthRequest = headlabel.RealWidth + 70;
