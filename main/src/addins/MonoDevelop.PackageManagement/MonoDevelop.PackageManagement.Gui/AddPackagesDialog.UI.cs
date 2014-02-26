@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Unix;
 using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
+using Mono.Unix;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using Xwt;
 using Xwt.Drawing;
 
@@ -96,10 +98,16 @@ namespace MonoDevelop.PackageManagement
 
 			// Error information.
 			var packagesListVBox = new VBox ();
+			packagesListVBox.Spacing = 0;
 			errorMessageHBox = new HBox ();
 			errorMessageHBox.Margin = new WidgetSpacing ();
 			errorMessageHBox.BackgroundColor = Colors.Orange;
 			errorMessageHBox.Visible = false;
+			var errorImage = new ImageView ();
+			errorImage.Margin = new WidgetSpacing (10, 0, 0, 0);
+			errorImage.Image = ImageService.GetIcon (Stock.Warning, Gtk.IconSize.Menu);
+			errorImage.HorizontalPlacement = WidgetPlacement.End;
+			errorMessageHBox.PackStart (errorImage);
 			errorMessageLabel = new Label ();
 			errorMessageLabel.TextColor = Colors.White;
 			errorMessageLabel.Margin = new WidgetSpacing (5, 5, 5, 5);
