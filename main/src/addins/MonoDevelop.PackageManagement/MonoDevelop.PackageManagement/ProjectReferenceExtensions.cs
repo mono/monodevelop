@@ -36,21 +36,24 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
 		{
-			if (!IsAssemblyReference (projectReference))
+			if (!projectReference.IsAssemblyReference ())
 				return false;
 
 			var project = projectReference.OwnerProject as DotNetProject;
 			if ((project == null) || !project.HasPackages ())
 				return false;
 
+			var assemblyFilePath = new FilePath (projectReference.GetFullAssemblyPath ());
+			if (assemblyFilePath.IsNullOrEmpty)
+				return false;
+
 			var packagesPath = new SolutionPackageRepositoryPath (project);
 			var packagesFilePath = new FilePath (packagesPath.PackageRepositoryPath);
 
-			var assemblyFilePath = new FilePath (projectReference.GetFullAssemblyPath ());
 			return assemblyFilePath.IsChildPathOf (packagesFilePath);
 		}
 
-		static bool IsAssemblyReference (ProjectReference reference)
+		static bool IsAssemblyReference (this ProjectReference reference)
 		{
 			return (reference.ReferenceType == ReferenceType.Assembly)
 				|| ((reference.ReferenceType == ReferenceType.Package) && !reference.IsValid);
@@ -58,16 +61,11 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetFullAssemblyPath (this ProjectReference projectReference)
 		{
-			if (projectReference.IsValid) {
-				return Path.GetFullPath (projectReference.Reference);
+			if (!String.IsNullOrEmpty (projectReference.HintPath)) {
+				return Path.GetFullPath (projectReference.HintPath);
 			}
 
-			string hintPath = projectReference.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] as string;
-			if (!String.IsNullOrEmpty (hintPath)) {
-				return Path.GetFullPath (Path.Combine (projectReference.OwnerProject.BaseDirectory, hintPath));
-			}
-
-			return projectReference.Reference;
+			return null;
 		}
 	}
 }
