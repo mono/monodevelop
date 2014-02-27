@@ -73,6 +73,7 @@ namespace MonoDevelop.Projects
 		string package;
 		SystemPackage cachedPackage;
 		string customError;
+		string hintPath;
 		
 		public event EventHandler StatusChanged;
 		
@@ -100,7 +101,11 @@ namespace MonoDevelop.Projects
 			UpdatePackageReference ();
 		}
 		
-		public ProjectReference (ReferenceType referenceType, string reference)
+		public ProjectReference (ReferenceType referenceType, string reference): this (referenceType, reference, null)
+		{
+		}
+
+		public ProjectReference (ReferenceType referenceType, string reference, string hintPath)
 		{
 			if (referenceType == ReferenceType.Assembly)
 				specificVersion = false;
@@ -110,6 +115,7 @@ namespace MonoDevelop.Projects
 #pragma warning restore 612
 			this.referenceType = referenceType;
 			this.reference     = reference;
+			this.hintPath = hintPath ?? (referenceType == ReferenceType.Assembly ? reference : null);
 			UpdatePackageReference ();
 		}
 		
@@ -210,12 +216,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal string LoadedReference {
-			get {
-				return loadedReference;
-			}
-		}
-
 		public bool SpecificVersion {
 			get {
 				return specificVersion;
@@ -283,7 +283,7 @@ namespace MonoDevelop.Projects
 						}
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {
-					if (!File.Exists (reference))
+					if (!File.Exists (hintPath))
 						return GettextCatalog.GetString ("File not found");
 				}
 				return string.Empty;
@@ -306,6 +306,10 @@ namespace MonoDevelop.Projects
 				return true;
 			}
 		}
+
+		public string HintPath {
+			get { return hintPath; }
+		}
 		
 		string GetVersionNum (string asmName)
 		{
@@ -321,6 +325,26 @@ namespace MonoDevelop.Projects
 			}
 			return "0.0.0.0";
 		}
+
+		internal ProjectReference GetRefreshedReference ()
+		{
+			if (customError != null)
+				return null;
+			if (ReferenceType == ReferenceType.Package) {
+				if (!string.IsNullOrEmpty (hintPath) && File.Exists (hintPath)) {
+					var res = (ProjectReference) MemberwiseClone ();
+					res.referenceType = ReferenceType.Assembly;
+					return res;
+				}
+			} else if (ReferenceType == ReferenceType.Assembly) {
+				if (!string.IsNullOrEmpty (hintPath) && !File.Exists (hintPath)) {
+					var res = (ProjectReference) MemberwiseClone ();
+					res.referenceType = ReferenceType.Package;
+					return res;
+				}
+			}
+			return null;
+		}
 		
 		/// <summary>
 		/// Returns the file name to an assembly, regardless of what 
@@ -330,7 +354,7 @@ namespace MonoDevelop.Projects
 		{
 			switch (ReferenceType) {
 				case ReferenceType.Assembly:
-					return reference;
+					return hintPath;
 				
 				case ReferenceType.Package:
 					string file = AssemblyContext.GetAssemblyLocation (Reference, package, ownerProject != null? ownerProject.TargetFramework : null);

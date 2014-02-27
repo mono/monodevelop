@@ -885,13 +885,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							pref.SetInvalid (GettextCatalog.GetString ("Invalid file path"));
 							pref.ExtendedProperties ["_OriginalMSBuildReferenceInclude"] = buildItem.Include;
 							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
-						} else if (File.Exists (path)) {
-							pref = new ProjectReference (ReferenceType.Assembly, path);
+						} else {
+							var type = File.Exists (path) ? ReferenceType.Assembly : ReferenceType.Package;
+							pref = new ProjectReference (type, buildItem.Include, path);
+							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
 							if (MSBuildProjectService.IsAbsoluteMSBuildPath (hintPath))
 								pref.ExtendedProperties ["_OriginalMSBuildReferenceIsAbsolute"] = true;
-						} else {
-							pref = new ProjectReference (ReferenceType.Package, buildItem.Include);
-							pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
 						}
 					} else {
 						string asm = buildItem.Include;
@@ -1459,9 +1458,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
 				}
 				else {
-					if (File.Exists (pref.Reference)) {
+					if (File.Exists (pref.HintPath)) {
 						try {
-							var aname = AssemblyName.GetAssemblyName (pref.Reference);
+							var aname = AssemblyName.GetAssemblyName (pref.HintPath);
 							if (pref.SpecificVersion) {
 								asm = aname.FullName;
 							} else {
@@ -1476,7 +1475,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					string basePath = Item.ItemDirectory;
 					if (pref.ExtendedProperties.Contains ("_OriginalMSBuildReferenceIsAbsolute"))
 						basePath = null;
-					hintPath = MSBuildProjectService.ToMSBuildPath (basePath, pref.Reference);
+					hintPath = MSBuildProjectService.ToMSBuildPath (basePath, pref.HintPath);
 				}
 				if (asm == null)
 					asm = Path.GetFileNameWithoutExtension (pref.Reference);

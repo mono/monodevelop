@@ -214,6 +214,18 @@ namespace MonoDevelop.Projects
 			get { return projectReferences; }
 		}
 
+		/// <summary>
+		/// Checks the status of references. To be called when referenced files may have been deleted or created.
+		/// </summary>
+		public void RefreshReferenceStatus ()
+		{
+			for (int n = 0; n < References.Count; n++) {
+				var cp = References [n].GetRefreshedReference ();
+				if (cp != null)
+					References [n] = cp;
+			}
+		}
+
 		public virtual bool CanReferenceProject (DotNetProject targetProject, out string reason)
 		{
 			if (!TargetFramework.CanReferenceAssembliesTargetingFramework (targetProject.TargetFramework)) {
@@ -441,12 +453,17 @@ namespace MonoDevelop.Projects
 			get { return new string[] { "AnyCPU" }; }
 		}
 
-		void CheckReferenceChange (string updatedFile)
+		void CheckReferenceChange (FilePath updatedFile)
 		{
-			foreach (ProjectReference pr in References) {
+			for (int n=0; n<References.Count; n++) {
+				ProjectReference pr = References [n];
 				if (pr.ReferenceType == ReferenceType.Assembly) {
-					if (updatedFile == Path.GetFullPath (pr.Reference))
+					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
 						pr.NotifyStatusChanged ();
+				} else if (pr.HintPath == updatedFile) {
+					var nr = pr.GetRefreshedReference ();
+					if (nr != null)
+						References [n] = nr;
 				}
 			}
 		}
@@ -904,9 +921,12 @@ namespace MonoDevelop.Projects
 		{
 			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles);
 			if (includeReferencedFiles) {
-				foreach (ProjectReference pref in References)
-					if (pref.ReferenceType == ReferenceType.Assembly)
-						col.Add (pref.Reference);
+				foreach (ProjectReference pref in References) {
+					if (pref.ReferenceType == ReferenceType.Assembly) {
+						foreach (var f in pref.GetReferencedFileNames (DefaultConfiguration.Selector))
+							col.Add (f);
+					}
+				}
 				foreach (DotNetProjectConfiguration c in Configurations) {
 					if (c.SignAssembly)
 						col.Add (c.AssemblyKeyFile);
