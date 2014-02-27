@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Unknown language '{1}')</span>", escapedProjectName, ((DotNetProject)p).LanguageName);
 			} else if (p is UnknownProject) {
 				var up = (UnknownProject)p;
-				nodeInfo.OverlayBottomRight = ImageService.GetIcon (Stock.Warning).WithSize (10, 10);
+				nodeInfo.OverlayBottomLeft = ImageService.GetIcon (Stock.Warning).WithSize (10, 10);
 				nodeInfo.Label = "<span foreground='gray'>" + escapedProjectName + " <small>(" + GLib.Markup.EscapeText (up.LoadError.TrimEnd ('.')) + ")</small></span>";
 				nodeInfo.Icon = Context.GetIcon (p.StockIcon).WithAlpha (0.5);
 				return;
