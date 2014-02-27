@@ -3,6 +3,10 @@
 	<Runtime>
 		<Import assembly="JGit.dll"/>
 		<Import assembly="IKVM.OpenJDK.Core.dll"/>
+		<Import assembly="IKVM.OpenJDK.Security.dll"/>
+		<Import assembly="IKVM.OpenJDK.Text.dll"/>
+		<Import assembly="IKVM.OpenJDK.Util.dll"/>
+		<Import assembly="IKVM.Runtime.dll"/>
 	</Runtime>
 
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">

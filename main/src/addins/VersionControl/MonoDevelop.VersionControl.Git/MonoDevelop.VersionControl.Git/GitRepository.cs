@@ -1407,14 +1407,16 @@ namespace MonoDevelop.VersionControl.Git
 		public void RenameRemote (string name, string newName)
 		{
 			StoredConfig cfg = RootRepository.getConfig ();
-			// TODO
-			/*
-			RemoteConfig rem = RemoteConfig.getAllRemoteConfigs (cfg).FirstOrDefault (r => r.getName() == name);
-			if (rem != null) {
-				// Missing setName
-				//rem.Name = newName;
-				rem.update (cfg);
-			}*/
+			RemoteConfig.getAllRemoteConfigs (cfg);
+			var iterator = RemoteConfig.getAllRemoteConfigs (cfg).listIterator ();
+			while (iterator.hasNext ()) {
+				var rem = (RemoteConfig)iterator.next ();
+				if (rem.getName () == name) {
+					rem.setName (newName);
+					rem.update (cfg);
+					break;
+				}
+			}
 		}
 
 		public void AddRemote (RemoteSource remote, bool importTags)
@@ -1445,12 +1447,15 @@ namespace MonoDevelop.VersionControl.Git
 		public void RemoveRemote (string name)
 		{
 			StoredConfig cfg = RootRepository.getConfig ();
-			// TODO
-			/*RemoteConfig rem = RemoteConfig.getAllRemoteConfigs (cfg).FirstOrDefault (r => r.getName() == name);
-			if (rem != null) {
-				cfg.unsetSection ("remote", name);
-				cfg.save ();
-			}*/
+			var iterator = RemoteConfig.getAllRemoteConfigs (cfg).listIterator ();
+			while (iterator.hasNext ()) {
+				var rem = (RemoteConfig)iterator.next ();
+				if (rem.getName () == name) {
+					cfg.unsetSection ("remote", name);
+					cfg.save ();
+					break;
+				}
+			}
 		}
 
 		public IEnumerable<Branch> GetBranches ()
@@ -1836,17 +1841,15 @@ namespace MonoDevelop.VersionControl.Git
 			RepoRemote = rem;
 			Name = rem.getName();
 
-			// TODO
-			//FetchUrl = rem.getURIs().Select (u => u.ToString ()).FirstOrDefault ();
-			//PushUrl = rem.getPushURIs().Select (u => u.toString ()).FirstOrDefault ();
+			FetchUrl = rem.getURIs ().isEmpty () ? null : ((URIish)rem.getURIs ().get (0)).toString ();
+			PushUrl = rem.getPushURIs().isEmpty () ? null : ((URIish)rem.getURIs ().get (0)).toString ();
 			if (string.IsNullOrEmpty (PushUrl))
 				PushUrl = FetchUrl;
 		}
 
 		internal void Update ()
 		{
-			// TODO
-			//RepoRemote.Name = Name;
+			RepoRemote.setName (Name);
 
 			var list = new List<URIish> (RepoRemote.getURIs ().size ());
 			var li = RepoRemote.getURIs ().listIterator ();
