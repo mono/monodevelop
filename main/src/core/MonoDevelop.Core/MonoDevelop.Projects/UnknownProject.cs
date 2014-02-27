@@ -110,8 +110,9 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		protected internal override void OnSave (IProgressMonitor monitor)
+		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
+			return new ProjectConfiguration (name);
 		}
 	}
 }
