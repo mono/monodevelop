@@ -59,13 +59,16 @@ module NRefactory =
             member x.LastIdent = lastIdent
 
     /// An NRefactory symbol for a local F# symbol.
-    type FSharpResolvedVariable(name, region, symbol, lastIdent) = 
+    type FSharpResolvedVariable(name, region, symbol, lastIdent) as this = 
         interface IHasFSharpSymbol with 
             member x.FSharpSymbol = symbol
             member x.LastIdent = lastIdent
         interface ISymbol with
             member x.SymbolKind = SymbolKind.Variable 
             member x.Name = name
+            member x.ToReference() =
+                { new ISymbolReference with 
+                  member x.Resolve(context) = this :> _}
         interface IVariable with 
             member x.Name = name
             member x.Region = region
