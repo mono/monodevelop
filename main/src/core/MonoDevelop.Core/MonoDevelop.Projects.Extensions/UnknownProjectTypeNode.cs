@@ -52,8 +52,11 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("product")]
 		string requiresProduct { get; set; }
 
-		[NodeAttribute ("loadFiles")]
+		[NodeAttribute ("loadFiles", "If true, MonoDevelop will show the project files in the solution pad")]
 		bool loadFiles = true;
+
+		[NodeAttribute ("extension", "Extension of the project file")]
+		string extension = "";
 
 		#pragma warning restore 649
 
@@ -65,6 +68,12 @@ namespace MonoDevelop.Projects.Extensions
 
 		public bool LoadFiles {
 			get { return loadFiles; }
+		}
+
+		public string Extension {
+			get {
+				return this.extension;
+			}
 		}
 
 		public bool MatchesGuid (string guid)

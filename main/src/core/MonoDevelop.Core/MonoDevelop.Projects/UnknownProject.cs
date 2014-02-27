@@ -67,17 +67,13 @@ namespace MonoDevelop.Projects
 
 
 		public string LoadError {
-			get { return loadError; }
+			get { return unloaded ? GettextCatalog.GetString ("Unavailable") : loadError; }
 			set { loadError = value; }
 		}
 
 		public bool UnloadedEntry {
 			get { return unloaded; }
-			set {
-				unloaded = value;
-				if (value)
-					loadError = GettextCatalog.GetString ("Unavailable");
-			}
+			set { unloaded = value; }
 		}
 
 		public override string Name {
@@ -97,7 +93,7 @@ namespace MonoDevelop.Projects
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var r = new BuildResult ();
-			r.AddError ("Project unavailable");
+			r.AddError (loadError);
 			return r;
 		}
 

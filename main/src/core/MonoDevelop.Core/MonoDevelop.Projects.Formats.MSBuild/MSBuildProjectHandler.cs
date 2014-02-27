@@ -448,7 +448,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 					return item;
 				} else {
-					var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (subtypeGuids.ToArray ());
+					var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (subtypeGuids.ToArray (), fileName);
 					if (projectInfo != null && projectInfo.LoadFiles) {
 						SetUnsupportedType (projectInfo);
 						return new UnknownProject (fileName, UnknownProjectTypeInfo.GetInstructions ());

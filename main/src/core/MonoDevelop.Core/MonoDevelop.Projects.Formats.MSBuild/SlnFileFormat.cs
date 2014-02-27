@@ -834,7 +834,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
 						if (!string.IsNullOrEmpty (name)) {
 							var guids = name.Split (';');
-							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids);
+							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, fileName);
 							if (projectInfo != null) {
 								loadAsProject = projectInfo.LoadFiles;
 								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));

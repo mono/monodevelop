@@ -299,8 +299,8 @@
 		<ProjectType guid = "{E3E379DF-F4C6-4180-9B81-6769533ABE47}" name = "ASP.NET MVC 4" addin = "ASP.NET MVC" />
 		<ProjectType guid = "{349C5851-65DF-11DA-9384-00065B846F21}" name = "ASP.NET Web Application" addin = "ASP.NET" />
 		<ProjectType guid = "{9B831FEF-F496-498F-9FE8-180DA5CB4258}" name = "MonoGame" addin = "MonoGame" />
-		<ProjectType guid = "{4925A630-B079-445d-BCD4-3A9C94FE9307}" name = "F#" addin = "F#" />
-		<ProjectType guid = "{F2A71F9B-5D33-465A-A702-920D77279786}" name = "F#" addin = "F#" />
+		<ProjectType guid = "{4925A630-B079-445d-BCD4-3A9C94FE9307}" name = "F#" extension="fsproj" addin = "F#" />
+		<ProjectType guid = "{F2A71F9B-5D33-465A-A702-920D77279786}" name = "F#" extension="fsproj" addin = "F#" />
 		<ProjectType guid = "{C089C8C0-30E0-4E22-80C0-CE093F111A43}" name = "Windows Phone" />
 		<ProjectType guid = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}" name = "ASP.NET Web Site" />
 		<ProjectType guid = "{F135691A-BF7E-435D-8960-F99683D2D49C}" name = "MS Distributed System" loadFiles="False" />
@@ -331,7 +331,7 @@
 		<ProjectType guid = "{D399B71A-8929-442a-A9AC-8BEC78BB2433}" name = "XNA (Zune)" />
 		<ProjectType guid = "{A1591282-1198-4647-A2B1-27E5FF5F6F3B}" name = "Silverlight" />
 		<ProjectType guid = "{BC8A1FFA-BEE3-4634-8014-F334798102B3}" name = "Windows Store App" />
-		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" />
-		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" />
+		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" extension="vcxproj"/>
+		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
 	</Extension>
 </ExtensionModel>
