@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (new [] { typeGuid });
 			if (projectInfo != null && projectInfo.LoadFiles) {
 				var h = new MSBuildProjectHandler (typeGuid, "", itemGuid);
-				h.ProjectTypeIsUnsupported = true;
+				h.SetUnsupportedType (projectInfo);
 				return h.Load (monitor, fileName, expectedFormat, "", null);
 			}
 

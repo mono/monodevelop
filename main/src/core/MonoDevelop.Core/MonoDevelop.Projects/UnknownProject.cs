@@ -39,12 +39,14 @@ namespace MonoDevelop.Projects
 		public UnknownProject ()
 		{
 			NeedsReload = false;
+			loadError = GettextCatalog.GetString ("Unknown project type");
 		}
 
-		public UnknownProject (FilePath file): this ()
+		public UnknownProject (FilePath file, string loadError): this ()
 		{
 			NeedsReload = false;
 			FileName = file;
+			this.loadError = loadError;
 		}
 
 		public override string ProjectType {

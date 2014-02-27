@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder projectBuilder;
 		ITimeTracker timer;
 		bool modifiedInMemory;
+		UnknownProjectTypeNode unknownProjectTypeInfo;
 		
 		string lastBuildToolsVersion;
 		string lastBuildRuntime;
@@ -72,10 +73,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string productVersion;
 		string schemaVersion;
 
-		public bool ProjectTypeIsUnsupported { get; set; }
+		internal bool ProjectTypeIsUnsupported {
+			get { return unknownProjectTypeInfo != null; }
+		}
+
+		internal UnknownProjectTypeNode UnknownProjectTypeInfo {
+			get { return unknownProjectTypeInfo; }
+		}
 
 		public List<string> TargetImports {
 			get { return targetImports; }
+		}
+
+		internal void SetUnsupportedType (UnknownProjectTypeNode typeInfo)
+		{
+			unknownProjectTypeInfo = typeInfo;
 		}
 
 		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
@@ -403,7 +415,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string itemType, Type itemClass)
 		{
 			if (ProjectTypeIsUnsupported)
-				return new UnknownProject (fileName);
+				return new UnknownProject (fileName, UnknownProjectTypeInfo.GetInstructions ());
 
 			if (subtypeGuids.Any ()) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (subtypeGuids);
@@ -438,8 +450,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				} else {
 					var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (subtypeGuids.ToArray ());
 					if (projectInfo != null && projectInfo.LoadFiles) {
-						ProjectTypeIsUnsupported = true;
-						return new UnknownProject (fileName);
+						SetUnsupportedType (projectInfo);
+						return new UnknownProject (fileName, UnknownProjectTypeInfo.GetInstructions ());
 					}
 					throw new UnknownSolutionItemTypeException (ProjectTypeIsUnsupported ? TypeGuid : string.Join (";", subtypeGuids));
 				}
