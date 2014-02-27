@@ -25,12 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -101,10 +103,33 @@ namespace MonoDevelop.PackageManagement
 				aggregatedMonitor.MasterMonitor as IConsole,
 				(sender, e) => {
 					using (progressMonitor) {
-						ReportOutcome ((IAsyncOperation)sender, progressMonitor, progressMessage);
+						OnPackageRestoreCompleted ((IAsyncOperation)sender, progressMonitor, progressMessage);
 					}
 				}
 			);
+		}
+
+		void OnPackageRestoreCompleted (
+			IAsyncOperation operation,
+			IProgressMonitor progressMonitor,
+			ProgressMonitorStatusMessage progressMessage)
+		{
+			if (operation.Success) {
+				RefreshProjectReferences ();
+			}
+			ReportOutcome (operation, progressMonitor, progressMessage);
+		}
+
+		void RefreshProjectReferences ()
+		{
+			DispatchService.GuiDispatch (() => {
+				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				if (solution != null) {
+					foreach (DotNetProject project in solution.GetAllProjects ().OfType<DotNetProject> ()) {
+						project.RefreshReferenceStatus ();
+					}
+				}
+			});
 		}
 
 		void ReportOutcome (
