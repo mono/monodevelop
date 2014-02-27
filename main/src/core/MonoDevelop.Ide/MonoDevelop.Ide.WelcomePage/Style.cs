@@ -104,5 +104,10 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + (bold ? "bold" : "normal") + "\">{0}</span>";
 		}
+
+		public static string GetFormatString (string fontFace, int fontSize, string color, string fontWeight)
+		{
+			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + fontWeight + "\">{0}</span>";
+		}
 	}
 }

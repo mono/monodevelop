@@ -49,6 +49,13 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected string Text { get; set; }
 		protected bool Bold { get; set; }
 
+		HBox box = new HBox ();
+
+		public int IconTextSpacing {
+			get { return box.Spacing; }
+			set { box.Spacing = value; }
+		}
+
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
 			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
@@ -64,8 +71,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
-			HBox box = new HBox ();
-			box.Spacing = Styles.WelcomeScreen.Links.IconTextSpacing;
+			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
 			label = new Label ();
 			imageWidget = image.ToGtkWidget ();

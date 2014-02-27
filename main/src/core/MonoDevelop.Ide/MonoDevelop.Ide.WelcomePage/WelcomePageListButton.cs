@@ -41,6 +41,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gdk.Rectangle starRect;
 		bool mouseOverStar;
 
+		protected bool TitleFontIsBold { get; set; }
+
 		static readonly Xwt.Drawing.Image starNormal;
 		static readonly Xwt.Drawing.Image starNormalHover;
 		static readonly Xwt.Drawing.Image starPinned;
@@ -55,6 +57,67 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public int LeftTextPadding { get; set; }
 		public int InternalPadding { get; set; }
+
+
+		string smallTitleColor = Styles.WelcomeScreen.Pad.SmallTitleColor;
+		public string SmallTitleColor {
+			get {
+				return smallTitleColor;
+			}
+			set {
+				smallTitleColor = value;
+			}
+		}
+
+		string mediumTitleColor = Styles.WelcomeScreen.Pad.MediumTitleColor;
+		public string MediumTitleColor {
+			get {
+				return mediumTitleColor;
+			}
+			set {
+				mediumTitleColor = value;
+			}
+		}
+
+		string titleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
+		public string TitleFontFace {
+			get {
+				return titleFontFace;
+			}
+			set {
+				titleFontFace = value;
+			}
+		}
+
+		string smallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
+		public string SmallTitleFontFace {
+			get {
+				return smallTitleFontFace;
+			}
+			set {
+				smallTitleFontFace = value;
+			}
+		}
+
+		int titleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize;
+		public int TitleFontSize {
+			get {
+				return titleFontSize;
+			}
+			set {
+				titleFontSize = value;
+			}
+		}
+
+		int smallTitleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize;
+		public int SmallTitleFontSize {
+			get {
+				return smallTitleFontSize;
+			}
+			set {
+				smallTitleFontSize = value;
+			}
+		}
 
 		static WelcomePageListButton ()
 		{
@@ -71,6 +134,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.subtitle = subtitle;
 			this.icon = icon;
 			this.actionUrl = actionUrl;
+			this.SmallTitleColor = smallTitleColor;
+			this.MediumTitleColor = mediumTitleColor;
 			WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width;
 			HeightRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Height + 2;
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask);
@@ -200,11 +265,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				int textWidth = Allocation.Width - LeftTextPadding - InternalPadding * 2;
 
-				var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
 				titleLayout.Width = Pango.Units.FromPixels (textWidth);
 				titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-				titleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize, false, Styles.WelcomeScreen.Pad.MediumTitleColor, title));
+				titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, titleFontSize, TitleFontIsBold, MediumTitleColor, title));
 
 				Pango.Layout subtitleLayout = null;
 
@@ -212,7 +276,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					subtitleLayout = new Pango.Layout (PangoContext);
 					subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 					subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize, false, Styles.WelcomeScreen.Pad.SmallTitleColor, subtitle));
+					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, smallTitleFontSize, false, SmallTitleColor, subtitle));
 				}
 
 				int height = 0;
