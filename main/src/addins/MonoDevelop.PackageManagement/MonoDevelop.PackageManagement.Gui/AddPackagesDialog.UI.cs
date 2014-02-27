@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 	public partial class AddPackagesDialog : ExtendedTitleBarDialog
 	{
 		ComboBox packageSourceComboBox;
-		TextEntry packageSearchEntry;
+		SearchTextEntry packageSearchEntry;
 		ListView packagesListView;
 		VBox packageInfoVBox;
 		Label packageNameLabel;
@@ -78,7 +78,8 @@ namespace MonoDevelop.PackageManagement
 			packageSourceComboBox.MinWidth = 200;
 			topHBox.PackStart (packageSourceComboBox);
 
-			packageSearchEntry = new TextEntry ();
+			packageSearchEntry = new SearchTextEntry ();
+			packageSearchEntry.WidthRequest = 187;
 			topHBox.PackEnd (packageSearchEntry);
 
 			this.HeaderContent = topHBox;
