@@ -25,13 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
 using NuGet;
-using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -67,13 +69,18 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			return GetPackageReferencesNodes (dataObject).Any ();
+		}
+
+		IEnumerable<PackageReferenceNode> GetPackageReferencesNodes (object dataObject)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
+			return projectPackagesNode.GetPackageReferencesNodes ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
-			foreach (PackageReferenceNode packageReference in projectPackagesNode.GetPackageReferencesNodes ()) {
+			foreach (PackageReferenceNode packageReference in GetPackageReferencesNodes (dataObject)) {
 				treeBuilder.AddChild (packageReference);
 			}
 		}
