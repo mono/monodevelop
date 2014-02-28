@@ -440,8 +440,12 @@ namespace MonoDevelop.PackageManagement
 
 		void PackagesListRowActivated (object sender, ListViewRowEventArgs e)
 		{
-			PackageViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
-			InstallPackage (packageViewModel);
+			if (packagesCheckedCount > 0) {
+				AddPackagesButtonClicked (sender, e);
+			} else {
+				PackageViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
+				InstallPackage (packageViewModel);
+			}
 		}
 
 		void InstallPackage (PackageViewModel packageViewModel)
