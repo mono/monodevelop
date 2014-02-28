@@ -83,6 +83,9 @@ namespace MonoDevelop.Components.MainToolbar
 		bool settingGlobalConfig;
 		SolutionEntityItem currentStartupProject;
 
+		int ignoreConfigurationChangedCount;
+		int ignoreRuntimeChangedCount;
+
 		public Cairo.ImageSurface Background {
 			get;
 			set;
@@ -313,6 +316,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Add (align);
 			SetDefaultSizes (-1, 21);
+
+			configurationCombo.Changed += HandleConfigurationChanged;
+			runtimeCombo.Changed += HandleRuntimeChanged;
 			UpdateCombos ();
 
 			button.Clicked += HandleStartButtonClicked;
@@ -528,12 +534,14 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
 		{
-			NotifyConfigurationChange ();
+			if (ignoreRuntimeChangedCount == 0)
+				NotifyConfigurationChange ();
 		}
 
 		void HandleConfigurationChanged (object sender, EventArgs e)
 		{
-			NotifyConfigurationChange ();
+			if (ignoreConfigurationChangedCount == 0)
+				NotifyConfigurationChange ();
 		}
 
 		void UpdateBuildConfiguration ()
@@ -570,7 +578,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
 
-			configurationCombo.Changed -= HandleConfigurationChanged;
+			ignoreConfigurationChangedCount++;
 			try {
 				TreeIter iter;
 
@@ -596,7 +604,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			} finally {
-				configurationCombo.Changed += HandleConfigurationChanged;
+				ignoreConfigurationChangedCount--;
 			}
 
 			SelectActiveRuntime ();
@@ -646,7 +654,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectActiveRuntime ()
 		{
-			runtimeCombo.Changed -= HandleRuntimeChanged;
+			ignoreRuntimeChangedCount++;
 
 			try {
 				TreeIter iter;
@@ -665,7 +673,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			} finally {
-				runtimeCombo.Changed += HandleRuntimeChanged;
+				ignoreRuntimeChangedCount--;
 			}
 		}
 
@@ -676,7 +684,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			configurationMerger.Load (currentSolution);
 
-			configurationCombo.Changed -= HandleConfigurationChanged;
+			ignoreConfigurationChangedCount++;
 			try {
 				configurationStore.Clear ();
 				if (!IdeApp.Workspace.IsOpen) {
@@ -691,7 +699,7 @@ namespace MonoDevelop.Components.MainToolbar
 					configurationStore.AppendValues (conf.Replace ("|", " | "), conf);
 				}
 			} finally {
-				configurationCombo.Changed += HandleConfigurationChanged;
+				ignoreConfigurationChangedCount--;
 			}
 
 			FillRuntimes ();
@@ -700,7 +708,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void FillRuntimes ()
 		{
-			runtimeCombo.Changed -= HandleRuntimeChanged;
+			ignoreRuntimeChangedCount++;
 			try {
 				runtimeStore.Clear ();
 				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
@@ -755,7 +763,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				runtimeCombo.Sensitive = runtimes > 1;
 			} finally {
-				runtimeCombo.Changed += HandleRuntimeChanged;
+				ignoreRuntimeChangedCount--;
 			}
 		}
 
