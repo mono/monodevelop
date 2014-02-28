@@ -42,12 +42,12 @@ namespace MonoDevelop.PackageManagement
 		IBackgroundPackageActionRunner backgroundActionRunner;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
-		DataField<bool> packageCheckBoxActiveField = new DataField<bool> ();
-		DataField<bool> packageCheckBoxVisibleField = new DataField<bool> ();
-		DataField<Image> packageIconField = new DataField<Image> ();
+		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
+		DataField<double> packageCheckBoxAlphaField = new DataField<double> ();
+		const double packageCheckBoxSemiTransarentAlpha = 0.6;
 		ListStore packageStore;
-		Image defaultPackageImage;
+		PackageCellView packageCellView;
 		TimeSpan searchDelayTimeSpan = TimeSpan.FromMilliseconds (500);
 		IDisposable searchTimer;
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
@@ -93,40 +93,28 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageCheckBoxActiveField, packageCheckBoxVisibleField, packageIconField, packageViewModelField);
+			packageStore = new ListStore (packageHasBackgroundColorField, packageCheckBoxAlphaField, packageViewModelField);
 			packagesListView.DataSource = packageStore;
 
-			AddPackageCheckBoxColumnToListView ();
-			packagesListView.Columns.Add ("Icon", packageIconField);
-			AddPackageDescriptionColumnToListView ();
+			AddPackageCellViewToListView ();
 
 			packagesListView.SelectionChanged += PackagesListViewSelectionChanged;
 			packagesListView.RowActivated += PackagesListRowActivated;
 			packagesListView.VerticalScrollControl.ValueChanged += PackagesListViewScrollValueChanged;
-
-			defaultPackageImage = Image.FromResource (typeof(AddPackagesDialog), "packageicon.png");
 		}
 
-		void AddPackageCheckBoxColumnToListView ()
+		void AddPackageCellViewToListView ()
 		{
-			var checkBoxCellView = new CheckBoxCellView {
-				ActiveField = packageCheckBoxActiveField,
-				Editable = true,
-				VisibleField = packageCheckBoxVisibleField
-			};
-			checkBoxCellView.Toggled += PackageCheckBoxToggled;
-			var checkBoxColumn = new ListViewColumn ("Checked", checkBoxCellView);
-			packagesListView.Columns.Add (checkBoxColumn);
-		}
-
-		void AddPackageDescriptionColumnToListView ()
-		{
-			var packageCellView = new PackageCellView {
+			packageCellView = new PackageCellView {
 				PackageField = packageViewModelField,
-				CellWidth = 490
+				HasBackgroundColorField = packageHasBackgroundColorField,
+				CheckBoxAlphaField = packageCheckBoxAlphaField,
+				CellWidth = 535
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
 			packagesListView.Columns.Add (textColumn);
+
+			packageCellView.PackageChecked += PackageCellViewPackageChecked;
 		}
 
 		void ShowLoadingMessage ()
@@ -292,6 +280,7 @@ namespace MonoDevelop.PackageManagement
 				packageStore.Clear ();
 				packagesCheckedCount = 0;
 				ResetPackagesListViewScroll ();
+				UpdatePackageListViewSelectionColor ();
 				ShowLoadingMessage ();
 			} else {
 				HideLoadingMessage ();
@@ -338,10 +327,22 @@ namespace MonoDevelop.PackageManagement
 		void AppendPackageToListView (PackageViewModel packageViewModel)
 		{
 			int row = packageStore.AddRow ();
-			packageStore.SetValue (row, packageCheckBoxVisibleField, true);
-			packageStore.SetValue (row, packageCheckBoxActiveField, false);
-			packageStore.SetValue (row, packageIconField, defaultPackageImage);
+			packageStore.SetValue (row, packageHasBackgroundColorField, IsOddRow (row));
+			packageStore.SetValue (row, packageCheckBoxAlphaField, GetPackageCheckBoxAlpha ());
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
+		}
+
+		bool IsOddRow (int row)
+		{
+			return (row % 2) == 0;
+		}
+
+		double GetPackageCheckBoxAlpha ()
+		{
+			if (packagesCheckedCount == 0) {
+				return packageCheckBoxSemiTransarentAlpha;
+			}
+			return 1;
 		}
 
 		void AddPackagesButtonClicked (object sender, EventArgs e)
@@ -399,7 +400,7 @@ namespace MonoDevelop.PackageManagement
 			var packageViewModels = new List<PackageViewModel> ();
 			for (int row = 0; row < viewModel.PackageViewModels.Count; ++row) {
 				PackageViewModel packageViewModel = viewModel.PackageViewModels [row];
-				if (packageStore.GetValue (row, packageCheckBoxActiveField)) {
+				if (packageViewModel.IsChecked) {
 					packageViewModels.Add (packageViewModel);
 				}
 			}
@@ -479,23 +480,22 @@ namespace MonoDevelop.PackageManagement
 			return (currentValue / (maxValue - pageSize)) > 0.7;
 		}
 
-		void PackageCheckBoxToggled (object sender, WidgetEventArgs e)
+		void PackageCellViewPackageChecked (object sender, PackageCellViewEventArgs e)
 		{
-			var checkBoxCell = (CheckBoxCellView)sender;
-			if (checkBoxCell.Active) {
-				// About to be unchecked.
-				packagesCheckedCount--;
-			} else {
-				// About to be checked.
+			if (e.PackageViewModel.IsChecked) {
 				packagesCheckedCount++;
+			} else {
+				packagesCheckedCount--;
 			}
 
 			UpdateAddPackagesButton ();
+			UpdatePackageListViewSelectionColor ();
+			UpdatePackageListViewCheckBoxAlpha ();
 		}
 
 		void UpdateAddPackagesButton ()
 		{
-			if (packagesCheckedCount > 1) {
+			if (packagesCheckedCount >= 1) {
 				addPackagesButton.Label = Catalog.GetString ("Add Packages");
 			} else {
 				if (OlderPackageInstalledThanPackageSelected ()) {
@@ -505,6 +505,22 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 			addPackagesButton.Sensitive = IsAtLeastOnePackageSelected ();
+		}
+
+		void UpdatePackageListViewSelectionColor ()
+		{
+			packageCellView.UseStrongSelectionColor = (packagesCheckedCount == 0);
+		}
+
+		void UpdatePackageListViewCheckBoxAlpha ()
+		{
+			if (packagesCheckedCount > 1)
+				return;
+
+			double alpha = GetPackageCheckBoxAlpha ();
+			for (int row = 0; row < packageStore.RowCount; ++row) {
+				packageStore.SetValue (row, packageCheckBoxAlphaField, alpha);
+			}
 		}
 
 		bool OlderPackageInstalledThanPackageSelected ()

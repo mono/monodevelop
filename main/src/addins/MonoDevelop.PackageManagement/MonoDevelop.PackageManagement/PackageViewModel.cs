@@ -556,5 +556,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return selectedProjects.HasOlderPackageInstalled (package);
 		}
+
+		public bool IsChecked { get; set; }
 	}
 }
