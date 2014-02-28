@@ -90,7 +90,10 @@
   <Extension path="/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id="FSharpConsoleProject" file="templates.FSharpConsoleProject.xpt.xml"/>
     <ProjectTemplate id="FSharpLibraryProject" file="templates.FSharpLibraryProject.xpt.xml"/>
-    <ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+    <!-- Only include the tutorial project if the F# 3.0 target is available as this includes F# 3.0 specific features -->
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
+      <ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+    </Condition>
     <ProjectTemplate id="FSharpGtkProject" file="templates.FSharpGtkProject.xpt.xml"/>
     <Condition id="Platform" value="windows">
       <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.windows.xpt.xml"/>
@@ -98,7 +101,9 @@
     <Condition id="Platform" value="!windows">
       <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.xpt.xml"/>
     </Condition>
-    <ProjectTemplate id="FSharpPortableProject" file="templates.PortableLibrary.xpt.xml"/>
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
+      <ProjectTemplate id="FSharpPortableProject" file="templates.PortableLibrary.xpt.xml"/>
+    </Condition>
 
   </Extension>
 
