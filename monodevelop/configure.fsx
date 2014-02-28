@@ -86,8 +86,7 @@ let mutable mdVersion = "4.1.6"
 if (File.Exists (GetPath ["../../../monodevelop.pc.in"])) then
     // Local MonoDevelop build directory
     mdDir <- GetPath [Environment.CurrentDirectory + "/../../../build"]
-    if (File.Exists (GetPath [mdDir;  "../../main/configure.in"])) then 
-        mdVersion <- Grep (GetPath [mdDir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
+    mdVersion <- Grep (GetPath [mdDir; "../../version.config"], @"^Version.*?(?<ver>([0-9]|\.)+)", "ver")
 else
     // Using installed MonoDevelop
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
