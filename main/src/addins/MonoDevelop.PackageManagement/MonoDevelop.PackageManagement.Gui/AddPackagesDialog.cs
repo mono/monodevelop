@@ -44,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 		List<PackageSource> packageSources;
 		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
 		DataField<PackageViewModel> packageViewModelField = new DataField<PackageViewModel> ();
+		DataField<Image> packageImageField = new DataField<Image> ();
 		DataField<double> packageCheckBoxAlphaField = new DataField<double> ();
 		const double packageCheckBoxSemiTransarentAlpha = 0.6;
 		ListStore packageStore;
@@ -53,6 +54,7 @@ namespace MonoDevelop.PackageManagement
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 		int packagesCheckedCount;
+		ImageLoader imageLoader = new ImageLoader ();
 
 		public AddPackagesDialog (PackagesViewModel viewModel, string initialSearch = null)
 			: this (viewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
@@ -79,6 +81,7 @@ namespace MonoDevelop.PackageManagement
 			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
 			this.packageSearchEntry.Activated += PackageSearchEntryActivated;
+			imageLoader.Loaded += ImageLoaded;
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -93,7 +96,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InitializeListView ()
 		{
-			packageStore = new ListStore (packageHasBackgroundColorField, packageCheckBoxAlphaField, packageViewModelField);
+			packageStore = new ListStore (packageHasBackgroundColorField, packageCheckBoxAlphaField, packageImageField, packageViewModelField);
 			packagesListView.DataSource = packageStore;
 
 			AddPackageCellViewToListView ();
@@ -109,6 +112,7 @@ namespace MonoDevelop.PackageManagement
 				PackageField = packageViewModelField,
 				HasBackgroundColorField = packageHasBackgroundColorField,
 				CheckBoxAlphaField = packageCheckBoxAlphaField,
+				ImageField = packageImageField,
 				CellWidth = 535
 			};
 			var textColumn = new ListViewColumn ("Package", packageCellView);
@@ -314,9 +318,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			bool packagesListViewWasEmpty = (packageStore.RowCount == 0);
 
-			for (int i = packageStore.RowCount; i < viewModel.PackageViewModels.Count; ++i) {
-				PackageViewModel packageViewModel = viewModel.PackageViewModels [i];
+			for (int row = packageStore.RowCount; row < viewModel.PackageViewModels.Count; ++row) {
+				PackageViewModel packageViewModel = viewModel.PackageViewModels [row];
 				AppendPackageToListView (packageViewModel);
+				LoadPackageImage (row, packageViewModel);
 			}
 
 			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
@@ -332,6 +337,13 @@ namespace MonoDevelop.PackageManagement
 			packageStore.SetValue (row, packageViewModelField, packageViewModel);
 		}
 
+		void LoadPackageImage (int row, PackageViewModel packageViewModel)
+		{
+			if (packageViewModel.HasIconUrl) {
+				imageLoader.LoadFrom (packageViewModel.IconUrl, row);
+			}
+		}
+
 		bool IsOddRow (int row)
 		{
 			return (row % 2) == 0;
@@ -343,6 +355,27 @@ namespace MonoDevelop.PackageManagement
 				return packageCheckBoxSemiTransarentAlpha;
 			}
 			return 1;
+		}
+
+		void ImageLoaded (object sender, ImageLoadedEventArgs e)
+		{
+			if (!e.HasError) {
+				int row = (int)e.State;
+				if (IsValidRowAndUrl (row, e.Uri)) {
+					packageStore.SetValue (row, packageImageField, e.Image);
+				}
+			}
+		}
+
+		bool IsValidRowAndUrl (int row, Uri uri)
+		{
+			if (row < packageStore.RowCount) {
+				PackageViewModel packageViewModel = packageStore.GetValue (row, packageViewModelField);
+				if (packageViewModel != null) {
+					return uri == packageViewModel.IconUrl;
+				}
+			}
+			return false;
 		}
 
 		void AddPackagesButtonClicked (object sender, EventArgs e)

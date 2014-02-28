@@ -45,6 +45,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public IDataField<PackageViewModel> PackageField { get; set; }
+		public IDataField<Image> ImageField { get; set; }
 		public IDataField<bool> HasBackgroundColorField { get; set; }
 		public IDataField<double> CheckBoxAlphaField { get; set; }
 
@@ -174,10 +175,50 @@ namespace MonoDevelop.PackageManagement
 
 		void DrawPackageImage (Context ctx, Rectangle cellArea)
 		{
-			ctx.DrawImage (
-				defaultPackageImage,
-				cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth,
-				cellArea.Top + packageImagePadding.Top);
+			double imageAlpha = 1;
+			Image image = GetValue (ImageField);
+			if (image == null) {
+				image = defaultPackageImage;
+				imageAlpha = GetImageAlphaForDefaultPackageImage ();
+			}
+
+			if (PackageImageNeedsResizing (image)) {
+				Point imageLocation = GetPackageImageLocation (maxPackageImageSize, cellArea);
+				ctx.DrawImage (
+					image,
+					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
+					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
+					maxPackageImageSize.Width,
+					maxPackageImageSize.Height,
+					imageAlpha);
+			} else {
+				Point imageLocation = GetPackageImageLocation (image.Size, cellArea);
+				ctx.DrawImage (
+					image,
+					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
+					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
+					imageAlpha);
+			}
+		}
+
+		double GetImageAlphaForDefaultPackageImage ()
+		{
+			if (Selected) {
+				return 0.5;
+			}
+			return 0.2;
+		}
+
+		bool PackageImageNeedsResizing (Image image)
+		{
+			return (image.Width > maxPackageImageSize.Width) || (image.Height > maxPackageImageSize.Height);
+		}
+
+		Point GetPackageImageLocation (Size imageSize, Rectangle cellArea)
+		{
+			double width = (packageImageAreaWidth - imageSize.Width) / 2;
+			double height = (cellArea.Height - imageSize.Height - packageImagePadding.Bottom) / 2;
+			return new Point (width, height);
 		}
 
 		protected override Size OnGetRequiredSize ()
@@ -219,21 +260,21 @@ namespace MonoDevelop.PackageManagement
 
 		const int checkBoxAreaWidth = 36;
 		const int packageImageAreaWidth = 54;
-		const int packageDescriptionLeftOffset = checkBoxAreaWidth + packageImageAreaWidth;
+		const int packageDescriptionLeftOffset = checkBoxAreaWidth + packageImageAreaWidth + 8;
 
 		WidgetSpacing packageDescriptionPadding = new WidgetSpacing (5, 5, 5, 10);
-		WidgetSpacing packageImagePadding = new WidgetSpacing (8, 20, 8, 20);
+		WidgetSpacing packageImagePadding = new WidgetSpacing (0, 0, 0, 5);
 		WidgetSpacing checkBoxPadding = new WidgetSpacing (10, 0, 0, 10);
 
+		Size maxPackageImageSize = new Size (48, 48);
 		Size checkBoxImageSize = new Size (16, 16);
 		Rectangle checkBoxImageClickableRectangle = new Rectangle (0, 10, 40, 50);
-
-		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "packageicon.png");
 
 		static readonly Image checkedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "CheckedCheckBox.png");
 		static readonly Image uncheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "UncheckedCheckBox.png");
 		static readonly Image selectedCheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "SelectedCheckedCheckBox.png");
 		static readonly Image selectedUncheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "SelectedUncheckedCheckBox.png");
+		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "packageicon.png");
 	}
 }
 
