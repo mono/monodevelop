@@ -48,7 +48,10 @@ namespace MonoDevelop.Ide.WelcomePage
 		public int FontSize { get; set; }
 		protected string Text { get; set; }
 		protected Pango.Weight FontWeight { get; set; }
-
+		protected bool Bold { 
+			get { return FontWeight == Pango.Weight.Bold; }
+			set { FontWeight = value ? Pango.Weight.Bold : Pango.Weight.Normal; }
+		}
 		HBox box = new HBox ();
 
 		public int IconTextSpacing {
