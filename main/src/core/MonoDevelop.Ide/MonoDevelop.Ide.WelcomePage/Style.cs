@@ -100,14 +100,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		public static string GetFormatString (string fontFace, int fontSize, string color, bool bold = false)
+		public static string GetFormatString (string fontFace, int fontSize, string color, Pango.Weight weight = Pango.Weight.Normal)
 		{
-			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + (bold ? "bold" : "normal") + "\">{0}</span>";
+			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + weight + "\">{0}</span>";
 		}
 
-		public static string GetFormatString (string fontFace, int fontSize, string color, string fontWeight)
-		{
-			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + fontWeight + "\">{0}</span>";
-		}
 	}
 }

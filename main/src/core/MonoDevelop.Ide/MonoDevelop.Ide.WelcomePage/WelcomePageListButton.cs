@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gdk.Rectangle starRect;
 		bool mouseOverStar;
 
-		protected bool TitleFontIsBold { get; set; }
+		protected Pango.Weight TitleFontWeight { get; set; }
 
 		static readonly Xwt.Drawing.Image starNormal;
 		static readonly Xwt.Drawing.Image starNormalHover;
@@ -197,6 +197,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
+		protected virtual void DrawLayout (Cairo.Context ctx, Pango.Layout layout, string fontFace, int fontSize, Pango.Weight weight, string color, int tx, int ty)
+		{
+			ctx.MoveTo (tx, ty);
+			Pango.CairoHelper.ShowLayout (ctx, layout);
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
@@ -268,7 +274,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
 				titleLayout.Width = Pango.Units.FromPixels (textWidth);
 				titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-				titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, titleFontSize, TitleFontIsBold, MediumTitleColor, title));
+				titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, title));
 
 				Pango.Layout subtitleLayout = null;
 
@@ -276,7 +282,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					subtitleLayout = new Pango.Layout (PangoContext);
 					subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 					subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, smallTitleFontSize, false, SmallTitleColor, subtitle));
+					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
 				}
 
 				int height = 0;
@@ -292,13 +298,11 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				int tx = Allocation.X + InternalPadding + LeftTextPadding;
 				int ty = Allocation.Y + (Allocation.Height - height) / 2;
-				ctx.MoveTo (tx, ty);
-				Pango.CairoHelper.ShowLayout (ctx, titleLayout);
+				DrawLayout (ctx, titleLayout, TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, tx, ty);
 
 				if (subtitleLayout != null) {
 					ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-					ctx.MoveTo (tx, ty);
-					Pango.CairoHelper.ShowLayout (ctx, subtitleLayout);
+					DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
 				}
 			}
 			return true;

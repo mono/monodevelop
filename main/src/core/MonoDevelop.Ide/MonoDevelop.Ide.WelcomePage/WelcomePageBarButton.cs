@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public string Color { get; set; }
 		public int FontSize { get; set; }
 		protected string Text { get; set; }
-		protected bool Bold { get; set; }
+		protected Pango.Weight FontWeight { get; set; }
 
 		HBox box = new HBox ();
 
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
-			label = new Label ();
+			label = CreateLabel ();
 			imageWidget = image.ToGtkWidget ();
 			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)
@@ -85,6 +85,11 @@ namespace MonoDevelop.Ide.WelcomePage
 			Update ();
 
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
+		}
+
+		protected virtual Label CreateLabel ()
+		{
+			return new Label ();
 		}
 
 		protected void SetImage (Xwt.Drawing.Image normal, Xwt.Drawing.Image hover)
@@ -138,7 +143,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (imageNormal != null)
 				image.Image = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
-			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, Bold, color, Text);
+			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, FontWeight, color, Text);
 		}
 	}
 }
