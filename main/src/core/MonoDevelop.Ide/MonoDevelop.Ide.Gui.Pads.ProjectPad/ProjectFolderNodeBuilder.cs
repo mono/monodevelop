@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var deleteOnlyQuestion = new QuestionMessage () {
 				AllowApplyToAll = folders.Count > 1,
-				SecondaryText = GettextCatalog.GetString ("The directory and any files it contains will be permanintly removed from your hard disk. ")
+				SecondaryText = GettextCatalog.GetString ("The directory and any files it contains will be permanently removed from your hard disk. ")
 			};
 			deleteOnlyQuestion.Buttons.Add (AlertButton.Cancel);
 			deleteOnlyQuestion.Buttons.Add (AlertButton.Delete);
