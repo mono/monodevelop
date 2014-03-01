@@ -876,19 +876,16 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("abstract", colorStyle.KeywordModifiers) + " modifier can be used with classes, methods, properties, indexers, and events.";
 				break;
 			case "add":
-                    //done
 				result.SignatureMarkup = Highlight ("add", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Form", "[modifiers] " + Highlight("add", colorStyle.KeywordContext) + " { accessor-body }");
                 result.SummaryMarkup = "The " + Highlight("add", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.";
 				break;
 			case "ascending":
-                //done
 				result.SignatureMarkup = Highlight ("ascending", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Query Form", Highlight("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight("ascending", colorStyle.KeywordContext));
                 result.SummaryMarkup = "The " + Highlight("ascending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.";
 				break;
 			case "async":
-                //done
 				result.SignatureMarkup = Highlight ("async", colorStyle.KeywordContext) + keywordSign;
                 result.SummaryMarkup = "The " + Highlight("async", colorStyle.KeywordContext) + " modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.";
 				break;
@@ -898,7 +895,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("as", colorStyle.KeywordOperators) + " operator is used to perform conversions between compatible types. ";
 				break;
 			case "await":
-                    //done
 				result.SignatureMarkup = Highlight ("await", colorStyle.KeywordContext) + keywordSign;
                 result.SummaryMarkup = "The " + Highlight("await", colorStyle.KeywordContext) + " operator is used to specify that an " + Highlight("async", colorStyle.KeywordContext) + " method is to have its execution suspended until the " + Highlight("await", colorStyle.KeywordContext) +
                     " task has completed.";
@@ -993,7 +989,6 @@ namespace MonoDevelop.CSharp
                 result.SummaryMarkup = "The " + Highlight("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
 				break;
 			case "descending":
-                //done
 				result.SignatureMarkup = Highlight ("descending", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Query Form", Highlight("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight("descending", colorStyle.KeywordContext));
                 result.SummaryMarkup = "The " + Highlight("descending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from largest to smallest in a query expression.";
@@ -1051,7 +1046,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("foreach", colorStyle.KeywordIteration) + " statement repeats a group of embedded statements for each element in an array or an object collection. ";
 				break;
 			case "from":
-                //done
 				result.SignatureMarkup = Highlight ("from", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Form", Highlight("from", colorStyle.KeywordContext) + " range-variable " + Highlight("in", colorStyle.KeywordIteration) 
                     + " data-source [query clauses] " + Highlight("select", colorStyle.KeywordContext) + " product-expression");
@@ -1063,7 +1057,6 @@ namespace MonoDevelop.CSharp
                 result.SummaryMarkup = "The " + Highlight("get", colorStyle.KeywordContext) + " keyword is used to define an accessor method to retrieve the value of the property or indexer element.";
 				break;
 			case "global":
-                //done
 				result.SignatureMarkup = Highlight ("global", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Form", Highlight("global", colorStyle.KeywordContext) + " :: type");
                 result.SummaryMarkup = "The " + Highlight("global", colorStyle.KeywordContext) + " keyword is used to specify a type is within the global namespace.";
@@ -1076,7 +1069,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("goto", colorStyle.KeywordJump) + " statement transfers the program control directly to a labeled statement. ";
 				break;
 			case "group":
-                //done
 				result.SignatureMarkup = Highlight ("group", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Query Form", Highlight("group", colorStyle.KeywordContext) + " range-variable " + Highlight("by", colorStyle.KeywordContext) + "key-value" 
                     +Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
@@ -1093,7 +1085,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("if", colorStyle.KeywordSelection) + " statement selects a statement for execution based on the value of a Boolean expression. ";
 				break;
 			case "into":
-                    //done
 				result.SignatureMarkup = Highlight ("into", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory("Query Form", Highlight("group", colorStyle.KeywordContext) + " range-variable " + Highlight("by", colorStyle.KeywordContext) + " key-value " + Highlight("into", colorStyle.KeywordContext) + " group-name ");
                 result.SummaryMarkup = "The " + Highlight("into", colorStyle.KeywordContext) + " keyword stores the result of a group statement for further use in the query.";
@@ -1260,7 +1251,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("ref", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 				break;
 			case "remove":
-                //done
 				result.SignatureMarkup = Highlight ("remove", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Form", "[modifiers] " + Highlight("remove", colorStyle.KeywordContext) + " { accessor-body }");
                 result.SummaryMarkup = "The " + Highlight("remove", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.";
@@ -1280,7 +1270,6 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "A sealed class cannot be inherited.";
 				break;
 			case "set":
-                //done
 				result.SignatureMarkup = Highlight ("set", colorStyle.KeywordContext) + keywordSign;
                 result.AddCategory("Form", "[modifiers] " + Highlight("set", colorStyle.KeywordContext) + " [ { accessor-body } ]");
                 result.SummaryMarkup = "The " + Highlight("set", colorStyle.KeywordContext) + " keyword is used to define an accessor method to assign to the value of the property or indexer element.";
@@ -1369,7 +1358,6 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("void", colorStyle.KeywordTypes) + keywordSign;
 				break;
 			case "where":
-                    //done
 				result.SignatureMarkup = Highlight ("where", colorStyle.KeywordContext) + keywordSign;
                 if (hintNode != null)
                 {
@@ -1394,7 +1382,6 @@ namespace MonoDevelop.CSharp
                 }
 				break;
 			case "yield":
-                    //done
 				result.SignatureMarkup = Highlight ("yield", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory("Form", Highlight("yield", colorStyle.KeywordContext) + Highlight("break", colorStyle.KeywordJump) + Environment.NewLine
                     + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine
