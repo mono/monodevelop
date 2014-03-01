@@ -990,7 +990,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case "dynamic":
 				result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
-				//TODO
+                result.SummaryMarkup = "The " + Highlight("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
 				break;
 			case "descending":
                 //done
