@@ -2650,6 +2650,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

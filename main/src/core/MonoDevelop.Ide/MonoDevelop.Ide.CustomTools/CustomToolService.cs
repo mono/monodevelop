@@ -42,9 +42,9 @@ namespace MonoDevelop.Ide.CustomTools
 {
 	public static class CustomToolService
 	{
-		static Dictionary<string,CustomToolExtensionNode> nodes = new Dictionary<string,CustomToolExtensionNode> ();
+		static readonly Dictionary<string,CustomToolExtensionNode> nodes = new Dictionary<string,CustomToolExtensionNode> ();
 		
-		static Dictionary<string,IAsyncOperation> runningTasks = new Dictionary<string, IAsyncOperation> ();
+		static readonly Dictionary<string,IAsyncOperation> runningTasks = new Dictionary<string, IAsyncOperation> ();
 		
 		static CustomToolService ()
 		{
@@ -79,15 +79,25 @@ namespace MonoDevelop.Ide.CustomTools
 			//forces static ctor to run
 		}
 		
-		static ISingleFileCustomTool GetGenerator (ProjectFile file)
+		static ISingleFileCustomTool GetGenerator (string name)
 		{
+			if (string.IsNullOrEmpty (name))
+				return null;
+
+			if (name.StartsWith ("msbuild:", StringComparison.OrdinalIgnoreCase)) {
+				string target = name.Substring ("msbuild:".Length).Trim ();
+				if (string.IsNullOrEmpty (target))
+					return null;
+				return new MSBuildCustomTool (target);
+			}
+
 			CustomToolExtensionNode node;
-			if (!string.IsNullOrEmpty (file.Generator) && nodes.TryGetValue (file.Generator, out node)) {
+			if (nodes.TryGetValue (name, out node)) {
 				try {
 					return node.Tool;
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error loading generator '" + file.Generator + "'", ex);
-					nodes.Remove (file.Generator);
+					LoggingService.LogError ("Error loading generator '" + name + "'", ex);
+					nodes.Remove (name);
 				}
 			}
 			return null;
@@ -95,7 +105,7 @@ namespace MonoDevelop.Ide.CustomTools
 		
 		public static void Update (ProjectFile file, bool force)
 		{
-			var tool = GetGenerator (file);
+			var tool = GetGenerator (file.Generator);
 			if (tool == null)
 				return;
 			
@@ -124,7 +134,7 @@ namespace MonoDevelop.Ide.CustomTools
 			var aggOp = new AggregatedOperationMonitor (monitor);
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
-				var op = tool.Generate (monitor, file, result);
+				IAsyncOperation op = tool.Generate (monitor, file, result);
 				runningTasks.Add (file.FilePath, op);
 				aggOp.AddOperation (op);
 				op.Completed += delegate {
@@ -172,20 +182,21 @@ namespace MonoDevelop.Ide.CustomTools
 					monitor.ReportError (msg, result.UnhandledException);
 					LoggingService.LogError (msg, result.UnhandledException);
 				}
-				
+
 				genFileName = result.GeneratedFilePath.IsNullOrEmpty?
 					null : result.GeneratedFilePath.ToRelative (file.FilePath.ParentDirectory);
 				
-				bool validName = !string.IsNullOrEmpty (genFileName)
-					&& genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
-					&& FileService.IsValidFileName (genFileName);
-				
-				if (!broken && !validName) {
-					broken = true;
-					string msg = GettextCatalog.GetString ("The '{0}' code generator output invalid filename '{1}'",
-					                                       file.Generator, result.GeneratedFilePath);
-					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg));
-					monitor.ReportError (msg, null);
+				if (!string.IsNullOrEmpty (genFileName)) {
+					bool validName = genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
+						&& FileService.IsValidFileName (genFileName);
+					
+					if (!broken && !validName) {
+						broken = true;
+						string msg = GettextCatalog.GetString ("The '{0}' code generator output invalid filename '{1}'",
+						                                       file.Generator, result.GeneratedFilePath);
+						result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg));
+						monitor.ReportError (msg, null);
+					}
 				}
 				
 				if (result.Errors.Count > 0) {
@@ -226,7 +237,7 @@ namespace MonoDevelop.Ide.CustomTools
 		{
 			foreach (ProjectFileEventInfo args in e) {
 				var file = args.ProjectFile;
-				var tool = GetGenerator (file);
+				var tool = GetGenerator (file.Generator);
 				if (tool == null)
 					continue;
 			}
