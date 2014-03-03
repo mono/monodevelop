@@ -82,11 +82,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (IncludePrerelease) {
 				return base.GetFilteredPackagesBeforePagingResults(allPackages)
-					.DistinctLast(PackageEqualityComparer.Id);
+					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
 				.Where(package => package.IsReleaseVersion())
-				.DistinctLast(PackageEqualityComparer.Id);
+				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 	}
 }
