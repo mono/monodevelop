@@ -347,18 +347,9 @@ namespace ICSharpCode.PackageManagement
 			selectedPackageSourceViewModel.UserName = NewPackageSourceUserName;
 			selectedPackageSourceViewModel.Password = NewPackageSourcePassword;
 
+			OnPackageSourceChanged (selectedPackageSourceViewModel);
+
 			packageSourceChecker.Check (selectedPackageSourceViewModel);
-
-			OnSelectedPackageSourceUpdated ();
-		}
-
-		public event EventHandler SelectedPackageSourceUpdated;
-
-		void OnSelectedPackageSourceUpdated ()
-		{
-			if (SelectedPackageSourceUpdated != null) {
-				SelectedPackageSourceUpdated (this, new EventArgs ());
-			}
 		}
 
 		public void Save (IEnumerable<PackageSourceViewModel> packageSourceViewModels)

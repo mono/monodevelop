@@ -38,6 +38,7 @@ namespace ICSharpCode.PackageManagement
 		public PackageSourceViewModel(PackageSource packageSource)
 		{
 			this.packageSource = new RegisteredPackageSource(packageSource);
+			IsValid = true;
 			ValidationFailureMessage = "";
 		}
 		

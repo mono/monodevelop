@@ -19,8 +19,7 @@ namespace MonoDevelop.PackageManagement
 		ListStore packageSourcesStore;
 		const int IsEnabledCheckBoxColumn = 0;
 		const int PackageSourceIconColumn = 1;
-		const int PackageSourceDescriptionColumn = 2;
-		const int PackageSourceViewModelColumn = 3;
+		const int PackageSourceViewModelColumn = 2;
 		
 		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel)
 		{
@@ -38,14 +37,12 @@ namespace MonoDevelop.PackageManagement
 			this.addButton.Clicked += AddButtonClicked;
 
 			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
-			this.viewModel.SelectedPackageSourceUpdated += SelectedPackageSourceUpdated;
 			this.viewModel.PackageSourceChanged += PackageSourceChanged;
 		}
 
 		public override void Dispose ()
 		{
 			this.viewModel.PackageSourceViewModels.CollectionChanged -= PackageSourceViewModelsCollectionChanged;
-			this.viewModel.SelectedPackageSourceUpdated -= SelectedPackageSourceUpdated;
 			this.viewModel.PackageSourceChanged -= PackageSourceChanged;
 			this.viewModel.Dispose ();
 			base.Dispose ();
@@ -53,7 +50,7 @@ namespace MonoDevelop.PackageManagement
 		
 		void InitializeTreeView ()
 		{
-			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (string), typeof (PackageSourceViewModel));
+			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
@@ -77,11 +74,11 @@ namespace MonoDevelop.PackageManagement
 			column.PackStart (iconRenderer, false);
 			column.AddAttribute (iconRenderer, "icon-id", PackageSourceIconColumn);
 
-			var textRenderer = new CellRendererText ();
-			textRenderer.Mode = CellRendererMode.Activatable;
-			column.PackStart (textRenderer, true);
-			column.AddAttribute (textRenderer, "markup", PackageSourceDescriptionColumn);
-			
+			var packageSourceRenderer = new PackageSourceCellRenderer ();
+			packageSourceRenderer.Mode = CellRendererMode.Activatable;
+			column.PackStart (packageSourceRenderer, true);
+			column.AddAttribute (packageSourceRenderer, "package-source", PackageSourceViewModelColumn);
+
 			return column;
 		}
 		
@@ -102,17 +99,7 @@ namespace MonoDevelop.PackageManagement
 			packageSourcesStore.AppendValues (
 				packageSourceViewModel.IsEnabled,
 				new IconId ("md-nuget-package-source"),
-				GetPackageSourceDescriptionMarkup (packageSourceViewModel),
 				packageSourceViewModel);
-		}
-		
-		string GetPackageSourceDescriptionMarkup (PackageSourceViewModel packageSourceViewModel)
-		{
-			string format = "<b>{0}</b> <span foreground='grey'>{1}\n{2}</span>";
-			return MarkupString.Format (
-				format, packageSourceViewModel.Name,
-				packageSourceViewModel.ValidationFailureMessage,
-				packageSourceViewModel.SourceUrl);
 		}
 		
 		void PackageSourceCheckBoxToggled (object o, ToggledArgs args)
@@ -239,17 +226,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void SelectedPackageSourceUpdated (object sender, EventArgs e)
-		{
-			TreeIter iter;
-			if (packageSourcesTreeView.Selection.GetSelected (out iter)) {
-				packageSourcesStore.SetValue (
-					iter,
-					PackageSourceDescriptionColumn,
-					GetPackageSourceDescriptionMarkup (viewModel.SelectedPackageSourceViewModel));
-			}
-		}
-
 		void PackageSourcesTreeViewDragEnded (object o, DragEndArgs args)
 		{
 			HasPackageSourcesOrderChanged = true;
@@ -274,8 +250,8 @@ namespace MonoDevelop.PackageManagement
 			TreeIter iter = GetTreeIter (e.PackageSource);
 			packageSourcesStore.SetValue (
 				iter,
-				PackageSourceDescriptionColumn,
-				GetPackageSourceDescriptionMarkup (e.PackageSource));
+				PackageSourceViewModelColumn,
+				e.PackageSource);
 		}
 	}
 }

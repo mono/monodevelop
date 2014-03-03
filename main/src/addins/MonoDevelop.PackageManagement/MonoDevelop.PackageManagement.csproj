@@ -57,6 +57,7 @@
     <Reference Include="NuGet.Core">
       <HintPath>lib\NuGet.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cairo, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -303,6 +304,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChecker.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelCheckedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourceCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

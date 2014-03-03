@@ -32,25 +32,22 @@ namespace MonoDevelop.PackageManagement
 	public class PackageSourceViewModelCheckedEventArgs : EventArgs
 	{
 		public PackageSourceViewModelCheckedEventArgs (PackageSourceViewModel packageSource)
-			: this (packageSource, false, "")
+			: this (packageSource, "")
 		{
 		}
 
 		public PackageSourceViewModelCheckedEventArgs (PackageSourceViewModel packageSource, string errorMessage)
-			: this (packageSource, true, errorMessage)
-		{
-		}
-
-		public PackageSourceViewModelCheckedEventArgs (PackageSourceViewModel packageSource, bool valid, string errorMessage)
 		{
 			PackageSource = packageSource;
-			IsValid = valid;
 			ValidationFailureMessage = errorMessage;
 		}
 
 		public PackageSourceViewModel PackageSource { get; private set; }
-		public bool IsValid { get; set; }
 		public string ValidationFailureMessage { get; set; }
+
+		public bool IsValid {
+			get { return String.IsNullOrEmpty(ValidationFailureMessage); }
+		}
 	}
 }
 
