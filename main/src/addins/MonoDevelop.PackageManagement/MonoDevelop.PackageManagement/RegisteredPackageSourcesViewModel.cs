@@ -32,16 +32,18 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>
+	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>, IDisposable
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
 		RegisteredPackageSources packageSources;
 		IFolderBrowser folderBrowser;
+		PackageSourceViewModelChecker packageSourceChecker = new PackageSourceViewModelChecker ();
 		
 		DelegateCommand addPackageSourceCommmand;
 		DelegateCommand removePackageSourceCommand;
@@ -66,7 +68,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.packageSources = packageSources;
 			this.folderBrowser = folderBrowser;
+			packageSourceChecker.PackageSourceChecked += PackageSourceChecked;
 			CreateCommands();
+		}
+
+		void PackageSourceChecked (object sender, PackageSourceViewModelCheckedEventArgs e)
+		{
+			e.PackageSource.IsValid = e.IsValid;
+			e.PackageSource.ValidationFailureMessage = e.ValidationFailureMessage;
+			OnPackageSourceChanged (e.PackageSource);
 		}
 		
 		void CreateCommands()
@@ -130,6 +140,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			var packageSourceViewModel = new PackageSourceViewModel(packageSource);
 			packageSourceViewModels.Add(packageSourceViewModel);
+
+			packageSourceChecker.Check (packageSourceViewModel);
 		}
 		
 		public void Save()
@@ -335,6 +347,8 @@ namespace ICSharpCode.PackageManagement
 			selectedPackageSourceViewModel.UserName = NewPackageSourceUserName;
 			selectedPackageSourceViewModel.Password = NewPackageSourcePassword;
 
+			packageSourceChecker.Check (selectedPackageSourceViewModel);
+
 			OnSelectedPackageSourceUpdated ();
 		}
 
@@ -355,6 +369,20 @@ namespace ICSharpCode.PackageManagement
 				packageSources.Add(source);
 			}
 			PackageManagementServices.InitializeCredentialProvider ();
+		}
+
+		public event EventHandler<PackageSourceViewModelChangedEventArgs> PackageSourceChanged;
+
+		void OnPackageSourceChanged (PackageSourceViewModel packageSource)
+		{
+			if (PackageSourceChanged != null) {
+				PackageSourceChanged (this, new PackageSourceViewModelChangedEventArgs (packageSource));
+			}
+		}
+
+		public void Dispose ()
+		{
+			packageSourceChecker.Dispose ();
 		}
 	}
 }

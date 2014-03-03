@@ -84,5 +84,9 @@ namespace ICSharpCode.PackageManagement
 		public AggregateException Exception {
 			get { return task.Exception; }
 		}
+
+		public bool IsCompleted {
+			get { return task.IsCompleted; }
+		}
 	}
 }

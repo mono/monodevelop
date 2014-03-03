@@ -39,12 +39,15 @@ namespace MonoDevelop.PackageManagement
 
 			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
 			this.viewModel.SelectedPackageSourceUpdated += SelectedPackageSourceUpdated;
+			this.viewModel.PackageSourceChanged += PackageSourceChanged;
 		}
 
 		public override void Dispose ()
 		{
 			this.viewModel.PackageSourceViewModels.CollectionChanged -= PackageSourceViewModelsCollectionChanged;
 			this.viewModel.SelectedPackageSourceUpdated -= SelectedPackageSourceUpdated;
+			this.viewModel.PackageSourceChanged -= PackageSourceChanged;
+			this.viewModel.Dispose ();
 			base.Dispose ();
 		}
 		
@@ -105,8 +108,11 @@ namespace MonoDevelop.PackageManagement
 		
 		string GetPackageSourceDescriptionMarkup (PackageSourceViewModel packageSourceViewModel)
 		{
-			string format = "<b>{0}</b>\n<span foreground='grey'>{1}</span>";
-			return MarkupString.Format (format, packageSourceViewModel.Name, packageSourceViewModel.SourceUrl);
+			string format = "<b>{0}</b> <span foreground='grey'>{1}\n{2}</span>";
+			return MarkupString.Format (
+				format, packageSourceViewModel.Name,
+				packageSourceViewModel.ValidationFailureMessage,
+				packageSourceViewModel.SourceUrl);
 		}
 		
 		void PackageSourceCheckBoxToggled (object o, ToggledArgs args)
@@ -261,6 +267,15 @@ namespace MonoDevelop.PackageManagement
 			});
 
 			return packageSourceViewModels;
+		}
+
+		void PackageSourceChanged (object sender, PackageSourceViewModelChangedEventArgs e)
+		{
+			TreeIter iter = GetTreeIter (e.PackageSource);
+			packageSourcesStore.SetValue (
+				iter,
+				PackageSourceDescriptionColumn,
+				GetPackageSourceDescriptionMarkup (e.PackageSource));
 		}
 	}
 }
