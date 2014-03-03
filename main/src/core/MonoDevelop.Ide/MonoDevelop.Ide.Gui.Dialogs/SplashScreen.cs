@@ -30,10 +30,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
 				bitmap = new Gdk.Pixbuf (stream);
 			this.Resize (bitmap.Width, bitmap.Height);
+			MessageService.PopupDialog += HandlePopupDialog;
 		}
+
+		void HandlePopupDialog (object sender, EventArgs e)
+		{
+			if (!isDestroyed)
+				Destroy ();
+		}
+
+		bool isDestroyed;
 		
 		protected override void OnDestroyed ()
 		{
+			isDestroyed = true;
+			MessageService.PopupDialog -= HandlePopupDialog;
 			base.OnDestroyed ();
 			if (bitmap != null) {
 				bitmap.Dispose ();
@@ -205,7 +216,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void IDisposable.Dispose ()
 		{
-			Destroy ();
+			if (!isDestroyed)
+				Destroy ();
 		}
 	}
 }
