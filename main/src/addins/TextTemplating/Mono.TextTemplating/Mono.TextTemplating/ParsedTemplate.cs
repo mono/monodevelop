@@ -277,9 +277,10 @@ namespace Mono.TextTemplating
 		public string Extract (string key)
 		{
 			string value;
-			if (!Attributes.TryGetValue (key, out value))
+			var lowerKey = key.ToLower();
+			if (!Attributes.TryGetValue (lowerKey, out value))
 				return null;
-			Attributes.Remove (key);
+			Attributes.Remove (lowerKey);
 			return value;
 		}
 	}
