@@ -332,6 +332,7 @@ namespace MonoDevelop.Ide
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
 			PlaceDialog (dialog, parent);
+			OnPopupDialog (EventArgs.Empty);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 		
@@ -454,6 +455,7 @@ namespace MonoDevelop.Ide
 					Exception = e,
 					TransientFor = parent,
 				};
+				OnPopupDialog (EventArgs.Empty);
 				exceptionDialog.Run ();
 				return exceptionDialog.ResultButton;
 			}
@@ -461,6 +463,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (MessageDescription message)
 			{
 				var dialog = new AlertDialog (message);
+				OnPopupDialog (EventArgs.Empty);
 				return dialog.Run ();
 			}
 			
@@ -472,12 +475,24 @@ namespace MonoDevelop.Ide
 					Value = initialValue,
 					IsPassword = isPassword,
 				};
+				OnPopupDialog (EventArgs.Empty);
 				if (dialog.Run ())
 					return dialog.Value;
 				return null;
 			}
 		}
 		#endregion
+
+
+		static void OnPopupDialog (EventArgs e)
+		{
+			var handler = PopupDialog;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		public static event EventHandler PopupDialog;
+
 	}
 	
 	public class MessageDescription

@@ -91,7 +91,7 @@ THE SOFTWARE.
 	<BeforeConstructorDeclarationParameterComma>False</BeforeConstructorDeclarationParameterComma>
 	<AfterConstructorDeclarationParameterComma>True</AfterConstructorDeclarationParameterComma>
 	<WithinConstructorDeclarationParentheses>False</WithinConstructorDeclarationParentheses>
-	<NewLineBeforeConstructorInitializerColon>NextLine</NewLineBeforeConstructorInitializerColon>
+	<NewLineBeforeConstructorInitializerColon>NewLine</NewLineBeforeConstructorInitializerColon>
 	<NewLineAfterConstructorInitializerColon>SameLine</NewLineAfterConstructorInitializerColon>
 	<BeforeIndexerDeclarationBracket>True</BeforeIndexerDeclarationBracket>
 	<WithinIndexerDeclarationBracket>False</WithinIndexerDeclarationBracket>

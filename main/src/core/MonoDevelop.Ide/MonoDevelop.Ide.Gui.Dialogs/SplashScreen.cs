@@ -34,10 +34,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				bitmap = Xwt.Drawing.Image.FromResource ("SplashScreen.png");
 
 			this.Resize ((int)bitmap.Width, (int)bitmap.Height);
+			MessageService.PopupDialog += HandlePopupDialog;
 		}
+
+		void HandlePopupDialog (object sender, EventArgs e)
+		{
+			if (!isDestroyed)
+				Destroy ();
+		}
+
+		bool isDestroyed;
 		
 		protected override void OnDestroyed ()
 		{
+			isDestroyed = true;
+			MessageService.PopupDialog -= HandlePopupDialog;
 			base.OnDestroyed ();
 			if (bitmap != null) {
 				bitmap.Dispose ();
@@ -209,7 +220,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void IDisposable.Dispose ()
 		{
-			Destroy ();
+			if (!isDestroyed)
+				Destroy ();
 		}
 	}
 }

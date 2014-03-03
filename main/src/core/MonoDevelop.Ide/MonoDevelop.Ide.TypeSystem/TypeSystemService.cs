@@ -1590,18 +1590,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					UnresolvedAssemblyProxy ctx;
 					// Add mscorlib reference
 
-					// hack: find the NoStdLib flag
 					var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration : null;
 					bool noStdLib = false;
 					if (config != null) {
-						var parameters = config.CompilationParameters;
+						var parameters = config.CompilationParameters as DotNetConfigurationParameters;
 						if (parameters != null) {
-							var prop = parameters.GetType ().GetProperty ("NoStdLib");
-							if (prop != null) {
-								var val = prop.GetValue (parameters, null);
-								if (val is bool)
-									noStdLib = (bool)val;
-							}
+							noStdLib = parameters.NoStdLib;
 						}
 					}
 
@@ -1624,11 +1618,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
 						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-
-							// HACK: core reference get added automatically, even if no std lib is set.
-							if (noStdLib && file.Contains ("System.Core.dll"))
-								continue;
-
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);

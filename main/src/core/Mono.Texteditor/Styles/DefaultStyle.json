@@ -65,10 +65,10 @@
 
         { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
-		{ "name": "Underline(Error)", "color":"invalid-red" },
-		{ "name": "Underline(Warning)", "color":"chocolate2" },
-		{ "name": "Underline(Suggestion)", "color":"chameleon3" },
-		{ "name": "Underline(Hint)", "color":"chameleon1" },
+		{ "name": "Underline(Error)", "color":"#E896A0" },
+		{ "name": "Underline(Warning)", "color":"#FEB958" },
+		{ "name": "Underline(Suggestion)", "color":"#9CC0EA" },
+		{ "name": "Underline(Hint)", "color":"#9CC0EA" },
 
 		{ "name": "Quick Diff(Dirty)", "color":"orangesicle-light" },
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
@@ -106,10 +106,10 @@
 		{ "name": "Message Bubble Warning Line", "color":"#fff1da"},
 		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B"},
 
-		{ "name": "Code Analysis Status All Good", "color":"#7ED3213C", "bordercolor":"#7CCD2F64"},
-		{ "name": "Code Analysis Status Suggestions", "color":"#4A90E24B", "bordercolor":"#4A90E264"},
-		{ "name": "Code Analysis Status Warnings", "color":"#F5A62341", "bordercolor":"#F5A62364"},
-		{ "name": "Code Analysis Status Errors", "color":"#D522203C", "bordercolor":"#D522203C32"}
+		{ "name": "Code Analysis Status All Good", "color":"#B1E479", "bordercolor":"#7CCD2F"},
+		{ "name": "Code Analysis Status Suggestions", "color":"#77ABE9", "bordercolor":"#4A90E2"},
+		{ "name": "Code Analysis Status Warnings", "color":"#F7C46F", "bordercolor":"#F5A623"},
+		{ "name": "Code Analysis Status Errors", "color":"#E67A79", "bordercolor":"#E05F5E"}
 	],
 
 	"text":[

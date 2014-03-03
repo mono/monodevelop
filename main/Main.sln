@@ -272,11 +272,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Tests\Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8D032520-DF32-49A7-9E8A-80819C011970}"
-	ProjectSection(SolutionItems) = preProject
-		Main.sln = Main.sln
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

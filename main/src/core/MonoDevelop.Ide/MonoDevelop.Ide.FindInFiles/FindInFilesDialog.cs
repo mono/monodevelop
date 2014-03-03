@@ -453,6 +453,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			searchentryFileMask.Query = properties.Get ("MonoDevelop.FindReplaceDialogs.FileMask", "");
 			
+			searchentryFileMask.Entry.ActivatesDefault = true;
 			searchentryFileMask.Show ();
 			
 			TableAddRow (tableFindAndReplace, row, labelFileMask, searchentryFileMask);

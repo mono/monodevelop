@@ -328,7 +328,7 @@ namespace MonoDevelop.Components.MainToolbar
 				case SymbolKind.Constructor:
 					return GettextCatalog.GetString ("constructor ({0})", loc);
 				case SymbolKind.Destructor:
-					return GettextCatalog.GetString ("destrutcor ({0})", loc);
+					return GettextCatalog.GetString ("destructor ({0})", loc);
 				default:
 					throw new NotSupportedException (member.SymbolKind + " is not supported.");
 				}

@@ -200,6 +200,8 @@ namespace MonoDevelop.Core.Instrumentation
 		public static bool Enabled {
 			get { return enabled; }
 			set {
+				if (enabled == value)
+					return;
 				enabled = value;
 				UpdateCounterStatus ();
 			}

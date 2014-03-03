@@ -209,8 +209,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							ext.markers.Enqueue (marker);
 						}
 					}
-					if (currentResult.Level != Severity.Hint)
-						ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
+					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
 				}
 				
 				return true;

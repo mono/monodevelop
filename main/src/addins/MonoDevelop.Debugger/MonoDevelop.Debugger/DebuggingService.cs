@@ -175,7 +175,7 @@ namespace MonoDevelop.Debugger
 					EnginePriority = parray;
 					return parray;
 				}
-				return s.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+				return s.Split (new [] {','}, StringSplitOptions.RemoveEmptyEntries);
 			}
 			set {
 				string s = string.Join (",", value);
@@ -477,8 +477,9 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
-			DebugExecutionHandler h = new DebugExecutionHandler (null);
-			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (file);
+			var h = new DebugExecutionHandler (null);
+			var cmd = Runtime.ProcessService.CreateCommand (file);
+
 			return h.Execute (cmd, console);
 		}
 		
@@ -508,7 +509,7 @@ namespace MonoDevelop.Debugger
 			eval.GroupPrivateMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupPrivateMembers", true);
 			eval.GroupStaticMembers = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.GroupStaticMembers", true);
 			eval.MemberEvaluationTimeout = eval.EvaluationTimeout * 2;
-			return new DebuggerSessionOptions () {
+			return new DebuggerSessionOptions {
 				StepOverPropertiesAndOperators = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.StepOverPropertiesAndOperators", true),
 				ProjectAssembliesOnly = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.ProjectAssembliesOnly", true),
 				EvaluationOptions = eval,
@@ -883,7 +884,7 @@ namespace MonoDevelop.Debugger
 		public static Dictionary<string, ExpressionEvaluatorExtensionNode> GetExpressionEvaluators()
 		{
 			if (evaluators == null) {
-				Dictionary<string, ExpressionEvaluatorExtensionNode> evgs = new Dictionary<string, ExpressionEvaluatorExtensionNode> (StringComparer.InvariantCultureIgnoreCase);
+				var evgs = new Dictionary<string, ExpressionEvaluatorExtensionNode> (StringComparer.InvariantCultureIgnoreCase);
 				foreach (ExpressionEvaluatorExtensionNode node in AddinManager.GetExtensionNodes (EvaluatorsPath))
 					evgs.Add (node.extension, node);
 				
@@ -972,17 +973,18 @@ namespace MonoDevelop.Debugger
 		public static ExpressionEvaluatorExtensionNode EvaluatorForExtension (string extension)
 		{
 			ExpressionEvaluatorExtensionNode result;
+
 			if (GetExpressionEvaluators ().TryGetValue (extension, out result))
 				return result;
+
 			return null;
 		}
 
 		static IExpressionEvaluator OnGetExpressionEvaluator (string extension)
 		{
-			ExpressionEvaluatorExtensionNode info = EvaluatorForExtension (extension);
-			if (info != null)
-				return info.Evaluator;
-			return null;
+			var info = EvaluatorForExtension (extension);
+
+			return info != null ? info.Evaluator : null;
 		}
 	}
 	

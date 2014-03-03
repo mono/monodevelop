@@ -127,7 +127,7 @@ namespace Mono.TextEditor.Theatrics
                     return actor;
                 }
 
-                return Add (target);
+				return Add (target, duration.HasValue ? duration.Value : default_duration);
             }
         }
 
