@@ -113,13 +113,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		void FillTags ()
 		{
-			TreeViewState state = new TreeViewState (listTags, 1);
-			state.Save ();
 			storeTags.Clear ();
 			foreach (string tag in repo.GetTags ()) {
 				storeTags.AppendValues (tag);
 			}
-			state.Load ();
 		}
 		
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
