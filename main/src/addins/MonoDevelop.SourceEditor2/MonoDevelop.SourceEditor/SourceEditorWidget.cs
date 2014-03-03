@@ -364,6 +364,10 @@ namespace MonoDevelop.SourceEditor
 			vbox.PackStart (mainsw, true, true, 0);
 			
 			textEditorData = textEditor.GetTextEditorData ();
+			textEditorData.EditModeChanged += delegate {
+				KillWidgets ();
+			};
+
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
