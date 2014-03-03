@@ -34,8 +34,6 @@ namespace MonoDevelop.PackageManagement
 
 		void AddEventHandlers ()
 		{
-			this.moveUpButton.Clicked += MoveUpButtonClicked;
-			this.moveDownButton.Clicked += MoveDownButtonClicked;
 			this.removeButton.Clicked += RemoveButtonClicked;
 			this.addButton.Clicked += AddButtonClicked;
 
@@ -57,8 +55,10 @@ namespace MonoDevelop.PackageManagement
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
 			packageSourcesTreeView.RowActivated += PackageSourcesTreeViewRowActivated;
+			packageSourcesTreeView.Reorderable = true;
+			packageSourcesTreeView.DragEnd += PackageSourcesTreeViewDragEnded;
 		}
-		
+
 		TreeViewColumn CreateTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
@@ -140,8 +140,6 @@ namespace MonoDevelop.PackageManagement
 		
 		void UpdateEnabledButtons ()
 		{
-			this.moveUpButton.Sensitive = viewModel.CanMovePackageSourceUp;
-			this.moveDownButton.Sensitive= viewModel.CanMovePackageSourceDown;
 			this.removeButton.Sensitive = viewModel.CanRemovePackageSource;
 		}
 		
@@ -211,18 +209,6 @@ namespace MonoDevelop.PackageManagement
 			return foundIter;
 		}
 		
-		void MoveUpButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.MovePackageSourceUp ();
-			UpdateEnabledButtons ();
-		}
-		
-		void MoveDownButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.MovePackageSourceDown ();
-			UpdateEnabledButtons ();
-		}
-		
 		void RemoveButtonClicked (object sender, EventArgs e)
 		{
 			viewModel.RemovePackageSource ();
@@ -256,6 +242,25 @@ namespace MonoDevelop.PackageManagement
 					PackageSourceDescriptionColumn,
 					GetPackageSourceDescriptionMarkup (viewModel.SelectedPackageSourceViewModel));
 			}
+		}
+
+		void PackageSourcesTreeViewDragEnded (object o, DragEndArgs args)
+		{
+			HasPackageSourcesOrderChanged = true;
+		}
+
+		public bool HasPackageSourcesOrderChanged { get; private set; }
+
+		public IEnumerable<PackageSourceViewModel> GetOrderedPackageSources ()
+		{
+			var packageSourceViewModels = new List<PackageSourceViewModel> ();
+			packageSourcesStore.Foreach ((model, path, iter) => {
+				var currentViewModel = model.GetValue (iter, PackageSourceViewModelColumn) as PackageSourceViewModel;
+				packageSourceViewModels.Add (currentViewModel);
+				return false;
+			});
+
+			return packageSourceViewModels;
 		}
 	}
 }

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -133,12 +134,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Save()
 		{
-			packageSources.Clear();
-			foreach (PackageSourceViewModel packageSourceViewModel in packageSourceViewModels) {
-				PackageSource source = packageSourceViewModel.GetPackageSource();
-				packageSources.Add(source);
-			}
-			PackageManagementServices.InitializeCredentialProvider ();
+			Save (packageSourceViewModels);
 		}
 		
 		public string NewPackageSourceName {
@@ -349,6 +345,16 @@ namespace ICSharpCode.PackageManagement
 			if (SelectedPackageSourceUpdated != null) {
 				SelectedPackageSourceUpdated (this, new EventArgs ());
 			}
+		}
+
+		public void Save (IEnumerable<PackageSourceViewModel> packageSourceViewModels)
+		{
+			packageSources.Clear();
+			foreach (PackageSourceViewModel packageSourceViewModel in packageSourceViewModels) {
+				PackageSource source = packageSourceViewModel.GetPackageSource();
+				packageSources.Add(source);
+			}
+			PackageManagementServices.InitializeCredentialProvider ();
 		}
 	}
 }

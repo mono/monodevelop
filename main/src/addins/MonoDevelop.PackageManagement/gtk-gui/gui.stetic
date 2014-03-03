@@ -1172,50 +1172,6 @@ If you do not agree to the license terms click "Cancel".</property>
                 <property name="AutoSize">True</property>
               </packing>
             </child>
-            <child>
-              <widget class="Gtk.VButtonBox" id="moveButtonsBox">
-                <property name="MemberName" />
-                <property name="Size">2</property>
-                <property name="LayoutStyle">Start</property>
-                <child>
-                  <widget class="Gtk.Button" id="moveUpButton">
-                    <property name="MemberName" />
-                    <property name="Sensitive">False</property>
-                    <property name="CanFocus">True</property>
-                    <property name="UseStock">True</property>
-                    <property name="Type">StockItem</property>
-                    <property name="StockId">gtk-go-up</property>
-                    <property name="label">gtk-go-up</property>
-                  </widget>
-                  <packing>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Button" id="moveDownButton">
-                    <property name="MemberName" />
-                    <property name="Sensitive">False</property>
-                    <property name="CanFocus">True</property>
-                    <property name="UseStock">True</property>
-                    <property name="Type">StockItem</property>
-                    <property name="StockId">gtk-go-down</property>
-                    <property name="label">gtk-go-down</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
           </widget>
           <packing>
             <property name="Position">0</property>

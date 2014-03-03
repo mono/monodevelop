@@ -35,18 +35,25 @@ namespace MonoDevelop.PackageManagement.Gui
 	public class PackageSourcesOptionsPanel : OptionsPanel
 	{
 		PackageManagementViewModels viewModels;
+		PackageSourcesWidget packageSourcesWidget;
 
 		public override Gtk.Widget CreatePanelWidget()
 		{
 			viewModels = new PackageManagementViewModels ();
 			viewModels.RegisteredPackageSourcesViewModel.Load ();
 			
-			return new PackageSourcesWidget (viewModels.RegisteredPackageSourcesViewModel);
+			packageSourcesWidget = new PackageSourcesWidget (viewModels.RegisteredPackageSourcesViewModel);
+			return packageSourcesWidget;
 		}
 		
 		public override void ApplyChanges()
 		{
-			viewModels.RegisteredPackageSourcesViewModel.Save ();
+			if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
+				viewModels.RegisteredPackageSourcesViewModel.Save (
+					packageSourcesWidget.GetOrderedPackageSources ());
+			} else {
+				viewModels.RegisteredPackageSourcesViewModel.Save ();
+			}
 		}
 	}
 }

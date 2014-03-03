@@ -8,9 +8,6 @@ namespace MonoDevelop.PackageManagement
 		private global::Gtk.HBox packageSourceListHBox;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView packageSourcesTreeView;
-		private global::Gtk.VButtonBox moveButtonsBox;
-		private global::Gtk.Button moveUpButton;
-		private global::Gtk.Button moveDownButton;
 		private global::Gtk.HBox packageSourceHBox;
 		private global::Gtk.HButtonBox bottomButtonBox;
 		private global::Gtk.Button removeButton;
@@ -43,43 +40,9 @@ namespace MonoDevelop.PackageManagement
 			this.packageSourceListHBox.Add (this.GtkScrolledWindow);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.packageSourceListHBox [this.GtkScrolledWindow]));
 			w2.Position = 0;
-			// Container child packageSourceListHBox.Gtk.Box+BoxChild
-			this.moveButtonsBox = new global::Gtk.VButtonBox ();
-			this.moveButtonsBox.Name = "moveButtonsBox";
-			this.moveButtonsBox.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(3));
-			// Container child moveButtonsBox.Gtk.ButtonBox+ButtonBoxChild
-			this.moveUpButton = new global::Gtk.Button ();
-			this.moveUpButton.Sensitive = false;
-			this.moveUpButton.CanFocus = true;
-			this.moveUpButton.Name = "moveUpButton";
-			this.moveUpButton.UseStock = true;
-			this.moveUpButton.UseUnderline = true;
-			this.moveUpButton.Label = "gtk-go-up";
-			this.moveButtonsBox.Add (this.moveUpButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w3 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.moveButtonsBox [this.moveUpButton]));
-			w3.Expand = false;
-			w3.Fill = false;
-			// Container child moveButtonsBox.Gtk.ButtonBox+ButtonBoxChild
-			this.moveDownButton = new global::Gtk.Button ();
-			this.moveDownButton.Sensitive = false;
-			this.moveDownButton.CanFocus = true;
-			this.moveDownButton.Name = "moveDownButton";
-			this.moveDownButton.UseStock = true;
-			this.moveDownButton.UseUnderline = true;
-			this.moveDownButton.Label = "gtk-go-down";
-			this.moveButtonsBox.Add (this.moveDownButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w4 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.moveButtonsBox [this.moveDownButton]));
-			w4.Position = 1;
-			w4.Expand = false;
-			w4.Fill = false;
-			this.packageSourceListHBox.Add (this.moveButtonsBox);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.packageSourceListHBox [this.moveButtonsBox]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
 			this.mainVBox.Add (this.packageSourceListHBox);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.packageSourceListHBox]));
-			w6.Position = 0;
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.packageSourceListHBox]));
+			w3.Position = 0;
 			// Container child mainVBox.Gtk.Box+BoxChild
 			this.packageSourceHBox = new global::Gtk.HBox ();
 			this.packageSourceHBox.Name = "packageSourceHBox";
@@ -97,9 +60,9 @@ namespace MonoDevelop.PackageManagement
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = global::Mono.Unix.Catalog.GetString ("Remove");
 			this.bottomButtonBox.Add (this.removeButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.bottomButtonBox [this.removeButton]));
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w4 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.bottomButtonBox [this.removeButton]));
+			w4.Expand = false;
+			w4.Fill = false;
 			// Container child bottomButtonBox.Gtk.ButtonBox+ButtonBoxChild
 			this.addButton = new global::Gtk.Button ();
 			this.addButton.CanFocus = true;
@@ -107,18 +70,18 @@ namespace MonoDevelop.PackageManagement
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = global::Mono.Unix.Catalog.GetString ("Add");
 			this.bottomButtonBox.Add (this.addButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.bottomButtonBox [this.addButton]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w5 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.bottomButtonBox [this.addButton]));
+			w5.Position = 1;
+			w5.Expand = false;
+			w5.Fill = false;
 			this.packageSourceHBox.Add (this.bottomButtonBox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.packageSourceHBox [this.bottomButtonBox]));
-			w9.Position = 0;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.packageSourceHBox [this.bottomButtonBox]));
+			w6.Position = 0;
 			this.mainVBox.Add (this.packageSourceHBox);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.packageSourceHBox]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.packageSourceHBox]));
+			w7.Position = 1;
+			w7.Expand = false;
+			w7.Fill = false;
 			this.Add (this.mainVBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
