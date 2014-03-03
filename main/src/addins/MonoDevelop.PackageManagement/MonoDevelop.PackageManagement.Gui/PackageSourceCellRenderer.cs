@@ -60,7 +60,7 @@ namespace MonoDevelop.PackageManagement
 
 				if (!PackageSourceViewModel.IsValid) {
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						ctx.DrawImage (widget, warningImage, cell_area.X + packageSourceNameWidth + imageSpacing, cell_area.Y + 2);
+						ctx.DrawImage (widget, warningImage, cell_area.X + packageSourceNameWidth + imageSpacing, cell_area.Y);
 					}
 
 					layout.SetMarkup (GetPackageSourceErrorMarkup ());
