@@ -115,6 +115,26 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public int MaxWidth { get; set; }
 
+		void messageBoxToolTip (object o, QueryTooltipArgs e)
+		{
+			if (theme.IsEllipsized && (e.X < messageBox.Allocation.Width)) {
+				var label = new Label ();
+				if (renderArg.CurrentTextIsMarkup) {
+					label.Markup = renderArg.CurrentText;
+				} else {
+					label.Text = renderArg.CurrentText;
+				}
+
+				label.Wrap = true;
+				label.WidthRequest = messageBox.Allocation.Width;
+				
+				e.Tooltip.Custom = label;
+				e.RetVal = true;
+			} else {
+				e.RetVal = false;
+			}
+		}
+
 		public StatusArea ()
 		{
 			theme = new StatusAreaTheme ();
@@ -162,6 +182,9 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackEnd (statusIconBox, false, false, 0);
 			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
 			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
+
+			HasTooltip = true;
+			QueryTooltip += messageBoxToolTip;
 
 			mainAlign = new Alignment (0, 0.5f, 1, 0);
 			mainAlign.LeftPadding = 12;
