@@ -99,6 +99,26 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
+		string hoverBackgroundColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor;
+		public string HoverBackgroundColor {
+			get {
+				return hoverBackgroundColor;
+			}
+			set {
+				hoverBackgroundColor = value;
+			}
+		}
+
+		string hoverBorderColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor;
+		public string HoverBorderColor {
+			get {
+				return hoverBorderColor;
+			}
+			set {
+				hoverBorderColor = value;
+			}
+		}
+
 		int titleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize;
 		public int TitleFontSize {
 			get {
@@ -209,7 +229,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (mouseOver) {
 					if (BorderPadding <= 0) {
 						ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor));
+						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
 						ctx.Fill ();
 						ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
 						ctx.RelLineTo (Allocation.Width, 0);
@@ -226,18 +246,18 @@ namespace MonoDevelop.Ide.WelcomePage
 						}
 						
 						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor));
+						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
 						ctx.Stroke ();
 					} else {
 						Gdk.Rectangle region = Allocation;
 						region.Inflate (-BorderPadding, -BorderPadding);
 
 						ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor));
+						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
 						ctx.FillPreserve ();
 						
 						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor));
+						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
 						ctx.Stroke ();
 					}
 				}
