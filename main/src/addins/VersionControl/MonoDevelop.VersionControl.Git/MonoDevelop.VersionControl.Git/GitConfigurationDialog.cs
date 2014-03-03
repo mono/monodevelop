@@ -284,10 +284,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected void OnButtonNewTagClicked (object sender, EventArgs e)
 		{
-			// Create dialog with revisions of current branch.
-			// Select revision to tag at.
-			// Create tag.
-
 			using (var dlg = new GitSelectRevisionDialog (repo)) {
 				if (dlg.Run () != Xwt.Command.Ok)
 					return;
