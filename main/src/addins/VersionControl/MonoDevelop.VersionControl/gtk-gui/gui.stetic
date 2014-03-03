@@ -9,16 +9,8 @@
     <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" internal="true" />
   </import>
-  <icon-factory>
-    <icon-set id="vcs-repository">
-      <source>
-        <property name="Image">resource:repository.png</property>
-      </source>
-    </icon-set>
-  </icon-factory>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog" design-size="617 438">
     <property name="MemberName" />
     <property name="Visible">False</property>

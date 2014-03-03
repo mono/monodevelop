@@ -142,9 +142,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 			TreeIter it;
 			if (!parent.Equals (TreeIter.Zero))
-				it = store.AppendValues (parent, r, r.Name, r.VersionControlSystem.Name, false, "vcs-repository");
+				it = store.AppendValues (parent, r, r.Name, r.VersionControlSystem.Name, false, "vc-repository");
 			else
-				it = store.AppendValues (r, r.Name, r.VersionControlSystem.Name, false, "vcs-repository");
+				it = store.AppendValues (r, r.Name, r.VersionControlSystem.Name, false, "vc-repository");
 
 			try {
 				if (r.HasChildRepositories)
@@ -209,7 +209,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 							repoTree.ExpandRow (store.GetPath (iter), false);
 						} else if (filled) {
 							store.SetValue (iter, FilledCol, false);
-							store.AppendValues (iter, null, "", "", true, "vcs-repository");
+							store.AppendValues (iter, null, "", "", true, "vc-repository");
 						}
 					}
 					UpdateRepoDescription ();

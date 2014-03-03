@@ -10,10 +10,6 @@ namespace Stetic
 		{
 			if ((Stetic.Gui.initialized == false)) {
 				Stetic.Gui.initialized = true;
-				global::Gtk.IconFactory w1 = new global::Gtk.IconFactory ();
-				global::Gtk.IconSet w2 = new global::Gtk.IconSet (global::Gdk.Pixbuf.LoadFromResource ("repository.png"));
-				w1.Add ("vcs-repository", w2);
-				w1.AddDefault ();
 			}
 		}
 	}
@@ -21,6 +17,7 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
+		
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)
