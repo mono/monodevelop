@@ -101,7 +101,7 @@ namespace MonoDevelop.PackageManagement
 			if (Directory.Exists (packageSource.SourceUrl)) {
 				return new PackageSourceViewModelCheckedEventArgs (packageSource);
 			}
-			return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString( "Directory not found"));
+			return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Directory not found"));
 		}
 
 		PackageSourceViewModelCheckedEventArgs CreatePackageSourceViewModelCheckedEventArgs (PackageSourceViewModel packageSource, WebException ex)
@@ -121,10 +121,9 @@ namespace MonoDevelop.PackageManagement
 					errorMessage = GettextCatalog.GetString ("Unreachable");
 					break;
 				}
-				LoggingService.LogInfo ("Package source '{0}' returned http status code {1}", packageSource.SourceUrl, response.StatusCode);
 			}
 
-			LoggingService.LogInfo ("Package source '{0}' returned exception", packageSource.SourceUrl, ex);
+			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.SourceUrl), ex);
 
 			switch (ex.Status) {
 			case WebExceptionStatus.ConnectFailure:
