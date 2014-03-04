@@ -80,9 +80,15 @@
   <Extension path="/MonoDevelop/Ide/ProjectTemplates">
     <ProjectTemplate id="FSharpConsoleProject" file="templates.FSharpConsoleProject.xpt.xml"/>
     <ProjectTemplate id="FSharpLibraryProject" file="templates.FSharpLibraryProject.xpt.xml"/>
-    <!-- Only include the tutorial project if the F# 3.0 target is available as this includes F# 3.0 specific features -->
-    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets">
-      <ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+    <!-- Only include the tutorial project if an F# 3.0 or 3.1 target is available as this includes F# 3.0 specific features -->
+	<ComplexCondition>
+		<Or>
+			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+		</Or>
+		<ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+	</ComplexCondition>
+      
     </Condition>
     <ProjectTemplate id="FSharpGtkProject" file="templates.FSharpGtkProject.xpt.xml"/>
     <Condition id="Platform" value="windows">
