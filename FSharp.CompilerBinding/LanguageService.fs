@@ -201,22 +201,34 @@ type LanguageService(dirtyNotify) =
     // Start looping with no initial information        
     loop None)
 
-   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
+  /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args, targetFramework) =
     let ext = Path.GetExtension(fileName)
     let opts = 
       if (ext = ".fsx" || ext = ".fsscript") then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
+        x.GetScriptCheckerOptions(fileName, projFilename, source, targetFramework)
+          
+      // We are in a project - construct options using current properties
+      else
+        x.GetProjectCheckerOptions(projFilename, files, args, targetFramework)
+    opts
+   
+  /// Constructs options for the interactive checker for the given script file in the project under the given configuration. 
+  member x.GetScriptCheckerOptions(fileName, projFilename, source, targetFramework) =
+    let ext = Path.GetExtension(fileName)
+    let opts = 
+        // We are in a stand-alone file or we are in a project, but currently editing a script file
         try 
           let fileName = fixFileName(fileName)
-          Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
+          Debug.WriteLine (sprintf "GetScriptCheckerOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename)
           
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
-            Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
+            Debug.WriteLine("GetScriptCheckerOptions: Adding missing core assemblies.")
             let dirs = FSharpEnvironment.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, targetFramework )
             {opts with ProjectOptions = [| yield! opts.ProjectOptions
                                            match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
@@ -226,10 +238,18 @@ type LanguageService(dirtyNotify) =
                                            | Some fn -> yield sprintf "-r:%s" fn
                                            | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
-          
+
+    // Print contents of check option for debugging purposes
+    Debug.WriteLine(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    opts
+   
+  /// Constructs options for the interactive checker for a project under the given configuration. 
+  member x.GetProjectCheckerOptions(projFilename, files, args, targetFramework) =
+    let opts = 
+      
       // We are in a project - construct options using current properties
-      else
-        Debug.WriteLine (sprintf "GetCheckerOptions: Creating for file '%s' in project '%s'" fileName projFilename )
+        Debug.WriteLine (sprintf "GetProjectCheckerOptions: Creating for project '%s'" projFilename )
 
         {ProjectFileName = projFilename
          ProjectFileNames = files
@@ -240,10 +260,10 @@ type LanguageService(dirtyNotify) =
          UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
-    Debug.WriteLine(sprintf "GetCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
-                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
+    
   
   /// Parses and type-checks the given file in the given project under the given configuration. The callback
   /// is called after the complete typecheck has been performed.
