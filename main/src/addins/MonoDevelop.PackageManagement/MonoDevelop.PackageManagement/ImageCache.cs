@@ -1,5 +1,5 @@
 ﻿//
-// ImageLoadedEventArgs.cs
+// ImageCache.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,50 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ImageLoadedEventArgs : EventArgs
+	public class ImageCache
 	{
-		public ImageLoadedEventArgs (Image image, Uri uri, object state)
+		const int MaxImageCount = 50;
+
+		Queue<Uri> orderedKeys = new Queue<Uri> ();
+		Dictionary<Uri, Image> images = new Dictionary<Uri, Image> ();
+
+		public Image GetImage (Uri uri)
 		{
-			Uri = uri;
-			Image = image;
-			State = state;
+			Image image = null;
+			if (images.TryGetValue (uri, out image)) {
+				return image;
+			}
+			return null;
 		}
 
-		public ImageLoadedEventArgs (Exception ex, Uri uri, object state)
+		public void AddImage (Uri uri, Image image)
 		{
-			Uri = uri;
-			Exception = ex;
-			State = state;
+			if (images.ContainsKey (uri))
+				return;
+
+			images [uri] = image;
+			orderedKeys.Enqueue (uri);
 		}
 
-		public Image Image { get; private set; }
-		public Uri Uri { get; private set; }
-		public Exception Exception { get; private set; }
-		public object State { get; private set; }
-
-		public bool HasError {
-			get { return Exception != null; }
+		Image RemoveImage ()
+		{
+			Uri uri = orderedKeys.Dequeue ();
+			Image image = GetImage (uri);
+			images.Remove (uri);
+			return image;
 		}
 
-		public ImageLoadedEventArgs WithState (object state)
+		public void ShrinkImageCache ()
 		{
-			var eventArgs = (ImageLoadedEventArgs)MemberwiseClone ();
-			eventArgs.State = state;
-			return eventArgs;
+			while (orderedKeys.Count > MaxImageCount) {
+				Image image = RemoveImage ();
+				image.Dispose ();
+			}
 		}
 	}
 }

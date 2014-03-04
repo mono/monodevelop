@@ -89,6 +89,9 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void Dispose (bool disposing)
 		{
+			imageLoader.Loaded -= ImageLoaded;
+			imageLoader.Dispose ();
+
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			viewModel.Dispose ();
 			DisposeExistingTimer ();
@@ -287,6 +290,7 @@ namespace MonoDevelop.PackageManagement
 				ResetPackagesListViewScroll ();
 				UpdatePackageListViewSelectionColor ();
 				ShowLoadingMessage ();
+				ShrinkImageCache ();
 			} else {
 				HideLoadingMessage ();
 			}
@@ -313,6 +317,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			errorMessageHBox.Visible = false;
 			errorMessageLabel.Text = "";
+		}
+
+		void ShrinkImageCache ()
+		{
+			imageLoader.ShrinkImageCache ();
 		}
 
 		void AppendPackagesToListView ()

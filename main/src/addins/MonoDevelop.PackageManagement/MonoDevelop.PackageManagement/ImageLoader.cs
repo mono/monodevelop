@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using NuGet;
 using ICSharpCode.PackageManagement;
 using Xwt.Drawing;
+using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -40,6 +41,8 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler<ImageLoadedEventArgs> Loaded;
 
 		PackageManagementTaskFactory taskFactory = new PackageManagementTaskFactory ();
+		Dictionary<Uri, List<object>> callersWaitingForImageLoad = new Dictionary<Uri, List<object>> ();
+		static readonly ImageCache imageCache = new ImageCache ();
 
 		public void LoadFrom (string uri, object state)
 		{
@@ -48,11 +51,41 @@ namespace MonoDevelop.PackageManagement
 
 		public void LoadFrom (Uri uri, object state)
 		{
+			Image image = imageCache.GetImage (uri);
+			if (image != null) {
+				OnLoaded (new ImageLoadedEventArgs (image, uri, state));
+				return;
+			}
+
+			if (AddToCallersWaitingForImageLoad (uri, state))
+				return;
+
 			ITask<ImageLoadedEventArgs> loadTask = taskFactory.CreateTask (
 				() => LoadImage (uri, state),
 				(task) => OnLoaded (task, uri, state));
 
 			loadTask.Start ();
+		}
+
+		bool AddToCallersWaitingForImageLoad (Uri uri, object state)
+		{
+			List<object> callers = GetCallersWaitingForImageLoad (uri);
+			if (callers != null) {
+				callers.Add (state);
+				return true;
+			} else {
+				callersWaitingForImageLoad.Add (uri, new List<object> ());
+			}
+			return false;
+		}
+
+		List<object> GetCallersWaitingForImageLoad (Uri uri)
+		{
+			List<object> callers = null;
+			if (callersWaitingForImageLoad.TryGetValue (uri, out callers)) {
+				return callers;
+			}
+			return null;
 		}
 
 		ImageLoadedEventArgs LoadImage (Uri uri, object state)
@@ -81,14 +114,46 @@ namespace MonoDevelop.PackageManagement
 
 		void OnLoaded (ImageLoadedEventArgs eventArgs)
 		{
-			if (Loaded != null) {
-				Loaded (this, eventArgs);
+			if (eventArgs.Image != null) {
+				imageCache.AddImage (eventArgs.Uri, eventArgs.Image);
+			}
+
+			OnLoaded (this, eventArgs);
+
+			List<object> callers = GetCallersWaitingForImageLoad (eventArgs.Uri);
+			if (callers != null) {
+				OnLoaded (callers, eventArgs);
+				callersWaitingForImageLoad.Remove (eventArgs.Uri);
 			}
 		}
 
 		void OnError (Exception ex, Uri uri, object state)
 		{
 			OnLoaded (new ImageLoadedEventArgs (ex, uri, state));
+		}
+
+		void OnLoaded (object sender, ImageLoadedEventArgs eventArgs)
+		{
+			if (Loaded != null) {
+				Loaded (this, eventArgs);
+			}
+		}
+
+		void OnLoaded (IEnumerable<object> states, ImageLoadedEventArgs eventArgs)
+		{
+			foreach (object state in states) {
+				OnLoaded (this, eventArgs.WithState (state));
+			}
+		}
+
+		public void ShrinkImageCache ()
+		{
+			imageCache.ShrinkImageCache ();
+		}
+
+		public void Dispose ()
+		{
+			ShrinkImageCache ();
 		}
 	}
 }

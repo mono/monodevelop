@@ -305,6 +305,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelCheckedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourceCellRenderer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
