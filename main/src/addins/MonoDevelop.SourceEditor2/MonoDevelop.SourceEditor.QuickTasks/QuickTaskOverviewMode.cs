@@ -572,10 +572,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			var x1 = Allocation.Width / 2d;
 			var y1 = indicatorPadding + indicatorDiameter / 2d;
 
-			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
+			cr.Arc (x1, y1 + 1, indicatorDiameter / 2d, 0, 2 * Math.PI);
+			cr.SetSourceRGBA (0, 0, 0, 0.2);
+			cr.Fill ();
 
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 			cr.SetSourceColor (color);
-			cr.FillPreserve ();
+			cr.Fill ();
+
+			cr.Arc (x1, y1, indicatorDiameter / 2d - 1, 0, 2 * Math.PI);
+			cr.SetSourceRGBA (1, 1, 1, 0.1);
+			cr.Stroke ();
+
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 			cr.SetSourceColor (borderColor);
 			cr.Stroke ();
 		}
