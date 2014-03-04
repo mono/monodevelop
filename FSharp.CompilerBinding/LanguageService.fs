@@ -271,30 +271,37 @@ type LanguageService(dirtyNotify) =
            // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
            mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
 
-  member x.GetUsesOfSymbolAtLocation(projectFilename, file, source, files, line:int, col, lineStr, args, framework) =
+  member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, targetFramework)  : Async<TypedParseResult> = 
    async { 
-    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
+    let req = ParseRequest(fileName, src, opts, false, None)
+    // Try to get recent results from the F# service
+    match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
+    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
+        return TypedParseResult(typed, untyped)
+    | _ -> 
+        return! mbox.PostAndAsyncReply((fun repl -> UpdateAndGetTypedInfo(req, repl)))
+   }
 
-    //parse and retrieve Checked Project results, this has the entity graph and errors etc
-    let! projectResults = checker.ParseAndCheckProject(projectOptions) 
-  
-    //get the parse results for the current file
-    let! backgroundParseResults, backgroundTypedParse = //Note this operates on the file system so the file needs to be current
-        checker.GetBackgroundCheckResultsForFileInProject(file, projectOptions) 
 
+  /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
+  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, files, line:int, col, lineStr, args, targetFramework) =
+   async { 
     match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
-        //get symbol at location
-        //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
-        match backgroundTypedParse.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
-        | Some(symbol) ->
+
+        let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, allowRecentTypeCheckResults=true, targetFramework=targetFramework)
+
+        match checkResults.CheckFileResults.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
+        | Some symbol ->
             let lastIdent = Seq.last identIsland
-            let refs = projectResults.GetUsesOfSymbol(symbol)
+            let refs = checkResults.CheckFileResults.GetUsesOfSymbolInFile(symbol)
             return Some(lastIdent, refs)
         | _ -> return None
-    | _ -> return None }
+    | _ -> return None 
+   }
 
-  member x.GetUsesOfSymbol(projectFilename, file, source, files, args, framework, symbol:FSharpSymbol) =
+  member x.GetUsesOfSymbolInProject(projectFilename, file, source, files, args, framework, symbol:FSharpSymbol) =
    async { 
     let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
 

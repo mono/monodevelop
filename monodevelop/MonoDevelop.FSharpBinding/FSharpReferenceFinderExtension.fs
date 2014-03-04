@@ -65,7 +65,7 @@ type FSharpReferenceFinder() =
             
             let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
             let references = 
-                try Some(MDLanguageService.Instance.GetUsesOfSymbol(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
+                try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
                     |> Async.RunSynchronously)
                 with _ -> None
 

@@ -342,7 +342,7 @@ type HighlightUsagesExtension() as this =
         let token = cts.Token
         let asyncOperation = 
             async{let! symbolReferences =
-                    MDLanguageService.Instance.GetUsesOfSymbolAtLocation(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
+                    MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
                   | Some(fsSymbolName, references) -> 
@@ -361,7 +361,6 @@ type HighlightUsagesExtension() as this =
                                 try
                                     try
                                         //find usages is based on symbols found in phsical files so a dirty file here will be invalid
-                                        if doc.IsDirty then doc.Save()
                                         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(textEditorData.Caret.Offset, doc.Editor.Document)
                                         let currentFile = FilePath(textEditorData.FileName).ToString()
 
