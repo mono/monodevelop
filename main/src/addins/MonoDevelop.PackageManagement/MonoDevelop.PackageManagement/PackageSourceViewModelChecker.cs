@@ -120,6 +120,9 @@ namespace MonoDevelop.PackageManagement
 				case HttpStatusCode.RequestTimeout:
 					errorMessage = GettextCatalog.GetString ("Unreachable");
 					break;
+				case HttpStatusCode.ProxyAuthenticationRequired:
+					errorMessage = GettextCatalog.GetString ("Proxy authentication required");
+					break;
 				}
 			}
 

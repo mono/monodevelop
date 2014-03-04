@@ -69,11 +69,19 @@ namespace ICSharpCode.PackageManagement
 		
 		public static void InitializeCredentialProvider()
 		{
-			ISettings settings = Settings.LoadDefaultSettings(null, null, null);
-			var packageSourceProvider = new PackageSourceProvider(settings);
-			var credentialProvider = new SettingsCredentialProvider(new MonoDevelopCredentialProvider(), packageSourceProvider);
-			
-			HttpClient.DefaultCredentialProvider = credentialProvider;
+			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (new MonoDevelopCredentialProvider ());
+		}
+
+		static SettingsCredentialProvider CreateSettingsCredentialProvider (ICredentialProvider credentialProvider)
+		{
+			ISettings settings = Settings.LoadDefaultSettings (null, null, null);
+			var packageSourceProvider = new PackageSourceProvider (settings);
+			return new SettingsCredentialProvider(credentialProvider, packageSourceProvider);
+		}
+
+		public static void DisablePromptForCredentials ()
+		{
+			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (NullCredentialProvider.Instance);
 		}
 
 		public static PackageManagementOptions Options {

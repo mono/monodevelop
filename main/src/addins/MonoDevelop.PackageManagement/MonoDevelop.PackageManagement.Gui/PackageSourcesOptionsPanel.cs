@@ -55,6 +55,13 @@ namespace MonoDevelop.PackageManagement.Gui
 				viewModels.RegisteredPackageSourcesViewModel.Save ();
 			}
 		}
+
+		public override void Dispose ()
+		{
+			if (packageSourcesWidget != null) {
+				packageSourcesWidget.Dispose ();
+			}
+		}
 	}
 }
 

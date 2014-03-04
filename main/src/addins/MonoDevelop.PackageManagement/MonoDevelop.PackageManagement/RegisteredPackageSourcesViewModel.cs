@@ -131,6 +131,8 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Load()
 		{
+			PackageManagementServices.DisablePromptForCredentials ();
+
 			foreach (PackageSource packageSource in packageSources) {
 				AddPackageSourceToViewModel(packageSource);
 			}
@@ -359,7 +361,6 @@ namespace ICSharpCode.PackageManagement
 				PackageSource source = packageSourceViewModel.GetPackageSource();
 				packageSources.Add(source);
 			}
-			PackageManagementServices.InitializeCredentialProvider ();
 		}
 
 		public event EventHandler<PackageSourceViewModelChangedEventArgs> PackageSourceChanged;
@@ -373,7 +374,11 @@ namespace ICSharpCode.PackageManagement
 
 		public void Dispose ()
 		{
-			packageSourceChecker.Dispose ();
+			try {
+				packageSourceChecker.Dispose ();
+			} finally {
+				PackageManagementServices.InitializeCredentialProvider ();
+			}
 		}
 	}
 }
