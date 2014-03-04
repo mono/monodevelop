@@ -380,11 +380,11 @@ type HighlightUsagesExtension() as this =
         EventHandler<_>
             (fun s dl -> let isHighlighted = SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages
                          let selectionContainsCaret = textEditorData.IsSomethingSelected && markers.Values.Any(fun m -> m.Contains(textEditorData.Caret.Offset))
-                         if isHighlighted || selectionContainsCaret then
+                         if isHighlighted && (textEditorData.IsSomethingSelected || not selectionContainsCaret) then
                              removeMarkers (textEditorData.IsSomethingSelected)
                              removeTimer()
-                         if not textEditorData.IsSomethingSelected then
-                             popupTimer := GLib.Timeout.Add(1000u, delayedHighight))
+                             if not textEditorData.IsSomethingSelected then
+                                 popupTimer := GLib.Timeout.Add(1000u, delayedHighight))
 
     let documentTextReplaced = EventHandler<_>(fun _ _ -> removeMarkers(false))
     let documentSelectionChanged = EventHandler(fun _ _ -> removeMarkers(false))
