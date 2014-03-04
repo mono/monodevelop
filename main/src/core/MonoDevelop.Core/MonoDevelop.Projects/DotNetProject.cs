@@ -457,7 +457,7 @@ namespace MonoDevelop.Projects
 		{
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
-				if (pr.ReferenceType == ReferenceType.Assembly) {
+				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
 					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
 						pr.NotifyStatusChanged ();
 				} else if (pr.HintPath == updatedFile) {
