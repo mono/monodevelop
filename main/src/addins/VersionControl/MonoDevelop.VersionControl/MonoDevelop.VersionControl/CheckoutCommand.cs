@@ -63,9 +63,16 @@ namespace MonoDevelop.VersionControl
 					    AlertButton.Ok) == AlertButton.Cancel)
 					return;
 				FileService.DeleteDirectory (path);
+				FileService.CreateDirectory (path);
 			}
 
-			vc.Checkout (path, null, true, Monitor);
+			try {
+				vc.Checkout (path, null, true, Monitor);
+			} catch (VersionControlException e) {
+				Monitor.ReportError (GettextCatalog.GetString (e.Message), null);
+				return;
+			}
+
 			if (Monitor.IsCancelRequested) {
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
 				return;

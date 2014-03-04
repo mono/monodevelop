@@ -875,6 +875,7 @@ namespace MonoDevelop.VersionControl.Git
 						e.InnerException is NGit.Errors.TransportException ||
 						e.InnerException is NGit.Errors.NotSupportedException) {
 						FileService.DeleteDirectory (targetLocalPath);
+						throw new VersionControlException ("Checkout failed. Supplied URL is invalid.");
 					}
 				}
 			}
