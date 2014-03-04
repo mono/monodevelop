@@ -28,6 +28,9 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
+using NuGet;
+using ICSharpCode.PackageManagement;
 using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
@@ -36,6 +39,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		public event EventHandler<ImageLoadedEventArgs> Loaded;
 
+		PackageManagementTaskFactory taskFactory = new PackageManagementTaskFactory ();
+
 		public void LoadFrom (string uri, object state)
 		{
 			LoadFrom (new Uri (uri), state);
@@ -43,40 +48,35 @@ namespace MonoDevelop.PackageManagement
 
 		public void LoadFrom (Uri uri, object state)
 		{
-			var request = HttpWebRequest.Create (uri);
-			Task<WebResponse> readTask = Task.Factory.FromAsync<WebResponse> (request.BeginGetResponse, request.EndGetResponse, null);
-			readTask.ContinueWith (task => OnReadComplete (task, uri, state));
+			ITask<ImageLoadedEventArgs> loadTask = taskFactory.CreateTask (
+				() => LoadImage (uri, state),
+				(task) => OnLoaded (task, uri, state));
+
+			loadTask.Start ();
 		}
 
-		void OnReadComplete (Task<WebResponse> task, Uri uri, object state)
+		ImageLoadedEventArgs LoadImage (Uri uri, object state)
+		{
+			try {
+				var httpClient = new HttpClient (uri);
+				Stream stream = httpClient.GetResponse ().GetResponseStream ();
+				Image image = Image.FromStream (stream);
+
+				return new ImageLoadedEventArgs (image, uri, state);
+			} catch (Exception ex) {
+				return new ImageLoadedEventArgs (ex, uri, state);
+			}
+		}
+
+		void OnLoaded (ITask<ImageLoadedEventArgs> task, Uri uri, object state)
 		{
 			if (task.IsFaulted) {
 				OnError (task.Exception, uri, state);
-			} else if (task.IsCanceled) {
+			} else if (task.IsCancelled) {
 				// Do nothing.
 			} else {
-				LoadFrom (task.Result.GetResponseStream (), uri, state);
+				OnLoaded (task.Result);
 			}
-		}
-
-		void OnError (Exception ex, Uri uri, object state)
-		{
-			OnLoaded (new ImageLoadedEventArgs (ex, uri, state));
-		}
-
-		void LoadFrom (Stream stream, Uri uri, object state)
-		{
-			try {
-				Image image = Image.FromStream (stream);
-				OnLoaded (image, uri, state);
-			} catch (Exception ex) {
-				OnError (ex, uri, state);
-			}
-		}
-
-		void OnLoaded (Image image, Uri uri, object state)
-		{
-			OnLoaded (new ImageLoadedEventArgs (image, uri, state));
 		}
 
 		void OnLoaded (ImageLoadedEventArgs eventArgs)
@@ -84,6 +84,11 @@ namespace MonoDevelop.PackageManagement
 			if (Loaded != null) {
 				Loaded (this, eventArgs);
 			}
+		}
+
+		void OnError (Exception ex, Uri uri, object state)
+		{
+			OnLoaded (new ImageLoadedEventArgs (ex, uri, state));
 		}
 	}
 }

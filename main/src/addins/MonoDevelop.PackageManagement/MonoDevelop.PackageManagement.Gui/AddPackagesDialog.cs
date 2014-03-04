@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using Mono.Unix;
+using MonoDevelop.Ide;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
@@ -340,8 +341,18 @@ namespace MonoDevelop.PackageManagement
 		void LoadPackageImage (int row, PackageViewModel packageViewModel)
 		{
 			if (packageViewModel.HasIconUrl) {
-				imageLoader.LoadFrom (packageViewModel.IconUrl, row);
+				// Workaround: Image loading is incorrectly being done on GUI thread
+				// since the wrong synchronization context seems to be used. So
+				// here we switch to a background thread and then back to the GUI thread.
+				DispatchService.BackgroundDispatch (() => LoadImage (packageViewModel.IconUrl, row));
 			}
+		}
+
+		void LoadImage (Uri iconUrl, int row)
+		{
+			// Put it back on the GUI thread so the correct synchronization context
+			// is used. The image loading will be done on a background thread.
+			DispatchService.GuiDispatch (() => imageLoader.LoadFrom (iconUrl, row));
 		}
 
 		bool IsOddRow (int row)
