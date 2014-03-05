@@ -207,7 +207,7 @@ type FSharpTextEditorCompletion() =
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
       let framework = CompilerArguments.getTargetFramework( (doc.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, true, ServiceSettings.blockingTimeout, framework)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework)
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
@@ -252,7 +252,7 @@ type FSharpTextEditorCompletion() =
       // Note, however, that this is just an approximation - for example no re-typecheck is enforced here:
       //      (abc + def).PPP.
       
-      let allowRecentTypeCheckResults = 
+      let allowAnyStale = 
           match ch with 
           | '.' -> 
               let doc = x.Document
@@ -262,22 +262,23 @@ type FSharpTextEditorCompletion() =
               offset > 1 && Char.IsLetter (docText.[offset-2])
           | _ -> true
 
-      Debug.WriteLine("allowRecentTypeCheckResults = {0}", allowRecentTypeCheckResults)
+      Debug.WriteLine("allowAnyStale = {0}", allowAnyStale)
 
-      x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults)
+      x.CodeCompletionCommandImpl(context, allowAnyStale)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
   override x.CodeCompletionCommand(context) =
       x.CodeCompletionCommandImpl(context, true)
 
-  member x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults) =
+  member x.CodeCompletionCommandImpl(context, allowAnyStale) =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
       let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(x.Document.Project, config)
       let framework = CompilerArguments.getTargetFramework( (x.Document.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, ServiceSettings.blockingTimeout, framework)
+      let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else  AllowStaleResults.MatchingSource
+      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
       
       // Get declarations and generate list for MonoDevelop
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
@@ -384,7 +385,7 @@ type FSharpPathExtension() =
             let posGeq p1 p2 =
                 posEq p1 p2 || posGt p1 p2
 
-            let inside (docloc:Mono.TextEditor.DocumentLocation) ((start, finish) :Range) =
+            let inside (docloc:Mono.TextEditor.DocumentLocation) (start, finish) =
                 let cursor = (docloc.Column, docloc.Line)
                 posGeq cursor start && posGeq finish cursor
 
@@ -394,8 +395,8 @@ type FSharpPathExtension() =
                 with _ -> [| |] 
 
             let topLevelTypesInsideCursor =
-                toplevel |> Array.filter (fun tl -> inside loc tl.Declaration.Range)
-                         |> Array.sortBy(fun xs -> xs.Declaration.Range)
+                toplevel |> Array.filter (fun tl -> let m = tl.Declaration.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
+                         |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
 
             let newPath = ResizeArray<_>()
             for top in topLevelTypesInsideCursor do
@@ -408,8 +409,8 @@ type FSharpPathExtension() =
             if topLevelTypesInsideCursor.Length > 0 then
                 let lastToplevel = topLevelTypesInsideCursor.Last()
                 //only first child found is returned, could there be multiple children found?
-                let child = lastToplevel.Nested |> Array.tryFind (fun tl -> inside loc tl.Range)
-                let multichild = lastToplevel.Nested |> Array.filter (fun tl -> inside loc tl.Range)
+                let child = lastToplevel.Nested |> Array.tryFind (fun tl -> let m = tl.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
+                let multichild = lastToplevel.Nested |> Array.filter (fun tl -> let m = tl.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
 
                 Debug.Assert( multichild.Length <= 1, String.Format("{0} children found please investigate!", multichild.Length))
                 match child with
@@ -479,7 +480,7 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
             let node = memberList.[n]
             let extEditor = ext.Document.GetContent<IExtensibleTextEditor>()
             if extEditor <> null then
-                let (scol,sline), _ = node.Range
+                let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
                 extEditor.SetCaretTo(max 1 sline, max 1 scol, true)
 
         member x.GetMarkup(n) =

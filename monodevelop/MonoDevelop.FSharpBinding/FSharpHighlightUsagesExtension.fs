@@ -160,7 +160,8 @@ module NRefactory =
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
     let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, text, lastIdentAtLoc:string) =
-         let ((beginLine, beginCol), (endLine, endCol)) = symbolUse.Range
+         let m = symbolUse.RangeAlternate
+         let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
          
          // We always know the text of the identifier that resolved to symbol.
          // Trim the range of the referring text to only include this identifier.
@@ -173,8 +174,8 @@ module NRefactory =
                  (beginLine, beginCol)
              
          let document = TextDocument(text)
-         let offset = document.LocationToOffset(beginLine+1, beginCol+1)
-         let domRegion = DomRegion(fileNameOfRef, beginLine+1, beginCol+1, endLine+1, endCol+1)
+         let offset = document.LocationToOffset(beginLine, beginCol+1)
+         let domRegion = DomRegion(fileNameOfRef, beginLine, beginCol+1, endLine, endCol+1)
 
          let symbol = createSymbol(projectContent, symbolUse.Symbol, lastIdentAtLoc, domRegion)
          let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
@@ -376,7 +377,9 @@ type HighlightUsagesExtension() as this =
 
     let caretPositionChanged =
         EventHandler<_>
-            (fun s dl -> let isHighlighted = SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages
+            (fun s dl -> let isHighlighted = 
+                             SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages
+                          || SourceEditor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting
                          let selectionContainsCaret = textEditorData.IsSomethingSelected && markers.Values.Any(fun m -> m.Contains(textEditorData.Caret.Offset))
                          if isHighlighted && (textEditorData.IsSomethingSelected || not selectionContainsCaret) then
                              removeMarkers (textEditorData.IsSomethingSelected)

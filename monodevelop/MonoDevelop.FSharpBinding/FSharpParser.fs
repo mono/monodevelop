@@ -31,7 +31,7 @@ type FSharpParser() =
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn + 1, error.EndLine + 1, error.EndColumn + 1))
+      new Error(typ, error.Message, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file
@@ -89,7 +89,7 @@ type FSharpParser() =
 
                     // Keep the result until we reparse
                     activeResults.[fileName] <- makeErrors errors
-                    typedParsedResult <- MDLanguageService.Instance.GetTypedParseResult(proj.FileName.ToString(), filePath, fileContent, files, args, true, 400, framework)
+                    typedParsedResult <- MDLanguageService.Instance.GetTypedParseResult(proj.FileName.ToString(), filePath, fileContent, files, args, AllowStaleResults.MatchingFileName , 400, framework)
                     // Schedule a reparse to actually update the errors, checking first if this is still the active document
                     try 
                        let doc = IdeApp.Workbench.ActiveDocument
@@ -107,8 +107,8 @@ type FSharpParser() =
         try
           let regions =
             let processDecl (decl:SourceCodeServices.DeclarationItem) =
-              let (sc,sl), (fc,fl) = decl.Range
-              FoldingRegion(decl.Name, DomRegion(sl,sc+1, fl,fc+1))
+              let m = decl.Range
+              FoldingRegion(decl.Name, DomRegion(m.StartLine, m.StartColumn+1, m.EndLine, m.EndColumn+1))
                   
             seq{for toplevel in typedParsedResult.ParseFileResults.GetNavigationItems().Declarations do
                   yield processDecl toplevel.Declaration

@@ -361,8 +361,8 @@ module internal TipFormatter =
 module internal MonoDevelop =
     let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
-        let line, col = max (loc.Line - 1) 0, loc.Column-1
-        let currentLine = doc.Lines |> Seq.nth line
+        let line, col = max loc.Line 1, loc.Column-1
+        let currentLine = doc.Lines |> Seq.nth (line-1)
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
         (line, col, lineStr)
     

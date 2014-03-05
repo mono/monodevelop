@@ -38,8 +38,13 @@
     <DocumentationFile>bin\Release\FSharp.InteractiveAutocomplete.XML</DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
-
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <!--
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
@@ -49,7 +54,6 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   -->
-
   <ItemGroup>
     <Compile Include="Debug.fs" />
     <Compile Include="Options.fs" />
@@ -78,7 +82,7 @@
       <Name>FSharp.CompilerBinding</Name>
     </ProjectReference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.22\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.26\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

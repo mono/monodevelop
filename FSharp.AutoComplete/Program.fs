@@ -534,10 +534,12 @@ module internal Main =
           | Text ->
               let declstrings =
                 [ for tld in decls do
-                    let (s1, e1), (s2, e2) = tld.Declaration.Range
+                    let m = tld.Declaration.Range
+                    let (s1, e1), (s2, e2) =  ((m.StartColumn, m.StartLine), (m.EndColumn, m.EndLine))
                     yield sprintf "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
                     for d in tld.Nested do
-                      let (s1, e1), (s2, e2) = d.Range
+                      let m = d.Range
+                      let (s1, e1), (s2, e2) = ((m.StartColumn, m.StartLine), (m.EndColumn, m.EndLine))
                       yield sprintf "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name ]
               printfn "DATA: declarations\n%s\n<<EOF>>" (String.concat "\n" declstrings)
           | Json -> prAsJson { Kind = "declarations"; Data = decls }
@@ -618,10 +620,10 @@ module internal Main =
             match agent.FindDeclaration(opts, line, col, state.Files.[file].[line], timeout) with
             | None
             | Some (FindDeclResult.DeclNotFound _) -> printMsg "ERROR" "Could not find declaration"
-            | Some (FindDeclResult.DeclFound ((line,col),file)) ->
+            | Some (FindDeclResult.DeclFound range) ->
               
               match state.OutputMode with
-              | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
+              | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" range.FileName (range.StartLine-1) range.StartColumn
               | Json ->
                   let data = { Line = line; Column = col; File = file }
                   prAsJson { Kind = "finddecl"; Data = data }

@@ -10,6 +10,7 @@ open System.Text
 open System.Linq
 open System.Collections.Generic
 open System.Threading
+open FSharp.CompilerBinding
 
 open Mono.TextEditor
 open MonoDevelop.Core
@@ -57,7 +58,7 @@ type FSharpLanguageItemTooltipProvider() =
                   docText, 
                   files,
                   args,
-                  true,
+                  AllowStaleResults.MatchingSource,
                   ServiceSettings.blockingTimeout,
                   framework)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
@@ -163,7 +164,7 @@ type FSharpResolverProvider() =
                   docText, 
                   files, 
                   args, 
-                  true,
+                  AllowStaleResults.MatchingSource,
                   ServiceSettings.blockingTimeout,
                   framework)
 
@@ -184,9 +185,9 @@ type FSharpResolverProvider() =
         | Some fsSymbol -> 
             let reg = 
                 match loc with
-                | FindDeclResult.DeclFound((line, col), file) -> 
-                    Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
-                    DomRegion(file,line+1,col+1)
+                | FindDeclResult.DeclFound(m) -> 
+                    Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
+                    DomRegion(m.FileName,m.StartLine,m.StartColumn+1)
                 | FindDeclResult.DeclNotFound(notfound) -> 
                     match notfound with 
                     | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")

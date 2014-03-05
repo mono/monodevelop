@@ -19,7 +19,7 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
         | Some (longName, residue) ->
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (info.GetDeclarations(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
+            try Some (info.GetDeclarationsAlternate(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
                       |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 
@@ -29,7 +29,7 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-          let res = info.GetToolTipText(line, col, lineStr, identIsland, token)
+          let res = info.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
           Some (res, (col - (Seq.last identIsland).Length, col))
 
@@ -37,7 +37,7 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland) ->
-            let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, true)
+            let res = info.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, true)
             Debug.WriteLine("Result: Got something, returning")
             res 
 
@@ -45,7 +45,7 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
         match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-            let res = info.GetMethods(line, col, lineStr, Some identIsland)
+            let res = info.GetMethodsAlternate(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
             Some (res.MethodName, res.Methods) 
 
@@ -54,11 +54,20 @@ type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
         | Some(colu, identIsland) ->
             //get symbol at location
             //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
-            info.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+            info.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland)
         | None -> None
 
     member x.CheckFileResults = info        
     member x.ParseFileResults = untyped 
+
+[<RequireQualifiedAccess>]
+type AllowStaleResults = 
+    // Allow checker results where the source doesn't even match
+    | MatchingFileName
+    // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
+    | MatchingSource
+    // Don't allow stale results
+    | No
 
 // --------------------------------------------------------------------------------------
 /// Represents request send to the background worker
@@ -278,28 +287,39 @@ type LanguageService(dirtyNotify) =
         let req = ParseRequest(fileName, src, opts, false, None)
         checker.ParseFileInProject(fileName, src, opts)
 
-  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout, targetFramework)  : TypedParseResult = 
+  member internal x.TryGetStaleTypedParseResult(fileName:string, req: ParseRequest, src, stale)  = 
+    // Try to get recent results from the F# service
+    let res = 
+        match stale with 
+        | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) 
+        | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options, source=src) 
+        | AllowStaleResults.No -> None
+    match res with 
+    | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (untyped,typed)
+    | _ -> None
+
+  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : TypedParseResult = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
     let req = ParseRequest(fileName, src, opts, false, None)
     // Try to get recent results from the F# service
-    match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
-    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
+    match x.TryGetStaleTypedParseResult(fileName, req, src, stale)  with
+    | Some(untyped, typed) ->
         Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
         TypedParseResult(typed, untyped)
-    | _ -> Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
-           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-           mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
+    | _ -> 
+        Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
+        // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+        mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
 
-  member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, targetFramework)  : Async<TypedParseResult> = 
+  member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale, targetFramework)  : Async<TypedParseResult> = 
    async { 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     let req = ParseRequest(fileName, src, opts, false, None)
-    // Try to get recent results from the F# service
-    match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
-    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
+    match x.TryGetStaleTypedParseResult(fileName, req, src, stale)  with
+    | Some(untyped, typed) -> 
         return TypedParseResult(typed, untyped)
-    | _ -> 
+    | _ ->  
         return! mbox.PostAndAsyncReply((fun repl -> UpdateAndGetTypedInfo(req, repl)))
    }
 
@@ -310,9 +330,9 @@ type LanguageService(dirtyNotify) =
     match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
 
-        let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, allowRecentTypeCheckResults=true, targetFramework=targetFramework)
+        let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource, targetFramework=targetFramework)
 
-        match checkResults.CheckFileResults.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
+        match checkResults.CheckFileResults.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland) with
         | Some symbol ->
             let lastIdent = Seq.last identIsland
             let refs = checkResults.CheckFileResults.GetUsesOfSymbolInFile(symbol)
