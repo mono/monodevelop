@@ -159,7 +159,7 @@ module NRefactory =
     /// Create an NRefactory MemberReference for an F# symbol.
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, lastIdentAtLoc:string) =
+    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, text, lastIdentAtLoc:string) =
          let ((beginLine, beginCol), (endLine, endCol)) = symbolUse.Range
          
          // We always know the text of the identifier that resolved to symbol.
@@ -172,7 +172,6 @@ module NRefactory =
              else
                  (beginLine, beginCol)
              
-         let text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText(fileNameOfRef)
          let document = TextDocument(text)
          let offset = document.LocationToOffset(beginLine+1, beginCol+1)
          let domRegion = DomRegion(fileNameOfRef, beginLine+1, beginCol+1, endLine+1, endCol+1)
@@ -342,7 +341,7 @@ type HighlightUsagesExtension() as this =
         let token = cts.Token
         let asyncOperation = 
             async{let! symbolReferences =
-                    MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
+                    MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
                   | Some(fsSymbolName, references) -> 
@@ -350,7 +349,7 @@ type HighlightUsagesExtension() as this =
                           [| for symbolUse in references do
                               //We only want symbol refs from the current file as we are highlighting text
                               if symbolUse.FileName = currentFile then 
-                                  yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, fsSymbolName) |]
+                                  yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) |]
                       if not token.IsCancellationRequested then
                           Gtk.Application.Invoke(fun _ _ -> showReferences(memberReferences))
                   | _ -> () }
