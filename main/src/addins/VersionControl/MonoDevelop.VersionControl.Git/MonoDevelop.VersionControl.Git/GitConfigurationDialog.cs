@@ -53,7 +53,17 @@ namespace MonoDevelop.VersionControl.Git
 			
 			listBranches.AppendColumn (GettextCatalog.GetString ("Branch"), new CellRendererText (), "markup", 1);
 			listBranches.AppendColumn (GettextCatalog.GetString ("Tracking"), new CellRendererText (), "text", 2);
-			
+
+			listBranches.Selection.Changed += delegate {
+				TreeIter it;
+				if (!listBranches.Selection.GetSelected (out it))
+					return;
+
+				string currentBranch = repo.GetCurrentBranch ();
+				var b = (Branch) storeBranches.GetValue (it, 0);
+				buttonRemoveBranch.Sensitive = b.Name != currentBranch;
+			};
+
 			// Sources tree
 			
 			storeRemotes = new TreeStore (typeof(RemoteSource), typeof(string), typeof(string), typeof(string), typeof(string));
