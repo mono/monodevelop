@@ -71,7 +71,9 @@ type FSharpReferenceFinder() =
 
             match references with
             | Some(references) -> 
-                let memberRefs = [| for symbolUse in references -> NRefactory.createMemberReference(projectContent, symbolUse, symbolUse.FileName, fsSymbol.LastIdent) |]
+                let memberRefs = [| for symbolUse in references -> 
+                                        let text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText(symbolUse.FileName)
+                                        NRefactory.createMemberReference(projectContent, symbolUse, symbolUse.FileName, text, fsSymbol.LastIdent) |]
                 yield! memberRefs
             | None -> ()
 
