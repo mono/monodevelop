@@ -1,0 +1,44 @@
+{
+	"name": "FSharp",
+	"include": {
+		"dev": [
+			["*.*", [
+					"*.hg*",
+					"*.JSON-tmLanguage",
+					"*.ps1",
+					"*.sublime-project",
+					"*.sublime-workspace",
+					"*builder.py",
+					"*manifest.json",
+					"*toplist.py",
+					"build.sh"
+					]
+			],
+			["./tests/*.py", []],
+			["./tests/fsac/*.py", []],
+			["./fsac/*.py", []],
+			["./const/*.py", []],
+			["./bundled/fsautocomplete.zip", []]
+		],
+		"release": [
+			["*.*", [
+					"*.hg*",
+					"*.JSON-tmLanguage",
+					"*.ps1",
+					"*.sublime-commands",
+					"*.sublime-project",
+					"*.sublime-workspace",
+					"*build.sh",
+					"*builder.py",
+					"*manifest.json",
+					"*test_runner.py",
+					"*toplist.py",
+					"build.sh"
+					]
+			],
+			["./fsac/*.py", []],
+			["./const/*.py", []],
+			["./bundled/fsautocomplete.zip", []]
+		]
+	}
+}
