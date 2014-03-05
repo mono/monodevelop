@@ -103,7 +103,7 @@ namespace MonoDevelop.VersionControl
 			
 			string msg = GettextCatalog.GetString ("Are you sure you want to remove the selected items from the version control system?");
 			string msg2 = GettextCatalog.GetString ("The files will be kept on disk.");
-			if (MessageService.Confirm (msg, msg2, AlertButton.Delete))
+			if (MessageService.Confirm (msg, msg2, AlertButton.Remove))
 				new RemoveWorker (items).Start();
 			return true;
 		}
