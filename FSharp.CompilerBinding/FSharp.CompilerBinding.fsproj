@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,6 +72,7 @@
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
       <HintPath>..\monodevelop\MonoDevelop.FSharpBinding\packages\FSharp.Compiler.Service.0.0.26\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.22\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

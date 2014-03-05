@@ -78,9 +78,10 @@ type FSharpParser() =
         if config <> null then 
           // Keep a record that we have an inflight check of this going on
           activeRequests.[fileName] <- fileContent
+          let proj = proj :?> MonoDevelop.Projects.DotNetProject
           let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
           let args = CompilerArguments.getArgumentsFromProject(proj, config)
-          let framework = CompilerArguments.getTargetFramework( (proj :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+          let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
 
           MDLanguageService.Instance.TriggerParse(proj.FileName.ToString(), filePath, fileContent, files, args, framework,
             (fun (_,errors) ->
