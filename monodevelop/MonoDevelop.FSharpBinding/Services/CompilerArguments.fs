@@ -43,16 +43,22 @@ module CompilerArguments =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let private generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
+  let private generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
 
     // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
     // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
-    let files = 
-      items.GetAll<ProjectReference>() 
-      |> Seq.filter (fun ref -> ref.Reference <> "FSharp.Core") 
-      |> Seq.collect (fun ref -> ref.GetReferencedFileNames(configSelector))
+    let projDir = Path.GetDirectoryName(project.FileName.ToString())
+    let files =
+        [ for ref in project.GetReferencedAssemblies(configSelector) do
+            if not (Path.IsPathRooted ref) then
+                yield Path.GetFullPath (Path.Combine(projDir, ref))
+            else
+                yield Path.GetFullPath ref ]
+        |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
+        |> set
+
                     
     // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to resolve it and add it. 
     // We look in the directories returned by getDefaultDirectories(langVersion, targetFramework).
@@ -79,8 +85,8 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the 
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, items, configSelector, shouldWrap) =
-    let dashr = generateReferences (items, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+  let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
@@ -228,8 +234,8 @@ module CompilerArguments =
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
 
-  let getArgumentsFromProject (proj:MonoDevelop.Projects.Project, config) =
+  let getArgumentsFromProject (proj:DotNetProject, config) =
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateCompilerOptions (fsconfig, FSharpCompilerVersion.LatestKnown , getTargetFramework projConfig.TargetFramework.Id, proj.Items, config, false) |> Array.ofList
+        generateCompilerOptions (proj, fsconfig, FSharpCompilerVersion.LatestKnown , getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 

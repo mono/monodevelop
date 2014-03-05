@@ -280,7 +280,7 @@ type LanguageService(dirtyNotify) =
 
   member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout, targetFramework)  : TypedParseResult = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
-    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
+    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", [|fileName|])
     let req = ParseRequest(fileName, src, opts, false, None)
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
