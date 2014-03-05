@@ -114,7 +114,12 @@
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
 					macShortcut = "Control|Alt|space" />
-					
+
+		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ExportRules"
+					defaultHandler = "MonoDevelop.AnalysisCore.ExportRulesHandler"
+					_label = "Export C# Code Rules to a File" 
+					_description = "Generates an HTML file that contains a list of all code rules"
+					/>
 		</Category>
 	</Extension>
 	
