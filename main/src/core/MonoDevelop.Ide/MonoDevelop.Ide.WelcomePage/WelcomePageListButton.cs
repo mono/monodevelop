@@ -223,44 +223,45 @@ namespace MonoDevelop.Ide.WelcomePage
 			Pango.CairoHelper.ShowLayout (ctx, layout);
 		}
 
+		protected virtual void DrawHoverBackground (Cairo.Context ctx)
+		{
+			if (BorderPadding <= 0) {
+				ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
+				ctx.Fill ();
+				ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
+				ctx.RelLineTo (Allocation.Width, 0);
+				ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
+				ctx.RelLineTo (Allocation.Width, 0);
+				if (DrawRightBorder) {
+					ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
+					ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
+				}
+				if (DrawLeftBorder) {
+					ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
+					ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
+				}
+				ctx.LineWidth = 1;
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
+				ctx.Stroke ();
+			}
+			else {
+				Gdk.Rectangle region = Allocation;
+				region.Inflate (-BorderPadding, -BorderPadding);
+				ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
+				ctx.FillPreserve ();
+				ctx.LineWidth = 1;
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
+				ctx.Stroke ();
+			}
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (mouseOver) {
-					if (BorderPadding <= 0) {
-						ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
-						ctx.Fill ();
-						ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
-						ctx.RelLineTo (Allocation.Width, 0);
-						ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
-						ctx.RelLineTo (Allocation.Width, 0);
-						
-						if (DrawRightBorder) {
-							ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
-							ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
-						}
-						if (DrawLeftBorder) {
-							ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
-							ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
-						}
-						
-						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
-						ctx.Stroke ();
-					} else {
-						Gdk.Rectangle region = Allocation;
-						region.Inflate (-BorderPadding, -BorderPadding);
-
-						ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
-						ctx.FillPreserve ();
-						
-						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
-						ctx.Stroke ();
-					}
-				}
+				if (mouseOver)
+					DrawHoverBackground (ctx);
 
 				// Draw the icon
 
