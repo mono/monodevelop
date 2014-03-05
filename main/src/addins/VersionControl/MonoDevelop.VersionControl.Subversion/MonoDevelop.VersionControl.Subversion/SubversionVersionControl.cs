@@ -266,7 +266,7 @@ namespace MonoDevelop.VersionControl.Subversion
 	}
 	
 
-	public class SubversionException : ApplicationException
+	public class SubversionException : VersionControlException
 	{
 		public int ErrorCode {
 			get;
