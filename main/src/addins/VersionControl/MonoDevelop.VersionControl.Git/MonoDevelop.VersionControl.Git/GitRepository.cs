@@ -1281,6 +1281,7 @@ namespace MonoDevelop.VersionControl.Git
 				} catch (NGit.Api.Errors.JGitInternalException e) {
 					if (e.InnerException is NGit.Errors.TransportException)
 						throw new VersionControlException (e.InnerException.Message);
+					throw;
 				}
 			}
 
