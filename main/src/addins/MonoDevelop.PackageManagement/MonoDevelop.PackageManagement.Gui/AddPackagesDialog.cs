@@ -162,7 +162,11 @@ namespace MonoDevelop.PackageManagement
 			PopulatePackageSources ();
 			viewModel.PropertyChanged += ViewModelPropertyChanged;
 
-			viewModel.ReadPackages ();
+			if (viewModel.SelectedPackageSource != null) {
+				viewModel.ReadPackages ();
+			} else {
+				HideLoadingMessage ();
+			}
 		}
 
 		void ClearSelectedPackageInformation ()
@@ -187,7 +191,7 @@ namespace MonoDevelop.PackageManagement
 
 			AddPackageSourceToComboBox (dummyPackageSourceRepresentingConfigureSettingsItem);
 
-			this.packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
+			packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
 		}
 
 		void AddPackageSourceToComboBox (PackageSource packageSource)

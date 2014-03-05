@@ -105,10 +105,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public void ReadPackages()
 		{
+			if (SelectedPackageSource == null) {
+				return;
+			}
+
 			allPackages = null;
 			pages.SelectedPageNumber = 1;
-			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			IsLoadingNextPage = false;
+			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			StartReadPackagesTask();
 		}
 		

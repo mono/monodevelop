@@ -35,7 +35,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		ManagePackagesViewModel managePackagesViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;
-		RegisteredPackageSourcesViewModel registeredProjectTemplatePackageSourcesViewModel;
 		PackageManagementOptionsViewModel packageManagementOptionsViewModel;
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
@@ -95,44 +94,16 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
 			get {
 				if (registeredPackageSourcesViewModel == null) {
-					RegisteredPackageSources packageSources = GetRegisteredPackageSources();
-					registeredPackageSourcesViewModel = 
-						CreateRegisteredPackageSourcesViewModel(packageSources);
+					registeredPackageSourcesViewModel = CreateRegisteredPackageSourcesViewModel();
 				}
 				return registeredPackageSourcesViewModel;
 			}
 		}
 		
-		RegisteredPackageSources GetRegisteredPackageSources()
-		{
-			return PackageManagementServices.Options.PackageSources;
-		}
-		
-		RegisteredPackageSources CreateDesignTimeRegisteredPackageSources()
-		{
-			return new RegisteredPackageSources(new PackageSource[0]);
-		}
-		
-		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel(RegisteredPackageSources packageSources)
+		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel()
 		{
 			CreateRegisteredPackageRepositories();
-			return new RegisteredPackageSourcesViewModel(packageSources);
-		}
-		
-		public RegisteredPackageSourcesViewModel RegisteredProjectTemplatePackageSourcesViewModel {
-			get {
-				if (registeredProjectTemplatePackageSourcesViewModel == null) {
-					RegisteredPackageSources packageSources = GetProjectTemplatePackageSources();
-					registeredProjectTemplatePackageSourcesViewModel =
-						CreateRegisteredPackageSourcesViewModel(packageSources);
-				}
-				return registeredProjectTemplatePackageSourcesViewModel;
-			}
-		}
-		
-		RegisteredPackageSources GetProjectTemplatePackageSources()
-		{
-			return PackageManagementServices.ProjectTemplatePackageSources;
+			return new RegisteredPackageSourcesViewModel(registeredPackageRepositories);
 		}
 		
 		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
