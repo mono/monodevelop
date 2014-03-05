@@ -363,7 +363,7 @@ type HighlightUsagesExtension() as this =
                                         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(textEditorData.Caret.Offset, doc.Editor.Document)
                                         let currentFile = FilePath(textEditorData.FileName).ToString()
 
-                                        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project, IdeApp.Workspace.ActiveConfiguration)
+                                        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
 
                                         //cancel any current highlights
                                         cancelHighlight()

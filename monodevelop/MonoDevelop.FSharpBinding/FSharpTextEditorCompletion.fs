@@ -204,9 +204,10 @@ type FSharpTextEditorCompletion() =
       if config = null then null else
 
       // Try to get typed result - with the specified timeout
+      let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
-      let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
-      let framework = CompilerArguments.getTargetFramework( (doc.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+      let args = CompilerArguments.getArgumentsFromProject(proj, config)
+      let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, true, ServiceSettings.blockingTimeout, framework)
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
@@ -273,9 +274,10 @@ type FSharpTextEditorCompletion() =
   member x.CodeCompletionCommandImpl(context, allowRecentTypeCheckResults) =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
+      let proj = x.Document.Project :?> MonoDevelop.Projects.DotNetProject
       let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
-      let args = CompilerArguments.getArgumentsFromProject(x.Document.Project, config)
-      let framework = CompilerArguments.getTargetFramework( (x.Document.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+      let args = CompilerArguments.getArgumentsFromProject(proj, config)
+      let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, allowRecentTypeCheckResults, ServiceSettings.blockingTimeout, framework)
       

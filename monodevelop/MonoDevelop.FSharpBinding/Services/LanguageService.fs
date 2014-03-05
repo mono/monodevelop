@@ -367,17 +367,18 @@ module internal MonoDevelop =
         (line, col, lineStr)
     
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
-    let getCheckerArgsFromProject(project:Project, config) =
+    let getCheckerArgsFromProject(project:DotNetProject, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let projConfig = project.GetConfiguration(config) :?> MonoDevelop.Projects.DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        let args = CompilerArguments.generateCompilerOptions(fsconfig, 
+
+        let args = CompilerArguments.generateCompilerOptions(project,
+                                                             fsconfig,
                                                              FSharp.CompilerBinding.FSharpCompilerVersion.LatestKnown, 
                                                              CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
-                                                             project.Items, 
                                                              config, 
                                                              false) |> Array.ofList
-        let framework = CompilerArguments.getTargetFramework( (project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+        let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
         project.FileName.ToString(), files, args, framework
                 
 
