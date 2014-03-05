@@ -73,7 +73,9 @@ type FSharpLanguageItemTooltipProvider() =
             Debug.WriteLine("TooltipProvider: Got data")
             //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
             match lastResult with
-            | Some(tooltipItem) when tooltipItem.Item :?> _ = tiptext -> tooltipItem
+            | Some(tooltipItem) when
+                tooltipItem.Item :?> ToolTipText = tiptext && 
+                tooltipItem.ItemSegment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1) -> tooltipItem
             //If theres no match or previous cached result generate a new tooltipitem
             | Some(_) | None -> 
                 let line = editor.Document.OffsetToLineNumber offset
