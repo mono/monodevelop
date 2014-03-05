@@ -93,7 +93,13 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run ()
 		{
-			vc.Publish (moduleName, path, files, message, Monitor);
+			try {
+				vc.Publish (moduleName, path, files, message, Monitor);
+			} catch (VersionControlException e) {
+				Monitor.ReportError (e.Message, null);
+				return;
+			}
+
 			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
 			
 			Gtk.Application.Invoke (delegate {
