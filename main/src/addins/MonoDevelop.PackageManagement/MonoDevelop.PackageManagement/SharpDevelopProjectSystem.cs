@@ -352,7 +352,7 @@ namespace ICSharpCode.PackageManagement
 		public void AddImport(string targetPath, ProjectImportLocation location)
 		{
 			string relativeTargetPath = GetRelativePath(targetPath);
-			project.AddImportIfMissing(relativeTargetPath, location);
+			project.AddImportIfMissing (relativeTargetPath, null);
 			projectService.Save(project);
 		}
 
