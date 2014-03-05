@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public ProjectCreateInformation CreateProjectCI (ProjectCreateInformation projectCI)
 		{
-			var projectCreateInformation = projectCI;
+			var projectCreateInformation = new ProjectCreateInformation (projectCI);
 			var substitution = new string[,] { { "ProjectName", projectCreateInformation.ProjectName } };
 
 			projectCreateInformation.ProjectName = StringParserService.Parse (name, substitution);
