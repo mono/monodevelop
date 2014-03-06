@@ -132,6 +132,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
+			responseSensitive = !string.IsNullOrEmpty (Message);
 			
 			// Focus the text view and move the insert point to the beginning. Makes it easier to insert
 			// a comment header.
@@ -257,7 +258,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		void OnTextChanged (object s, EventArgs args)
 		{
 			changeSet.GlobalComment = Message;
-			responseSensitive = !string.IsNullOrEmpty (changeSet.GlobalComment);
+			responseSensitive = !string.IsNullOrEmpty (Message);
 			SetResponseSensitive (ResponseType.Ok, responseSensitive);
 			UpdatePositionLabel (textview.Buffer.GetIterAtOffset (textview.Buffer.CursorPosition));
 		}
