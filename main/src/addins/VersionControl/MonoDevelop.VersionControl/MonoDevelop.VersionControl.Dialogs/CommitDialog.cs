@@ -145,10 +145,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)
 		{
-			bool allowCommit = true;
+			bool allowCommit = responseSensitive;
 			foreach (CommitDialogExtension ext in extensions)
 				allowCommit &= ext.AllowCommit;
-			SetResponseSensitive (Gtk.ResponseType.Ok, responseSensitive && allowCommit);
+			SetResponseSensitive (Gtk.ResponseType.Ok, allowCommit);
 		}
 		
 		protected override void OnResponse (Gtk.ResponseType type)
