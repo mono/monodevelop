@@ -22,7 +22,7 @@ type FSharpLanguageBinding() =
     | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
         let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
         let options = MDLanguageService.Instance.GetProjectCheckerOptions(projectFilename, files, args, framework)
-        MDLanguageService.Instance.Checker.InvalidateConfiguration(options)
+        MDLanguageService.Instance.InvalidateConfiguration(options)
     | _ -> ()
     
   let invalidateAll (args:#ProjectFileEventInfo seq) =

@@ -43,6 +43,7 @@ type FSharpLanguageItemTooltipProvider() =
        | None -> ()
 
     override x.GetItem (editor, offset) =
+      try
         let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
@@ -53,7 +54,7 @@ type FSharpLanguageItemTooltipProvider() =
         let args = CompilerArguments.getArgumentsFromProject(proj, config)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
         let tyRes =
-            MDLanguageService.Instance.GetTypedParseResult
+            MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (extEditor.Project.FileName.ToString(),
                   editor.FileName, 
                   docText, 
@@ -85,6 +86,7 @@ type FSharpLanguageItemTooltipProvider() =
                 let tooltipItem = TooltipItem (tiptext, segment)
                 lastResult <- Some(tooltipItem)
                 tooltipItem
+      with _ -> null
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
@@ -162,7 +164,7 @@ type FSharpResolverProvider() =
         let args = CompilerArguments.getArgumentsFromProject(proj, config)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
         let tyRes = 
-            MDLanguageService.Instance.GetTypedParseResult
+            MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (doc.Project.FileName.ToString(),
                   doc.Editor.FileName, 
                   docText, 

@@ -208,7 +208,7 @@ type FSharpTextEditorCompletion() =
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(proj, config)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework)
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
@@ -280,7 +280,7 @@ type FSharpTextEditorCompletion() =
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else  AllowStaleResults.MatchingSource
-      let tyRes = MDLanguageService.Instance.GetTypedParseResult(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
+      let tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
       
       // Get declarations and generate list for MonoDevelop
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
@@ -334,17 +334,6 @@ type FSharpTextEditorCompletion() =
 
 open Microsoft.FSharp.Compiler.Range
 
-[<AutoOpen>]
-module Helper = 
-  type ParseFileResults with 
-    // GetNavigationItems is not 100% solid and throws occasional exceptions
-    member x.GetNavigationItemsDeclarationsSafe() = 
-        try x.GetNavigationItems().Declarations
-        with _ -> 
-            Debug.Assert(false, "couldn't update navigation items, ignoring")  
-            [| |]
-
-
 type FSharpPathExtension() =
     inherit TextEditorExtension()
 
@@ -376,7 +365,7 @@ type FSharpPathExtension() =
         
         if x.Document.ParsedDocument = null then () else
         match x.Document.ParsedDocument.Ast with
-        | :? TypedParseResult as ast ->
+        | :? ParseAndCheckResults as ast ->
 
             let posGt (p1Column, p1Line) (p2Column, p2Line) = 
                 (p1Line > p2Line || (p1Line = p2Line && p1Column > p2Column))
@@ -391,10 +380,7 @@ type FSharpPathExtension() =
                 let cursor = (docloc.Column, docloc.Line)
                 posGeq cursor start && posGeq finish cursor
 
-            let toplevel = 
-                // GetNavigationItems is not 100% solid and throws occasional exceptions
-                try ast.ParseFileResults.GetNavigationItemsDeclarationsSafe()
-                with _ -> [| |] 
+            let toplevel = ast.GetNavigationItems()
 
             let topLevelTypesInsideCursor =
                 toplevel |> Array.filter (fun tl -> let m = tl.Declaration.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
@@ -456,13 +442,13 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
     let reset() =  
         memberList.Clear()
         match tag with
-        | :? TypedParseResult as tpr ->
-            let navitems = tpr.ParseFileResults.GetNavigationItemsDeclarationsSafe()
+        | :? ParseAndCheckResults as tpr ->
+            let navitems = tpr.GetNavigationItems()
             for decl in navitems do
                 memberList.Add(decl.Declaration)
-        | :? (TypedParseResult * string) as typeAndFilter ->
+        | :? (ParseAndCheckResults * string) as typeAndFilter ->
             let tpr, filter = typeAndFilter 
-            let navitems = tpr.ParseFileResults.GetNavigationItemsDeclarationsSafe()
+            let navitems = tpr.GetNavigationItems()
             for decl in navitems do
                 if decl.Declaration.Name.StartsWith(filter) then
                     memberList.Add(decl.Declaration)
