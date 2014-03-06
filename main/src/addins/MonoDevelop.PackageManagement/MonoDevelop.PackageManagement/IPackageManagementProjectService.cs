@@ -36,8 +36,7 @@ namespace ICSharpCode.PackageManagement
 	{
 		Project CurrentProject { get; }
 		Solution OpenSolution { get; }
-		
-		void Save(Project project);
+
 		void Save(Solution solution);
 		
 		IEnumerable<Project> GetOpenProjects();
