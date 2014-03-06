@@ -30,11 +30,13 @@ using System.ComponentModel;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using Mono.Unix;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
 using Xwt.Formats;
+using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -220,7 +222,12 @@ namespace MonoDevelop.PackageManagement
 		
 		void PackagesListViewSelectionChanged (object sender, EventArgs e)
 		{
-			ShowSelectedPackage ();
+			try {
+				ShowSelectedPackage ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error showing selected package.", ex);
+				ShowErrorMessage (ex.Message);
+			}
 		}
 
 		void ShowSelectedPackage ()
@@ -280,8 +287,18 @@ namespace MonoDevelop.PackageManagement
 
 		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
+			try {
+				ShowPackages ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error showing packages.", ex);
+				ShowErrorMessage (ex.Message);
+			}
+		}
+
+		void ShowPackages ()
+		{
 			if (viewModel.HasError) {
-				ShowErrorMessage ();
+				ShowErrorMessage (viewModel.ErrorMessage);
 			} else {
 				ClearErrorMessage ();
 			}
@@ -311,9 +328,9 @@ namespace MonoDevelop.PackageManagement
 			packagesListView.VerticalScrollControl.Value = 0;
 		}
 
-		void ShowErrorMessage ()
+		void ShowErrorMessage (string message)
 		{
-			errorMessageLabel.Text = viewModel.ErrorMessage;
+			errorMessageLabel.Text = message;
 			errorMessageHBox.Visible = true;
 		}
 
@@ -404,8 +421,13 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
-			List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
-			InstallPackages (packageActions);
+			try {
+				List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
+				InstallPackages (packageActions);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Adding packages failed.", ex);
+				ShowErrorMessage (ex.Message);
+			}
 		}
 
 		void InstallPackages (List<IPackageAction> packageActions)
@@ -507,9 +529,14 @@ namespace MonoDevelop.PackageManagement
 
 		void InstallPackage (PackageViewModel packageViewModel)
 		{
-			if (packageViewModel != null) {
-				List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
-				InstallPackages (packageActions);
+			try {
+				if (packageViewModel != null) {
+					List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
+					InstallPackages (packageActions);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Installing package failed.", ex);
+				ShowErrorMessage (ex.Message);
 			}
 		}
 

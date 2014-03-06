@@ -76,6 +76,15 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Updating packages in project..."),
+				GetString ("Packages successfully updated."),
+				GetString ("Could not update packages. Please see Package Console for details.")
+			);
+		}
+
 		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (

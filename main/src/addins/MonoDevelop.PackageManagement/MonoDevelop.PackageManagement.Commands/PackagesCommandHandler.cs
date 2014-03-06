@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -58,6 +59,15 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected bool IsDotNetSolutionSelected ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+		}
+
+		protected void ShowStatusBarError (ProgressMonitorStatusMessage progressMessage, Exception ex)
+		{
+			var factory = new PackageManagementProgressMonitorFactory ();
+			using (IProgressMonitor progressMonitor = factory.CreateProgressMonitor (progressMessage.Status)) {
+				progressMonitor.Log.WriteLine (ex.Message);
+				progressMonitor.ReportError (progressMessage.Error, null);
+			}
 		}
 	}
 }

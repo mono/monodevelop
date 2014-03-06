@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -35,10 +36,15 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
-			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+			try {
+				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
+				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error updating all packages in solution.", ex);
+				ShowStatusBarError (progressMessage, ex);
+			}
 		}
 
 		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution ()

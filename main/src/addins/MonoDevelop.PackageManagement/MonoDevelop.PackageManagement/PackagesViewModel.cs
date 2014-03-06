@@ -83,6 +83,7 @@ namespace ICSharpCode.PackageManagement
 		public void Dispose()
 		{
 			OnDispose();
+			CancelReadPackagesTask ();
 			IsDisposed = true;
 		}
 		
