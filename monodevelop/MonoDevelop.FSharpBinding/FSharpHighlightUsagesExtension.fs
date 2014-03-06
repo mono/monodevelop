@@ -162,8 +162,9 @@ module NRefactory =
     /// Create an NRefactory MemberReference for an F# symbol.
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, lastIdentAtLoc:string) =
-         let ((beginLine, beginCol), (endLine, endCol)) = symbolUse.Range
+    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, text, lastIdentAtLoc:string) =
+         let m = symbolUse.RangeAlternate
+         let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
          
          // We always know the text of the identifier that resolved to symbol.
          // Trim the range of the referring text to only include this identifier.
@@ -175,10 +176,9 @@ module NRefactory =
              else
                  (beginLine, beginCol)
              
-         let text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText(fileNameOfRef)
          let document = TextDocument(text)
-         let offset = document.LocationToOffset(beginLine+1, beginCol+1)
-         let domRegion = DomRegion(fileNameOfRef, beginLine+1, beginCol+1, endLine+1, endCol+1)
+         let offset = document.LocationToOffset(beginLine, beginCol+1)
+         let domRegion = DomRegion(fileNameOfRef, beginLine, beginCol+1, endLine, endCol+1)
 
          let symbol = createSymbol(projectContent, symbolUse.Symbol, lastIdentAtLoc, domRegion)
          let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
@@ -345,7 +345,7 @@ type HighlightUsagesExtension() as this =
         let token = cts.Token
         let asyncOperation = 
             async{let! symbolReferences =
-                    MDLanguageService.Instance.GetUsesOfSymbolAtLocation(projectFilename, currentFile, textEditorData.Text, files, line, col, lineStr, args, framework)
+                    MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args, framework)
 
                   match symbolReferences with
                   | Some(fsSymbolName, references) -> 
@@ -353,7 +353,7 @@ type HighlightUsagesExtension() as this =
                           [| for symbolUse in references do
                               //We only want symbol refs from the current file as we are highlighting text
                               if symbolUse.FileName = currentFile then 
-                                  yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, fsSymbolName) |]
+                                  yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) |]
                       if not token.IsCancellationRequested then
                           Gtk.Application.Invoke(fun _ _ -> showReferences(memberReferences))
                   | _ -> () }
@@ -364,11 +364,10 @@ type HighlightUsagesExtension() as this =
                                 try
                                     try
                                         //find usages is based on symbols found in phsical files so a dirty file here will be invalid
-                                        if doc.IsDirty then doc.Save()
                                         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(textEditorData.Caret.Offset, doc.Editor.Document)
                                         let currentFile = FilePath(textEditorData.FileName).ToString()
 
-                                        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project, IdeApp.Workspace.ActiveConfiguration)
+                                        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
 
                                         //cancel any current highlights
                                         cancelHighlight()
@@ -381,13 +380,15 @@ type HighlightUsagesExtension() as this =
 
     let caretPositionChanged =
         EventHandler<_>
-            (fun s dl -> let isHighlighted = SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages
+            (fun s dl -> let isHighlighted = 
+                             SourceEditor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages
+                          || SourceEditor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting
                          let selectionContainsCaret = textEditorData.IsSomethingSelected && markers.Values.Any(fun m -> m.Contains(textEditorData.Caret.Offset))
-                         if isHighlighted || selectionContainsCaret then
+                         if isHighlighted && (textEditorData.IsSomethingSelected || not selectionContainsCaret) then
                              removeMarkers (textEditorData.IsSomethingSelected)
                              removeTimer()
-                         if not textEditorData.IsSomethingSelected then
-                             popupTimer := GLib.Timeout.Add(1000u, delayedHighight))
+                             if not textEditorData.IsSomethingSelected then
+                                 popupTimer := GLib.Timeout.Add(1000u, delayedHighight))
 
     let documentTextReplaced = EventHandler<_>(fun _ _ -> removeMarkers(false))
     let documentSelectionChanged = EventHandler(fun _ _ -> removeMarkers(false))

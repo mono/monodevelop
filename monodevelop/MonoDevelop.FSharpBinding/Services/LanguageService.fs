@@ -361,23 +361,24 @@ module internal TipFormatter =
 module internal MonoDevelop =
     let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) = 
         let loc  = doc.OffsetToLocation(offset)
-        let line, col = max (loc.Line - 1) 0, loc.Column-1
-        let currentLine = doc.Lines |> Seq.nth line
+        let line, col = max loc.Line 1, loc.Column-1
+        let currentLine = doc.Lines |> Seq.nth (line-1)
         let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
         (line, col, lineStr)
     
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
-    let getCheckerArgsFromProject(project:Project, config) =
+    let getCheckerArgsFromProject(project:DotNetProject, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let projConfig = project.GetConfiguration(config) :?> MonoDevelop.Projects.DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        let args = CompilerArguments.generateCompilerOptions(fsconfig, 
+
+        let args = CompilerArguments.generateCompilerOptions(project,
+                                                             fsconfig,
                                                              FSharp.CompilerBinding.FSharpCompilerVersion.LatestKnown, 
                                                              CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
-                                                             project.Items, 
                                                              config, 
                                                              false) |> Array.ofList
-        let framework = CompilerArguments.getTargetFramework( (project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+        let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
         project.FileName.ToString(), files, args, framework
                 
 

@@ -16,7 +16,20 @@ type FSharpLanguageBinding() =
   static let LanguageName = "F#"
 
   let provider = lazy new CodeDom.FSharpCodeProvider()
-  
+    
+  let invalidateProjectFile(project:Project) =
+    match project with
+    | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
+        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
+        let options = MDLanguageService.Instance.GetProjectCheckerOptions(projectFilename, files, args, framework)
+        MDLanguageService.Instance.InvalidateConfiguration(options)
+    | _ -> ()
+    
+  let invalidateAll (args:#ProjectFileEventInfo seq) =
+    for projectFileEvent in args do 
+        if CompilerArguments.supportedExtension(Path.GetExtension(projectFileEvent.ProjectFile.FilePath.ToString())) then
+            invalidateProjectFile(projectFileEvent.Project) 
+            
   // ------------------------------------------------------------------------------------------
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
@@ -24,15 +37,16 @@ type FSharpLanguageBinding() =
     // Register handler that will reparse when the active configuration is changes
       IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
              for doc in IdeApp.Workbench.Documents do
-                 if doc.Editor <> null then 
-                   doc.ReparseDocument ())
-
-      // Register handler that will reparse when F# file is opened/closed (is this even needed?)
-      IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
-        let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-             doc.Editor.TabsToSpaces <- true
-             doc.ReparseDocument())
+                 if doc.Editor <> null && CompilerArguments.supportedExtension(Path.GetExtension(doc.FileName.ToString())) then 
+                    doc.ReparseDocument ())
+                   
+      //Add events to invalidate FCS if anything imprtant to do with configuration changes
+      //e.g. Files added/removed/renamed, or references added/removed      
+      IdeApp.Workspace.FileAddedToProject.Add(invalidateAll)
+      IdeApp.Workspace.FileRemovedFromProject.Add(invalidateAll)
+      IdeApp.Workspace.FileRenamedInProject.Add(invalidateAll)
+      IdeApp.Workspace.ReferenceAddedToProject.Add(fun r -> invalidateProjectFile(r.Project))
+      IdeApp.Workspace.ReferenceRemovedFromProject.Add(fun r -> invalidateProjectFile(r.Project))
 
     
   // ----------------------------------------------------------------------------

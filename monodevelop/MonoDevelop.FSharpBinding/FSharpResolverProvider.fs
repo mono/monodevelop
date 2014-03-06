@@ -10,6 +10,7 @@ open System.Text
 open System.Linq
 open System.Collections.Generic
 open System.Threading
+open FSharp.CompilerBinding
 
 open Mono.TextEditor
 open MonoDevelop.Core
@@ -42,22 +43,24 @@ type FSharpLanguageItemTooltipProvider() =
        | None -> ()
 
     override x.GetItem (editor, offset) =
+      try
         let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
         let config = IdeApp.Workspace.ActiveConfiguration
         if config = null then null else
+        let proj = extEditor.Project :?> MonoDevelop.Projects.DotNetProject
         let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(extEditor.Project, config)
-        let framework = CompilerArguments.getTargetFramework( (extEditor.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
-        let tyRes = 
-            MDLanguageService.Instance.GetTypedParseResult
+        let args = CompilerArguments.getArgumentsFromProject(proj, config)
+        let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
+        let tyRes =
+            MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (extEditor.Project.FileName.ToString(),
                   editor.FileName, 
                   docText, 
                   files,
                   args,
-                  true,
+                  AllowStaleResults.MatchingSource,
                   ServiceSettings.blockingTimeout,
                   framework)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
@@ -73,7 +76,9 @@ type FSharpLanguageItemTooltipProvider() =
             Debug.WriteLine("TooltipProvider: Got data")
             //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
             match lastResult with
-            | Some(tooltipItem) when tooltipItem.Item :?> _ = tiptext -> tooltipItem
+            | Some(tooltipItem) when
+                tooltipItem.Item :?> ToolTipText = tiptext && 
+                tooltipItem.ItemSegment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1) -> tooltipItem
             //If theres no match or previous cached result generate a new tooltipitem
             | Some(_) | None -> 
                 let line = editor.Document.OffsetToLineNumber offset
@@ -81,6 +86,7 @@ type FSharpLanguageItemTooltipProvider() =
                 let tooltipItem = TooltipItem (tiptext, segment)
                 lastResult <- Some(tooltipItem)
                 tooltipItem
+      with _ -> null
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
@@ -153,17 +159,18 @@ type FSharpResolverProvider() =
 
         Debug.WriteLine("Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
+        let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
         let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(doc.Project, config)
-        let framework = CompilerArguments.getTargetFramework( (doc.Project :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+        let args = CompilerArguments.getArgumentsFromProject(proj, config)
+        let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
         let tyRes = 
-            MDLanguageService.Instance.GetTypedParseResult
+            MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (doc.Project.FileName.ToString(),
                   doc.Editor.FileName, 
                   docText, 
                   files, 
                   args, 
-                  true,
+                  AllowStaleResults.MatchingSource,
                   ServiceSettings.blockingTimeout,
                   framework)
 
@@ -184,9 +191,9 @@ type FSharpResolverProvider() =
         | Some fsSymbol -> 
             let reg = 
                 match loc with
-                | FindDeclResult.DeclFound((line, col), file) -> 
-                    Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
-                    DomRegion(file,line+1,col+1)
+                | FindDeclResult.DeclFound(m) -> 
+                    Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
+                    DomRegion(m.FileName,m.StartLine,m.StartColumn+1)
                 | FindDeclResult.DeclNotFound(notfound) -> 
                     match notfound with 
                     | FindDeclFailureReason.Unknown           -> Debug.WriteLine("DeclNotFound: Unknown")

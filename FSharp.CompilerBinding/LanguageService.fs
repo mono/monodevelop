@@ -7,83 +7,113 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
-/// various IntelliSense functions (such as completion & tool tips)
-type TypedParseResult(info:CheckFileResults, untyped : ParseFileResults) =
+/// various IntelliSense functions (such as completion & tool tips). Provides default
+/// empty/negative results if information is missing.
+type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults) option) =
     let token = Parser.tagOfToken(Parser.token.IDENT("")) 
+
+    new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
+
+    static member Empty = ParseAndCheckResults(None)
 
     /// Get declarations at the current location in the specified document
     /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
     member x.GetDeclarations(line, col, lineStr) = 
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdentsAndResidue(col, lineStr) with
         | None -> None
         | Some (longName, residue) ->
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (info.GetDeclarations(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
+            try Some (checkResults.GetDeclarationsAlternate(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
                       |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
-    member x.GetToolTip(line, col, lineStr) : Option<ToolTipText * (int * int)> =
+    member x.GetToolTip(line, col, lineStr) =
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-          let res = info.GetToolTipText(line, col, lineStr, identIsland, token)
+          let res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
           Some (res, (col - (Seq.last identIsland).Length, col))
 
     member x.GetDeclarationLocation(line, col, lineStr) =
+        match infoOpt with 
+        | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
+        | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
         | Some(col,identIsland) ->
-            let res = info.GetDeclarationLocation(line, col, lineStr, identIsland, true)
+            let res = checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, true)
             Debug.WriteLine("Result: Got something, returning")
             res 
 
     member x.GetMethods(line, col, lineStr) =
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
         | None -> None
         | Some(col,identIsland) ->
-            let res = info.GetMethods(line, col, lineStr, Some identIsland)
+            let res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
             Some (res.MethodName, res.Methods) 
 
     member x.GetSymbol(line, col, lineStr) =
-        match Parsing.findLongIdents(col, lineStr) with 
-        | Some(colu, identIsland) ->
-            //get symbol at location
-            //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
-            info.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+        match infoOpt with 
         | None -> None
+        | Some (checkResults, parseResults) -> 
+        match Parsing.findLongIdents(col, lineStr) with 
+        | None -> None
+        | Some(colu, identIsland) ->
+            checkResults.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland)
 
-    member x.CheckFileResults = info        
-    member x.ParseFileResults = untyped 
+    member x.GetSymbolAtLocation(line, col, lineStr, identIsland) =
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> 
+            checkResults.GetSymbolAtLocationAlternate(line, col, lineStr, identIsland)
 
-// --------------------------------------------------------------------------------------
-/// Represents request send to the background worker
-/// We need information about the current file and project (options)
-type internal ParseRequest (file:string, source:string, options:ProjectOptions, fullCompile:bool, afterCompleteTypeCheckCallback: (string * ErrorInfo [] -> unit) option) =
-  member x.File  = file
-  member x.Source = source
-  member x.Options = options
-  member x.StartFullCompile = fullCompile
-  /// A callback that gets called asynchronously on a background thread after a full, complete and accurate typecheck of a file has finally completed.
-  member x.AfterCompleteTypeCheckCallback = afterCompleteTypeCheckCallback
+    member x.GetUsesOfSymbolInFile(symbol) =
+        match infoOpt with 
+        | None -> [| |]
+        | Some (checkResults, parseResults) -> checkResults.GetUsesOfSymbolInFile(symbol)
+
+    member x.GetErrors() =
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> Some checkResults.Errors
+
+    member x.GetNavigationItems() =
+        match infoOpt with 
+        | None -> [| |]
+        | Some (checkResults, parseResults) -> 
+           // GetNavigationItems is not 100% solid and throws occasional exceptions
+            try parseResults.GetNavigationItems().Declarations
+            with _ -> 
+                Debug.Assert(false, "couldn't update navigation items, ignoring")  
+                [| |]
+            
+
+[<RequireQualifiedAccess>]
+type AllowStaleResults = 
+    // Allow checker results where the source doesn't even match
+    | MatchingFileName
+    // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
+    | MatchingSource
+    // Don't allow stale results
+    | No
+
   
 // --------------------------------------------------------------------------------------
-// Language service - is a mailbox processor that deals with requests from the user
-// interface - mainly to trigger background parsing or get current parsing results
-// All processing in the mailbox is quick - however, if we don't have required info
-// we post ourselves a message that will be handled when the info becomes available
-
-type internal LanguageServiceMessage = 
-  // Trigger parse request in ParserWorker
-  | TriggerRequest of ParseRequest
-  // Request for information - when we receive this, we parse and reply when information become available
-  | UpdateAndGetTypedInfo of ParseRequest * AsyncReplyChannel<TypedParseResult>
-  | GetTypedInfoDone of AsyncReplyChannel<TypedParseResult>
-
+// Language service 
 
 /// Provides functionality for working with the F# interactive checker running in background
 type LanguageService(dirtyNotify) =
@@ -118,105 +148,74 @@ type LanguageService(dirtyNotify) =
           Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
       Path.Combine(dir, Path.GetFileName(path))
    
-  // Mailbox of this 'LanguageService'
+  // We use an additional mailbox processor here so we can get work off the GUI 
+  // thread and timeout on synchronous requests. Note, there is already a background thread in F.C.S.
+  //
+  // Every request to the mailbox is 'PostAndReply' or 'PostAndAsyncReply'.  This means the requests are
+  // a lot like a function call, except 
+  //   (a) they may be asynchronous (reply is interleaved on the UI thread)
+  //   (b) they may be on on a timeout (to prevent blocking the UI thread)
+  //   (c) only one request is active at a time, the rest are in the queue
+
   let mbox = MailboxProcessor.Start(fun mbox ->
     
-    // Tail-recursive loop that remembers the current state
-    // (untyped and typed parse results)
-    let rec loop typedInfo =
-      mbox.Scan(fun msg ->
-        Debug.WriteLine(sprintf "Worker: Checking message %s" (msg.GetType().Name))
-        match msg, typedInfo with 
-        | TriggerRequest(info), _ -> Some <| async {
-          let newTypedInfo = 
-           try
-            Debug.WriteLine("Worker: TriggerRequest")
-            let fileName = info.File        
-            Debug.WriteLine("Worker: Request parse received")
-            // Run the untyped parsing of the file and report result...
-            Debug.WriteLine("Worker: Untyped parse...")
-            let untypedInfo = try checker.ParseFileInProject(fileName, info.Source, info.Options) 
-                              with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString()))
-                                        reraise ()
+    async { 
+       while true do
+            Debug.WriteLine("Worker: Awaiting request") 
+            let! (fileName, source, options, reply: AsyncReplyChannel<_> ) = mbox.Receive()
+            
+            let fileName = fixFileName(fileName)            
+            
+            Debug.WriteLine("Worker: Request received, fileName = {0}, parsing...", box fileName)
+            let parseResults = checker.ParseFileInProject(fileName, source, options) 
               
-            // Now run the type-checking
-            let fileName = fixFileName(fileName)
             Debug.WriteLine("Worker: Typecheck source...")
-            let updatedTyped = try checker.CheckFileInProjectIfReady( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false), null )
-                               with e -> Debug.WriteLine(sprintf "Worker: Error in TypeCheckSource: %s" (e.ToString()))
-                                         reraise ()
+            let! checkAnswer = checker.CheckFileInProject(parseResults, fileName, 0, source,options, IsResultObsolete(fun () -> false), null )
               
-            // If this is 'full' request, then start background compilations too
-            if info.StartFullCompile then
-                Debug.WriteLine(sprintf "Worker: Starting background compilations")
-                checker.StartBackgroundCompile(info.Options)
             Debug.WriteLine(sprintf "Worker: Parse completed")
 
-            let file = info.File
-
             // Construct new typed parse result if the task succeeded
-            let newTypedInfo =
-              match updatedTyped with
-              | Some(CheckFileAnswer.Succeeded(results)) ->
+            let results =
+              match checkAnswer with
+              | CheckFileAnswer.Succeeded(checkResults) ->
                   // Handle errors on the GUI thread
-                  Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" results.HasFullTypeCheckInfo)
-                  match info.AfterCompleteTypeCheckCallback with 
-                  | None -> ()
-                  | Some cb -> 
-                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (Path.GetFileName(file)))
-                      cb(file, results.Errors)
-
-                  match results.HasFullTypeCheckInfo with
-                  | true -> Some(TypedParseResult(results, untypedInfo))
-                  | _ -> typedInfo
+                  Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" checkResults.HasFullTypeCheckInfo)
+                  ParseAndCheckResults(checkResults, parseResults)
               | _ -> 
                   Debug.WriteLine("LanguageService: Update typed info - failed")
-                  typedInfo
-            newTypedInfo
-           with e -> 
-            Debug.WriteLine (sprintf "Errors: Got unexpected background error: %s" (e.ToString()))
-            typedInfo
-          return! loop newTypedInfo }
+                  ParseAndCheckResults.Empty
+                  
+            reply.Reply results
+        })
 
-        
-        // When we receive request for information and we don't have it we trigger a 
-        // parse request and then send ourselves a message, so that we can reply later
-        | UpdateAndGetTypedInfo(req, reply), _ -> Some <| async { 
-            Debug.WriteLine ("LanguageService: UpdateAndGetTypedInfo")
-            mbox.Post(TriggerRequest(req))
-            mbox.Post(GetTypedInfoDone(reply)) 
-            return! loop typedInfo }
-                    
-        | GetTypedInfoDone(reply), (Some typedRes) -> Some <| async {
-            Debug.WriteLine (sprintf "LanguageService: GetTypedInfoDone")
-            reply.Reply(typedRes)
-            return! loop typedInfo }
-
-        // We didn't have information to reply to a request - keep waiting for results!
-        // The caller will probably timeout.
-        | GetTypedInfoDone _, None -> 
-            Debug.WriteLine("Worker: No match found for the message, leaving in queue until info is available")
-            None )
-        
-    // Start looping with no initial information        
-    loop None)
-
-   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
+  /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args, targetFramework) =
     let ext = Path.GetExtension(fileName)
     let opts = 
       if (ext = ".fsx" || ext = ".fsscript") then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
+        x.GetScriptCheckerOptions(fileName, projFilename, source, targetFramework)
+          
+      // We are in a project - construct options using current properties
+      else
+        x.GetProjectCheckerOptions(projFilename, files, args, targetFramework)
+    opts
+   
+  /// Constructs options for the interactive checker for the given script file in the project under the given configuration. 
+  member x.GetScriptCheckerOptions(fileName, projFilename, source, targetFramework) =
+    let ext = Path.GetExtension(fileName)
+    let opts = 
+        // We are in a stand-alone file or we are in a project, but currently editing a script file
         try 
           let fileName = fixFileName(fileName)
-          Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
+          Debug.WriteLine (sprintf "GetScriptCheckerOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename)
           
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
-            Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
+            Debug.WriteLine("GetScriptCheckerOptions: Adding missing core assemblies.")
             let dirs = FSharpEnvironment.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, targetFramework )
             {opts with ProjectOptions = [| yield! opts.ProjectOptions
                                            match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
@@ -226,10 +225,18 @@ type LanguageService(dirtyNotify) =
                                            | Some fn -> yield sprintf "-r:%s" fn
                                            | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
-          
+
+    // Print contents of check option for debugging purposes
+    Debug.WriteLine(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    opts
+   
+  /// Constructs options for the interactive checker for a project under the given configuration. 
+  member x.GetProjectCheckerOptions(projFilename, files, args, targetFramework) =
+    let opts = 
+      
       // We are in a project - construct options using current properties
-      else
-        Debug.WriteLine (sprintf "GetCheckerOptions: Creating for file '%s' in project '%s'" fileName projFilename )
+        Debug.WriteLine (sprintf "GetProjectCheckerOptions: Creating for project '%s'" projFilename )
 
         {ProjectFileName = projFilename
          ProjectFileNames = files
@@ -240,61 +247,79 @@ type LanguageService(dirtyNotify) =
          UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
-    Debug.WriteLine(sprintf "GetCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
-                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
+    
   
-  /// Parses and type-checks the given file in the given project under the given configuration. The callback
-  /// is called after the complete typecheck has been performed.
-  member x.TriggerParse(projectFilename, fileName:string, src, files, args, targetFramework, afterCompleteTypeCheckCallback) = 
+  /// Parses and checks the given file in the given project under the given configuration. Asynchronously
+  /// returns the results of checking the file.
+  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, targetFramework) = 
+   async {
     let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args, targetFramework)
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
-    mbox.Post(TriggerRequest(ParseRequest(fileName, src, opts, true, Some afterCompleteTypeCheckCallback)))
+    let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
+    Debug.WriteLine(sprintf "Worker: Starting background compilations")
+    checker.StartBackgroundCompile(opts)
+    return results
+   }
 
-  member x.GetUntypedParseResult(projectFilename, fileName:string, src, files, args, targetFramework) = 
-        let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
-        Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
-        let req = ParseRequest(fileName, src, opts, false, None)
-        checker.ParseFileInProject(fileName, src, opts)
-
-  member x.GetTypedParseResult(projectFilename, fileName:string, src, files, args, allowRecentTypeCheckResults, timeout, targetFramework)  : TypedParseResult = 
+  member x.ParseFileInProject(projectFilename, fileName:string, src, files, args, targetFramework) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
-    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", fileName)
-    let req = ParseRequest(fileName, src, opts, false, None)
+    Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
+    checker.ParseFileInProject(fileName, src, opts)
+
+  member internal x.TryGetStaleTypedParseResult(fileName:string, options, src, stale)  = 
     // Try to get recent results from the F# service
-    match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
-    | Some(untyped, typed, _) when typed.HasFullTypeCheckInfo && allowRecentTypeCheckResults ->
-        Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
-        TypedParseResult(typed, untyped)
-    | _ -> Debug.WriteLine(sprintf "Worker: No TryGetRecentTypeCheckResultsForFile - trying typecheck with timeout")
-           // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-           mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
+    let res = 
+        match stale with 
+        | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fileName, options) 
+        | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fileName, options, source=src) 
+        | AllowStaleResults.No -> None
+    match res with 
+    | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
+    | _ -> None
 
-  member x.GetUsesOfSymbolAtLocation(projectFilename, file, source, files, line:int, col, lineStr, args, framework) =
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : ParseAndCheckResults = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
+    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", [|fileName|])
+    // Try to get recent results from the F# service
+    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
+    | Some results ->
+        Debug.WriteLine(sprintf "Parsing: using stale results")
+        results
+    | None -> 
+        Debug.WriteLine(sprintf "Worker: Not using stale results - trying typecheck with timeout")
+        // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+        mbox.PostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+
+  member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale, targetFramework) = 
    async { 
-    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
+    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
+    | Some results -> return results
+    | None -> return! mbox.PostAndAsyncReply(fun reply -> (fileName, src, opts, reply))
+   }
 
-    //parse and retrieve Checked Project results, this has the entity graph and errors etc
-    let! projectResults = checker.ParseAndCheckProject(projectOptions) 
-  
-    //get the parse results for the current file
-    let! backgroundParseResults, backgroundTypedParse = //Note this operates on the file system so the file needs to be current
-        checker.GetBackgroundCheckResultsForFileInProject(file, projectOptions) 
 
+  /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
+  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, files, line:int, col, lineStr, args, targetFramework) =
+   async { 
     match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
-        //get symbol at location
-        //Note we advance the caret to 'colu' ** due to GetSymbolAtLocation only working at the beginning/end **
-        match backgroundTypedParse.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
-        | Some(symbol) ->
-            let lastIdent = Seq.last identIsland
-            let refs = projectResults.GetUsesOfSymbol(symbol)
-            return Some(lastIdent, refs)
-        | _ -> return None
-    | _ -> return None }
 
-  member x.GetUsesOfSymbol(projectFilename, file, source, files, args, framework, symbol:FSharpSymbol) =
+        let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource, targetFramework=targetFramework)
+
+        match checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
+        | Some symbol ->
+            let lastIdent = Seq.last identIsland
+            let refs = checkResults.GetUsesOfSymbolInFile(symbol)
+            return Some(lastIdent, refs)
+        | None -> return None
+    | None -> return None 
+   }
+
+  member x.GetUsesOfSymbolInProject(projectFilename, file, source, files, args, framework, symbol:FSharpSymbol) =
    async { 
     let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args, framework)
 
@@ -304,5 +329,5 @@ type LanguageService(dirtyNotify) =
     let refs = projectResults.GetUsesOfSymbol(symbol)
     return refs }
 
-  member x.Checker = checker
+  member x.InvalidateConfiguration(options) = checker.InvalidateConfiguration(options)
 

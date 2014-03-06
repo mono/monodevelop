@@ -25,13 +25,13 @@ type FSharpParser() =
   /// Holds the previous content used to generate the previous errors. An entry is only present if we have 
   /// scheduled a new ReparseDocument() to update the errors.
   let activeRequests = System.Collections.Generic.Dictionary<string,string>()
-  let mutable typedParsedResult = Unchecked.defaultof<_>
+  let mutable typedParsedResult = ParseAndCheckResults.Empty
 
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn + 1, error.EndLine + 1, error.EndColumn + 1))
+      new Error(typ, error.Message, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file
@@ -78,25 +78,29 @@ type FSharpParser() =
         if config <> null then 
           // Keep a record that we have an inflight check of this going on
           activeRequests.[fileName] <- fileContent
+          let proj = proj :?> MonoDevelop.Projects.DotNetProject
           let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
           let args = CompilerArguments.getArgumentsFromProject(proj, config)
-          let framework = CompilerArguments.getTargetFramework( (proj :?> MonoDevelop.Projects.DotNetProject).TargetFramework.Id)
+          let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
 
-          MDLanguageService.Instance.TriggerParse(proj.FileName.ToString(), filePath, fileContent, files, args, framework,
-            (fun (_,errors) ->
-                DispatchService.GuiDispatch( fun () ->
-                    Debug.WriteLine("[Thread {0}]: Callback after parsing, file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+          async { 
+             let! results = MDLanguageService.Instance.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, fileContent, files, args, framework)
+             match results.GetErrors() with 
+             | None -> ()
+             | Some errors -> 
+                 try 
+                     Debug.WriteLine("[Thread {0}]: Callback after parsing, file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
 
-                    // Keep the result until we reparse
-                    activeResults.[fileName] <- makeErrors errors
-                    typedParsedResult <- MDLanguageService.Instance.GetTypedParseResult(proj.FileName.ToString(), filePath, fileContent, files, args, true, 400, framework)
-                    // Schedule a reparse to actually update the errors, checking first if this is still the active document
-                    try 
-                       let doc = IdeApp.Workbench.ActiveDocument
-                       if doc <> null && doc.FileName.FullPath.ToString() = fileName then 
-                           Debug.WriteLine("[Thread {0}]: Parsing: Requesting re-parse of file {1}, hash {2}",System.Threading.Thread.CurrentThread.ManagedThreadId,fileName, hash fileContent)
-                           doc.ReparseDocument()
-                    with _ -> ())))
+                     // Keep the result until we reparse
+                     activeResults.[fileName] <- makeErrors errors
+                     typedParsedResult <- results
+                     // Schedule a reparse to actually update the errors, checking first if this is still the active document
+                     let doc = IdeApp.Workbench.ActiveDocument
+                     if doc <> null && doc.FileName.FullPath.ToString() = fileName then 
+                        Debug.WriteLine("[Thread {0}]: Parsing: Requesting re-parse of file {1}, hash {2}",System.Threading.Thread.CurrentThread.ManagedThreadId,fileName, hash fileContent)
+                        doc.ReparseDocument()
+                 with _ -> ()
+           } |> Async.StartImmediate
 
     if activeResults.ContainsKey(fileName) then
         for er in activeResults.[fileName] do 
@@ -107,10 +111,10 @@ type FSharpParser() =
         try
           let regions =
             let processDecl (decl:SourceCodeServices.DeclarationItem) =
-              let (sc,sl), (fc,fl) = decl.Range
-              FoldingRegion(decl.Name, DomRegion(sl,sc+1, fl,fc+1))
+              let m = decl.Range
+              FoldingRegion(decl.Name, DomRegion(m.StartLine, m.StartColumn+1, m.EndLine, m.EndColumn+1))
                   
-            seq{for toplevel in typedParsedResult.ParseFileResults.GetNavigationItems().Declarations do
+            seq{for toplevel in typedParsedResult.GetNavigationItems() do
                   yield processDecl toplevel.Declaration
                   for next in toplevel.Nested do yield processDecl next}
           doc.Add(regions)

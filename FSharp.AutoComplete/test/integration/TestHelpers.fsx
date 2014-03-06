@@ -55,5 +55,9 @@ let installNuGetPkg s =
       + s
   p.Start () |> ignore
   if not (p.WaitForExit(10000)) then
-    p.Kill()
+    try
+      p.Kill()
+    with // These two exceptions indicate that the process has gone anyway
+      | :? System.SystemException
+      | :? System.InvalidOperationException -> ()
   

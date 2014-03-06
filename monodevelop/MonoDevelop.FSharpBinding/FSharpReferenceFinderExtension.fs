@@ -63,15 +63,17 @@ type FSharpReferenceFinder() =
             // Get the source, but only in order to infer the project options for a script.
             let activeDocSource = activeDoc.Editor.Text
             
-            let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgsFromProject(project, IdeApp.Workspace.ActiveConfiguration)
+            let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgsFromProject(project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
             let references = 
-                try Some(MDLanguageService.Instance.GetUsesOfSymbol(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
+                try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
                     |> Async.RunSynchronously)
                 with _ -> None
 
             match references with
             | Some(references) -> 
-                let memberRefs = [| for symbolUse in references -> NRefactory.createMemberReference(projectContent, symbolUse, symbolUse.FileName, fsSymbol.LastIdent) |]
+                let memberRefs = [| for symbolUse in references -> 
+                                        let text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText(symbolUse.FileName)
+                                        NRefactory.createMemberReference(projectContent, symbolUse, symbolUse.FileName, text, fsSymbol.LastIdent) |]
                 yield! memberRefs
             | None -> ()
 
