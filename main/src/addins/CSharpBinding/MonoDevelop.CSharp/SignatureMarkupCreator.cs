@@ -58,6 +58,7 @@ namespace MonoDevelop.CSharp
 		}
 
 		int highlightParameter = -1;
+
 		public int HighlightParameter {
 			get {
 				return highlightParameter;
@@ -97,9 +98,7 @@ namespace MonoDevelop.CSharp
 			} catch (Exception e) {
 				var compilation = GetCompilation (type);
 				if (compilation == null) {
-
-					Console.WriteLine ("type:"+type.GetType ());
-					Console.WriteLine ("got exception while conversion:" + e);
+					LoggingService.LogWarning ("type:" + type.GetType (), e);
 					return "?";
 				}
 				astType = new TypeSystemAstBuilder (new CSharpResolver (compilation)).ConvertType (type);
@@ -169,7 +168,7 @@ namespace MonoDevelop.CSharp
 			}
 			string reason;
 			if (entity.IsObsolete (out reason)) {
-				var attr =  reason == null ? "[Obsolete]" : "[Obsolete(\"" + reason + "\")]";
+				var attr = reason == null ? "[Obsolete]" : "[Obsolete(\"" + reason + "\")]";
 				result = "<span size=\"smaller\">" + attr + "</span>" + Environment.NewLine + result;
 			}
 			return result;
@@ -310,9 +309,9 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		static bool IsObjectOrValueType(IType type)
+		static bool IsObjectOrValueType (IType type)
 		{
-			var d = type.GetDefinition();
+			var d = type.GetDefinition ();
 			return d != null && (d.KnownTypeCode == KnownTypeCode.Object || d.KnownTypeCode == KnownTypeCode.ValueType);
 		}
 
@@ -321,7 +320,7 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 			var result = new StringBuilder ();
-			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypes);
+			var highlightedTypeName = Highlight (FilterEntityName (t.Name), colorStyle.UserTypes);
 			result.Append (highlightedTypeName);
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
@@ -346,7 +345,7 @@ namespace MonoDevelop.CSharp
 					result.Append (Highlight ("struct", colorStyle.KeywordDeclaration));
 				}
 				foreach (var bt in tp.DirectBaseTypes) {
-					if (!IsObjectOrValueType(bt)) {
+					if (!IsObjectOrValueType (bt)) {
 						if (constraints > 0) {
 							result.Append (",");
 							if (constraints % 5 == 0) {
@@ -382,7 +381,7 @@ namespace MonoDevelop.CSharp
 				parameters = parameters.Skip (def.DeclaringTypeDefinition.TypeParameterCount);
 			AppendTypeParameters (result, parameters);
 		}
-		
+
 		void AppendTypeArgumentList (StringBuilder result, IType def)
 		{
 			IEnumerable<IType> parameters = def.TypeArguments;
@@ -394,7 +393,7 @@ namespace MonoDevelop.CSharp
 		string GetTypeNameWithParameters (IType t)
 		{
 			StringBuilder result = new StringBuilder ();
-			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypesTypeParameters));
+			result.Append (Highlight (FilterEntityName (t.Name), colorStyle.UserTypesTypeParameters));
 			if (t.TypeParameterCount > 0) {
 				if (t.TypeArguments.Count > 0) {
 					AppendTypeArgumentList (result, t);
@@ -404,7 +403,7 @@ namespace MonoDevelop.CSharp
 			}
 			return result.ToString ();
 		}
-		
+
 		string GetTypeMarkup (IType t, bool includeDeclaringTypes = false)
 		{
 			if (t == null)
@@ -504,8 +503,7 @@ namespace MonoDevelop.CSharp
 					if (i % 5 == 0) {
 						result.AppendLine (",");
 						result.Append ("\t");
-					}
-					else {
+					} else {
 						result.Append (", ");
 					}
 				}
@@ -527,8 +525,7 @@ namespace MonoDevelop.CSharp
 					if (i % 5 == 0) {
 						result.AppendLine (",");
 						result.Append ("\t");
-					}
-					else {
+					} else {
 						result.Append (", ");
 					}
 				}
@@ -538,6 +535,11 @@ namespace MonoDevelop.CSharp
 				i++;
 			}
 			result.Append ("&gt;");
+		}
+
+		static string FilterEntityName (string name)
+		{
+			return AmbienceService.EscapeText (CSharpAmbience.FilterName (name));
 		}
 
 		public string GetDelegateInfo (IType type)
@@ -557,7 +559,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			
-			result.Append (CSharpAmbience.FilterName (t.Name));
+			result.Append (FilterEntityName (t.Name));
 			
 			AppendTypeParameters (result, method.TypeParameters);
 
@@ -565,7 +567,7 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 			
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma, false);
+			AppendParameterList (result, method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma, false);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -587,7 +589,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			
-			result.Append (CSharpAmbience.FilterName (delegateType.Name));
+			result.Append (FilterEntityName (delegateType.Name));
 
 			if (delegateType.TypeArguments.Count > 0) {
 				AppendTypeArgumentList (result, delegateType);
@@ -599,7 +601,7 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 			
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma);
+			AppendParameterList (result, method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -621,7 +623,7 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 			}
 	
-			result.Append (CSharpAmbience.FilterName (variable.Name));
+			result.Append (FilterEntityName (variable.Name));
 			
 			if (variable.IsConst) {
 				if (formattingOptions.SpaceAroundAssignment) {
@@ -634,7 +636,7 @@ namespace MonoDevelop.CSharp
 			
 			return result.ToString ();
 		}
-		
+
 
 		string GetFieldMarkup (IField field)
 		{
@@ -655,9 +657,9 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 			}
 
-			result.Append (HighlightSemantically (CSharpAmbience.FilterName (field.Name), colorStyle.UserFieldDeclaration));
+			result.Append (HighlightSemantically (FilterEntityName (field.Name), colorStyle.UserFieldDeclaration));
 
-			if (field.IsFixed){
+			if (field.IsFixed) {
 				if (formattingOptions.SpaceBeforeArrayDeclarationBrackets) {
 					result.Append (" [");
 				} else {
@@ -704,14 +706,14 @@ namespace MonoDevelop.CSharp
 				result.Append ("operator ");
 				result.Append (CSharpAmbience.GetOperator (method.Name));
 			} else {
-				result.Append (HighlightSemantically (CSharpAmbience.FilterName (method.Name), colorStyle.UserMethodDeclaration));
+				result.Append (HighlightSemantically (FilterEntityName (method.Name), colorStyle.UserMethodDeclaration));
 			}
 			if (method.TypeArguments.Count > 0) {
 				result.Append ("&lt;");
 				for (int i = 0; i < method.TypeArguments.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					result.Append (HighlightSemantically (GetTypeReferenceString (method.TypeArguments[i], false), colorStyle.UserTypes));
+					result.Append (HighlightSemantically (GetTypeReferenceString (method.TypeArguments [i], false), colorStyle.UserTypes));
 				}
 				result.Append ("&gt;");
 			} else {
@@ -723,7 +725,7 @@ namespace MonoDevelop.CSharp
 
 			result.Append ('(');
 			IList<IParameter> parameters = method.Parameters;
-			AppendParameterList (result,  parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
+			AppendParameterList (result, parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -737,7 +739,7 @@ namespace MonoDevelop.CSharp
 			var result = new StringBuilder ();
 			AppendModifiers (result, method);
 
-			result.Append (CSharpAmbience.FilterName (method.DeclaringType.Name));
+			result.Append (FilterEntityName (method.DeclaringType.Name));
 
 			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
 				result.Append (" ");
@@ -768,13 +770,13 @@ namespace MonoDevelop.CSharp
 			}
 			
 			result.Append ("~");
-			result.Append (CSharpAmbience.FilterName (method.DeclaringType.Name));
+			result.Append (FilterEntityName (method.DeclaringType.Name));
 			
 			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
 				result.Append (" ");
 			
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
+			AppendParameterList (result, method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -805,7 +807,7 @@ namespace MonoDevelop.CSharp
 			if (property.SymbolKind == SymbolKind.Indexer) {
 				result.Append (Highlight ("this", colorStyle.KeywordAccessors));
 			} else {
-				result.Append (HighlightSemantically (CSharpAmbience.FilterName (property.Name), colorStyle.UserPropertyDeclaration));
+				result.Append (HighlightSemantically (FilterEntityName (property.Name), colorStyle.UserPropertyDeclaration));
 			}
 			
 			if (property.Parameters.Count > 0) {
@@ -826,7 +828,7 @@ namespace MonoDevelop.CSharp
 				result.Append (Highlight (" get", colorStyle.KeywordProperty) + ";");
 			}
 
-			if (property.CanSet && IsAccessibleOrHasSourceCode(property.Setter)) {
+			if (property.CanSet && IsAccessibleOrHasSourceCode (property.Setter)) {
 				if (property.Setter.Accessibility != property.Accessibility) {
 					result.Append (" ");
 					AppendAccessibility (result, property.Setter);
@@ -856,6 +858,7 @@ namespace MonoDevelop.CSharp
 
 			return result;
 		}
+
 		public TooltipInformation GetKeywordTooltip (AstNode node)
 		{
 			return GetKeywordTooltip (node.ToString (), node);
@@ -870,24 +873,24 @@ namespace MonoDevelop.CSharp
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
-			switch (keyword){
+			switch (keyword) {
 			case "abstract":
 				result.SignatureMarkup = Highlight ("abstract", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("abstract", colorStyle.KeywordModifiers) + " modifier can be used with classes, methods, properties, indexers, and events.";
 				break;
 			case "add":
 				result.SignatureMarkup = Highlight ("add", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", "[modifiers] " + Highlight("add", colorStyle.KeywordContext) + " { accessor-body }");
-                result.SummaryMarkup = "The " + Highlight("add", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.";
+				result.AddCategory ("Form", "[modifiers] " + Highlight ("add", colorStyle.KeywordContext) + " { accessor-body }");
+				result.SummaryMarkup = "The " + Highlight ("add", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.";
 				break;
 			case "ascending":
 				result.SignatureMarkup = Highlight ("ascending", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight("ascending", colorStyle.KeywordContext));
-                result.SummaryMarkup = "The " + Highlight("ascending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.";
+				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("ascending", colorStyle.KeywordContext));
+				result.SummaryMarkup = "The " + Highlight ("ascending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.";
 				break;
 			case "async":
 				result.SignatureMarkup = Highlight ("async", colorStyle.KeywordContext) + keywordSign;
-                result.SummaryMarkup = "The " + Highlight("async", colorStyle.KeywordContext) + " modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.";
+				result.SummaryMarkup = "The " + Highlight ("async", colorStyle.KeywordContext) + " modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.";
 				break;
 			case "as":
 				result.SignatureMarkup = Highlight ("as", colorStyle.KeywordOperators) + keywordSign;
@@ -896,8 +899,8 @@ namespace MonoDevelop.CSharp
 				break;
 			case "await":
 				result.SignatureMarkup = Highlight ("await", colorStyle.KeywordContext) + keywordSign;
-                result.SummaryMarkup = "The " + Highlight("await", colorStyle.KeywordContext) + " operator is used to specify that an " + Highlight("async", colorStyle.KeywordContext) + " method is to have its execution suspended until the " + Highlight("await", colorStyle.KeywordContext) +
-                    " task has completed.";
+				result.SummaryMarkup = "The " + Highlight ("await", colorStyle.KeywordContext) + " operator is used to specify that an " + Highlight ("async", colorStyle.KeywordContext) + " method is to have its execution suspended until the " + Highlight ("await", colorStyle.KeywordContext) +
+				" task has completed.";
 				break;
 			case "base":
 				result.SignatureMarkup = Highlight ("base", colorStyle.KeywordAccessors) + keywordSign;
@@ -911,24 +914,24 @@ namespace MonoDevelop.CSharp
 			case "case":
 				result.SignatureMarkup = Highlight ("case", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-				                    "  statement" + Environment.NewLine +
-				                    "  jump-statement");
+				"  statement" + Environment.NewLine +
+				"  jump-statement");
 				result.SummaryMarkup = "";
 				break;
 			case "catch":
 				result.SignatureMarkup = Highlight ("catch", colorStyle.KeywordException) + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
-				                    "  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
-				                    "  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2" + Environment.NewLine +
-				                    "  ..." + Environment.NewLine +
-				                    Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
+				"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
+				"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2" + Environment.NewLine +
+				"  ..." + Environment.NewLine +
+				Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
 				result.SummaryMarkup = "";
 				break;
 			case "checked":
 				result.SignatureMarkup = Highlight ("checked", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("checked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
-				                    "or" + Environment.NewLine +
-				                    Highlight ("checked", colorStyle.KeywordOther) + " (expression)");
+				"or" + Environment.NewLine +
+				Highlight ("checked", colorStyle.KeywordOther) + " (expression)");
 				result.SummaryMarkup = "The " + Highlight ("checked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions. It can be used as an operator or a statement.";
 				break;
 			case "class":
@@ -952,32 +955,32 @@ namespace MonoDevelop.CSharp
 				if (hintNode != null) {
 					if (hintNode.Parent is DefaultValueExpression) {
 						result.AddCategory ("Form",
-						                    Highlight ("default", colorStyle.KeywordSelection) + " (Type)");
+							Highlight ("default", colorStyle.KeywordSelection) + " (Type)");
 						break;
 					} else if (hintNode.Parent is CaseLabel) {
 						result.AddCategory ("Form",
-						                    Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { "+ Environment.NewLine +
-						                    "  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-						                    "    statement"+ Environment.NewLine +
-						                    "    jump-statement" + Environment.NewLine +
-						                    "  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-						                    "    statement" + Environment.NewLine +
-						                    "    jump-statement]" + Environment.NewLine +
-						                    "}");
+							Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
+							"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
+							"    statement" + Environment.NewLine +
+							"    jump-statement" + Environment.NewLine +
+							"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
+							"    statement" + Environment.NewLine +
+							"    jump-statement]" + Environment.NewLine +
+							"}");
 						break;
 					}
 				}
 				result.AddCategory ("Form",
-				                    Highlight ("default", colorStyle.KeywordSelection) + " (Type)" + Environment.NewLine + Environment.NewLine +
-				                    "or" + Environment.NewLine + Environment.NewLine +
-				                    Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { "+ Environment.NewLine +
-				                    "  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-				                    "    statement"+ Environment.NewLine +
-				                    "    jump-statement" + Environment.NewLine +
-				                    "  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-				                    "    statement" + Environment.NewLine +
-				                    "    jump-statement]" + Environment.NewLine +
-				                    "}");
+					Highlight ("default", colorStyle.KeywordSelection) + " (Type)" + Environment.NewLine + Environment.NewLine +
+						"or" + Environment.NewLine + Environment.NewLine +
+					Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
+						"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
+						"    statement" + Environment.NewLine +
+						"    jump-statement" + Environment.NewLine +
+						"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
+						"    statement" + Environment.NewLine +
+						"    jump-statement]" + Environment.NewLine +
+						"}");
 				break;
 			case "delegate":
 				result.SignatureMarkup = Highlight ("delegate", colorStyle.KeywordDeclaration) + keywordSign;
@@ -986,12 +989,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case "dynamic":
 				result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
-                result.SummaryMarkup = "The " + Highlight("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
+				result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
 				break;
 			case "descending":
 				result.SignatureMarkup = Highlight ("descending", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight("descending", colorStyle.KeywordContext));
-                result.SummaryMarkup = "The " + Highlight("descending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from largest to smallest in a query expression.";
+				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("descending", colorStyle.KeywordContext));
+				result.SummaryMarkup = "The " + Highlight ("descending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from largest to smallest in a query expression.";
 				break;
 			case "do":
 				result.SignatureMarkup = Highlight ("do", colorStyle.KeywordIteration) + keywordSign;
@@ -1001,9 +1004,9 @@ namespace MonoDevelop.CSharp
 			case "else":
 				result.SignatureMarkup = Highlight ("else", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
-				                    "  statement1" + Environment.NewLine +
-				                    "  [" + Highlight ("else", colorStyle.KeywordSelection) + Environment.NewLine +
-				                    "  statement2]");
+					"  statement1" + Environment.NewLine +
+					"  [" + Highlight ("else", colorStyle.KeywordSelection) + Environment.NewLine +
+					"  statement2]");
 				result.SummaryMarkup = "";
 				break;
 			case "enum":
@@ -1014,7 +1017,7 @@ namespace MonoDevelop.CSharp
 			case "event":
 				result.SignatureMarkup = Highlight ("event", colorStyle.KeywordModifiers) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type declarator;" + Environment.NewLine +
-				                    "[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type member-name {accessor-declarations};");
+					"[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type member-name {accessor-declarations};");
 				result.SummaryMarkup = "Specifies an event.";
 				break;
 			case "explicit":
@@ -1047,47 +1050,47 @@ namespace MonoDevelop.CSharp
 				break;
 			case "from":
 				result.SignatureMarkup = Highlight ("from", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", Highlight("from", colorStyle.KeywordContext) + " range-variable " + Highlight("in", colorStyle.KeywordIteration) 
-                    + " data-source [query clauses] " + Highlight("select", colorStyle.KeywordContext) + " product-expression");
-                result.SummaryMarkup = "The " + Highlight("from", colorStyle.KeywordContext) + " keyword marks the beginning of a query expression and defines the data source and local variable to represent the elements in the sequence.";
+				result.AddCategory ("Form", Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration)
+				+ " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
+				result.SummaryMarkup = "The " + Highlight ("from", colorStyle.KeywordContext) + " keyword marks the beginning of a query expression and defines the data source and local variable to represent the elements in the sequence.";
 				break;
 			case "get":
 				result.SignatureMarkup = Highlight ("get", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", "[modifiers] " + Highlight("get", colorStyle.KeywordContext) + " [ { accessor-body } ]");
-                result.SummaryMarkup = "The " + Highlight("get", colorStyle.KeywordContext) + " keyword is used to define an accessor method to retrieve the value of the property or indexer element.";
+				result.AddCategory ("Form", "[modifiers] " + Highlight ("get", colorStyle.KeywordContext) + " [ { accessor-body } ]");
+				result.SummaryMarkup = "The " + Highlight ("get", colorStyle.KeywordContext) + " keyword is used to define an accessor method to retrieve the value of the property or indexer element.";
 				break;
 			case "global":
 				result.SignatureMarkup = Highlight ("global", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", Highlight("global", colorStyle.KeywordContext) + " :: type");
-                result.SummaryMarkup = "The " + Highlight("global", colorStyle.KeywordContext) + " keyword is used to specify a type is within the global namespace.";
+				result.AddCategory ("Form", Highlight ("global", colorStyle.KeywordContext) + " :: type");
+				result.SummaryMarkup = "The " + Highlight ("global", colorStyle.KeywordContext) + " keyword is used to specify a type is within the global namespace.";
 				break;
 			case "goto":
 				result.SignatureMarkup = Highlight ("goto", colorStyle.KeywordJump) + keywordSign;
 				result.AddCategory ("Form", Highlight ("goto", colorStyle.KeywordJump) + " identifier;" + Environment.NewLine +
-					Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression;" + Environment.NewLine +
-				                    Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("default", colorStyle.KeywordSelection) + ";");
+				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression;" + Environment.NewLine +
+				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("default", colorStyle.KeywordSelection) + ";");
 				result.SummaryMarkup = "The " + Highlight ("goto", colorStyle.KeywordJump) + " statement transfers the program control directly to a labeled statement. ";
 				break;
 			case "group":
 				result.SignatureMarkup = Highlight ("group", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("group", colorStyle.KeywordContext) + " range-variable " + Highlight("by", colorStyle.KeywordContext) + "key-value" 
-                    +Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
-                    Highlight("group", colorStyle.KeywordContext) + " range-variable " + Highlight("by", colorStyle.KeywordContext) + " key-value " + Highlight("into", colorStyle.KeywordContext) + " group-name ");
-                result.SummaryMarkup = "The " + Highlight("group", colorStyle.KeywordContext) + " keyword groups elements together from a query which match the key value and stores the result in an "
-                    + Highlight ("IGrouping&lt;TKey, TElement&gt;", colorStyle.KeywordTypes) + ". It can also be stored in a group for further use in the query with 'into'.";
+				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + "key-value"
+					+ Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
+				Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + " key-value " + Highlight ("into", colorStyle.KeywordContext) + " group-name ");
+				result.SummaryMarkup = "The " + Highlight ("group", colorStyle.KeywordContext) + " keyword groups elements together from a query which match the key value and stores the result in an "
+					+ Highlight ("IGrouping&lt;TKey, TElement&gt;", colorStyle.KeywordTypes) + ". It can also be stored in a group for further use in the query with 'into'.";
 				break;
 			case "if":
 				result.SignatureMarkup = Highlight ("if", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
 					"  statement1" + Environment.NewLine +
 					"  [" + Highlight ("else", colorStyle.KeywordSelection) + Environment.NewLine +
-				                    "  statement2]");
+					"  statement2]");
 				result.SummaryMarkup = "The " + Highlight ("if", colorStyle.KeywordSelection) + " statement selects a statement for execution based on the value of a Boolean expression. ";
 				break;
 			case "into":
 				result.SignatureMarkup = Highlight ("into", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory("Query Form", Highlight("group", colorStyle.KeywordContext) + " range-variable " + Highlight("by", colorStyle.KeywordContext) + " key-value " + Highlight("into", colorStyle.KeywordContext) + " group-name ");
-                result.SummaryMarkup = "The " + Highlight("into", colorStyle.KeywordContext) + " keyword stores the result of a group statement for further use in the query.";
+				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + " key-value " + Highlight ("into", colorStyle.KeywordContext) + " group-name ");
+				result.SummaryMarkup = "The " + Highlight ("into", colorStyle.KeywordContext) + " keyword stores the result of a group statement for further use in the query.";
 				break;
 			case "implicit":
 				result.SignatureMarkup = Highlight ("implicit", colorStyle.KeywordOperatorDeclaration) + keywordSign;
@@ -1098,26 +1101,26 @@ namespace MonoDevelop.CSharp
 				if (hintNode != null) {
 					if (hintNode.Parent is ForeachStatement) {
 						result.AddCategory ("Form",
-						                    Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
+							Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
 						break;
 					}
 					if (hintNode.Parent is QueryFromClause) {
 						result.AddCategory ("Form",
-						                    Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
+							Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
 						break;
 					}
 					if (hintNode.Parent is TypeParameterDeclaration) {
 						result.AddCategory ("Form",
-						                    Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}");
+							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}");
 						break;
 					}
 				}
-				result.AddCategory ("Form", Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement"+ Environment.NewLine + Environment.NewLine +
-				                    "or" + Environment.NewLine + Environment.NewLine +
-				                    Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression" + Environment.NewLine + Environment.NewLine +
-				                    "or" + Environment.NewLine + Environment.NewLine +
-				                    Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}"
-				                    );
+				result.AddCategory ("Form", Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement" + Environment.NewLine + Environment.NewLine +
+					"or" + Environment.NewLine + Environment.NewLine +
+				Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression" + Environment.NewLine + Environment.NewLine +
+					"or" + Environment.NewLine + Environment.NewLine +
+				Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}"
+				);
 				break;
 			case "interface":
 				result.SignatureMarkup = Highlight ("interface", colorStyle.KeywordDeclaration) + keywordSign;
@@ -1135,14 +1138,14 @@ namespace MonoDevelop.CSharp
 				break;
 			case "join":
 				result.SignatureMarkup = Highlight ("join", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("join", colorStyle.KeywordContext) + " range-variable2 " + Highlight("in", colorStyle.KeywordContext) + " range2 " + Highlight("on", colorStyle.KeywordContext)
-                    + " statement1 " + Highlight("equals", colorStyle.KeywordContext) + " statement2 [ " + Highlight("into", colorStyle.KeywordContext) + " group-name ]");
-                result.SummaryMarkup = "The " + Highlight("join", colorStyle.KeywordContext) + " clause produces a new sequence of elements from two source sequences on a given equality condition.";
+				result.AddCategory ("Query Form", Highlight ("join", colorStyle.KeywordContext) + " range-variable2 " + Highlight ("in", colorStyle.KeywordContext) + " range2 " + Highlight ("on", colorStyle.KeywordContext)
+					+ " statement1 " + Highlight ("equals", colorStyle.KeywordContext) + " statement2 [ " + Highlight ("into", colorStyle.KeywordContext) + " group-name ]");
+				result.SummaryMarkup = "The " + Highlight ("join", colorStyle.KeywordContext) + " clause produces a new sequence of elements from two source sequences on a given equality condition.";
 				break;
 			case "let":
 				result.SignatureMarkup = Highlight ("let", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("let", colorStyle.KeywordContext) + " range-variable = expression");
-                result.SummaryMarkup = "The " + Highlight("let", colorStyle.KeywordContext) + " clause allows for a sub-expression to have its value stored in a new range variable for use later in the query.";
+				result.AddCategory ("Query Form", Highlight ("let", colorStyle.KeywordContext) + " range-variable = expression");
+				result.SummaryMarkup = "The " + Highlight ("let", colorStyle.KeywordContext) + " clause allows for a sub-expression to have its value stored in a new range variable for use later in the query.";
 				break;
 			case "lock":
 				result.SignatureMarkup = Highlight ("lock", colorStyle.KeywordOther) + keywordSign;
@@ -1153,7 +1156,7 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("namespace", colorStyle.KeywordNamespace) + keywordSign;
 				result.AddCategory ("Form", Highlight ("namespace", colorStyle.KeywordNamespace) + " name[.name1] ...] {" + Environment.NewLine +
 					"type-declarations" + Environment.NewLine +
-				                    " }");
+					" }");
 				result.SummaryMarkup = "The " + Highlight ("namespace", colorStyle.KeywordNamespace) + " keyword is used to declare a scope. ";
 				break;
 			case "new":
@@ -1167,40 +1170,41 @@ namespace MonoDevelop.CSharp
 			case "operator":
 				result.SignatureMarkup = Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " unary-operator ( op-type operand )" + Environment.NewLine +
-				                    Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " binary-operator (" + Environment.NewLine +
+				Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " binary-operator (" + Environment.NewLine +
 					"op-type operand," + Environment.NewLine +
 					"op-type2 operand2" + Environment.NewLine +
 					" )" + Environment.NewLine +
 					Highlight ("public static ", colorStyle.KeywordModifiers) + Highlight ("implicit operator", colorStyle.KeywordOperatorDeclaration) + " conv-type-out ( conv-type-in operand )" + Environment.NewLine +
-				                    Highlight ("public static ", colorStyle.KeywordModifiers) + Highlight ("explicit operator", colorStyle.KeywordOperatorDeclaration) + " conv-type-out ( conv-type-in operand )");
+					Highlight ("public static ", colorStyle.KeywordModifiers) + Highlight ("explicit operator", colorStyle.KeywordOperatorDeclaration) + " conv-type-out ( conv-type-in operand )"
+				);
 				result.SummaryMarkup = "The " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an operator in a class or struct declaration.";
 				break;
 			case "orderby":
 				result.SignatureMarkup = Highlight ("orderby", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("orderby", colorStyle.KeywordContext) + " order-key1 [ " + Highlight("ascending", colorStyle.KeywordContext) + "|" + Highlight("descending", colorStyle.KeywordContext) + " , [order-key2, ...]");
-                result.SummaryMarkup = "The " + Highlight("orderby", colorStyle.KeywordContext) + " clause specifies for the returned sequence to be sorted on a given element in either ascending or descending order.";
+				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " order-key1 [ " + Highlight ("ascending", colorStyle.KeywordContext) + "|" + Highlight ("descending", colorStyle.KeywordContext) + " , [order-key2, ...]");
+				result.SummaryMarkup = "The " + Highlight ("orderby", colorStyle.KeywordContext) + " clause specifies for the returned sequence to be sorted on a given element in either ascending or descending order.";
 				break;
 			case "out":
 				result.SignatureMarkup = Highlight ("out", colorStyle.KeywordParameter) + keywordSign;
 				if (hintNode != null) {
 					if (hintNode.Parent is TypeParameterDeclaration) {
 						result.AddCategory ("Form",
-						                    Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}");
+							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}");
 						break;
 					}
 					if (hintNode.Parent is ParameterDeclaration) {
 						result.AddCategory ("Form",
-						                    Highlight ("out", colorStyle.KeywordParameter) + " parameter-name");
+							Highlight ("out", colorStyle.KeywordParameter) + " parameter-name");
 						result.SummaryMarkup = "The " + Highlight ("out", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 						break;
 					}
 				}
 
 				result.AddCategory ("Form", 
-				                    Highlight ("out", colorStyle.KeywordParameter) + " parameter-name" + Environment.NewLine + Environment.NewLine +
-				                    "or" + Environment.NewLine + Environment.NewLine +
-				                    Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}"
-				                    );
+					Highlight ("out", colorStyle.KeywordParameter) + " parameter-name" + Environment.NewLine + Environment.NewLine +
+					"or" + Environment.NewLine + Environment.NewLine +
+					Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}"
+				);
 				break;
 			case "override":
 				result.SignatureMarkup = Highlight ("override", colorStyle.KeywordModifiers) + keywordSign;
@@ -1212,23 +1216,18 @@ namespace MonoDevelop.CSharp
 				break;
 			case "partial":
 				result.SignatureMarkup = Highlight ("partial", colorStyle.KeywordContext) + keywordSign;
-                if (hintNode != null)
-                {
-                    if (hintNode.Parent is TypeDeclaration)
-                    {
-                        result.AddCategory("Form", "[modifiers] " + Highlight("partial", colorStyle.KeywordContext) + " type-declaration");
-                        result.SummaryMarkup = "The " + Highlight("partial", colorStyle.KeywordContext) + " keyword on a type declaration allows for the definition to be split into multiple files.";
-                        break;
-                    }
-                    else if(hintNode.Parent is MethodDeclaration)
-                    {
-                        result.AddCategory("Form", Highlight("partial", colorStyle.KeywordContext) + " method-declaration");
-                        result.SummaryMarkup = "The " + Highlight("partial", colorStyle.KeywordContext) + " keyword on a method declaration allows for the implementation of a method to be defined in another part of the partial class.";
-                    }
-                }
-                else
-                result.AddCategory("Form", "[modifiers] " + Highlight("partial", colorStyle.KeywordContext) + " type-declaration" + Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
-                    Highlight("partial", colorStyle.KeywordContext) + " method-declaration");
+				if (hintNode != null) {
+					if (hintNode.Parent is TypeDeclaration) {
+						result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration");
+						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a type declaration allows for the definition to be split into multiple files.";
+						break;
+					} else if (hintNode.Parent is MethodDeclaration) {
+						result.AddCategory ("Form", Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
+						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a method declaration allows for the implementation of a method to be defined in another part of the partial class.";
+					}
+				} else
+					result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration" + Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
+					Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
 				break;
 			case "private":
 				result.SignatureMarkup = Highlight ("private", colorStyle.KeywordModifiers) + keywordSign;
@@ -1252,8 +1251,8 @@ namespace MonoDevelop.CSharp
 				break;
 			case "remove":
 				result.SignatureMarkup = Highlight ("remove", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", "[modifiers] " + Highlight("remove", colorStyle.KeywordContext) + " { accessor-body }");
-                result.SummaryMarkup = "The " + Highlight("remove", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.";
+				result.AddCategory ("Form", "[modifiers] " + Highlight ("remove", colorStyle.KeywordContext) + " { accessor-body }");
+				result.SummaryMarkup = "The " + Highlight ("remove", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.";
 				break;
 			case "return":
 				result.SignatureMarkup = Highlight ("return", colorStyle.KeywordJump) + keywordSign;
@@ -1262,8 +1261,8 @@ namespace MonoDevelop.CSharp
 				break;
 			case "select":
 				result.SignatureMarkup = Highlight ("select", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Query Form", Highlight("select", colorStyle.KeywordContext) + " return-type");
-                result.SummaryMarkup = "The " + Highlight("select", colorStyle.KeywordContext) + " clause specifies the type of value to return from the query.";
+				result.AddCategory ("Query Form", Highlight ("select", colorStyle.KeywordContext) + " return-type");
+				result.SummaryMarkup = "The " + Highlight ("select", colorStyle.KeywordContext) + " clause specifies the type of value to return from the query.";
 				break;
 			case "sealed":
 				result.SignatureMarkup = Highlight ("sealed", colorStyle.KeywordModifiers) + keywordSign;
@@ -1271,8 +1270,8 @@ namespace MonoDevelop.CSharp
 				break;
 			case "set":
 				result.SignatureMarkup = Highlight ("set", colorStyle.KeywordContext) + keywordSign;
-                result.AddCategory("Form", "[modifiers] " + Highlight("set", colorStyle.KeywordContext) + " [ { accessor-body } ]");
-                result.SummaryMarkup = "The " + Highlight("set", colorStyle.KeywordContext) + " keyword is used to define an accessor method to assign to the value of the property or indexer element.";
+				result.AddCategory ("Form", "[modifiers] " + Highlight ("set", colorStyle.KeywordContext) + " [ { accessor-body } ]");
+				result.SummaryMarkup = "The " + Highlight ("set", colorStyle.KeywordContext) + " keyword is used to define an accessor method to assign to the value of the property or indexer element.";
 				break;
 			case "sizeof":
 				result.SignatureMarkup = Highlight ("sizeof", colorStyle.KeywordOperators) + keywordSign;
@@ -1295,15 +1294,15 @@ namespace MonoDevelop.CSharp
 				break;
 			case "switch":
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory ("Form", Highlight ("switch", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine + 
-					" {" + Environment.NewLine + 
-				                    "  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine + 
-					"  statement" + Environment.NewLine + 
-					"  jump-statement" + Environment.NewLine + 
-					"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine + 
-					"  statement" + Environment.NewLine + 
-					"  jump-statement]" + Environment.NewLine + 
-				                    " }");
+				result.AddCategory ("Form", Highlight ("switch", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
+					" {" + Environment.NewLine +
+					"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
+					"  statement" + Environment.NewLine +
+					"  jump-statement" + Environment.NewLine +
+					"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
+					"  statement" + Environment.NewLine +
+					"  jump-statement]" + Environment.NewLine +
+					" }");
 				result.SummaryMarkup = "The " + Highlight ("switch", colorStyle.KeywordSelection) + " statement is a control statement that handles multiple selections by passing control to one of the " + Highlight ("case", colorStyle.KeywordSelection) + " statements within its body.";
 				break;
 			case "this":
@@ -1317,11 +1316,11 @@ namespace MonoDevelop.CSharp
 				break;
 			case "try":
 				result.SignatureMarkup = Highlight ("try", colorStyle.KeywordException) + keywordSign;
-				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine + 
-				                    "  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1 " + Environment.NewLine + 
-					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2 " + Environment.NewLine + 
-					"..." + Environment.NewLine + 
-				                    Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
+				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
+					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1 " + Environment.NewLine +
+					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2 " + Environment.NewLine +
+					"..." + Environment.NewLine +
+					Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
 				result.SummaryMarkup = "The try-catch statement consists of a " + Highlight ("try", colorStyle.KeywordException) + " block followed by one or more " + Highlight ("catch", colorStyle.KeywordException) + " clauses, which specify handlers for different exceptions.";
 				break;
 			case "typeof":
@@ -1332,8 +1331,8 @@ namespace MonoDevelop.CSharp
 			case "unchecked":
 				result.SignatureMarkup = Highlight ("unchecked", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("unchecked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
-				                    Highlight ("unchecked", colorStyle.KeywordOther) + " (expression)");
-				result.SummaryMarkup = "The "+ Highlight ("unchecked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.";
+				Highlight ("unchecked", colorStyle.KeywordOther) + " (expression)");
+				result.SummaryMarkup = "The " + Highlight ("unchecked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.";
 				break;
 			case "unsafe":
 				result.SignatureMarkup = Highlight ("unsafe", colorStyle.KeywordOther) + keywordSign;
@@ -1342,7 +1341,7 @@ namespace MonoDevelop.CSharp
 			case "using":
 				result.SignatureMarkup = Highlight ("using", colorStyle.KeywordNamespace) + keywordSign;
 				result.AddCategory ("Form", Highlight ("using", colorStyle.KeywordNamespace) + " (expression | type identifier = initializer) statement" + Environment.NewLine +
-				                    Highlight ("using", colorStyle.KeywordNamespace) + " [alias = ]class_or_namespace;");
+				Highlight ("using", colorStyle.KeywordNamespace) + " [alias = ]class_or_namespace;");
 				result.SummaryMarkup = "The " + Highlight ("using", colorStyle.KeywordNamespace) + " directive creates an alias for a namespace or imports types defined in other namespaces. The " + Highlight ("using", colorStyle.KeywordNamespace) + " statement defines a scope at the end of which an object will be disposed.";
 				break;
 			case "virtual":
@@ -1359,34 +1358,29 @@ namespace MonoDevelop.CSharp
 				break;
 			case "where":
 				result.SignatureMarkup = Highlight ("where", colorStyle.KeywordContext) + keywordSign;
-                if (hintNode != null)
-                {
-                    if (hintNode.Parent is QueryWhereClause)
-                    {
-                        result.AddCategory("Query Form", Highlight("where", colorStyle.KeywordContext) + " condition");
-                        result.SummaryMarkup = "The " + Highlight("where", colorStyle.KeywordContext) + " clause specifies which elements from the data source to be returned according to a given condition.";
-                        break;
-                    }
-                    if(hintNode.Parent is Constraint)
-                    {
-                        result.AddCategory("Form", "generic-class-declaration " + Highlight("where", colorStyle.KeywordContext) + " type-parameter : type-constraint");
-                        result.SummaryMarkup = "The " + Highlight("where", colorStyle.KeywordContext) + " clause constrains which types can be used as the type parameter in a generic declaration.";
-                        break;
-                    }
-                }
-                else
-                {
-                    result.AddCategory("Form", "generic-class-declaration " + Highlight("where", colorStyle.KeywordContext) + " type-parameter : type-constraint"
-                        +Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine + "query-clauses " + Highlight("where", colorStyle.KeywordContext) + 
-                        " condition" + " [query-clauses]");
-                }
+				if (hintNode != null) {
+					if (hintNode.Parent is QueryWhereClause) {
+						result.AddCategory ("Query Form", Highlight ("where", colorStyle.KeywordContext) + " condition");
+						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause specifies which elements from the data source to be returned according to a given condition.";
+						break;
+					}
+					if (hintNode.Parent is Constraint) {
+						result.AddCategory ("Form", "generic-class-declaration " + Highlight ("where", colorStyle.KeywordContext) + " type-parameter : type-constraint");
+						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause constrains which types can be used as the type parameter in a generic declaration.";
+						break;
+					}
+				} else {
+					result.AddCategory ("Form", "generic-class-declaration " + Highlight ("where", colorStyle.KeywordContext) + " type-parameter : type-constraint"
+					+ Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine + "query-clauses " + Highlight ("where", colorStyle.KeywordContext) +
+					" condition" + " [query-clauses]");
+				}
 				break;
 			case "yield":
 				result.SignatureMarkup = Highlight ("yield", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory("Form", Highlight("yield", colorStyle.KeywordContext) + Highlight("break", colorStyle.KeywordJump) + Environment.NewLine
-                    + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine
-                    + Highlight("yield", colorStyle.KeywordContext) + Highlight("return", colorStyle.KeywordJump) + " expression");
-                result.SummaryMarkup = "The " + Highlight("yield", colorStyle.KeywordContext) + " keyword is used to indicate that a method, get accessor, or operator is an iterator.";
+				result.AddCategory ("Form", Highlight ("yield", colorStyle.KeywordContext) + Highlight ("break", colorStyle.KeywordJump) + Environment.NewLine
+				+ Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine
+				+ Highlight ("yield", colorStyle.KeywordContext) + Highlight ("return", colorStyle.KeywordJump) + " expression");
+				result.SummaryMarkup = "The " + Highlight ("yield", colorStyle.KeywordContext) + " keyword is used to indicate that a method, get accessor, or operator is an iterator.";
 				break;
 			case "while":
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
@@ -1441,7 +1435,7 @@ namespace MonoDevelop.CSharp
 			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
 			return result;
 		}
-		
+
 		public TooltipInformation GetAliasedTypeTooltip (AliasTypeResolveResult resolveResult)
 		{
 			var result = new TooltipInformation ();
@@ -1449,7 +1443,7 @@ namespace MonoDevelop.CSharp
 			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
 			return result;
 		}
-		
+
 		string GetEventMarkup (IEvent evt)
 		{
 			if (evt == null)
@@ -1465,11 +1459,12 @@ namespace MonoDevelop.CSharp
 			}
 
 			AppendExplicitInterfaces (result, evt);
-			result.Append (HighlightSemantically (CSharpAmbience.FilterName (evt.Name), colorStyle.UserEventDeclaration));
+			result.Append (HighlightSemantically (FilterEntityName (evt.Name), colorStyle.UserEventDeclaration));
 			return result.ToString ();
 		}
 
 		bool grayOut;
+
 		bool GrayOut {
 			get {
 				return grayOut;
@@ -1491,7 +1486,7 @@ namespace MonoDevelop.CSharp
 					result.Append (new string (' ', 2));
 				var doHighightParameter = i == HighlightParameter || HighlightParameter >= i && i == parameterList.Count - 1 && parameter.IsParams;
 				if (doHighightParameter)
-					result.Append("<u>");
+					result.Append ("<u>");
 				/*				if (parameter.IsOptional) {
 					GrayOut = true;
 					var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
@@ -1510,7 +1505,7 @@ namespace MonoDevelop.CSharp
 //					result.Append ("</span>");
 				}
 				if (doHighightParameter)
-					result.Append("</u>");
+					result.Append ("</u>");
 				if (i + 1 < parameterList.Count) {
 					if (spaceBefore)
 						result.Append (' ');
@@ -1526,7 +1521,7 @@ namespace MonoDevelop.CSharp
 			if (newLine)
 				result.AppendLine ();
 		}
-		
+
 		void AppendParameter (StringBuilder result, IParameter parameter)
 		{
 			if (parameter == null)
@@ -1540,7 +1535,7 @@ namespace MonoDevelop.CSharp
 			}
 			result.Append (GetTypeReferenceString (parameter.Type));
 			result.Append (" ");
-			result.Append (CSharpAmbience.FilterName (parameter.Name));
+			result.Append (FilterEntityName (parameter.Name));
 		}
 
 		void AppendExplicitInterfaces (StringBuilder sb, IMember member)
@@ -1590,15 +1585,15 @@ namespace MonoDevelop.CSharp
 				return;
 			}
 
-			while (NullableType.IsNullable (constantType)) 
+			while (NullableType.IsNullable (constantType))
 				constantType = NullableType.GetUnderlyingType (constantType);
 			if (constantType.Kind == TypeKind.Enum) {
 				foreach (var field in constantType.GetFields ()) {
-					if (field.ConstantValue == constantValue){
+					if (field.ConstantValue == constantValue) {
 						if (useNumericalEnumValue) {
 							sb.Append (Highlight (string.Format ("0x{0:X}", field.ConstantValue), colorStyle.Number));
 						} else {
-							sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+							sb.Append (GetTypeReferenceString (constantType) + "." + FilterEntityName (field.Name));
 						}
 						return;
 					}
@@ -1622,8 +1617,8 @@ namespace MonoDevelop.CSharp
 						for (int i = 0; i < fields.Count; i++) {
 							if (i > 0)
 								sb.Append (" | ");
-							var field = fields[i];
-							sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
+							var field = fields [i];
+							sb.Append (GetTypeReferenceString (constantType) + "." + FilterEntityName (field.Name));
 						}
 						return;
 					}
@@ -1638,9 +1633,9 @@ namespace MonoDevelop.CSharp
 
 		void AppendVariance (StringBuilder sb, VarianceModifier variance)
 		{
-			if (variance  == VarianceModifier.Contravariant) {
+			if (variance == VarianceModifier.Contravariant) {
 				sb.Append (Highlight ("in ", colorStyle.KeywordParameter));
-			} else if (variance  == VarianceModifier.Covariant) {
+			} else if (variance == VarianceModifier.Covariant) {
 				sb.Append (Highlight ("out ", colorStyle.KeywordParameter));
 			}
 		}
@@ -1651,12 +1646,12 @@ namespace MonoDevelop.CSharp
 				(byte)((alpha * color.Red + (1 - alpha) * color2.Red) / 256), 
 				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256), 
 				(byte)((alpha * color.Blue + (1 - alpha) * color2.Blue) / 256)
-				);
+			);
 		}
 
 		Gdk.Color AlphaBlend (Cairo.Color color, Cairo.Color color2, double alpha)
 		{
-			return AlphaBlend ((Gdk.Color) ((HslColor)color), (Gdk.Color) ((HslColor)color2), alpha);
+			return AlphaBlend ((Gdk.Color)((HslColor)color), (Gdk.Color)((HslColor)color2), alpha);
 		}
 
 		public string GetArrayIndexerMarkup (ArrayType arrayType)
@@ -1697,10 +1692,10 @@ namespace MonoDevelop.CSharp
 
 		string Highlight (string str, ChunkStyle style)
 		{
-			var color = (Gdk.Color) ((HslColor)colorStyle.GetForeground (style));
+			var color = (Gdk.Color)((HslColor)colorStyle.GetForeground (style));
 
 			if (grayOut) {
-				color = AlphaBlend (color, (Gdk.Color) ((HslColor)colorStyle.PlainText.Background), optionalAlpha);
+				color = AlphaBlend (color, (Gdk.Color)((HslColor)colorStyle.PlainText.Background), optionalAlpha);
 			}
 
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
@@ -1725,14 +1720,12 @@ namespace MonoDevelop.CSharp
 
 						if (def.TryGetSourceProject (out project)) {
 							var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
-							return
-								(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
+							return (string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
 								"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>" + Environment.NewLine +
 								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), def.Region.Begin.Line) + "</small>";
 						}
 					}
-					return
-						(string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
+					return (string.IsNullOrEmpty (def.Namespace) ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (def.Namespace)) + "</small>" + Environment.NewLine) +
 						"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>";
 				}
 				return null;
@@ -1743,14 +1736,12 @@ namespace MonoDevelop.CSharp
 					MonoDevelop.Projects.Project project;
 					if (entity.DeclaringTypeDefinition.TryGetSourceProject (out project)) {
 						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, entity.Region.FileName);
-						return
-							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
+						return "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
 							"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.FullName)) + "</small>" + Environment.NewLine +
 							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), entity.Region.Begin.Line) + "</small>";
 					}
 				}
-				return
-					"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.FullName)) + "</small>" + Environment.NewLine +
+				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.FullName)) + "</small>" + Environment.NewLine +
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (entity.DeclaringTypeDefinition.ParentAssembly.AssemblyName)) + "</small>";
 			}
 			return null;
