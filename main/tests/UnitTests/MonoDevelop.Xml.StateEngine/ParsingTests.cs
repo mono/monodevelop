@@ -235,7 +235,7 @@ namespace MonoDevelop.Xml.StateEngine
 			Assert.AreEqual (3, el.Attributes.Count ());
 			parser.AssertErrorCount (1);
 			Assert.AreEqual (1, parser.Errors [0].Region.BeginLine);
-			Assert.AreEqual (25, parser.Errors [0].Region.BeginColumn);
+			Assert.AreEqual (26, parser.Errors [0].Region.BeginColumn);
 		}
 	}
 }
