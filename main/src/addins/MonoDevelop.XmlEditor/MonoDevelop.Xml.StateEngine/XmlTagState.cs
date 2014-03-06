@@ -148,9 +148,13 @@ namespace MonoDevelop.Xml.StateEngine
 				context.Nodes.Pop ();
 
 			element.End (location);
-
-			if (context.BuildTree)
-				((XContainer)context.Nodes.Peek ()).AddChildNode (element);
+			if (context.BuildTree) {
+				XContainer container = element.IsClosed? 
+					  (XContainer) context.Nodes.Peek ()
+					: (XContainer) context.Nodes.Peek (1);
+										
+				container.AddChildNode (element);
+			}
 		}
 	}
 }
