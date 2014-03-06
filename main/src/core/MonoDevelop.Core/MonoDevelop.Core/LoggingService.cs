@@ -126,7 +126,7 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 
-		[Obsolete ("Use GetSessionLogFileName or CreateSessionLogFile")]
+		[Obsolete ("Use CreateLogFile")]
 		public static DateTime LogTimestamp {
 			get { return timestamp; }
 		}
@@ -135,7 +135,13 @@ namespace MonoDevelop.Core
 		/// Creates a session log file with the given identifier.
 		/// </summary>
 		/// <returns>A TextWriter, null if the file cannot be created.</returns>
-		public static TextWriter CreateSessionLogFile (string identifier)
+		public static TextWriter CreateLogFile (string identifier)
+		{
+			string filename;
+			return CreateLogFile (identifier, out filename);
+		}
+
+		public static TextWriter CreateLogFile (string identifier, out string filename)
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
 			Directory.CreateDirectory (logDir);
@@ -143,9 +149,9 @@ namespace MonoDevelop.Core
 			int oldIdx = logFileSuffix;
 
 			while (true) {
-				string logName = GetSessionLogFileName (identifier);
+				filename = logDir.Combine (GetSessionLogFileName (identifier));
 				try {
-					var stream = File.Open (logDir.Combine (logName), FileMode.Create, FileAccess.Write, FileShare.Read);
+					var stream = File.Open (filename, FileMode.Create, FileAccess.Write, FileShare.Read);
 					return new StreamWriter (stream) { AutoFlush = true };
 				} catch (Exception ex) {
 					// if the file already exists, retry with a suffix, up to 10 times
@@ -164,7 +170,7 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public static string GetSessionLogFileName (string logName)
+		static string GetSessionLogFileName (string logName)
 		{
 			if (logFileSuffix == 0)
 				return string.Format ("{0}.{1}.log", logName, timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
@@ -272,7 +278,7 @@ namespace MonoDevelop.Core
 
 		static void RedirectOutputToFileWindows ()
 		{
-			var writer = CreateSessionLogFile ("Ide");
+			var writer = CreateLogFile ("Ide");
 			if (writer == Console.Out)
 				return;
 
