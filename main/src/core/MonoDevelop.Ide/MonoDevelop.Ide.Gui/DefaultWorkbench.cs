@@ -46,6 +46,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using Mono.TextEditor;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -859,7 +860,7 @@ namespace MonoDevelop.Ide.Gui
 			// In order to get the correct bar height we need to calculate the tab size using the
 			// correct style (the style of the window). At this point the widget is not yet a child
 			// of the window, so its style is not yet the correct one.
-			tabControl.InitSize (this);
+			tabControl.InitSize ();
 			var barHeight = tabControl.BarHeight;
 
 			// The main document area
@@ -1176,7 +1177,7 @@ namespace MonoDevelop.Ide.Gui
 			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true);
 		}
 
-		internal void RemoveTab (int pageNum, bool animate)
+		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)
 		{
 			try {
 				// Weird switch page events are fired when a tab is removed.

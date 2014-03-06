@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -71,6 +72,14 @@ namespace MonoDevelop.Ide.Gui
 
 		public event EventHandler ViewsChanged;
 
+		internal void SetDockNotebook (DockNotebook tabControl, IDockNotebookTab tabLabel)
+		{
+			this.tabControl = tabControl;
+			this.tab = tabLabel;
+			this.tabPage = content.Control;
+			SetTitleEvent(null, null);
+		}
+
 		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
@@ -103,7 +112,7 @@ namespace MonoDevelop.Ide.Gui
 			Add (box);
 			
 			SetTitleEvent(null, null);
-			
+
 			commandHandler = new ViewCommandHandlers (this);
 		}
 
@@ -377,7 +386,7 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return false;
 			
-			workbench.RemoveTab (tab.Index, animate);
+			workbench.RemoveTab (tabControl, tab.Index, animate);
 
 			OnClosed (args);
 
