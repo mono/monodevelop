@@ -59,15 +59,19 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override IQueryable<IPackage> GetPackages(string search)
 		{
 			if (repository == null) {
 				throw new ApplicationException(errorMessage);
 			}
 			if (IncludePrerelease) {
-				return repository.GetPackages();
+				return repository
+					.Search (search, new string[0], IncludePrerelease)
+					.Where (package => package.IsAbsoluteLatestVersion);
 			}
-			return repository.GetPackages().Where(package => package.IsLatestVersion);
+			return repository
+				.Search (search, new string[0], IncludePrerelease)
+				.Where (package => package.IsLatestVersion);
 		}
 		
 		/// <summary>
