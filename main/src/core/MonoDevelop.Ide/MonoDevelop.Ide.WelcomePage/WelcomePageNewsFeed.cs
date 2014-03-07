@@ -44,9 +44,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		bool destroyed;
 		Gtk.VBox box;
 		
-		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5): base (title)
+		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5, int spacing = Styles.WelcomeScreen.Pad.News.Item.MarginBottom): base (title)
 		{
-			box = new VBox (false, Styles.WelcomeScreen.Pad.News.Item.MarginBottom);
+			box = new VBox (false, spacing);
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
 			if (string.IsNullOrEmpty (id))

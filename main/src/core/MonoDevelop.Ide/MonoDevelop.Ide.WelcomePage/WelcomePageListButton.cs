@@ -33,20 +33,20 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageListButton: EventBox
 	{
-		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
+		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 		string title, subtitle, actionUrl;
-		Xwt.Drawing.Image icon;
-		bool mouseOver;
-		bool pinned;
-		Gdk.Rectangle starRect;
-		bool mouseOverStar;
+		protected Xwt.Drawing.Image icon;
+		protected bool mouseOver;
+		protected bool pinned;
+		protected Gdk.Rectangle starRect;
+		protected bool mouseOverStar;
 
 		protected Pango.Weight TitleFontWeight { get; set; }
 
-		static readonly Xwt.Drawing.Image starNormal;
-		static readonly Xwt.Drawing.Image starNormalHover;
-		static readonly Xwt.Drawing.Image starPinned;
-		static readonly Xwt.Drawing.Image starPinnedHover;
+		static protected readonly Xwt.Drawing.Image starNormal;
+		static protected readonly Xwt.Drawing.Image starNormalHover;
+		static protected readonly Xwt.Drawing.Image starPinned;
+		static protected readonly Xwt.Drawing.Image starPinnedHover;
 
 		public event EventHandler PinClicked;
 
@@ -257,6 +257,32 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
+		protected virtual void DrawIcon (Cairo.Context ctx)
+		{
+			int x = Allocation.X + InternalPadding;
+			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
+			ctx.DrawImage (this, icon, x, y);
+			if (AllowPinning && (mouseOver || pinned)) {
+				Xwt.Drawing.Image star;
+				if (pinned) {
+					if (mouseOverStar)
+						star = starPinnedHover;
+					else
+						star = starPinned;
+				}
+				else {
+					if (mouseOverStar)
+						star = starNormalHover;
+					else
+						star = starNormal;
+				}
+				x = x + (int)icon.Width - (int)star.Width + 3;
+				y = y + (int)icon.Height - (int)star.Height + 3;
+				ctx.DrawImage (this, star, x, y);
+				starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
+			}
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
@@ -264,29 +290,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					DrawHoverBackground (ctx);
 
 				// Draw the icon
-
-				int x = Allocation.X + InternalPadding;
-				int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
-				ctx.DrawImage (this, icon, x, y);
-
-				if (AllowPinning && (mouseOver || pinned)) {
-					Xwt.Drawing.Image star;
-					if (pinned) {
-						if (mouseOverStar)
-							star = starPinnedHover;
-						else
-							star = starPinned;
-					} else {
-						if (mouseOverStar)
-							star = starNormalHover;
-						else
-							star = starNormal;
-					}
-					x = x + (int)icon.Width - (int)star.Width + 3;
-					y = y + (int)icon.Height - (int)star.Height + 3;
-					ctx.DrawImage (this, star, x, y);
-					starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
-				}
+				DrawIcon (ctx);
 
 				// Draw the text
 
