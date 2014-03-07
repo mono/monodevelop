@@ -237,6 +237,7 @@
     <Compile Include="Mono.TextEditor.Utils\AvlTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\FileSettingsStore.cs" />
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
+    <Compile Include="Mono.TextEditor\EditModeChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

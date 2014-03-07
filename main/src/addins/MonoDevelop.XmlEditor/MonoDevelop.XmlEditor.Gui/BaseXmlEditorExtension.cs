@@ -60,6 +60,12 @@ namespace MonoDevelop.XmlEditor.Gui
 		Gtk.TreeStore outlineTreeStore;
 
 		#region Setup and teardown
+
+		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		{
+			//can only attach if there is not already an attached BaseXmlEditorExtension
+			return doc.GetContent<BaseXmlEditorExtension> () == null;
+		}
 		
 		protected virtual RootState CreateRootState ()
 		{

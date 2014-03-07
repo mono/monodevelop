@@ -40,8 +40,7 @@ THE SOFTWARE.
 	<IndentSwitchBody>True</IndentSwitchBody>
 	<IndentCaseBody>True</IndentCaseBody>
 	<IndentBreakStatements>True</IndentBreakStatements>
-	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
-	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
+	<AlignEmbeddedStatements>True</AlignEmbeddedStatements>
 	<PropertyFormatting>AllowOneLine</PropertyFormatting>
 	<NamespaceBraceStyle>NextLine</NamespaceBraceStyle>
 	<ClassBraceStyle>NextLine</ClassBraceStyle>

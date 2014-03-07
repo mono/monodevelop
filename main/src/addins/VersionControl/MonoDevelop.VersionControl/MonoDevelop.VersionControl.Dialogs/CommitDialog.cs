@@ -48,6 +48,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		ArrayList extensions = new ArrayList ();
 		ChangeSet changeSet;
 		string oldMessage;
+		bool responseSensitive;
 
 		public CommitDialog (ChangeSet changeSet)
 		{
@@ -131,6 +132,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
+			responseSensitive = !string.IsNullOrEmpty (Message);
 			
 			// Focus the text view and move the insert point to the beginning. Makes it easier to insert
 			// a comment header.
@@ -138,11 +140,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			textview.Buffer.MoveMark (textview.Buffer.SelectionBound, textview.Buffer.StartIter);
 			textview.GrabFocus ();
 			textview.Buffer.MarkSet += OnMarkSet;
+
+			SetResponseSensitive (ResponseType.Ok, responseSensitive);
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)
 		{
-			bool allowCommit = true;
+			bool allowCommit = responseSensitive;
 			foreach (CommitDialogExtension ext in extensions)
 				allowCommit &= ext.AllowCommit;
 			SetResponseSensitive (Gtk.ResponseType.Ok, allowCommit);
@@ -152,11 +156,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 		{
 			if (type != Gtk.ResponseType.Ok) {
 				changeSet.GlobalComment = oldMessage;
-			}
+			} else if (!ButtonCommitClicked ())
+				return;
+
 			base.OnResponse (type);
 		}
 
-		protected void OnButtonCommitClicked (object sender, System.EventArgs e)
+		bool ButtonCommitClicked ()
 		{
 			// In case we have local unsaved files with changes, throw a dialog for the user.
 			System.Collections.Generic.List<Document> docList = new System.Collections.Generic.List<Document> ();
@@ -179,7 +185,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				);
 
 				if (response == AlertButton.Cancel)
-					return;
+					return false;
 
 				if (response == AlertButton.Save) {
 					// Go through all the items and save them.
@@ -191,7 +197,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 						if (item.IsDirty) {
 							MessageService.ShowMessage (GettextCatalog.GetString (
 								"Some files could not be saved. Commit operation aborted"));
-							return;
+							return false;
 						}
 				}
 
@@ -228,11 +234,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 							ext.OnEndCommit (changeSet, false);
 						} catch {}
 					}
-					return;
+					return false;
 				}
-				Hide ();
 			}
-			Respond (Gtk.ResponseType.Ok);
+			return true;
 		}
 
 		void UpdatePositionLabel (TextIter iter)
@@ -253,6 +258,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 		void OnTextChanged (object s, EventArgs args)
 		{
 			changeSet.GlobalComment = Message;
+			responseSensitive = !string.IsNullOrEmpty (Message);
+			SetResponseSensitive (ResponseType.Ok, responseSensitive);
 			UpdatePositionLabel (textview.Buffer.GetIterAtOffset (textview.Buffer.CursorPosition));
 		}
 		
