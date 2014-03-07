@@ -141,10 +141,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageListButton ()
 		{
-			starNormal = Xwt.Drawing.Image.FromResource ("star-normal.png");
-			starNormalHover = Xwt.Drawing.Image.FromResource ("star-normal-hover.png");
-			starPinned = Xwt.Drawing.Image.FromResource ("star-pinned.png");
-			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-pinned-hover.png");
+			starNormal = Xwt.Drawing.Image.FromResource ("unstar-overlay-light-16.png");
+			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-overlay-hover-light-16.png");
+			starPinned = Xwt.Drawing.Image.FromResource ("star-overlay-light-16.png");
+			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-overlay-hover-light-16.png");
 		}
 
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
-		
+
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			GdkWindow.Cursor = null;

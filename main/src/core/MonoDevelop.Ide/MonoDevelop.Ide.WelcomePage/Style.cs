@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			public const double InnerShadowOpacity = 0.4;
 			public const int InnerShadowSize = 10;
 			public static int Spacing = 20;
-			
+
 			public static class Links
 			{
 				public const string Color = "#555555";
@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				public const int BottomMargin = 24;
 				public const int IconTextSpacing = 8;
 			}
-			
+
 			public static class Pad
 			{
 				public const string TitleFontFamilyMac = "Lucida Grande";
@@ -50,21 +50,21 @@ namespace MonoDevelop.Ide.WelcomePage
 				public const string SummaryFontFamily = "Arial";
 				public const int SummaryLineHeight = 19;
 				public const int SummaryParagraphMarginTop = 8;
-				
+
 				public static class FeaturedApp
 				{
 					public const int Width = 400;
-					
+
 					public static class Preview
 					{
 						public const int VerticalMargin = 20;
 					}
 				}
-				
+
 				public static class News
 				{
 					public const int Width = 500;
-					
+
 					public static class Item
 					{
 						public const int MarginBottom = 26;
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						public const int FirstMarginTop = 18;
 					}
 				}
-				
+
 				public static class Solutions
 				{
 					public const int LargeTitleMarginBottom = 14;
@@ -90,10 +90,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 						public static class PinButton
 						{
-							public const string NormalImage = "./images/WelcomeScreen/star-normal.png";
-							public const string NormalHoverImage = "./images/WelcomeScreen/star-normal-hover.png";
-							public const string PinnedImage = "./images/WelcomeScreen/star-pinned.png";
-							public const string PinnedHoverImage = "./images/WelcomeScreen/star-pinned-hover.png";
+							public const string NormalImage = "unstar-overlay-light-16.png";
+							public const string NormalHoverImage = "unstar-overlay-hover-light-16.png";
+							public const string PinnedImage = "star-overlay-light-16.png";
+							public const string PinnedHoverImage = "star-overlay-hover-light-16.png";
 						}
 					}
 				}
