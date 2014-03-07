@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Linq;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -50,15 +52,46 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			return IsDotNetProjectSelected () || IsDotNetSolutionSelected ();
 		}
-		
+
 		protected bool IsDotNetProjectSelected ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedProject is DotNetProject;
+			return GetSelectedDotNetProject () != null;
 		}
-		
+
+		protected DotNetProject GetSelectedDotNetProject ()
+		{
+			return IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+		}
+
+		protected bool SelectedDotNetProjectHasPackages ()
+		{
+			DotNetProject project = GetSelectedDotNetProject ();
+			return (project != null) && project.HasPackages ();
+		}
+
 		protected bool IsDotNetSolutionSelected ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedSolution != null;
+		}
+
+		protected bool SelectedDotNetSolutionHasPackages ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution == null) {
+				return false;
+			}
+
+			return solution.HasAnyProjectWithPackages ();
+		}
+
+		protected bool SelectedDotNetProjectOrSolutionHasPackages ()
+		{
+			if (IsDotNetProjectSelected ()) {
+				return SelectedDotNetProjectHasPackages ();
+			} else if (IsDotNetSolutionSelected ()) {
+				return SelectedDotNetSolutionHasPackages ();
+			}
+			return false;
 		}
 
 		protected void ShowStatusBarError (ProgressMonitorStatusMessage progressMessage, Exception ex)

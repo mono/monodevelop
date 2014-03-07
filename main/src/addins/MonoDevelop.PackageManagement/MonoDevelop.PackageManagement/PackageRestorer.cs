@@ -47,9 +47,7 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (Solution solution)
 		{
 			return solution
-				.GetAllProjects ()
-				.OfType<DotNetProject> ()
-				.Where (project => project.HasPackages ())
+				.GetAllProjectsWithPackages ()
 				.Select (project => new ProjectPackageReferenceFile (project));
 		}
 

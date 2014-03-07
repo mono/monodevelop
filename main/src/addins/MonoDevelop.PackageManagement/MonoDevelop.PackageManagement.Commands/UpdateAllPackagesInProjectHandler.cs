@@ -25,10 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
-using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -60,6 +62,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
 			ShowStatusBarError (message, ex);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = SelectedDotNetProjectHasPackages ();
 		}
 	}
 }

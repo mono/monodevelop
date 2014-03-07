@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
@@ -52,6 +53,11 @@ namespace MonoDevelop.PackageManagement.Commands
 			return new UpdateAllPackagesInSolution (
 				PackageManagementServices.Solution,
 				PackageManagementServices.PackageRepositoryCache.CreateAggregateRepository ());
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
 		}
 	}
 }
