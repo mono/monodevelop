@@ -30,6 +30,7 @@ using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Linq;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.PackageManagement
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
-						monitor.ReportSuccess (progressMessage.Success);
+						eventMonitor.ReportResult (progressMessage);
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (ex);
 						monitor.Log.WriteLine (ex.Message);
@@ -75,12 +76,26 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> installPackageActions)
+		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
-			foreach (IPackageAction action in installPackageActions) {
+			foreach (IPackageAction action in packageActions) {
+				CheckForPowerShellScripts (action);
 				action.Execute ();
 				monitor.Step (1);
 			}
+		}
+
+		void CheckForPowerShellScripts (IPackageAction action)
+		{
+			if (action.HasPackageScriptsToRun ()) {
+				ReportPowerShellScriptWarning ();
+			}
+		}
+
+		void ReportPowerShellScriptWarning ()
+		{
+			string message = GettextCatalog.GetString ("Package contains PowerShell scripts which will not be run.");
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
 		}
 	}
 }

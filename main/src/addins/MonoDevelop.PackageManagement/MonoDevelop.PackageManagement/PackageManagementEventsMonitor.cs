@@ -53,7 +53,35 @@ namespace MonoDevelop.PackageManagement
 		
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
-			progressMonitor.Log.WriteLine (e.Message.ToString ());
+			if (e.Message.Level == MessageLevel.Warning) {
+				ReportWarning (e.Message.ToString ());
+			} else {
+				LogMessage (e.Message.ToString ());
+			}
+		}
+
+		void ReportWarning (string message)
+		{
+			progressMonitor.ReportWarning (message);
+			LogMessage (message);
+
+			HasWarnings = true;
+		}
+
+		void LogMessage (string message)
+		{
+			progressMonitor.Log.WriteLine (message);
+		}
+
+		public bool HasWarnings { get; private set; }
+
+		public void ReportResult (ProgressMonitorStatusMessage progressMessage)
+		{
+			if (HasWarnings) {
+				progressMonitor.ReportSuccess (progressMessage.Warning);
+			} else {
+				progressMonitor.ReportSuccess (progressMessage.Success);
+			}
 		}
 	}
 }
