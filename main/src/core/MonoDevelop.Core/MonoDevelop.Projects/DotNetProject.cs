@@ -457,7 +457,7 @@ namespace MonoDevelop.Projects
 		{
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
-				if (pr.ReferenceType == ReferenceType.Assembly) {
+				if (pr.ReferenceType == ReferenceType.Assembly && DefaultConfiguration != null) {
 					if (pr.GetReferencedFileNames (DefaultConfiguration.Selector).Any (f => f == updatedFile))
 						pr.NotifyStatusChanged ();
 				} else if (pr.HintPath == updatedFile) {
@@ -767,10 +767,21 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
+			bool noStdLib = false;
+			if (config != null) {
+				var parameters = config.CompilationParameters as DotNetConfigurationParameters;
+				if (parameters != null) {
+					noStdLib = parameters.NoStdLib;
+				}
+			}
+
 			// System.Core is an implicit reference
-			var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
-			if (sa != null)
-				yield return sa.Location;
+			if (!noStdLib) {
+				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
+				if (sa != null)
+					yield return sa.Location;
+			}
 		}
 
 		protected internal override void OnSave (IProgressMonitor monitor)
@@ -1212,6 +1223,34 @@ namespace MonoDevelop.Projects
 				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 			}
+		}
+
+		public void AddImportIfMissing (string name, string condition)
+		{
+			importsAdded.Add (name);
+		}
+
+		public void RemoveImport (string name)
+		{
+			importsRemoved.Add (name);
+		}
+
+		List <string> importsAdded = new List<string> ();
+
+		internal IList<string> ImportsAdded {
+			get { return importsAdded; }
+		}
+
+		List <string> importsRemoved = new List<string> ();
+
+		internal IList<string> ImportsRemoved {
+			get { return importsRemoved; }
+		}
+
+		public void ImportsSaved ()
+		{
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
 		}
 	}
 }

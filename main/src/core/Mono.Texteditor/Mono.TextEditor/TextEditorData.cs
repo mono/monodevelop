@@ -79,8 +79,21 @@ namespace Mono.TextEditor
 				currentMode.AddedToEditor (this);
 				if (oldMode != null)
 					oldMode.RemovedFromEditor (this);
+				OnEditModeChanged (new EditModeChangedEventArgs (oldMode, currentMode));
 			}
 		}
+
+		protected virtual void OnEditModeChanged (EditModeChangedEventArgs e)
+		{
+			var handler = EditModeChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		/// <summary>
+		/// Occurs when the edit mode changed.
+		/// </summary>
+		public event EventHandler<EditModeChangedEventArgs> EditModeChanged;
 		
 		public TextEditor Parent {
 			get;

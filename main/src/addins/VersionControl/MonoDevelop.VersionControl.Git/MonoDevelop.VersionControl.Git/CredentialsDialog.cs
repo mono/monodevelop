@@ -114,7 +114,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
 		{
 			singleYesNoCred.SetValue (false);
-			Respond (ResponseType.Ok);
+			Respond (ResponseType.Cancel);
 		}
 	}
 }

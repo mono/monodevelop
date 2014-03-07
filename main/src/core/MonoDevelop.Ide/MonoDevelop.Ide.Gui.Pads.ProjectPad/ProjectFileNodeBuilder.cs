@@ -117,8 +117,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			if (otherNode.DataItem is ProjectFolder)
 				return 1;
-			else
+
+			if (!(thisNode.DataItem is ProjectFile))
 				return DefaultSort;
+			if (!(otherNode.DataItem is ProjectFile))
+				return DefaultSort;
+
+			string name1 = thisNode.NodeName;
+			string name2 = otherNode.NodeName;
+
+			//Compare filenames without extension
+			string path1 = System.IO.Path.GetFileNameWithoutExtension (name1);
+			string path2 = System.IO.Path.GetFileNameWithoutExtension (name2);
+			int cmp = string.Compare (path1, path2, true);
+			if (cmp != 0)
+				return cmp;
+			//Compare extensions
+			string ext1 = System.IO.Path.GetExtension (name1);
+			string ext2 = System.IO.Path.GetExtension (name2);
+			return string.Compare (ext1, ext2, true);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

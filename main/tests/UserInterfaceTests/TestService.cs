@@ -46,6 +46,7 @@ namespace UserInterfaceTests
 				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
 			});
 
+			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
 			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
 		}
 

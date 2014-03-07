@@ -114,7 +114,12 @@
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
 					macShortcut = "Control|Alt|space" />
-					
+
+		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ExportRules"
+					defaultHandler = "MonoDevelop.AnalysisCore.ExportRulesHandler"
+					_label = "Export C# Code Rules to a File" 
+					_description = "Generates an HTML file that contains a list of all code rules"
+					/>
 		</Category>
 	</Extension>
 	
@@ -158,7 +163,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
 		<Section id = "C#" _label = "C#">
-			<Section id = "Inspection" _label = "Code Rules" fill="true"
+			<Section id = "CodeIssuePanel" _label = "Code Rules" fill="true"
 				class="MonoDevelop.CodeIssues.CodeIssuePanel"/>
 			<Section id = "CodeActions" _label = "Code Actions" fill="true"
 				icon="md-text-quickfix" 

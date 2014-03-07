@@ -117,9 +117,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			return true;
 		}
 
-		public static string FormatText (string fontFace, int fontSize, bool bold, string color, string text)
+		public static string FormatText (string fontFace, int fontSize, Pango.Weight weight, string color, string text)
 		{
-			var format = Styles.GetFormatString (fontFace, fontSize, color, bold);
+			var format = Styles.GetFormatString (fontFace, fontSize, color, weight);
 			return string.Format (format, GLib.Markup.EscapeText (text));
 		}
 

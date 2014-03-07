@@ -552,8 +552,7 @@ class Test {
 }
 ");
 
-			AddOption (indentOptions, category, "AlignEmbeddedIfStatements", GettextCatalog.GetString ("Align embedded 'if' statements"), "class AClass { void AMethod () { if (a) if (b) { int c; } } } ");
-			AddOption (indentOptions, category, "AlignEmbeddedUsingStatements", GettextCatalog.GetString ("Align embedded 'using' statements"), "class AClass { void AMethod () {using (IDisposable a = null) using (IDisposable b = null) { int c; } } }");
+			AddOption (indentOptions, category, "AlignEmbeddedStatements", GettextCatalog.GetString ("Align embedded statements"), "class AClass { void AMethod () { if (a) if (b) { int c; } } } ");
 			treeviewIndentOptions.ExpandAll ();
 			#endregion
 			

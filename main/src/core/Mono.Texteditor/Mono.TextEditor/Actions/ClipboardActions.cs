@@ -75,7 +75,7 @@ namespace Mono.TextEditor
 			public static readonly Gdk.Atom CLIPBOARD_ATOM        = Gdk.Atom.Intern ("CLIPBOARD", false);
 			public static readonly Gdk.Atom PRIMARYCLIPBOARD_ATOM = Gdk.Atom.Intern ("PRIMARY", false);
 			public static readonly Gdk.Atom RTF_ATOM;
-			public static readonly Gdk.Atom MD_ATOM  = Gdk.Atom.Intern ("text/monotext", false);
+			public static readonly Gdk.Atom MD_ATOM  = Gdk.Atom.Intern ("MD_CLIPBOARD_FORMAT", false);
 			public static readonly Gdk.Atom HTML_ATOM;
 
 			public CopyOperation ()	
@@ -289,7 +289,8 @@ namespace Mono.TextEditor
 				clipboard.RequestContents (CopyOperation.MD_ATOM, delegate(Clipboard clp, SelectionData selectionData) {
 					if (selectionData.Length > 0) {
 						byte[] selBytes = selectionData.Data;
-						byte[] copyData = new byte[selBytes[1]];
+						var upperBound = System.Math.Max (0, System.Math.Min (selBytes [1], selBytes.Length - 2));
+						byte[] copyData = new byte[upperBound];
 						Array.Copy (selBytes, 2, copyData, 0, copyData.Length);
 						var rawTextOffset = 1 + 1 + copyData.Length;
 						string text = Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);

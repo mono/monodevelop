@@ -44,9 +44,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		bool destroyed;
 		Gtk.VBox box;
 		
-		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5): base (title)
+		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5, int spacing = Styles.WelcomeScreen.Pad.News.Item.MarginBottom): base (title)
 		{
-			box = new VBox (false, Styles.WelcomeScreen.Pad.News.Item.MarginBottom);
+			box = new VBox (false, spacing);
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
 			if (string.IsNullOrEmpty (id))
@@ -77,7 +77,12 @@ namespace MonoDevelop.Ide.WelcomePage
 				yield return new WelcomePageFeedItem (child);
 			}
 		}
-		
+
+		protected virtual void AddNewsItem (VBox box, Gtk.Widget newsItem)
+		{
+			box.PackStart (newsItem, true, false, 0);
+		}
+
 		void LoadNews ()
 		{
 			//can get called from async handler
@@ -93,10 +98,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				var news = GetNewsXml ();
 				if (news.FirstNode == null) {
 					var label = new Label (GettextCatalog.GetString ("No news found.")) { Xalign = 0, Xpad = 6 };
+
 					box.PackStart (label, true, false, 0);
 				} else {
 					foreach (var child in OnLoadNews (news).Take (limit))
-						box.PackStart (child, true, false, 0);
+						AddNewsItem (box, child);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Error loading news feed.", ex);

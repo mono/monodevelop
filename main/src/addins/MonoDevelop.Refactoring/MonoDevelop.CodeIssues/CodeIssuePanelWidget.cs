@@ -42,10 +42,25 @@ namespace MonoDevelop.CodeIssues
 	class CodeIssuePanel : OptionsPanel
 	{
 		CodeIssuePanelWidget widget;
+
+		public CodeIssuePanelWidget Widget {
+			get {
+				EnsureWidget ();
+				return widget;
+			}
+		}
+
+		void EnsureWidget ()
+		{
+			if (widget != null)
+				return;
+			widget = new CodeIssuePanelWidget ("text/x-csharp");
+		}
 		
 		public override Widget CreatePanelWidget ()
 		{
-			return widget = new CodeIssuePanelWidget ("text/x-csharp");
+			EnsureWidget ();
+			return widget;
 		}
 		
 		public override void ApplyChanges ()
@@ -73,6 +88,35 @@ namespace MonoDevelop.CodeIssues
 					}
 				}
 			}
+		}
+
+		public void SelectCodeIssue (string idString)
+		{
+			TreeIter iter;
+			if (!treeStore.GetIterFirst (out iter))
+				return;
+			SelectCodeIssue (idString, iter);
+		}
+
+		bool SelectCodeIssue (string idString, TreeIter iter)
+		{
+			do {
+				var provider = treeStore.GetValue (iter, 1) as BaseCodeIssueProvider; 
+				if (provider != null && provider.IdString == idString) {
+					treeviewInspections.ExpandToPath (treeStore.GetPath (iter));
+					treeviewInspections.Selection.SelectIter (iter);
+					return true;
+				}
+
+				TreeIter childIterator;
+				if (treeStore.IterChildren (out childIterator, iter)) {
+					do {
+						if (SelectCodeIssue (idString, childIterator))
+							return true;
+					} while (treeStore.IterNext (ref childIterator));
+				}
+			} while (treeStore.IterNext (ref iter));
+			return false;
 		}
 
 		static string GetDescription (Severity severity)

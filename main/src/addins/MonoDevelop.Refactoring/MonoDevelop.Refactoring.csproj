@@ -104,8 +104,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueOptionsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssueOptionsDialog.cs" />
     <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />

@@ -29,10 +29,10 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.PackageManagement
 {
-	//TODO use UI thread.
 	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
 		IPackageManagementEvents unsafeEvents;
@@ -51,6 +51,7 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackagesUpdated += RaiseParentPackagesUpdatedEventIfHasSubscribers;
+			unsafeEvents.ResolveFileConflict += RaiseResolveFileConflictEventIfHasSubscribers;
 		}
 		
 		public void Dispose()
@@ -65,12 +66,13 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackagesUpdated -= RaiseParentPackagesUpdatedEventIfHasSubscribers;
+			unsafeEvents.ResolveFileConflict -= RaiseResolveFileConflictEventIfHasSubscribers;
 		}
 		
 		void RaisePackageOperationStartingEventIfHasSubscribers(object sender, EventArgs e)
 		{
 			if (PackageOperationsStarting != null) {
-				RaisePackageOperationStartingEvent(sender, e);
+				DispatchService.GuiSyncDispatch (() => RaisePackageOperationStartingEvent (sender, e));
 			}
 		}
 		
@@ -84,14 +86,14 @@ namespace ICSharpCode.PackageManagement
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				RaisePackageOperationErrorEvent(sender, e);
+				DispatchService.GuiSyncDispatch (() => RaisePackageOperationErrorEvent(sender, e));
 			}
 		}
 		
 		void RaisePackageOperationErrorEvent(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				PackageOperationError(sender, e);
+				DispatchService.GuiSyncDispatch (() => PackageOperationError(sender, e));
 			}
 		}
 		
@@ -100,7 +102,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageInstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageInstalled != null) {
-				RaiseParentPackageInstalledEvent(sender, e);
+				DispatchService.GuiSyncDispatch (() => RaiseParentPackageInstalledEvent(sender, e));
 			}
 		}
 		
@@ -114,7 +116,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageUninstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageUninstalled != null) {
-				RaiseParentPackageUninstalledEvent(sender, e);
+				DispatchService.GuiSyncDispatch (() => RaiseParentPackageUninstalledEvent(sender, e));
 			}
 		}
 		
@@ -175,14 +177,18 @@ namespace ICSharpCode.PackageManagement
 			return unsafeEvents.OnSelectProjects(selectedProjects);
 		}
 		
-		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict {
-			add { unsafeEvents.ResolveFileConflict += value; }
-			remove { unsafeEvents.ResolveFileConflict -= value; }
-		}
+		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		
 		public FileConflictResolution OnResolveFileConflict(string message)
 		{
 			return unsafeEvents.OnResolveFileConflict(message);
+		}
+
+		void RaiseResolveFileConflictEventIfHasSubscribers (object sender, ResolveFileConflictEventArgs e)
+		{
+			if (ResolveFileConflict != null) {
+				DispatchService.GuiSyncDispatch (() => ResolveFileConflict (sender, e));
+			}
 		}
 		
 		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
@@ -195,7 +201,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackagesUpdatedEventIfHasSubscribers(object sender, ParentPackagesOperationEventArgs e)
 		{
 			if (ParentPackagesUpdated != null) {
-				RaiseParentPackagesUpdatedEvent(sender, e);
+				DispatchService.GuiSyncDispatch (() => RaiseParentPackagesUpdatedEvent(sender, e));
 			}
 		}
 		
@@ -204,10 +210,14 @@ namespace ICSharpCode.PackageManagement
 			ParentPackagesUpdated(sender, e);
 		}
 
-		public event EventHandler PackagesRestored;
+		public event EventHandler PackagesRestored {
+			add { unsafeEvents.PackagesRestored += value; }
+			remove { unsafeEvents.PackagesRestored -= value; }
+		}
 
 		public void OnPackagesRestored()
 		{
+			unsafeEvents.OnPackagesRestored ();
 		}
 	}
 }

@@ -53,7 +53,17 @@ namespace MonoDevelop.VersionControl.Git
 			
 			listBranches.AppendColumn (GettextCatalog.GetString ("Branch"), new CellRendererText (), "markup", 1);
 			listBranches.AppendColumn (GettextCatalog.GetString ("Tracking"), new CellRendererText (), "text", 2);
-			
+
+			listBranches.Selection.Changed += delegate {
+				TreeIter it;
+				if (!listBranches.Selection.GetSelected (out it))
+					return;
+
+				string currentBranch = repo.GetCurrentBranch ();
+				var b = (Branch) storeBranches.GetValue (it, 0);
+				buttonRemoveBranch.Sensitive = b.Name != currentBranch;
+			};
+
 			// Sources tree
 			
 			storeRemotes = new TreeStore (typeof(RemoteSource), typeof(string), typeof(string), typeof(string), typeof(string));
@@ -113,13 +123,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		void FillTags ()
 		{
-			TreeViewState state = new TreeViewState (listTags, 1);
-			state.Save ();
 			storeTags.Clear ();
 			foreach (string tag in repo.GetTags ()) {
 				storeTags.AppendValues (tag);
 			}
-			state.Load ();
 		}
 		
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
@@ -284,10 +291,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected void OnButtonNewTagClicked (object sender, EventArgs e)
 		{
-			// Create dialog with revisions of current branch.
-			// Select revision to tag at.
-			// Create tag.
-
 			using (var dlg = new GitSelectRevisionDialog (repo)) {
 				if (dlg.Run () != Xwt.Command.Ok)
 					return;

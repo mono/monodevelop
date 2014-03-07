@@ -176,7 +176,11 @@ namespace ICSharpCode.PackageManagement
 		public Uri IconUrl {
 			get { return package.IconUrl; }
 		}
-		
+
+		public bool HasIconUrl {
+			get { return IconUrl != null; }
+		}
+
 		public string Summary {
 			get { return package.SummaryOrDescription(); }
 		}
@@ -556,5 +560,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return selectedProjects.HasOlderPackageInstalled (package);
 		}
+
+		public bool IsChecked { get; set; }
 	}
 }

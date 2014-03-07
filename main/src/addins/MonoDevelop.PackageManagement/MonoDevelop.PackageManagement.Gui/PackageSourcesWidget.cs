@@ -19,8 +19,7 @@ namespace MonoDevelop.PackageManagement
 		ListStore packageSourcesStore;
 		const int IsEnabledCheckBoxColumn = 0;
 		const int PackageSourceIconColumn = 1;
-		const int PackageSourceDescriptionColumn = 2;
-		const int PackageSourceViewModelColumn = 3;
+		const int PackageSourceViewModelColumn = 2;
 		
 		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel)
 		{
@@ -34,31 +33,32 @@ namespace MonoDevelop.PackageManagement
 
 		void AddEventHandlers ()
 		{
-			this.moveUpButton.Clicked += MoveUpButtonClicked;
-			this.moveDownButton.Clicked += MoveDownButtonClicked;
 			this.removeButton.Clicked += RemoveButtonClicked;
 			this.addButton.Clicked += AddButtonClicked;
 
 			this.viewModel.PackageSourceViewModels.CollectionChanged += PackageSourceViewModelsCollectionChanged;
-			this.viewModel.SelectedPackageSourceUpdated += SelectedPackageSourceUpdated;
+			this.viewModel.PackageSourceChanged += PackageSourceChanged;
 		}
 
 		public override void Dispose ()
 		{
 			this.viewModel.PackageSourceViewModels.CollectionChanged -= PackageSourceViewModelsCollectionChanged;
-			this.viewModel.SelectedPackageSourceUpdated -= SelectedPackageSourceUpdated;
+			this.viewModel.PackageSourceChanged -= PackageSourceChanged;
+			this.viewModel.Dispose ();
 			base.Dispose ();
 		}
 		
 		void InitializeTreeView ()
 		{
-			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (string), typeof (PackageSourceViewModel));
+			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
 			packageSourcesTreeView.RowActivated += PackageSourcesTreeViewRowActivated;
+			packageSourcesTreeView.Reorderable = true;
+			packageSourcesTreeView.DragEnd += PackageSourcesTreeViewDragEnded;
 		}
-		
+
 		TreeViewColumn CreateTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
@@ -74,11 +74,11 @@ namespace MonoDevelop.PackageManagement
 			column.PackStart (iconRenderer, false);
 			column.AddAttribute (iconRenderer, "icon-id", PackageSourceIconColumn);
 
-			var textRenderer = new CellRendererText ();
-			textRenderer.Mode = CellRendererMode.Activatable;
-			column.PackStart (textRenderer, true);
-			column.AddAttribute (textRenderer, "markup", PackageSourceDescriptionColumn);
-			
+			var packageSourceRenderer = new PackageSourceCellRenderer ();
+			packageSourceRenderer.Mode = CellRendererMode.Activatable;
+			column.PackStart (packageSourceRenderer, true);
+			column.AddAttribute (packageSourceRenderer, "package-source", PackageSourceViewModelColumn);
+
 			return column;
 		}
 		
@@ -99,14 +99,7 @@ namespace MonoDevelop.PackageManagement
 			packageSourcesStore.AppendValues (
 				packageSourceViewModel.IsEnabled,
 				new IconId ("md-nuget-package-source"),
-				GetPackageSourceDescriptionMarkup (packageSourceViewModel),
 				packageSourceViewModel);
-		}
-		
-		string GetPackageSourceDescriptionMarkup (PackageSourceViewModel packageSourceViewModel)
-		{
-			string format = "<b>{0}</b>\n<span foreground='grey'>{1}</span>";
-			return MarkupString.Format (format, packageSourceViewModel.Name, packageSourceViewModel.SourceUrl);
 		}
 		
 		void PackageSourceCheckBoxToggled (object o, ToggledArgs args)
@@ -140,8 +133,6 @@ namespace MonoDevelop.PackageManagement
 		
 		void UpdateEnabledButtons ()
 		{
-			this.moveUpButton.Sensitive = viewModel.CanMovePackageSourceUp;
-			this.moveDownButton.Sensitive= viewModel.CanMovePackageSourceDown;
 			this.removeButton.Sensitive = viewModel.CanRemovePackageSource;
 		}
 		
@@ -211,18 +202,6 @@ namespace MonoDevelop.PackageManagement
 			return foundIter;
 		}
 		
-		void MoveUpButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.MovePackageSourceUp ();
-			UpdateEnabledButtons ();
-		}
-		
-		void MoveDownButtonClicked (object sender, EventArgs e)
-		{
-			viewModel.MovePackageSourceDown ();
-			UpdateEnabledButtons ();
-		}
-		
 		void RemoveButtonClicked (object sender, EventArgs e)
 		{
 			viewModel.RemovePackageSource ();
@@ -247,15 +226,32 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void SelectedPackageSourceUpdated (object sender, EventArgs e)
+		void PackageSourcesTreeViewDragEnded (object o, DragEndArgs args)
 		{
-			TreeIter iter;
-			if (packageSourcesTreeView.Selection.GetSelected (out iter)) {
-				packageSourcesStore.SetValue (
-					iter,
-					PackageSourceDescriptionColumn,
-					GetPackageSourceDescriptionMarkup (viewModel.SelectedPackageSourceViewModel));
-			}
+			HasPackageSourcesOrderChanged = true;
+		}
+
+		public bool HasPackageSourcesOrderChanged { get; private set; }
+
+		public IEnumerable<PackageSourceViewModel> GetOrderedPackageSources ()
+		{
+			var packageSourceViewModels = new List<PackageSourceViewModel> ();
+			packageSourcesStore.Foreach ((model, path, iter) => {
+				var currentViewModel = model.GetValue (iter, PackageSourceViewModelColumn) as PackageSourceViewModel;
+				packageSourceViewModels.Add (currentViewModel);
+				return false;
+			});
+
+			return packageSourceViewModels;
+		}
+
+		void PackageSourceChanged (object sender, PackageSourceViewModelChangedEventArgs e)
+		{
+			TreeIter iter = GetTreeIter (e.PackageSource);
+			packageSourcesStore.SetValue (
+				iter,
+				PackageSourceViewModelColumn,
+				e.PackageSource);
 		}
 	}
 }

@@ -125,7 +125,7 @@ namespace MonoDevelop.PackageManagement
 			DispatchService.GuiDispatch (() => {
 				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (solution != null) {
-					foreach (DotNetProject project in solution.GetAllProjects ().OfType<DotNetProject> ()) {
+					foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 						project.RefreshReferenceStatus ();
 					}
 				}

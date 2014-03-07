@@ -41,6 +41,9 @@ using MonoDevelop.CodeIssues;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
 using System.Threading;
+using System.IO;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -48,7 +51,8 @@ namespace MonoDevelop.AnalysisCore
 	{
 		FixOperations,
 		ShowFixes,
-		QuickFix
+		QuickFix,
+		ExportRules
 	}
 	
 	class ShowFixesHandler : CommandHandler
@@ -267,6 +271,71 @@ namespace MonoDevelop.AnalysisCore
 				return Ide.Gui.Stock.Information;
 			default:
 				return null;
+			}
+		}
+	}
+
+	class ExportRulesHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var lang = "text/x-csharp";
+
+			OpenFileDialog dlg = new OpenFileDialog ("Export Rules", FileChooserAction.Save);
+			dlg.InitialFileName = "rules.html";
+			if (!dlg.Run ())
+				return;
+
+			Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
+
+			foreach (var node in RefactoringService.GetInspectors (lang)) {
+				severities [node] = node.GetSeverity ();
+				if (node.HasSubIssues) {
+					foreach (var subIssue in node.SubIssues) {
+						severities [subIssue] = subIssue.GetSeverity ();
+					}
+				}
+			}
+
+			var grouped = severities.Keys.OfType<CodeIssueProvider> ()
+				.GroupBy (node => node.Category)
+				.OrderBy (g => g.Key, StringComparer.Ordinal);
+
+			using (var sw = new StreamWriter (dlg.SelectedFile)) {
+				sw.WriteLine ("<h1>Code Rules</h1>");
+				foreach (var g in grouped) {
+					sw.WriteLine ("<h2>" + g.Key + "</h2>");
+					sw.WriteLine ("<table border='1'>");
+
+					foreach (var node in g.OrderBy (n => n.Title, StringComparer.Ordinal)) {
+						var title = node.Title;
+						var desc = node.Description != title ? node.Description : "";
+						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.GetSeverity () + "</td></tr>");
+						if (node.HasSubIssues) {
+							foreach (var subIssue in node.SubIssues) {
+								title = subIssue.Title;
+								desc = subIssue.Description != title ? subIssue.Description : "";
+								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + subIssue.GetSeverity () + "</td></tr>");
+							}
+						}
+					}
+					sw.WriteLine ("</table>");
+				}
+
+				Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
+				string disabledNodes = PropertyService.Get ("ContextActions." + lang, "");
+				foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == lang)) {
+					providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
+				}
+
+				sw.WriteLine ("<h1>Code Actions</h1>");
+				sw.WriteLine ("<table border='1'>");
+				var sortedAndFiltered = providerStates.Keys.OrderBy (n => n.Title, StringComparer.Ordinal);
+				foreach (var node in sortedAndFiltered) {
+					var desc = node.Title != node.Description ? node.Description : "";
+					sw.WriteLine ("<tr><td>" + node.Title + "</td><td>" + desc + "</td></tr>");
+				}
+				sw.WriteLine ("</table>");
 			}
 		}
 	}

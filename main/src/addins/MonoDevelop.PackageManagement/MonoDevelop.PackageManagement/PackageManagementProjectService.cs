@@ -57,11 +57,6 @@ namespace ICSharpCode.PackageManagement
 			return new Project[0];
 		}
 		
-		public void Save(Project project)
-		{
-			project.Save();
-		}
-		
 		public void Save(Solution solution)
 		{
 			solution.Save();

@@ -48,7 +48,12 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public override string OptionsTitle { get { return GetTitle (Inspector); } }
 		public override void ShowResultOptionsDialog ()
 		{
-			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (Inspector), MessageService.RootWindow);
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "CodeIssuePanel", dialog => {
+				var panel = dialog.GetPanel<CodeIssuePanel> ("CodeIssuePanel");
+				if (panel == null)
+					return;
+				panel.Widget.SelectCodeIssue (Inspector.IdString);
+			});
 		}
 
 		public static string GetTitle (BaseCodeIssueProvider inspector)

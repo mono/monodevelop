@@ -5,35 +5,65 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class SelectRepositoryDialog
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Notebook notebook;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.ComboBox repCombo;
+		
 		private global::Gtk.HSeparator hseparator1;
+		
 		private global::Gtk.EventBox repoContainer;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TreeView repoTree;
+		
 		private global::Gtk.VButtonBox vbuttonbox1;
+		
 		private global::Gtk.Button buttonAdd;
+		
 		private global::Gtk.Button buttonRemove;
+		
 		private global::Gtk.Button buttonEdit;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.HBox boxFolder;
+		
 		private global::Gtk.Entry entryFolder;
+		
 		private global::Gtk.Button buttonBrowse;
+		
 		private global::Gtk.HBox boxMessage;
+		
 		private global::Gtk.Entry entryMessage;
+		
 		private global::Gtk.Entry entryName;
+		
 		private global::Gtk.Label label5;
+		
 		private global::Gtk.Label labelMessage;
+		
 		private global::Gtk.Label labelName;
+		
 		private global::Gtk.Label labelRepository;
+		
 		private global::Gtk.Label labelTargetDir;
+		
 		private global::Gtk.Button button559;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()

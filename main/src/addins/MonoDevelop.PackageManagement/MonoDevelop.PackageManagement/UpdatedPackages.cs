@@ -84,7 +84,7 @@ namespace ICSharpCode.PackageManagement
 			List<IPackage> packages = localPackages.ToList();
 			if (packages.Any()) {
 				packages.Sort(PackageComparer.Version);
-				return packages.Distinct(PackageEqualityComparer.Id).ToList();
+				return packages.Distinct<IPackage>(PackageEqualityComparer.Id).ToList();
 			}
 			return packages;
 		}

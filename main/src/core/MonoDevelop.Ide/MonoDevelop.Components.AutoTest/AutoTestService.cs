@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Components.Commands;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Collections;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
 

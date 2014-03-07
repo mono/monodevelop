@@ -38,15 +38,15 @@ namespace UserInterfaceTests
 		[Test]
 		public void OpenEditCompile ()
 		{
-			var slnFile = IdeApi.OpenTestSolution ("ConsoleApp-VS2010/ConsoleApplication.sln");
+			var slnFile = Ide.OpenTestSolution ("ConsoleApp-VS2010/ConsoleApplication.sln");
 			var slnDir = slnFile.ParentDirectory;
 
 			var exe = slnDir.Combine ("bin", "Debug", "ConsoleApplication.exe");
 			Assert.IsFalse (File.Exists (exe));
 
-			IdeApi.OpenFile (slnFile.ParentDirectory.Combine ("Program.cs"));
+			Ide.OpenFile (slnFile.ParentDirectory.Combine ("Program.cs"));
 
-			IdeApi.BuildSolution ();
+			Ide.BuildSolution ();
 			AssertExeHasOutput (exe, "");
 
 			//select text editor, move down 10 lines, and insert a statement
@@ -56,10 +56,10 @@ namespace UserInterfaceTests
 			Session.ExecuteCommand (TextEditorCommands.LineEnd);
 			Session.TypeText ("\nConsole.WriteLine (\"Hello World!\");");
 
-			IdeApi.BuildSolution ();
+			Ide.BuildSolution ();
 			AssertExeHasOutput (exe, "Hello World!");
 
-			IdeApi.CloseAll ();
+			Ide.CloseAll ();
 		}
 
 		void AssertExeHasOutput (string exe, string expectedOutput)
@@ -70,6 +70,22 @@ namespace UserInterfaceTests
 			string output = sw.ToString ();
 
 			Assert.AreEqual (expectedOutput, output.Trim ());
+		}
+
+		[Test]
+		public void CreateBuildProject ()
+		{
+			string projectName = "TestFoo";
+			string projectCategory = "C#";
+			string projectKind = "Console Project";
+
+			var projectDirectory = Util.CreateTmpDir (projectName);
+
+			Ide.CreateProject (projectName, projectCategory, projectKind, projectDirectory);
+
+			Ide.BuildSolution ();
+
+			Ide.CloseAll ();
 		}
 	}
 }

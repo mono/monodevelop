@@ -47,7 +47,23 @@ namespace MonoDevelop.Ide.WelcomePage
 		public string Color { get; set; }
 		public int FontSize { get; set; }
 		protected string Text { get; set; }
-		protected bool Bold { get; set; }
+		protected Pango.Weight FontWeight { get; set; }
+		protected bool Bold { 
+			get { return FontWeight == Pango.Weight.Bold; }
+			set { FontWeight = value ? Pango.Weight.Bold : Pango.Weight.Normal; }
+		}
+		HBox box = new HBox ();
+
+		public int IconTextSpacing {
+			get { return box.Spacing; }
+			set { box.Spacing = value; }
+		}
+
+		public bool MouseOver {
+			get {
+				return mouseOver;
+			}
+		}
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
@@ -64,10 +80,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
-			HBox box = new HBox ();
-			box.Spacing = Styles.WelcomeScreen.Links.IconTextSpacing;
+			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
-			label = new Label ();
+			label = CreateLabel ();
 			imageWidget = image.ToGtkWidget ();
 			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)
@@ -79,6 +94,11 @@ namespace MonoDevelop.Ide.WelcomePage
 			Update ();
 
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
+		}
+
+		protected virtual Label CreateLabel ()
+		{
+			return new Label ();
 		}
 
 		protected void SetImage (Xwt.Drawing.Image normal, Xwt.Drawing.Image hover)
@@ -132,7 +152,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (imageNormal != null)
 				image.Image = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
-			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, Bold, color, Text);
+			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, FontWeight, color, Text);
 		}
 	}
 }

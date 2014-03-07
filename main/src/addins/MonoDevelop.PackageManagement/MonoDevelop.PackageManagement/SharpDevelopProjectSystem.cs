@@ -32,6 +32,7 @@ using System.IO;
 using System.Runtime.Versioning;
 
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
@@ -69,7 +70,9 @@ namespace ICSharpCode.PackageManagement
 		public bool IsBindingRedirectSupported { get; set; }
 		
 		public FrameworkName TargetFramework {
-			get { return GetTargetFramework(); }
+			get {
+				return GuiSyncDispatch (() => GetTargetFramework ());
+			}
 		}
 		
 		FrameworkName GetTargetFramework()
@@ -81,18 +84,24 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public string ProjectName {
-			get { return project.Name; }
+			get {
+				return GuiSyncDispatch (() => project.Name);
+			}
 		}
 		
 		public dynamic GetPropertyValue(string propertyName)
 		{
-			return project.GetEvaluatedProperty(propertyName);
+			return GuiSyncDispatch (() => {
+				return project.GetEvaluatedProperty (propertyName);
+			});
 		}
 		
 		public void AddReference(string referencePath, Stream stream)
 		{
-			ProjectReference assemblyReference = CreateReference(referencePath);
-			AddReferenceToProject(assemblyReference);
+			GuiSyncDispatch (() => {
+				ProjectReference assemblyReference = CreateReference (referencePath);
+				AddReferenceToProject (assemblyReference);
+			});
 		}
 		
 		ProjectReference CreateReference(string referencePath)
@@ -103,8 +112,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void AddReferenceToProject(ProjectReference assemblyReference)
 		{
-			project.References.Add(assemblyReference);
-			projectService.Save(project);
+			project.References.Add (assemblyReference);
+			project.Save ();
 			LogAddedReferenceToProject(assemblyReference);
 		}
 		
@@ -125,11 +134,13 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool ReferenceExists(string name)
 		{
-			ProjectReference referenceProjectItem = FindReference(name);
-			if (referenceProjectItem != null) {
-				return true;
-			}
-			return false;
+			return GuiSyncDispatch (() => {
+				ProjectReference referenceProjectItem = FindReference (name);
+				if (referenceProjectItem != null) {
+					return true;
+				}
+				return false;
+			});
 		}
 		
 		ProjectReference FindReference(string name)
@@ -179,12 +190,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveReference(string name)
 		{
-			ProjectReference referenceProjectItem = FindReference(name);
-			if (referenceProjectItem != null) {
-				project.References.Remove(referenceProjectItem);
-				projectService.Save(project);
-				LogRemovedReferenceFromProject(referenceProjectItem);
-			}
+			GuiSyncDispatch (() => {
+				ProjectReference referenceProjectItem = FindReference (name);
+				if (referenceProjectItem != null) {
+					project.References.Remove (referenceProjectItem);
+					project.Save ();
+					LogRemovedReferenceFromProject (referenceProjectItem);
+				}
+			});
 		}
 		
 		void LogRemovedReferenceFromProject(ProjectReference referenceProjectItem)
@@ -199,10 +212,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool IsSupportedFile(string path)
 		{
-			if (project.IsWebProject()) {
-				return !IsAppConfigFile(path);
-			}
-			return !IsWebConfigFile(path);
+			return GuiSyncDispatch (() => {
+				if (project.IsWebProject ()) {
+					return !IsAppConfigFile (path);
+				}
+				return !IsWebConfigFile (path);
+			});
 		}
 		
 		bool IsWebConfigFile(string path)
@@ -224,7 +239,7 @@ namespace ICSharpCode.PackageManagement
 		public override void AddFile(string path, Stream stream)
 		{
 			PhysicalFileSystemAddFile(path, stream);
-			AddFileToProject(path);
+			GuiSyncDispatch (() => AddFileToProject (path));
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
@@ -235,7 +250,7 @@ namespace ICSharpCode.PackageManagement
 		public override void AddFile(string path, Action<Stream> writeToStream)
 		{
 			base.AddFile(path, writeToStream);
-			AddFileToProject(path);
+			GuiSyncDispatch (() => AddFileToProject (path));
 		}
 		
 		void AddFileToProject(string path)
@@ -260,14 +275,16 @@ namespace ICSharpCode.PackageManagement
 		public bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
-			return project.IsFileInProject(fullPath);
+			return GuiSyncDispatch (() => {
+				return project.IsFileInProject (fullPath);
+			});
 		}
 		
 		void AddFileProjectItemToProject(string path)
 		{
-			ProjectFile fileItem = CreateFileProjectItem(path);
-			project.AddFile(fileItem);
-			projectService.Save(project);
+			ProjectFile fileItem = CreateFileProjectItem (path);
+			project.AddFile (fileItem);
+			project.Save ();
 		}
 		
 		ProjectFile CreateFileProjectItem(string path)
@@ -292,19 +309,23 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void DeleteDirectory(string path, bool recursive)
 		{
-			string directory = GetFullPath(path);
-			fileService.RemoveDirectory(directory);
-			projectService.Save(project);
-			LogDeletedDirectory(path);
+			GuiSyncDispatch (() => {
+				string directory = GetFullPath (path);
+				fileService.RemoveDirectory (directory);
+				project.Save ();
+				LogDeletedDirectory (path);
+			});
 		}
 		
 		public override void DeleteFile(string path)
 		{
-			string fileName = GetFullPath(path);
-			project.Files.Remove(fileName);
-			fileService.RemoveFile(fileName);
-			projectService.Save(project);
-			LogDeletedFileInfo(path);
+			GuiSyncDispatch (() => {
+				string fileName = GetFullPath (path);
+				project.Files.Remove (fileName);
+				fileService.RemoveFile (fileName);
+				project.Save ();
+				LogDeletedFileInfo (path);
+			});
 		}
 		
 		protected virtual void LogDeletedDirectory(string folder)
@@ -335,8 +356,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddFrameworkReference(string name)
 		{
-			ProjectReference assemblyReference = CreateGacReference(name);
-			AddReferenceToProject(assemblyReference);
+			GuiSyncDispatch (() => {
+				ProjectReference assemblyReference = CreateGacReference (name);
+				AddReferenceToProject (assemblyReference);
+			});
 		}
 		
 		ProjectReference CreateGacReference(string name)
@@ -351,9 +374,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void AddImport(string targetPath, ProjectImportLocation location)
 		{
-			string relativeTargetPath = GetRelativePath(targetPath);
-			project.AddImportIfMissing(relativeTargetPath, location);
-			projectService.Save(project);
+			GuiSyncDispatch (() => {
+				string relativeTargetPath = GetRelativePath (targetPath);
+				project.AddImportIfMissing (relativeTargetPath, null);
+				project.Save ();
+			});
 		}
 
 		string GetRelativePath(string path)
@@ -363,9 +388,23 @@ namespace ICSharpCode.PackageManagement
 		
 		public void RemoveImport(string targetPath)
 		{
-			string relativeTargetPath = GetRelativePath(targetPath);
-			project.RemoveImport(relativeTargetPath);
-			projectService.Save(project);
+			GuiSyncDispatch (() => {
+				string relativeTargetPath = GetRelativePath (targetPath);
+				project.RemoveImport (relativeTargetPath);
+				project.Save ();
+			});
+		}
+
+		T GuiSyncDispatch<T> (Func<T> action)
+		{
+			T result = default(T);
+			DispatchService.GuiSyncDispatch (() => result = action ());
+			return result;
+		}
+
+		void GuiSyncDispatch (Action action)
+		{
+			DispatchService.GuiSyncDispatch (() => action ());
 		}
 	}
 }

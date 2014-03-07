@@ -40,8 +40,7 @@ THE SOFTWARE.
 	<IndentSwitchBody>True</IndentSwitchBody>
 	<IndentCaseBody>True</IndentCaseBody>
 	<IndentBreakStatements>True</IndentBreakStatements>
-	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
-	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
+	<AlignEmbeddedStatements>True</AlignEmbeddedStatements>
 	<PropertyFormatting>AllowOneLine</PropertyFormatting>
 	<NamespaceBraceStyle>NextLine</NamespaceBraceStyle>
 	<ClassBraceStyle>NextLine</ClassBraceStyle>
@@ -91,7 +90,7 @@ THE SOFTWARE.
 	<BeforeConstructorDeclarationParameterComma>False</BeforeConstructorDeclarationParameterComma>
 	<AfterConstructorDeclarationParameterComma>True</AfterConstructorDeclarationParameterComma>
 	<WithinConstructorDeclarationParentheses>False</WithinConstructorDeclarationParentheses>
-	<NewLineBeforeConstructorInitializerColon>NextLine</NewLineBeforeConstructorInitializerColon>
+	<NewLineBeforeConstructorInitializerColon>NewLine</NewLineBeforeConstructorInitializerColon>
 	<NewLineAfterConstructorInitializerColon>SameLine</NewLineAfterConstructorInitializerColon>
 	<BeforeIndexerDeclarationBracket>True</BeforeIndexerDeclarationBracket>
 	<WithinIndexerDeclarationBracket>False</WithinIndexerDeclarationBracket>

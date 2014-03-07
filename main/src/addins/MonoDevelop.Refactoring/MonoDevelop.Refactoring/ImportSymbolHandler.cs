@@ -226,7 +226,7 @@ namespace MonoDevelop.Refactoring
 			var lookup = new MemberLookup (null, doc.Compilation.MainAssembly);
 
 			List<ImportSymbolCompletionData> typeList = new List<ImportSymbolCompletionData> ();
-			foreach (var type in dom.GetAllTypeDefinitions ()) {
+			foreach (var type in dom.GetTopLevelTypeDefinitons ()) {
 				if (!lookup.IsAccessible (type, false))
 					continue;
 				typeList.Add (new ImportSymbolCompletionData (doc, cache, type));

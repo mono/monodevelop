@@ -1200,18 +1200,6 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-info.png">
       <LogicalName>link-info.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-normal-hover.png">
-      <LogicalName>star-normal-hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-normal.png">
-      <LogicalName>star-normal.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-pinned-hover.png">
-      <LogicalName>star-pinned-hover.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-pinned.png">
-      <LogicalName>star-pinned.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\new_solution.png">
       <LogicalName>new_solution.png</LogicalName>
     </EmbeddedResource>
@@ -1511,6 +1499,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\done-16%402x.png">
       <LogicalName>done-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-16.png">
+      <LogicalName>star-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-16%402x.png">
+      <LogicalName>star-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-hover-16.png">
+      <LogicalName>star-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-hover-16%402x.png">
+      <LogicalName>star-hover-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-overlay-16.png">
+      <LogicalName>star-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-overlay-16%402x.png">
+      <LogicalName>star-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-overlay-hover-16.png">
+      <LogicalName>star-overlay-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\star-overlay-hover-16%402x.png">
+      <LogicalName>star-overlay-hover-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-16.png">
+      <LogicalName>unstar-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-16%402x.png">
+      <LogicalName>unstar-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-hover-16.png">
+      <LogicalName>unstar-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-hover-16%402x.png">
+      <LogicalName>unstar-hover-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-overlay-16.png">
+      <LogicalName>unstar-overlay-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-overlay-16%402x.png">
+      <LogicalName>unstar-overlay-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-overlay-hover-16.png">
+      <LogicalName>unstar-overlay-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\unstar-overlay-hover-16%402x.png">
+      <LogicalName>unstar-overlay-hover-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
