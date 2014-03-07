@@ -48,6 +48,7 @@ namespace ICSharpCode.PackageManagement
 			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
 				addinPackageSources.Add (node.GetPackageSource ());
 			}
+			addinPackageSources.Add (RegisteredPackageSources.DefaultPackageSource);
 			return addinPackageSources;
 		}
 		
