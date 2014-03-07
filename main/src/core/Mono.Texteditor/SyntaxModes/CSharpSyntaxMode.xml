@@ -222,7 +222,8 @@
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "Keyword(Property)">		<Word>get</Word>
+	<Keywords color = "Keyword(Property)">
+		<Word>get</Word>
 		<Word>set</Word>
 		<Word>add</Word>
 		<Word>remove</Word>
@@ -328,7 +329,7 @@
 	<Rule name = "XmlDocumentation">
 		<Delimiters>&lt;&gt;</Delimiters>
 
-		<Span color = "Comment(DocTag)" rule = "XmlDocumentationTag">
+		<Span color = "Comment(DocTag)" rule = "XmlDocumentationTag" stopateol = "true">
 			<Begin>&lt;</Begin>
 			<End>&gt;</End>
 		</Span>
