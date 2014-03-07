@@ -53,11 +53,12 @@ let installNuGetPkg s =
                       "../../../lib/nuget/NuGet.exe")
       + " install -ExcludeVersion "
       + s
+  p.StartInfo.UseShellExecute <- false
   p.Start () |> ignore
   if not (p.WaitForExit(10000)) then
     try
       p.Kill()
     with // These two exceptions indicate that the process has gone anyway
-      | :? System.SystemException
-      | :? System.InvalidOperationException -> ()
+      | :? System.SystemException as e ->
+            printfn "Warning: NuGet installation threw an exception: %A" e
   

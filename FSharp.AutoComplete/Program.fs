@@ -78,6 +78,21 @@ type SeverityConverter() =
   override x.CanRead = false
   override x.CanWrite = true
 
+type RangeConverter() =
+  inherit JsonConverter()
+
+  override x.CanConvert(t:System.Type) = t = typeof<Range.range>
+
+  override x.WriteJson(writer, value, serializer) =
+    let range = value :?> Range.range
+    serializer.Serialize(writer, (range.Start, range.End))
+
+  override x.ReadJson(reader, t, _, serializer) =
+    raise (System.NotSupportedException())
+
+  override x.CanRead = false
+  override x.CanWrite = true
+
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
 
@@ -442,11 +457,11 @@ module internal Main =
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
 
-  let severityConverter = new SeverityConverter()
+  let jsonConverters = [| new SeverityConverter() :> JsonConverter; new RangeConverter() :> JsonConverter |]
 
   let rec main (state:State) : int =
 
-    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, severityConverter))
+    let prAsJson o = Console.WriteLine (JsonConvert.SerializeObject(o, jsonConverters))
 
     let printMsg ty s =
       match state.OutputMode with
@@ -625,7 +640,7 @@ module internal Main =
               match state.OutputMode with
               | Text -> printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" range.FileName (range.StartLine-1) range.StartColumn
               | Json ->
-                  let data = { Line = line; Column = col; File = file }
+                  let data = { Line = range.StartLine-1; Column = range.StartColumn; File = range.FileName }
                   prAsJson { Kind = "finddecl"; Data = data }
             
             main state
