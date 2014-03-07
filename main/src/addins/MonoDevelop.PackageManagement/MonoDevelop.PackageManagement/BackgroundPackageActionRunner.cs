@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using System.Linq;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -78,11 +78,25 @@ namespace MonoDevelop.PackageManagement
 
 		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
+			if (!AcceptPackageLicenses (packageActions))
+				return;
+
 			foreach (IPackageAction action in packageActions) {
 				CheckForPowerShellScripts (action);
 				action.Execute ();
 				monitor.Step (1);
 			}
+		}
+
+		bool AcceptPackageLicenses (IList<IPackageAction> packageActions)
+		{
+			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
+			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (packageActions).ToList ();
+			if (packages.Any ()) {
+				return packageManagementEvents.OnAcceptLicenses (packages);
+			}
+
+			return true;
 		}
 
 		void CheckForPowerShellScripts (IPackageAction action)

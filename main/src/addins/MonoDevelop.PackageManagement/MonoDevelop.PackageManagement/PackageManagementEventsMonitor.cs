@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -35,7 +36,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		IProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
-		ManagePackagesUserPrompts userPrompts;
+		FileConflictResolution lastFileConflictResolution;
+		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
 
 		public PackageManagementEventsMonitor (
 			IProgressMonitor progressMonitor,
@@ -43,15 +45,36 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
-			userPrompts = new ManagePackagesUserPrompts (new ThreadSafePackageManagementEvents (packageManagementEvents));
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
+			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
+			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 		}
 
 		public void Dispose ()
 		{
-			userPrompts.Dispose ();
+			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
+			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
+		}
+
+		void ResolveFileConflict(object sender, ResolveFileConflictEventArgs e)
+		{
+			if (UserPreviouslySelectedOverwriteAllOrIgnoreAll ()) {
+				e.Resolution = lastFileConflictResolution;
+			} else {
+				DispatchService.GuiSyncDispatch (() => {
+					e.Resolution = fileConflictResolver.ResolveFileConflict (e.Message);
+				});
+				lastFileConflictResolution = e.Resolution;
+			}
+		}
+
+		bool UserPreviouslySelectedOverwriteAllOrIgnoreAll()
+		{
+			return
+				(lastFileConflictResolution == FileConflictResolution.IgnoreAll) ||
+				(lastFileConflictResolution == FileConflictResolution.OverwriteAll);
 		}
 		
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
@@ -85,6 +108,28 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				progressMonitor.ReportSuccess (progressMessage.Success);
 			}
+		}
+
+		void AcceptLicenses (object sender, AcceptLicensesEventArgs e)
+		{
+			foreach (IPackage package in e.Packages) {
+				ReportLicenseAgreementWarning (package);
+			}
+			e.IsAccepted = true;
+		}
+
+		void ReportLicenseAgreementWarning (IPackage package)
+		{
+			string message = GettextCatalog.GetString (
+				"The package {0} has a license agreement which is available at {1}{2}" +
+				"Please review this license agreement and remove the package if you do not accept the agreement.{2}" +
+				"Check the package for additional dependencies which may also have license agreements.{2}" +
+				"Using this package and any dependencies constitutes your acceptance of these license agreements.",
+				package.Id,
+				package.LicenseUrl,
+				Environment.NewLine);
+
+			ReportWarning (message);
 		}
 	}
 }
