@@ -642,16 +642,17 @@ namespace MonoDevelop.Ide.Gui
 					continue;
 				}
 				if (ext.ExtendsEditor (this, editor)) {
-					if (editorExtension == null)
-						editorExtension = ext;
-					if (last != null)
+					if (last != null) {
+						ext.Next = last.Next;
 						last.Next = ext;
-					last = ext;
+						last = ext;
+					} else {
+						editorExtension = last = ext;
+						last.Next = editor.AttachExtension (editorExtension);
+					}
 					ext.Initialize (this);
 				}
 			}
-			if (editorExtension != null)
-				last.Next = editor.AttachExtension (editorExtension);
 		}
 
 		void DetachExtensionChain ()
