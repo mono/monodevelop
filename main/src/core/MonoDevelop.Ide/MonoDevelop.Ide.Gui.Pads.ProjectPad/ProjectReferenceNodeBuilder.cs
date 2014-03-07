@@ -134,8 +134,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
 			if (pref != null) {
-				foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
-					IdeApp.Workbench.OpenDocument (fileName, pref.OwnerProject);
+				foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
+					if (File.Exists (fileName))
+						IdeApp.Workbench.OpenDocument (fileName, pref.OwnerProject);
+				}
 			}
 		}
 				

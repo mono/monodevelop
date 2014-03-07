@@ -270,14 +270,6 @@ namespace MonoDevelop.Xml.StateEngine
 			return new TextLocation (line, col);
 		}
 		
-		DomRegion LocationCurrentChar {
-			get {
-				int col = Location.Column - 1;
-				System.Diagnostics.Debug.Assert (col > 0);
-				return new DomRegion (Location.Line, col, Location.Line, Location.Column);
-			}
-		}
-		
 		StringBuilder IParseContext.KeywordBuilder {
 			get { return keywordBuilder; }
 		}
@@ -294,13 +286,13 @@ namespace MonoDevelop.Xml.StateEngine
 		void IParseContext.LogError (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, message, LocationCurrentChar));
+				InternalLogError (new Error (ErrorType.Error, message, Location));
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, message, LocationCurrentChar));
+				InternalLogError (new Error (ErrorType.Warning, message, Location));
 		}
 		
 		void IParseContext.LogError (string message, TextLocation location)

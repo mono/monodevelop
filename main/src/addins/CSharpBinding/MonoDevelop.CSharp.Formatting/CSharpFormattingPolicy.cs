@@ -195,25 +195,15 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool AlignEmbeddedUsingStatements {
+		public bool AlignEmbeddedStatements {
 			get {
-				return options.AlignEmbeddedUsingStatements;
+				return options.AlignEmbeddedStatements;
 			}
 			set {
-				options.AlignEmbeddedUsingStatements = value;
+				options.AlignEmbeddedStatements = value;
 			}
 		}
-		
-		[ItemProperty]
-		public bool AlignEmbeddedIfStatements {
-			get {
-				return options.AlignEmbeddedIfStatements;
-			}
-			set {
-				options.AlignEmbeddedIfStatements = value;
-			}
-		}
-		
+
 		[ItemProperty]
 		public PropertyFormatting SimplePropertyFormatting {
 			get {

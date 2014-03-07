@@ -65,12 +65,12 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public virtual void OpenFile (string filename)
 		{
-			Process.Start ("file://" + filename);
+			Process.Start (filename);
 		}
 		
 		public virtual void OpenFolder (FilePath folderPath)
 		{
-			Process.Start ("file://" + folderPath);
+			Process.Start (folderPath);
 		}
 		
 		public virtual void ShowUrl (string url)
