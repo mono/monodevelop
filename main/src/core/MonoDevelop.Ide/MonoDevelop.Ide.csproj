@@ -2306,6 +2306,7 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\IDockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -35,6 +35,7 @@ using MonoDevelop.Components;
 using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-light-12.png");
 
 		List<Widget> children = new List<Widget> ();
-		DockNotebook notebook;
+		readonly DockNotebook notebook;
 		DockNotebookTab highlightedTab;
 		bool overCloseButton;
 		bool buttonPressedOnTab;
@@ -106,6 +107,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public TabStrip (DockNotebook notebook)
 		{
+			if (notebook == null)
+				throw new ArgumentNullException ("notebook");
 			TabWidth = 125;
 			TargetWidth = 125;
 			tracker = new MouseTracker (this);
@@ -321,9 +324,14 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
 			if (draggingTab) {
-				var tab = notebook.CurrentTab;
-				placeholderWindow = new PlaceholderWindow (tab);
-				placeholderWindow.Show ();
+				if (placeholderWindow == null) {
+					var tab = notebook.CurrentTab;
+					placeholderWindow = new PlaceholderWindow (tab);
+					placeholderWindow.Show ();
+					placeholderWindow.Destroyed += delegate {
+						placeholderWindow = null;
+					};
+				}
 				draggingTab = false;
 			}
 			return base.OnLeaveNotifyEvent (evnt);
@@ -335,13 +343,8 @@ namespace MonoDevelop.Components.DockNotebook
 			if (placeholderWindow != null) {
 				int ox, oy;
 				GdkWindow.GetOrigin (out ox, out oy);
-
-				placeholderWindow.Relocate (
-					(int)evnt.X + ox - placeholderWindow.Allocation.Width / 2, 
-					(int)evnt.Y + oy - placeholderWindow.Allocation.Height / 2, 
-					100, 
-					100, 
-					false); 
+				placeholderWindow.MovePosition ((int)evnt.X + ox, (int)evnt.Y + oy); 
+				return base.OnMotionNotifyEvent (evnt);
 			}
 
 			if (!draggingTab) {
@@ -447,29 +450,7 @@ namespace MonoDevelop.Components.DockNotebook
 			buttonPressedOnTab = false;
 
 			if (placeholderWindow != null) {
-				placeholderWindow.Destroy ();
-
-				var newWindow = new Gtk.Window (Gtk.WindowType.Toplevel);
-
-				var newNotebook = new DockNotebook ();
-				var box = new VBox ();
-				box.PackStart (newNotebook, true, true, 0);
-				newWindow.Child = box;
-				newNotebook.InitSize ();
-				newNotebook.PageRemoved += delegate {
-					if (newNotebook.TabCount == 0)
-						newWindow.Destroy ();
-				};
-				var tab = notebook.CurrentTab;
-				notebook.RemoveTab (tab.Index, false); 
-
-				var window = (SdiWorkspaceWindow)tab.Content;
-
-				var newTab = newNotebook.InsertTab (-1); 
-				newTab.Content = window;
-				newWindow.ShowAll (); 
-				window.SetDockNotebook (newNotebook, newTab); 
-
+				placeholderWindow.PlaceWindow (notebook);
 				return base.OnButtonReleaseEvent (evnt);
 			}
 
