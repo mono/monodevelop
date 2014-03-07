@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement
 	public partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
+		ManagePackagesViewModel parentViewModel;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
 		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
@@ -59,17 +60,18 @@ namespace MonoDevelop.PackageManagement
 		int packagesCheckedCount;
 		ImageLoader imageLoader = new ImageLoader ();
 
-		public AddPackagesDialog (PackagesViewModel viewModel, string initialSearch = null)
-			: this (viewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
+		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
+			: this (parentViewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public AddPackagesDialog (
-			PackagesViewModel viewModel,
+			ManagePackagesViewModel parentViewModel,
 			string initialSearch,
 			IBackgroundPackageActionRunner backgroundActionRunner)
 		{
-			this.viewModel = viewModel;
+			this.parentViewModel = parentViewModel;
+			this.viewModel = parentViewModel.AvailablePackagesViewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			Build ();
@@ -95,7 +97,7 @@ namespace MonoDevelop.PackageManagement
 			imageLoader.Dispose ();
 
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
-			viewModel.Dispose ();
+			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
 			base.Dispose (disposing);
 		}
