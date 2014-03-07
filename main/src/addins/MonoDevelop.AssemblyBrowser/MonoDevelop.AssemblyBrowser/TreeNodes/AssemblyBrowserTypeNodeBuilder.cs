@@ -105,8 +105,8 @@ namespace MonoDevelop.AssemblyBrowser
 				return new SimpleTypeResolveContext (simpleCompilation.MainAssembly);
 			}
 			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var ctx = TypeSystemService.GetCompilation (project);
-			return ctx.TypeResolveContext;
+			var compilation = TypeSystemService.GetCompilation (project);
+			return new SimpleTypeResolveContext (compilation.MainAssembly);
 		}
 		
 		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member, ITypeDefinition currentType = null)
