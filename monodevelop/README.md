@@ -16,6 +16,10 @@ Adds open source F# support to the open source editor MonoDevelop. Features:
 
 Requires MonoDevelop or Xamarin Studio 4.0.13 and later versions
 
+### Prerequisites
+
+To use F# language support please ensure that you have F# installed on your system, for details on this please see http://fsharp.org
+
 ### Installation
 
 First check install MonoDevelop/Xamarin Studio. Check if F# support is already installed using the AddIn manager.
