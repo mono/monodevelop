@@ -35,6 +35,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
+		ManagePackagesUserPrompts userPrompts;
 
 		public PackageManagementEventsMonitor (
 			IProgressMonitor progressMonitor,
@@ -42,12 +43,14 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
+			userPrompts = new ManagePackagesUserPrompts (new ThreadSafePackageManagementEvents (packageManagementEvents));
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 		}
 
 		public void Dispose ()
 		{
+			userPrompts.Dispose ();
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 		}
 		
