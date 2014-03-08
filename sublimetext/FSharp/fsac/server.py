@@ -23,14 +23,16 @@ class Server(object):
     """
     Wraps fsautocomplete.exe daemon.
     """
-    def __init__(self, path):
+    def __init__(self, path, *args):
         self.path = path
+        self.args = args
+        self.cmd_line = [self.path] + list(args)
         self.proc = None
-    def start(self):
 
+    def start(self):
         logging.debug('Starting fsautocomplete...')
         try:
-            self.proc = Popen([self.path], stdin=PIPE, stdout=PIPE)
+            self.proc = Popen(self.cmd_line, stdin=PIPE, stdout=PIPE)
         except Exception as e:
             logging.error("Exception occurred during fsautocomplete's startup")
             raise IOError("Could not open fsautocomplete.exe.")
@@ -44,8 +46,9 @@ class Server(object):
             if self.proc:
                 self._send('quit')
         except Exception as e:
-            logging.error("Exception during fsautocomplete's shutdown")
-            raise
+            logging.error("Exception during fsautocomplete's shutdown: {0}".format(e))
+            self.proc.stdin.close()
+            raise e
 
     def help(self):
         self._send('help')
@@ -99,30 +102,52 @@ class Server(object):
         logging.debug('sending command ' + repr(cmd))
         self.proc.stdin.write(to_utf8(cmd))
         self.proc.stdin.flush()
-        self.proc.stdout.flush()
 
     def _unmarshal(self, s):
+        """
+        Returns a JSON object. If @s does not represent a valid
+        JSON object, returns a made-up response resembling a
+        fsautocomplete.exe reponse.
+
+        @s
+            A string representing a JSON object.
+        """
         try:
             val = json.loads(s)
             logging.debug('returning ' + repr(val))
             return val
         except:
             # Unmarshalling will fail when calling .help(), because we don't
-            # get Json back from the daemon. Simply return the text.
-            logging.debug('returning ' + repr(s))
-            return s
+            # get Json back from the daemon. Make up out own response.
+            output = {'Kind': '_UNPARSED', 'Data': s}
+            logging.debug('returning ' + repr(output))
+            return output
 
-    def _read(self):
+    def read_line(self):
+        """
+        Reads a line from stdout and returns the data as a parsed
+        JSON object.
+        """
         line = self.proc.stdout.readline()
         logging.debug('line read as utf-8: ' + repr(to_str(line)))
         return self._unmarshal(to_str(line))
 
-    def _read_all(self):
+    def read_all(self, eof=None):
+        """
+        Reads output line by line until stdout is exhausted and
+        returns a parsed JSON object.
+
+        @eof
+            For example, fsautocomplete.exe's 'help' command does not
+            signal EOF in any particular way, so we can pass a value
+            to @eof in order to stop reading from stdout. This is not
+            a problem on Windows, where we can rely on _CRLF.
+        """
         lines = b''
         while True:
             line = self.proc.stdout.readline()
             logging.debug('line read as utf-8: ' + repr(to_str(line)))
-            if line == _EOF or line.endswith(_CRLF):
+            if line == _EOF or line.endswith(_CRLF) or line == eof:
                 break
             lines += line
 

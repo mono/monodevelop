@@ -68,7 +68,7 @@ class AsyncPipe(object):
 
     def read(self):
         while True:
-            data = self.server._read()
+            data = self.server.read_line()
             process_output(data)
 
             try:
