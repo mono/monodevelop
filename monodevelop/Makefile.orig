@@ -54,12 +54,8 @@ install: pack
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
 
-packs: build-support
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION4=4.0 config=Release pack
-
-# Used by continuous integration.
-builds: 
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION4=4.0 config=Release build
+release: 
+	$(MAKE) config=Release pack
 
 clean:
 	-rm -fr bin
