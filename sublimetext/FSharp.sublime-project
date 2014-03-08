@@ -27,11 +27,11 @@
 	[
 		{
 			"follow_symlinks": true,
-			"path": "./FSharp"
+			"path": "."
 		},
 		{
 			"follow_symlinks": true,
-			"path": "."
+			"path": "./FSharp"
 		},
 		{
 			"follow_symlinks": true,
