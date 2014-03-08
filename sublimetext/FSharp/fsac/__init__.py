@@ -13,6 +13,7 @@ def get_server():
         if sublime.platform() in ('osx', 'linux'):
             _server = Server('mono', const.path_to_fs_ac_binary())
         else:
+            assert sublime.platform() == 'windows'
             _server = Server(const.path_to_fs_ac_binary())
         _server.start()
         pass

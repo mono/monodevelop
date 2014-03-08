@@ -47,7 +47,10 @@ class Server(object):
                 self._send('quit')
         except Exception as e:
             logging.error("Exception during fsautocomplete's shutdown: {0}".format(e))
-            self.proc.stdin.close()
+            try:
+                self.proc.stdin.close()
+            except:
+                pass
             raise e
 
     def help(self):
@@ -118,7 +121,7 @@ class Server(object):
             return val
         except:
             # Unmarshalling will fail when calling .help(), because we don't
-            # get Json back from the daemon. Make up out own response.
+            # get Json back from the daemon. Make up our own response.
             output = {'Kind': '_UNPARSED', 'Data': s}
             logging.debug('returning ' + repr(output))
             return output
