@@ -55,7 +55,7 @@ $(bin_d)     :; mkdir -p $(bin_d)
 # Cleaning
 
 clean : clean-elc
-	rm -fr $(bin_d)
+	rm -rf $(bin_d)
 	rm -rf $(tmp_d)
 
 clean-elc :
