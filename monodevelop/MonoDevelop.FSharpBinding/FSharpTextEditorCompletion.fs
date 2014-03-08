@@ -339,6 +339,7 @@ type FSharpPathExtension() =
 
     let pathChanged = new Event<_,_>()
     let mutable currentPath = [||]
+    let mutable subscriptions = []
     member x.Document = base.Document
     member x.GetEntityMarkup(node: DeclarationItem) =
         let prefix = match node.Kind with
@@ -357,9 +358,10 @@ type FSharpPathExtension() =
 
     override x.Initialize() =
         currentPath <- [| new PathEntry("No selection", Tag = null) |]
-        x.Document.Editor.Caret.PositionChanged.AddHandler(fun o e -> x.PathUpdated e)
-        x.Document.DocumentParsed.AddHandler(fun o e -> x.PathUpdated null)
-
+        let positionChanged = x.Document.Editor.Caret.PositionChanged.Subscribe(fun o e -> x.PathUpdated e)
+        let documentParsed  = x.Document.DocumentParsed.Subscribe(fun o e -> x.PathUpdated null)
+        subscriptions <- positionChanged :: documentParsed :: subscriptions
+        
     member private x.PathUpdated(documentLocation) =
         let loc = x.Document.Editor.Caret.Location
         
@@ -417,8 +419,8 @@ type FSharpPathExtension() =
         | _ -> ()
 
     override x.Dispose() =
-        x.Document.Editor.Caret.PositionChanged.RemoveHandler(fun o e -> x.PathUpdated e)
-        x.Document.DocumentParsed.RemoveHandler(fun o e -> x.PathUpdated null)
+        subscriptions |> List.iter (fun s -> s.Dispose())
+        subscriptions <- []
 
     interface IPathedDocument with
         member x.CurrentPath = currentPath
