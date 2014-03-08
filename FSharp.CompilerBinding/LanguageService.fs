@@ -148,10 +148,16 @@ type LanguageService(dirtyNotify) =
           Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
       Path.Combine(dir, Path.GetFileName(path))
    
-  // We use an additional mailbox processor here so we can get work off the GUI 
-  // thread and timeout on synchronous requests. Note, there is already a background thread in F.C.S.
+  // We use a mailbox processor to wrap requests to F.C.S. here so 
+  //   (a) we can get work off the GUI thread and 
+  //   (b) timeout on synchronous requests. 
+  // 
+  // There is already a background compilation queue+thread in F.C.S. abd many of the F.C.S. operations
+  // are already asynchronous. However using direct calls to the F.C.S. API isn't quite sufficient because
+  // we can't timeout, and not all F.C.S. operations are asynchronous (e.g. parsing). If F.C.S. is extended
+  // so all operations are asynchronous then I believe we won't need a wrapper agent at all.
   //
-  // Every request to the mailbox is 'PostAndReply' or 'PostAndAsyncReply'.  This means the requests are
+  // Every request to this agent is 'PostAndReply' or 'PostAndAsyncReply'.  This means the requests are
   // a lot like a function call, except 
   //   (a) they may be asynchronous (reply is interleaved on the UI thread)
   //   (b) they may be on on a timeout (to prevent blocking the UI thread)
@@ -178,7 +184,6 @@ type LanguageService(dirtyNotify) =
             let results =
               match checkAnswer with
               | CheckFileAnswer.Succeeded(checkResults) ->
-                  // Handle errors on the GUI thread
                   Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" checkResults.HasFullTypeCheckInfo)
                   ParseAndCheckResults(checkResults, parseResults)
               | _ -> 
@@ -241,6 +246,7 @@ type LanguageService(dirtyNotify) =
         {ProjectFileName = projFilename
          ProjectFileNames = files
          ProjectOptions = args
+         ReferencedProjects = [| |]
          IsIncompleteTypeCheckEnvironment = false
          UseScriptResolutionRules = false   
          LoadTime = fakeDateTimeRepresentingTimeLoaded projFilename

@@ -194,6 +194,7 @@ type internal IntelliSenseAgent() =
         { ProjectFileName = projFile
           ProjectFileNames = files
           ProjectOptions = args
+          ReferencedProjects = [| |]
           IsIncompleteTypeCheckEnvironment = false
           UseScriptResolutionRules = false
           LoadTime = ProjectParser.getLoadTime proj
