@@ -122,21 +122,6 @@
       <Name>MonoDevelop.VersionControl.Git</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\ngit\NGit\NGit.csproj">
-      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
-      <Name>NGit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\ngit\Sharpen\Sharpen.csproj">
-      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
-      <Name>Sharpen</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\ngit\NSch\NSch.csproj">
-      <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
-      <Name>NSch</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
@@ -180,11 +165,6 @@
     <ProjectReference Include="..\..\src\addins\Deployment\MonoDevelop.Deployment.Linux\MonoDevelop.Deployment.Linux.csproj">
       <Project>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</Project>
       <Name>MonoDevelop.Deployment.Linux</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
-      <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
-      <Name>Sharpen.Unix</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
