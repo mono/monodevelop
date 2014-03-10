@@ -5,10 +5,10 @@ bund_d = $(fsharp_d)/bundled
 
 getdeps:
 	rm -f $(bund_d)/fsautocomplete.zip
-	wget https://bitbucket.org/guillermooo/fsac/downloads/fsautocomplete_mono.zip -O $(bund_d)/fsautocomplete.zip
+	wget https://bitbucket.org/guillermooo/fsac/downloads/fsautocomplete.zip -O $(bund_d)/fsautocomplete.zip
 
 build:
 	# Publishes tests too.
-	cd $(bin_d)	&& ./publish.sh
+	cd $(bin_d) && ./publish.sh
 
 install: getdeps build

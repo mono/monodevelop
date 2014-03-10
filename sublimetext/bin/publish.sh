@@ -17,7 +17,7 @@ publish_tests () {
         cp -f FSharpTests.sublime-commands "$data_path/Packages/FSharp_Tests"
         pushd tests
             # Copy actual Python packages containing tests.
-            cp * -r "$data_path/Packages/FSharp_Tests"
+            cp * -rf "$data_path/Packages/FSharp_Tests"
         popd
     popd
 }
