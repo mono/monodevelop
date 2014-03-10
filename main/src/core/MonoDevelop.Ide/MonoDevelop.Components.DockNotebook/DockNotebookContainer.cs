@@ -32,7 +32,7 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookContainer : EventBox
 	{
-		readonly DockNotebook tabControl;
+		DockNotebook tabControl;
 
 		public DockNotebook TabControl {
 			get {
@@ -40,10 +40,48 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public DockNotebookContainer (DockNotebook tabControl)
+		public DockNotebookContainer (DockNotebook tabControl, bool isMasterTab = false)
 		{
 			this.tabControl = tabControl;
 			Child = tabControl;
+			
+			if (!isMasterTab)
+				tabControl.PageRemoved += HandlePageRemoved;
+		}
+
+		void HandlePageRemoved (object sender, EventArgs e)
+		{
+			var control = (DockNotebook)sender;
+			if (control.TabCount != 0)
+				return;
+			var controlContainer = control.Parent as DockNotebookContainer;
+			if (controlContainer == null || controlContainer.Parent == null) 
+				return;
+			
+			var paned = controlContainer.Parent as Paned;
+			if (paned != null) {
+				var otherContainer = (paned.Child1 == control.Parent ? paned.Child2 : paned.Child1) as DockNotebookContainer;
+				if (otherContainer == null)
+					return;
+				
+				var motherContainer = (DockNotebookContainer)paned.Parent;
+				
+				var newChild = otherContainer.Child;
+				otherContainer.Remove (newChild);
+				
+				motherContainer.tabControl = otherContainer.tabControl;
+				motherContainer.Remove (paned);
+				motherContainer.Child = newChild;
+				
+				motherContainer.ShowAll ();
+				
+				paned.Destroy ();
+				
+				return;
+			}
+			
+			// window case.
+			controlContainer.Parent.Parent.Destroy ();
 		}
 
 		void Insert(SdiWorkspaceWindow window, Action<DockNotebookContainer> callback)
@@ -54,14 +92,7 @@ namespace MonoDevelop.Components.DockNotebook
 			newNotebook.Destroyed += delegate {
 				PlaceholderWindow.newNotebooks.Remove (newNotebook);
 			};
-			newNotebook.PageRemoved += delegate {
-				if (newNotebook.TabCount == 0) {
-					((Container)tabControl.Parent).Remove (tabControl);
-					Child.Destroy ();
-					Child = tabControl;
-					ShowAll ();
-				}
-			};
+			newNotebook.PageRemoved += HandlePageRemoved;
 
 			var newTab = newNotebook.InsertTab (-1); 
 			newTab.Content = window;
@@ -79,7 +110,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Insert (window, container => {
 				var box = new HPaned ();
 				box.Add1 (container); 
-				box.Add2 (tabControl); 
+				box.Add2 (new DockNotebookContainer (tabControl)); 
 				box.Position = Allocation.Width / 2;
 				Child = box;
 			}); 
@@ -89,7 +120,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			Insert (window, container => {
 				var box = new HPaned ();
-				box.Add1 (tabControl); 
+				box.Add1 (new DockNotebookContainer (tabControl)); 
 				box.Add2 (container); 
 				box.Position = Allocation.Width / 2;
 				Child = box;
@@ -101,7 +132,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Insert (window, container => {
 				var box = new VPaned ();
 				box.Add1 (container); 
-				box.Add2 (tabControl); 
+				box.Add2 (new DockNotebookContainer (tabControl)); 
 				box.Position = Allocation.Height / 2;
 				Child = box;
 			}); 
@@ -111,7 +142,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			Insert (window, container => {
 				var box = new VPaned ();
-				box.Add1 (tabControl); 
+				box.Add1 (new DockNotebookContainer (tabControl)); 
 				box.Add2 (container); 
 				box.Position = Allocation.Height / 2;
 				Child = box;

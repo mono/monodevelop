@@ -868,7 +868,7 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Expand = true;
 			documentDockItem.DrawFrame = false;
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
-			documentDockItem.Content = new DockNotebookContainer (tabControl);
+			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 
 			DockVisualStyle style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
