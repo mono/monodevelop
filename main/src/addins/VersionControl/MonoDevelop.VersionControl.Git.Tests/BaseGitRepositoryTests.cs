@@ -162,7 +162,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("this is a new test which doesn't pass on Mac yet")]
 		public void TestGitStash ()
 		{
 			var repo2 = (GitRepository)Repo;
@@ -177,7 +176,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("this is a new test which doesn't pass on Mac yet")]
 		public void TestGitBranchCreation ()
 		{
 			var repo2 = (GitRepository)Repo;
@@ -208,7 +206,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("this is a new test which doesn't pass on Mac yet")]
 		public void TestGitSyncBranches ()
 		{
 			var repo2 = (GitRepository)Repo;
@@ -250,7 +247,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("GetPushDiff content is always empty")]
 		public void TestPushDiff ()
 		{
 			var repo2 = (GitRepository)Repo;
@@ -312,7 +308,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("this is a new test which doesn't pass on Mac yet")]
 		public void TestIsMerged ()
 		{
 			var repo2 = (GitRepository)Repo;
