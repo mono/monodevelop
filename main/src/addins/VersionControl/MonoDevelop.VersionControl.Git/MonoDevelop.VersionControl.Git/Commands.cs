@@ -162,7 +162,7 @@ namespace MonoDevelop.VersionControl.Git
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					NGit.Api.MergeCommandResult result;
+					org.eclipse.jgit.api.MergeResult result;
 					using (var gm = new GitMonitor (monitor))
 						result = stashes.Pop (gm);
 					GitService.ReportStashResult (monitor, result);

@@ -30,11 +30,13 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
-using NGit;
-using NGit.Treewalk;
-using NGit.Dircache;
-using NGit.Revwalk;
-using NGit.Api;
+using org.eclipse.jgit.lib;
+using org.eclipse.jgit.api;
+using org.eclipse.jgit.revwalk;
+using org.eclipse.jgit.dircache;
+using org.eclipse.jgit.treewalk;
+using JRepository = org.eclipse.jgit.lib.Repository;
+using JFileMode = org.eclipse.jgit.lib.FileMode;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -84,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (prevStashCommitId ?? new string ('0', 40)).Append (' ');
 			sb.Append (commitId).Append (' ');
-			sb.Append (author.GetName ()).Append (" <").Append (author.GetEmailAddress ()).Append ("> ");
+			sb.Append (author.getName ()).Append (" <").Append (author.getEmailAddress ()).Append ("> ");
 			sb.Append (secs).Append (' ').Append (tz).Append ('\t');
 			sb.Append (comment);
 			FullLine = sb.ToString ();
@@ -143,7 +145,7 @@ namespace MonoDevelop.VersionControl.Git
 			return s;
 		}
 		
-		public MergeCommandResult Apply (ProgressMonitor monitor)
+		public MergeResult Apply (ProgressMonitor monitor)
 		{
 			return StashCollection.Apply (monitor, this);
 		}
@@ -151,16 +153,16 @@ namespace MonoDevelop.VersionControl.Git
 	
 	public class StashCollection: IEnumerable<Stash>
 	{
-		readonly NGit.Repository _repo;
+		readonly JRepository _repo;
 		
-		internal StashCollection (NGit.Repository repo)
+		internal StashCollection (JRepository repo)
 		{
 			this._repo = repo;
 		}
 		
 		FileInfo StashLogFile {
 			get {
-				string stashLog = Path.Combine (_repo.Directory, "logs");
+				string stashLog = Path.Combine (_repo.getDirectory ().toString (), "logs");
 				stashLog = Path.Combine (stashLog, "refs");
 				return new FileInfo (Path.Combine (stashLog, "stash"));
 			}
@@ -168,7 +170,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		FileInfo StashRefFile {
 			get {
-				string file = Path.Combine (_repo.Directory, "refs");
+				string file = Path.Combine (_repo.getDirectory ().toString (), "refs");
 				return new FileInfo (Path.Combine (file, "stash"));
 			}
 		}
@@ -181,136 +183,136 @@ namespace MonoDevelop.VersionControl.Git
 		public Stash Create (ProgressMonitor monitor, string message)
 		{
 			if (monitor != null) {
-				monitor.Start (1);
-				monitor.BeginTask ("Stashing changes", 100);
+				monitor.start (1);
+				monitor.beginTask ("Stashing changes", 100);
 			}
 			
-			UserConfig config = _repo.GetConfig ().Get (UserConfig.KEY);
+			UserConfig config = (UserConfig)_repo.getConfig ().get (UserConfig.KEY);
 			RevWalk rw = new RevWalk (_repo);
-			ObjectId headId = _repo.Resolve (Constants.HEAD);
-			var parent = rw.ParseCommit (headId);
+			ObjectId headId = _repo.resolve (Constants.HEAD);
+			var parent = rw.parseCommit (headId);
 			
-			PersonIdent author = new PersonIdent(config.GetAuthorName () ?? "unknown", config.GetAuthorEmail () ?? "unknown@(none).");
+			PersonIdent author = new PersonIdent(config.getAuthorName () ?? "unknown", config.getAuthorEmail () ?? "unknown@(none).");
 			
 			if (string.IsNullOrEmpty (message)) {
 				// Use the commit summary as message
-				message = parent.Abbreviate (7) + " " + parent.GetShortMessage ();
+				message = parent.abbreviate (7) + " " + parent.getShortMessage ();
 				int i = message.IndexOfAny (new char[] { '\r', '\n' });
 				if (i != -1)
 					message = message.Substring (0, i);
 			}
 			
 			// Create the index tree commit
-			ObjectInserter inserter = _repo.NewObjectInserter ();
-			DirCache dc = _repo.ReadDirCache ();
+			ObjectInserter inserter = _repo.newObjectInserter ();
+			DirCache dc = _repo.readDirCache ();
 			
 			if (monitor != null)
-				monitor.Update (10);
+				monitor.update (10);
 				
-			var tree_id = dc.WriteTree (inserter);
-			inserter.Release ();
+			var tree_id = dc.writeTree (inserter);
+			inserter.release ();
 			
 			if (monitor != null)
-				monitor.Update (10);
+				monitor.update (10);
 			
-			string commitMsg = "index on " + _repo.GetBranch () + ": " + message;
+			string commitMsg = "index on " + _repo.getBranch () + ": " + message;
 			ObjectId indexCommit = GitUtil.CreateCommit (_repo, commitMsg + "\n", new ObjectId[] {headId}, tree_id, author, author);
 
 			if (monitor != null)
-				monitor.Update (20);
+				monitor.update (20);
 			
 			// Create the working dir commit
-			tree_id = WriteWorkingDirectoryTree (parent.Tree, dc);
-			commitMsg = "WIP on " + _repo.GetBranch () + ": " + message;
+			tree_id = WriteWorkingDirectoryTree (parent.getTree (), dc);
+			commitMsg = "WIP on " + _repo.getBranch () + ": " + message;
 			var wipCommit = GitUtil.CreateCommit(_repo, commitMsg + "\n", new ObjectId[] { headId, indexCommit }, tree_id, author, author);
 			
 			if (monitor != null)
-				monitor.Update (20);
+				monitor.update (20);
 			
 			string prevCommit = null;
 			FileInfo sf = StashRefFile;
 			if (sf.Exists)
 				prevCommit = File.ReadAllText (sf.FullName).Trim (' ','\t','\r','\n');
 			
-			Stash s = new Stash (prevCommit, wipCommit.Name, author, commitMsg);
+			Stash s = new Stash (prevCommit, wipCommit.getName (), author, commitMsg);
 			
 			FileInfo stashLog = StashLogFile;
 			File.AppendAllText (stashLog.FullName, s.FullLine + "\n");
 			File.WriteAllText (sf.FullName, s.CommitId + "\n");
 			
 			if (monitor != null)
-				monitor.Update (5);
+				monitor.update (5);
 			
 			// Wipe all local changes
 			GitUtil.HardReset (_repo, Constants.HEAD);
 			
-			monitor.EndTask ();
+			monitor.endTask ();
 			s.StashCollection = this;
 			return s;
 		}
 		
 		ObjectId WriteWorkingDirectoryTree (RevTree headTree, DirCache index)
 		{
-			DirCache dc = DirCache.NewInCore ();
-			DirCacheBuilder cb = dc.Builder ();
+			DirCache dc = DirCache.newInCore ();
+			DirCacheBuilder cb = dc.builder ();
 			
-			ObjectInserter oi = _repo.NewObjectInserter ();
+			ObjectInserter oi = _repo.newObjectInserter ();
 			try {
 				TreeWalk tw = new TreeWalk (_repo);
-				tw.Reset ();
-				tw.AddTree (new FileTreeIterator (_repo));
-				tw.AddTree (headTree);
-				tw.AddTree (new DirCacheIterator (index));
+				tw.reset ();
+				tw.addTree (new FileTreeIterator (_repo));
+				tw.addTree (headTree);
+				tw.addTree (new DirCacheIterator (index));
 				
-				while (tw.Next ()) {
+				while (tw.next ()) {
 					// Ignore untracked files
-					if (tw.IsSubtree)
-						tw.EnterSubtree ();
-					else if (tw.GetFileMode (0) != NGit.FileMode.MISSING && (tw.GetFileMode (1) != NGit.FileMode.MISSING || tw.GetFileMode (2) != NGit.FileMode.MISSING)) {
-						WorkingTreeIterator f = tw.GetTree<WorkingTreeIterator>(0);
-						DirCacheIterator dcIter = tw.GetTree<DirCacheIterator>(2);
-						DirCacheEntry currentEntry = dcIter.GetDirCacheEntry ();
-						DirCacheEntry ce = new DirCacheEntry (tw.PathString);
-						if (!f.IsModified (currentEntry, true)) {
-							ce.SetLength (currentEntry.Length);
-							ce.LastModified = currentEntry.LastModified;
-							ce.FileMode = currentEntry.FileMode;
-							ce.SetObjectId (currentEntry.GetObjectId ());
+					if (tw.isSubtree ())
+						tw.enterSubtree ();
+					else if (tw.getFileMode (0) != JFileMode.MISSING && (tw.getFileMode (1) != JFileMode.MISSING || tw.getFileMode (2) != JFileMode.MISSING)) {
+						WorkingTreeIterator f = (WorkingTreeIterator)tw.getTree(0, (java.lang.Class)typeof(WorkingTreeIterator));
+						DirCacheIterator dcIter = (DirCacheIterator)tw.getTree(2, (java.lang.Class)typeof(DirCacheIterator));
+						DirCacheEntry currentEntry = dcIter.getDirCacheEntry ();
+						DirCacheEntry ce = new DirCacheEntry (tw.getPathString ());
+						if (!f.isModified (currentEntry, true)) {
+							ce.setLength (currentEntry.getLength ());
+							ce.setLastModified (currentEntry.getLastModified ());
+							ce.setFileMode (currentEntry.getFileMode ());
+							ce.setObjectId (currentEntry.getObjectId ());
 						}
 						else {
-							long sz = f.GetEntryLength();
-							ce.SetLength (sz);
-							ce.LastModified = f.GetEntryLastModified();
-							ce.FileMode = f.EntryFileMode;
-							var data = f.OpenEntryStream();
+							long sz = f.getEntryLength();
+							ce.setLength (sz);
+							ce.setLastModified (f.getEntryLastModified());
+							ce.setFileMode (f.getEntryFileMode ());
+							var data = f.openEntryStream();
 							try {
-								ce.SetObjectId (oi.Insert (Constants.OBJ_BLOB, sz, data));
+								ce.setObjectId (oi.insert (Constants.OBJ_BLOB, sz, data));
 							} finally {
-								data.Close ();
+								data.close ();
 							}
 						}
-						cb.Add (ce);
+						cb.add (ce);
 					}
 				}
 				
-				cb.Finish ();
-				return dc.WriteTree (oi);
+				cb.finish ();
+				return dc.writeTree (oi);
 			} finally {
-				oi.Release ();
+				oi.release ();
 			}
 		}
 		
-		internal MergeCommandResult Apply (ProgressMonitor monitor, Stash stash)
+		internal MergeResult Apply (ProgressMonitor monitor, Stash stash)
 		{
-			monitor.Start (1);
-			monitor.BeginTask ("Applying stash", 100);
-			ObjectId cid = _repo.Resolve (stash.CommitId);
+			monitor.start (1);
+			monitor.beginTask ("Applying stash", 100);
+			ObjectId cid = _repo.resolve (stash.CommitId);
 			RevWalk rw = new RevWalk (_repo);
-			RevCommit wip = rw.ParseCommit (cid);
-			RevCommit oldHead = wip.Parents.First();
-			rw.ParseHeaders (oldHead);
-			MergeCommandResult res = GitUtil.MergeTrees (monitor, _repo, oldHead, wip, "Stash", false);
-			monitor.EndTask ();
+			RevCommit wip = rw.parseCommit (cid);
+			RevCommit oldHead = wip.getParent (0);
+			rw.parseHeaders (oldHead);
+			MergeResult res = GitUtil.MergeTrees (monitor, _repo, oldHead, wip, "Stash", false);
+			monitor.endTask ();
 			return res;
 		}
 		
@@ -320,12 +322,13 @@ namespace MonoDevelop.VersionControl.Git
 			Remove (stashes, s);
 		}
 		
-		public MergeCommandResult Pop (ProgressMonitor monitor)
+		public MergeResult Pop (ProgressMonitor monitor)
 		{
 			List<Stash> stashes = ReadStashes ();
 			Stash last = stashes.Last ();
-			MergeCommandResult res = last.Apply (monitor);
-			if (res.GetMergeStatus () != MergeStatus.FAILED && res.GetMergeStatus () != MergeStatus.NOT_SUPPORTED)
+			MergeResult res = last.Apply (monitor);
+			if (res.getMergeStatus () != MergeResult.MergeStatus.FAILED &&
+				res.getMergeStatus () != MergeResult.MergeStatus.NOT_SUPPORTED)
 				Remove (stashes, last);
 			return res;
 		}

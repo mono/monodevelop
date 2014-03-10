@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
-using NGit.Api;
+using org.eclipse.jgit.api;
 using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
@@ -144,7 +144,7 @@ namespace MonoDevelop.VersionControl.Git
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					MergeCommandResult result;
+					MergeResult result;
 					using (var gm = new GitMonitor (monitor))
 						result = s.Apply (gm);
 					ReportStashResult (monitor, result);
@@ -160,9 +160,9 @@ namespace MonoDevelop.VersionControl.Git
 			return monitor.AsyncOperation;
 		}
 		
-		public static void ReportStashResult (IProgressMonitor monitor, MergeCommandResult result)
+		public static void ReportStashResult (IProgressMonitor monitor, MergeResult result)
 		{
-			if (result.GetMergeStatus () == MergeStatus.FAILED) {
+			if (result.getMergeStatus () == MergeResult.MergeStatus.FAILED) {
 				string msg = GettextCatalog.GetString ("Stash operation failed.");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
@@ -170,14 +170,14 @@ namespace MonoDevelop.VersionControl.Git
 				string txt = msg + "\n\n" + GetMergeResultErrorDetail (result);
 				monitor.ReportError (txt, null);
 			}
-			else if (result.GetMergeStatus () == MergeStatus.NOT_SUPPORTED) {
+			else if (result.getMergeStatus () == MergeResult.MergeStatus.NOT_SUPPORTED) {
 				string msg = GettextCatalog.GetString ("Operation not supported");
 				monitor.ReportError (msg, null);
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
 				});
 			}
-			else if (result.GetMergeStatus () == MergeStatus.CONFLICTING) {
+			else if (result.getMergeStatus () == MergeResult.MergeStatus.CONFLICTING) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
@@ -191,18 +191,25 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		internal static string GetMergeResultErrorDetail (MergeCommandResult result)
+		internal static string GetMergeResultErrorDetail (MergeResult result)
 		{
 			string msg = "";
-			if (result.GetFailingPaths () != null) {
-				foreach (var f in result.GetFailingPaths ()) {
+			if (result.getFailingPaths () != null) {
+				var failing = result.getFailingPaths ();
+				var iterator = failing.keySet ().iterator ();
+				while (iterator.hasNext ()) {
+					var key = iterator.next ();
 					if (msg.Length > 0)
 						msg += "\n";
-					switch (f.Value) {
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_WORKTREE: msg += GettextCatalog.GetString ("The file '{0}' has unstaged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_INDEX: msg += GettextCatalog.GetString ("The file '{0}' has staged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.COULD_NOT_DELETE: msg += GettextCatalog.GetString ("The file '{0}' could not be deleted", f.Key); break;
-					}
+
+					var value = (org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason)failing.get (key);
+
+					if (value == org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason.DIRTY_WORKTREE)
+						msg += GettextCatalog.GetString ("The file '{0}' has unstaged changes", key);
+					else if (value == org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason.DIRTY_INDEX)
+						msg += GettextCatalog.GetString ("The file '{0}' has staged changes", key);
+					else if (value == org.eclipse.jgit.merge.ResolveMerger.MergeFailureReason.COULD_NOT_DELETE)
+						msg += GettextCatalog.GetString ("The file '{0}' could not be deleted", key);
 				}
 			}
 			return msg;

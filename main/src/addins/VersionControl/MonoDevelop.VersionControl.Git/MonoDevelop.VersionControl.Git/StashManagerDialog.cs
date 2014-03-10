@@ -27,8 +27,8 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
-using NGit.Revwalk;
-using NGit;
+using org.eclipse.jgit.revwalk;
+using org.eclipse.jgit.lib;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -119,11 +119,11 @@ namespace MonoDevelop.VersionControl.Git
 				var dlg = new EditBranchDialog (repository, null, true);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-						ObjectId commit = repository.RootRepository.Resolve (s.CommitId);
+						ObjectId commit = repository.RootRepository.resolve (s.CommitId);
 						var rw = new RevWalk (repository.RootRepository);
-						RevCommit c = rw.ParseCommit (commit);
-						RevCommit old = c.GetParent (0);
-						rw.ParseHeaders (old);
+						RevCommit c = rw.parseCommit (commit);
+						RevCommit old = c.getParent (0);
+						rw.parseHeaders (old);
 						repository.CreateBranchFromCommit (dlg.BranchName, old);
 						GitService.SwitchToBranch (repository, dlg.BranchName);
 						ApplyStashAndRemove (s);

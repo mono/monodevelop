@@ -27,9 +27,10 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using NGit.Storage.File;
-using NGit.Revwalk;
-using NGit;
+using org.eclipse.jgit.diff;
+using org.eclipse.jgit.@internal.storage.file;
+using org.eclipse.jgit.lib;
+using org.eclipse.jgit.revwalk;
 using System.IO;
 using System.Collections.Generic;
 
@@ -227,15 +228,22 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public void GetCommitChangesAddedRemoved ()
 		{
 			var commit = "9ed729ee";
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+			var changes = GitUtil.CompareCommits (repo, repo.resolve (commit), repo.resolve (commit + "^"));
+			var iterator = changes.listIterator ();
+			DiffEntry add = null;
+			DiffEntry remove = null;
+			while (iterator.hasNext () && (add == null || remove == null)) {
+				var c = (DiffEntry)iterator.next ();
+				if (add == null && c.getNewPath ().EndsWith ("DocumentLine.cs", StringComparison.Ordinal))
+					add = c;
+				if (remove == null && c.getOldPath ().EndsWith ("LineSegment.cs", StringComparison.Ordinal))
+					remove = c;
+			}
 
-			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
-			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs", StringComparison.Ordinal));
-
-			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.ADD, add.GetChangeType (), "#1");
-			Assert.AreEqual ("/dev/null", add.GetOldPath (), "#2");
-			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.DELETE, remove.GetChangeType (), "#3");
-			Assert.AreEqual ("/dev/null", remove.GetNewPath (), "#4");
+			Assert.AreEqual (DiffEntry.ChangeType.ADD, add.getChangeType (), "#1");
+			Assert.AreEqual ("/dev/null", add.getOldPath (), "#2");
+			Assert.AreEqual (DiffEntry.ChangeType.DELETE, remove.getChangeType (), "#3");
+			Assert.AreEqual ("/dev/null", remove.getNewPath (), "#4");
 		}
 		
 		[Test]
@@ -256,11 +264,21 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				"TextViewMargin.cs",
 			};
 			
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
-			Assert.AreEqual (11, changes.Length, "#1");
+			var changes = GitUtil.CompareCommits (repo, repo.resolve (commit), repo.resolve (commit + "^"));
+			Assert.AreEqual (11, changes.size (), "#1");
 			
-			foreach (var file in changedFiles)
-				Assert.IsTrue (changes.Any (f => f.GetNewPath ().EndsWith (".cs", StringComparison.Ordinal)), "#2." + file);
+			foreach (var file in changedFiles) {
+				var iterator = changes.iterator ();
+				bool found = false;
+				while (iterator.hasNext ()) {
+					var f = (DiffEntry)iterator.next ();
+					if (f.getNewPath ().EndsWith (".cs", StringComparison.Ordinal)) {
+						found = true;
+						break;
+					}
+				}
+				Assert.IsTrue (found, "#2." + file);
+			}
 		}
 		
 		RevCommit[] GetBlameForFixedFile (string revision)
@@ -278,15 +296,15 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			
 			if (blame == null)
 			{
-				var git = new NGit.Api.Git (repo);
-				var commit = git.GetRepository ().Resolve (revision);
-				var result = git.Blame ().SetFilePath (filePath).SetStartCommit (commit).Call ();
+				var git = new org.eclipse.jgit.api.Git (repo);
+				var commit = git.getRepository ().resolve (revision);
+				var result = git.blame ().setFilePath (filePath).setStartCommit (commit).call ();
 				if (result == null)
 					return null;
 
-				blame = new RevCommit [result.GetResultContents ().Size ()];
-				for (int i = 0; i < result.GetResultContents ().Size (); i ++)
-					blame [i] = result.GetSourceCommit (i);
+				blame = new RevCommit [result.getResultContents ().size ()];
+				for (int i = 0; i < result.getResultContents ().size (); i ++)
+					blame [i] = result.getSourceCommit (i);
 				blames.Add(key, blame);
 			}
 			
@@ -299,7 +317,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				int zeroBasedStartLine = blame.StartLine - 1;
 				
 				for (int i = 0; i < blame.LineCount; i++) {
-					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Is.StringStarting (blame.RevID), "Error at line {0}", blame.StartLine + i);
+					Assert.That (blameCommits [zeroBasedStartLine + i].getId ().getName (), Is.StringStarting (blame.RevID),
+						"Error at line {0}", blame.StartLine + i);
 				}
 			}
 		}

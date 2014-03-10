@@ -28,7 +28,7 @@ using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NGit.Transport;
+using org.eclipse.jgit.transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -38,17 +38,17 @@ namespace MonoDevelop.VersionControl.Git
 			get; set;
 		}
 		
-		public override bool IsInteractive ()
+		public override bool isInteractive ()
 		{
 			return true;
 		}
 		
-		public override bool Supports (params CredentialItem[] items)
+		public override bool supports (params CredentialItem[] items)
 		{
 			return true;
 		}
 
-		public override bool Get (URIish uri, params CredentialItem[] items)
+		public override bool get (URIish uri, params CredentialItem[] items)
 		{
 			bool result = false;
 			CredentialItem.Password passwordItem = null;
@@ -77,15 +77,15 @@ namespace MonoDevelop.VersionControl.Git
 			if (result) {
 				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
 				if (passwordItem != null) {
-					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
+					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.getValue (), new string (passwordItem.getValue ()));
 				} else if (passphraseItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
+					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.getValue ());
 				}
 			}
 			return result;
 		}
 		
-		public override void Reset (URIish uri)
+		public override void reset (URIish uri)
 		{
 			HasReset = true;
 		}
@@ -100,7 +100,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				var passphraseValue = PasswordService.GetWebPassword (actualUrl);
 				if (passphraseValue != null) {
-					passphrase.SetValue (passphraseValue);
+					passphrase.setValue (passphraseValue);
 					return true;
 				}
 			} else {
@@ -121,8 +121,8 @@ namespace MonoDevelop.VersionControl.Git
 
 				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
 				if (cred != null) {
-					username.SetValue (cred.Item1);
-					password.SetValueNoCopy (cred.Item2.ToArray ());
+					username.setValue (cred.Item1);
+					password.setValueNoCopy (cred.Item2.ToArray ());
 					return true;
 				}
 			} else {
