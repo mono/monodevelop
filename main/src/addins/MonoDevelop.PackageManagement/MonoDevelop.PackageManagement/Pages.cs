@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class Pages : ObservableCollection<Page>
 	{
-		public const int DefaultPageSize = 10;
+		public const int DefaultPageSize = 29;
 		public const int DefaultMaximumSelectablePages = 5;
 		
 		int pageSize = DefaultPageSize;
