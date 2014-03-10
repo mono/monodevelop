@@ -191,16 +191,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xwt.Gtk.Mac", "external\xwt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xwt.Gtk.Windows", "external\xwt\Xwt.Gtk.Windows\Xwt.Gtk.Windows.csproj", "{252117CA-0ABB-4F36-BFC8-DE23A8089BB9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NGit", "NGit", "{08AC1C52-707A-46D1-AD72-36D747991592}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NGit", "external\ngit\NGit\NGit.csproj", "{E3BFF8B4-189C-496A-A817-7E8B31E22B91}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharpen.Unix", "external\ngit\Sharpen.Unix\Sharpen.Unix.csproj", "{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharpen", "external\ngit\Sharpen\Sharpen.csproj", "{72944A6C-45FF-4EF8-B349-8C9CABF519D4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSch", "external\ngit\NSch\NSch.csproj", "{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mono.Cecil", "Mono.Cecil", "{D07C8309-996F-484E-BDA1-26BBAF69D29B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "external\cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
