@@ -208,15 +208,15 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			tabStartX = allocation.X + LeftBarPadding + LeanWidth / 2;
+			tabStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
 			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
 			var height = allocation.Height - BottomBarPadding;
 			if (height < 0)
 				height = 0;
 
 			PreviousButton.SizeAllocate (new Gdk.Rectangle (
-				allocation.X,
-				allocation.Y,
+				0, // allocation.X,
+				0, // allocation.Y,
 				LeftBarPadding / 2,
 				height
 			)
