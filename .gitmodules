@@ -8,9 +8,6 @@
 [submodule "main/external/monomac"]
 	path = main/external/monomac
 	url = git://github.com/mono/monomac.git
-[submodule "main/external/ngit"]
-	path = main/external/ngit
-	url = git://github.com/mono/ngit.git
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
 	url = git://github.com/mono/mdtestharness.git
