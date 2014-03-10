@@ -318,12 +318,7 @@ namespace MonoDevelop.PackageManagement
 			if (viewModel.IsLoadingNextPage) {
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
-				packageStore.Clear ();
-				packagesCheckedCount = 0;
-				ResetPackagesListViewScroll ();
-				UpdatePackageListViewSelectionColor ();
-				ShowLoadingMessage ();
-				ShrinkImageCache ();
+				ClearPackages ();
 			} else {
 				HideLoadingMessage ();
 			}
@@ -333,6 +328,16 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			UpdateAddPackagesButton ();
+		}
+
+		void ClearPackages ()
+		{
+			packageStore.Clear ();
+			packagesCheckedCount = 0;
+			ResetPackagesListViewScroll ();
+			UpdatePackageListViewSelectionColor ();
+			ShowLoadingMessage ();
+			ShrinkImageCache ();
 		}
 
 		void ResetPackagesListViewScroll ()
@@ -509,6 +514,8 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSearchEntryChanged (object sender, EventArgs e)
 		{
+			ClearPackages ();
+			UpdateAddPackagesButton ();
 			SearchAfterDelay ();
 		}
 
