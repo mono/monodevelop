@@ -48,6 +48,7 @@ type FSharpLanguageBinding() =
              doc.Editor.TabsToSpaces <- true
              doc.ReparseDocument())
 
+
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
       IdeApp.Workspace.FileAddedToProject.Add(invalidateAll)
