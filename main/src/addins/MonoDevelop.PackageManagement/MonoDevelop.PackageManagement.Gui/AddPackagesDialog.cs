@@ -135,7 +135,6 @@ namespace MonoDevelop.PackageManagement
 			noPackagesFoundFrame.Visible = false;
 			packagesListView.Visible = false;
 			loadingSpinnerFrame.Visible = true;
-			loadingSpinner.Visible = true;
 		}
 
 		void HideLoadingMessage ()
