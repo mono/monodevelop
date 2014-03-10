@@ -71,6 +71,7 @@ namespace MonoDevelop.PackageManagement
 				LoggingService.LogInternalError (ex);
 				progressMonitor.Log.WriteLine(ex.Message);
 				progressMonitor.ReportError (progressMessage.Error, null);
+				progressMonitor.ShowPackageConsole ();
 				progressMonitor.Dispose();
 			}
 		}
@@ -142,6 +143,7 @@ namespace MonoDevelop.PackageManagement
 				packageManagementEvents.OnPackagesRestored ();
 			} else {
 				progressMonitor.ReportError (progressMessage.Error, null);
+				progressMonitor.ShowPackageConsole ();
 			}
 		}
 	}

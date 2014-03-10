@@ -69,6 +69,7 @@ namespace MonoDevelop.PackageManagement
 						LoggingService.LogInternalError (ex);
 						monitor.Log.WriteLine (ex.Message);
 						monitor.ReportError (progressMessage.Error, null);
+						monitor.ShowPackageConsole ();
 					} finally {
 						monitor.EndTask ();
 					}
