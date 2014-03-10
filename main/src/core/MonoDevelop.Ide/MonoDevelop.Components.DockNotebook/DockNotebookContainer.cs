@@ -32,7 +32,13 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookContainer : EventBox
 	{
-		DockNotebook tabControl;
+		readonly DockNotebook tabControl;
+
+		public DockNotebook TabControl {
+			get {
+				return tabControl;
+			}
+		}
 
 		public DockNotebookContainer (DockNotebook tabControl)
 		{

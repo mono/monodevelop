@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui
 		DockToolbarFrame toolbarFrame;
 		DockFrame dock;
 		SdiDragNotebook tabControl;
+		SdiDragNotebook activeTabControl;
 		Gtk.MenuBar topMenu;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
@@ -140,10 +141,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (tabControl == null || tabControl.CurrentTabIndex < 0 || tabControl.CurrentTabIndex >= tabControl.TabCount)  {
+				if (activeTabControl == null || activeTabControl.CurrentTabIndex < 0 || activeTabControl.CurrentTabIndex >= activeTabControl.TabCount)  {
 					return null;
 				}
-				return (IWorkbenchWindow) tabControl.CurrentTab.Content;
+				return (IWorkbenchWindow) activeTabControl.CurrentTab.Content;
 			}
 		}
 		
@@ -522,41 +523,41 @@ namespace MonoDevelop.Ide.Gui
 			ActivatePad (content, giveFocus);
 		}
 		
+		internal static string GetTitle (IWorkbenchWindow window)
+		{
+			if (window.ViewContent.IsUntitled)
+				return GetDefaultTitle ();
+			string post = String.Empty;
+			if (window.ViewContent.IsDirty) {
+				post = "*";
+			}
+			if (window.ViewContent.Project != null) {
+				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
+			}
+			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationName;
+		}
+		
 		void SetWorkbenchTitle ()
 		{
 			try {
 				IWorkbenchWindow window = ActiveWorkbenchWindow;
 				if (window != null) {
-					if (window.ViewContent.IsUntitled) {
-						SetDefaultTitle ();
-					} else {
-						string post = String.Empty;
-						if (window.ViewContent.IsDirty) {
-							post = "*";
-						}
-						if (window.ViewContent.Project != null) {
-							Title = window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
-						} else {
-							Title = window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationName;
-						}
-					}
+					Title = GetTitle (window);
 				} else {
-					SetDefaultTitle ();
+					Title = GetDefaultTitle ();
 					if (IsInFullViewMode)
 						this.ToggleFullViewMode ();
 				}
 			} catch (Exception) {
-				SetDefaultTitle ();
+				Title = GetDefaultTitle ();
 			}
 		}
 		
-		void SetDefaultTitle ()
+		static string GetDefaultTitle ()
 		{
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				Title = IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
-			} else {
-				Title = BrandingService.ApplicationName;
-			}
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
+				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
+			return BrandingService.ApplicationName;
 		}
 		
 		public Properties GetStoredMemento (IViewContent content)
@@ -740,6 +741,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnActiveWindowChanged (object sender, EventArgs e)
 		{
+			activeTabControl = sender as SdiDragNotebook;
+
 			if (ignorePageSwitch)
 				return;
 			
@@ -843,7 +846,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (dock);
 			
 			// Create the notebook for the various documents.
-			tabControl = new SdiDragNotebook (this);
+			activeTabControl = tabControl = new SdiDragNotebook (this);
 
 
 			Add (fullViewVBox);
@@ -1416,18 +1419,19 @@ namespace MonoDevelop.Ide.Gui
 			PreviousButtonClicked += delegate {
 				IdeApp.CommandService.DispatchCommand (Ide.Commands.NavigationCommands.NavigateBack);
 			};
-
 			SwitchPage += window.OnActiveWindowChanged;
 			PageRemoved += window.OnActiveWindowChanged;
 			TabClosed += window.CloseClicked;
-
+			FocusChildSet += delegate {
+				window.OnActiveWindowChanged (this, EventArgs.Empty);
+			};
 			TabActivated += delegate(object sender, TabEventArgs e) {
 				window.ToggleFullViewMode ();
 			};
 			TabsReordered += new TabsReorderedHandler (window.OnTabsReordered);
-
+	
 			DoPopupMenu = window.ShowPopup;
-
+			Events |= Gdk.EventMask.FocusChangeMask;
 			IdeApp.CommandService.RegisterCommandBar (this);
 		}
 
