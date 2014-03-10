@@ -1103,7 +1103,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label3">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">?/?</property>
+                    <property name="LabelProp" translatable="yes">1/1</property>
                     <property name="MnemonicWidget">textview</property>
                   </widget>
                   <packing>
