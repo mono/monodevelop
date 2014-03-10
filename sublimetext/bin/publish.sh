@@ -34,6 +34,7 @@ pushd "$__FILE_DIR__/../FSharp"
             ;;
         'Darwin')
             data_path=~/Library/Application\ Support/Sublime\ Text \3
+            publish_package
             publish_tests
             ;;
     esac
