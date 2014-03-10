@@ -132,14 +132,17 @@ namespace MonoDevelop.PackageManagement
 		void ShowLoadingMessage ()
 		{
 			UpdateSpinnerLabel ();
+			noPackagesFoundFrame.Visible = false;
 			packagesListView.Visible = false;
 			loadingSpinnerFrame.Visible = true;
+			loadingSpinner.Visible = true;
 		}
 
 		void HideLoadingMessage ()
 		{
 			loadingSpinnerFrame.Visible = false;
 			packagesListView.Visible = true;
+			noPackagesFoundFrame.Visible = false;
 		}
 
 		void UpdateSpinnerLabel ()
@@ -148,6 +151,14 @@ namespace MonoDevelop.PackageManagement
 				loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
 			} else {
 				loadingSpinnerLabel.Text = Catalog.GetString ("Searching packages...");
+			}
+		}
+
+		void ShowNoPackagesFoundMessage ()
+		{
+			if (!String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
+				packagesListView.Visible = false;
+				noPackagesFoundFrame.Visible = true;
 			}
 		}
 
@@ -359,6 +370,10 @@ namespace MonoDevelop.PackageManagement
 
 			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
 				packagesListView.SelectRow (0);
+			}
+
+			if (!viewModel.IsReadingPackages && (packageStore.RowCount == 0)) {
+				ShowNoPackagesFoundMessage ();
 			}
 		}
 
