@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -47,6 +48,7 @@ namespace ICSharpCode.PackageManagement
 		PackageViewModelOperationLogger logger;
 		IPackageActionRunner actionRunner;
 		IPackageViewModelParent parent;
+		string summary;
 		
 		public PackageViewModel(
 			IPackageViewModelParent parent,
@@ -182,7 +184,17 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		public string Summary {
-			get { return package.SummaryOrDescription(); }
+			get {
+				if (summary == null) {
+					summary = StripNewLinesAndIndentation (package.SummaryOrDescription ());
+				}
+				return summary;
+			}
+		}
+
+		string StripNewLinesAndIndentation (string text)
+		{
+			return PackageListViewTextFormatter.Format (text);
 		}
 		
 		public SemanticVersion Version {

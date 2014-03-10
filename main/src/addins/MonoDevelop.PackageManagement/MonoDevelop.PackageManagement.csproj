@@ -308,6 +308,7 @@
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackagesRequiringLicenseAcceptance.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
