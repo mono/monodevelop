@@ -70,38 +70,40 @@ type FSharpInteractivePad() =
       if doc <> null then Path.GetDirectoryName(doc) |> Some else None
     else None
 
-  let setupSession() = 
-    let ses = InteractiveSession()
-    let textReceived = ses.TextReceived.Subscribe(fun t -> view.WriteOutput t )
-    let promptReady = ses.PromptReady.Subscribe(fun () -> view.Prompt true )
-    ses.Exited.Add(fun e -> 
-      textReceived.Dispose()
-      promptReady.Dispose()
-      if killIntent = NoIntent then
-        DispatchService.GuiDispatch(fun () ->
-          Debug.WriteLine (sprintf "Interactive: process stopped")
-          view.WriteOutput("\nSession termination detected. Press Enter to restart."))
-        isPrompting <- true
-      elif killIntent = Restart then 
-        DispatchService.GuiDispatch view.Clear
-      killIntent <- NoIntent)
-    ses.StartReceiving()
-    // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
-    getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
-    ses
+  let setupSession() =
+    try
+        let ses = InteractiveSession()
+        let textReceived = ses.TextReceived.Subscribe(fun t -> view.WriteOutput t )
+        let promptReady = ses.PromptReady.Subscribe(fun () -> view.Prompt true )
+        ses.Exited.Add(fun e -> 
+          textReceived.Dispose()
+          promptReady.Dispose()
+          if killIntent = NoIntent then
+            DispatchService.GuiDispatch(fun () ->
+              Debug.WriteLine (sprintf "Interactive: process stopped")
+              view.WriteOutput("\nSession termination detected. Press Enter to restart."))
+            isPrompting <- true
+          elif killIntent = Restart then 
+            DispatchService.GuiDispatch view.Clear
+          killIntent <- NoIntent)
+        ses.StartReceiving()
+        // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
+        getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
+        Some(ses)
+    with exn -> None
     
-  let session = ref (Some(setupSession()))
+  let session = ref (setupSession())
 
   let sendCommand (str:string) = 
      session := match !session with 
-                | None -> Some (setupSession())
+                | None -> setupSession()
                 | s -> s
      !session |> Option.iter (fun s -> s.SendCommand(str))
 
   let resetFsi intent = 
     killIntent <- intent
     !session |> Option.iter (fun ses -> ses.Kill())
-    if intent = Restart then session := Some (setupSession())
+    if intent = Restart then session := setupSession()
   
   let AddSourceToSelection selection =
      let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
@@ -153,7 +155,8 @@ type FSharpInteractivePad() =
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
           !session |> Option.iter (fun s -> s.Interrupt()))
-      activeDoc <- IdeApp.Workbench.ActiveDocumentChanged.Subscribe ensureCorrectDirectory |> Some
+      if x.IsValidSession then
+        activeDoc <- IdeApp.Workbench.ActiveDocumentChanged.Subscribe ensureCorrectDirectory |> Some
 
       x.UpdateFont()   
 
@@ -272,6 +275,8 @@ type FSharpInteractivePad() =
     let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
     sendCommand orderedreferences
+    
+  member x.IsValidSession = !session |> Option.isSome
 
   static member private Pad =
     try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad>()
@@ -288,7 +293,11 @@ type FSharpInteractivePad() =
     with exn -> None
 
   static member IsInteractiveAvailable =
-    FSharpInteractivePad.Pad |> Option.isSome
+    match FSharpInteractivePad.Pad with
+    | Some(pad) -> match pad.Content with
+                   | :? FSharpInteractivePad as fsipad -> fsipad.IsValidSession
+                   | _ -> false
+    | None -> false
 
   static member BringToFront(grabfocus) =
     FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))

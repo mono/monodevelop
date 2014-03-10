@@ -39,29 +39,14 @@
   <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
 
-            <!--  If FSharp 3.1 is not available, but FSharp 3.0 is, then use FSharp 3.0  -->
-            <ComplexCondition>
-	      <And>
-		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-		
-  		<Not>
-		  <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-                </Not>
-	      </And>
-              <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-	    </ComplexCondition>
-
-
-            <!--  Otherwise use FSharp 3.1 - this is the negation of the above -->
-	    <ComplexCondition>
-	      <Or>
-		<Not>
-		  <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-		</Not>
-		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-		</Or>
+            <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
+	    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
               <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-	    </ComplexCondition>
+	    </Condition>
+
+            <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
+            <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+
 
     </Extension>
 
@@ -232,6 +217,7 @@
 
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+    <SeparatorItem id = "FSharpInteractiveStart" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />

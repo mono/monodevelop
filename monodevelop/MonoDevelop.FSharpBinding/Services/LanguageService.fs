@@ -250,7 +250,9 @@ module internal TipFormatter =
         let indexOfIndent = 
             match line.IndexOf(':') with
             | -1 -> 0
-            | foundIndex -> foundIndex+2
+            //ideally we would use foundIndex+2 here but there seems to be external wrapping causing probelms
+            // for now resort to indenting by 4 characters
+            | foundIndex -> 4
         formatter line true indexOfIndent
     sb.ToString().Trim()
 
@@ -261,7 +263,7 @@ module internal TipFormatter =
     | ToolTipElementNone -> ()
     | ToolTipElement(it, comment) -> 
         Debug.WriteLine("DataTipElement: " + it)
-        signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 120)) |> ignore
+        signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 80)) |> ignore
         let html = buildFormatComment comment 
         if not (String.IsNullOrWhiteSpace html) then 
             commentB.Append(html) |> ignore
@@ -273,7 +275,7 @@ module internal TipFormatter =
         if (items.Length > 1) then
           signatureB.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) -> 
-          signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 120))  |> ignore
+          signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 80))  |> ignore
           if i = 0 then 
               let html = buildFormatComment comment 
               if not (String.IsNullOrWhiteSpace html) then 

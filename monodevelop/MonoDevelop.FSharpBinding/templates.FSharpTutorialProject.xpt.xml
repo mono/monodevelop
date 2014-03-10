@@ -5,7 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# Tutorial</_Name>
     <!--<Icon>md-project-console|res:fsharp-icon-32.png</Icon>-->
-    <_Description>An F# 3.0 tutorial project providing a walkthrough of the F# language</_Description>
+    <_Description>An F# tutorial project providing a walkthrough of the F# language</_Description>
     <_Category>F#</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
