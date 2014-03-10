@@ -650,7 +650,9 @@ module internal Main =
           main state
 
     | Help ->
-        Console.WriteLine(helpText)
+        match state.OutputMode with
+        | Text -> Console.WriteLine(helpText)
+        | Json -> prAsJson { Kind = "INFO"; Data = helptext }
         main state
 
     | Error(msg) ->

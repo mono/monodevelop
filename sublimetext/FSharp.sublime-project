@@ -20,18 +20,19 @@
 	{
 		"ensure_new_line_at_eof_on_save": true,
 		"trim_trailing_white_space_on_save": true,
-		"default_line_ending": "unix"
+		"default_line_ending": "unix",
+		"translate_tabs_to_spaces": true
 	},
 
 	"folders":
 	[
 		{
 			"follow_symlinks": true,
-			"path": "./FSharp"
+			"path": "."
 		},
 		{
 			"follow_symlinks": true,
-			"path": "."
+			"path": "./FSharp"
 		},
 		{
 			"follow_symlinks": true,
