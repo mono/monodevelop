@@ -217,6 +217,7 @@
 
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+    <SeparatorItem id = "FSharpInteractiveStart" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />

@@ -25,7 +25,10 @@ type InteractiveSession() =
 
   let mutable waitingForResponse = false
  
-  let check = if path = "" then raise (Exception("No path to F# Interactive console set, and default could not be located."))
+  let check = 
+    if path = "" then
+        MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive console set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
+        raise (InvalidOperationException("No path to F# Interactive console set, and default could not be located."))
   let fsiProcess = 
     let startInfo = 
       new ProcessStartInfo
@@ -39,8 +42,8 @@ type InteractiveSession() =
       Debug.WriteLine (sprintf "Interactive: Error %s" (e.ToString()))
       reraise()
     
-  let textReceived = new Event<_>()  
-  let promptReady = new Event<_>()  
+  let textReceived = Event<_>()  
+  let promptReady = Event<_>()  
   
   do 
     Event.merge fsiProcess.OutputDataReceived fsiProcess.ErrorDataReceived
