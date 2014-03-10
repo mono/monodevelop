@@ -1,0 +1,41 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "FSharp: Debug",
+			"working_dir": "${project_path}/FSharp",
+			"shell_cmd": "./build.sh",
+			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\"" }
+		},
+
+		{
+			"name": "F#: Release",
+			"working_dir": "${project_path}/FSharp",
+			"shell_cmd": "./build.sh --release release",
+			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\" -release -dontupload" }
+		}
+	],
+
+	"settings":
+	{
+		"ensure_new_line_at_eof_on_save": true,
+		"trim_trailing_white_space_on_save": true,
+		"default_line_ending": "unix"
+	},
+
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "./FSharp"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"path": "./FSharp_Tests"
+		}
+	]
+}

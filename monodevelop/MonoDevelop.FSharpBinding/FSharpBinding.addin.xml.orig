@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
-       author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop INSERT_FSPROJ_MDVERSION4). Install F# 3.0 before using." category="Language bindings" version="INSERT_FSPROJ_VERSION">
+       author="F# Software Foundation (fsharp.org)" copyright="F# Software Foundation (fsharp.org)" url="http://github.com/fsharp/fsharpbinding"
+       description="F# Language Binding (for Xamarin Studio/MonoDevelop INSERT_FSPROJ_MDVERSION4). Install F# before using, see http://fsharp.org" category="Language bindings" version="INSERT_FSPROJ_VERSION">
 
   <Runtime>
     <Import assembly="FSharp.Core.dll" />
@@ -35,15 +35,34 @@
     <Addin id="Refactoring" version="INSERT_FSPROJ_MDVERSION4"/>
   </Dependencies>
 
-  <!-- By default projects use the F# 3.0 targets file. -->
-  <!-- For Mono F# 3.0 and beyond, this targets file is also installed and it points to the F# 3.0 compiler -->
-  <!-- New projects will be created with this targets file. When opened with Visual Studio 2013, it will ask for a project -->
-  <!-- upgrade but keep referencing the F# 3.0 targets file in when used on Mono. -->
+  <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
+  <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
-    <DotNetProject language="F#" extension="fsproj"
-			guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}"
-      import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"
-      resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+
+            <!--  If FSharp 3.1 is not available, but FSharp 3.0 is, then use FSharp 3.0  -->
+            <ComplexCondition>
+	      <And>
+		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+		
+  		<Not>
+		  <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+                </Not>
+	      </And>
+              <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+	    </ComplexCondition>
+
+
+            <!--  Otherwise use FSharp 3.1 - this is the negation of the above -->
+	    <ComplexCondition>
+	      <Or>
+		<Not>
+		  <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+		</Not>
+		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+		</Or>
+              <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+	    </ComplexCondition>
+
     </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">

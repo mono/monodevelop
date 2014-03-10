@@ -29,7 +29,7 @@ Global
 		{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj
+		StartupItem = FSharp.AutoComplete\FSharp.AutoComplete.fsproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,7 +12,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.25"
+let FSharpVersion = "3.2.26"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -129,3 +129,22 @@ FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
+
+if  isWindows then
+
+  for config in ["Debug";"Release"] do
+    System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),
+       sprintf """
+@echo off
+set MSBUILD=%%WINDIR%%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
+%%MSBUILD%% ..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj /p:Configuration=%s
+%%MSBUILD%% MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
+set MDROOT="%s"
+rmdir /s /q pack
+mkdir pack\windows\%s
+xcopy /s /I /y dependencies\AspNetMvc4 bin\windows\%s\packages\AspNetMvc4
+%%MDROOT%%\bin\mdtool.exe setup pack bin\windows\%s\FSharpBinding.dll -d:pack\windows\%s
+%%MDROOT%%\bin\mdtool.exe setup install -y pack\windows\%s\MonoDevelop.FSharpBinding_%s.mpack 
+"""
+           config config mdDir config config config config config FSharpVersion)
+

@@ -16,6 +16,10 @@ Adds open source F# support to the open source editor MonoDevelop. Features:
 
 Requires MonoDevelop or Xamarin Studio 4.0.13 and later versions
 
+### Prerequisites
+
+To use F# language support please ensure that you have F# installed on your system, for details on this please see http://fsharp.org
+
 ### Installation
 
 First check install MonoDevelop/Xamarin Studio. Check if F# support is already installed using the AddIn manager.
@@ -58,7 +62,7 @@ If Monodevelop is installed in an unusual prefix you will need to invoke `config
 
 	cd monodevelop
 	configure.bat
-	.\install-debug-xamarin-studio.bat
+	.\build-and-install-debug.bat
 
 
 
@@ -98,7 +102,7 @@ On Windows, the configuration creates the file `MonoDevelop.FSharpBinding\MonoDe
 Be aware that this is not the original file, which is `MonoDevelop.FSharp.fsproj.orig`. The windows file is 
 created automatically by the configuration script (`configure.bat`)
 
-On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. 
+On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.1. 
 
 On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MonoDevelop you can use the command:  
 ```

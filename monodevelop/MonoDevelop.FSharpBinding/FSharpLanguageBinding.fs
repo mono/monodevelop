@@ -39,7 +39,15 @@ type FSharpLanguageBinding() =
              for doc in IdeApp.Workbench.Documents do
                  if doc.Editor <> null && CompilerArguments.supportedExtension(Path.GetExtension(doc.FileName.ToString())) then 
                     doc.ReparseDocument ())
-                   
+
+      IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
+        let doc = IdeApp.Workbench.ActiveDocument
+        if doc <> null && doc.Editor <> null &&
+           not doc.Editor.TabsToSpaces &&
+           (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
+             doc.Editor.TabsToSpaces <- true
+             doc.ReparseDocument())
+
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
       IdeApp.Workspace.FileAddedToProject.Add(invalidateAll)

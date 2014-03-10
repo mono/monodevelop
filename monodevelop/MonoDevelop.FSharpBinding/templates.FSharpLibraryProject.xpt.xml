@@ -5,7 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# Library</_Name>
     <Icon>md-project-library|res:fsharp-icon-32.png</Icon>
-    <_Description>A project for creating an F# library</_Description>
+    <_Description>An F# project for creating an F# library</_Description>
     <_Category>F#</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
