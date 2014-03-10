@@ -50,85 +50,108 @@ class ServerTests(unittest.TestCase):
         finally:
             s.stop()
 
-    # def testCanSetProject(self):
-    #     try:
-    #         cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         p = os.path.join(DATA_DIR, 'FindDecl.fsproj')
-    #         self.assertTrue(os.path.exists(p))
-    #         s.project(p)
-    #         response = s.read_line()
-    #         self.assertEqual(response['Kind'], 'project')
-    #     finally:
-    #         s.stop()
+    def testCanSetProject(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FindDecl.fsproj')
+            self.assertTrue(os.path.exists(p))
+            s.project(p)
+            response = s.read_line()
+            self.assertEqual(response['Kind'], 'project')
+        finally:
+            s.stop()
 
-    # def testCanParseFile(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         response = s.parse('./tests/data/FileTwo.fs')
-    #         # XXX: Why in all caps?
-    #         self.assertEqual(response['Kind'], 'INFO')
-    #     finally:
-    #         s.stop()
+    def testCanParseFile(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            s.parse(p)
+            response = s.read_line()
+            # XXX: Why in all caps?
+            self.assertEqual(response['Kind'], 'INFO')
+        finally:
+            s.stop()
 
-    # def testCanRetrieveErrors(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         response = s.parse('./tests/data/FileTwo.fs')
-    #         response = s.errors()
-    #         self.assertEqual(response['Kind'], 'errors')
-    #     finally:
-    #         s.stop()
+    def testCanRetrieveErrors(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            s.parse(p)
+            _ = s.read_line()
+            s.errors()
+            response = s.read_line()
+            self.assertEqual(response['Kind'], 'errors')
+        finally:
+            s.stop()
 
-    # def testCanRetrieveDeclarations(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         response = s.parse('./tests/data/FileTwo.fs')
-    #         response = s.declarations('./tests/data/FileTwo.fs')
-    #         self.assertEqual(response['Kind'], 'declarations')
-    #     finally:
-    #         s.stop()
+    def testCanRetrieveDeclarations(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            s.parse(p)
+            _ = s.read_line()
+            s.declarations(p)
+            response = s.read_line()
+            self.assertEqual(response['Kind'], 'declarations')
+        finally:
+            s.stop()
 
-    # def testCanRetrieveCompletions(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         response = s.parse('./tests/data/FileTwo.fs')
-    #         helptext, completions = s.completions('./tests/data/FileTwo.fs', 12, 9)
-    #         self.assertEqual(helptext['Kind'], 'helptext')
-    #         self.assertEqual(completions['Kind'], 'completion')
-    #     finally:
-    #         s.stop()
+    def testCanRetrieveCompletions(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            s.parse(p)
+            _ = s.read_line()
+            s.completions(p, 12, 9)
+            helptext = s.read_line()
+            completions = s.read_line()
+            self.assertEqual(helptext['Kind'], 'helptext')
+            self.assertEqual(completions['Kind'], 'completion')
+        finally:
+            s.stop()
 
-    # def testCanRetrieveTooltip(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         response = s.parse('./tests/data/FileTwo.fs')
-    #         response = s.tooltip('./tests/data/FileTwo.fs', 12, 9)
-    #         self.assertEqual(response['Kind'], 'tooltip')
-    #     finally:
-    #         s.stop()
+    def testCanRetrieveTooltip(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            s.parse(p)
+            _ = s.read_line()
+            s.tooltip(p, 12, 9)
+            response = s.read_line()
+            self.assertEqual(response['Kind'], 'tooltip')
+        finally:
+            s.stop()
 
-    # def testCanFindDeclaration(self):
-    #     try:
-    # cmd, args = self.cmd_line
-    #         s = Server(cmd, *args)
-    #         s.start()
-    #         s.project('./tests/data/FindDecl.fsproj')
-    #         s.parse('./tests/data/FileTwo.fs')
-    #         s.parse('./tests/data/Script.fsx')
-    #         s.parse('./tests/data/Program.fs')
-    #         response = s.find_declaration('./tests/data/Program.fs', 5, 15)
-    #         self.assertEqual(response['Kind'], 'finddecl')
-    #     finally:
-    #         s.stop()
+    def testCanFindDeclaration(self):
+        try:
+            cmd, args = self.cmd_line
+            s = Server(cmd, *args)
+            s.start()
+            p = os.path.join(DATA_DIR, 'FileTwo.fs')
+            p2 = os.path.join(DATA_DIR, 'Script.fsx')
+            p3 = os.path.join(DATA_DIR, 'Program.fs')
+            s.project(p)
+            _ = s.read_line()
+            s.parse(p)
+            _ = s.read_line()
+            s.parse(p2)
+            _ = s.read_line()
+            s.parse(p3)
+            _ = s.read_line()
+            s.find_declaration(p3, 5, 15)
+            response = s.read_line()
+            self.assertEqual(response['Kind'], 'finddecl')
+        finally:
+            s.stop()
