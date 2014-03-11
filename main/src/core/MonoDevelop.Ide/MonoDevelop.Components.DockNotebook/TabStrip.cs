@@ -414,7 +414,7 @@ namespace MonoDevelop.Components.DockNotebook
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
 				if (evnt.IsContextMenuButton ()) {
-					notebook.DoPopupMenu (t.Index, evnt);
+					notebook.DoPopupMenu (notebook, t.Index, evnt);
 					return true;
 				}
 				// Don't select the tab if we are clicking the close button

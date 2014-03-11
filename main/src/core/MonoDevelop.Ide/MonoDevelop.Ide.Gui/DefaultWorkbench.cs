@@ -1006,10 +1006,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal void ShowPopup (int tabIndex, Gdk.EventButton evt)
+		internal void ShowPopup (DockNotebook notebook, int tabIndex, Gdk.EventButton evt)
 		{
-			this.tabControl.CurrentTabIndex = tabIndex;
-			IdeApp.CommandService.ShowContextMenu (this.tabControl, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
+			notebook.CurrentTabIndex = tabIndex;
+			IdeApp.CommandService.ShowContextMenu (notebook, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
 		}
 		
 		internal void OnTabsReordered (Widget widget, int oldPlacement, int newPlacement)

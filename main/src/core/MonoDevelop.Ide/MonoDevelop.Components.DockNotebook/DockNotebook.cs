@@ -164,7 +164,7 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.InitSize ();
 		}
 
-		public Action<int,Gdk.EventButton> DoPopupMenu { get; set; }
+		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
 
 		public IDockNotebookTab InsertTab (int index)
 		{

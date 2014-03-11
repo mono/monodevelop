@@ -57,7 +57,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		IDockNotebookTab frame;
 		
-		public PlaceholderWindow (IDockNotebookTab frame): base (Gtk.WindowType.Popup)
+		public PlaceholderWindow (IDockNotebookTab frame): base (Gtk.WindowType.Toplevel)
 		{
 			this.frame = frame;
 			SkipTaskbarHint = true;
@@ -182,15 +182,15 @@ namespace MonoDevelop.Components.DockNotebook
 						false
 					); 
 					placementDelegate = PlaceInHoverNotebook;
+					return;
 				}
-				return;
 			}
 
 			Relocate (
-				x - Allocation.Width / 2, 
-				y - Allocation.Height / 2, 
-				100, 
-				100, 
+				x - w / 2, 
+				y - h / 2, 
+				w, 
+				h, 
 				false
 			); 
 			placementDelegate = PlaceInFloatingFrame;
@@ -365,11 +365,12 @@ namespace MonoDevelop.Components.DockNotebook
 			newWindow.Title = DefaultWorkbench.GetTitle (window2);
 			newWindow.ShowAll (); 
 			window2.SetDockNotebook (newNotebook, newTab2); 
-			const int w = 640;
-			const int h = 480;
 			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
 			newWindow.Resize (w, h);
 		}
+
+		const int w = 640;
+		const int h = 480;
 
 		void PlaceInHoverNotebook (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
