@@ -1028,6 +1028,27 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)
+		{
+			SetActiveWidget (Focus);
+			return base.OnConfigureEvent (evnt);
+		}
+
+		/// <summary>
+		/// Sets the current active document widget.
+		/// </summary>
+		internal void SetActiveWidget (Widget child)
+		{
+			while (child != null) {
+				var dragNotebook = child as SdiDragNotebook;
+				if (dragNotebook != null) {
+					OnActiveWindowChanged (dragNotebook, EventArgs.Empty);
+					break;
+				}
+				child = child.Parent;
+			}
+		}
+		
 		//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
 		//else they will diverge
 		void DestroyFullViewLayouts (string oldLayout)
@@ -1432,9 +1453,6 @@ namespace MonoDevelop.Ide.Gui
 			SwitchPage += window.OnActiveWindowChanged;
 			PageRemoved += window.OnActiveWindowChanged;
 			TabClosed += window.CloseClicked;
-			FocusChildSet += delegate {
-				window.OnActiveWindowChanged (this, EventArgs.Empty);
-			};
 			TabActivated += delegate {
 				window.ToggleFullViewMode ();
 			};
