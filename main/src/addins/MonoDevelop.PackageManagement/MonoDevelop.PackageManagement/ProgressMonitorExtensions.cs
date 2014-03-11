@@ -36,11 +36,13 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static void ShowPackageConsole (this IProgressMonitor monitor)
 		{
-			var aggregateMonitor = (AggregatedProgressMonitor)monitor;
-			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (aggregateMonitor.MasterMonitor);
-			if (pad != null) {
-				pad.BringToFront ();
-			}
+			DispatchService.GuiDispatch (() => {
+				var aggregateMonitor = (AggregatedProgressMonitor)monitor;
+				Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (aggregateMonitor.MasterMonitor);
+				if (pad != null) {
+					pad.BringToFront ();
+				}
+			});
 		}
 	}
 }
