@@ -300,7 +300,6 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			public DockWindow () : base (Gtk.WindowType.Toplevel)
 			{
-				Events |= EventMask.AllEventsMask;
 			}
 
 			static void RemoveWindows (DockNotebookContainer container)
@@ -361,11 +360,10 @@ namespace MonoDevelop.Components.DockNotebook
 		void PlaceInHoverNotebook (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var window = (SdiWorkspaceWindow)tab.Content;
-			if (notebook == window.TabControl)
-				return;
 			var newTab = hoverNotebook.InsertTab (-1); 
 			newTab.Content = window;
 			window.SetDockNotebook (hoverNotebook, newTab); 
+			window.SelectWindow ();
 		}
 
 		Action<DockNotebook, IDockNotebookTab, Rectangle, int, int> placementDelegate;
