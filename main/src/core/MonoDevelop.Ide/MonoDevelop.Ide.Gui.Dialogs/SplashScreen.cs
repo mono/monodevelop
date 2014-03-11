@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			double height = rect.Height;
 
 			c.Rectangle (x, y, width, height);
-			c.SetSourceRGB (71 / 255.0, 128 / 255.0, 68 / 255.0);
+			c.SetSourceRGB (0, 0, 0);
 			c.Fill ();
 		}
 
