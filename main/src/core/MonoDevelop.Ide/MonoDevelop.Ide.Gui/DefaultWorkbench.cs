@@ -133,9 +133,12 @@ namespace MonoDevelop.Ide.Gui
 			get { return bottomBar; }
 		}
 
-		internal DockNotebook TabControl {
+		internal SdiDragNotebook TabControl {
 			get {
 				return tabControl;
+			}
+			set {
+				tabControl = value;
 			}
 		}
 		

@@ -32,6 +32,8 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookContainer : EventBox
 	{
+		bool isMasterTab;
+
 		DockNotebook tabControl;
 
 		public DockNotebook TabControl {
@@ -42,6 +44,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public DockNotebookContainer (DockNotebook tabControl, bool isMasterTab = false)
 		{
+			this.isMasterTab = isMasterTab;
 			this.tabControl = tabControl;
 			Child = tabControl;
 			
@@ -49,13 +52,13 @@ namespace MonoDevelop.Components.DockNotebook
 				tabControl.PageRemoved += HandlePageRemoved;
 		}
 
-		void HandlePageRemoved (object sender, EventArgs e)
+		static void HandlePageRemoved (object sender, EventArgs e)
 		{
 			var control = (DockNotebook)sender;
 			if (control.TabCount != 0)
 				return;
 			var controlContainer = control.Parent as DockNotebookContainer;
-			if (controlContainer == null || controlContainer.Parent == null) 
+			if (controlContainer == null || controlContainer.Parent == null || controlContainer.isMasterTab)
 				return;
 			
 			var paned = controlContainer.Parent as Paned;
@@ -70,6 +73,10 @@ namespace MonoDevelop.Components.DockNotebook
 				otherContainer.Remove (newChild);
 				
 				motherContainer.tabControl = otherContainer.tabControl;
+				if (motherContainer.isMasterTab) {
+					((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl = (SdiDragNotebook)motherContainer.tabControl;
+				}
+				motherContainer.isMasterTab |= otherContainer.isMasterTab;
 				motherContainer.Remove (paned);
 				motherContainer.Child = newChild;
 				
