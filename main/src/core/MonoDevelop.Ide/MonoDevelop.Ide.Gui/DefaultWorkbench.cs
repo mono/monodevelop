@@ -1060,11 +1060,13 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
+			return FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt); 
+		}
+
+		internal bool FilterWindowKeypress (Gdk.EventKey evnt)
+		{
 			// Handle Alt+1-0 keys
-			Gdk.ModifierType winSwitchModifier = Platform.IsMac
-				? KeyBindingManager.SelectionModifierControl
-				: KeyBindingManager.SelectionModifierAlt;
-			
+			Gdk.ModifierType winSwitchModifier = Platform.IsMac ? KeyBindingManager.SelectionModifierControl : KeyBindingManager.SelectionModifierAlt;
 			if ((evnt.State & winSwitchModifier) != 0 && (evnt.State & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask)) != (Gdk.ModifierType.ControlMask | Gdk.ModifierType.Mod1Mask)) {
 				switch (evnt.Key) {
 				case Gdk.Key.KP_1:
@@ -1109,14 +1111,19 @@ namespace MonoDevelop.Ide.Gui
 					return true;
 				}
 			}
-			return base.OnKeyPressEvent (evnt); 
+			return false;
 		}
 		
 		void SwitchToDocument (int number)
 		{
-			if (number >= viewContentCollection.Count || number < 0)
+			if (activeTabControl == null)
 				return;
-			viewContentCollection[number].WorkbenchWindow.SelectWindow ();
+			
+			if (number >= activeTabControl.TabCount || number < 0)
+				return;
+			var window = activeTabControl.Tabs [number].Content as IWorkbenchWindow;
+			if (window != null)
+				window.SelectWindow ();
 		}
 		
 		bool initializing;
@@ -1428,14 +1435,24 @@ namespace MonoDevelop.Ide.Gui
 			FocusChildSet += delegate {
 				window.OnActiveWindowChanged (this, EventArgs.Empty);
 			};
-			TabActivated += delegate(object sender, TabEventArgs e) {
+			TabActivated += delegate {
 				window.ToggleFullViewMode ();
 			};
-			TabsReordered += new TabsReorderedHandler (window.OnTabsReordered);
-	
+			TabsReordered += window.OnTabsReordered;
+			CanFocus = true;
+			
 			DoPopupMenu = window.ShowPopup;
-			Events |= Gdk.EventMask.FocusChangeMask;
+			Events |= Gdk.EventMask.FocusChangeMask | Gdk.EventMask.KeyPressMask;
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+		
+		void SwitchToDocument (int number)
+		{
+			if (number >= TabCount || number < 0)
+				return;
+			var window = Tabs [number].Content as SdiWorkspaceWindow;
+			if (window != null)
+				window.SelectWindow ();
 		}
 
 		protected override void OnDestroyed ()

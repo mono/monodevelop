@@ -407,7 +407,7 @@ namespace MonoDevelop.Components.Commands
 			RegisterTopWindow (rootWidget);
 		}
 		
-		void RegisterTopWindow (Gtk.Window win)
+		internal void RegisterTopWindow (Gtk.Window win)
 		{
 			if (!topLevelWindows.ContainsKey (win)) {
 				topLevelWindows.Add (win, win);

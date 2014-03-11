@@ -300,8 +300,15 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			public DockWindow () : base (Gtk.WindowType.Toplevel)
 			{
+				IdeApp.CommandService.RegisterTopWindow (this);
+				AddAccelGroup (IdeApp.CommandService.AccelGroup);
 			}
 
+			protected override bool OnKeyPressEvent (EventKey evnt)
+			{
+				return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt);
+			}
+			
 			static void RemoveWindows (DockNotebookContainer container)
 			{
 				var notebook = container.TabControl;
@@ -329,6 +336,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			protected override void OnDestroyed ()
 			{
+				RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
 				RemoveWindows (Child);
 				base.OnDestroyed ();
 			}
