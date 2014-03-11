@@ -303,13 +303,19 @@ namespace MonoDevelop.Components.DockNotebook
 				IdeApp.CommandService.RegisterTopWindow (this);
 				AddAccelGroup (IdeApp.CommandService.AccelGroup);
 			}
-			
+
 			protected override bool OnConfigureEvent (EventConfigure evnt)
 			{
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
 				return base.OnConfigureEvent (evnt);
 			}
-			
+
+			protected override bool OnFocusInEvent (EventFocus evnt)
+			{
+				((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
+				return base.OnFocusInEvent (evnt);
+			}
+
 			protected override bool OnKeyPressEvent (EventKey evnt)
 			{
 				return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt);

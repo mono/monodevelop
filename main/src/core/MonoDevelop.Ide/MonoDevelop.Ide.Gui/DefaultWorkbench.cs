@@ -744,13 +744,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnActiveWindowChanged (object sender, EventArgs e)
 		{
-			activeTabControl = sender as SdiDragNotebook;
-
 			if (ignorePageSwitch)
 				return;
 			
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
+			activeTabControl = sender as SdiDragNotebook ?? activeTabControl;
 
 			WelcomePage.WelcomePageService.HideWelcomePage ();
 
@@ -1033,6 +1032,13 @@ namespace MonoDevelop.Ide.Gui
 			SetActiveWidget (Focus);
 			return base.OnConfigureEvent (evnt);
 		}
+
+		protected override bool OnFocusInEvent (Gdk.EventFocus evnt)
+		{
+			SetActiveWidget (Focus);
+			return base.OnFocusInEvent (evnt);
+		}
+
 
 		/// <summary>
 		/// Sets the current active document widget.
