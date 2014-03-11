@@ -71,7 +71,13 @@ namespace MonoDevelop.Ide.Gui
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
-
+		
+		public DockNotebook TabControl {
+			get {
+				return this.tabControl;
+			}
+		}
+		
 		internal void SetDockNotebook (DockNotebook tabControl, IDockNotebookTab tabLabel)
 		{
 			this.tabControl = tabControl;
