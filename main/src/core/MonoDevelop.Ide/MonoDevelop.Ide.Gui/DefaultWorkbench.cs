@@ -746,10 +746,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ignorePageSwitch)
 				return;
-			
+			activeTabControl = sender as SdiDragNotebook ?? activeTabControl ?? tabControl;
+
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
-			activeTabControl = sender as SdiDragNotebook ?? activeTabControl;
 
 			WelcomePage.WelcomePageService.HideWelcomePage ();
 
