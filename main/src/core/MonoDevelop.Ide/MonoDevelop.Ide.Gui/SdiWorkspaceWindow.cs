@@ -84,6 +84,7 @@ namespace MonoDevelop.Ide.Gui
 			this.tab = tabLabel;
 			this.tabPage = content.Control;
 			SetTitleEvent(null, null);
+			SetDockNotebookTabTitle ();
 		}
 
 		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
@@ -676,31 +677,37 @@ namespace MonoDevelop.Ide.Gui
 			} else
 				return null;
 		}
+
+		void SetDockNotebookTabTitle ()
+		{
+			tab.Text = Title;
+			tab.Notify = show_notification;
+			tab.Dirty = content.IsDirty;
+			if (content.ContentName != null && content.ContentName != "") {
+				tab.Tooltip = content.ContentName;
+			}
+			try {
+				if (content.StockIconId != null) {
+					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
+				}
+				else
+					if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] {
+						'*',
+						'+'
+					}) == -1) {
+						tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
+					}
+			}
+			catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+			}
+		}
 		
 		protected virtual void OnTitleChanged(EventArgs e)
 		{
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
-
-			tab.Text = Title;
-			tab.Notify = show_notification;
-			tab.Dirty = content.IsDirty;
-			
-			if (content.ContentName != null && content.ContentName != "") {
-				tab.Tooltip = content.ContentName;
-			}
-
-			try {
-				if (content.StockIconId != null ) {
-					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-				}
-				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
-					tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			}
-
+			SetDockNotebookTabTitle ();
 			if (TitleChanged != null) {
 				TitleChanged(this, e);
 			}
