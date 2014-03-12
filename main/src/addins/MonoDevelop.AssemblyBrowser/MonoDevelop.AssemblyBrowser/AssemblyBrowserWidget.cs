@@ -158,10 +158,10 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 
 			languageCombobox = Gtk.ComboBox.NewText ();
-			languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
+			//languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
 			languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
 			languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
-			languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 2);
+			languageCombobox.Active = Math.Min (1, PropertyService.Get ("AssemblyBrowser.InspectLanguage", 1));
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
 
 			loader = new CecilLoader (true);
@@ -1109,16 +1109,11 @@ namespace MonoDevelop.AssemblyBrowser
 			inspectEditor.Document.ClearFoldSegments ();
 			switch (this.languageCombobox.Active) {
 			case 0:
-				inspectEditor.Options.ShowFoldMargin = false;
-				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				this.documentationPanel.Markup = builder.GetDocumentationMarkup (nav);
-				break;
-			case 1:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-ilasm";
 				SetReferencedSegments (builder.Disassemble (inspectEditor.GetTextEditorData (), nav));
 				break;
-			case 2:
+			case 1:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-csharp";
 				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav, PublicApiOnly));

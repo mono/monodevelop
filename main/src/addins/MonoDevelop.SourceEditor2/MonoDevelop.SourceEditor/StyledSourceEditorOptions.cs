@@ -331,7 +331,8 @@ namespace MonoDevelop.SourceEditor
 
 		public IndentStyle IndentStyle {
 			get {
-				if (DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Smart && CurrentPolicy.RemoveTrailingWhitespace)
+				if ((DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Smart ||
+					DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Auto) && CurrentPolicy.RemoveTrailingWhitespace)
 					return IndentStyle.Virtual;
 				return DefaultSourceEditorOptions.Instance.IndentStyle;
 			}

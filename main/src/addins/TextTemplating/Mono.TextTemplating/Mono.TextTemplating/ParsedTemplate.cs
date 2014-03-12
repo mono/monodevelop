@@ -130,7 +130,7 @@ namespace Mono.TextTemplating
 						switch (tokeniser.State) {
 						case State.DirectiveName:
 							if (directive == null) {
-								directive = new Directive (tokeniser.Value.ToLower (), tokeniser.Location);
+								directive = new Directive (tokeniser.Value, tokeniser.Location);
 								directive.TagStartLocation = tokeniser.TagStartLocation;
 								if (!parseIncludes || directive.Name != "include")
 									segments.Add (directive);
@@ -139,7 +139,7 @@ namespace Mono.TextTemplating
 							break;
 						case State.DirectiveValue:
 							if (attName != null && directive != null)
-								directive.Attributes[attName.ToLower ()] = tokeniser.Value;
+								directive.Attributes[attName] = tokeniser.Value;
 							else
 								LogError ("Directive value without name", tokeniser.Location);
 							attName = null;
@@ -264,7 +264,7 @@ namespace Mono.TextTemplating
 		public Directive (string name, Location start)
 		{
 			this.Name = name;
-			this.Attributes = new Dictionary<string, string> ();
+			this.Attributes = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 			this.StartLocation = start;
 		}
 		
