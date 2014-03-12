@@ -297,7 +297,9 @@ type LanguageService(dirtyNotify) =
     | None -> 
         Debug.WriteLine(sprintf "Worker: Not using stale results - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        mbox.PostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+        match mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout) with
+        | Some x -> x
+        | None -> ParseAndCheckResults.Empty
 
   member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale, targetFramework) = 
    async { 
