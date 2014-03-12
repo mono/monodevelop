@@ -22,7 +22,7 @@
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
 			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
-			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
+			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" icon="md-view-debug-immediate" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
 		</Category>
 	</Extension>
 
@@ -216,6 +216,7 @@
 		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-watch" resource = "pad-watch-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-bug" resource = "bug-light-16.png" size="Menu" />
 	</Extension>
 
