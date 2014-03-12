@@ -1595,12 +1595,6 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				
-				if (TextEditor.Caret.Column != 0) {
-					TextEditor.Caret.PreserveSelection = true;
-					TextEditor.Caret.Column += commentTag.Length;
-					TextEditor.Caret.PreserveSelection = false;
-				}
-				
 				if (TextEditor.IsSomethingSelected) 
 					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 			}
@@ -1638,12 +1632,6 @@ namespace MonoDevelop.SourceEditor
 					} else {
 						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
 					}
-				}
-				
-				if (TextEditor.Caret.Column != DocumentLocation.MinColumn) {
-					TextEditor.Caret.PreserveSelection = true;
-					TextEditor.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, TextEditor.Caret.Column - last);
-					TextEditor.Caret.PreserveSelection = false;
 				}
 				
 				if (TextEditor.IsSomethingSelected) 
