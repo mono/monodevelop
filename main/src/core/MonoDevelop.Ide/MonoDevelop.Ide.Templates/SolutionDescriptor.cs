@@ -149,10 +149,13 @@ namespace MonoDevelop.Ide.Templates
                     else
 	                    entryProjectCI = localProjectCI;
 
-                    ISolutionItemDescriptor solutionItem = entryDescriptors[i];
+					var solutionItemDesc = entryDescriptors[i];
 
-                    SolutionEntityItem info = solutionItem.CreateItem (entryProjectCI, defaultLanguage);
-                    entryDescriptors[i].InitializeItem (solution.RootFolder, entryProjectCI, defaultLanguage, info);
+					SolutionEntityItem info = solutionItemDesc.CreateItem (entryProjectCI, defaultLanguage);
+					if (info == null)
+						continue;
+
+					solutionItemDesc.InitializeItem (solution.RootFolder, entryProjectCI, defaultLanguage, info);
 
                     IConfigurationTarget configurationTarget = info as IConfigurationTarget;
                     if (configurationTarget != null) {
@@ -167,8 +170,8 @@ namespace MonoDevelop.Ide.Templates
                         }
                     }
 
-					if ((info is Project) && (solutionItem is ProjectDescriptor)) {
-						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItem);
+					if ((info is Project) && (solutionItemDesc is ProjectDescriptor)) {
+						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItemDesc);
 					}
                     solution.RootFolder.Items.Add (info);
 					if (startupProject == info.Name)

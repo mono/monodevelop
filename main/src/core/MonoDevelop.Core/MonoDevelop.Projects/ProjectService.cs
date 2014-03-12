@@ -502,6 +502,15 @@ namespace MonoDevelop.Projects
 			throw new InvalidOperationException ("Project type '" + type + "' not found");
 		}
 
+		public bool CanCreateProject (string type)
+		{
+			foreach (ProjectBindingCodon projectBinding in projectBindings) {
+				if (projectBinding.ProjectBinding.Name == type)
+					return true;
+			}
+			return false;
+		}
+
 		//TODO: find solution that contains the project if possible
 		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
 		{
