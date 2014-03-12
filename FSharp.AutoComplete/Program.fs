@@ -293,10 +293,13 @@ module internal CommandInput =
         followed by content of a file (ended with <<EOF>>)
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
+    helptext <candidate>
+      - fetch type signature for specified completion candidate
+        (from last completion request). Only use in JSON mode.
     tooltip ""<filename>"" <line> <col> [timeout]
       - get tool tip for the specified location
     finddecl ""<filename>"" <line> <col> [timeout]
-      - find the point of declaration of the object at specified position
+      - find the point of declaration of the symbol at specified location
     project ""<filename>""
       - associates the current session with the specified project
     outputmode {json,text}
