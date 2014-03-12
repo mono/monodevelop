@@ -1446,6 +1446,12 @@
     <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
       <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-overlay-9.png">
+      <LogicalName>warning-overlay-light-9.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-overlay-9%402x.png">
+      <LogicalName>warning-overlay-light-9@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-16.png">
       <LogicalName>warning-light-16.png</LogicalName>
     </EmbeddedResource>
