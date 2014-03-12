@@ -121,9 +121,8 @@ class actions:
     @staticmethod
     def show_tooltip(data):
         v = sublime.active_window().active_view()
-        heading = list(data['Data'].keys())[0]
-        body = data['Data'][heading]
-        v.show_popup_menu([heading, body], None)
+        v.show_popup_menu([line for line in data['Data'].split('\n') if x],
+                          None)
 
 
 def process_output(data):
@@ -132,7 +131,7 @@ def process_output(data):
         # Completions should normally be processed via events.
         # action = actions.show_completions
         pass
-    elif data['Kind'] == 'helptext':
+    elif data['Kind'] == 'tooltip':
         action = actions.show_tooltip
     elif data['Kind'] == 'INFO':
         action = actions.show_info
@@ -209,7 +208,7 @@ class FsParseFile(sublime_plugin.WindowCommand):
         tasks.put(('parse', (v.file_name(), True)))
 
 
-class FsFindDeclaration(sublime_plugin.WindowCommand):
+class FsGetTooltip(sublime_plugin.WindowCommand):
     def is_enabled(self):
         v = self.window.active_view()
         if v and fs.is_fsharp_code(v.file_name()):
@@ -224,7 +223,7 @@ class FsFindDeclaration(sublime_plugin.WindowCommand):
         v = self.window.active_view()
         row, col = v.rowcol(v.sel()[0].b)
         tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('find_declaration', (v.file_name(), row, col)))
+        tasks.put(('tooltip', (v.file_name(), row, col)))
 
 
 class FsDeclarations(sublime_plugin.WindowCommand):

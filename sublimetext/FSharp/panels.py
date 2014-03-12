@@ -8,7 +8,7 @@ _menu_items = {
     'F#: Set as Project File':  ('fs_set_project_file'),
     'F#: Go to Declaration':    ('fs_find_declaration'),
     'F#: Get Completions':      ('fs_find_completions'),
-    'F#: Get Tooltip':          ('fs_find_completions'),
+    'F#: Get Tooltip':          ('fs_get_tooltip'),
     'F#: List Declarations':    ('fs_declarations')
 }
 
@@ -27,6 +27,7 @@ class FsShowMainMenu(sublime_plugin.WindowCommand):
         fname = self.window.active_view().file_name()
         if fname:
             return fs.is_fsharp_file(fname)
+        return False
 
     def run(self):
         self.window.show_quick_panel(self.ITEMS, self.on_done)
