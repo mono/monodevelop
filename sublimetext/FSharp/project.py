@@ -1,13 +1,14 @@
 import sublime
 import sublime_plugin
 
-import os
-from zipfile import ZipFile
-
-from . import const
-from FSharp.fsac import get_server
-from threading import Thread
 from queue import Queue
+from threading import Thread
+from zipfile import ZipFile
+import os
+
+from FSharp.lib import const
+from FSharp.lib.fsac import get_server
+from FSharp.lib import fs
 
 
 tasks = Queue()
@@ -95,10 +96,6 @@ class actions:
         print("RECEIVED: " + str(data))
 
     @staticmethod
-    def show_help_text(data):
-        sublime.status_message(str(data['Data']))
-
-    @staticmethod
     def show_info(data):
         print(data)
 
@@ -116,13 +113,27 @@ class actions:
         decls = data['Data']
         print(decls)
 
+    @staticmethod
+    def show_completions(data):
+        v = sublime.active_window().active_view()
+        v.show_popup_menu(data['Data'], None)
+
+    @staticmethod
+    def show_tooltip(data):
+        v = sublime.active_window().active_view()
+        heading = list(data['Data'].keys())[0]
+        body = data['Data'][heading]
+        v.show_popup_menu([heading, body], None)
+
 
 def process_output(data):
     action = None
     if data['Kind'] == 'completion':
-        action = actions.generic_action
+        # Completions should normally be processed via events.
+        # action = actions.show_completions
+        pass
     elif data['Kind'] == 'helptext':
-        action = actions.show_help_text
+        action = actions.show_tooltip
     elif data['Kind'] == 'INFO':
         action = actions.show_info
     elif data['Kind'] == 'finddecl':
@@ -166,67 +177,86 @@ class installation:
 
 
 class FsSetProjectFile(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_project(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not a project file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith('.fsproj')):
-            msg = 'FSharp: Not a project file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
         sublime.status_message('FSharp: Loading project...')
         tasks.put(('project', (v.file_name(),)))
 
 
 class FsParseFile(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        fname = v.file_name()
-        if not (v and fname.endswith(('.fs', '.fsi', '.fsx'))):
-            msg = 'FSharp: Not a fsharp file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
-        tasks.put(('parse', (fname, True)))
+        tasks.put(('parse', (v.file_name(), True)))
 
 
 class FsFindDeclaration(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
         row, col = v.rowcol(v.sel()[0].b)
         tasks.put(('parse', (v.file_name(), True)))
         tasks.put(('find_declaration', (v.file_name(), row, col)))
 
 
 class FsDeclarations(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
         tasks.put(('parse', (v.file_name(), True)))
         tasks.put(('declarations', (v.file_name(),)))
 
 
 class FsFindCompletions(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
         row, col = v.rowcol(v.sel()[0].b)
         tasks.put(('parse', (v.file_name(), True)))
         tasks.put(('completions', (v.file_name(), row, col)))
