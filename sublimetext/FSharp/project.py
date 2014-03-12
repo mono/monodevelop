@@ -2,6 +2,7 @@ import sublime
 import sublime_plugin
 
 from queue import Queue
+import queue
 from threading import Thread
 from zipfile import ZipFile
 import os
@@ -12,8 +13,10 @@ from FSharp.lib import fs
 
 
 tasks = Queue()
+task_results = Queue()
 
-SIG_STOP = '__STOP__'
+
+SIG_QUIT = '<<QUIT>>'
 
 
 def plugin_loaded():
@@ -33,7 +36,7 @@ def plugin_loaded():
 
 
 def plugin_unloaded():
-    tasks.put((SIG_STOP, ()))
+    tasks.put((SIG_QUIT, ()))
 
 
 class AsyncPipe(object):
@@ -59,7 +62,7 @@ class AsyncPipe(object):
                 process_output({'Kind': 'ERROR', 'Data': 'Not a valid call.'})
                 continue
 
-            if action == SIG_STOP:
+            if action == SIG_QUIT:
                 # Give the other thread a chance to exit.
                 self.tasks.put((action, args))
                 break
@@ -69,8 +72,11 @@ class AsyncPipe(object):
 
     def read(self):
         while True:
-            data = self.server.read_line()
-            process_output(data)
+            output = self.server.read_line()
+            if output['Kind'] == 'completion':
+                task_results.put(output)
+            else:
+                process_output(output)
 
             try:
                 # Don't block here so we can read all the remaining output.
@@ -78,7 +84,7 @@ class AsyncPipe(object):
             except:
                 continue
 
-            if action == SIG_STOP:
+            if action == SIG_QUIT:
                 #  Give the other thread a chance to exit.
                 self.tasks.put((action, args))
                 break
@@ -121,16 +127,37 @@ class actions:
     @staticmethod
     def show_tooltip(data):
         v = sublime.active_window().active_view()
-        v.show_popup_menu([line for line in data['Data'].split('\n') if x],
+        v.show_popup_menu([line for line in data['Data'].split('\n') if line],
                           None)
+
+
+class requests:
+    @staticmethod
+    def parse(view):
+        tasks.put(('parse', (view.file_name(), True)))
+
+    @staticmethod
+    def completions(view):
+        requests.parse(view)
+        row, col = view.rowcol(view.sel()[0].b)
+        tasks.put(('completions', (view.file_name(), row, col)))
+
+    @staticmethod
+    def declarations(view):
+        requests.parse(view)
+        tasks.put(('declarations', (view.file_name(),)))
+
+    @staticmethod
+    def tooltip(view):
+        requests.parse(view)
+        row, col = view.rowcol(view.sel()[0].b)
+        tasks.put(('tooltip', (view.file_name(), row, col)))
 
 
 def process_output(data):
     action = None
     if data['Kind'] == 'completion':
-        # Completions should normally be processed via events.
-        # action = actions.show_completions
-        pass
+        raise ValueError('completion results should be handled in a different way')
     elif data['Kind'] == 'tooltip':
         action = actions.show_tooltip
     elif data['Kind'] == 'INFO':
@@ -192,22 +219,6 @@ class FsSetProjectFile(sublime_plugin.WindowCommand):
         tasks.put(('project', (v.file_name(),)))
 
 
-class FsParseFile(sublime_plugin.WindowCommand):
-    def is_enabled(self):
-        v = self.window.active_view()
-        if v and fs.is_fsharp_code(v.file_name()):
-            return True
-
-        msg = 'FSharp: Not an F# code file.'
-        print(msg)
-        sublime.status_message(msg)
-        return False
-
-    def run(self):
-        v = self.window.active_view()
-        tasks.put(('parse', (v.file_name(), True)))
-
-
 class FsGetTooltip(sublime_plugin.WindowCommand):
     def is_enabled(self):
         v = self.window.active_view()
@@ -221,9 +232,7 @@ class FsGetTooltip(sublime_plugin.WindowCommand):
 
     def run(self):
         v = self.window.active_view()
-        row, col = v.rowcol(v.sel()[0].b)
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('tooltip', (v.file_name(), row, col)))
+        requests.tooltip(v)
 
 
 class FsDeclarations(sublime_plugin.WindowCommand):
@@ -239,23 +248,31 @@ class FsDeclarations(sublime_plugin.WindowCommand):
 
     def run(self):
         v = self.window.active_view()
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('declarations', (v.file_name(),)))
+        requests.declarations(v)
 
 
-class FsFindCompletions(sublime_plugin.WindowCommand):
-    def is_enabled(self):
-        v = self.window.active_view()
-        if v and fs.is_fsharp_code(v.file_name()):
-            return True
+class FsStEvents(sublime_plugin.EventListener):
+    def on_query_completions(self, view, prefix, locations):
+        if not fs.is_fsharp_code(view.file_name()):
+            return []
 
-        msg = 'FSharp: Not an F# code file.'
-        print(msg)
-        sublime.status_message(msg)
-        return False
+        while not task_results.empty():
+            task_results.get()
 
-    def run(self):
-        v = self.window.active_view()
-        row, col = v.rowcol(v.sel()[0].b)
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('completions', (v.file_name(), row, col)))
+        # A request for completions is treated especially: the result will
+        # be published to a queue.
+        requests.completions(view)
+
+        completions = []
+        try:
+            completions = task_results.get(timeout=0.2)
+            completions = completions['Data']
+        except queue.Empty:
+            # Too bad. The deamon was too slow.
+            pass
+
+        # TODO: Necessary? (It seems so.)
+        flags = (sublime.INHIBIT_EXPLICIT_COMPLETIONS |
+                 sublime.INHIBIT_WORD_COMPLETIONS)
+
+        return [[c, c] for c in completions], flags

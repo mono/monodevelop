@@ -7,7 +7,6 @@ from FSharp.lib import fs
 _menu_items = {
     'F#: Set as Project File':  ('fs_set_project_file'),
     'F#: Go to Declaration':    ('fs_find_declaration'),
-    'F#: Get Completions':      ('fs_find_completions'),
     'F#: Get Tooltip':          ('fs_get_tooltip'),
     'F#: List Declarations':    ('fs_declarations')
 }
