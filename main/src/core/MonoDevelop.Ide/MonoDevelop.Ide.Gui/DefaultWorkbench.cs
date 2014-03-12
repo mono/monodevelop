@@ -545,7 +545,8 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				IWorkbenchWindow window = ActiveWorkbenchWindow;
 				if (window != null) {
-					Title = GetTitle (window);
+					if (window.ActiveViewContent.Control.Toplevel == this)
+						Title = GetTitle (window);
 				} else {
 					Title = GetDefaultTitle ();
 					if (IsInFullViewMode)
