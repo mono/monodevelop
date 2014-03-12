@@ -1,13 +1,13 @@
 import sublime
 import sublime_plugin
 
-import os
-from zipfile import ZipFile
-
-from . import const
-from FSharp.fsac import get_server
-from threading import Thread
 from queue import Queue
+from threading import Thread
+from zipfile import ZipFile
+import os
+
+from FSharp.lib import const
+from FSharp.lib.fsac import get_server
 
 
 tasks = Queue()
@@ -116,11 +116,16 @@ class actions:
         decls = data['Data']
         print(decls)
 
+    @staticmethod
+    def show_completions(data):
+        v = sublime.active_window().active_view()
+        v.show_popup_menu(data['Data'], None)
+
 
 def process_output(data):
     action = None
     if data['Kind'] == 'completion':
-        action = actions.generic_action
+        action = actions.show_completions
     elif data['Kind'] == 'helptext':
         action = actions.show_help_text
     elif data['Kind'] == 'INFO':

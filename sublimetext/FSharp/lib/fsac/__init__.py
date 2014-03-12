@@ -1,7 +1,7 @@
 # We need the fsac server, which is provided separately. The build process should place the
 # required files here.
-from FSharp.const import const
-from FSharp.fsac.server import Server
+from FSharp.lib import const
+from FSharp.lib.fsac.server import Server
 
 import sublime
 

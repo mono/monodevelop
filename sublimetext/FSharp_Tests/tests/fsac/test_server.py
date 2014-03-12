@@ -1,8 +1,8 @@
 import unittest
 import os
 
-from FSharp.fsac.server import Server
-from FSharp import const
+from FSharp.lib.fsac.server import Server
+from FSharp.lib import const
 
 import sublime
 
