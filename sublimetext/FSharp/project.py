@@ -8,6 +8,7 @@ import os
 
 from FSharp.lib import const
 from FSharp.lib.fsac import get_server
+from FSharp.lib import fs
 
 
 tasks = Queue()
@@ -95,10 +96,6 @@ class actions:
         print("RECEIVED: " + str(data))
 
     @staticmethod
-    def show_help_text(data):
-        sublime.status_message(str(data['Data']))
-
-    @staticmethod
     def show_info(data):
         print(data)
 
@@ -121,13 +118,22 @@ class actions:
         v = sublime.active_window().active_view()
         v.show_popup_menu(data['Data'], None)
 
+    @staticmethod
+    def show_tooltip(data):
+        v = sublime.active_window().active_view()
+        heading = list(data['Data'].keys())[0]
+        body = data['Data'][heading]
+        v.show_popup_menu([heading, body], None)
+
 
 def process_output(data):
     action = None
     if data['Kind'] == 'completion':
-        action = actions.show_completions
+        # Completions should normally be processed via events.
+        # action = actions.show_completions
+        pass
     elif data['Kind'] == 'helptext':
-        action = actions.show_help_text
+        action = actions.show_tooltip
     elif data['Kind'] == 'INFO':
         action = actions.show_info
     elif data['Kind'] == 'finddecl':
