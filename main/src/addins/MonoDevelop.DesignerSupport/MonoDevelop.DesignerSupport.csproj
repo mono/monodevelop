@@ -179,23 +179,23 @@
     <EmbeddedResource Include="icons\light\compact-display-16%402x.png">
       <LogicalName>compact-display-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\properties-16.png">
-      <LogicalName>properties-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-properties-16.png">
+      <LogicalName>pad-properties-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\properties-16%402x.png">
-      <LogicalName>properties-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-properties-16%402x.png">
+      <LogicalName>pad-properties-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\toolbox-16.png">
-      <LogicalName>toolbox-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-toolbox-16.png">
+      <LogicalName>pad-toolbox-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\toolbox-16%402x.png">
-      <LogicalName>toolbox-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-toolbox-16%402x.png">
+      <LogicalName>pad-toolbox-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\document-outline-16.png">
-      <LogicalName>document-outline-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-document-outline-16.png">
+      <LogicalName>pad-document-outline-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\document-outline-16%402x.png">
-      <LogicalName>document-outline-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-document-outline-16%402x.png">
+      <LogicalName>pad-document-outline-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

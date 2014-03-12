@@ -503,11 +503,11 @@
     <EmbeddedResource Include="icons\light\package-48%402x.png">
       <LogicalName>package-light-48@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\task-list-16.png">
-      <LogicalName>task-list-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-task-list-16.png">
+      <LogicalName>pad-task-list-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\task-list-16%402x.png">
-      <LogicalName>task-list-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-task-list-16%402x.png">
+      <LogicalName>pad-task-list-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\project-16.png">
       <LogicalName>project-light-16.png</LogicalName>
@@ -839,11 +839,11 @@
     <EmbeddedResource Include="icons\disclose-arrow-up-16.png">
       <LogicalName>disclose-arrow-up-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\search-results-16.png">
-      <LogicalName>search-results-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-search-results-16.png">
+      <LogicalName>pad-search-results-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\search-results-16%402x.png">
-      <LogicalName>search-results-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-search-results-16%402x.png">
+      <LogicalName>pad-search-results-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-16.png">
       <LogicalName>searchbox-clear-16.png</LogicalName>
@@ -876,23 +876,23 @@
     <EmbeddedResource Include="icons\goto-prev-bookmark-16.png">
       <LogicalName>goto-prev-bookmark-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\application-output-16.png">
-      <LogicalName>application-output-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-application-output-16.png">
+      <LogicalName>pad-application-output-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\application-output-16%402x.png">
-      <LogicalName>application-output-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-application-output-16%402x.png">
+      <LogicalName>pad-application-output-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\immediate-16.png">
-      <LogicalName>immediate-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-immediate-16.png">
+      <LogicalName>pad-immediate-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\immediate-16%402x.png">
-      <LogicalName>immediate-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-immediate-16%402x.png">
+      <LogicalName>pad-immediate-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-pad-16.png">
-      <LogicalName>generic-pad-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-generic-pad-16.png">
+      <LogicalName>pad-generic-pad-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-pad-16%402x.png">
-      <LogicalName>generic-pad-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-generic-pad-16%402x.png">
+      <LogicalName>pad-generic-pad-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\replace-in-files-16.png">
       <LogicalName>replace-in-files-16.png</LogicalName>
@@ -1218,23 +1218,23 @@
     <EmbeddedResource Include="icons\sdk-locations-16.png">
       <LogicalName>sdk-locations-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-16.png">
-      <LogicalName>error-list-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-16.png">
+      <LogicalName>pad-error-list-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-16%402x.png">
-      <LogicalName>error-list-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-16%402x.png">
+      <LogicalName>pad-error-list-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-errors-16.png">
-      <LogicalName>error-list-errors-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-errors-16.png">
+      <LogicalName>pad-error-list-errors-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-errors-16%402x.png">
-      <LogicalName>error-list-errors-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-errors-16%402x.png">
+      <LogicalName>pad-error-list-errors-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-warnings-16.png">
-      <LogicalName>error-list-warnings-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-warnings-16.png">
+      <LogicalName>pad-error-list-warnings-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\error-list-warnings-16%402x.png">
-      <LogicalName>error-list-warnings-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-error-list-warnings-16%402x.png">
+      <LogicalName>pad-error-list-warnings-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>
@@ -1404,11 +1404,11 @@
     <EmbeddedResource Include="icons\light\web-reference-folder-win-16%402x.png">
       <LogicalName>web-reference-folder-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\help-16.png">
-      <LogicalName>help-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-help-16.png">
+      <LogicalName>pad-help-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\help-16%402x.png">
-      <LogicalName>help-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-help-16%402x.png">
+      <LogicalName>pad-help-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\preferences-16.png">
       <LogicalName>preferences-light-16.png</LogicalName>

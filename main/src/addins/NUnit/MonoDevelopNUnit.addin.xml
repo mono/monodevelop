@@ -7,14 +7,14 @@
 		<Import assembly="nunit.framework.dll" />
 		<Import assembly="nunit.util.dll" />
 	</Runtime>
-	
+
 	<!-- Extension Points -->
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
 		<ExtensionNode name ="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
@@ -75,25 +75,25 @@
 			<LayoutPad id="MonoDevelop.NUnit.TestResultsPad" status="Dockable" />
 		</Layout>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "NUnitAssemblyGroupNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupNodeBuilder"/>
 		<NodeBuilder id = "NUnitAssemblyGroupConfigurationNodeBuilder" class = "MonoDevelop.NUnit.NUnitAssemblyGroupConfigurationNodeBuilder"/>
 		<NodeBuilder id = "TestAssemblyNodeBuilder" class = "MonoDevelop.NUnit.TestAssemblyNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "NUnit" id = "NUnit">
-		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests" 
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests"
 			_label = "Run Unit Tests"
 			_description="Runs all tests of the current selected project."
 			shortcut="Control|T"
 			defaultHandler="MonoDevelop.NUnit.Commands.RunAllTestsHandler"/>
-		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" 
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith"
 			_label = "Run With"
 			type="array"
 			_description="Runs tests using a special execution mode."/>
-		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.DebugTest" 
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.DebugTest"
 			_label = "Debug Test"
 			type="array" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
@@ -115,7 +115,7 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunAllTests" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/ProjectPad/NUnitAssemblyGroup">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
@@ -164,7 +164,7 @@
 		<Section id = "Configurations"
 					 _label = "Configurations" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/NUnit/UnitTestOptions/ConfigurationOptions">
 		<Section id = "NUnitOptionsPanel"
 					 _label = "${Configuration}"
@@ -183,16 +183,16 @@
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
 	</Extension>
-  
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "nunit-pad-icon" resource = "unit-test-light-16.png" size="Menu" />
-		<StockIcon stockid = "nunit-results-pad-icon" resource = "unit-test-results-light-16.png" size="Menu" />
+		<StockIcon stockid = "nunit-pad-icon" resource = "pad-unit-test-light-16.png" size="Menu" />
+		<StockIcon stockid = "nunit-results-pad-icon" resource = "pad-unit-test-results-light-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
 	</Extension>
