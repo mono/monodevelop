@@ -250,6 +250,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SelectWindow()
 		{
+			var window = tabControl.Toplevel as Gtk.Window;
+			if (window != null) {
+				GLib.Timeout.Add (10, delegate {
+					window.Present ();
+					return false;
+				});
+			}
+
 			tabControl.CurrentTabIndex = tab.Index;
 			if (tabControl.FocusChild != null) {
 				tabControl.FocusChild.GrabFocus ();
