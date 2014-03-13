@@ -235,6 +235,7 @@
     <Compile Include="Services\TcpTestListener.cs" />
     <Compile Include="Gui\TestStatusIcon.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\AbstractUnitTestEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

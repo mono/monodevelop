@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide
 		{
 			if (Platform.IsWindows)
 				return;
-			GLib.Timeout.Add (5000, () => {
+			GLib.Timeout.Add (2000, () => {
 				lastIdle = DateTime.Now;
 				return true;
 			});
