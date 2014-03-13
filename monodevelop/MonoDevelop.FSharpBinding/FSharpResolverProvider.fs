@@ -53,7 +53,7 @@ type FSharpLanguageItemTooltipProvider() =
         let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(proj, config)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-        let tyRes =
+        let tyResOpt =
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (extEditor.Project.FileName.ToString(),
                   editor.FileName, 
@@ -64,6 +64,9 @@ type FSharpLanguageItemTooltipProvider() =
                   ServiceSettings.blockingTimeout,
                   framework)
         Debug.WriteLine (sprintf "TooltipProvider: Getting tool tip")
+        match tyResOpt with
+        | None -> null
+        | Some tyRes ->
         // Get tool-tip from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
         let tip = tyRes.GetToolTip(line, col, lineStr)
@@ -163,7 +166,7 @@ type FSharpResolverProvider() =
         let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(proj, config)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-        let tyRes = 
+        let tyResOpt = 
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (doc.Project.FileName.ToString(),
                   doc.Editor.FileName, 
@@ -175,7 +178,9 @@ type FSharpResolverProvider() =
                   framework)
 
         Debug.WriteLine("getting declaration location...")
-       
+        match tyResOpt with
+        | None -> null
+        | Some tyRes ->
         // Get the declaration location from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
         let loc = tyRes.GetDeclarationLocation(line, col, lineStr)
