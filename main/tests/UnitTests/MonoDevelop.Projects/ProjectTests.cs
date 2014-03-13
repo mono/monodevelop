@@ -30,6 +30,7 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -280,6 +281,155 @@ namespace MonoDevelop.Projects
 		public static string NormalizePath (string path)
 		{
 			return path.Replace ('/', Path.DirectorySeparatorChar);
+		}
+
+		[Test]
+		public void RefreshReferences ()
+		{
+			string solFile = Util.GetSampleProject ("reference-refresh", "ConsoleProject.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			DotNetProject project = sol.GetAllSolutionItems<DotNetProject> ().FirstOrDefault ();
+
+			Assert.AreEqual (4, project.References.Count);
+
+			ProjectReference r;
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System.Xml,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("test.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "gtk-sharp");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("gtk-sharp.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			// Refresh without any change
+
+			project.RefreshReferenceStatus ();
+
+			Assert.AreEqual (4, project.References.Count);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System.Xml,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("test.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "gtk-sharp");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("gtk-sharp.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			// Refresh after deleting test.dll
+
+			File.Move (project.BaseDirectory.Combine ("test.dll"), project.BaseDirectory.Combine ("test.dll.tmp"));
+			project.RefreshReferenceStatus ();
+
+			Assert.AreEqual (4, project.References.Count);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System.Xml,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsFalse (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "gtk-sharp");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("gtk-sharp.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			// Refresh after deleting gtk-sharp.dll
+
+			File.Move (project.BaseDirectory.Combine ("gtk-sharp.dll"), project.BaseDirectory.Combine ("gtk-sharp.dll.tmp"));
+			project.RefreshReferenceStatus ();
+
+			Assert.AreEqual (4, project.References.Count);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System.Xml,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsFalse (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("gtk-sharp,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.AreEqual ("gtk-sharp.dll", Path.GetFileName (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single ()));
+			Assert.IsTrue (r.IsValid);		
+
+			// Refresh after restoring gtk-sharp.dll and test.dll
+
+			File.Move (project.BaseDirectory.Combine ("test.dll.tmp"), project.BaseDirectory.Combine ("test.dll"));
+			File.Move (project.BaseDirectory.Combine ("gtk-sharp.dll.tmp"), project.BaseDirectory.Combine ("gtk-sharp.dll"));
+			project.RefreshReferenceStatus ();
+
+			Assert.AreEqual (4, project.References.Count);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("System.Xml,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("test.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+
+			r = project.References.FirstOrDefault (re => re.Reference.StartsWith ("gtk-sharp,"));
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("gtk-sharp.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
 		}
 	}
 }
