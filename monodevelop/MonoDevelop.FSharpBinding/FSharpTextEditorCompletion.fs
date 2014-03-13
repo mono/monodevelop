@@ -281,23 +281,23 @@ type FSharpTextEditorCompletion() =
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else  AllowStaleResults.MatchingSource
       let tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
-      
-      // Get declarations and generate list for MonoDevelop
-      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
-      match tyRes.GetDeclarations(line, col, lineStr) with
-      | Some(decls, residue) when decls.Items.Any() -> 
-            let items = decls.Items
-                        |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
-            let result = CompletionDataList()
-            result.AddRange(items)
-            result :> ICompletionDataList
-      | _ -> null
 
-    with 
-    | :? System.TimeoutException -> 
+      if tyRes = ParseAndCheckResults.Empty then
         let result = CompletionDataList()
         result.Add(FSharpTryAgainMemberCompletionData())
         result :> ICompletionDataList
+      else
+        // Get declarations and generate list for MonoDevelop
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
+        match tyRes.GetDeclarations(line, col, lineStr) with
+        | Some(decls, residue) when decls.Items.Any() ->
+              let items = decls.Items
+                          |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
+              let result = CompletionDataList()
+              result.AddRange(items)
+              result :> ICompletionDataList
+        | _ -> null
+    with
     | e -> let result = CompletionDataList()
            result.Add(FSharpErrorCompletionData(e))
            result :> ICompletionDataList
