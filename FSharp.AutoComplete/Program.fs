@@ -124,7 +124,7 @@ type internal IntelliSenseAgent() =
       match msg with
       | TriggerParseRequest(opts, full) ->
           // Start parsing and update errors with the new ones
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           let res =
             checker.CheckFileInProjectIfReady
               ( untypedInfo, opts.FileName, 0, opts.Source,
@@ -138,13 +138,13 @@ type internal IntelliSenseAgent() =
           return! loop errors
 
       | GetDeclarationsMessage(opts, repl) ->
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           repl.Reply(untypedInfo.GetNavigationItems().Declarations)
           return! loop errors
 
       | GetTypeCheckInfo(opts, timeout, reply) ->
           // Try to get information for the IntelliSense (in the specified time)
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           try
             let res, errors =
               Async.RunSynchronously

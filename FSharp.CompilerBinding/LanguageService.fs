@@ -173,7 +173,7 @@ type LanguageService(dirtyNotify) =
             let fileName = fixFileName(fileName)            
             
             Debug.WriteLine("Worker: Request received, fileName = {0}, parsing...", box fileName)
-            let parseResults = checker.ParseFileInProject(fileName, source, options) 
+            let! parseResults = checker.ParseFileInProject(fileName, source, options) 
               
             Debug.WriteLine("Worker: Typecheck source...")
             let! checkAnswer = checker.CheckFileInProject(parseResults, fileName, 0, source,options, IsResultObsolete(fun () -> false), null )
