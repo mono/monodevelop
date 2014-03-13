@@ -8,7 +8,7 @@ class Test_Fs_Helpers(unittest.TestCase):
         self.assertTrue(fs.is_fsharp_project('foo.fsproj'))
 
     def test_is_fsharp_project_can_fail(self):
-        self.assertTrue(fs.is_fsharp_project('foo.fsproj'))
+        self.assertFalse(fs.is_fsharp_project('foo.txt'))
 
     def test_can_detect_fs_code_file(self):
         self.assertTrue(fs.is_fsharp_code('one.fs'))
