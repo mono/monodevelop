@@ -64,7 +64,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Decorated = false;
 			TransientFor = IdeApp.Workbench.RootWindow;
 			TypeHint = WindowTypeHint.Utility;
-
+			KeepAbove = true;
 			// Create the mask for the arrow
 
 			Realize ();
