@@ -548,16 +548,18 @@ namespace Mono.TextEditor
 				this.args = args;
 			}
 
-			public virtual void Undo (TextDocument doc)
+			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
-				OnUndoDone ();
+				if (fireEvent)
+					OnUndoDone ();
 			}
 			
-			public virtual void Redo (TextDocument doc)
+			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText.Text);
-				OnRedoDone ();
+				if (fireEvent)
+					OnRedoDone ();
 			}
 			
 			protected virtual void OnUndoDone ()
@@ -614,26 +616,28 @@ namespace Mono.TextEditor
 				operations.Add (operation);
 			}
 			
-			public override void Undo (TextDocument doc)
+			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.currentAtomicUndoOperationType.Push (operationType);
 				for (int i = operations.Count - 1; i >= 0; i--) {
-					operations [i].Undo (doc);
+					operations [i].Undo (doc, false);
 					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
 				}
 				doc.currentAtomicUndoOperationType.Pop (); 
-				OnUndoDone ();
+				if (fireEvent)
+					OnUndoDone ();
 			}
 			
-			public override void Redo (TextDocument doc)
+			public override void Redo (TextDocument doc, bool fireEvent = true)
 			{
 				doc.currentAtomicUndoOperationType.Push (operationType);
 				foreach (UndoOperation operation in this.operations) {
-					operation.Redo (doc);
+					operation.Redo (doc, false);
 					doc.OnRedone (new UndoOperationEventArgs (operation));
 				}
 				doc.currentAtomicUndoOperationType.Pop (); 
-				OnRedoDone ();
+				if (fireEvent)
+					OnRedoDone ();
 			}
 		}
 		
@@ -805,13 +809,11 @@ namespace Mono.TextEditor
 				return;
 			OnBeforeUndoOperation (EventArgs.Empty);
 			isInUndo = true;
-			UndoOperation operation = undoStack.Pop ();
+			var operation = undoStack.Pop ();
 			redoStack.Push (operation);
 			operation.Undo (this);
 			isInUndo = false;
 			OnUndone (new UndoOperationEventArgs (operation));
-			this.RequestUpdate (new UpdateAll ());
-			this.CommitDocumentUpdate ();
 		}
 
 		public void RollbackTo (ICSharpCode.NRefactory.Editor.ITextSourceVersion version)
@@ -858,8 +860,6 @@ namespace Mono.TextEditor
 			operation.Redo (this);
 			isInUndo = false;
 			OnRedone (new UndoOperationEventArgs (operation));
-			this.RequestUpdate (new UpdateAll ());
-			this.CommitDocumentUpdate ();
 		}
 		
 		internal protected virtual void OnRedone (UndoOperationEventArgs e)
