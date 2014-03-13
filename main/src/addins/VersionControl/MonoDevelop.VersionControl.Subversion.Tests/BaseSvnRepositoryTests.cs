@@ -93,6 +93,10 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			return Is.InstanceOf<SubversionRepository> ();
 		}
 
+		protected override VersionStatus InitialValue {
+			get { return VersionStatus.Unversioned; }
+		}
+
 		protected override void TestValidUrl ()
 		{
 			var repo2 = (SubversionRepository)Repo;
