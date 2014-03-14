@@ -1,21 +1,21 @@
-// 
+//
 // PropertyGridTable.cs
-//  
+//
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
-// 
+//
 // Copyright (c) 2012 Xamarin Inc
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -92,8 +92,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-16.png");
-			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-16.png");
+			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-light-16.png");
+			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-light-16.png");
 		}
 
 		protected override void OnDestroyed ()
@@ -152,17 +152,17 @@ namespace MonoDevelop.Components.PropertyGrid
 		internal void Populate (PropertyDescriptorCollection properties, object instance)
 		{
 			bool categorised = PropertySort == PropertySort.Categorized;
-		
+
 			//transcribe browsable properties
 			var sorted = new List<PropertyDescriptor>();
 
 			foreach (PropertyDescriptor descriptor in properties)
 				if (descriptor.IsBrowsable)
 					sorted.Add (descriptor);
-			
+
 			if (sorted.Count == 0)
 				return;
-			
+
 			if (!categorised) {
 				if (PropertySort != PropertySort.NoSort)
 					sorted.Sort ((a,b) => a.DisplayName.CompareTo (b.DisplayName));
@@ -194,7 +194,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 			QueueResize ();
 		}
-		
+
 		internal void Update (PropertyDescriptorCollection properties, object instance)
 		{
 			foreach (PropertyDescriptor pd in properties)
@@ -202,7 +202,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 			QueueResize ();
 		}
-		
+
 		bool UpdateProperty (PropertyDescriptor pd, object instance, IEnumerable<TableRow> rowList)
 		{
 			foreach (var row in rowList) {
@@ -217,12 +217,12 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 			return false;
 		}
-	
+
 		void AppendProperty (PropertyDescriptor prop, object instance)
 		{
 			AppendProperty (rows, prop, new InstanceData (instance));
 		}
-		
+
 		void AppendProperty (List<TableRow> rowList, PropertyDescriptor prop, object instance)
 		{
 			TableRow row = new TableRow () {
@@ -248,13 +248,13 @@ namespace MonoDevelop.Components.PropertyGrid
 			e.Initialize (this, editorManager, row.Property, row.Instace);
 			return e;
 		}
-		
+
 		protected override void ForAll (bool includeInternals, Gtk.Callback callback)
 		{
 			base.ForAll (includeInternals, callback);
 			foreach (var c in children.Keys.ToArray ()) {
 				if (c.Parent == null) {
-					LoggingService.LogError ("Error found unparented child in property grid:" + c.GetType ()); 
+					LoggingService.LogError ("Error found unparented child in property grid:" + c.GetType ());
 					continue;
 				}
 				callback (c);
@@ -293,14 +293,14 @@ namespace MonoDevelop.Components.PropertyGrid
 			children [w] = rect;
 			QueueResize ();
 		}
-		
+
 		protected override void OnAdded (Gtk.Widget widget)
 		{
 			children.Add (widget, new Gdk.Rectangle (0,0,0,0));
 			widget.Parent = this;
 			QueueResize ();
 		}
-		
+
 		protected override void OnRemoved (Gtk.Widget widget)
 		{
 			children.Remove (widget);
@@ -354,7 +354,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				ctx.RelLineTo (0, Allocation.Height);
 				ctx.SetSourceColor (DividerColor);
 				ctx.Stroke ();
-	
+
 				int y = 0;
 				Draw (ctx, rows, dx, PropertyLeftPadding, ref y);
 			}
@@ -759,13 +759,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 	}
 
-	class InstanceData 
+	class InstanceData
 	{
-		public InstanceData (object instance) 
+		public InstanceData (object instance)
 		{
 			Instance = instance;
 		}
-		
+
 		public object Instance;
 	}
 }
