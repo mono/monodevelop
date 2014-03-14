@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			TreeViewColumn col = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
-			//			col.PackStart (crp, false);
+			col.PackStart (crp, false);
 			col.SetCellDataFunc (crp, PixbufCellDataFunc);
 			var crt = new CellRendererText ();
 			col.PackStart (crt, true);
