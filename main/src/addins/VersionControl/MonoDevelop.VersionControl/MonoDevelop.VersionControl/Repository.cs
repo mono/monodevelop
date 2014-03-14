@@ -159,7 +159,12 @@ namespace MonoDevelop.VersionControl
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Length, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
 			}
-			return infos.Single ();
+			try {
+				return infos.Single ();
+			} catch (InvalidOperationException) {
+				// Workaround for #17216.
+				return infos [0];
+			}
 		}
 		
 		/// <summary>
