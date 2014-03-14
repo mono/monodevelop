@@ -104,6 +104,9 @@
     <None Include="templates.FSharpProjectMvc4Razor.windows.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="templates.FSharpNUnitLibraryProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <EmbeddedResource Include="FSharpBinding.addin.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>

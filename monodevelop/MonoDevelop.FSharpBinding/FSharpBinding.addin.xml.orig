@@ -19,6 +19,7 @@
     <Import file = "templates.AssemblyInfo.xft.xml" />
     <Import file = "templates.FSharpProjectMvc4Razor.xpt.xml" />
     <Import file = "templates.FSharpProjectMvc4Razor.windows.xpt.xml" />
+    <Import file = "templates.FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
@@ -100,6 +101,7 @@
     <Condition id="Platform" value="!windows">
       <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.xpt.xml"/>
     </Condition>
+    <ProjectTemplate id="FSharpNUnitLibraryProject" file="templates.FSharpNUnitLibraryProject.xpt.xml"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
