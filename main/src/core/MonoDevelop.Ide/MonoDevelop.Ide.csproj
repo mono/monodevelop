@@ -848,8 +848,23 @@
     <EmbeddedResource Include="icons\searchbox-clear-16.png">
       <LogicalName>searchbox-clear-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button.png">
-      <LogicalName>tree-popup-button.png</LogicalName>
+    <EmbeddedResource Include="icons\light\tree-popup-button.png">
+      <LogicalName>tree-popup-button-light.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tree-popup-button%402x.png">
+      <LogicalName>tree-popup-button-light@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tree-popup-button-hover.png">
+      <LogicalName>tree-popup-button-hover-light.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tree-popup-button-hover%402x.png">
+      <LogicalName>tree-popup-button-hover-light@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tree-popup-button-down.png">
+      <LogicalName>tree-popup-button-down-light.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tree-popup-button-down%402x.png">
+      <LogicalName>tree-popup-button-down-light@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components\SearchEntry.cs" />
     <EmbeddedResource Include="icons\searchbox-search-16.png">
@@ -1128,9 +1143,6 @@
     <EmbeddedResource Include="icons\light\information-16%402x.png">
       <LogicalName>information-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-down.png">
-      <LogicalName>tree-popup-button-down.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\command-16.png">
       <LogicalName>command-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1148,9 +1160,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\light\ico-build-normal-32%402x.png">
       <LogicalName>ico-build-normal-light-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tree-popup-button-hover.png">
-      <LogicalName>tree-popup-button-hover.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\stop-16.png">
       <LogicalName>stop-light-16.png</LogicalName>
