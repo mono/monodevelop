@@ -2,7 +2,7 @@
 <Template Originator="Dave Thomas" Created="14/3/2014" LastModified="14/3/2014">
 	
 	<TemplateConfiguration>
-		<_Name>Test Fixture</_Name>
+		<_Name>F# Test Fixture</_Name>
 		<Icon>md-text-file-icon|res:nunit-overlay-32.png</Icon>
 		<_Category>NUnit</_Category>
 		<LanguageName>F#</LanguageName>
@@ -11,7 +11,7 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File name="Test.fs" AddStandardHeader="True">
+		<File AddStandardHeader="True">
 <![CDATA[namespace ${ProjectName}
 open System
 open NUnit.Framework
