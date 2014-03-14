@@ -32,10 +32,7 @@ using Mono.TextEditor;
 using MonoDevelop.NUnit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
 using Gtk;
-using System.Text;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.NUnit
@@ -97,7 +94,7 @@ namespace MonoDevelop.NUnit
 						return;
 					if (actionMargin.IsVisible ^ (foundTests.Count > 0))
 						textEditor.QueueDraw ();
-					actionMargin.IsVisible = foundTests.Count > 0;
+					actionMargin.IsVisible |= foundTests.Count > 0;
 					foreach (var oldMarker in currentMarker)
 						editor.Document.RemoveMarker (oldMarker);
 
@@ -302,21 +299,23 @@ namespace MonoDevelop.NUnit
 						return;
 					}
 
-					Stack<UnitTest> tests = new Stack<UnitTest> ();
+					var tests = new Stack<UnitTest> ();
 					foreach (var test in NUnitService.Instance.RootTests) {
 						tests.Push (test);
 					}
 					while (tests.Count > 0) {
 						var test = tests.Pop ();
 
-						if (test is SolutionFolderTestGroup) {
-							foreach (var test2 in ((SolutionFolderTestGroup)test).Tests) {
+						var solutionFolderTestGroup = test as SolutionFolderTestGroup;
+						if (solutionFolderTestGroup != null) {
+							foreach (var test2 in solutionFolderTestGroup.Tests) {
 								tests.Push (test2); 
 							}
 							continue;
 						}
-						if (test is NUnitProjectTestSuite)
-							testSuites.Add ((NUnitProjectTestSuite)test); 
+						var nUnitProjectTestSuite = test as NUnitProjectTestSuite;
+						if (nUnitProjectTestSuite != null)
+							testSuites.Add (nUnitProjectTestSuite); 
 					}
 
 					foreach (var test in testSuites) {
@@ -429,7 +428,7 @@ namespace MonoDevelop.NUnit
 
 			public UnitTestLocation (int lineNumber)
 			{
-				this.LineNumber = lineNumber;
+				LineNumber = lineNumber;
 			}
 		}
 	}
