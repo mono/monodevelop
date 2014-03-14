@@ -76,6 +76,8 @@ namespace MonoDevelop.PackageManagement
 
 			Build ();
 
+			packageSearchEntry.Text = initialSearch;
+
 			InitializeListView ();
 			UpdateAddPackagesButton ();
 			ShowLoadingMessage ();
@@ -170,7 +172,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.ClearPackagesOnPaging = false;
 			viewModel.SearchTerms = initialSearch;
-			packageSearchEntry.Text = initialSearch;
 
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
