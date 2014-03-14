@@ -20,6 +20,7 @@
     <Import file = "templates.FSharpProjectMvc4Razor.xpt.xml" />
     <Import file = "templates.FSharpProjectMvc4Razor.windows.xpt.xml" />
     <Import file = "templates.FSharpNUnitLibraryProject.xpt.xml" />
+    <Import file = "templates.FSharpNUnitTestType.xft.xml" />
     <Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
@@ -80,6 +81,7 @@
     <FileTemplate id="EmptyFSharpScript" file="templates.EmptyFSharpScript.xft.xml"/>
     <FileTemplate id="EmptyFSharpSignature" file="templates.EmptyFSharpSignature.xft.xml"/>
     <FileTemplate id="FSharpAssemblyInfo" file="templates.AssemblyInfo.xft.xml" />
+    <FileTemplate id="FSharpNUnitTestType" file="templates.FSharpNUnitTestType.xft.xml" />
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/ProjectTemplates">
