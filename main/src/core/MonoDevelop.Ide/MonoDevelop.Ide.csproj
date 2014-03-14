@@ -1284,8 +1284,11 @@
     <EmbeddedResource Include="icons\light\status-connecting-6-14%402x.png">
       <LogicalName>status-connecting-6-light-14@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\variable-16.png">
-      <LogicalName>variable-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-variable-16.png">
+      <LogicalName>element-variable-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-variable-16%402x.png">
+      <LogicalName>element-variable-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
