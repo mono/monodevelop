@@ -154,6 +154,10 @@ namespace MonoDevelop.VersionControl.Tests
 			get { return VersionStatus.Versioned; }
 		}
 
+		protected int QueryTimer {
+			get { return 1000; }
+		}
+
 		[Test]
 		// Tests Repository.GetVersionInfo with query thread.
 		public void QueryThreadWorks ()
@@ -168,7 +172,7 @@ namespace MonoDevelop.VersionControl.Tests
 			// No cache, query.
 			Assert.AreEqual (InitialValue, vi.Status);
 			Assert.AreEqual (0, vis.Length);
-			System.Threading.Thread.Sleep (500);
+			System.Threading.Thread.Sleep (QueryTimer);
 
 			// Cached.
 			vi = Repo.GetVersionInfo (RootCheckout + "testfile");
@@ -183,8 +187,8 @@ namespace MonoDevelop.VersionControl.Tests
 
 			// Query.
 			Repo.ClearCachedVersionInfo (RootCheckout);
-			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
-			System.Threading.Thread.Sleep (500);
+			Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			System.Threading.Thread.Sleep (QueryTimer);
 
 			// Cached.
 			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
