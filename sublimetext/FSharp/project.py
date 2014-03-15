@@ -58,6 +58,11 @@ class AsyncPipe(object):
             action, args = self.tasks.get()
             method = getattr(self.server, action, None)
 
+            if self.server.proc.poll() is not None:
+                print("FSharp: Server process unavailable. "
+                      "Exiting writer thread.")
+                break
+
             if not method:
                 process_output({'Kind': 'ERROR', 'Data': 'Not a valid call.'})
                 continue
@@ -77,6 +82,11 @@ class AsyncPipe(object):
                 task_results.put(output)
             else:
                 process_output(output)
+
+            if self.server.proc.poll() is not None:
+                print("FSharp: Server process unavailable. "
+                      "Exiting reader thread.")
+                break
 
             try:
                 # Don't block here so we can read all the remaining output.
