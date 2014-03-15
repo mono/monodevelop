@@ -15,6 +15,13 @@ class Test_Fs_Helpers(unittest.TestCase):
         self.assertTrue(fs.is_fsharp_code('two.fsx'))
         self.assertTrue(fs.is_fsharp_code('three.fsi'))
 
+    def test_can_detect_fs_script_file(self):
+        self.assertTrue(fs.is_fsharp_script('foo.fsx'))
+        self.assertTrue(fs.is_fsharp_script('foo.fsscript'))
+
+    def test_is_fsharp_script_can_fail(self):
+        self.assertFalse(fs.is_fsharp_script('foo.fs'))
+
     def test_is_fsharp_code_can_fail(self):
         self.assertFalse(fs.is_fsharp_code('three.txt'))
 
