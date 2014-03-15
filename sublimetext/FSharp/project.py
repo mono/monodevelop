@@ -268,7 +268,7 @@ class FsStEvents(sublime_plugin.EventListener):
             completions = task_results.get(timeout=0.2)
             completions = completions['Data']
         except queue.Empty:
-            # Too bad. The deamon was too slow.
+            # Too bad. The daemon was too slow.
             pass
 
         # TODO: Necessary? (It seems so.)

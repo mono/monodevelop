@@ -1,0 +1,5 @@
+{
+    "target": "run_fs_script",
+    "path_to_script": "$file",
+    "selector": "source.fsharp"
+}
