@@ -12,6 +12,7 @@ open Microsoft.Build.BuildEngine
 open Microsoft.Build.Framework
 open Microsoft.Build.Tasks
 open Microsoft.Build.Utilities
+open FSharp.CompilerBinding
 
 module ProjectParser =
 
@@ -40,6 +41,15 @@ module ProjectParser =
     let fs  = p.project.GetEvaluatedItemsByName("Compile")
     let dir = getDirectory p
     [| for f in fs do yield IO.Path.Combine(dir, f.FinalItemSpec) |]
+
+  let getFrameworkVersion (p: ProjectResolver) =
+    match p.project.GetEvaluatedProperty("TargetFrameworkVersion") with
+    | "v2.0" -> FSharpTargetFramework.NET_2_0
+    | "v3.0" -> FSharpTargetFramework.NET_3_0
+    | "v3.5" -> FSharpTargetFramework.NET_3_5
+    | "v4.0" -> FSharpTargetFramework.NET_4_0
+    | "v4.5" -> FSharpTargetFramework.NET_4_5
+    | _      -> FSharpTargetFramework.NET_4_5
 
   // We really want the output of ResolveAssemblyReferences. However, this
   // needs as input ChildProjectReferences, which is populated by

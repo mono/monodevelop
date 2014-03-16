@@ -232,8 +232,8 @@ type LanguageService(dirtyNotify) =
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
 
     // Print contents of check option for debugging purposes
-    Debug.WriteLine(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    // Debug.WriteLine(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
    
   /// Constructs options for the interactive checker for a project under the given configuration. 
@@ -253,8 +253,8 @@ type LanguageService(dirtyNotify) =
          UnresolvedReferences = None } 
 
     // Print contents of check option for debugging purposes
-    Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
     
   
@@ -288,7 +288,7 @@ type LanguageService(dirtyNotify) =
 
   member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : Option<ParseAndCheckResults> = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
-    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", [|fileName|])
+    Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", box fileName)
     // Try to get recent results from the F# service
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
     | Some _ as results ->

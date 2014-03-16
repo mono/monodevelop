@@ -4,9 +4,15 @@ DATA: project
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
-INFO: Background parsing started
+DATA: errors
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+INFO: Background parsing started
+<<EOF>>
+DATA: errors
 <<EOF>>
 DATA: completion
 funky
@@ -77,6 +83,4 @@ DATA: declarations
 [3:0-10:0] Script
 [3:0-4:21] XA
   - [4:6-4:21] funky
-<<EOF>>
-DATA: errors
 <<EOF>>

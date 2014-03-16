@@ -17,9 +17,9 @@ if not (File.Exists "FSharp.Data/lib/net40/FSharp.Data.dll") then
 let p = new FSharpAutoCompleteWrapper()
 
 p.parse "Test.fsx"
-p.completion "Test.fsx" 11 4
-p.completion "Test.fsx" 13 14
-p.completion "Test.fsx" 15 15
+p.completion "Test.fsx" 12 4
+p.completion "Test.fsx" 14 14
+p.completion "Test.fsx" 16 15
 p.send "quit\n"
 let output = p.finalOutput ()
 File.WriteAllText("output.txt", output)
