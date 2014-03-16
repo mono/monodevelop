@@ -305,6 +305,9 @@ module internal CommandInput =
     outputmode {json,text}
       - switches the output format. json offers richer data
         for some commands
+    compilerlocation
+      - prints the best guess for the location of fsc and fsi
+        (or fsharpc and fsharpi on unix)
     "
     
   let outputText = @"
@@ -347,6 +350,7 @@ module internal CommandInput =
     | Error of string
     | Project of string
     | OutputMode of OutputMode
+    | CompilerLocation
     | Help
     | Quit
 
@@ -427,6 +431,11 @@ module internal CommandInput =
       return HelpText sym
     }
 
+  let compilerlocation = parser {
+    let! _ = string "compilerlocation"
+    return CompilerLocation
+    }
+
   // Parses always and returns default error message
   let error = parser { return Error("Unknown command or wrong arguments") }
 
@@ -436,7 +445,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> outputmode <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = compilerlocation <|> errors <|> outputmode <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -651,6 +660,20 @@ module internal Main =
 
         else
           main state
+
+    | CompilerLocation ->
+        let locopt =
+          FSharpEnvironment.BinFolderOfDefaultFSharpCompiler
+            FSharpCompilerVersion.LatestKnown
+        match locopt with
+        | None -> printMsg "ERROR" "Could not find compiler"; main state
+        | Some loc ->
+
+        match state.OutputMode with
+        | Text -> printfn "DATA: compilerlocation\n%s\n<<EOF>>" loc
+        | Json -> prAsJson { Kind = "compilerlocation"; Data = loc }
+
+        main state
 
     | Help ->
         match state.OutputMode with
