@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using System;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -302,6 +303,29 @@ namespace MonoDevelop.Components.DockNotebook
 			{
 				IdeApp.CommandService.RegisterTopWindow (this);
 				AddAccelGroup (IdeApp.CommandService.AccelGroup);
+				this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
+					var documents = IdeApp.Workbench.Documents.Where(d => d.Window.ViewContent.Control.Toplevel == this).ToList ();
+//					bool showDirtyDialog = false;
+//					foreach (var content in documents) {
+//						if (content.IsDirty) {
+//							showDirtyDialog = true;
+//							break;
+//						}
+//					}
+//
+//					if (showDirtyDialog) {
+//						var dlg = new MonoDevelop.Ide.Gui.Dialogs.DirtyFilesDialog ();
+//						dlg.Modal = true;
+//						if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok) {
+//							args.RetVal = true;
+//							return;
+//						}
+//					}
+					foreach (var d in documents) {
+						if (!d.Close ())
+							args.RetVal = true;
+					}
+				};
 			}
 
 			protected override bool OnConfigureEvent (EventConfigure evnt)
