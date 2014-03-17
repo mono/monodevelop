@@ -191,6 +191,12 @@
     <EmbeddedResource Include="Gui\icons\light\unit-inconclusive-16%402x.png">
       <LogicalName>unit-inconclusive-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\unit-run-16.png">
+      <LogicalName>unit-run-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\unit-run-16%402x.png">
+      <LogicalName>unit-run-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
