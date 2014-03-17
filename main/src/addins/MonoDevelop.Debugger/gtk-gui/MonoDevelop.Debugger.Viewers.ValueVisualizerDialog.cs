@@ -5,12 +5,17 @@ namespace MonoDevelop.Debugger.Viewers
 	public partial class ValueVisualizerDialog
 	{
 		private global::Gtk.VBox mainBox;
-		private global::Gtk.HBox hbox1;
-		private global::Gtk.Label label1;
-		private global::Gtk.ComboBox comboVisualizers;
-		private global::Gtk.Button buttonCancel;
-		private global::Gtk.Button buttonOk;
 		
+		private global::Gtk.HBox hbox1;
+		
+		private global::Gtk.Label label1;
+		
+		private global::Gtk.ComboBox comboVisualizers;
+		
+		private global::Gtk.Button buttonCancel;
+		
+		private global::Gtk.Button buttonSave;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -73,15 +78,15 @@ namespace MonoDevelop.Debugger.Viewers
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-			this.buttonOk = new global::Gtk.Button ();
-			this.buttonOk.CanDefault = true;
-			this.buttonOk.CanFocus = true;
-			this.buttonOk.Name = "buttonOk";
-			this.buttonOk.UseStock = true;
-			this.buttonOk.UseUnderline = true;
-			this.buttonOk.Label = "gtk-ok";
-			w6.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonOk]));
+			this.buttonSave = new global::Gtk.Button ();
+			this.buttonSave.CanDefault = true;
+			this.buttonSave.CanFocus = true;
+			this.buttonSave.Name = "buttonSave";
+			this.buttonSave.UseStock = true;
+			this.buttonSave.UseUnderline = true;
+			this.buttonSave.Label = "gtk-save";
+			this.AddActionWidget (this.buttonSave, -10);
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonSave]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -92,7 +97,7 @@ namespace MonoDevelop.Debugger.Viewers
 			this.DefaultHeight = 433;
 			this.Hide ();
 			this.comboVisualizers.Changed += new global::System.EventHandler (this.OnComboVisualizersChanged);
-			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
+			this.buttonSave.Clicked += new global::System.EventHandler (this.OnSaveClicked);
 		}
 	}
 }

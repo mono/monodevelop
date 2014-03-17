@@ -128,7 +128,7 @@ namespace MonoDevelop.HexEditor
 				val.SetRawValue (hexEditor.HexEditorData.Bytes);
 				return true;
 			default:
-				return false;
+				return true;
 			}
 		}
 

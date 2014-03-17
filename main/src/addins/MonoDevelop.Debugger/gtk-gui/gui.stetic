@@ -1844,16 +1844,16 @@ Break when the hit count is a multiple of</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonOk">
+          <widget class="Gtk.Button" id="buttonSave">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
-            <property name="StockId">gtk-ok</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonOkClicked" />
-            <property name="label">gtk-ok</property>
+            <property name="StockId">gtk-save</property>
+            <property name="ResponseId">-10</property>
+            <signal name="Clicked" handler="OnSaveClicked" />
+            <property name="label">gtk-save</property>
           </widget>
           <packing>
             <property name="Position">1</property>
