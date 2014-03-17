@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<Template originator = "Dave Thomas">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>F# NUnit Library Project</_Name>
+		<_Category>F#/NUnit</_Category>
+		<Icon>md-project|res:nunit-overlay-32.png</Icon>
+		<_Description>Creates an F# NUnit library</_Description>
+		<LanguageName>F#</LanguageName>
+		<DefaultFilename>NUnitProject</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Test.fs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options Target = "Library" />
+			
+			<References>
+				<Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="nunit.framework" SpecificVersion = "false" LocalCopy = "false" />
+			</References>
+		
+			<Files>
+				<File name="Test.fs">
+<![CDATA[namespace ${ProjectName}
+open System
+open NUnit.Framework
+
+[<TestFixture>]
+type Test() = 
+
+    [<Test>]
+    member x.TestCase() =
+        Assert.IsTrue(true)
+]]>
+             	</File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

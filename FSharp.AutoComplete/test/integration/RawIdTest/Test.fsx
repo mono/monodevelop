@@ -7,7 +7,7 @@ type TestType = CsvProvider<"data.csv">
 
 let data = TestType.Load("data.csv")
 
-let row = data.Data |> Seq.head
+let row = data.Rows |> Seq.head
 
 row.
 

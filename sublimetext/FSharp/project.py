@@ -1,18 +1,22 @@
 import sublime
 import sublime_plugin
 
-import os
-from zipfile import ZipFile
-
-from . import const
-from FSharp.fsac import get_server
-from threading import Thread
 from queue import Queue
+import queue
+from threading import Thread
+from zipfile import ZipFile
+import os
+
+from FSharp.lib import const
+from FSharp.lib.fsac import get_server
+from FSharp.lib import fs
 
 
 tasks = Queue()
+task_results = Queue()
 
-SIG_STOP = '__STOP__'
+
+SIG_QUIT = '<<QUIT>>'
 
 
 def plugin_loaded():
@@ -32,7 +36,7 @@ def plugin_loaded():
 
 
 def plugin_unloaded():
-    tasks.put((SIG_STOP, ()))
+    tasks.put((SIG_QUIT, ()))
 
 
 class AsyncPipe(object):
@@ -54,11 +58,16 @@ class AsyncPipe(object):
             action, args = self.tasks.get()
             method = getattr(self.server, action, None)
 
+            if self.server.proc.poll() is not None:
+                print("FSharp: Server process unavailable. "
+                      "Exiting writer thread.")
+                break
+
             if not method:
                 process_output({'Kind': 'ERROR', 'Data': 'Not a valid call.'})
                 continue
 
-            if action == SIG_STOP:
+            if action == SIG_QUIT:
                 # Give the other thread a chance to exit.
                 self.tasks.put((action, args))
                 break
@@ -68,8 +77,16 @@ class AsyncPipe(object):
 
     def read(self):
         while True:
-            data = self.server.read_line()
-            process_output(data)
+            output = self.server.read_line()
+            if output['Kind'] == 'completion':
+                task_results.put(output)
+            else:
+                process_output(output)
+
+            if self.server.proc.poll() is not None:
+                print("FSharp: Server process unavailable. "
+                      "Exiting reader thread.")
+                break
 
             try:
                 # Don't block here so we can read all the remaining output.
@@ -77,7 +94,7 @@ class AsyncPipe(object):
             except:
                 continue
 
-            if action == SIG_STOP:
+            if action == SIG_QUIT:
                 #  Give the other thread a chance to exit.
                 self.tasks.put((action, args))
                 break
@@ -93,10 +110,6 @@ class actions:
     def generic_action(data=None):
         sublime.status_message("RECEIVED: " + str(data))
         print("RECEIVED: " + str(data))
-
-    @staticmethod
-    def show_help_text(data):
-        sublime.status_message(str(data['Data']))
 
     @staticmethod
     def show_info(data):
@@ -116,13 +129,47 @@ class actions:
         decls = data['Data']
         print(decls)
 
+    @staticmethod
+    def show_completions(data):
+        v = sublime.active_window().active_view()
+        v.show_popup_menu(data['Data'], None)
+
+    @staticmethod
+    def show_tooltip(data):
+        v = sublime.active_window().active_view()
+        v.show_popup_menu([line for line in data['Data'].split('\n') if line],
+                          None)
+
+
+class requests:
+    @staticmethod
+    def parse(view):
+        tasks.put(('parse', (view.file_name(), True)))
+
+    @staticmethod
+    def completions(view):
+        requests.parse(view)
+        row, col = view.rowcol(view.sel()[0].b)
+        tasks.put(('completions', (view.file_name(), row, col)))
+
+    @staticmethod
+    def declarations(view):
+        requests.parse(view)
+        tasks.put(('declarations', (view.file_name(),)))
+
+    @staticmethod
+    def tooltip(view):
+        requests.parse(view)
+        row, col = view.rowcol(view.sel()[0].b)
+        tasks.put(('tooltip', (view.file_name(), row, col)))
+
 
 def process_output(data):
     action = None
     if data['Kind'] == 'completion':
-        action = actions.generic_action
-    elif data['Kind'] == 'helptext':
-        action = actions.show_help_text
+        raise ValueError('completion results should be handled in a different way')
+    elif data['Kind'] == 'tooltip':
+        action = actions.show_tooltip
     elif data['Kind'] == 'INFO':
         action = actions.show_info
     elif data['Kind'] == 'finddecl':
@@ -166,67 +213,76 @@ class installation:
 
 
 class FsSetProjectFile(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_project(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not a project file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith('.fsproj')):
-            msg = 'FSharp: Not a project file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
         sublime.status_message('FSharp: Loading project...')
         tasks.put(('project', (v.file_name(),)))
 
 
-class FsParseFile(sublime_plugin.WindowCommand):
+class FsGetTooltip(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        fname = v.file_name()
-        if not (v and fname.endswith(('.fs', '.fsi', '.fsx'))):
-            msg = 'FSharp: Not a fsharp file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
-        tasks.put(('parse', (fname, True)))
-
-
-class FsFindDeclaration(sublime_plugin.WindowCommand):
-    def run(self):
-        v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
-        row, col = v.rowcol(v.sel()[0].b)
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('find_declaration', (v.file_name(), row, col)))
+        requests.tooltip(v)
 
 
 class FsDeclarations(sublime_plugin.WindowCommand):
+    def is_enabled(self):
+        v = self.window.active_view()
+        if v and fs.is_fsharp_code(v.file_name()):
+            return True
+
+        msg = 'FSharp: Not an F# code file.'
+        print(msg)
+        sublime.status_message(msg)
+        return False
+
     def run(self):
         v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
-
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('declarations', (v.file_name(),)))
+        requests.declarations(v)
 
 
-class FsFindCompletions(sublime_plugin.WindowCommand):
-    def run(self):
-        v = self.window.active_view()
-        if not (v and v.file_name().endswith(('.fs', '.fsx'))):
-            msg = 'FSharp: Not an F# file.'
-            print(msg)
-            sublime.status_message(msg)
-            return
+class FsStEvents(sublime_plugin.EventListener):
+    def on_query_completions(self, view, prefix, locations):
+        if not fs.is_fsharp_code(view.file_name()):
+            return []
 
-        row, col = v.rowcol(v.sel()[0].b)
-        tasks.put(('parse', (v.file_name(), True)))
-        tasks.put(('completions', (v.file_name(), row, col)))
+        while not task_results.empty():
+            task_results.get()
+
+        # A request for completions is treated especially: the result will
+        # be published to a queue.
+        requests.completions(view)
+
+        completions = []
+        try:
+            completions = task_results.get(timeout=0.2)
+            completions = completions['Data']
+        except queue.Empty:
+            # Too bad. The daemon was too slow.
+            pass
+
+        # TODO: Necessary? (It seems so.)
+        flags = (sublime.INHIBIT_EXPLICIT_COMPLETIONS |
+                 sublime.INHIBIT_WORD_COMPLETIONS)
+
+        return [[c, c] for c in completions], flags

@@ -124,7 +124,7 @@ type internal IntelliSenseAgent() =
       match msg with
       | TriggerParseRequest(opts, full) ->
           // Start parsing and update errors with the new ones
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           let res =
             checker.CheckFileInProjectIfReady
               ( untypedInfo, opts.FileName, 0, opts.Source,
@@ -138,13 +138,13 @@ type internal IntelliSenseAgent() =
           return! loop errors
 
       | GetDeclarationsMessage(opts, repl) ->
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           repl.Reply(untypedInfo.GetNavigationItems().Declarations)
           return! loop errors
 
       | GetTypeCheckInfo(opts, timeout, reply) ->
           // Try to get information for the IntelliSense (in the specified time)
-          let untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
+          let! untypedInfo = checker.ParseFileInProject(opts.FileName, opts.Source, opts.Options)
           try
             let res, errors =
               Async.RunSynchronously
@@ -293,15 +293,21 @@ module internal CommandInput =
         followed by content of a file (ended with <<EOF>>)
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
+    helptext <candidate>
+      - fetch type signature for specified completion candidate
+        (from last completion request). Only use in JSON mode.
     tooltip ""<filename>"" <line> <col> [timeout]
       - get tool tip for the specified location
     finddecl ""<filename>"" <line> <col> [timeout]
-      - find the point of declaration of the object at specified position
+      - find the point of declaration of the symbol at specified location
     project ""<filename>""
       - associates the current session with the specified project
     outputmode {json,text}
       - switches the output format. json offers richer data
         for some commands
+    compilerlocation
+      - prints the best guess for the location of fsc and fsi
+        (or fsharpc and fsharpi on unix)
     "
     
   let outputText = @"
@@ -344,6 +350,7 @@ module internal CommandInput =
     | Error of string
     | Project of string
     | OutputMode of OutputMode
+    | CompilerLocation
     | Help
     | Quit
 
@@ -424,6 +431,11 @@ module internal CommandInput =
       return HelpText sym
     }
 
+  let compilerlocation = parser {
+    let! _ = string "compilerlocation"
+    return CompilerLocation
+    }
+
   // Parses always and returns default error message
   let error = parser { return Error("Unknown command or wrong arguments") }
 
@@ -433,7 +445,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> outputmode <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = compilerlocation <|> errors <|> outputmode <|> helptext <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -648,6 +660,20 @@ module internal Main =
 
         else
           main state
+
+    | CompilerLocation ->
+        let locopt =
+          FSharpEnvironment.BinFolderOfDefaultFSharpCompiler
+            FSharpCompilerVersion.LatestKnown
+        match locopt with
+        | None -> printMsg "ERROR" "Could not find compiler"; main state
+        | Some loc ->
+
+        match state.OutputMode with
+        | Text -> printfn "DATA: compilerlocation\n%s\n<<EOF>>" loc
+        | Json -> prAsJson { Kind = "compilerlocation"; Data = loc }
+
+        main state
 
     | Help ->
         match state.OutputMode with

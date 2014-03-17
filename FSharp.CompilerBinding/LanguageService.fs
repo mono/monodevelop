@@ -173,7 +173,7 @@ type LanguageService(dirtyNotify) =
             let fileName = fixFileName(fileName)            
             
             Debug.WriteLine("Worker: Request received, fileName = {0}, parsing...", box fileName)
-            let parseResults = checker.ParseFileInProject(fileName, source, options) 
+            let! parseResults = checker.ParseFileInProject(fileName, source, options) 
               
             Debug.WriteLine("Worker: Typecheck source...")
             let! checkAnswer = checker.CheckFileInProject(parseResults, fileName, 0, source,options, IsResultObsolete(fun () -> false), null )
@@ -286,18 +286,18 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : ParseAndCheckResults = 
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : Option<ParseAndCheckResults> = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", [|fileName|])
     // Try to get recent results from the F# service
-    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
-    | Some results ->
+    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
+    | Some _ as results ->
         Debug.WriteLine(sprintf "Parsing: using stale results")
         results
     | None -> 
         Debug.WriteLine(sprintf "Worker: Not using stale results - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        mbox.PostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+        mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
 
   member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale, targetFramework) = 
    async { 

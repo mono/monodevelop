@@ -199,16 +199,18 @@ type FSharpTextEditorCompletion() =
           loop 0 offset 
 
       Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
-      if docText = null || offset >= docText.Length || offset < 0 then null else
       let config = IdeApp.Workspace.ActiveConfiguration
-      if config = null then null else
+      if docText = null || config = null || offset >= docText.Length || offset < 0 then null else
 
       // Try to get typed result - with the specified timeout
       let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(proj, config)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-      let tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework)
+
+      match MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) with
+      | None -> null
+      | Some tyRes ->
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
@@ -279,25 +281,24 @@ type FSharpTextEditorCompletion() =
       let args = CompilerArguments.getArgumentsFromProject(proj, config)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
-      let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else  AllowStaleResults.MatchingSource
-      let tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
-      
-      // Get declarations and generate list for MonoDevelop
-      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
-      match tyRes.GetDeclarations(line, col, lineStr) with
-      | Some(decls, residue) when decls.Items.Any() -> 
-            let items = decls.Items
-                        |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
-            let result = CompletionDataList()
-            result.AddRange(items)
-            result :> ICompletionDataList
-      | _ -> null
-
-    with 
-    | :? System.TimeoutException -> 
+      let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
+      match MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework) with
+      | None ->
         let result = CompletionDataList()
         result.Add(FSharpTryAgainMemberCompletionData())
         result :> ICompletionDataList
+      | Some tyRes ->
+        // Get declarations and generate list for MonoDevelop
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
+        match tyRes.GetDeclarations(line, col, lineStr) with
+        | Some(decls, residue) when decls.Items.Any() ->
+              let items = decls.Items
+                          |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
+              let result = CompletionDataList()
+              result.AddRange(items)
+              result :> ICompletionDataList
+        | _ -> null
+    with
     | e -> let result = CompletionDataList()
            result.Add(FSharpErrorCompletionData(e))
            result :> ICompletionDataList

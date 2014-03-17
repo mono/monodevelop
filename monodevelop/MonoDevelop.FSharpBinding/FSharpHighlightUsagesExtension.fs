@@ -103,7 +103,8 @@ module NRefactory =
            //unresolvedTypeDef.BaseTypes <- [ for x in fsEntity.DeclaredInterfaces -> Def ]
 
            // Create an IUnresolveAssembly holding the type definition.
-           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location=projectContent.Location)
+           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "" | Some n -> n
+           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location = assemblyFilename)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
 
            // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
@@ -135,7 +136,8 @@ module NRefactory =
            // method or function. For the operations we're implementing (Find-all references and rename refactoring)
            // it doesn't seem to matter.
            let unresolvedMember = FSharpUnresolvedMethod(unresolvedTypeDef, fsMember.DisplayName, fsSymbol, lastIdent, Region=region, Accessibility=access)
-           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location=projectContent.Location)
+           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "" | Some n -> n
+           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location = assemblyFilename)
            unresolvedTypeDef.Members.Add(unresolvedMember)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
 

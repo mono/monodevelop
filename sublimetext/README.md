@@ -11,35 +11,49 @@ development environment.
 
 Pull requests to FSharp are welcome.
 
-At the moment, FSharp is only compatible with Sublime Text 3 on Windows.
+At the moment, FSharp is only compatible with Sublime Text 3.
 
 See also *FSharp_Tests/README.md*.
 
-General steps:
+#### General steps
 
 * Clone this repository to any folder outside of Sublime Text's *Data* folder
 * Edit files as needed
 * Edit tests in FSharp_Tests as needed
-* Publish the project using the provided scripts
+* Publish the project using `make install` or `.bin/Publish.ps1`
 * Restart Sublime Text
-* Run the tests
+* Run the tests via command palette: *FSharp: Run Tests*
 
-There are scripts to build *FSharp.sublime-package* automatically on Linux,
-OS X and Windows, but they may not work on your computer at present.
 
-The file *manifest.json* should contain all the files that need to be
-included in *FSharp.sublime-package*.
+#### Building
 
-### Windows development environment
+See below for platform-specific instructions.
+
+
+### Development environment - Linux/Mac
 
 #### Requirements
 
-* Python 2.7 or above, or Python 3.3 or above.
+* Python 2.7 or above (including Python 3)
 
-If you're using a portable installation of Sublime Text, you must set
+Run `make install` to obtain dependencies and publish the files locally.
+Run `make build` to only publish the files locally.
+
+Check the *Makefile* for more options.
+
+
+### Development environment - Windows
+
+#### Requirements
+
+* Python 2.7 or above (including Python 3)
+
+If you're using a **portable installation** of Sublime Text, you must set
 `$STDataPath` in your PowerShell session to Sublime Text's *Data* path. For
-full installations, the script will attempt to find said directory
+**full installations**, the build script will attempt to find said directory
 automatically.
 
+Build process:
+
 Run `.\bin\GetDependencies.ps1` once to get dependencies.
-Run `.\bin\Publish.ps1` to publish locally any changes to the files.
+Run `.\bin\Publish.ps1` to publish the files locally.

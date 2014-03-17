@@ -48,7 +48,7 @@ class Server(object):
         except Exception as e:
             logging.error("Exception during fsautocomplete's shutdown: {0}".format(e))
             try:
-                self.proc.stdin.close()
+                self.proc.kill()
             except:
                 pass
             raise e

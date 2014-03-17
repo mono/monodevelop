@@ -2,19 +2,16 @@ INFO: Background parsing started
 <<EOF>>
 DATA: completion
 Another`Column
-AsTuple
 Column Two
 Column1
 <<EOF>>
 DATA: completion
 Another`Column
-AsTuple
 Column Two
 Column1
 <<EOF>>
 DATA: completion
 Another`Column
-AsTuple
 Column Two
 Column1
 <<EOF>>

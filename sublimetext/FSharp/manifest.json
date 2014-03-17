@@ -14,10 +14,9 @@
 					"build.sh"
 					]
 			],
-			["./tests/*.py", []],
-			["./tests/fsac/*.py", []],
-			["./fsac/*.py", []],
-			["./const/*.py", []],
+			["./lib/*.py", []],
+			["./lib/fsac/*.py", []],
+			["./lib/const/*.py", []],
 			["./bundled/fsautocomplete.zip", []]
 		],
 		"release": [
@@ -36,8 +35,9 @@
 					"build.sh"
 					]
 			],
-			["./fsac/*.py", []],
-			["./const/*.py", []],
+			["./lib/*.py", []],
+			["./lib/fsac/*.py", []],
+			["./lib/const/*.py", []],
 			["./bundled/fsautocomplete.zip", []]
 		]
 	}

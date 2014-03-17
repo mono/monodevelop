@@ -1,4 +1,3 @@
-
 (defun init-melpa ()
   (setq package-archives
         '(("melpa"       . "http://melpa.milkbox.net/packages/")))
@@ -99,7 +98,7 @@
        (sleep-for 1))
      (search-forward "X.func")
      (backward-char 2)
-     (call-process "sleep" nil nil nil "3")
+     (call-process "sleep" nil nil nil "6")
      (fsharp-ac/gotodefn-at-point)
      (with-timeout (5)
        (while (eq (point) 88)
