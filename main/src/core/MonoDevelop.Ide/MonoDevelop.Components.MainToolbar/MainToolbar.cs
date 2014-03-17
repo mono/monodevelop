@@ -298,6 +298,9 @@ namespace MonoDevelop.Components.MainToolbar
 				if (args.Event is Gdk.EventConfigure)
 					PositionPopup ();
 			};
+			SizeAllocated += delegate {
+				PositionPopup ();
+			};
 
 			BuildToolbar ();
 			IdeApp.CommandService.RegisterCommandBar (buttonBar);
