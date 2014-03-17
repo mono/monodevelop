@@ -4,6 +4,8 @@ DATA: project
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
+DATA: errors
+<<EOF>>
 ERROR: Position is out of range
 <<EOF>>
 ERROR: Position is out of range
