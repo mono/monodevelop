@@ -287,11 +287,17 @@
     <EmbeddedResource Include="icons\light\breakpoint-disable-all-16%402x.png">
       <LogicalName>breakpoint-disable-all-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-disabled-16.png">
-      <LogicalName>breakpoint-disabled-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\breakpoint-disabled-16.png">
+      <LogicalName>breakpoint-disabled-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-invalid-16.png">
-      <LogicalName>breakpoint-invalid-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\breakpoint-disabled-16%402x.png">
+      <LogicalName>breakpoint-disabled-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\breakpoint-invalid-16.png">
+      <LogicalName>breakpoint-invalid-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\breakpoint-invalid-16%402x.png">
+      <LogicalName>breakpoint-invalid-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\breakpoint-new-16.png">
       <LogicalName>breakpoint-new-light-16.png</LogicalName>

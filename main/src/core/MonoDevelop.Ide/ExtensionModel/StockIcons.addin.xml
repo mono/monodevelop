@@ -41,8 +41,8 @@
 	<StockIcon stockid = "md-add-namespace" resource = "add-namespace-16.png"/>
 	<StockIcon stockid = "md-breakpoint" resource = "breakpoint-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-light-16.png" size="Menu"/>
-	<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-16.png" size="Menu"/>
-	<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-16.png" size="Menu"/>
+	<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-light-16.png" size="Menu"/>
+	<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-clear-all-light-16.png" size="Menu"/>
@@ -104,7 +104,7 @@
 	<StockIcon stockid = "md-method" resource = "element-method-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-static-method" icon = "res:element-method-light-16.png|res:element-visibility-static-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-newmethod" resource = "element-method-new-16.png" size="Menu" />
-	<StockIcon stockid = "md-misc-files" resource = "misc-files-16.png" size="Menu" />
+	<StockIcon stockid = "md-misc-files" resource = "file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-name-space" resource = "element-namespace-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-folder-icon" resource = "folder-new-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-project" resource = "project-new-16.png" size="Menu" />
