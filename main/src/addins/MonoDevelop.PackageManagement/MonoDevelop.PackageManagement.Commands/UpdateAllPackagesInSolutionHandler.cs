@@ -43,8 +43,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error updating all packages in solution.", ex);
-				ShowStatusBarError (progressMessage, ex);
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
 

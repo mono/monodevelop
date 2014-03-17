@@ -40,12 +40,32 @@ namespace MonoDevelop.PackageManagement.Commands
 		public override void DeleteItem ()
 		{
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageReferenceNode.Id);
+
+			try {
+				RemovePackage (packageReferenceNode, progressMessage);
+			} catch (Exception ex) {
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
+
+		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
+		{
 			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
 			UninstallPackageAction action = project.CreateUninstallPackageAction ();
 			action.Package = project.FindPackage (packageReferenceNode.Id);
 
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRemoveSinglePackageMessage (packageReferenceNode.Id);
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			if (action.Package != null) {
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			} else {
+				ShowMissingPackageError (progressMessage, packageReferenceNode);
+			}
+		}
+
+		void ShowMissingPackageError (ProgressMonitorStatusMessage progressMessage, PackageReferenceNode packageReferenceNode)
+		{
+			string message = GettextCatalog.GetString ("Unable to find package {0} {1} to remove it from the project. Please restore the package first.", packageReferenceNode.Id, packageReferenceNode.Version);
+			PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, message);
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -64,12 +84,17 @@ namespace MonoDevelop.PackageManagement.Commands
 		public void UpdatePackage ()
 		{
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-			UpdatePackageAction action = project.CreateUpdatePackageAction ();
-			action.PackageId = packageReferenceNode.Id;
-
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+
+			try {
+				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				UpdatePackageAction action = project.CreateUpdatePackageAction ();
+				action.PackageId = packageReferenceNode.Id;
+
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			} catch (Exception ex) {
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
 		}
 
 		[CommandUpdateHandler (PackageReferenceNodeCommands.ShowPackageVersion)]

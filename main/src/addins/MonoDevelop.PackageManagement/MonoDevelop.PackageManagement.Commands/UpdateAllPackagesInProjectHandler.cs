@@ -45,7 +45,6 @@ namespace MonoDevelop.PackageManagement.Commands
 				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error updating all packages in solution.", ex);
 				ShowStatusBarError (ex);
 			}
 		}
@@ -61,7 +60,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void ShowStatusBarError (Exception ex)
 		{
 			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
-			ShowStatusBarError (message, ex);
+			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
 		}
 
 		protected override void Update (CommandInfo info)

@@ -93,14 +93,5 @@ namespace MonoDevelop.PackageManagement.Commands
 			}
 			return false;
 		}
-
-		protected void ShowStatusBarError (ProgressMonitorStatusMessage progressMessage, Exception ex)
-		{
-			var factory = new PackageManagementProgressMonitorFactory ();
-			using (IProgressMonitor progressMonitor = factory.CreateProgressMonitor (progressMessage.Status)) {
-				progressMonitor.Log.WriteLine (ex.Message);
-				progressMonitor.ReportError (progressMessage.Error, null);
-			}
-		}
 	}
 }

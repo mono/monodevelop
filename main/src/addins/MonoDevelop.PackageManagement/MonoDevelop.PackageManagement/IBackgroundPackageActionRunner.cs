@@ -34,6 +34,9 @@ namespace MonoDevelop.PackageManagement
 	{
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
 		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
+
+		void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception);
+		void ShowError (ProgressMonitorStatusMessage progressMessage, string message);
 	}
 }
 

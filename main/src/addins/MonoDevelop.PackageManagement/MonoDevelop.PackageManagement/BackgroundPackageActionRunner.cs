@@ -112,6 +112,21 @@ namespace MonoDevelop.PackageManagement
 			string message = GettextCatalog.GetString ("Package contains PowerShell scripts which will not be run.");
 			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
 		}
+
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
+		{
+			LoggingService.LogInternalError (progressMessage.Status, exception);
+			ShowError (progressMessage, exception.Message);
+		}
+
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, string error)
+		{
+			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
+				monitor.Log.WriteLine (error);
+				monitor.ReportError (progressMessage.Error, null);
+				monitor.ShowPackageConsole ();
+			}
+		}
 	}
 }
 
