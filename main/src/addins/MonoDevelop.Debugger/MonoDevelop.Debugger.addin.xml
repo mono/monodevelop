@@ -136,7 +136,7 @@
 				defaultHandler = "MonoDevelop.Debugger.DisableAllBreakpointsHandler" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ClearAllBreakpointsHandler"
-				icon = "md-breakpoint-remove-all"
+				icon = "md-clear"
 				_label = "Clear All Breakpoints" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly"
 				_label = "Show Disassembly"

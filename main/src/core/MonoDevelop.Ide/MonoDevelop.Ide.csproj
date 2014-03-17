@@ -311,12 +311,6 @@
     <EmbeddedResource Include="icons\light\breakpoint-on-off-16%402x.png">
       <LogicalName>breakpoint-on-off-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\breakpoint-clear-all-16.png">
-      <LogicalName>breakpoint-clear-all-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\breakpoint-clear-all-16%402x.png">
-      <LogicalName>breakpoint-clear-all-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\build-project-16.png">
       <LogicalName>build-project-16.png</LogicalName>
     </EmbeddedResource>
