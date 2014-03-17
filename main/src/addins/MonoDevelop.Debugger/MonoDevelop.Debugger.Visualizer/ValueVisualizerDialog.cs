@@ -85,7 +85,7 @@ namespace MonoDevelop.Debugger.Viewers
 		
 		protected virtual void OnSaveClicked (object sender, EventArgs e)
 		{
-			if (value.IsReadOnly || currentVisualizer == null || currentVisualizer.StoreValue (value))
+			if (currentVisualizer == null || currentVisualizer.StoreValue (value))
 				Respond (Gtk.ResponseType.Ok);
 		}
 	}
