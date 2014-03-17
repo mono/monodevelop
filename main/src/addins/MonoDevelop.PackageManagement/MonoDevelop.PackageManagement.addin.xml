@@ -69,12 +69,6 @@
 				insertafter="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
 				insertbefore="AddSectionEnd" />
 		</Condition>
-		<Condition id="ItemType" value="Project">
-			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages"
-				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-				insertbefore="AddSectionEnd" />
-		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
@@ -82,6 +76,15 @@
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.Restore" />
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="Project">
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.AddPackages"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
 	</Extension>
 	
