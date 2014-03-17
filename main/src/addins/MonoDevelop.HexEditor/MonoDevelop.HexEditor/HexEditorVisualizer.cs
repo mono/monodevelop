@@ -168,9 +168,10 @@ namespace MonoDevelop.HexEditor
 
 		public byte[] GetBytes (long index, int count)
 		{
-			while (index < 0 && count > 0) {
-				index++;
-				count--;
+			if (index < 0 && count > 0) {
+				int n = (int) Math.Min (-index, count);
+				index += n;
+				count -= n;
 			}
 
 			if (count == 0)
