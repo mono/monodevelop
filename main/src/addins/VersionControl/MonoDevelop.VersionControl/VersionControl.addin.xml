@@ -95,6 +95,8 @@
 		<StockIcon stockid = "vc-file-modified" resource = "vcs-modified-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-file-conflicted" resource = "vcs-conflicted-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-repository" resource = "repository-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-tag" resource = "tag-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-branch" resource = "branch-light-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

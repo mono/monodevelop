@@ -272,6 +272,18 @@
     <EmbeddedResource Include="icons\light\revert-16%402x.png">
       <LogicalName>revert-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\branch-16.png">
+      <LogicalName>branch-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\branch-16%402x.png">
+      <LogicalName>branch-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tag-16.png">
+      <LogicalName>tag-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tag-16%402x.png">
+      <LogicalName>tag-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />

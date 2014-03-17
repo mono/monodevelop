@@ -143,12 +143,6 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\arrow_branch.png">
-      <LogicalName>arrow_branch.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\tag_blue.png">
-      <LogicalName>tag_blue.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
