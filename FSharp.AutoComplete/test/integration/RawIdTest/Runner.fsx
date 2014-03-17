@@ -12,7 +12,7 @@ Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 File.Delete "output.txt"
 
 if not (File.Exists "FSharp.Data/lib/net40/FSharp.Data.dll") then
-  installNuGetPkg "FSharp.Data"
+  installNuGetPkg "FSharp.Data" "2.0.3"
 
 let p = new FSharpAutoCompleteWrapper()
 
