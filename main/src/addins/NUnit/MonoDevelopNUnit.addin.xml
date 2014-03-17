@@ -187,6 +187,7 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "nunit-pad-icon" resource = "pad-unit-test-light-16.png" size="Menu" />
 		<StockIcon stockid = "nunit-results-pad-icon" resource = "pad-unit-test-results-light-16.png" size="Menu" />
+		<StockIcon stockid = "nunit-run" resource = "unit-run-light-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
