@@ -376,7 +376,7 @@ module internal MonoDevelop =
 
         let args = CompilerArguments.generateCompilerOptions(project,
                                                              fsconfig,
-                                                             FSharp.CompilerBinding.FSharpCompilerVersion.LatestKnown, 
+                                                             None,
                                                              CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
                                                              config, 
                                                              false) |> Array.ofList

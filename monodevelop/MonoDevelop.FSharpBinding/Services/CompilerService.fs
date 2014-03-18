@@ -171,13 +171,12 @@ module CompilerService =
   // ------------------------------------------------------------------------------------
   /// Compiles the specified F# project using the current configuration
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
-    let reqLangVersion = FSharpCompilerVersion.LatestKnown
     let runtime = config.TargetRuntime
     let framework = config.TargetFramework
     let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
     let args = 
         [ yield! [ "--noframework --nologo" ]
-          yield! generateCmdArgs(config, reqLangVersion, items, configSel)
+          yield! generateCmdArgs(config, None, items, configSel)
           yield! CompilerArguments.generateOtherItems items 
       
           // Generate source files

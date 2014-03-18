@@ -221,7 +221,7 @@ type LanguageService(dirtyNotify) =
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("GetScriptCheckerOptions: Adding missing core assemblies.")
-            let dirs = FSharpEnvironment.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, targetFramework )
+            let dirs = FSharpEnvironment.getDefaultDirectories (None, targetFramework )
             {opts with ProjectOptions = [| yield! opts.ProjectOptions
                                            match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
                                            | Some fn -> yield sprintf "-r:%s" fn
