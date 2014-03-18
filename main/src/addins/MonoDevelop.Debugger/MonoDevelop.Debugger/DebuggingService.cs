@@ -38,7 +38,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Debugger.Viewers;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 
 /*
@@ -136,7 +135,7 @@ namespace MonoDevelop.Debugger
 			
 			watch.LiveUpdate = liveUpdate;
 			if (liveUpdate) {
-				Breakpoint bp = new Breakpoint (watch.File, watch.Line);
+				var bp = new Breakpoint (watch.File, watch.Line);
 				bp.TraceExpression = "{" + watch.Expression + "}";
 				bp.HitAction = HitAction.PrintExpression;
 				lock (breakpoints)
@@ -163,8 +162,9 @@ namespace MonoDevelop.Debugger
 				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
 				if (s.Length == 0) {
 					// Set the initial priorities
-					List<string> prios = new List<string> ();
+					var prios = new List<string> ();
 					int i = 0;
+
 					foreach (DebuggerEngineExtensionNode de in AddinManager.GetExtensionNodes (FactoriesPath)) {
 						if (de.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal)) // Give priority to soft debugger by default
 							prios.Insert (i++, de.Id);
@@ -217,16 +217,16 @@ namespace MonoDevelop.Debugger
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
 		{
 			var dlg = new BreakpointPropertiesDialog (bp, editNew);
-			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
-				return true;
-			return false;
+
+			return MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok;
 		}
 		
 		public static void ShowAddTracepointDialog (string file, int line)
 		{
-			AddTracePointDialog dlg = new AddTracePointDialog ();
+			var dlg = new AddTracePointDialog ();
+
 			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
-				Breakpoint bp = new Breakpoint (file, line);
+				var bp = new Breakpoint (file, line);
 				bp.HitAction = HitAction.PrintExpression;
 				bp.TraceExpression = dlg.Text;
 				bp.ConditionExpression = dlg.Condition;
@@ -238,9 +238,10 @@ namespace MonoDevelop.Debugger
 		
 		public static void AddWatch (string expression)
 		{
-			Pad pad = IdeApp.Workbench.GetPad<WatchPad> ();
+			var pad = IdeApp.Workbench.GetPad<WatchPad> ();
+			var wp = (WatchPad) pad.Content;
+
 			pad.BringToFront (false);
-			WatchPad wp = (WatchPad) pad.Content;
 			wp.AddWatch (expression);
 		}
 
@@ -262,7 +263,7 @@ namespace MonoDevelop.Debugger
 
 		public static bool IsFeatureSupported (DebuggerFeatures feature)
 		{
-			foreach (DebuggerEngine engine in GetDebuggerEngines ())
+			foreach (var engine in GetDebuggerEngines ())
 				if ((engine.SupportedFeatures & feature) == feature)
 					return true;
 			return false;
@@ -270,37 +271,39 @@ namespace MonoDevelop.Debugger
 
 		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
 		{
-			FeatureCheckerHandlerFactory fc = new FeatureCheckerHandlerFactory ();
-			ExecutionContext ctx = new ExecutionContext (fc, null);
+			var fc = new FeatureCheckerHandlerFactory ();
+			var ctx = new ExecutionContext (fc, null);
+
 			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
+
 			return fc.SupportedFeatures;
 		}
 
 		public static DebuggerFeatures GetSupportedFeaturesForCommand (ExecutionCommand command)
 		{
-			DebuggerEngine engine = GetFactoryForCommand (command);
-			if (engine != null)
-				return engine.SupportedFeatures;
+			var engine = GetFactoryForCommand (command);
 
-			return DebuggerFeatures.None;
+			return engine != null ? engine.SupportedFeatures : DebuggerFeatures.None;
 		}
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			ExpressionEvaluatorDialog dlg = new ExpressionEvaluatorDialog ();
+			var dlg = new ExpressionEvaluatorDialog ();
+
 			if (expression != null)
 				dlg.Expression = expression;
+
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
 		public static void ShowExceptionCaughtDialog ()
 		{
-			EvaluationOptions ops = session.EvaluationOptions.Clone ();
+			var ops = session.EvaluationOptions.Clone ();
 			ops.MemberEvaluationTimeout = 0;
 			ops.EvaluationTimeout = 0;
 			ops.EllipsizeStrings = false;
 			
-			ExceptionInfo val = CurrentFrame.GetException (ops);
+			var val = CurrentFrame.GetException (ops);
 			if (val != null) {
 				HideExceptionCaughtDialog ();
 				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
@@ -929,9 +932,7 @@ namespace MonoDevelop.Debugger
 		
 		static void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
-			XmlElement elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints");
-			if (elem == null)
-				elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
+			var elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints") ?? args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 
 			if (elem != null) {
 				lock (breakpoints)
@@ -1021,7 +1022,7 @@ namespace MonoDevelop.Debugger
 
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			DebugExecutionHandler h = new DebugExecutionHandler (engine);
+			var h = new DebugExecutionHandler (engine);
 			return h.Execute (command, console);
 		}
 	}
@@ -1047,14 +1048,11 @@ namespace MonoDevelop.Debugger
 	
 	class GtkConnectionDialog : IConnectionDialog
 	{
-		bool disposed;
+		static readonly string DefaultListenMessage = GettextCatalog.GetString ("Waiting for debugger to connect...");
 		System.Threading.CancellationTokenSource cts;
+		bool disposed;
 		
 		public event EventHandler UserCancelled;
-		
-		string DefaultListenMessage {
-			get { return GettextCatalog.GetString ("Waiting for debugger to connect..."); }
-		}
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
@@ -1081,7 +1079,7 @@ namespace MonoDevelop.Debugger
 				title = GettextCatalog.GetString ("Waiting for debugger");
 			} else {
 				message = message.Trim ();
-				int i = message.IndexOfAny (new char[] { '\n', '\r' });
+				int i = message.IndexOfAny (new [] { '\n', '\r' });
 				if (i > 0) {
 					title = message.Substring (0, i).Trim ();
 					message = message.Substring (i).Trim ();
