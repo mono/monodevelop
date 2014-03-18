@@ -77,24 +77,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dialogs\EncodingSelectionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dialogs\EncodingSelectionForm.Designer.cs">
-      <DependentUpon>EncodingSelectionForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\OpenFileDialogEx.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Dialogs\OpenFileDialogEx.Designer.cs">
-      <DependentUpon>OpenFileDialogEx.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />
     <Compile Include="Dialogs\SelectFileDialogHandler.cs" />
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
-    <Compile Include="Dialogs\EncodingComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="GdkWin32.cs" />
@@ -110,13 +95,6 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dialogs\EncodingSelectionForm.resx">
-      <DependentUpon>EncodingSelectionForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\OpenFileDialogEx.resx">
-      <DependentUpon>OpenFileDialogEx.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">
       <LogicalName>WindowsPlatform.addin.xml</LogicalName>
     </EmbeddedResource>
