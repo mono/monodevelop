@@ -309,6 +309,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackagesRequiringLicenseAcceptance.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewCheckBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -317,18 +318,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\PackageSourceIcon.png">
       <LogicalName>PackageSourceIcon.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\CheckedCheckBox.png">
-      <LogicalName>CheckedCheckBox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\SelectedCheckedCheckBox.png">
-      <LogicalName>SelectedCheckedCheckBox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\SelectedUncheckedCheckBox.png">
-      <LogicalName>SelectedUncheckedCheckBox.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\UncheckedCheckBox.png">
-      <LogicalName>UncheckedCheckBox.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
