@@ -139,6 +139,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			set {
 				tabControl = value;
+				tabControl.NavigationButtonsVisible = true;
 			}
 		}
 		

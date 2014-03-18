@@ -382,6 +382,7 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var newWindow = new DockWindow ();
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+			newNotebook.NavigationButtonsVisible = false;
 			newNotebooks.Add (newNotebook);
 			
 			var box = new VBox ();
@@ -394,6 +395,7 @@ namespace MonoDevelop.Components.DockNotebook
 			newTab2.Content = window2;
 			newWindow.Title = DefaultWorkbench.GetTitle (window2);
 			newWindow.ShowAll (); 
+
 			window2.SetDockNotebook (newNotebook, newTab2); 
 			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
 			newWindow.Resize (w, h);

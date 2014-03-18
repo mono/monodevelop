@@ -105,6 +105,25 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
+		public bool  NavigationButtonsVisible {
+			get { return children.Contains (PreviousButton); }
+			set {
+				if (value == NavigationButtonsVisible)
+					return;
+				if (value) {
+					children.Add (NextButton); 
+					children.Add (PreviousButton); 
+					OnSizeAllocated (Allocation);
+					PreviousButton.ShowAll ();
+					NextButton.ShowAll ();
+				} else {
+					children.Remove (PreviousButton);
+					children.Remove (NextButton);
+					OnSizeAllocated (Allocation);
+				}
+			}
+		}
+
 		public TabStrip (DockNotebook notebook)
 		{
 			if (notebook == null)
@@ -208,7 +227,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			tabStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
+			if (NavigationButtonsVisible) {
+				tabStartX = /*allocation.X +*/ LeftBarPadding + LeanWidth / 2;
+			} else {
+				tabStartX = LeanWidth / 2;
+			}
 			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
 			var height = allocation.Height - BottomBarPadding;
 			if (height < 0)
@@ -222,8 +245,8 @@ namespace MonoDevelop.Components.DockNotebook
 			)
 			);
 			NextButton.SizeAllocate (new Gdk.Rectangle (
-				allocation.X + LeftBarPadding / 2,
-				allocation.Y,
+				LeftBarPadding / 2,
+				0,
 				LeftBarPadding / 2, height)
 			);
 

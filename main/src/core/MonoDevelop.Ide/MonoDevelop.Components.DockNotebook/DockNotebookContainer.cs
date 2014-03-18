@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.DockNotebook
 					return;
 				
 				var motherContainer = (DockNotebookContainer)paned.Parent;
-				
+
 				var newChild = otherContainer.Child;
 				otherContainer.Remove (newChild);
 				
@@ -79,11 +79,8 @@ namespace MonoDevelop.Components.DockNotebook
 				motherContainer.isMasterTab |= otherContainer.isMasterTab;
 				motherContainer.Remove (paned);
 				motherContainer.Child = newChild;
-				
 				motherContainer.ShowAll ();
-				
 				paned.Destroy ();
-				
 				return;
 			}
 			
@@ -94,6 +91,7 @@ namespace MonoDevelop.Components.DockNotebook
 		void Insert(SdiWorkspaceWindow window, Action<DockNotebookContainer> callback)
 		{
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+			newNotebook.NavigationButtonsVisible = false;
 			PlaceholderWindow.newNotebooks.Add (newNotebook);
 			newNotebook.InitSize ();
 			newNotebook.Destroyed += delegate {
@@ -109,7 +107,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 			tabControl.InitSize ();
 			ShowAll ();
-
 		}
 
 		public void InsertLeft (SdiWorkspaceWindow window)

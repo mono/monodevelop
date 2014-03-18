@@ -112,6 +112,11 @@ namespace MonoDevelop.Components.DockNotebook
 			set { tabStrip.NextButton.Sensitive = value; }
 		}
 
+		public bool NavigationButtonsVisible {
+			get { return tabStrip.NavigationButtonsVisible; }
+			set { tabStrip.NavigationButtonsVisible = value; }
+		}
+
 		public ReadOnlyCollection<IDockNotebookTab> Tabs {
 			get { return pagesCol; }
 		}
