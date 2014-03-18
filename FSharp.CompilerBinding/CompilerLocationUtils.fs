@@ -44,6 +44,8 @@ type FSharpCompilerVersion =
 
 module FSharpEnvironment =
 
+  let fsharpVers = [ FSharp_3_1; FSharp_3_0; FSharp_2_0 ]
+
   let safeExists f = (try File.Exists(f) with _ -> false)
 
   let FSharpCoreLibRunningVersion =
@@ -95,7 +97,7 @@ module FSharpEnvironment =
 
   // MaxPath accounts for the null-terminating character, for example, the maximum path on the D drive is "D:\<256 chars>\0". 
   // See: ndp\clr\src\BCL\System\IO\Path.cs
-  let maxPath = 260;
+  let maxPath = 260
   let maxDataLength = (new System.Text.UTF32Encoding()).GetMaxByteCount(maxPath)
   let KEY_WOW64_DEFAULT = 0x0000
   let KEY_WOW64_32KEY = 0x0200
@@ -258,123 +260,140 @@ module FSharpEnvironment =
   //   - default F# binaries directory in service.fs (REVIEW: check this)
   //   - default location of fsi.exe in FSharp.VS.FSI.dll
   //   - default location of fsc.exe in FSharp.Compiler.CodeDom.dll
-  let BinFolderOfDefaultFSharpCompiler(reqLangVersion: FSharpCompilerVersion) = 
-    // Check for an app.config setting to redirect the default compiler location
-    // Like fsharp-compiler-location
-    try
-      // FSharp.Compiler support setting an appkey for compiler location. I've never seen this used.
-      Debug.WriteLine("Resolution:BinFolderOfDefaultFSharpCore: Probing app.config")
-      let result = tryAppConfig "fsharp-compiler-location"
-      match result with 
-      | Some _ -> result 
-      | None -> let result = tryWindowsConfig reqLangVersion
-                match result with
-                | Some _ -> result
-                | None -> let result = tryUnixConfig() 
-                          match result with 
-                          | Some _ -> result
-                          | None -> None
-    with e -> 
-      System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
-      Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: error %s" (e.ToString()))
-      None
+  let BinFolderOfDefaultFSharpCompiler(reqLangVersion: Option<FSharpCompilerVersion>) = 
 
+    let getBinFolder(reqLangVersion: FSharpCompilerVersion) =
+      // Check for an app.config setting to redirect the default compiler location
+      // Like fsharp-compiler-location
+      try
+        // FSharp.Compiler support setting an appkey for compiler location. I've never seen this used.
+        Debug.WriteLine("Resolution:BinFolderOfDefaultFSharpCore: Probing app.config")
+        let result = tryAppConfig "fsharp-compiler-location"
+        match result with 
+        | Some _ -> result 
+        | None -> let result = tryWindowsConfig reqLangVersion
+                  match result with
+                  | Some _ -> result
+                  | None -> let result = tryUnixConfig() 
+                            match result with 
+                            | Some _ -> result
+                            | None -> None
+      with e -> 
+        System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
+        Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: error %s" (e.ToString()))
+        None
 
-  let FolderOfDefaultFSharpCore(reqLangVersion:FSharpCompilerVersion, targetFramework) = 
-    try 
-      Debug.WriteLine(sprintf "Resolution: Determing folder of FSharp.Core for target framework '%A'" targetFramework)
-      let result = tryAppConfig "fsharp-core-location"
-      match result with 
-      | Some _ ->  result 
-      | None -> 
+    match reqLangVersion with
+    | Some v -> getBinFolder v
+    | None -> List.tryPick getBinFolder fsharpVers
+    
+  let FolderOfDefaultFSharpCore(reqLangVersion:Option<FSharpCompilerVersion>, targetFramework) =
 
-        // On Windows, look for the registry key giving the installation location of FSharp.Core.dll.
-        // This only works for .NET 2.0 - 4.0. To target Silverlight or Portable you'll need to use a direct reference to
-        // the right FSharp.Core.dll.
-        let result =
-            //early termination on Mono, continuing here results in failed pinvokes and reg key failures ~18-35ms
-            if Environment.runningOnMono then None else
-            match reqLangVersion, targetFramework with
-            | FSharp_2_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
-            | FSharp_2_0, _ ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
-            | FSharp_3_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\F# 3.0 Core Assemblies"
-            | FSharp_3_0, NET_4_0 ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
-            | FSharp_3_0, NET_4_5 ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.0 Core Assemblies"
-            | FSharp_3_1, NET_4_5 ->
-                tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.1 Core Assemblies"
-            | _ -> None
-        
+    let getFolder reqLangVersion =
+      try 
+        Debug.WriteLine(sprintf "Resolution: Determing folder of FSharp.Core for target framework '%A'" targetFramework)
+        let result = tryAppConfig "fsharp-core-location"
         match result with 
         | Some _ ->  result 
         | None -> 
-        Debug.WriteLine(sprintf "Resolution: FSharp.Core: looking in environment variable")
-        let result = 
-            let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
-            if String.IsNullOrEmpty(var) then None
-            else Some(var)
-        match result with 
-        | Some _ -> result
-        | None -> 
-        let possibleInstallationPoints = 
-            Option.toList (BinFolderOfDefaultFSharpCompiler(reqLangVersion) |> Option.map Path.GetDirectoryName) @  
-            BackupInstallationProbePoints
-        Debug.WriteLine(sprintf "Resolution: targetFramework = %A" targetFramework)
-        let ext = 
-            match targetFramework with 
-            | NET_2_0 | NET_3_0 | NET_3_5 -> "2.0"
-            | NET_4_0 -> "4.0"
-            | NET_4_5 -> "4.5"
 
-        let safeExists f = (try File.Exists(f) with _ -> false)
-        let result = 
-            possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+          // On Windows, look for the registry key giving the installation location of FSharp.Core.dll.
+          // This only works for .NET 2.0 - 4.0. To target Silverlight or Portable you'll need to use a direct reference to
+          // the right FSharp.Core.dll.
+          let result =
+              //early termination on Mono, continuing here results in failed pinvokes and reg key failures ~18-35ms
+              if Environment.runningOnMono then None else
+              match reqLangVersion, targetFramework with
+              | FSharp_2_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
+              | FSharp_2_0, _ ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
+              | FSharp_3_0, x when (x = NET_2_0 || x = NET_3_0 || x = NET_3_5) ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+              | FSharp_3_0, NET_4_0 ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+              | FSharp_3_0, NET_4_5 ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+              | FSharp_3_1, NET_4_5 ->
+                  tryRegKey @"Software\Microsoft\.NETFramework\v4.5.50709\AssemblyFoldersEx\F# 3.1 Core Assemblies"
+              | _ -> None
+        
+          match result with 
+          | Some _ ->  result 
+          | None -> 
+          Debug.WriteLine(sprintf "Resolution: FSharp.Core: looking in environment variable")
+          let result = 
+              let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
+              if String.IsNullOrEmpty(var) then None
+              else Some(var)
+          match result with 
+          | Some _ -> result
+          | None -> 
+          let possibleInstallationPoints = 
+              Option.toList (BinFolderOfDefaultFSharpCompiler(Some reqLangVersion) |> Option.map Path.GetDirectoryName) @  
+              BackupInstallationProbePoints
+          Debug.WriteLine(sprintf "Resolution: targetFramework = %A" targetFramework)
+          let ext = 
+              match targetFramework with 
+              | NET_2_0 | NET_3_0 | NET_3_5 -> "2.0"
+              | NET_4_0 -> "4.0"
+              | NET_4_5 -> "4.5"
+
+          let safeExists f = (try File.Exists(f) with _ -> false)
+          let result = 
+              possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
  
-              Debug.WriteLine(sprintf "Resolution: Probing for %s/lib/mono/%s/FSharp.Core.dll" possibleInstallationDir ext)   
-              let (++) s x = Path.Combine(s,x)
-              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ ext
-              if safeExists (candidate ++ "FSharp.Core.dll") then 
-                  Some candidate
-              else
-                  None)
+                Debug.WriteLine(sprintf "Resolution: Probing for %s/lib/mono/%s/FSharp.Core.dll" possibleInstallationDir ext)   
+                let (++) s x = Path.Combine(s,x)
+                let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ ext
+                if safeExists (candidate ++ "FSharp.Core.dll") then 
+                    Some candidate
+                else
+                    None)
                 
-        match result with 
-        | Some _ -> result
-        | None -> 
-        let result = 
-            possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+          match result with 
+          | Some _ -> result
+          | None -> 
+          let result = 
+              possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
 
-                  Debug.WriteLine(sprintf "Resolution: Probing %s/bin for fsc/fsi scripts or fsharpc/fsharpi scripts" possibleInstallationDir)
+                    Debug.WriteLine(sprintf "Resolution: Probing %s/bin for fsc/fsi scripts or fsharpc/fsharpi scripts" possibleInstallationDir)
               
-                  let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
-                  let exists f = safeExists(file f)
-                  match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
-                  | Some res -> Some res
-                  | None ->
-                  match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
-                  | Some res -> Some res
-                  | None -> None)
+                    let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
+                    let exists f = safeExists(file f)
+                    match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
+                    | Some res -> Some res
+                    | None ->
+                    match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
+                    | Some res -> Some res
+                    | None -> None)
                 
-        match result with 
-        | Some _ -> result
-        | None -> None
+          match result with 
+          | Some _ -> result
+          | None -> None
 
-    with e -> 
-      System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
-      None
+      with e -> 
+        System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
+        None
+
+    match reqLangVersion with
+    | Some v -> getFolder v
+    | None -> List.tryPick getFolder fsharpVers
 
   /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories(langVersion, fsTargetFramework) =   
+  let getDefaultDirectories(langVersion: Option<_>, fsTargetFramework) =
+
+    let dir =
+      match langVersion with
+      | Some v -> FolderOfDefaultFSharpCore(v, fsTargetFramework)
+      | None -> List.tryPick (fun v -> FolderOfDefaultFSharpCore(Some v, fsTargetFramework)) fsharpVers
+
     // Return all known directories, get the location of the System DLLs
-    [match FolderOfDefaultFSharpCore(langVersion, fsTargetFramework) with 
-     | Some dir -> Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
-                   yield dir
-     | None -> Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
-     yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()]
+    [ match dir with
+      | Some dir -> Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
+                    yield dir
+      | None -> Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
+      yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()]
 
   /// Resolve assembly in the specified list of directories
   let rec resolveAssembly dirs asm =

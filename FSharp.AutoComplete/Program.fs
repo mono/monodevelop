@@ -515,9 +515,7 @@ module internal Main =
           main state
 
     | CompilerLocation ->
-        let locopt =
-          FSharpEnvironment.BinFolderOfDefaultFSharpCompiler
-            FSharpCompilerVersion.LatestKnown
+        let locopt = FSharpEnvironment.BinFolderOfDefaultFSharpCompiler None
         match locopt with
         | None -> printMsg "ERROR" "Could not find compiler"; main state
         | Some loc ->
