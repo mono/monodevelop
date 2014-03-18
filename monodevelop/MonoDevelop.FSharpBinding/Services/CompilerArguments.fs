@@ -200,7 +200,7 @@ module CompilerArguments =
     match getShellToolPath [| ""; ".exe"; ".bat" |] "fsi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None-> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler None with
     | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsi.exe")) ->  
         Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
@@ -229,7 +229,7 @@ module CompilerArguments =
     match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler None with
     | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsc.exe")) ->  
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
@@ -237,5 +237,5 @@ module CompilerArguments =
   let getArgumentsFromProject (proj:DotNetProject, config) =
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateCompilerOptions (proj, fsconfig, FSharpCompilerVersion.LatestKnown , getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
+        generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 
