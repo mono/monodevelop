@@ -168,7 +168,7 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			var widget = Toolkit.CurrentEngine.GetNativeWidget (ParentWidget);
-			var checkbox = new PackageCellViewCheckBox ();
+			var checkbox = new PackageCellViewCheckBox (ParentWidget.ParentWindow.Screen.ScaleFactor);
 			checkbox.Container = (Gtk.Widget)widget;
 			checkbox.Size = (int)checkBoxImageSize.Width + 1;
 
@@ -319,14 +319,14 @@ namespace MonoDevelop.PackageManagement
 		Size checkBoxImageSize = new Size (16, 16);
 		Rectangle checkBoxImageClickableRectangle = new Rectangle (0, 10, 40, 50);
 
-		static Image whiteCheckedCheckBoxImage;
-		static Image whiteUncheckedCheckBoxImage;
-		static Image greyCheckedCheckBoxImage;
-		static Image greyUncheckedCheckBoxImage;
-		static Image blueCheckedCheckBoxImage;
-		static Image blueUncheckedCheckBoxImage;
-		static Image checkedCheckBoxWithBackgroundColorImage;
-		static Image uncheckedCheckBoxWithBackgroundColorImage;
+		Image whiteCheckedCheckBoxImage;
+		Image whiteUncheckedCheckBoxImage;
+		Image greyCheckedCheckBoxImage;
+		Image greyUncheckedCheckBoxImage;
+		Image blueCheckedCheckBoxImage;
+		Image blueUncheckedCheckBoxImage;
+		Image checkedCheckBoxWithBackgroundColorImage;
+		Image uncheckedCheckBoxWithBackgroundColorImage;
 
 		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "packageicon.png");
 	}

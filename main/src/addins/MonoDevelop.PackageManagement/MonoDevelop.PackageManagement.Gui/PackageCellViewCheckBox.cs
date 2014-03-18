@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		static int indicatorSize;
 		static int indicatorSpacing;
+		double scaleFactor;
 
 		static PackageCellViewCheckBox ()
 		{
@@ -42,8 +43,9 @@ namespace MonoDevelop.PackageManagement
 			indicatorSpacing = (int) cb.StyleGetProperty ("indicator-spacing");
 		}
 
-		public PackageCellViewCheckBox ()
+		public PackageCellViewCheckBox (double scaleFactor)
 		{
+			this.scaleFactor = scaleFactor;
 			Size = indicatorSize;
 			BackgroundColor = Xwt.Drawing.Colors.White;
 		}
@@ -55,13 +57,13 @@ namespace MonoDevelop.PackageManagement
 
 		public Xwt.Drawing.Image CreateImage ()
 		{
-			var bounds = new Gdk.Rectangle (0, 0, Size, Size);
-			return CreatePixBuf (bounds).ToXwtImage ();
+			var bounds = new Gdk.Rectangle (0, 0, (int)(Size * scaleFactor), (int)(Size * scaleFactor));
+			return CreatePixBuf (bounds).ToXwtImage ().WithSize (Size, Size);
 		}
 
 		Gdk.Pixbuf CreatePixBuf (Gdk.Rectangle bounds)
 		{
-			using (var pmap = new Gdk.Pixmap (Gdk.Screen.Default.RootWindow, bounds.Width, bounds.Height)) {
+			using (var pmap = new Gdk.Pixmap (Container.GdkWindow, bounds.Width, bounds.Height)) {
 				using (Cairo.Context ctx = Gdk.CairoHelper.Create (pmap)) {
 					ctx.Rectangle (0, 0, bounds.Width, bounds.Height);
 					ctx.SetSourceRGBA (BackgroundColor.Red, BackgroundColor.Green, BackgroundColor.Blue, BackgroundColor.Alpha);
@@ -76,7 +78,7 @@ namespace MonoDevelop.PackageManagement
 		void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
 			Gtk.ShadowType sh = (bool) Active ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
-			int s = Size - 1;
+			int s = (int)(scaleFactor * Size) - 1;
 			if (s > bounds.Height)
 				s = bounds.Height;
 			if (s > bounds.Width)
