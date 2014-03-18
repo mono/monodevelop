@@ -40,6 +40,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		DialogState state = DialogState.Uninitialized;
 		Label docLabel;
 		readonly DotNetProject project;
+		readonly DotNetProject wcfProject;
 		
 		#region Properties
 		/// <summary>Gets or Sets whether the current location of the browser is a valid web service or not.</summary>
@@ -160,6 +161,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.BasePath = Library.GetWebReferencePath (project);
 			this.isWebService = false;
 			this.project = project;
+			wcfProject = project;
 			this.modified = true;
 			this.NamespacePrefix = String.Empty;
 			ServiceUrl = String.Empty;
@@ -167,6 +169,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 			tbxReferenceURL.Text = homeUrl;
 
 			wcfOptions = WebReferencesService.WcfEngine.DefaultClientOptions;
+			if (project is PortableDotNetProject) {
+				wcfOptions.GenerateAsynchronousMethods = false;
+				wcfOptions.GenerateEventBasedAsynchronousMethods = true;
+			}
 
 			ChangeState (DialogState.Create);
 			frmBrowser.Show ();
@@ -178,6 +184,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			Build ();
 			this.isWebService = true;
 			this.wcfOptions = options;
+			wcfProject = item.Project;
 			this.NamespacePrefix = item.Project.DefaultNamespace;
 			ServiceUrl = String.Empty;
 
@@ -484,7 +491,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				btnOK.Sensitive = isWebService;
 				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
 				tbxReferenceName.Sensitive = isWebService;
-				comboModel.Sensitive = true;
+				comboModel.Sensitive = !(project is PortableDotNetProject);
 				break;
 
 			case DialogState.CreateConfig:
@@ -577,7 +584,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				sw = new ScrolledWindow ();
 				sw.ShadowType = ShadowType.In;
 
-				wcfConfig = new WCFConfigWidget (wcfOptions);
+				wcfConfig = new WCFConfigWidget (wcfOptions, wcfProject);
 				sw.AddWithViewport (wcfConfig);
 				sw.ShowAll ();
 				frmBrowser.Add (sw);

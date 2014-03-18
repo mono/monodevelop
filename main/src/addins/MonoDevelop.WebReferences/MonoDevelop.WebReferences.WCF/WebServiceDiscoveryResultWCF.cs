@@ -165,6 +165,12 @@ namespace MonoDevelop.WebReferences.WCF
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
 			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetCoreClr)
 				generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
+			if (refGroup.ClientOptions.GenerateEventBasedAsynchronousMethods)
+				generator.Options |= ServiceContractGenerationOptions.EventBasedAsynchronousMethods;
+#if NET_4_5
+			if (refGroup.ClientOptions.GenerateTaskBasedAsynchronousMethod)
+				generator.Options |= ServiceContractGenerationOptions.TaskBasedAsynchronousMethod;
+#endif
 			if (refGroup.ClientOptions.GenerateInternalTypes)
 				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
 			if (refGroup.ClientOptions.GenerateMessageContracts)

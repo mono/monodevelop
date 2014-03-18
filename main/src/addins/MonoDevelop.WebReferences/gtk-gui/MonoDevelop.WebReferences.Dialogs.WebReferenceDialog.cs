@@ -29,7 +29,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private global::Gtk.Button btnBack;
 		private global::Gtk.Button btnOK;
 		private global::Gtk.Button btnConfig;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -61,7 +61,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.vbxContainer = new global::Gtk.VBox ();
 			this.vbxContainer.Name = "vbxContainer";
 			// Container child vbxContainer.Gtk.Box+BoxChild
-			this.UIManager.AddUiFromString ("<ui><toolbar name='tlbNavigate'><toolitem name='btnNavBack' action='btnNavBack'/><toolitem name='btnNavNext' action='btnNavNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
+			this.UIManager.AddUiFromString (@"<ui><toolbar name='tlbNavigate'><toolitem name='btnNavBack' action='btnNavBack'/><toolitem name='btnNavNext' action='btnNavNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
 			this.tlbNavigate = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/tlbNavigate")));
 			this.tlbNavigate.Name = "tlbNavigate";
 			this.tlbNavigate.ShowArrow = false;

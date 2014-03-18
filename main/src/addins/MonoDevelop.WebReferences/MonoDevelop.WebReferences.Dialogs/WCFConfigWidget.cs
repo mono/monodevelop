@@ -29,13 +29,14 @@ using System.Collections.Generic;
 using MonoDevelop.WebReferences.WCF;
 using System.ServiceModel.Description;
 using Gtk;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class WCFConfigWidget : Bin
 	{
-		public WCFConfigWidget (ClientOptions options)
+		public WCFConfigWidget (ClientOptions options, DotNetProject project)
 		{
 			this.Options = options;
 			this.Build ();
@@ -46,10 +47,16 @@ namespace MonoDevelop.WebReferences.Dialogs
 			dictTypes = new List<Type> (DefaultDictionaryTypes);
 			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
 
-			foreach (var access in AccessGenerationTypes)
-				listAccess.AppendText (access);
-
+#if NET_4_5
+			listAsync.AppendText (Mono.Unix.Catalog.GetString ("Task-based"));
+#endif
 			listAccess.Active = options.GenerateInternalTypes ? 1 : 0;
+			listAsync.Active = AsyncOptionToIndex;
+
+			if (project is PortableDotNetProject) {
+				listAccess.Sensitive = false;
+				listAsync.Sensitive = false;
+			}
 		}
 		
 		public ClientOptions Options {
@@ -77,10 +84,18 @@ namespace MonoDevelop.WebReferences.Dialogs
 			typeof (System.Collections.Specialized.OrderedDictionary)
 		};
 
-		static readonly List<string> AccessGenerationTypes = new List<string> {
-			"Public",
-			"Internal"
-		};
+		int AsyncOptionToIndex {
+			get {
+				int index = 0;
+#if NET_4_5
+				if (options.GenerateTaskBasedAsynchronousMethod)
+					index = 2;
+#endif
+				if (Options.GenerateAsynchronousMethods)
+					index = 1;
+				return index;
+			}
+		}
 		
 		public bool Modified {
 			get;
@@ -173,8 +188,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 			UpdateBox (listCollection, "List", listTypes);
 			UpdateBox (dictionaryCollection, "Dictionary", dictTypes);
 
-			if (listAccess.Active != (Options.GenerateInternalTypes ? 1 : 0)) {
+			if (listAccess.Sensitive && listAccess.Active != (Options.GenerateInternalTypes ? 1 : 0)) {
 				Options.GenerateInternalTypes = !Options.GenerateInternalTypes;
+				Modified = true;
+			}
+
+			int index = AsyncOptionToIndex;
+			if (listAsync.Sensitive && listAsync.Active != index) {
+				Options.GenerateAsynchronousMethods = listAsync.Active == 1;
+				Options.GenerateTaskBasedAsynchronousMethod = listAsync.Active == 2;
 				Modified = true;
 			}
 		}
