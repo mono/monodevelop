@@ -62,13 +62,13 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public DropDownBoxListWindow (IListDataProvider provider) : base (WindowType.Popup)
+		public DropDownBoxListWindow (IListDataProvider provider) : base (WindowType.Toplevel)
 		{
 			this.DataProvider = provider;
 			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.TypeHint = Gdk.WindowTypeHint.Menu;
+			this.Decorated = false;
 			this.BorderWidth = 1;
-			this.Events |= Gdk.EventMask.KeyPressMask;
 			list = new ListWidget (this);
 			list.SelectItem += delegate {
 				var sel = list.Selection;
@@ -194,12 +194,6 @@ namespace MonoDevelop.Components
 			return base.OnEnterNotifyEvent (evnt);
 		}
 
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-		{
-			ProcessKey (evnt.Key, evnt.State);
-			return base.OnKeyPressEvent (evnt);
-		}
-
 		internal class ListWidget: DrawingArea
 		{
 			const int margin = 0;
@@ -229,6 +223,7 @@ namespace MonoDevelop.Components
 			{
 				this.win = win;
 				this.Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
+				this.CanFocus = true;
 				layout = new Pango.Layout (this.PangoContext);
 				CalcRowHeight ();
 				CalcVisibleRows ();
@@ -352,6 +347,11 @@ namespace MonoDevelop.Components
 				Selection = GetRowByPosition (curMouseY);
 				
 				return base.OnMotionNotifyEvent (evnt);
+			}
+
+			protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+			{
+				return win.ProcessKey (evnt.Key, evnt.State);
 			}
 
 			protected override bool OnScrollEvent (Gdk.EventScroll evnt)

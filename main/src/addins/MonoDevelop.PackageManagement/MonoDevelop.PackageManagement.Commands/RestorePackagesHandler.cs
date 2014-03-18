@@ -33,6 +33,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -42,6 +43,11 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			var runner = new PackageRestoreRunner ();
 			runner.Run ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
 		}
 	}
 }

@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Commands
 		Redo,
 		SelectAll,
 		ToggleCodeComment,
+		AddCodeComment,
+		RemoveCodeComment,
 		IndentSelection,
 		UnIndentSelection,
 		UppercaseSelection,

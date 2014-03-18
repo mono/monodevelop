@@ -102,7 +102,7 @@ namespace MonoDevelop.PackageManagement
 			descriptionTextLayout.Font = descriptionTextLayout.Font.WithScaledSize (0.9);
 			descriptionTextLayout.Width = cellArea.Width - packageDescriptionPadding.HorizontalSpacing - packageDescriptionLeftOffset;
 			descriptionTextLayout.Height = cellArea.Height - packageIdTextSize.Height - packageDescriptionPadding.VerticalSpacing;
-			descriptionTextLayout.Text = packageViewModel.Description;
+			descriptionTextLayout.Text = packageViewModel.Summary;
 			descriptionTextLayout.Trimming = TextTrimming.Word;
 
 			ctx.DrawTextLayout (

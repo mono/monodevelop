@@ -34,13 +34,23 @@ namespace MonoDevelop.Ide.Templates
 		public static ProjectTemplatePackageReference Create (XmlElement xmlElement)
 		{
 			return new ProjectTemplatePackageReference {
-				Id = xmlElement.GetAttribute ("Id"),
-				Version = xmlElement.GetAttribute ("Version")
+				Id = GetAttribute (xmlElement, "id"),
+				Version = GetAttribute (xmlElement, "version")
 			};
 		}
 
 		public string Id { get; private set; }
 		public string Version { get; private set; }
+
+		static string GetAttribute (XmlElement xmlElement, string attributeName)
+		{
+			foreach (XmlAttribute attribute in xmlElement.Attributes) {
+				if (attributeName.Equals (attribute.Name, StringComparison.OrdinalIgnoreCase)) {
+					return attribute.Value;
+				}
+			}
+			return "";
+		}
 	}
 }
 

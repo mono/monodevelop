@@ -2497,13 +2497,37 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.OnUpdateToggleComment (info);
 		}
-		
+
 		[CommandHandler (EditCommands.ToggleCodeComment)]
 		public void ToggleCodeComment ()
 		{
 			widget.ToggleCodeComment ();
 		}
-		
+
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		internal void OnUpdateAddCodeComment (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			widget.OnUpdateToggleComment (info);
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		public void AddCodeComment ()
+		{
+			widget.AddCodeComment ();
+		}
+
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		internal void OnUpdateRemoveCodeComment (MonoDevelop.Components.Commands.CommandInfo info)
+		{
+			widget.OnUpdateToggleComment (info);
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		public void RemoveCodeComment ()
+		{
+			widget.RemoveCodeComment ();
+		}
+
 		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
 		{

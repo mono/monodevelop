@@ -46,7 +46,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="NuGet.Core">
-      <HintPath>..\lib\NuGet.Core.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -216,8 +216,9 @@ namespace MonoDevelop.Ide.Gui
 			if (instanceCount > 0) {
 				// Additional output pads will be destroyed when hidden
 				pad.Window.PadHidden += delegate {
-					outputMonitors.Remove (pad);
-					pad.Destroy ();
+					// Workaround for crash reported in bug #18096. Look like MS.NET can't access private fields
+					// when the delegate is invoked through the remoting chain.
+					DestroyPad (pad);
 				};
 			}
 			
@@ -227,6 +228,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			return pad;
+		}
+
+		void DestroyPad (Pad pad)
+		{
+			outputMonitors.Remove (pad);
+			pad.Destroy ();
 		}
 		
 		public ISearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)

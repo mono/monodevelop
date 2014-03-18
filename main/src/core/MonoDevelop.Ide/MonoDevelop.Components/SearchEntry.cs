@@ -73,18 +73,18 @@ namespace MonoDevelop.Components
 			add { filter_changed += value; }
 			remove { filter_changed -= value; }
 		}
-		
+
 		bool forceFilterButtonVisible = true;
 		public bool ForceFilterButtonVisible {
 			get {
-				return forceFilterButtonVisible; 
+				return forceFilterButtonVisible;
 			}
 			set {
 				forceFilterButtonVisible = value;
 				ShowHideButtons ();
 			}
 		}
-		
+
 		public Menu Menu {
 			get { return menu; }
 			set { menu = value; menu.Deactivated += OnMenuDeactivated; }
@@ -115,10 +115,10 @@ namespace MonoDevelop.Components
 		public SearchEntry ()
 		{
 			AppPaintable = true;
-			
+
 			BuildWidget ();
 			BuildMenu ();
-			
+
 			NoShowAll = true;
 		}
 
@@ -151,7 +151,7 @@ namespace MonoDevelop.Components
 			alignment.Add (box);
 			Add (alignment);
 			alignment.ShowAll ();
-			
+
 			entry.StyleSet += OnInnerEntryStyleSet;
 			entry.StateChanged += OnInnerEntryStateChanged;
 			entry.FocusInEvent += OnInnerEntryFocusEvent;
@@ -163,7 +163,7 @@ namespace MonoDevelop.Components
 
 			filter_button.CanFocus = false;
 			clear_button.CanFocus = false;
-			
+
 			filter_button.ButtonReleaseEvent += OnButtonReleaseEvent;
 			clear_button.ButtonReleaseEvent += OnButtonReleaseEvent;
 			clear_button.Clicked += OnClearButtonClicked;
@@ -209,7 +209,7 @@ namespace MonoDevelop.Components
 		{
 			ShowMenu (0);
 		}
-		
+
 		void ShowMenu (uint time)
 		{
 			OnRequestMenu (EventArgs.Empty);
@@ -231,10 +231,10 @@ namespace MonoDevelop.Components
 		private void OnPositionMenu (Menu menu, out int x, out int y, out bool push_in)
 		{
 			int origin_x, origin_y, tmp;
-			
+
 			filter_button.GdkWindow.GetOrigin (out origin_x, out tmp);
 			GdkWindow.GetOrigin (out tmp, out origin_y);
-			
+
 			x = origin_x + filter_button.Allocation.X;
 			y = origin_y + Allocation.Y + SizeRequest ().Height;
 			push_in = true;
@@ -252,21 +252,21 @@ namespace MonoDevelop.Components
 			if (IsCheckMenu || toggling || !(o is FilterMenuItem)) {
 				return;
 			}
-			
+
 			toggling = true;
 			FilterMenuItem item = (FilterMenuItem)o;
-			
+
 			foreach (MenuItem child_item in menu) {
 				if (!(child_item is FilterMenuItem)) {
 					continue;
 				}
-				
+
 				FilterMenuItem filter_child = (FilterMenuItem)child_item;
 				if (filter_child != item) {
 					filter_child.Active = false;
 				}
 			}
-			
+
 			item.Active = true;
 			ActiveFilterID = item.ID;
 			toggling = false;
@@ -275,11 +275,11 @@ namespace MonoDevelop.Components
 		private void OnInnerEntryChanged (object o, EventArgs args)
 		{
 			ShowHideButtons ();
-			
+
 			if (changed_timeout_id > 0) {
 				GLib.Source.Remove (changed_timeout_id);
 			}
-			
+
 			if (Ready)
 				changed_timeout_id = GLib.Timeout.Add (25, OnChangedTimeout);
 		}
@@ -328,23 +328,23 @@ namespace MonoDevelop.Components
 			if (args.Event.Button != 1) {
 				return;
 			}
-			
+
 			entry.HasFocus = true;
-			
+
 			if (o == filter_button) {
 				ShowMenu (args.Event.Time);
 			}
 		}
-		
+
 		protected virtual void OnRequestMenu (EventArgs e)
 		{
 			EventHandler handler = this.RequestMenu;
 			if (handler != null)
 				handler (this, e);
 		}
-		
+
 		public event EventHandler RequestMenu;
-		
+
 		public void GrabFocusEntry ()
 		{
 			this.entry.GrabFocus ();
@@ -355,7 +355,7 @@ namespace MonoDevelop.Components
 			entry.Text = String.Empty;
 			NotifyActivated ();
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			if (menu != null) {
@@ -423,11 +423,11 @@ namespace MonoDevelop.Components
 			double r = h / 2;
 			ctx.Arc (x + r, y + r, r, Math.PI / 2, Math.PI + Math.PI / 2);
 			ctx.LineTo (x + w - r, y);
-			
+
 			ctx.Arc (x + w - r, y + r, r, Math.PI + Math.PI / 2, Math.PI + Math.PI + Math.PI / 2);
-			
+
 			ctx.LineTo (x + r, y + h);
-			
+
 			ctx.ClosePath ();
 		}
 
@@ -442,7 +442,7 @@ namespace MonoDevelop.Components
 			if (!Ready) {
 				return;
 			}
-			
+
 			EventHandler handler = entry_changed;
 			if (handler != null) {
 				handler (this, EventArgs.Empty);
@@ -455,7 +455,7 @@ namespace MonoDevelop.Components
 			if (handler != null) {
 				handler (this, EventArgs.Empty);
 			}
-			
+
 			if (IsQueryAvailable) {
 				OnInnerEntryChanged (this, EventArgs.Empty);
 			}
@@ -466,16 +466,16 @@ namespace MonoDevelop.Components
 			if (id < 0) {
 				throw new ArgumentException ("id", "must be >= 0");
 			}
-			
+
 			FilterMenuItem item = new FilterMenuItem (id, label);
-			
+
 			item.Toggled += OnMenuItemToggled;
 			menu.Append (item);
-			
+
 			if (ActiveFilterID < 0) {
 				item.Toggle ();
 			}
-			
+
 			filter_button.Visible = true;
 			return item;
 		}
@@ -515,7 +515,7 @@ namespace MonoDevelop.Components
 					return (FilterMenuItem)item;
 				}
 			}
-			
+
 			return null;
 		}
 
@@ -525,7 +525,7 @@ namespace MonoDevelop.Components
 			if (item == null) {
 				return null;
 			}
-			
+
 			return item.Label;
 		}
 
@@ -541,7 +541,7 @@ namespace MonoDevelop.Components
 				if (value == active_filter_id) {
 					return;
 				}
-				
+
 				active_filter_id = value;
 				OnFilterChanged ();
 			}
@@ -582,7 +582,7 @@ namespace MonoDevelop.Components
 		protected override void OnStateChanged (Gtk.StateType previous_state)
 		{
 			base.OnStateChanged (previous_state);
-			
+
 			entry.Sensitive = State != StateType.Insensitive;
 			filter_button.Sensitive = State != StateType.Insensitive;
 			clear_button.Sensitive = State != StateType.Insensitive;
@@ -623,7 +623,7 @@ namespace MonoDevelop.Components
 					Toggled (this, EventArgs.Empty);
 				}
 			}
-			
+
 		}
 
 		private class FramelessEntry : Entry
@@ -636,7 +636,7 @@ namespace MonoDevelop.Components
 			{
 				this.parent = parent;
 				HasFrame = false;
-				
+
 				parent.StyleSet += OnParentStyleSet;
 				WidthChars = 1;
 			}
@@ -651,40 +651,40 @@ namespace MonoDevelop.Components
 			{
 				text_gc = null;
 			}
-			
+
 			protected override void OnDestroyed ()
 			{
 				parent.StyleSet -= OnParentStyleSet;
 				base.OnDestroyed ();
 			}
-			
+
 			public static Gdk.Color ColorBlend (Gdk.Color a, Gdk.Color b)
 			{
 				// at some point, might be nice to allow any blend?
 				double blend = 0.5;
-				
+
 				if (blend < 0.0 || blend > 1.0) {
 					throw new ApplicationException ("blend < 0.0 || blend > 1.0");
 				}
-				
+
 				double blendRatio = 1.0 - blend;
-				
+
 				int aR = a.Red >> 8;
 				int aG = a.Green >> 8;
 				int aB = a.Blue >> 8;
-				
+
 				int bR = b.Red >> 8;
 				int bG = b.Green >> 8;
 				int bB = b.Blue >> 8;
-				
+
 				double mR = aR + bR;
 				double mG = aG + bG;
 				double mB = aB + bB;
-				
+
 				double blR = mR * blendRatio;
 				double blG = mG * blendRatio;
 				double blB = mB * blendRatio;
-				
+
 				Gdk.Color color = new Gdk.Color ((byte)blR, (byte)blG, (byte)blB);
 				Gdk.Colormap.System.AllocColor (ref color, true, true);
 				return color;
@@ -700,9 +700,9 @@ namespace MonoDevelop.Components
 				if (evnt.Window == GdkWindow) {
 					return true;
 				}
-				
+
 				bool ret = base.OnExposeEvent (evnt);
-				
+
 				if (text_gc == null) {
 					text_gc = new Gdk.GC (evnt.Window);
 					text_gc.Copy (Style.TextGC (StateType.Normal));
@@ -710,21 +710,21 @@ namespace MonoDevelop.Components
 					Gdk.Color color_b = parent.Style.Text (StateType.Normal);
 					text_gc.RgbFgColor = ColorBlend (color_a, color_b);
 				}
-				
+
 				if (Text.Length > 0 || HasFocus || parent.EmptyMessage == null) {
 					return ret;
 				}
-				
+
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
 					layout.FontDescription = PangoContext.FontDescription.Copy ();
 				}
-				
+
 				int width, height;
 				layout.SetMarkup (parent.EmptyMessage);
 				layout.GetPixelSize (out width, out height);
 				evnt.Window.DrawLayout (text_gc, 2, (SizeRequest ().Height - height) / 2, layout);
-				
+
 				return ret;
 			}
 		}

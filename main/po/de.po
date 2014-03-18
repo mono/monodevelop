@@ -20657,7 +20657,7 @@ msgstr "Ausdrücke zum Überwachungs-Pad zufügen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:0
 msgid "Add watch"
-msgstr "Überwachiung hinzufügen"
+msgstr "Überwachung hinzufügen"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:0
 msgid "Stops the execution of the expression being evaluated by the debugger"

@@ -30,16 +30,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Web;
 using System.Linq;
 using System.Diagnostics;
+
+#if ENABLE_RAYGUN
 using System.Threading;
-using System.IO.Compression;
 using Mindscape.Raygun4Net;
-using Mindscape.Raygun4Net.Messages;
+#endif
 
 using MonoDevelop.Core.Logging;
+using Mono.Unix.Native;
 
 namespace MonoDevelop.Core
 {
@@ -49,10 +49,13 @@ namespace MonoDevelop.Core
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 
-		static RaygunClient raygunClient = null;
+#if ENABLE_RAYGUN
+		static RaygunClient raygunClient;
+#endif
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
+		static int logFileSuffix;
 		static TextWriter defaultError;
 		static TextWriter defaultOut;
 		static bool reporting;
@@ -65,7 +68,7 @@ namespace MonoDevelop.Core
 
 		static LoggingService ()
 		{
-			ConsoleLogger consoleLogger = new ConsoleLogger ();
+			var consoleLogger = new ConsoleLogger ();
 			loggers.Add (consoleLogger);
 			loggers.Add (new InstrumentationLogger ());
 			
@@ -73,7 +76,9 @@ namespace MonoDevelop.Core
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
 				try {
 					consoleLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), consoleLogLevelEnv, true);
-				} catch {}
+				} catch (Exception e) {
+					LogError ("Error setting log level", e);
+				}
 			}
 			
 			string consoleLogUseColourEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_USE_COLOUR");
@@ -86,12 +91,12 @@ namespace MonoDevelop.Core
 			string logFileEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_LOG_FILE");
 			if (!string.IsNullOrEmpty (logFileEnv)) {
 				try {
-					FileLogger fileLogger = new FileLogger (logFileEnv);
+					var fileLogger = new FileLogger (logFileEnv);
 					loggers.Add (fileLogger);
 					string logFileLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL");
 					fileLogger.EnabledLevel = (EnabledLoggingLevel) Enum.Parse (typeof (EnabledLoggingLevel), logFileLevelEnv, true);
 				} catch (Exception e) {
-					LogError (e.ToString ());
+					LogError ("Error setting custom log file", e);
 				}
 			}
 
@@ -105,10 +110,10 @@ namespace MonoDevelop.Core
 #endif
 
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
-			System.Diagnostics.Debug.Listeners.Clear ();
+			Debug.Listeners.Clear ();
 
 			//add a new listener that just logs failed asserts
-			System.Diagnostics.Debug.Listeners.Add (new AssertLoggingTraceListener ());
+			Debug.Listeners.Add (new AssertLoggingTraceListener ());
 		}
 
 		public static bool? ReportCrashes {
@@ -121,18 +126,55 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 
-		static string GenericLogFile {
-			get { return "Ide.log"; }
-		}
-		
+		[Obsolete ("Use CreateLogFile")]
 		public static DateTime LogTimestamp {
 			get { return timestamp; }
 		}
 
-		static string UniqueLogFile {
-			get {
-				return string.Format ("Ide.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
+		/// <summary>
+		/// Creates a session log file with the given identifier.
+		/// </summary>
+		/// <returns>A TextWriter, null if the file cannot be created.</returns>
+		public static TextWriter CreateLogFile (string identifier)
+		{
+			string filename;
+			return CreateLogFile (identifier, out filename);
+		}
+
+		public static TextWriter CreateLogFile (string identifier, out string filename)
+		{
+			FilePath logDir = UserProfile.Current.LogDir;
+			Directory.CreateDirectory (logDir);
+
+			int oldIdx = logFileSuffix;
+
+			while (true) {
+				filename = logDir.Combine (GetSessionLogFileName (identifier));
+				try {
+					var stream = File.Open (filename, FileMode.Create, FileAccess.Write, FileShare.Read);
+					return new StreamWriter (stream) { AutoFlush = true };
+				} catch (Exception ex) {
+					// if the file already exists, retry with a suffix, up to 10 times
+					if (logFileSuffix < oldIdx + 10) {
+						const int ERROR_FILE_EXISTS = 80;
+						const int ERROR_SHARING_VIOLATION = 32;
+						var err = System.Runtime.InteropServices.Marshal.GetHRForException (ex) & 0xFFFF;
+						if (err == ERROR_FILE_EXISTS || err == ERROR_SHARING_VIOLATION) {
+							logFileSuffix++;
+							continue;
+						}
+					}
+					LogInternalError ("Failed to create log file.", ex);
+					return null;
+				}
 			}
+		}
+
+		static string GetSessionLogFileName (string logName)
+		{
+			if (logFileSuffix == 0)
+				return string.Format ("{0}.{1}.log", logName, timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
+			return string.Format ("{0}.{1}-{2}.log", logName, timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"), logFileSuffix);
 		}
 		
 		public static void Initialize (bool redirectOutput)
@@ -181,11 +223,13 @@ namespace MonoDevelop.Core
 				foreach (var cd in SystemInformation.GetDescription ())
 					customData[cd.Title ?? ""] = cd.Description;
 
+#if ENABLE_RAYGUN
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
 					});
 				}
+#endif
 
 				//ensure we don't lose the setting
 				if (ReportCrashes != oldReportCrashes) {
@@ -220,27 +264,24 @@ namespace MonoDevelop.Core
 
 		static void RedirectOutputToLogFile ()
 		{
-			FilePath logDir = UserProfile.Current.LogDir;
-			if (!Directory.Exists (logDir))
-				Directory.CreateDirectory (logDir);
-			
 			try {
 				if (Platform.IsWindows) {
 					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
-					RedirectOutputToFileWindows (logDir, UniqueLogFile);
+					RedirectOutputToFileWindows ();
 				} else {
-					RedirectOutputToFileUnix (logDir, UniqueLogFile);
+					RedirectOutputToFileUnix ();
 				}
 			} catch (Exception ex) {
-				Console.Error.WriteLine (ex);
+				LogInternalError ("Failed to redirect output to log file", ex);
 			}
 		}
 
-		static void RedirectOutputToFileWindows (FilePath logDirectory, string logName)
+		static void RedirectOutputToFileWindows ()
 		{
-			var stream = File.Open (logDirectory.Combine (logName), FileMode.Create, FileAccess.Write, FileShare.Read);
-			var writer = new StreamWriter (stream) { AutoFlush = true };
-			
+			var writer = CreateLogFile ("Ide");
+			if (writer == Console.Out)
+				return;
+
 			var stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stderr.ChainWriter (Console.Error);
 			stderr.ChainWriter (writer);
@@ -254,39 +295,64 @@ namespace MonoDevelop.Core
 			Console.SetOut (stdout);
 		}
 		
-		static void RedirectOutputToFileUnix (FilePath logDirectory, string logName)
+		static void RedirectOutputToFileUnix ()
 		{
 			const int STDOUT_FILENO = 1;
 			const int STDERR_FILENO = 2;
 			
-			Mono.Unix.Native.OpenFlags flags = Mono.Unix.Native.OpenFlags.O_WRONLY
-				| Mono.Unix.Native.OpenFlags.O_CREAT | Mono.Unix.Native.OpenFlags.O_TRUNC;
-			var mode = Mono.Unix.Native.FilePermissions.S_IFREG
-				| Mono.Unix.Native.FilePermissions.S_IRUSR | Mono.Unix.Native.FilePermissions.S_IWUSR
-				| Mono.Unix.Native.FilePermissions.S_IRGRP | Mono.Unix.Native.FilePermissions.S_IWGRP;
-			
-			var file = logDirectory.Combine (logName);
-			int fd = Mono.Unix.Native.Syscall.open (file, flags, mode);
-			if (fd < 0)
-				//error
-				return;
-			try {
-				int res = Mono.Unix.Native.Syscall.dup2 (fd, STDOUT_FILENO);
-				if (res < 0)
-					//error
-					return;
-				
-				res = Mono.Unix.Native.Syscall.dup2 (fd, STDERR_FILENO);
-				if (res < 0)
-					//error
-					return;
+			const OpenFlags flags = OpenFlags.O_WRONLY | OpenFlags.O_CREAT | OpenFlags.O_TRUNC;
 
-				var genericLog = logDirectory.Combine (GenericLogFile);
-				File.Delete (genericLog);
-				Mono.Unix.Native.Syscall.symlink (file, genericLog);
-			} finally {
-				Mono.Unix.Native.Syscall.close (fd);
+			const FilePermissions mode =
+				FilePermissions.S_IFREG | FilePermissions.S_IRUSR | FilePermissions.S_IWUSR |
+				FilePermissions.S_IRGRP | FilePermissions.S_IWGRP;
+
+			FilePath logDir = UserProfile.Current.LogDir;
+			Directory.CreateDirectory (logDir);
+
+			int fd;
+			string logFile;
+			int oldIdx = logFileSuffix;
+
+			while (true) {
+				logFile = logDir.Combine (GetSessionLogFileName ("Ide"));
+
+				// if the file already exists, retry with a suffix, up to 10 times
+				fd = Syscall.open (logFile, flags, mode);
+				if (fd >= 0)
+					break;
+
+				var err = Stdlib.GetLastError ();
+				if (logFileSuffix >= oldIdx + 10 || err != Errno.EEXIST) {
+					logFileSuffix++;
+					continue;
+				}
+				throw new IOException ("Unable to open file: " + err);
 			}
+
+			try {
+				int res = Syscall.dup2 (fd, STDOUT_FILENO);
+				if (res < 0)
+					throw new IOException ("Unable to redirect stdout: " + Stdlib.GetLastError ());
+				
+				res = Syscall.dup2 (fd, STDERR_FILENO);
+				if (res < 0)
+					throw new IOException ("Unable to redirect stderr: " + Stdlib.GetLastError ());
+
+				//try to symlink timestamped file to generic one. NBD if it fails.
+				SymlinkWithRetry (logFile, logDir.Combine ("Ide.log"), 10);
+			} finally {
+				Syscall.close (fd);
+			}
+		}
+
+		static bool SymlinkWithRetry (string from, string to, int retries)
+		{
+			for (int i = 0; i < retries; i++) {
+				Syscall.unlink (to);
+				if (Syscall.symlink (from, to) >= 0)
+					return true;
+			}
+			return false;
 		}
 
 		static void RestoreOutputRedirection ()
@@ -309,7 +375,7 @@ namespace MonoDevelop.Core
 		
 		public static bool IsLevelEnabled (LogLevel level)
 		{
-			EnabledLoggingLevel l = (EnabledLoggingLevel) level;
+			var l = (EnabledLoggingLevel) level;
 			foreach (ILogger logger in loggers)
 				if ((logger.EnabledLevel & l) == l)
 					return true;
@@ -318,7 +384,7 @@ namespace MonoDevelop.Core
 		
 		public static void Log (LogLevel level, string message)
 		{
-			EnabledLoggingLevel l = (EnabledLoggingLevel) level;
+			var l = (EnabledLoggingLevel) level;
 			foreach (ILogger logger in loggers)
 				if ((logger.EnabledLevel & l) == l)
 					logger.Log (level, message);
@@ -420,17 +486,17 @@ namespace MonoDevelop.Core
 		
 		public static void LogDebug (string message, Exception ex)
 		{
-			Log (LogLevel.Debug, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Debug, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 		
 		public static void LogInfo (string message, Exception ex)
 		{
-			Log (LogLevel.Info, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Info, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 		
 		public static void LogWarning (string message, Exception ex)
 		{
-			Log (LogLevel.Warn, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Warn, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 		
 		public static void LogError (string message, Exception ex)
@@ -440,13 +506,13 @@ namespace MonoDevelop.Core
 
 		public static void LogUserError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 
 		public static void LogInternalError (Exception ex)
 		{
 			if (ex != null) {
-				Log (LogLevel.Error, System.Environment.NewLine + ex.ToString ());
+				Log (LogLevel.Error, Environment.NewLine + ex);
 			}
 
 			ReportUnhandledException (ex, false, true, "internal");
@@ -454,21 +520,21 @@ namespace MonoDevelop.Core
 
 		public static void LogInternalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 
 			ReportUnhandledException (ex, false, true, "internal");
 		}
 
 		public static void LogCriticalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 
 			ReportUnhandledException (ex, false, false, "critical");
 		}
 
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? System.Environment.NewLine + ex.ToString () : string.Empty));
+			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 
 			ReportUnhandledException (ex, true, false, "fatal");
 		}

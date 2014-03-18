@@ -31,7 +31,7 @@
 	<Property Id="GTKSHARPPATH">
 		<RegistrySearch Id="gspath" Root="HKLM" Key="SOFTWARE\Novell\GtkSharp\InstallFolder" Type="raw" />
 	</Property>
-	  
+
 	  <!-- Major upgrade -->
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
@@ -72,7 +72,7 @@
               <File Name="Mono.Security.dll" Source="Libraries\Mono.Security.dll" />
 
               <File Name="updateinfo" Source="updateinfo" />
-              
+
               <File Id="file421" Name="monodoc.index" Source="$(var.BuildRoot)\bin\monodoc.index" />
               <File Id="file422" Name="monodoc.xml" Source="$(var.BuildRoot)\bin\monodoc.xml" />
               <File Id="file425" Name="resgen.exe" Source="$(var.BuildRoot)\bin\resgen.exe" />
@@ -81,7 +81,7 @@
 
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
-				
+
               <!-- GTK# path -->
               <RegistryValue Root='HKLM' Key='SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\MonoDevelop.exe' Type='string' Name='Path' Value='[GTKSHARPPATH]\bin' />
 
@@ -90,7 +90,7 @@
               <RegistryValue Root='HKLM' Key='SOFTWARE\Novell\MonoDevelop' Type='string' Name='Path' Value='[INSTALLLOCATION]' />
 
             </Component>
-            
+
             <Directory Id="gac">
               <Component Id="MonoDevelop_xsp" Guid="CE794E36-4DE7-4f9d-A633-7EB87A7164FB">
                 <File Id="MonoDevelop.Xsp" Name="MonoDevelop.Xsp.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Xsp.dll" KeyPath="yes" Assembly=".net"/>
@@ -563,15 +563,15 @@
                 <File Name="NGit.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NGit.dll" />
                 <File Name="NSch.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NSch.dll" />
                 <File Name="Sharpen.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\Sharpen.dll" />
-                <File Name="comment.png" Source="$(var.BuildRoot)\AddIns\VersionControl\comment.png" />
+                <File Name="comment-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\comment-16.png" />
                 <File Name="menu_add.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_add.png" />
-                <File Name="menu_commit.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_commit.png" />
-                <File Name="menu_diff.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_diff.png" />
+                <File Name="commit-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\commit-16.png" />
+                <File Name="diff-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\diff-16.png" />
                 <File Name="menu_log.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_log.png" />
-                <File Name="menu_remote_status.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_remote_status.png" />
+                <File Name="remote-status-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\remote-status-16.png" />
                 <File Name="menu_remove.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_remove.png" />
                 <File Name="menu_resolve.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_resolve.png" />
-                <File Name="menu_revert.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_revert.png" />
+                <File Name="revert-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\revert-16.png" />
                 <File Name="menu_status.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_status.png" />
                 <File Name="menu_update.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_update.png" />
               </Component>
@@ -678,7 +678,7 @@
               </Component>
             </Directory>
           </Directory>
-          
+
         </Directory>
       </Directory>
 
@@ -723,7 +723,7 @@
       <ComponentRef Id="MonoDevelop_data_options" />
 
       <ComponentRef Id="MonoDevelop_xsp" />
-      
+
       <ComponentRef Id="comp199" />
       <ComponentRef Id="comp203" />
       <ComponentRef Id="comp207" />
@@ -770,9 +770,9 @@
     <Property Id="ARPPRODUCTICON" Value="MonoDevelop.exe" />
 
     <!--
-        Install Start Menu shortcuts for all users, 
+        Install Start Menu shortcuts for all users,
         according to http://stackoverflow.com/questions/2211218/how-to-create-desktop-shortcut-for-all-users-in-wix
-        
+
         MSDN: http://msdn.microsoft.com/en-us/library/aa367559.aspx
     -->
     <Property Id="ALLUSERS">1</Property>

@@ -57,17 +57,17 @@ namespace ICSharpCode.PackageManagement
 		public void ReadPackages()
 		{
 			AvailablePackagesViewModel.ReadPackages();
-			InstalledPackagesViewModel.ReadPackages();
-			UpdatedPackagesViewModel.ReadPackages();
-			RecentPackagesViewModel.ReadPackages();
+			//InstalledPackagesViewModel.ReadPackages();
+			//UpdatedPackagesViewModel.ReadPackages();
+			//RecentPackagesViewModel.ReadPackages();
 		}
 		
 		public void Dispose()
 		{
 			AvailablePackagesViewModel.Dispose();
-			InstalledPackagesViewModel.Dispose();
-			RecentPackagesViewModel.Dispose();
-			UpdatedPackagesViewModel.Dispose();
+			//InstalledPackagesViewModel.Dispose();
+			//RecentPackagesViewModel.Dispose();
+			//UpdatedPackagesViewModel.Dispose();
 		}
 	}
 }

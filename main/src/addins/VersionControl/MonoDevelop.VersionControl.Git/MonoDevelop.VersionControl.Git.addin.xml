@@ -82,11 +82,6 @@
 		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "vc-git-tag" resource = "tag_blue.png"/>
-		<StockIcon stockid = "vc-git-branch" resource = "arrow_branch.png"/>
-	</Extension>
-
 <!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.VersionControl.Git.GitSupportFeature" />
 	</Extension>

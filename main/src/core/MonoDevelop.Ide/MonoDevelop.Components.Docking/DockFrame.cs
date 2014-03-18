@@ -128,13 +128,13 @@ namespace MonoDevelop.Components.Docking
 			OverlayWidgetVisible = true;
 			MinimizeAllAutohidden ();
 			if (animate) {
-				currentOverlayPosition = Allocation.Y + Allocation.Height;
+				currentOverlayPosition = Math.Max (0, Allocation.Y + Allocation.Height);
 				this.Animate (
 					"ShowOverlayWidget", 
 					ShowOverlayWidgetAnimation,
 					easing: Easing.CubicOut);
 			} else {
-				currentOverlayPosition = Allocation.Y;
+				currentOverlayPosition = Math.Max (0, Allocation.Y);
 				QueueResize ();
 			}
 		}

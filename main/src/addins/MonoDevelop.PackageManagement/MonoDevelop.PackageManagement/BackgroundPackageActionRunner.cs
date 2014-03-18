@@ -26,10 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using System.Linq;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -63,11 +64,12 @@ namespace MonoDevelop.PackageManagement
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
-						monitor.ReportSuccess (progressMessage.Success);
+						eventMonitor.ReportResult (progressMessage);
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (ex);
 						monitor.Log.WriteLine (ex.Message);
 						monitor.ReportError (progressMessage.Error, null);
+						monitor.ShowPackageConsole ();
 					} finally {
 						monitor.EndTask ();
 					}
@@ -75,11 +77,54 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> installPackageActions)
+		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
-			foreach (IPackageAction action in installPackageActions) {
+			if (!AcceptPackageLicenses (packageActions))
+				return;
+
+			foreach (IPackageAction action in packageActions) {
+				CheckForPowerShellScripts (action);
 				action.Execute ();
 				monitor.Step (1);
+			}
+		}
+
+		bool AcceptPackageLicenses (IList<IPackageAction> packageActions)
+		{
+			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
+			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (packageActions).ToList ();
+			if (packages.Any ()) {
+				return packageManagementEvents.OnAcceptLicenses (packages);
+			}
+
+			return true;
+		}
+
+		void CheckForPowerShellScripts (IPackageAction action)
+		{
+			if (action.HasPackageScriptsToRun ()) {
+				ReportPowerShellScriptWarning ();
+			}
+		}
+
+		void ReportPowerShellScriptWarning ()
+		{
+			string message = GettextCatalog.GetString ("Package contains PowerShell scripts which will not be run.");
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
+		}
+
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
+		{
+			LoggingService.LogInternalError (progressMessage.Status, exception);
+			ShowError (progressMessage, exception.Message);
+		}
+
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, string error)
+		{
+			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
+				monitor.Log.WriteLine (error);
+				monitor.ReportError (progressMessage.Error, null);
+				monitor.ShowPackageConsole ();
 			}
 		}
 	}

@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static PackageSource GetPackageSource (this PackageRepositoryNode node)
 		{
-			return new PackageSource (node.DirectoryPath, node.Id);
+			return new PackageSource (node.Source, node.Id);
 		}
 	}
 }

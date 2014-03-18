@@ -1224,5 +1224,33 @@ namespace MonoDevelop.Projects
 				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 			}
 		}
+
+		public void AddImportIfMissing (string name, string condition)
+		{
+			importsAdded.Add (name);
+		}
+
+		public void RemoveImport (string name)
+		{
+			importsRemoved.Add (name);
+		}
+
+		List <string> importsAdded = new List<string> ();
+
+		internal IList<string> ImportsAdded {
+			get { return importsAdded; }
+		}
+
+		List <string> importsRemoved = new List<string> ();
+
+		internal IList<string> ImportsRemoved {
+			get { return importsRemoved; }
+		}
+
+		public void ImportsSaved ()
+		{
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
+		}
 	}
 }

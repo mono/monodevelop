@@ -59,6 +59,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			set { box.Spacing = value; }
 		}
 
+		public bool MouseOver {
+			get {
+				return mouseOver;
+			}
+		}
+
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
 			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;

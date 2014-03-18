@@ -875,6 +875,7 @@ namespace MonoDevelop.VersionControl.Git
 						e.InnerException is NGit.Errors.TransportException ||
 						e.InnerException is NGit.Errors.NotSupportedException) {
 						FileService.DeleteDirectory (targetLocalPath);
+						throw new VersionControlException (e.InnerException.Message);
 					}
 				}
 			}
@@ -1274,7 +1275,14 @@ namespace MonoDevelop.VersionControl.Git
 			push.SetRemote (remote).SetRefSpecs (new RefSpec (remoteRef));
 			using (var gm = new GitMonitor (monitor)) {
 				push.SetProgressMonitor (gm);
-				res = push.Call ();
+
+				try {
+					res = push.Call ();
+				} catch (NGit.Api.Errors.JGitInternalException e) {
+					if (e.InnerException is NGit.Errors.TransportException)
+						throw new VersionControlException (e.InnerException.Message);
+					throw;
+				}
 			}
 
 			foreach (var pr in res) {

@@ -42,6 +42,7 @@ namespace ICSharpCode.PackageManagement
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
 		RegisteredPackageSources packageSources;
+		IRegisteredPackageRepositories registeredPackageRepositories;
 		IFolderBrowser folderBrowser;
 		PackageSourceViewModelChecker packageSourceChecker = new PackageSourceViewModelChecker ();
 		
@@ -57,17 +58,19 @@ namespace ICSharpCode.PackageManagement
 		bool isEditingSelectedPackageSource;
 		
 		public RegisteredPackageSourcesViewModel(
-			RegisteredPackageSources packageSources)
-			: this(packageSources, new FolderBrowser())
+			IRegisteredPackageRepositories registeredPackageRepositories)
+			: this(registeredPackageRepositories, new FolderBrowser())
 		{
 		}
 		
 		public RegisteredPackageSourcesViewModel(
-			RegisteredPackageSources packageSources,
+			IRegisteredPackageRepositories registeredPackageRepositories,
 			IFolderBrowser folderBrowser)
 		{
-			this.packageSources = packageSources;
+			this.packageSources = registeredPackageRepositories.PackageSources;
 			this.folderBrowser = folderBrowser;
+			this.registeredPackageRepositories = registeredPackageRepositories;
+
 			packageSourceChecker.PackageSourceChecked += PackageSourceChecked;
 			CreateCommands();
 		}
@@ -356,11 +359,8 @@ namespace ICSharpCode.PackageManagement
 
 		public void Save (IEnumerable<PackageSourceViewModel> packageSourceViewModels)
 		{
-			packageSources.Clear();
-			foreach (PackageSourceViewModel packageSourceViewModel in packageSourceViewModels) {
-				PackageSource source = packageSourceViewModel.GetPackageSource();
-				packageSources.Add(source);
-			}
+			registeredPackageRepositories.UpdatePackageSources (
+				packageSourceViewModels.Select (viewModel => viewModel.GetPackageSource ()));
 		}
 
 		public event EventHandler<PackageSourceViewModelChangedEventArgs> PackageSourceChanged;

@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharp.Completion
 			return tooltipInfo;
 		}
 
-		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)
+		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string methodName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)
 		{
-			if (string.IsNullOrEmpty (varName)) {
-				this.DisplayText   = "Handle" + (evt != null ? evt.Name : "");
+			if (string.IsNullOrEmpty (methodName)) {
+				this.DisplayText   = (evt != null ? evt.Name : "");
 			} else {
-				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
+				this.DisplayText   = Char.ToUpper (methodName[0]) + methodName.Substring (1) + (evt != null ? evt.Name : "");
 			}
 			
 			if (declaringType != null && declaringType.Members.Any (m => m.Name == this.DisplayText)) {

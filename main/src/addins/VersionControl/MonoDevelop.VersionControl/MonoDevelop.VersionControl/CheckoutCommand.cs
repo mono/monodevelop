@@ -2,6 +2,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run () 
 		{
-			if (System.IO.Directory.Exists (path)) {
+			if (System.IO.Directory.Exists (path) && System.IO.Directory.EnumerateFileSystemEntries (path).Any ()) {
 				if (MessageService.AskQuestion (GettextCatalog.GetString (
 					    "Checkout path is not empty. Do you want to delete its contents?"),
 					    path,
@@ -62,9 +63,16 @@ namespace MonoDevelop.VersionControl
 					    AlertButton.Ok) == AlertButton.Cancel)
 					return;
 				FileService.DeleteDirectory (path);
+				FileService.CreateDirectory (path);
 			}
 
-			vc.Checkout (path, null, true, Monitor);
+			try {
+				vc.Checkout (path, null, true, Monitor);
+			} catch (VersionControlException e) {
+				Monitor.ReportError (GettextCatalog.GetString (e.Message), null);
+				return;
+			}
+
 			if (Monitor.IsCancelRequested) {
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
 				return;

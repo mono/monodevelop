@@ -34,13 +34,19 @@ namespace MonoDevelop.Ide.Templates
 	{
 		#pragma warning disable 0649
 
-		[NodeAttribute ("path", Required=true)]
+		[NodeAttribute ("path", Required=false)]
 		string directoryPath;
+
+		[NodeAttribute ("url", Required=false)]
+		string url;
 
 		#pragma warning restore 0649
 
-		public FilePath DirectoryPath {
+		public string Source {
 			get {
+				if (!String.IsNullOrEmpty(url)) {
+					return url;
+				}
 				return Addin.GetFilePath (directoryPath);
 			}
 		}

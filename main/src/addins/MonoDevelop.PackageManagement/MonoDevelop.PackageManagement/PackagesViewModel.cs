@@ -83,6 +83,7 @@ namespace ICSharpCode.PackageManagement
 		public void Dispose()
 		{
 			OnDispose();
+			CancelReadPackagesTask ();
 			IsDisposed = true;
 		}
 		
@@ -105,10 +106,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public void ReadPackages()
 		{
+			if (SelectedPackageSource == null) {
+				return;
+			}
+
 			allPackages = null;
 			pages.SelectedPageNumber = 1;
-			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			IsLoadingNextPage = false;
+			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			StartReadPackagesTask();
 		}
 		
@@ -203,9 +208,8 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		public IQueryable<IPackage> GetPackagesFromPackageSource()
 		{
-			IQueryable<IPackage> packages = GetAllPackages();
-			packages = OrderPackages(packages);
-			return FilterPackagesBySearchCriteria(packages);
+			IQueryable<IPackage> packages = GetPackages (GetSearchCriteria ());
+			return OrderPackages (packages);
 		}
 		
 		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
@@ -214,23 +218,12 @@ namespace ICSharpCode.PackageManagement
 				.OrderBy(package => package.Id);
 		}
 		
-		IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages)
-		{
-			string searchCriteria = GetSearchCriteria();
-			return FilterPackagesBySearchCriteria(packages, searchCriteria);
-		}
-		
 		string GetSearchCriteria()
 		{
 			if (String.IsNullOrWhiteSpace(SearchTerms)) {
 				return null;
 			}
 			return SearchTerms;
-		}
-
-		protected virtual IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchCriteria)
-		{
-			return packages.Find(searchCriteria);
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
@@ -245,6 +238,14 @@ namespace ICSharpCode.PackageManagement
 		/// Returns all the packages.
 		/// </summary>
 		protected virtual IQueryable<IPackage> GetAllPackages()
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Returns packages filtered by search criteria.
+		/// </summary>
+		protected virtual IQueryable<IPackage> GetPackages (string search)
 		{
 			return null;
 		}

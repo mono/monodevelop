@@ -422,6 +422,9 @@ namespace SubversionAddinWindows
 						list.Add (VersionInfo.CreateUnversioned (e.File, false));
 					else
 						throw;
+				} catch (SvnWorkingCopyPathNotFoundException e) {
+					var fp = new FilePath (e.File);
+					list.Add (VersionInfo.CreateUnversioned (fp, fp.IsDirectory));
 				}
 			}
 			return list;

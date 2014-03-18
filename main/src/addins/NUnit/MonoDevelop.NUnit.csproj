@@ -173,23 +173,29 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-test-16.png">
-      <LogicalName>unit-test-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16.png">
+      <LogicalName>pad-unit-test-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-test-16%402x.png">
-      <LogicalName>unit-test-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16%402x.png">
+      <LogicalName>pad-unit-test-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-test-results-16.png">
-      <LogicalName>unit-test-results-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-results-16.png">
+      <LogicalName>pad-unit-test-results-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-test-results-16%402x.png">
-      <LogicalName>unit-test-results-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-results-16%402x.png">
+      <LogicalName>pad-unit-test-results-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\light\unit-inconclusive-16.png">
       <LogicalName>unit-inconclusive-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\light\unit-inconclusive-16%402x.png">
       <LogicalName>unit-inconclusive-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\unit-run-16.png">
+      <LogicalName>unit-run-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\unit-run-16%402x.png">
+      <LogicalName>unit-run-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +241,7 @@
     <Compile Include="Services\TcpTestListener.cs" />
     <Compile Include="Gui\TestStatusIcon.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="Gui\AbstractUnitTestEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

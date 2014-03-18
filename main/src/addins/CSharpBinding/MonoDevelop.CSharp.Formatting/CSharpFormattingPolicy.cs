@@ -193,27 +193,27 @@ namespace MonoDevelop.CSharp.Formatting
 				options.IndentBreakStatements = value;
 			}
 		}
-		
+
 		[ItemProperty]
-		public bool AlignEmbeddedUsingStatements {
+		public bool IndentBlocksInsideExpressions {
 			get {
-				return options.AlignEmbeddedUsingStatements;
+				return options.IndentBlocksInsideExpressions;
 			}
 			set {
-				options.AlignEmbeddedUsingStatements = value;
+				options.IndentBlocksInsideExpressions = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool AlignEmbeddedIfStatements {
+		public bool AlignEmbeddedStatements {
 			get {
-				return options.AlignEmbeddedIfStatements;
+				return options.AlignEmbeddedStatements;
 			}
 			set {
-				options.AlignEmbeddedIfStatements = value;
+				options.AlignEmbeddedStatements = value;
 			}
 		}
-		
+
 		[ItemProperty]
 		public PropertyFormatting SimplePropertyFormatting {
 			get {

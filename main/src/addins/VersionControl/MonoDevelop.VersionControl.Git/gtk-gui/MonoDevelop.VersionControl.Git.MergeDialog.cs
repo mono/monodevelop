@@ -5,14 +5,21 @@ namespace MonoDevelop.VersionControl.Git
 	internal partial class MergeDialog
 	{
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.Label labelHeader;
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		private global::Gtk.TreeView tree;
-		private global::Gtk.Label labelOper;
-		private global::Gtk.CheckButton checkStage;
-		private global::Gtk.Button buttonCancel;
-		private global::Gtk.Button buttonOk;
 		
+		private global::Gtk.Label labelHeader;
+		
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
+		private global::Gtk.TreeView tree;
+		
+		private global::Gtk.Label labelOper;
+		
+		private global::Gtk.CheckButton checkStage;
+		
+		private global::Gtk.Button buttonCancel;
+		
+		private global::Gtk.Button buttonOk;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

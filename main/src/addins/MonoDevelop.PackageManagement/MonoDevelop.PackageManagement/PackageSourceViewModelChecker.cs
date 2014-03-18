@@ -82,12 +82,13 @@ namespace MonoDevelop.PackageManagement
 		{
 			var httpClient = new HttpClient (new Uri (packageSource.SourceUrl));
 			try {
-				var response = (HttpWebResponse)httpClient.GetResponse ();
-				if (response.StatusCode == HttpStatusCode.OK) {
-					return new PackageSourceViewModelCheckedEventArgs (packageSource);
-				} else {
-					LoggingService.LogInfo ("Status code {0} returned from package source url '{1}'", response.StatusCode, packageSource.SourceUrl);
-					return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Unreachable"));
+				using (var response = (HttpWebResponse)httpClient.GetResponse ()) {
+					if (response.StatusCode == HttpStatusCode.OK) {
+						return new PackageSourceViewModelCheckedEventArgs (packageSource);
+					} else {
+						LoggingService.LogInfo ("Status code {0} returned from package source url '{1}'", response.StatusCode, packageSource.SourceUrl);
+						return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Unreachable"));
+					}
 				}
 			} catch (WebException ex) {
 				return CreatePackageSourceViewModelCheckedEventArgs (packageSource, ex);

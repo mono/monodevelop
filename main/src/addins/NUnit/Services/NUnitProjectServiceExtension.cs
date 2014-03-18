@@ -46,12 +46,12 @@ namespace MonoDevelop.NUnit
 					DispatchService.GuiSyncDispatch (delegate {
 						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
 					});
-					if (oper != null) {
-						monitor.CancelRequested += delegate {
-							oper.Cancel ();
-						};
-						oper.WaitForCompleted ();
-					}
+//					if (oper != null) {
+//						monitor.CancelRequested += delegate {
+//							oper.Cancel ();
+//						};
+//						oper.WaitForCompleted ();
+//					}
 				}
 			}
 		}

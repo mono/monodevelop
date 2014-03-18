@@ -168,9 +168,10 @@ namespace MonoDevelop.HexEditor
 
 		public byte[] GetBytes (long index, int count)
 		{
-			while (index < 0 && count > 0) {
-				index++;
-				count--;
+			if (index < 0 && count > 0) {
+				int n = (int) Math.Min (-index, count);
+				index += n;
+				count -= n;
 			}
 
 			if (count == 0)
@@ -186,7 +187,7 @@ namespace MonoDevelop.HexEditor
 			}
 
 			if (i < count) {
-				var chunk = array.Substring ((int) offset / 2, ((count + 1) - i) / 2);
+				var chunk = array.Substring ((int) offset / 2, (count - i) / 2);
 				var buf = Encoding.Unicode.GetBytes (chunk);
 
 				for (int j = 0; j < buf.Length; j++)
@@ -231,9 +232,10 @@ namespace MonoDevelop.HexEditor
 
 		public byte[] GetBytes (long index, int count)
 		{
-			while (index < 0 && count > 0) {
-				index++;
-				count--;
+			if (index < 0 && count > 0) {
+				int n = (int) Math.Min (-index, count);
+				index += n;
+				count -= n;
 			}
 
 			if (count == 0)

@@ -26,9 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using MonoDevelop.Ide.Gui.Content;
 using System.Linq;
 
 using NUnit.Framework;
@@ -235,7 +232,77 @@ namespace MonoDevelop.Xml.StateEngine
 			Assert.AreEqual (3, el.Attributes.Count ());
 			parser.AssertErrorCount (1);
 			Assert.AreEqual (1, parser.Errors [0].Region.BeginLine);
-			Assert.AreEqual (25, parser.Errors [0].Region.BeginColumn);
+			Assert.AreEqual (26, parser.Errors [0].Region.BeginColumn);
+		}
+
+		[Test]
+		public void SimpleTree ()
+		{
+			var parser = new TestParser (CreateRootState (), true);
+			parser.Parse (@"
+<doc>
+	<a>
+		<b>
+			<c/>
+			<d>
+				<e/>
+			</d>
+			<f>
+				<g/>
+			</f>
+		</b>
+	</a>
+</doc>");
+			parser.AssertErrorCount (0);
+
+			var doc = ((XDocument)parser.Nodes.Peek ()).RootElement;
+			Assert.NotNull (doc);
+			Assert.AreEqual ("doc", doc.Name.Name);
+			Assert.True (doc.IsEnded);
+
+			var a = (XElement)doc.FirstChild;
+			Assert.NotNull (a);
+			Assert.AreEqual ("a", a.Name.Name);
+			Assert.True (a.IsEnded);
+			Assert.False (a.IsSelfClosing);
+			Assert.IsNull (a.NextSibling);
+
+			var b = (XElement)a.FirstChild;
+			Assert.NotNull (b);
+			Assert.AreEqual ("b", b.Name.Name);
+			Assert.True (b.IsEnded);
+			Assert.False (b.IsSelfClosing);
+			Assert.IsNull (b.NextSibling);
+
+			var c = (XElement) b.FirstChild;
+			Assert.NotNull (c);
+			Assert.AreEqual ("c", c.Name.Name);
+			Assert.True (c.IsEnded);
+			Assert.True (c.IsSelfClosing);
+			Assert.IsNull (c.FirstChild);
+
+			var d = (XElement) c.NextSibling;
+			Assert.True (d.IsEnded);
+			Assert.False (d.IsSelfClosing);
+			Assert.AreEqual ("d", d.Name.Name);
+
+			var e = (XElement) d.FirstChild;
+			Assert.NotNull (e);
+			Assert.True (e.IsEnded);
+			Assert.True (e.IsSelfClosing);
+			Assert.AreEqual ("e", e.Name.Name);
+
+			var f = (XElement) d.NextSibling;
+			Assert.AreEqual (f, b.LastChild);
+			Assert.True (f.IsEnded);
+			Assert.False (f.IsSelfClosing);
+			Assert.AreEqual ("f", f.Name.Name);
+
+			var g = (XElement) f.FirstChild;
+			Assert.NotNull (g);
+			Assert.True (g.IsEnded);
+			Assert.True (g.IsSelfClosing);
+			Assert.AreEqual ("g", g.Name.Name);
 		}
 	}
 }

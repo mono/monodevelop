@@ -188,29 +188,29 @@
     <EmbeddedResource Include="icons\light\breakpoint-16%402x.png">
       <LogicalName>breakpoint-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\call-stack-16.png">
-      <LogicalName>call-stack-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-call-stack-16.png">
+      <LogicalName>pad-call-stack-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\call-stack-16%402x.png">
-      <LogicalName>call-stack-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-call-stack-16%402x.png">
+      <LogicalName>pad-call-stack-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\locals-16.png">
-      <LogicalName>locals-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-locals-16.png">
+      <LogicalName>pad-locals-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\locals-16%402x.png">
-      <LogicalName>locals-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-locals-16%402x.png">
+      <LogicalName>pad-locals-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\threads-16.png">
-      <LogicalName>threads-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-threads-16.png">
+      <LogicalName>pad-threads-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\threads-16%402x.png">
-      <LogicalName>threads-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-threads-16%402x.png">
+      <LogicalName>pad-threads-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\watch-16.png">
-      <LogicalName>watch-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-watch-16.png">
+      <LogicalName>pad-watch-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\watch-16%402x.png">
-      <LogicalName>watch-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\pad-watch-16%402x.png">
+      <LogicalName>pad-watch-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pause-16.png">
       <LogicalName>pause-light-16.png</LogicalName>

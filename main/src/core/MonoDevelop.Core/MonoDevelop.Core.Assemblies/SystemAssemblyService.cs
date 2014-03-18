@@ -195,7 +195,14 @@ namespace MonoDevelop.Core.Assemblies
 			TargetFramework fx;
 			if (frameworks.TryGetValue (id, out fx))
 				return fx;
-			LoggingService.LogWarning ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService", id);
+
+			LoggingService.LogDebug ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService, ensuring rutimes initialized and trying again", id);
+			foreach (var r in runtimes)
+				r.EnsureInitialized ();
+			if (frameworks.TryGetValue (id, out fx))
+				return fx;
+			
+			LoggingService.LogWarning ("Unregistered TargetFramework '{0}' is being requested from SystemAssemblyService, returning empty TargetFramework", id);
 			UpdateFrameworks (new [] { new TargetFramework (id) });
 			return frameworks [id];
 		}

@@ -185,6 +185,9 @@ namespace MonoDevelop.Ide.Projects {
 				if (projectEntry == configureProject)
 					continue;
 
+				if (projectEntry is UnknownProject)
+					continue;
+
 				string txt;
 				int matchRank = 0;
 				

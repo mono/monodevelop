@@ -25,9 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
-using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -35,11 +38,15 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-			var updateAllPackages = new UpdateAllPackagesInProject (project);
-			List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-			ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
-			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+			try {
+				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				var updateAllPackages = new UpdateAllPackagesInProject (project);
+				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
+				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
+			}
 		}
 
 		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions)
@@ -48,6 +55,17 @@ namespace MonoDevelop.PackageManagement.Commands
 				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId);
 			}
 			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
+		}
+
+		void ShowStatusBarError (Exception ex)
+		{
+			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = SelectedDotNetProjectHasPackages ();
 		}
 	}
 }

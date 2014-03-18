@@ -59,6 +59,7 @@ namespace MonoDevelop.PackageManagement
 		HBox errorMessageHBox;
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
+		FrameBox noPackagesFoundFrame;
 		Color lineBorderColor = Color.FromBytes (163, 166, 171);
 		Color packageInfoBackgroundColor = Color.FromBytes (227, 231, 237);
 
@@ -141,6 +142,21 @@ namespace MonoDevelop.PackageManagement
 			loadingSpinnerFrame.Content = loadingSpinnerHBox;
 			loadingSpinnerFrame.BorderWidth = new WidgetSpacing ();
 			packagesListVBox.PackStart (loadingSpinnerFrame, true, true);
+
+			// No packages found label.
+			var noPackagesFoundHBox = new HBox ();
+			noPackagesFoundHBox.HorizontalPlacement = WidgetPlacement.Center;
+
+			var noPackagesFoundLabel = new Label ();
+			noPackagesFoundLabel.Text = Catalog.GetString ("No matching packages found.");
+			noPackagesFoundHBox.PackEnd (noPackagesFoundLabel);
+
+			noPackagesFoundFrame = new FrameBox ();
+			noPackagesFoundFrame.Visible = false;
+			noPackagesFoundFrame.BackgroundColor = Colors.White;
+			noPackagesFoundFrame.Content = noPackagesFoundHBox;
+			noPackagesFoundFrame.BorderWidth = new WidgetSpacing ();
+			packagesListVBox.PackStart (noPackagesFoundFrame, true, true);
 
 			// Package information
 			packageInfoVBox = new VBox ();

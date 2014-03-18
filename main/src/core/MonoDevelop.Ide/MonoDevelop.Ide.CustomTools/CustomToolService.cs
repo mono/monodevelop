@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.CustomTools
 			if (!result.GeneratedFilePath.IsNullOrEmpty && File.Exists (result.GeneratedFilePath)) {
 				Gtk.Application.Invoke (delegate {
 					if (genFile == null) {
-						genFile = file.Project.AddFile (result.GeneratedFilePath);
+						genFile = file.Project.AddFile (result.GeneratedFilePath, result.OverrideBuildAction);
 					} else if (result.GeneratedFilePath != genFile.FilePath) {
 						genFile.Name = result.GeneratedFilePath;
 					}

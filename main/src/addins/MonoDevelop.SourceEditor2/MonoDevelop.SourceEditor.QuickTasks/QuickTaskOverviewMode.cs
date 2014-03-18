@@ -573,10 +573,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			var x1 = Allocation.Width / 2d;
 			var y1 = indicatorPadding + indicatorDiameter / 2d;
 
-			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
+			cr.Arc (x1, y1 + 1, indicatorDiameter / 2d, 0, 2 * Math.PI);
+			cr.SetSourceRGBA (0, 0, 0, 0.2);
+			cr.Fill ();
 
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 			cr.SetSourceColor (color);
-			cr.FillPreserve ();
+			cr.Fill ();
+
+			cr.Arc (x1, y1, indicatorDiameter / 2d - 1, 0, 2 * Math.PI);
+			cr.SetSourceRGBA (1, 1, 1, 0.1);
+			cr.Stroke ();
+
+			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
 			cr.SetSourceColor (borderColor);
 			cr.Stroke ();
 		}
@@ -722,7 +731,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				//compute new color such that it will produce same color when blended with bg
 				c = AddAlpha (win81Background, c, 0.5d);
 			} else {
-				c = new Cairo.Color (0, 0, 0, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
+				var brightness = HslColor.Brightness (TextEditor.ColorStyle.PlainText.Background); 
+				c = new Cairo.Color (1 - brightness, 1 - brightness, 1 - brightness, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
 			}
 			cr.SetSourceColor (c);
 			cr.Fill ();

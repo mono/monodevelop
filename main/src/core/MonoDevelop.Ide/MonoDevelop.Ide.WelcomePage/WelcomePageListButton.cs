@@ -33,20 +33,20 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageListButton: EventBox
 	{
-		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
+		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 		string title, subtitle, actionUrl;
-		Xwt.Drawing.Image icon;
-		bool mouseOver;
-		bool pinned;
-		Gdk.Rectangle starRect;
-		bool mouseOverStar;
+		protected Xwt.Drawing.Image icon;
+		protected bool mouseOver;
+		protected bool pinned;
+		protected Gdk.Rectangle starRect;
+		protected bool mouseOverStar;
 
 		protected Pango.Weight TitleFontWeight { get; set; }
 
-		static readonly Xwt.Drawing.Image starNormal;
-		static readonly Xwt.Drawing.Image starNormalHover;
-		static readonly Xwt.Drawing.Image starPinned;
-		static readonly Xwt.Drawing.Image starPinnedHover;
+		static protected readonly Xwt.Drawing.Image starNormal;
+		static protected readonly Xwt.Drawing.Image starNormalHover;
+		static protected readonly Xwt.Drawing.Image starPinned;
+		static protected readonly Xwt.Drawing.Image starPinnedHover;
 
 		public event EventHandler PinClicked;
 
@@ -141,10 +141,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageListButton ()
 		{
-			starNormal = Xwt.Drawing.Image.FromResource ("star-normal.png");
-			starNormalHover = Xwt.Drawing.Image.FromResource ("star-normal-hover.png");
-			starPinned = Xwt.Drawing.Image.FromResource ("star-pinned.png");
-			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-pinned-hover.png");
+			starNormal = Xwt.Drawing.Image.FromResource ("unstar-overlay-light-16.png");
+			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-overlay-hover-light-16.png");
+			starPinned = Xwt.Drawing.Image.FromResource ("star-overlay-light-16.png");
+			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-overlay-hover-light-16.png");
 		}
 
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
-		
+
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			GdkWindow.Cursor = null;
@@ -223,69 +223,74 @@ namespace MonoDevelop.Ide.WelcomePage
 			Pango.CairoHelper.ShowLayout (ctx, layout);
 		}
 
+		protected virtual void DrawHoverBackground (Cairo.Context ctx)
+		{
+			if (BorderPadding <= 0) {
+				ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
+				ctx.Fill ();
+				ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
+				ctx.RelLineTo (Allocation.Width, 0);
+				ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
+				ctx.RelLineTo (Allocation.Width, 0);
+				if (DrawRightBorder) {
+					ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
+					ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
+				}
+				if (DrawLeftBorder) {
+					ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
+					ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
+				}
+				ctx.LineWidth = 1;
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
+				ctx.Stroke ();
+			}
+			else {
+				Gdk.Rectangle region = Allocation;
+				region.Inflate (-BorderPadding, -BorderPadding);
+				ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
+				ctx.FillPreserve ();
+				ctx.LineWidth = 1;
+				ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
+				ctx.Stroke ();
+			}
+		}
+
+		protected virtual void DrawIcon (Cairo.Context ctx)
+		{
+			int x = Allocation.X + InternalPadding;
+			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
+			ctx.DrawImage (this, icon, x, y);
+			if (AllowPinning && (mouseOver || pinned)) {
+				Xwt.Drawing.Image star;
+				if (pinned) {
+					if (mouseOverStar)
+						star = starPinnedHover;
+					else
+						star = starPinned;
+				}
+				else {
+					if (mouseOverStar)
+						star = starNormalHover;
+					else
+						star = starNormal;
+				}
+				x = x + (int)icon.Width - (int)star.Width + 3;
+				y = y + (int)icon.Height - (int)star.Height + 3;
+				ctx.DrawImage (this, star, x, y);
+				starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
+			}
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (mouseOver) {
-					if (BorderPadding <= 0) {
-						ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
-						ctx.Fill ();
-						ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
-						ctx.RelLineTo (Allocation.Width, 0);
-						ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
-						ctx.RelLineTo (Allocation.Width, 0);
-						
-						if (DrawRightBorder) {
-							ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
-							ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
-						}
-						if (DrawLeftBorder) {
-							ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
-							ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
-						}
-						
-						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
-						ctx.Stroke ();
-					} else {
-						Gdk.Rectangle region = Allocation;
-						region.Inflate (-BorderPadding, -BorderPadding);
-
-						ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBackgroundColor));
-						ctx.FillPreserve ();
-						
-						ctx.LineWidth = 1;
-						ctx.SetSourceColor (CairoExtensions.ParseColor (HoverBorderColor));
-						ctx.Stroke ();
-					}
-				}
+				if (mouseOver)
+					DrawHoverBackground (ctx);
 
 				// Draw the icon
-
-				int x = Allocation.X + InternalPadding;
-				int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
-				ctx.DrawImage (this, icon, x, y);
-
-				if (AllowPinning && (mouseOver || pinned)) {
-					Xwt.Drawing.Image star;
-					if (pinned) {
-						if (mouseOverStar)
-							star = starPinnedHover;
-						else
-							star = starPinned;
-					} else {
-						if (mouseOverStar)
-							star = starNormalHover;
-						else
-							star = starNormal;
-					}
-					x = x + (int)icon.Width - (int)star.Width + 3;
-					y = y + (int)icon.Height - (int)star.Height + 3;
-					ctx.DrawImage (this, star, x, y);
-					starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
-				}
+				DrawIcon (ctx);
 
 				// Draw the text
 

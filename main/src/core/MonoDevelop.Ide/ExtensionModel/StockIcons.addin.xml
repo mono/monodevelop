@@ -41,11 +41,10 @@
 	<StockIcon stockid = "md-add-namespace" resource = "add-namespace-16.png"/>
 	<StockIcon stockid = "md-breakpoint" resource = "breakpoint-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-new" resource = "breakpoint-new-light-16.png" size="Menu"/>
-	<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-16.png" size="Menu"/>
-	<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-16.png" size="Menu"/>
+	<StockIcon stockid = "md-breakpoint-disabled" resource = "breakpoint-disabled-light-16.png" size="Menu"/>
+	<StockIcon stockid = "md-breakpoint-invalid" resource = "breakpoint-invalid-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-on-off" resource = "breakpoint-on-off-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-breakpoint-disable-all" resource = "breakpoint-disable-all-light-16.png" size="Menu"/>
-	<StockIcon stockid = "md-breakpoint-remove-all" resource = "breakpoint-clear-all-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-build-combine" resource = "build-solution-16.png" size="Menu"/>
 	<StockIcon stockid = "md-build-current-selected-project" resource = "build-project-16.png" size="Menu"/>
 	<StockIcon stockid = "md-class" resource = "element-class-light-16.png" size="Menu" />
@@ -56,7 +55,7 @@
 	<StockIcon stockid = "md-solution" resource = "solution-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-delegate" resource = "element-delegate-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-empty" resource = "empty-16.png" size="Menu" />
-	<StockIcon stockid = "md-magnify" resource = "search-results-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-magnify" resource = "pad-search-results-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-empty-file-icon" resource = "file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-enum" resource = "element-enumeration-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-event" resource = "element-event-light-16.png" size="Menu" />
@@ -99,18 +98,18 @@
 	<StockIcon stockid = "md-InternalAndProtected-property" icon = "res:element-property-light-16.png|res:element-visibility-internal-an-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-InternalAndProtected-static-property" icon = "res:element-property-light-16.png|res:element-visibility-static-overlay-light-16.png|res:element-visibility-internal-an-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-InternalAndProtected-struct" icon = "res:element-structure-light-16.png|res:element-visibility-internal-an-protected-overlay-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-variable" resource = "variable-16.png" size="Menu" />
+	<StockIcon stockid = "md-variable" resource = "element-variable-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-literal" resource = "element-constant-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-method" resource = "element-method-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-static-method" icon = "res:element-method-light-16.png|res:element-visibility-static-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-newmethod" resource = "element-method-new-16.png" size="Menu" />
-	<StockIcon stockid = "md-misc-files" resource = "misc-files-16.png" size="Menu" />
+	<StockIcon stockid = "md-misc-files" resource = "file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-name-space" resource = "element-namespace-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-folder-icon" resource = "folder-new-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-project" resource = "project-new-16.png" size="Menu" />
 	<StockIcon stockid = "md-new-solution" resource = "solution-new-16.png" size="Menu" />
-	<StockIcon stockid = "md-output-icon" resource = "immediate-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-generic-pad" resource = "generic-pad-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-output-icon" resource = "pad-application-output-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-generic-pad" resource = "pad-generic-pad-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-class" icon = "res:element-class-light-16.png|res:element-visibility-private-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-light-16.png|res:element-visibility-private-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-enum" icon = "res:element-enumeration-light-16.png|res:element-visibility-private-overlay-light-16.png" size="Menu" />
@@ -163,8 +162,8 @@
 	<StockIcon stockid = "md-resource-file-icon" resource = "file-resource-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-resource-file-icon" resource = "file-resource-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-save-all-icon" resource = "save-all-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-searchbox-clear" resource = "searchbox-clear-16.png" size = "Menu" />
-	<StockIcon stockid = "md-searchbox-search" resource = "searchbox-search-16.png" size = "Menu" />
+	<StockIcon stockid = "md-searchbox-clear" resource = "searchbox-clear-light-16.png" size = "Menu" />
+	<StockIcon stockid = "md-searchbox-search" resource = "searchbox-search-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-16.png" size="Menu"/>
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-22.png" />
 	<StockIcon stockid = "md-monodevelop" resource = "monodevelop-32.png" size="Dnd"/>
@@ -179,7 +178,7 @@
 	<StockIcon stockid = "md-project-library" icon = "md-project|md-library-overlay" size="Dnd" />
 	<StockIcon stockid = "md-project-web" icon = "md-project|md-web-overlay" size="Dnd" />
 	<StockIcon stockid = "md-struct" resource = "element-structure-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-task-list-icon" resource = "task-list-light-16.png" size="Menu"/>
+	<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-text-file-icon" resource = "file-text-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-text-file-icon" resource = "file-text-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-html-file-icon" resource = "file-web-light-32.png" size = "Dnd" />
@@ -215,7 +214,7 @@
 	<StockIcon stockid = "md-syntax-highlighting" resource = "syntax-highlighting-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-text-quickfix" resource = "text-quickfix-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-message-log" resource = "immediate-light-16.png" size = "Menu"/>
+	<StockIcon stockid = "md-message-log" resource = "pad-application-output-light-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-assembly-project" resource = "assembly-project-16.png" size="Menu" />
 	<StockIcon stockid = "md-parser" resource = "parser-16.png" size="Menu" />
 	<!-- for some reason both pairs next/previous and forward/back are in use -->
@@ -229,11 +228,11 @@
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-16.png" size="Menu" />
 	<StockIcon stockid = "md-feedback" resource = "feedback-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-software-update-available" resource = "updates-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-disclose-arrow-up" resource = "disclose-arrow-up-16.png" size="Menu" />
-	<StockIcon stockid = "md-disclose-arrow-down" resource = "disclose-arrow-down-16.png" size="Menu" />
+	<StockIcon stockid = "md-disclose-arrow-up" resource = "disclose-arrow-up-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-disclose-arrow-down" resource = "disclose-arrow-down-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-link-overlay" resource = "link-overlay-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-breadcrumb-next" resource = "breadcrumb-next-normal-16.png" size="Menu" />
-	<StockIcon stockid = "md-breadcrumb-prev" resource = "breadcrumb-prev-normal-16.png" size="Menu" />
+	<StockIcon stockid = "md-breadcrumb-next" resource = "breadcrumb-next-normal-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-breadcrumb-prev" resource = "breadcrumb-previous-normal-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-status-build" animation = "res:status-building-1-light-14.png;res:status-building-2-light-14.png;res:status-building-3-light-14.png;res:status-building-4-light-14.png;res:status-building-5-light-14.png" size="Menu" />
 	<StockIcon stockid = "md-status-download" animation = "res:status-pulling-1-light-14.png;res:status-pulling-2-light-14.png;res:status-pulling-3-light-14.png;res:status-pulling-4-light-14.png;res:status-pulling-5-light-14.png;res:status-pulling-6-light-14.png" size="Menu" />
 	<StockIcon stockid = "md-status-upload" animation = "res:status-pushing-1-light-14.png;res:status-pushing-2-light-14.png;res:status-pushing-3-light-14.png;res:status-pushing-4-light-14.png;res:status-pushing-5-light-14.png;res:status-pushing-6-light-14.png" size="Menu" />
@@ -249,15 +248,15 @@
 	<StockIcon stockid = "md-command" resource = "command-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-clear" resource = "clear-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-stop" resource = "stop-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-console" resource = "immediate-light-16" size="Menu" />
+	<StockIcon stockid = "md-console" resource = "pad-application-output-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-drive" resource = "drive-16.png" size="Menu" />
 	<StockIcon stockid = "md-letters" resource = "letters-16.png" size="Menu" />
 	<StockIcon stockid = "md-hammer" resource = "hammer-16.png" size="Menu" />
 	<StockIcon stockid = "md-monkey" resource = "monkey-16.png" size="Menu" />
 	<StockIcon stockid = "md-locale" resource = "locale-16.png" size="Menu" />
-	<StockIcon stockid = "md-errors-list" resource = "error-list-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-errors-list-has-errors" resource = "error-list-errors-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-errors-list-has-warnings" resource = "error-list-warnings-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-errors-list" resource = "pad-error-list-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-errors-list-has-errors" resource = "pad-error-list-errors-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-errors-list-has-warnings" resource = "pad-error-list-warnings-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-bubble-error" resource = "bubble-error-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-bubble-warning" resource = "bubble-warning-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-file-source" resource = "file-source-light-16.png" size="Menu" />
@@ -266,7 +265,7 @@
 	<StockIcon stockid = "md-file-header" resource = "file-header-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-file-unit-test" resource = "file-unit-test-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-preferences" resource = "preferences-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-help" resource = "help-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-help" resource = "pad-help-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-sort-alphabetically" resource = "sort-alphabetically-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-group-by-category" resource = "group-by-category-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-add" resource = "add-light-16.png" size="Menu" />

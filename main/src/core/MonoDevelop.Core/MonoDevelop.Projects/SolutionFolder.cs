@@ -228,6 +228,13 @@ namespace MonoDevelop.Projects
 							FileName = item.FileName,
 							UnloadedEntry = true
 						};
+						var ch = item.GetItemHandler () as MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler;
+						if (ch != null) {
+							var h = new MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler (ch.TypeGuid, ch.ItemId) {
+								Item = e,
+							};
+							e.SetItemHandler (h);
+						}
 						newItem = e;
 					}
 				} catch (Exception ex) {

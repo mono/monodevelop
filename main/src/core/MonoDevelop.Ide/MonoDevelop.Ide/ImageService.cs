@@ -85,6 +85,10 @@ namespace MonoDevelop.Ide
 				iconSizes[i].Width = w;
 				iconSizes[i].Height = h;
 			}
+			if (Platform.IsWindows) {
+				iconSizes[(int)Gtk.IconSize.Menu].Width = 16;
+				iconSizes[(int)Gtk.IconSize.Menu].Height = 16;
+			}
 		}
 		
 		static void LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
@@ -243,8 +247,7 @@ namespace MonoDevelop.Ide
 				return iconset.RenderIcon (Gtk.Widget.DefaultStyle, Gtk.TextDirection.Ltr, Gtk.StateType.Normal, size, null, null);
 			
 			if (Gtk.IconTheme.Default.HasIcon (stockid)) {
-				int w, h;
-				Gtk.Icon.SizeLookup (size, out w, out h);
+				int h = iconSizes[(int)size].Height;
 				Gdk.Pixbuf result = Gtk.IconTheme.Default.LoadIcon (stockid, h, (Gtk.IconLookupFlags)0);
 				return result;
 			}

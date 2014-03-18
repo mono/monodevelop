@@ -1095,7 +1095,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label3">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">?/?</property>
+                    <property name="LabelProp" translatable="yes">1/1</property>
                     <property name="MnemonicWidget">textview</property>
                   </widget>
                   <packing>
@@ -1192,8 +1192,7 @@
             <property name="Type">TextOnly</property>
             <property name="Label" translatable="yes">C_ommit</property>
             <property name="UseUnderline">True</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonCommitClicked" />
+            <property name="ResponseId">-5</property>
           </widget>
           <packing>
             <property name="Position">1</property>

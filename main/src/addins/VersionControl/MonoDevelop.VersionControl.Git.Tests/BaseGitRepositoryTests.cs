@@ -73,6 +73,14 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			return Is.InstanceOf<GitRepository> ();
 		}
 
+		protected override int RepoItemsCount {
+			get { return 1; }
+		}
+
+		protected override int RepoItemsCountRecursive {
+			get { return 13; }
+		}
+
 		protected override void TestDiff ()
 		{
 			string difftext = @"@@ -0,0 +1 @@

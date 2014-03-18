@@ -122,6 +122,10 @@ namespace MonoDevelop.Ide.Templates
 			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
+			if (!Services.ProjectService.CanCreateProject (type)) {
+				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
+				return null;
+			}
 			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
 			return project;
 		}
@@ -203,7 +207,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public ProjectCreateInformation CreateProjectCI (ProjectCreateInformation projectCI)
 		{
-			var projectCreateInformation = projectCI;
+			var projectCreateInformation = new ProjectCreateInformation (projectCI);
 			var substitution = new string[,] { { "ProjectName", projectCreateInformation.ProjectName } };
 
 			projectCreateInformation.ProjectName = StringParserService.Parse (name, substitution);

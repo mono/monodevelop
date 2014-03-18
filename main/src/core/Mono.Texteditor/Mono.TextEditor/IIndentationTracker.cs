@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	class DefaultIndentationTracker : IIndentationTracker
+	public class DefaultIndentationTracker : IIndentationTracker
 	{
 		readonly TextDocument doc;
 			

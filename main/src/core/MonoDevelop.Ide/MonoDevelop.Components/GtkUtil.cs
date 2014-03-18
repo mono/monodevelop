@@ -128,6 +128,8 @@ namespace MonoDevelop.Components
 			int w, h;
 			if (!Gtk.Icon.SizeLookup (size, out w, out h))
 				return image;
+			if (size == IconSize.Menu)
+				w = h = 16;
 			return image.WithSize (w, h);
 		}
 

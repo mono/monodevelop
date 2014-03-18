@@ -109,8 +109,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
-				headlabel.BreakOnCamelCasing = false;
-				headlabel.BreakOnPunctuation = false;
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
 				int x, y;

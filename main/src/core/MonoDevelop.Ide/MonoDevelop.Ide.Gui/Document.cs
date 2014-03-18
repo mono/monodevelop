@@ -634,18 +634,25 @@ namespace MonoDevelop.Ide.Gui
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName, mimetypeChain))
 					continue;
-				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
+				TextEditorExtension ext;
+				try {
+					ext = (TextEditorExtension)extNode.CreateInstance ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
+					continue;
+				}
 				if (ext.ExtendsEditor (this, editor)) {
-					if (editorExtension == null)
-						editorExtension = ext;
-					if (last != null)
+					if (last != null) {
+						ext.Next = last.Next;
 						last.Next = ext;
-					last = ext;
+						last = ext;
+					} else {
+						editorExtension = last = ext;
+						last.Next = editor.AttachExtension (editorExtension);
+					}
 					ext.Initialize (this);
 				}
 			}
-			if (editorExtension != null)
-				last.Next = editor.AttachExtension (editorExtension);
 		}
 
 		void DetachExtensionChain ()

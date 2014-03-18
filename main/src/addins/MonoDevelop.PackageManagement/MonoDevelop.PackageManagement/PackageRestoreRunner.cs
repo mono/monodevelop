@@ -71,6 +71,7 @@ namespace MonoDevelop.PackageManagement
 				LoggingService.LogInternalError (ex);
 				progressMonitor.Log.WriteLine(ex.Message);
 				progressMonitor.ReportError (progressMessage.Error, null);
+				progressMonitor.ShowPackageConsole ();
 				progressMonitor.Dispose();
 			}
 		}
@@ -125,7 +126,7 @@ namespace MonoDevelop.PackageManagement
 			DispatchService.GuiDispatch (() => {
 				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (solution != null) {
-					foreach (DotNetProject project in solution.GetAllProjects ().OfType<DotNetProject> ()) {
+					foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 						project.RefreshReferenceStatus ();
 					}
 				}
@@ -142,6 +143,7 @@ namespace MonoDevelop.PackageManagement
 				packageManagementEvents.OnPackagesRestored ();
 			} else {
 				progressMonitor.ReportError (progressMessage.Error, null);
+				progressMonitor.ShowPackageConsole ();
 			}
 		}
 	}

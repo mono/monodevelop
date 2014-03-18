@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder projectBuilder;
 		ITimeTracker timer;
 		bool modifiedInMemory;
+		UnknownProjectTypeNode unknownProjectTypeInfo;
 		
 		string lastBuildToolsVersion;
 		string lastBuildRuntime;
@@ -72,8 +73,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string productVersion;
 		string schemaVersion;
 
+		internal bool ProjectTypeIsUnsupported {
+			get { return unknownProjectTypeInfo != null; }
+		}
+
+		internal UnknownProjectTypeNode UnknownProjectTypeInfo {
+			get { return unknownProjectTypeInfo; }
+		}
+
 		public List<string> TargetImports {
 			get { return targetImports; }
+		}
+
+		internal void SetUnsupportedType (UnknownProjectTypeNode typeInfo)
+		{
+			unknownProjectTypeInfo = typeInfo;
 		}
 
 		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
@@ -400,8 +414,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language,
 			string itemType, Type itemClass)
 		{
-			SolutionItem item = null;
-			
+			if (ProjectTypeIsUnsupported)
+				return new UnknownProject (fileName, UnknownProjectTypeInfo.GetInstructions ());
+
 			if (subtypeGuids.Any ()) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (subtypeGuids);
 				if (st != null) {
@@ -429,35 +444,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						p.Save (fileName);
 					}
 
-					item = st.CreateInstance (language);
+					var item = st.CreateInstance (language);
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
-				} else
-					throw new UnknownSolutionItemTypeException (string.Join (";", subtypeGuids));
+					return item;
+				} else {
+					var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (subtypeGuids.ToArray (), fileName);
+					if (projectInfo != null && projectInfo.LoadFiles) {
+						SetUnsupportedType (projectInfo);
+						return new UnknownProject (fileName, UnknownProjectTypeInfo.GetInstructions ());
+					}
+					throw new UnknownSolutionItemTypeException (ProjectTypeIsUnsupported ? TypeGuid : string.Join (";", subtypeGuids));
+				}
 			}
 
-			if (item == null && itemClass != null)
-				item = (SolutionItem) Activator.CreateInstance (itemClass);
+			if (itemClass != null)
+				return (SolutionItem) Activator.CreateInstance (itemClass);
 			
-			if (item == null && !string.IsNullOrEmpty (language)) {
-				item = new DotNetAssemblyProject (language);
-
+			if (!string.IsNullOrEmpty (language)) {
 				//enable msbuild by default .NET assembly projects
 				UseMSBuildEngineByDefault = true;
 				RequireMSBuildEngine = false;
+				return new DotNetAssemblyProject (language);
 			}
 			
-			if (item == null) {
-				if (string.IsNullOrEmpty (itemType))
-					throw new UnknownSolutionItemTypeException ();
-					
-				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (itemType);
-				if (dt == null)
-					throw new UnknownSolutionItemTypeException (itemType);
-					
-				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
-			}
-
-			return item;
+			if (string.IsNullOrEmpty (itemType))
+				throw new UnknownSolutionItemTypeException ();
+				
+			DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (itemType);
+			if (dt == null)
+				throw new UnknownSolutionItemTypeException (itemType);
+				
+			return (SolutionItem) Activator.CreateInstance (dt.ValueType);
 		}
 
 		Type MigrateProject (IProgressMonitor monitor, DotNetProjectSubtypeNode st, MSBuildProject p, string fileName, string language)
@@ -606,7 +623,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (it is ProjectFile) {
 					var file = (ProjectFile)it;
 
-					if (file.Name.IndexOf ('*') > -1)  {
+					if (file.Name.IndexOf ('*') > -1) {
 						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
 						foreach (var expandedItem in ResolveWildcardItems (file))
 							EntityItem.Items.Add (expandedItem);
@@ -616,6 +633,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						EntityItem.WildcardItems.Add (it);
 						continue;
 					}
+					if (ProjectTypeIsUnsupported && !File.Exists (file.FilePath))
+						continue;
 				}
 
 				EntityItem.Items.Add (it);
@@ -1044,7 +1063,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		MSBuildProject SaveProject (IProgressMonitor monitor)
 		{
-			if (Item is UnknownProject || Item is UnknownSolutionItem)
+			if (Item is UnknownSolutionItem)
 				return null;
 
 			var toolsFormat = GetToolsFormat ();
@@ -1266,7 +1285,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// If the project is not new, don't add the default project imports,
 			// just assume that the current imports are correct
-			UpdateImports (imports, newProject);
+			UpdateImports (imports, dotNetProject, newProject);
 			foreach (string imp in imports) {
 				if (!currentImports.Contains (imp)) {
 					msproject.AddNewImport (imp, null);
@@ -1554,16 +1573,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildItem.Condition = pref.Condition;
 		}
 		
-		void UpdateImports (List<string> imports, bool addItemTypeImports)
+		void UpdateImports (List<string> imports, DotNetProject project, bool addItemTypeImports)
 		{
 			if (targetImports != null && addItemTypeImports) {
-				foreach (string imp in targetImports)
-					if (!imports.Contains (imp))
-						imports.Add (imp);
+				AddMissingImports (imports, targetImports);
 			}
 			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
 				ip.UpdateImports (EntityItem, imports);
 			}
+
+			if (project != null) {
+				AddMissingImports (imports, project.ImportsAdded);
+				RemoveImports (imports, project.ImportsRemoved);
+				project.ImportsSaved ();
+			}
+		}
+
+		void AddMissingImports (List<string> existingImports, IEnumerable<string> newImports)
+		{
+			foreach (string imp in newImports)
+				if (!existingImports.Contains (imp))
+					existingImports.Add (imp);
+		}
+
+		void RemoveImports (List<string> existingImports, IEnumerable<string> importsToRemove)
+		{
+			foreach (string imp in importsToRemove)
+				existingImports.Remove (imp);
 		}
 
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)
@@ -1890,7 +1926,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		// Items generated by VS but which MD is not using and should be ignored
 		
 		internal static readonly IList<string> UnsupportedItems = new string[] {
-			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service"
+			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service", 
+			"ProjectReference", "Reference" // Reference elements are included here because they are special-cased for DotNetProject, and they are unsupported in other types of projects
 		};
 	}
 	

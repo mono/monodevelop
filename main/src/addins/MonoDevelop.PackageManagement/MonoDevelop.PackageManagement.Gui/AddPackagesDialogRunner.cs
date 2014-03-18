@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var viewModels = new PackageManagementViewModels ();
 			return new AddPackagesDialog (
-				viewModels.ManagePackagesViewModel.AvailablePackagesViewModel,
+				viewModels.ManagePackagesViewModel,
 				initialSearch);
 		}
 

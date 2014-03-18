@@ -36,7 +36,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Adding {0}...", packageId),
 				GetString ("{0} successfully added.", packageId),
-				GetString ("Could not add {0}. Please see Package Console for details.", packageId)
+				GetString ("Could not add {0}. Please see Package Console for details.", packageId),
+				GetString ("{0} added with warnings. Please see Package Console for details.", packageId)
 			);
 		}
 
@@ -45,7 +46,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Adding packages..."),
 				GetString ("Packages successfully added."),
-				GetString ("Could not add packages. Please see Package Console for details.")
+				GetString ("Could not add packages. Please see Package Console for details."),
+				GetString ("Packages added with warnings. Please see Package Console for details.")
 			);
 		}
 
@@ -54,7 +56,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Adding {0} packages...", count),
 				GetString ("{0} packages successfully added.", count),
-				GetString ("Could not add packages. Please see Package Console for details.")
+				GetString ("Could not add packages. Please see Package Console for details."),
+				GetString ("{0} packages added with warnings. Please see Package Console for details.", count)
 			);
 		}
 
@@ -63,7 +66,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Updating packages in solution..."),
 				GetString ("Packages successfully updated."),
-				GetString ("Could not update packages. Please see Package Console for details.")
+				GetString ("Could not update packages. Please see Package Console for details."),
+				GetString ("Packages updated with warnings. Please see Package Console for details.")
 			);
 		}
 
@@ -72,7 +76,18 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Updating {0} packages in project...", count),
 				GetString ("{0} packages successfully updated.", count),
-				GetString ("Could not update packages. Please see Package Console for details.")
+				GetString ("Could not update packages. Please see Package Console for details."),
+				GetString ("{0} packages updated with warnings. Please see Package Console for details.", count)
+			);
+		}
+
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Updating packages in project..."),
+				GetString ("Packages successfully updated."),
+				GetString ("Could not update packages. Please see Package Console for details."),
+				GetString ("Packages updated with warnings. Please see Package Console for details.")
 			);
 		}
 
@@ -81,7 +96,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Updating {0}...", packageId),
 				GetString ("{0} successfully updated.", packageId),
-				GetString ("Could not update {0}. Please see Package Console for details.", packageId)
+				GetString ("Could not update {0}. Please see Package Console for details.", packageId),
+				GetString ("{0} updated with warnings. Please see Package Console for details.", packageId)
 			);
 		}
 
@@ -90,7 +106,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Removing {0}...", packageId),
 				GetString ("{0} successfully removed.", packageId),
-				GetString ("Could not remove {0}. Please see Package Console for details.", packageId)
+				GetString ("Could not remove {0}. Please see Package Console for details.", packageId),
+				GetString ("{0} removed with warnings. Please see Package Console for details.", packageId)
 			);
 		}
 
@@ -99,7 +116,8 @@ namespace MonoDevelop.PackageManagement
 			return new ProgressMonitorStatusMessage (
 				GetString ("Restoring packages for solution..."),
 				GetString ("Packages successfully restored."),
-				GetString ("Could not restore packages. Please see Package Console for details.")
+				GetString ("Could not restore packages. Please see Package Console for details."),
+				GetString ("Packages restored with warnings. Please see Package Console for details.")
 			);
 		}
 

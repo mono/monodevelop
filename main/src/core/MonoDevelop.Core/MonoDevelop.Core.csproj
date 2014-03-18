@@ -455,6 +455,7 @@
     <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
+    <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -560,7 +561,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Core.Web\" />
   </ItemGroup>
-  <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.txt" Outputs="BuildVariables.cs">
+  <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; ..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />

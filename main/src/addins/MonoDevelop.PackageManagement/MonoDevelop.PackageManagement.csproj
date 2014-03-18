@@ -54,10 +54,10 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="NuGet.Core">
-      <HintPath>lib\NuGet.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Cairo, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -306,6 +306,9 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourceCellRenderer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackagesRequiringLicenseAcceptance.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -367,16 +370,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lib\NuGet.exe">
+    <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\external\nuget-binary\NuGet.exe">
       <Link>NuGet.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\NuGet-LICENSE.txt">
+    <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
   </ItemGroup>
 </Project>

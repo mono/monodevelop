@@ -93,6 +93,14 @@
 			_description = "Comment/Uncomment selected lines of code" 
 			_label = "_Toggle Line Comment(s)"
 			icon = "md-comment" />
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment"
+			_description = "Comment selected lines of code" 
+			_label = "_Add Line Comment(s)"
+			icon = "md-comment" />
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment"
+			_description = "Uncomment selected lines of code" 
+			_label = "_Remove Line Comment(s)"
+			icon = "md-comment" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
 			shortcut = "Control|Alt|End"
 			_description = "Indent selected lines of code" 

@@ -49,6 +49,11 @@ namespace MonoDevelop.Ide.CustomTools
 		/// The absolute name of the generated file. Must be in same directory as source file.
 		/// </summary>
 		public FilePath GeneratedFilePath { get; set; }
+
+		/// <summary>
+		/// Overrides the default action on the generated file.
+		/// </summary>
+		public string OverrideBuildAction { get; private set; }
 		
 		/// <summary>
 		/// Any unhandled exception from the generator.

@@ -1,5 +1,5 @@
 <ExtensionModel>
-	
+
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
 		<Description>Debug session factories. Specified classes must implement MonoDevelop.Debugger.IDebuggerEngine</Description>
 		<ExtensionNode name="DebuggerEngine" type="MonoDevelop.Debugger.DebuggerEngineExtensionNode"/>
@@ -22,7 +22,7 @@
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
 			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
 			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
-			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
+			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" icon="md-view-debug-immediate" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
 		</Category>
 	</Extension>
 
@@ -136,7 +136,7 @@
 				defaultHandler = "MonoDevelop.Debugger.DisableAllBreakpointsHandler" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ClearAllBreakpointsHandler"
-				icon = "md-breakpoint-remove-all"
+				icon = "md-clear"
 				_label = "Clear All Breakpoints" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly"
 				_label = "Show Disassembly"
@@ -212,10 +212,11 @@
 		<StockIcon stockid = "md-step-out-debug" resource = "step-out-light-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-over-debug" resource = "step-over-light-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-call-stack" resource = "call-stack-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-locals" resource = "locals-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-threads" resource = "threads-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-watch" resource = "watch-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-watch" resource = "pad-watch-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-bug" resource = "bug-light-16.png" size="Menu" />
 	</Extension>
 

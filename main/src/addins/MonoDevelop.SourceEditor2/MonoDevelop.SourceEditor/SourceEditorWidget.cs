@@ -364,6 +364,10 @@ namespace MonoDevelop.SourceEditor
 			vbox.PackStart (mainsw, true, true, 0);
 			
 			textEditorData = textEditor.GetTextEditorData ();
+			textEditorData.EditModeChanged += delegate {
+				KillWidgets ();
+			};
+
 			ResetFocusChain ();
 			
 			UpdateLineCol ();
@@ -1481,21 +1485,29 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
-		public void ToggleCodeComment ()
+
+		bool TryGetLineCommentTag (out string commentTag)
 		{
 			var mode = Document.SyntaxMode as SyntaxMode;
-			if (mode == null)
-				return;
-			bool comment = false;
 			List<string> lineComments;
-			if (!mode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
+			if (mode == null || !mode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
+				commentTag = null;
+				return false;
+			}
+			commentTag = lineComments [0];
+			return true;
+		}
+
+		public void ToggleCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag)) {
 				ToggleCodeCommentWithBlockComments ();
 				return;
 			}
-			string commentTag = lineComments [0];
 
-			foreach (DocumentLine line in this.textEditor.SelectedLines) {
+			bool comment = false;
+			foreach (var line in textEditor.SelectedLines) {
 				if (line.GetIndentation (TextEditor.Document).Length == line.Length)
 					continue;
 				string text = Document.GetTextAt (line);
@@ -1505,13 +1517,30 @@ namespace MonoDevelop.SourceEditor
 					break;
 				}
 			}
+
 			if (comment) {
 				CommentSelectedLines (commentTag);
 			} else {
 				UncommentSelectedLines (commentTag);
 			}
 		}
-		
+
+		public void AddCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag))
+				return;
+			CommentSelectedLines (commentTag);
+		}
+
+		public void RemoveCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag))
+				return;
+			UncommentSelectedLines (commentTag);
+		}
+
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
 		{
 			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
@@ -1564,12 +1593,6 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				
-				if (TextEditor.Caret.Column != 0) {
-					TextEditor.Caret.PreserveSelection = true;
-					TextEditor.Caret.Column += commentTag.Length;
-					TextEditor.Caret.PreserveSelection = false;
-				}
-				
 				if (TextEditor.IsSomethingSelected) 
 					TextEditor.ExtendSelectionTo (TextEditor.Caret.Offset);
 			}
@@ -1607,12 +1630,6 @@ namespace MonoDevelop.SourceEditor
 					} else {
 						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
 					}
-				}
-				
-				if (TextEditor.Caret.Column != DocumentLocation.MinColumn) {
-					TextEditor.Caret.PreserveSelection = true;
-					TextEditor.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, TextEditor.Caret.Column - last);
-					TextEditor.Caret.PreserveSelection = false;
 				}
 				
 				if (TextEditor.IsSomethingSelected) 

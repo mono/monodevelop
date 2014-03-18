@@ -83,8 +83,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
 			else if (expectedType.IsAssignableFrom (typeof(SolutionEntityItem))) {
-				ItemTypeNode node = MSBuildProjectService.FindHandlerForFile (file);
-				if (node == null)
+				if (!MSBuildProjectService.CanReadFile (file))
 					return false;
 				//TODO: check ProductVersion first
 				return SupportsToolsVersion (ReadToolsVersion (file));

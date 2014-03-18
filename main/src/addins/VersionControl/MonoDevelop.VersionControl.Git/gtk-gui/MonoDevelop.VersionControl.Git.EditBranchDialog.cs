@@ -5,16 +5,25 @@ namespace MonoDevelop.VersionControl.Git
 	internal partial class EditBranchDialog
 	{
 		private global::Gtk.VBox vbox5;
-		private global::Gtk.Table table4;
-		private global::Gtk.Entry entryName;
-		private global::Gtk.Label label4;
-		private global::Gtk.Label labelError;
-		private global::Gtk.CheckButton checkTrack;
-		private global::Gtk.Alignment alignment1;
-		private global::Gtk.ComboBox comboSources;
-		private global::Gtk.Button buttonCancel;
-		private global::Gtk.Button buttonOk;
 		
+		private global::Gtk.Table table4;
+		
+		private global::Gtk.Entry entryName;
+		
+		private global::Gtk.Label label4;
+		
+		private global::Gtk.Label labelError;
+		
+		private global::Gtk.CheckButton checkTrack;
+		
+		private global::Gtk.Alignment alignment1;
+		
+		private global::Gtk.ComboBox comboSources;
+		
+		private global::Gtk.Button buttonCancel;
+		
+		private global::Gtk.Button buttonOk;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -66,6 +67,12 @@ namespace ICSharpCode.PackageManagement
 		protected virtual IEnumerable<PackageOperation> GetPackageOperations()
 		{
 			return null;
+		}
+
+		public IEnumerable<PackageOperation> GetInstallOperations ()
+		{
+			BeforeExecute ();
+			return Operations.Where (operation => operation.Action == PackageAction.Install);
 		}
 	}
 }

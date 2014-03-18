@@ -202,6 +202,36 @@
     <EmbeddedResource Include="MonoDevelop.SourceEditor\searchoptions.png">
       <LogicalName>searchoptions.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-busy-16.png">
+      <LogicalName>issues-busy-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-busy-16%402x.png">
+      <LogicalName>issues-busy-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-error-16.png">
+      <LogicalName>issues-error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-error-16%402x.png">
+      <LogicalName>issues-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-ok-16.png">
+      <LogicalName>issues-ok-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-ok-16%402x.png">
+      <LogicalName>issues-ok-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-suggestion-16.png">
+      <LogicalName>issues-suggestion-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-suggestion-16%402x.png">
+      <LogicalName>issues-suggestion-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-warning-16.png">
+      <LogicalName>issues-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\issues-warning-16%402x.png">
+      <LogicalName>issues-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

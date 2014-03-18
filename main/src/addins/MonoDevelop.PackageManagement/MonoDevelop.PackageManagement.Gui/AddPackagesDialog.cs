@@ -30,17 +30,20 @@ using System.ComponentModel;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using Mono.Unix;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
 using Xwt.Formats;
+using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 
 namespace MonoDevelop.PackageManagement
 {
 	public partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
+		ManagePackagesViewModel parentViewModel;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
 		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
@@ -57,20 +60,23 @@ namespace MonoDevelop.PackageManagement
 		int packagesCheckedCount;
 		ImageLoader imageLoader = new ImageLoader ();
 
-		public AddPackagesDialog (PackagesViewModel viewModel, string initialSearch = null)
-			: this (viewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
+		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
+			: this (parentViewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public AddPackagesDialog (
-			PackagesViewModel viewModel,
+			ManagePackagesViewModel parentViewModel,
 			string initialSearch,
 			IBackgroundPackageActionRunner backgroundActionRunner)
 		{
-			this.viewModel = viewModel;
+			this.parentViewModel = parentViewModel;
+			this.viewModel = parentViewModel.AvailablePackagesViewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			Build ();
+
+			packageSearchEntry.Text = initialSearch;
 
 			InitializeListView ();
 			UpdateAddPackagesButton ();
@@ -93,7 +99,7 @@ namespace MonoDevelop.PackageManagement
 			imageLoader.Dispose ();
 
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
-			viewModel.Dispose ();
+			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
 			base.Dispose (disposing);
 		}
@@ -128,6 +134,7 @@ namespace MonoDevelop.PackageManagement
 		void ShowLoadingMessage ()
 		{
 			UpdateSpinnerLabel ();
+			noPackagesFoundFrame.Visible = false;
 			packagesListView.Visible = false;
 			loadingSpinnerFrame.Visible = true;
 		}
@@ -136,6 +143,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			loadingSpinnerFrame.Visible = false;
 			packagesListView.Visible = true;
+			noPackagesFoundFrame.Visible = false;
 		}
 
 		void UpdateSpinnerLabel ()
@@ -144,6 +152,14 @@ namespace MonoDevelop.PackageManagement
 				loadingSpinnerLabel.Text = Catalog.GetString ("Loading package list...");
 			} else {
 				loadingSpinnerLabel.Text = Catalog.GetString ("Searching packages...");
+			}
+		}
+
+		void ShowNoPackagesFoundMessage ()
+		{
+			if (!String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
+				packagesListView.Visible = false;
+				noPackagesFoundFrame.Visible = true;
 			}
 		}
 
@@ -156,13 +172,16 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.ClearPackagesOnPaging = false;
 			viewModel.SearchTerms = initialSearch;
-			packageSearchEntry.Text = initialSearch;
 
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
 			viewModel.PropertyChanged += ViewModelPropertyChanged;
 
-			viewModel.ReadPackages ();
+			if (viewModel.SelectedPackageSource != null) {
+				viewModel.ReadPackages ();
+			} else {
+				HideLoadingMessage ();
+			}
 		}
 
 		void ClearSelectedPackageInformation ()
@@ -187,7 +206,7 @@ namespace MonoDevelop.PackageManagement
 
 			AddPackageSourceToComboBox (dummyPackageSourceRepresentingConfigureSettingsItem);
 
-			this.packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
+			packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
 		}
 
 		void AddPackageSourceToComboBox (PackageSource packageSource)
@@ -216,7 +235,12 @@ namespace MonoDevelop.PackageManagement
 		
 		void PackagesListViewSelectionChanged (object sender, EventArgs e)
 		{
-			ShowSelectedPackage ();
+			try {
+				ShowSelectedPackage ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error showing selected package.", ex);
+				ShowErrorMessage (ex.Message);
+			}
 		}
 
 		void ShowSelectedPackage ()
@@ -276,8 +300,18 @@ namespace MonoDevelop.PackageManagement
 
 		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
+			try {
+				ShowPackages ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error showing packages.", ex);
+				ShowErrorMessage (ex.Message);
+			}
+		}
+
+		void ShowPackages ()
+		{
 			if (viewModel.HasError) {
-				ShowErrorMessage ();
+				ShowErrorMessage (viewModel.ErrorMessage);
 			} else {
 				ClearErrorMessage ();
 			}
@@ -285,12 +319,7 @@ namespace MonoDevelop.PackageManagement
 			if (viewModel.IsLoadingNextPage) {
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
-				packageStore.Clear ();
-				packagesCheckedCount = 0;
-				ResetPackagesListViewScroll ();
-				UpdatePackageListViewSelectionColor ();
-				ShowLoadingMessage ();
-				ShrinkImageCache ();
+				ClearPackages ();
 			} else {
 				HideLoadingMessage ();
 			}
@@ -302,14 +331,24 @@ namespace MonoDevelop.PackageManagement
 			UpdateAddPackagesButton ();
 		}
 
+		void ClearPackages ()
+		{
+			packageStore.Clear ();
+			packagesCheckedCount = 0;
+			ResetPackagesListViewScroll ();
+			UpdatePackageListViewSelectionColor ();
+			ShowLoadingMessage ();
+			ShrinkImageCache ();
+		}
+
 		void ResetPackagesListViewScroll ()
 		{
 			packagesListView.VerticalScrollControl.Value = 0;
 		}
 
-		void ShowErrorMessage ()
+		void ShowErrorMessage (string message)
 		{
-			errorMessageLabel.Text = viewModel.ErrorMessage;
+			errorMessageLabel.Text = message;
 			errorMessageHBox.Visible = true;
 		}
 
@@ -336,6 +375,10 @@ namespace MonoDevelop.PackageManagement
 
 			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
 				packagesListView.SelectRow (0);
+			}
+
+			if (!viewModel.IsReadingPackages && (packageStore.RowCount == 0)) {
+				ShowNoPackagesFoundMessage ();
 			}
 		}
 
@@ -400,8 +443,13 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackagesButtonClicked (object sender, EventArgs e)
 		{
-			List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
-			InstallPackages (packageActions);
+			try {
+				List<IPackageAction> packageActions = CreateInstallPackageActionsForSelectedPackages ();
+				InstallPackages (packageActions);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Adding packages failed.", ex);
+				ShowErrorMessage (ex.Message);
+			}
 		}
 
 		void InstallPackages (List<IPackageAction> packageActions)
@@ -467,6 +515,8 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSearchEntryChanged (object sender, EventArgs e)
 		{
+			ClearPackages ();
+			UpdateAddPackagesButton ();
 			SearchAfterDelay ();
 		}
 
@@ -503,9 +553,14 @@ namespace MonoDevelop.PackageManagement
 
 		void InstallPackage (PackageViewModel packageViewModel)
 		{
-			if (packageViewModel != null) {
-				List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
-				InstallPackages (packageActions);
+			try {
+				if (packageViewModel != null) {
+					List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
+					InstallPackages (packageActions);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Installing package failed.", ex);
+				ShowErrorMessage (ex.Message);
 			}
 		}
 

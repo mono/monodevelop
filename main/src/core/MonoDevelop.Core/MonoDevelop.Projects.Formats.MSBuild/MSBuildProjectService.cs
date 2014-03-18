@@ -117,6 +117,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 
+			// If it is a known unsupported project, load it as UnknownProject
+			var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (typeGuid != null ? new [] { typeGuid } : new string[0], fileName);
+			if (projectInfo != null && projectInfo.LoadFiles) {
+				if (typeGuid == null)
+					typeGuid = projectInfo.Guid;
+				var h = new MSBuildProjectHandler (typeGuid, "", itemGuid);
+				h.SetUnsupportedType (projectInfo);
+				return h.Load (monitor, fileName, expectedFormat, "", null);
+			}
+
 			return null;
 		}
 		
@@ -239,22 +249,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		internal static ItemTypeNode FindHandlerForFile (FilePath file)
+		internal static bool CanReadFile (FilePath file)
 		{
 			foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (file, null)) {
-					return node;
+					return true;
 				}
 			}
 			if (IsProjectSubtypeFile (file)) {
 				string typeGuids = LoadProjectTypeGuids (file);
 				foreach (ItemTypeNode node in GetItemTypeNodes ()) {
 					if (node.CanHandleFile (file, typeGuids)) {
-						return node;
+						return true;
 					}
 				}
 			}
-			return null;
+			return GetUnknownProjectTypeInfo (new string[0], file) != null;
 		}
 		
 		internal static string GetExtensionForItem (SolutionEntityItem item)
@@ -629,10 +639,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return globalGroup.GetPropertyValue ("ProjectTypeGuids");
 		}
 
-		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids)
+		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids, string fileName = null)
 		{
+			var ext = fileName != null ? Path.GetExtension (fileName).TrimStart ('.') : null;
 			var nodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes")
-				.Where (p => guids.Any (p.MatchesGuid)).ToList ();
+				.Where (p => guids.Any (p.MatchesGuid) || (ext != null && p.Extension == ext)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
 		}
 

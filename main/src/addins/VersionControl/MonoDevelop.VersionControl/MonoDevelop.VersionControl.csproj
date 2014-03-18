@@ -152,8 +152,11 @@
     <EmbeddedResource Include="icons\light\ignored-overlay-16%402x.png">
       <LogicalName>ignored-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\repository.png">
-      <LogicalName>repository.png</LogicalName>
+    <EmbeddedResource Include="icons\light\repository-16.png">
+      <LogicalName>repository-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\repository-16%402x.png">
+      <LogicalName>repository-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\versioned-overlay-16.png">
       <LogicalName>versioned-overlay-light-16.png</LogicalName>
@@ -185,14 +188,20 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\version-control-16.png">
-      <LogicalName>version-control-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\version-control-16.png">
+      <LogicalName>version-control-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\version-control-16%402x.png">
+      <LogicalName>version-control-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\menu_log.png">
       <LogicalName>menu_log.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_diff.png">
-      <LogicalName>menu_diff.png</LogicalName>
+    <EmbeddedResource Include="icons\light\diff-16.png">
+      <LogicalName>diff-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\diff-16%402x.png">
+      <LogicalName>diff-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pull-16.png">
       <LogicalName>pull-light-16.png</LogicalName>
@@ -221,8 +230,11 @@
     <EmbeddedResource Include="icons\light\commit-16%402x.png">
       <LogicalName>commit-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_remote_status.png">
-      <LogicalName>menu_remote_status.png</LogicalName>
+    <EmbeddedResource Include="icons\light\remote-status-16.png">
+      <LogicalName>remote-status-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\remote-status-16%402x.png">
+      <LogicalName>remote-status-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\vcs-added-16.png">
       <LogicalName>vcs-added-light-16.png</LogicalName>
@@ -259,6 +271,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\revert-16%402x.png">
       <LogicalName>revert-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\branch-16.png">
+      <LogicalName>branch-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\branch-16%402x.png">
+      <LogicalName>branch-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tag-16.png">
+      <LogicalName>tag-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\tag-16%402x.png">
+      <LogicalName>tag-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +370,7 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlGeneralOptionsPanel.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

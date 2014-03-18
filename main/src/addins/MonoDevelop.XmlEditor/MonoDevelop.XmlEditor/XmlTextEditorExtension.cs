@@ -54,15 +54,11 @@ namespace MonoDevelop.XmlEditor
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		string defaultNamespacePrefix;
 		InferredXmlCompletionProvider inferredCompletionData;
-		bool inferenceQueued = false;
-		
-//		bool showSchemaAnnotation;
-		
+		bool inferenceQueued;
+
 		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
-			if (doc == null)
-				return false;
-			return IsFileNameHandled (doc.Name);
+			return IsFileNameHandled (doc.Name) && base.ExtendsEditor (doc, editor);
 		}
 		
 		public override void Initialize ()
@@ -450,8 +446,6 @@ namespace MonoDevelop.XmlEditor
 			foreach (var m in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				if (m == TextXmlMimeType || m == ApplicationXmlMimeType)
 					return true;
-				if (m == MonoDevelop.XmlEditor.MSBuild.MSBuildTextEditorExtension.MSBuildMimeType)
-					return false;
 			}
 			return false;
 		}

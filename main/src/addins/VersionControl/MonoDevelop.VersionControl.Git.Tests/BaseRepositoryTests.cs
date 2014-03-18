@@ -139,6 +139,67 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.IsTrue (Directory.Exists (RootCheckout + DotDir));
 		}
 
+		// In main directory, ".git".
+		protected virtual int RepoItemsCount {
+			get { return 0; }
+		}
+
+		// All contents of ".git".
+		protected virtual int RepoItemsCountRecursive {
+			get { return 0; }
+		}
+
+		// Subversion does an initial query.
+		protected virtual VersionStatus InitialValue {
+			get { return VersionStatus.Versioned; }
+		}
+
+		protected int QueryTimer {
+			get { return 1000; }
+		}
+
+		[Test]
+		// Tests Repository.GetVersionInfo with query thread.
+		public void QueryThreadWorks ()
+		{
+			// Cache is initially empty.
+			AddFile ("testfile", null, true, false);
+
+			// Query two queries.
+			VersionInfo vi = Repo.GetVersionInfo (RootCheckout + "testfile");
+			VersionInfo[] vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+
+			// No cache, query.
+			Assert.AreEqual (InitialValue, vi.Status);
+			Assert.AreEqual (0, vis.Length);
+			System.Threading.Thread.Sleep (QueryTimer);
+
+			// Cached.
+			vi = Repo.GetVersionInfo (RootCheckout + "testfile");
+			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd);
+
+			AddDirectory ("testdir", true, false);
+			AddFile (Path.Combine ("testdir", "testfile2"), null, true, false);
+
+			// Old cache.
+			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			Assert.AreEqual (1 + RepoItemsCount, vis.Length);
+
+			// Query.
+			Repo.ClearCachedVersionInfo (RootCheckout);
+			Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			System.Threading.Thread.Sleep (QueryTimer);
+
+			// Cached.
+			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			Assert.AreEqual (2 + RepoItemsCount, vis.Length);
+
+			// Wait for result.
+			AddFile ("testfile3", null, true, false);
+			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, true);
+			Assert.AreEqual (4 + RepoItemsCountRecursive, vis.Length);
+		}
+
 		[Test]
 		// Tests Repository.Add.
 		public void FileIsAdded ()

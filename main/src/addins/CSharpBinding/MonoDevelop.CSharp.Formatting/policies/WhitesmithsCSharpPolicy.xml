@@ -39,8 +39,7 @@ THE SOFTWARE.
 	<IndentSwitchBody>True</IndentSwitchBody>
 	<IndentCaseBody>True</IndentCaseBody>
 	<IndentBreakStatements>True</IndentBreakStatements>
-	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
-	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
+	<AlignEmbeddedStatements>True</AlignEmbeddedStatements>
 	<SimplePropertyFormatting>AllowOneLine</SimplePropertyFormatting>
 	<AutoPropertyFormatting>AllowOneLine</AutoPropertyFormatting>
 	<NamespaceBraceStyle>NextLineShifted</NamespaceBraceStyle>
@@ -161,4 +160,5 @@ THE SOFTWARE.
 	<BlankLinesInsideRegion>1</BlankLinesInsideRegion>
 	<BlankLinesAroundRegion>1</BlankLinesAroundRegion>
 	<IndentPreprocessorDirectives>True</IndentPreprocessorDirectives>
+	<IndentBlocksInsideExpressions>True</IndentBlocksInsideExpressions>
 </CSharpFormattingPolicy>

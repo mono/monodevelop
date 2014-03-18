@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("?/?");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("1/1");
 			this.hbox1.Add (this.label3);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w6.PackType = ((global::Gtk.PackType)(1));
@@ -144,6 +144,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonCommit.Name = "buttonCommit";
 			this.buttonCommit.UseUnderline = true;
 			this.buttonCommit.Label = global::Mono.Unix.Catalog.GetString ("C_ommit");
+			this.AddActionWidget (this.buttonCommit, -5);
 			w12.Add (this.buttonCommit);
 			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCommit]));
 			w14.Position = 1;
@@ -157,7 +158,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label2.MnemonicWidget = this.textview;
 			this.label3.MnemonicWidget = this.textview;
 			this.Hide ();
-			this.buttonCommit.Clicked += new global::System.EventHandler (this.OnButtonCommitClicked);
 		}
 	}
 }

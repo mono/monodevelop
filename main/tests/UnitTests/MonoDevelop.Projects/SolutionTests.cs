@@ -27,11 +27,13 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
@@ -677,6 +679,30 @@ namespace MonoDevelop.Projects
 		string GetConfigFolderName (DotNetProject lib, string conf)
 		{
 			return Path.GetFileName (Path.GetDirectoryName (lib.GetOutputFileName ((SolutionConfigurationSelector)conf)));
+		}
+
+		[Test]
+		public void LoadKnownUnsupportedProjects ()
+		{
+			string solFile = Util.GetSampleProject ("unsupported-project", "console-with-libs.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var app = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
+			var lib1 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "library1.csproj");
+			var lib2 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "library2.csproj");
+
+			Assert.IsInstanceOf<DotNetAssemblyProject> (app);
+			Assert.IsInstanceOf<UnknownSolutionItem> (lib1);
+			Assert.IsInstanceOf<UnknownProject> (lib2);
+
+			var p = (UnknownProject)lib2;
+
+			Assert.AreEqual (2, p.Files.Count);
+
+			p.AddFile (p.BaseDirectory.Combine ("Test.cs"), BuildAction.Compile);
+			sol.Save (new NullProgressMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 	}
 }
