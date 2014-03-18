@@ -77,8 +77,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 		public static readonly Gdk.Color DockSeparatorColor = ThinSplitterColor;
 
-		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (0xE5, 0xEC, 0xEE);
-		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground, 0.92);
+		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (225, 228, 232);
+		public static readonly Gdk.Color InactiveBrowserPadBackground = new Gdk.Color (240, 240, 240);
 
 		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
 		public static readonly Cairo.Color DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
