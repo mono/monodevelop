@@ -46,10 +46,15 @@ namespace MonoDevelop.WebReferences.Dialogs
 			dictTypes = new List<Type> (DefaultDictionaryTypes);
 			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
 
-			foreach (var access in AccessGenerationTypes)
-				listAccess.AppendText (access);
+			foreach (var type in AccessGenerationTypes)
+				listAccess.AppendText (type);
 
 			listAccess.Active = options.GenerateInternalTypes ? 1 : 0;
+
+			foreach (var type in AsyncGenerationTypes)
+				listAsync.AppendText (type);
+
+			listAsync.Active = AsyncOptionToIndex;
 		}
 		
 		public ClientOptions Options {
@@ -81,6 +86,19 @@ namespace MonoDevelop.WebReferences.Dialogs
 			"Public",
 			"Internal"
 		};
+
+		static readonly List<string> AsyncGenerationTypes = new List<string> {
+			"No",
+			"Async",
+			"Task-based"
+		};
+
+		int AsyncOptionToIndex {
+			get {
+				return Options.GenerateTaskBasedAsynchronousMethod ? 2 :
+						Options.GenerateAsynchronousMethods ? 1 : 0;
+			}
+		}
 		
 		public bool Modified {
 			get;
@@ -175,6 +193,13 @@ namespace MonoDevelop.WebReferences.Dialogs
 
 			if (listAccess.Active != (Options.GenerateInternalTypes ? 1 : 0)) {
 				Options.GenerateInternalTypes = !Options.GenerateInternalTypes;
+				Modified = true;
+			}
+
+			int index = AsyncOptionToIndex;
+			if (listAsync.Active != index) {
+				Options.GenerateAsynchronousMethods = listAsync.Active == 1;
+				Options.GenerateTaskBasedAsynchronousMethod = listAsync.Active == 2;
 				Modified = true;
 			}
 		}

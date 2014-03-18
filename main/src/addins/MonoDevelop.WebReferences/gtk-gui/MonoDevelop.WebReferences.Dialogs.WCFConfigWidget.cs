@@ -10,7 +10,9 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label3;
+		private global::Gtk.Label label4;
 		private global::Gtk.ComboBox listAccess;
+		private global::Gtk.ComboBox listAsync;
 		private global::Gtk.ComboBox listCollection;
 
 		protected virtual void Build ()
@@ -62,6 +64,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			// Container child wcfOptions.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Access level:");
 			this.wcfOptions.Add (this.label3);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.label3]));
@@ -70,28 +73,50 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
+			this.label4 = new global::Gtk.Label ();
+			this.label4.Name = "label4";
+			this.label4.Xalign = 0F;
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Generate Asynchronous:");
+			this.wcfOptions.Add (this.label4);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.label4]));
+			w5.TopAttach = ((uint)(3));
+			w5.BottomAttach = ((uint)(4));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child wcfOptions.Gtk.Table+TableChild
 			this.listAccess = global::Gtk.ComboBox.NewText ();
 			this.listAccess.Name = "listAccess";
 			this.wcfOptions.Add (this.listAccess);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAccess]));
-			w5.TopAttach = ((uint)(2));
-			w5.BottomAttach = ((uint)(3));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(7));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child wcfOptions.Gtk.Table+TableChild
-			this.listCollection = global::Gtk.ComboBox.NewText ();
-			this.listCollection.Name = "listCollection";
-			this.wcfOptions.Add (this.listCollection);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listCollection]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAccess]));
+			w6.TopAttach = ((uint)(2));
+			w6.BottomAttach = ((uint)(3));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.XOptions = ((global::Gtk.AttachOptions)(7));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child wcfOptions.Gtk.Table+TableChild
+			this.listAsync = global::Gtk.ComboBox.NewText ();
+			this.listAsync.Name = "listAsync";
+			this.wcfOptions.Add (this.listAsync);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAsync]));
+			w7.TopAttach = ((uint)(3));
+			w7.BottomAttach = ((uint)(4));
+			w7.LeftAttach = ((uint)(1));
+			w7.RightAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child wcfOptions.Gtk.Table+TableChild
+			this.listCollection = global::Gtk.ComboBox.NewText ();
+			this.listCollection.Name = "listCollection";
+			this.wcfOptions.Add (this.listCollection);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listCollection]));
+			w8.LeftAttach = ((uint)(1));
+			w8.RightAttach = ((uint)(2));
+			w8.XOptions = ((global::Gtk.AttachOptions)(7));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.dialog1_VBox.Add (this.wcfOptions);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.wcfOptions]));
-			w7.Position = 0;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.wcfOptions]));
+			w9.Position = 0;
 			this.Add (this.dialog1_VBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

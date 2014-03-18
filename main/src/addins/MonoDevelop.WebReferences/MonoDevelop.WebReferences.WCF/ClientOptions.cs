@@ -40,10 +40,14 @@ namespace MonoDevelop.WebReferences.WCF
 			Serializer = "Auto";
 			CollectionMappings = new List<CollectionMapping> ();
 			ReferencedAssemblies = new List<ReferencedAssembly> ();
+			GenerateAsynchronousMethods = true;
+			GenerateTaskBasedAsynchronousMethod = false;
 		}
 		
 		[XmlElement]
 	    public bool GenerateAsynchronousMethods { get; set; }
+		[XmlElement]
+		public bool GenerateTaskBasedAsynchronousMethod  { get; set; }
 		[XmlElement]
 	    public bool EnableDataBinding { get; set; }
 //	    string[] ExcludedTypes;
