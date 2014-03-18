@@ -26,14 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Components;
 
@@ -51,7 +47,7 @@ namespace MonoDevelop.Platform
         }
 		
 		void Populate ()
-		{			
+		{
 			var availableEncodings = new Dictionary<string,TextEncoding> ();
 			foreach (var encoding in TextEncoding.SupportedEncodings)
 				availableEncodings [encoding.Id] = encoding;
@@ -89,8 +85,6 @@ namespace MonoDevelop.Platform
 			SetStockImage (removeButton, Gtk.Stock.GoBack);
 			SetStockImage (upButton, Gtk.Stock.GoUp);
 			SetStockImage (downButton, Gtk.Stock.GoDown);
-
-			Icon = WinFormsRoot.MonoDevelopIcon;
 		}
 
 		void SetStockImage (Button b, string stockId)

@@ -18,14 +18,10 @@
 //  REMAINS UNCHANGED.
 
 using System;
-using System.IO;
 using System.Text;
-using System.Data;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 using System.ComponentModel;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using CustomControls.OS;
@@ -43,6 +39,7 @@ namespace CustomControls.Controls
         public event FileNameChangedHandler FileNameChanged;
         public event FileNameChangedHandler FolderNameChanged;
         public event EventHandler           ClosingDialog;
+        public new event EventHandler       HandleCreated; 
         #endregion
 
         #region Constants Declaration
@@ -59,7 +56,18 @@ namespace CustomControls.Controls
         private FolderViewMode      mDefaultViewMode= FolderViewMode.Default;
 		private FileDialog			fileDialog;
         private DummyForm           form;
+        private IntPtr              handle;
         #endregion
+
+		public new IntPtr Handle {
+			get { return handle; }
+			protected set {
+				handle = value;
+				var evt = HandleCreated;
+				if (evt != null)
+					evt (this, EventArgs.Empty);
+			}
+		}
 
         #region Constructors
 		public OpenFileDialogEx () : this (new OpenFileDialog ())
@@ -170,8 +178,7 @@ namespace CustomControls.Controls
             }
             finally
             {
-                //form.Dispose();
-                //form.Close();
+                form.Dispose();
             }
         }
         #endregion
@@ -438,6 +445,8 @@ namespace CustomControls.Controls
             #region Overrides
             protected override void WndProc(ref Message m)
             {
+				//if (MonoDevelop.Platform.GdkWin32.Win32DialogHook (m))
+				//	return;
                 switch(m.Msg)
                 {
                     case (int) Msg.WM_SHOWWINDOW:
@@ -635,7 +644,8 @@ namespace CustomControls.Controls
                 {
                     mWatchForActivate   = false;
                     mOpenDialogHandle   = m.LParam;
-                    mNativeDialog       = new OpenDialogNative(m.LParam, mFileDialogEx);
+					mNativeDialog       = new OpenDialogNative(mOpenDialogHandle, mFileDialogEx);
+					mFileDialogEx.Handle = mOpenDialogHandle;
                 }
                 base.WndProc(ref m);
             }

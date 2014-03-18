@@ -1,70 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// 
+// AddFileDialogHandler.cs
+//  
+// Authors:
+//   Carlos Alberto Cortez <calberto.cortez@gmail.com>
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Marius Ungureanu <marius.ungureanu@xamarin.com>
+// 
+// Copyright (c) 2011 Novell, Inc. (http://wwww.novell.com)
+// Copyright (C) 2014 Xamarin Inc. (http://www.xamarin.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
-using System.Windows.Forms;
-using CustomControls.Controls;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Platform
 {
-    class AddFileDialogHandler: IAddFileDialogHandler
-    {
-        volatile Form rootForm;
+	class AddFileDialogHandler: IAddFileDialogHandler
+	{
+		public bool Run (AddFileDialogData data)
+		{
+			var parent = data.TransientFor ?? MessageService.RootWindow;
+			var dialog = new CommonOpenFileDialog ();
+			SelectFileDialogHandler.SetCommonFormProperties (data, dialog);
 
-        public bool Run (AddFileDialogData data)
-        {
-            var parentWindow = data.TransientFor ?? MessageService.RootWindow;
-            parentWindow.FocusInEvent += OnParentFocusIn;
+			var buildActionCombo = new CommonFileDialogComboBox ();
+			var group = new CommonFileDialogGroupBox ("overridebuildaction", "Override build action:"); 
+			buildActionCombo.Items.Add (new CommonFileDialogComboBoxItem (GettextCatalog.GetString ("Default")));
+			foreach (var ba in data.BuildActions) {
+				if (ba == "--")
+					continue;
 
-            bool result = SelectFileDialogHandler.RunWinUIMethod (RunDialog, data);
+				buildActionCombo.Items.Add (new CommonFileDialogComboBoxItem (ba));
+			}
 
-            parentWindow.FocusInEvent -= OnParentFocusIn;
-            parentWindow.Present ();
+			buildActionCombo.SelectedIndex = 0;
+			group.Items.Add (buildActionCombo);
+			dialog.Controls.Add (group);
 
-            return result;
-        }
+			if (!GdkWin32.RunModalWin32Dialog (dialog, parent))
+				return false;
 
-        void OnParentFocusIn (object o, EventArgs args)
-        {
-            if (rootForm != null)
-                rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
-        }
+			SelectFileDialogHandler.GetCommonFormProperties (data, dialog);
+			var idx = buildActionCombo.SelectedIndex;
+			if (idx > 0)
+				data.OverrideAction = data.BuildActions[idx];
 
-        bool RunDialog (AddFileDialogData data)
-        {
-			Application.EnableVisualStyles ();
-			
-            CustomAddFilesDialog adlg = new CustomAddFilesDialog();
-            adlg.StartLocation = AddonWindowLocation.Bottom;
-            adlg.BuildActions = data.BuildActions;
-            bool result = false;
-			
-			SelectFileDialogHandler.SetCommonFormProperties (data, adlg.FileDialog);
-			
-            try
-            {
-                rootForm = new WinFormsRoot ();
-                if (adlg.ShowDialog (rootForm) == DialogResult.Cancel)
-                    result = false;
-                else
-                {
-					FilePath[] paths = new FilePath [adlg.FileDialog.FileNames.Length];
-					for (int n=0; n<adlg.FileDialog.FileNames.Length; n++)
-						paths [n] = adlg.FileDialog.FileNames [n];
-                    data.SelectedFiles = paths;
-                    data.OverrideAction = adlg.OverrideAction;
-                    result = true;
-                }
-            }
-            finally
-            {
-                adlg.Dispose();
-            }
-			
-            return result;
-        }
-    }
+			return true;
+		}
+	}
 }

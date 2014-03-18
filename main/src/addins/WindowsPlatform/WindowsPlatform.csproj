@@ -77,12 +77,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dialogs\CustomAddFilesDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Dialogs\CustomAddFilesDialog.Designer.cs">
-      <DependentUpon>CustomAddFilesDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\EncodingSelectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,13 +91,7 @@
     </Compile>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />
     <Compile Include="Dialogs\SelectFileDialogHandler.cs" />
-    <Compile Include="Dialogs\WinFormsRoot.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
-    <Compile Include="Dialogs\CustomOpenFileDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Dialogs\EncodingComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -122,10 +110,6 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dialogs\CustomAddFilesDialog.resx">
-      <DependentUpon>CustomAddFilesDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\EncodingSelectionForm.resx">
       <DependentUpon>EncodingSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
