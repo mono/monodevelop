@@ -96,13 +96,21 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			return ProjectHasPackages (dataObject);
+		}
+
+		bool ProjectHasPackages (object dataObject)
+		{
+			var project = (DotNetProject) dataObject;
+			return project.HasPackages ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (DotNetProject)dataObject;
-			treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
+			if (ProjectHasPackages (project)) {
+				treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
+			}
 		}
 	}
 }
