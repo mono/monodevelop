@@ -42,6 +42,8 @@ namespace MonoDevelop.Components.DockNotebook
 		uint anim;
 		int rx, ry, rw, rh;
 
+		int controlKeyMask;
+
 		static PlaceholderWindow ()
 		{
 			IdeApp.Workbench.ActiveDocumentChanged += delegate {
@@ -73,6 +75,29 @@ namespace MonoDevelop.Components.DockNotebook
 			redgc.RgbFgColor = frame.Content.Style.Background (StateType.Selected);
 		}
 
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Escape)
+				Destroy ();
+			if (evnt.Key == Gdk.Key.Control_L)
+				controlKeyMask |= 1;
+			if (evnt.Key == Gdk.Key.Control_R)
+				controlKeyMask |= 2;
+			MovePosition (curX, curY);
+
+			return base.OnKeyPressEvent (evnt);
+		}
+		protected override bool OnKeyReleaseEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Control_L)
+				controlKeyMask &= ~1;
+			if (evnt.Key == Gdk.Key.Control_R)
+				controlKeyMask &= ~2;
+			MovePosition (curX, curY);
+
+			return base.OnKeyReleaseEvent (evnt);
+		}
+
 		internal static List<DockNotebook> newNotebooks = new List<DockNotebook> ();
 
 		static IEnumerable<DockNotebook> AllNotebooks ()
@@ -86,11 +111,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		bool CanPlaceInHoverNotebook ()
 		{
-			return hoverNotebook != null && (hoverNotebook.TabCount != 1 || hoverNotebook.TabCount == 1 && hoverNotebook.Tabs [0] != frame);
+			return controlKeyMask == 0 && hoverNotebook != null && (hoverNotebook.TabCount != 1 || hoverNotebook.TabCount == 1 && hoverNotebook.Tabs [0] != frame);
 		}
 
+		int curX, curY;
 		public void MovePosition (int x, int y)
 		{
+			this.curX = x;
+			this.curY = y;
 			hoverNotebook = null;
 			
 			// TODO: Handle z-ordering of floating windows.
