@@ -123,15 +123,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			DecompilerSettings settings = new DecompilerSettings () {
-				AnonymousMethods = true,
-				AutomaticEvents  = true,
-				AutomaticProperties = true,
-				ForEachStatement = true,
-				LockStatement = true,
-				ShowXmlDocumentation = true,
-				CSharpFormattingOptions = codePolicy.CreateOptions ()
-			};
+			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
 			return Decompile (data, module, currentType, setData, settings);
 		}
 
