@@ -743,7 +743,9 @@
               <widget class="Gtk.ComboBox" id="listAccess">
                 <property name="MemberName" />
                 <property name="IsTextCombo">True</property>
-                <property name="Items" translatable="yes" />
+                <property name="Items" translatable="yes">Public
+Internal</property>
+                <property name="Active">0</property>
               </widget>
               <packing>
                 <property name="TopAttach">2</property>
@@ -765,7 +767,9 @@
               <widget class="Gtk.ComboBox" id="listAsync">
                 <property name="MemberName" />
                 <property name="IsTextCombo">True</property>
-                <property name="Items" translatable="yes" />
+                <property name="Items" translatable="yes">No
+Async</property>
+                <property name="Active">0</property>
               </widget>
               <packing>
                 <property name="TopAttach">3</property>

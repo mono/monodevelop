@@ -85,7 +85,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
 			this.listAccess = global::Gtk.ComboBox.NewText ();
+			this.listAccess.AppendText (global::Mono.Unix.Catalog.GetString ("Public"));
+			this.listAccess.AppendText (global::Mono.Unix.Catalog.GetString ("Internal"));
 			this.listAccess.Name = "listAccess";
+			this.listAccess.Active = 0;
 			this.wcfOptions.Add (this.listAccess);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAccess]));
 			w6.TopAttach = ((uint)(2));
@@ -96,7 +99,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child wcfOptions.Gtk.Table+TableChild
 			this.listAsync = global::Gtk.ComboBox.NewText ();
+			this.listAsync.AppendText (global::Mono.Unix.Catalog.GetString ("No"));
+			this.listAsync.AppendText (global::Mono.Unix.Catalog.GetString ("Async"));
 			this.listAsync.Name = "listAsync";
+			this.listAsync.Active = 0;
 			this.wcfOptions.Add (this.listAsync);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.wcfOptions [this.listAsync]));
 			w7.TopAttach = ((uint)(3));

@@ -48,6 +48,7 @@ namespace MonoDevelop.WebReferences.WCF
 	    public bool GenerateAsynchronousMethods { get; set; }
 		[XmlElement]
 		public bool GenerateTaskBasedAsynchronousMethod  { get; set; }
+		public bool GenerateEventBasedAsynchronousMethods { get; set; }
 		[XmlElement]
 	    public bool EnableDataBinding { get; set; }
 //	    string[] ExcludedTypes;
