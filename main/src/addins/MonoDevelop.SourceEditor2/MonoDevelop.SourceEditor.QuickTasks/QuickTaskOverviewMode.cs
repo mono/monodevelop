@@ -139,8 +139,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
 			
-			vadjustment.ValueChanged -= RedrawOnUpdate;
-			vadjustment.Changed -= RedrawOnUpdate;
+			// vadjustment.ValueChanged -= RedrawOnUpdate;
+			// vadjustment.Changed -= RedrawOnUpdate;
 		}
 		
 		void RedrawOnUpdate (object sender, EventArgs e)
@@ -815,7 +815,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 				DrawCaret (cr);
 				
-				DrawBar (cr);
+				//DrawBar (cr);
 				DrawLeftBorder (cr);
 			}
 			
