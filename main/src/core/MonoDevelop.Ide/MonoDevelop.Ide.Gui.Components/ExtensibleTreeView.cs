@@ -2348,7 +2348,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 					if ((flags & Gtk.CellRendererState.Selected) != 0) {
 						var icon = Pushed ? popupIconDown : popupIcon;
-						var dy = (cell_area.Height - (int)icon.Height) / 2;
+						var dy = (cell_area.Height - (int)icon.Height) / 2 - 1;
 						var y = cell_area.Y + dy;
 						var x = cell_area.X + cell_area.Width - (int)icon.Width - dy;
 
