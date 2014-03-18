@@ -491,7 +491,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				btnOK.Sensitive = isWebService;
 				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
 				tbxReferenceName.Sensitive = isWebService;
-				comboModel.Sensitive = true;
+				comboModel.Sensitive = !(project is PortableDotNetProject);
 				break;
 
 			case DialogState.CreateConfig:
