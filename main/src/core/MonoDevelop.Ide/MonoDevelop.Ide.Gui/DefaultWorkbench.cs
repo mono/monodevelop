@@ -404,9 +404,10 @@ namespace MonoDevelop.Ide.Gui
 				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
 			}			
 
-			var tab = tabControl.InsertTab (-1);
+			var addToControl = activeTabControl ?? tabControl;
+			var tab = addToControl.InsertTab (-1);
 
-			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, tabControl, tab);
+			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
@@ -417,7 +418,6 @@ namespace MonoDevelop.Ide.Gui
 
 			if (content.Project != null)
 				content.Project.NameChanged += HandleProjectNameChanged;
-			
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
 
@@ -748,7 +748,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ignorePageSwitch)
 				return;
-			activeTabControl = sender as SdiDragNotebook ?? activeTabControl ?? tabControl;
+			if (sender != null)
+				activeTabControl = sender as SdiDragNotebook ?? activeTabControl ?? tabControl;
 
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
