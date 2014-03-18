@@ -70,7 +70,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			string ISearchDataSource.GetMarkup (int item, bool isSelected)
 			{
-				return GettextCatalog.GetString ("Search in solution");
+				return GettextCatalog.GetString ("Search in Solution");
 			}
 
 			string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
