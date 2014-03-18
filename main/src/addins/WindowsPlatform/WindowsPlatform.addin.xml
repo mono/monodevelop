@@ -15,12 +15,12 @@
 	<Extension path = "/MonoDevelop/Core/PasswordProvider">
 		<Class class = "MonoDevelop.Platform.Windows.WindowsSecureStoragePasswordProvider" />
 	</Extension>
-<!--
-  <Extension path = "/MonoDevelop/Components/DialogHandlers">
-    <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
-    <Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
-    <Class class = "MonoDevelop.Platform.OpenFileDialogHandler"/>
-  </Extension>
--->
 
+	<Extension path = "/MonoDevelop/Components/DialogHandlers">
+		<Condition id="Platform" value="windows" minVersion="6.0">
+			<Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
+			<Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
+			<Class class = "MonoDevelop.Platform.OpenFileDialogHandler"/>
+		</Condition>
+	</Extension>
 </ExtensionModel>
