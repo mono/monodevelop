@@ -148,9 +148,9 @@ namespace MonoDevelop.Platform
 		{
 			var combo = new CommonFileDialogComboBox ();
 	
-			var encodings = SeletedEncodings.ConversionEncodings;
+			var encodings = SelectedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
-				encodings = SeletedEncodings.DefaultEncodings;
+				encodings = SelectedEncodings.DefaultEncodings;
 
 			if (showAutoDetected) {
 				combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Auto Detected")));
