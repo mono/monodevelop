@@ -90,10 +90,18 @@ namespace MonoDevelop.PackageManagement
 			foreach (ProjectTemplatePackageReference packageReference in projectPackageReferences.PackageReferences) {
 				InstallPackageAction action = project.CreateInstallPackageAction ();
 				action.PackageId = packageReference.Id;
-				action.PackageVersion = new SemanticVersion (packageReference.Version);
+				action.PackageVersion = GetPackageVersion (packageReference);
 
 				yield return action;
 			}
+		}
+
+		SemanticVersion GetPackageVersion (ProjectTemplatePackageReference packageReference)
+		{
+			if (!string.IsNullOrEmpty (packageReference.Version)) {
+				return new SemanticVersion (packageReference.Version);
+			}
+			return null;
 		}
 
 		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
