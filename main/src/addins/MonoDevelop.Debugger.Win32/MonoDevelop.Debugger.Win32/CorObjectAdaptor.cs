@@ -1028,7 +1028,7 @@ namespace MonoDevelop.Debugger.Win32
 
 			while (type != null) {
 				var tt = type.GetTypeInfo (cctx.Session);
-				FieldInfo field = FindByName (tt.GetFields (), f => f.Name, name, ctx.CaseSensitive);
+				FieldInfo field = FindByName (tt.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), f => f.Name, name, ctx.CaseSensitive);
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldReference (ctx, co as CorValRef, type, field);
 
@@ -1037,7 +1037,7 @@ namespace MonoDevelop.Debugger.Win32
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
 					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (tt) ? "" : "k__BackingField");
-					if ((field = FindByName (tt.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
+					if ((field = FindByName (tt.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
 						return new FieldReference (ctx, co as CorValRef, type, field, prop.Name, ObjectValueFlags.Property);
 
 					// Backing field not available, so do things the old fashioned way.
