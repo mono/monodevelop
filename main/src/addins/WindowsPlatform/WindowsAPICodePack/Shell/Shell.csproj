@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.WindowsAPICodePack.Shell</RootNamespace>
+    <AssemblyName>Microsoft.WindowsAPICodePack.Shell</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Microsoft.WindowsAPICodePack.Shell.XML</DocumentationFile>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysisDebug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\CodeAnalysisDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <DocumentationFile>bin\Debug\Microsoft.WindowsAPICodePack.Shell.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\Microsoft.WindowsAPICodePack.Shell.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Microsoft.WindowsAPICodePack.Shell.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CodeAnalysisDebug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\CodeAnalysisDebug\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <DocumentationFile>bin\Debug\Microsoft.WindowsAPICodePack.Shell.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisLogFile>bin\CodeAnalysisDebug\Microsoft.WindowsAPICodePack.Shell.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CustomMarshalers" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\EnumUnknown.cs" />
+    <Compile Include="Common\EventHandlerExtensionMethods.cs" />
+    <Compile Include="Common\NativePoint.cs" />
+    <Compile Include="Common\NativeRect.cs" />
+    <Compile Include="Common\ShellException.cs" />
+    <Compile Include="Common\ShellFileSystemFolder.cs" />
+    <Compile Include="Common\IconReference.cs" />
+    <Compile Include="Common\SearchCondition.cs" />
+    <Compile Include="Common\SearchConditionFactory.cs" />
+    <Compile Include="Common\ShellSearchFolder.cs" />
+    <Compile Include="Common\ShellFile.cs" />
+    <Compile Include="Common\ShellFolder.cs" />
+    <Compile Include="Common\ShellFolderItems.cs" />
+    <Compile Include="Common\ShellHelper.cs" />
+    <Compile Include="Common\ShellItemArray.cs" />
+    <Compile Include="Common\ShellObjectFactory.cs" />
+    <Compile Include="Common\ShellThumbnail.cs" />
+    <Compile Include="Common\ShellObjectCollection.cs" />
+    <Compile Include="Common\DefaultShellImageSizes.cs" />
+    <Compile Include="Common\SortColumn.cs" />
+    <Compile Include="Controls\CommandLinkWinforms.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\CommandLinkWPF.xaml.cs">
+      <DependentUpon>CommandLinkWPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DesktopWindowManager\DesktopWindowManagerNativeMethods.cs" />
+    <Compile Include="DesktopWindowManager\GlassEvents.cs" />
+    <Compile Include="DesktopWindowManager\GlassForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DesktopWindowManager\GlassWindow.cs" />
+    <Compile Include="ExplorerBrowser\CommonControlException.cs" />
+    <Compile Include="ExplorerBrowser\ExplorerBrowser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ExplorerBrowser\ExplorerBrowser.WPF.xaml.cs">
+      <DependentUpon>ExplorerBrowser.WPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ExplorerBrowser\ExplorerBrowserContentOptions.cs" />
+    <Compile Include="ExplorerBrowser\ExplorerBrowserEvents.cs" />
+    <Compile Include="ExplorerBrowser\ExplorerBrowserViewEvents.cs" />
+    <Compile Include="ExplorerBrowser\NavigationLog.cs" />
+    <Compile Include="ExplorerBrowser\ExplorerBrowserEnums.cs" />
+    <Compile Include="ExplorerBrowser\ExplorerBrowserPaneVisibility.cs" />
+    <Compile Include="ExplorerBrowser\NavigationLogEnums.cs" />
+    <Compile Include="ExplorerBrowser\NavigationLogEvents.cs" />
+    <Compile Include="ExplorerBrowser\NavigationOptions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interop\Common\IntPtrExtensions.cs" />
+    <Compile Include="Interop\Common\ShellNativeStructs.cs" />
+    <Compile Include="Interop\ShellObjectWatcher\ShellObjectWatcherNativeMethods.cs" />
+    <Compile Include="PropertySystem\PropertySystemException.cs" />
+    <Compile Include="Interop\StockIcons\StockIconsNativeMethods.cs" />
+    <Compile Include="Interop\Common\WindowUtilities.cs" />
+    <Compile Include="KnownFolders\IKnownFolder.cs" />
+    <Compile Include="Interop\Common\ShellCOMClasses.cs" />
+    <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserCOMGuids.cs">
+    </Compile>
+    <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserCOMInterfaces.cs" />
+    <Compile Include="Interop\ExplorerBrowser\ExplorerBrowserNativeMethods.cs" />
+    <Compile Include="KnownFolders\DefinitionOptions.cs" />
+    <Compile Include="KnownFolders\FolderCategory.cs" />
+    <Compile Include="KnownFolders\FolderProperties.cs" />
+    <Compile Include="KnownFolders\FoldersIdentifiers.cs" />
+    <Compile Include="KnownFolders\FolderTypes.cs" />
+    <Compile Include="KnownFolders\KnownFolderHelper.cs" />
+    <Compile Include="KnownFolders\KnownFolders.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KnownFolders\KnownFolderSettings.cs" />
+    <Compile Include="KnownFolders\RedirectionCapabilities.cs" />
+    <Compile Include="KnownFolders\RetrievalOptions.cs" />
+    <Compile Include="Common\ShellSearchConnector.cs" />
+    <Compile Include="Common\ShellEnums.cs" />
+    <Compile Include="Common\ShellLibrary.cs" />
+    <Compile Include="Common\ShellObject.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialog.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogButton.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogCheckBox.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogComboBox.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogControl.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogControlCollection.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogFilter.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogFilterCollection.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogFolderChangeEventArgs.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogGroupBox.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogLabel.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogMenu.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogProminentControl.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogRadioButtonList.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogResult.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogSeperator.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogStandardFilters.cs" />
+    <Compile Include="CommonFileDialogs\CommonFileDialogTextBox.cs" />
+    <Compile Include="CommonFileDialogs\CommonOpenFileDialog.cs" />
+    <Compile Include="CommonFileDialogs\CommonSaveFileDialog.cs" />
+    <Compile Include="CommonFileDialogs\ICommonFileDialogIndexedControls.cs" />
+    <Compile Include="Interop\KnownFolders\KnownFoldersCOMGuids.cs" />
+    <Compile Include="Interop\KnownFolders\KnownFoldersCOMInterfaces.cs" />
+    <Compile Include="Interop\KnownFolders\KnownFoldersNativeMethods.cs" />
+    <Compile Include="Interop\PropertySystem\PropertySystemCOMInterfaces.cs" />
+    <Compile Include="Interop\PropertySystem\PropertySystemNativeMethods.cs" />
+    <Compile Include="Interop\Taskbar\TabbedThumbnailNativeMethods.cs" />
+    <Compile Include="Interop\Taskbar\TaskbarCOMInterfaces.cs" />
+    <Compile Include="PropertySystem\ShellProperties.cs" />
+    <Compile Include="PropertySystem\ShellPropertyEnums.cs" />
+    <Compile Include="PropertySystem\ShellPropertyEnumType.cs" />
+    <Compile Include="KnownFolders\FileSystemKnownFolder.cs" />
+    <Compile Include="Common\ShellNonFileSystemItem.cs" />
+    <Compile Include="Common\ShellNonFileSystemFolder.cs" />
+    <Compile Include="KnownFolders\NonFileSystemKnownFolder.cs" />
+    <Compile Include="Common\ShellThumbnailEnums.cs" />
+    <Compile Include="Common\ShellSearchCollection.cs" />
+    <Compile Include="Common\ShellObjectContainer.cs" />
+    <Compile Include="Common\ShellLink.cs" />
+    <Compile Include="PropertySystem\ShellPropertyFactory.cs" />
+    <Compile Include="PropertySystem\ShellPropertyWriter.cs" />
+    <Compile Include="PropertySystem\StronglyTypedProperties.cs" />
+    <Compile Include="PropertySystem\SystemProperties.cs" />
+    <Compile Include="PropertySystem\WindowProperties.cs" />
+    <Compile Include="Resources\LocalizedMessages.Designer.cs">
+      <DependentUpon>LocalizedMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ShellObjectWatcher\ChangeNotifyEventManager.cs" />
+    <Compile Include="ShellObjectWatcher\ChangeNotifyLock.cs" />
+    <Compile Include="ShellObjectWatcher\MessageListener.cs" />
+    <Compile Include="ShellObjectWatcher\MessageListenerFilter.cs" />
+    <Compile Include="ShellObjectWatcher\ShellObjectNotificationEventArgs.cs" />
+    <Compile Include="ShellObjectWatcher\ShellObjectWatcher.cs" />
+    <Compile Include="ShellObjectWatcher\ShellObjectWatcherEnums.cs" />
+    <Compile Include="StockIcons\StockIcon.cs" />
+    <Compile Include="StockIcons\StockIconEnums.cs" />
+    <Compile Include="StockIcons\StockIcons.cs" />
+    <Compile Include="Taskbar\JumpListCustomCategoryCollection.cs" />
+    <Compile Include="Taskbar\JumpListItemCollection.cs" />
+    <Compile Include="Taskbar\JumpListLink.cs" />
+    <Compile Include="Taskbar\JumpListSeparator.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailClosedEventArgs.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailScreenCapture.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailManager.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailBitmapRequestedEventArgs.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailEventArgs.cs" />
+    <Compile Include="Taskbar\TabbedThumbnail.cs" />
+    <Compile Include="Taskbar\TabbedThumbnailProxyWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Taskbar\TaskbarEnums.cs" />
+    <Compile Include="Interop\Taskbar\TaskbarNativeMethods.cs" />
+    <Compile Include="PropertySystem\IShellProperty.cs" />
+    <Compile Include="PropertySystem\ShellPropertyCollection.cs" />
+    <Compile Include="PropertySystem\ShellPropertyDescription.cs" />
+    <Compile Include="PropertySystem\ShellPropertyDescriptionsCache.cs" />
+    <Compile Include="Interop\Dialogs\DialogsCOMClasses.cs" />
+    <Compile Include="Interop\Common\ShellCOMGuids.cs" />
+    <Compile Include="Interop\Common\ShellNativeMethods.cs" />
+    <Compile Include="Interop\Common\ShellCOMInterfaces.cs" />
+    <Compile Include="Interop\Dialogs\DialogsCOMInterfaces.cs" />
+    <Compile Include="Common\ShellSavedSearchCollection.cs" />
+    <Compile Include="PropertySystem\ShellProperty.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Taskbar\JumpListCustomCategory.cs" />
+    <Compile Include="Taskbar\JumpList.cs" />
+    <Compile Include="Taskbar\JumpListItem.cs" />
+    <Compile Include="Taskbar\TaskbarList.cs" />
+    <Compile Include="Taskbar\TaskbarManager.cs">
+    </Compile>
+    <Compile Include="Taskbar\TaskbarInterfaces.cs" />
+    <Compile Include="Taskbar\TaskbarWindow.cs" />
+    <Compile Include="Taskbar\TaskbarWindowManager.cs" />
+    <Compile Include="Taskbar\ThumbnailButton.cs" />
+    <Compile Include="Taskbar\ThumbnailButtonClickedEventArgs.cs" />
+    <Compile Include="Taskbar\ThumbnailToolbarManager.cs" />
+    <Compile Include="Taskbar\ThumbnailToolbarProxyWindow.cs" />
+    <Compile Include="Taskbar\UserRemovedJumpListItemsEventArg.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Design\ShellThumbnailClassDiagram.cd" />
+    <None Include="Design\ShellObjects.cd" />
+    <None Include="ExplorerBrowser\ExplorerBrowserDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\CommandLinkWPF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ExplorerBrowser\ExplorerBrowser.WPF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{2E1FB0DF-F9BB-4909-9F32-2D9D022A8E57}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LocalizedMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LocalizedMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

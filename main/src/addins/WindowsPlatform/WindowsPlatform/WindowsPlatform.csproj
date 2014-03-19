@@ -43,12 +43,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="PresentationCore" />
     <Reference Include="System.Xaml" />
@@ -74,6 +68,14 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsAPICodePack\Core\Core.csproj">
+      <Project>{2E1FB0DF-F9BB-4909-9F32-2D9D022A8E57}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsAPICodePack\Shell\Shell.csproj">
+      <Project>{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}</Project>
+      <Name>Shell</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,3 +1,5 @@
 
 SUBDIRS = \
-	WindowsPlatform
+	WindowsPlatform \
+	WindowsAPICodePack \
+	WindowsAPICodePack.Tests
