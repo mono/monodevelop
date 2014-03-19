@@ -4,12 +4,12 @@
 
 (defconst finddeclstr1
   (let ((file (concat fs-file-dir "Program.fs")))
-    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":1,\"Column\":6}}\n" file))
+    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":2,\"Column\":6}}\n" file))
   "A message for jumping to a definition in the same file")
 
 (defconst finddeclstr2
   (let ((file (concat fs-file-dir "FileTwo.fs")))
-    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":12,\"Column\":11}}\n" file file))
+    (format "{\"Kind\":\"finddecl\",\"Data\":{\"File\":\"%s\",\"Line\":13,\"Column\":11}}\n" file file))
     "A message for jumping to a definition in another file")
 
 (check "jumping to local definition should not change buffer"
@@ -42,7 +42,7 @@
 ;;; Error parsing
 
 (defconst err-brace-str
-  "{\"Kind\":\"errors\",\"Data\":[{\"FileName\":\"<filename>\",\"StartLine\":9,\"EndLine\":9,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":11,\"EndLine\":11,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Error\",\"Message\":\"Unexpected symbol '[<' in expression\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":12,\"EndLine\":12,\"StartColumn\":0,\"EndColumn\":3,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"}]}\n"
+  "{\"Kind\":\"errors\",\"Data\":[{\"FileName\":\"<filename>\",\"StartLine\":9,\"StartLineAlternate\":10,\"EndLine\":9,\"EndLineAlternate\":10,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":11,\"StartLineAlternate\":12,\"EndLine\":11,\"EndLineAlternate\":12,\"StartColumn\":0,\"EndColumn\":2,\"Severity\":\"Error\",\"Message\":\"Unexpected symbol '[<' in expression\",\"Subcategory\":\"parse\"},{\"FileName\":\"<filename>\",\"StartLine\":12,\"StartLineAlternate\":13,\"EndLine\":12,\"EndLineAlternate\":13,\"StartColumn\":0,\"EndColumn\":3,\"Severity\":\"Warning\",\"Message\":\"Possible incorrect indentation: this token is offside of context started at position (8:1). Try indenting this token further or using standard formatting conventions.\",\"Subcategory\":\"parse\"}]}\n"
   "A list of errors containing a square bracket to check the parsing")
 
 (check "parses errors from given string"

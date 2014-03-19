@@ -5,31 +5,21 @@ DATA: project
 INFO: Background parsing started
 <<EOF>>
 DATA: errors
-<<EOF>>
-DATA: completion
-func
-<<EOF>>
-DATA: errors
-[3:14-3:21] ERROR The namespace or module 'FileTwo' is not defined
-[7:11-7:27] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
-[9:18-9:22] ERROR This expression was expected to have type
+[4:14-4:21] ERROR The namespace or module 'FileTwo' is not defined
+[8:11-8:27] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
+[10:18-10:22] ERROR This expression was expected to have type
     int    
 but here has type
     string    
+<<EOF>>
+DATA: completion
+func
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
 DATA: errors
-[3:14-3:21] ERROR The namespace or module 'FileTwo' is not defined
-[7:11-7:27] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
-[9:18-9:22] ERROR This expression was expected to have type
-    int    
-but here has type
-    string    
+[8:12-8:19] ERROR The value or constructor 'unnamed' is not defined
 <<EOF>>
 DATA: completion
 func
-<<EOF>>
-DATA: errors
-[7:12-7:19] ERROR The value or constructor 'unnamed' is not defined
 <<EOF>>

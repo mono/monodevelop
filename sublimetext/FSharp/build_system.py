@@ -25,7 +25,7 @@ class RunFsScriptCommand(sublime_plugin.WindowCommand):
         #        $file, but I can't get it to work.
         path_to_script = self.window.active_view().file_name()
         # Forward parameters to built-in `exec` command.
-        self.window.run_command('exec', {"cmd": [path_to_fsi,
+        self.window.run_command('exec', {'cmd': [path_to_fsi,
                                                  path_to_script]})
 
 
@@ -34,7 +34,7 @@ def locate_fsi():
     Returns the path to fsi.exe, or `fsharpi`.
     """
     if os.name != 'nt':
-        return 'fsharpi'
+        return '/usr/bin/fsharpi'
 
     # TODO: Obtain latest version? Use registry?
     # Windows

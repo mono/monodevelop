@@ -102,7 +102,7 @@ display in a help buffer instead.")
       (fsharp-ac--log (format "Parsing \"%s\"\n" file))
       (process-send-string
        fsharp-ac-completion-process
-       (format "parse \"%s\" full\n%s\n<<EOF>>\n"
+       (format "parse \"%s\"\n%s\n<<EOF>>\n"
                file
                (buffer-substring-no-properties (point-min) (point-max)))))))
 
@@ -242,7 +242,7 @@ display in a help buffer instead.")
   (setq fsharp-ac-idle-timer
         (run-with-idle-timer fsharp-ac-idle-timeout
                              t
-                             'fsharp-ac-request-errors)))
+                             'fsharp-ac--parse-current-file)))
 
 
 (defvar fsharp-ac-source
@@ -280,7 +280,7 @@ display in a help buffer instead.")
      (fsharp-ac-send-pos-request
       "completion"
       (expand-file-name (buffer-file-name (current-buffer)))
-      (- (line-number-at-pos) 1)
+      (line-number-at-pos)
       (current-column)))
 
     (wait
@@ -377,7 +377,7 @@ The current buffer must be an F# file that exists on disk."
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request "tooltip"
                                  (expand-file-name (buffer-file-name))
-                                 (- (line-number-at-pos) 1)
+                                 (line-number-at-pos)
                                  (current-column))))
 
 (defun fsharp-ac/gotodefn-at-point ()
@@ -387,7 +387,7 @@ The current buffer must be an F# file that exists on disk."
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "finddecl"
                                 (expand-file-name (buffer-file-name))
-                                (- (line-number-at-pos) 1)
+                                (line-number-at-pos)
                                 (current-column))))
 
 (defun fsharp-ac--ac-start (&rest ac-start-args)
@@ -431,10 +431,9 @@ The current buffer must be an F# file that exists on disk."
 (defvar fsharp-ac-errors)
 (make-local-variable 'fsharp-ac-errors)
 
-(defun fsharp-ac-request-errors ()
+(defun fsharp-ac--parse-current-file ()
   (when (fsharp-ac-can-make-request)
-    (fsharp-ac-parse-current-buffer)
-    (log-psendstr fsharp-ac-completion-process "errors\n"))
+    (fsharp-ac-parse-current-buffer))
   ; Perform some emergency fixup if things got out of sync
   (when (not ac-completing)
     (setq fsharp-ac-status 'idle)))
@@ -453,9 +452,9 @@ The current buffer must be an F# file that exists on disk."
   (save-match-data
     (let (parsed)
       (dolist (err data parsed)
-        (let ((beg (fsharp-ac-line-column-to-pos (+ (gethash "StartLine" err) 1)
+        (let ((beg (fsharp-ac-line-column-to-pos (gethash "StartLineAlternate" err)
                                                  (gethash "StartColumn" err)))
-              (end (fsharp-ac-line-column-to-pos (+ (gethash "EndLine" err) 1)
+              (end (fsharp-ac-line-column-to-pos (gethash "EndLineAlternate" err)
                                                  (gethash "EndColumn" err)))
               (face (if (string= "Error" (gethash "Severity" err))
                         'fsharp-error-face
@@ -631,7 +630,7 @@ around to the start of the buffer."
 
 (defun fsharp-ac-visit-definition (data)
   (let* ((file (gethash "File" data))
-         (line (+ 1 (gethash "Line" data)))
+         (line (gethash "Line" data))
          (col (gethash "Column" data)))
     (find-file file)
     (goto-char (fsharp-ac-line-column-to-pos line col))))

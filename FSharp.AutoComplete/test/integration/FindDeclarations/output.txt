@@ -4,22 +4,28 @@ DATA: project
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
-INFO: Background parsing started
+DATA: errors
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
-DATA: finddecl
-<absolute path removed>/test/integration/FindDeclarations/Program.fs:1:6
+DATA: errors
+<<EOF>>
+INFO: Background parsing started
+<<EOF>>
+DATA: errors
 <<EOF>>
 DATA: finddecl
-<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:12:11
+<absolute path removed>/test/integration/FindDeclarations/Program.fs:2:6
 <<EOF>>
 DATA: finddecl
-<absolute path removed>/test/integration/FindDeclarations/Program.fs:5:4
+<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:13:11
 <<EOF>>
 DATA: finddecl
-<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:10:5
+<absolute path removed>/test/integration/FindDeclarations/Program.fs:6:4
 <<EOF>>
 DATA: finddecl
-<absolute path removed>/test/integration/FindDeclarations/Script.fsx:3:6
+<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:11:5
+<<EOF>>
+DATA: finddecl
+<absolute path removed>/test/integration/FindDeclarations/Script.fsx:4:6
 <<EOF>>

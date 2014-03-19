@@ -1,5 +1,7 @@
 INFO: Background parsing started
 <<EOF>>
+DATA: errors
+<<EOF>>
 INFO: No tooltip information
 <<EOF>>
 DATA: tooltip

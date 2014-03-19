@@ -1,5 +1,13 @@
 INFO: Background parsing started
 <<EOF>>
+DATA: errors
+[12:3-12:4] ERROR Missing qualification after '.'
+[14:3-14:4] ERROR Missing qualification after '.'
+[14:4-14:5] ERROR Unexpected reserved keyword in implementation file
+[14:4-14:5] ERROR Unexpected reserved keyword in implementation file
+[14:3-14:4] ERROR Missing qualification after '.'
+[12:3-12:4] ERROR Missing qualification after '.'
+<<EOF>>
 DATA: completion
 Another`Column
 Column Two
