@@ -218,7 +218,7 @@ namespace ICSharpCode.PackageManagement
 				.OrderBy(package => package.Id);
 		}
 		
-		string GetSearchCriteria()
+		protected string GetSearchCriteria()
 		{
 			if (String.IsNullOrWhiteSpace(SearchTerms)) {
 				return null;

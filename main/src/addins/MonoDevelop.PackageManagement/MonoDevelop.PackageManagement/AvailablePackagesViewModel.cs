@@ -79,6 +79,10 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
+			if (GetSearchCriteria () != null) {
+				// Order by relevance for searches.
+				return packages;
+			}
 			return packages.OrderByDescending(package => package.DownloadCount);
 		}
 		
