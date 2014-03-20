@@ -88,6 +88,20 @@ namespace MonoDevelop.Debugger.Win32
 			// There is no explicit way of disposing the metadata objects, so we have
 			// to rely on the GC to do it.
 
+			foreach (var module in modules.Values) {
+				var disposable = module.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
+
+			//Same readers are already disposed in previous loop but
+			//seems more proper to do it again
+			foreach (var doc in documents.Values) {
+				var disposable = doc.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
+
 			modules = null;
 			documents = null;
 			threads = null;
@@ -323,6 +337,9 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolDocument doc in reader.GetDocuments ()) {
 				Console.WriteLine (doc.URL);
 			}
+			var disposable = reader as IDisposable;
+			if (disposable != null)
+				disposable.Dispose ();
 			e.Continue = true;
 		}
 
