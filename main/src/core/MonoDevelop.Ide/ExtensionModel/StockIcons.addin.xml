@@ -276,6 +276,11 @@
 	<StockIcon stockid = "md-error" resource = "error-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-error" resource = "error-light-48.png" size="Dialog" />
 	<StockIcon stockid = "md-done" resource = "done-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-delete" resource = "remove-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-properties" resource = "properties-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-popup-close" resource = "popup-close-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-popup-close-hover" resource = "popup-close-hover-light-16.png" size="Menu" />
+
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-16.png" size="Menu" />
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="Button" />
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="LargeToolbar" />
@@ -287,12 +292,9 @@
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-24.png" size="Button" />
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-32.png" size="Dnd" />
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-48.png" size="Dialog" />
-	<StockIcon stockid = "md-delete" resource = "remove-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-properties" resource = "properties-light-16.png" size="Menu" />
 	<StockIcon stockid = "gtk-delete" resource = "remove-light-16.png" size="Menu" />
 	<StockIcon stockid = "gtk-properties" resource = "properties-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-popup-close" resource = "popup-close-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-popup-close-hover" resource = "popup-close-hover-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-clear" resource = "clear-light-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>
