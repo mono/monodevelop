@@ -1575,6 +1575,18 @@
     <EmbeddedResource Include="icons\light\unstar-overlay-hover-16%402x.png">
       <LogicalName>unstar-overlay-hover-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\remove-16.png">
+      <LogicalName>remove-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\remove-16%402x.png">
+      <LogicalName>remove-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\properties-16.png">
+      <LogicalName>properties-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\properties-16%402x.png">
+      <LogicalName>properties-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
