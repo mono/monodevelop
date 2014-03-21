@@ -542,11 +542,11 @@
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\project-reference-16.png">
-      <LogicalName>project-reference-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\reference-16.png">
+      <LogicalName>reference-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\project-reference-16%402x.png">
-      <LogicalName>project-reference-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\reference-16%402x.png">
+      <LogicalName>reference-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\solution-16.png">
       <LogicalName>solution-light-16.png</LogicalName>
