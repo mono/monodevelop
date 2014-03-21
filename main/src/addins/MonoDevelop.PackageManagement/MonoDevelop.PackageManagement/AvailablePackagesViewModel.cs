@@ -38,13 +38,17 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepository repository;
 		string errorMessage;
+		IRecentPackageRepository recentPackageRepository;
 		
 		public AvailablePackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
+			IRecentPackageRepository recentPackageRepository,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
+			this.recentPackageRepository = recentPackageRepository;
+
 			IsSearchable = true;
 			ShowPackageSources = true;
 			ShowPrerelease = true;
@@ -95,6 +99,28 @@ namespace ICSharpCode.PackageManagement
 			return base.GetFilteredPackagesBeforePagingResults(allPackages)
 				.Where(package => package.IsReleaseVersion())
 				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
+		}
+
+		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, string searchCriteria)
+		{
+			List<IPackage> recentPackages = GetRecentPackages (searchCriteria).ToList ();
+
+			if (PackageViewModels.Count == 0) {
+				foreach (IPackage package in recentPackages) {
+					yield return package;
+				}
+			}
+
+			foreach (IPackage package in packages) {
+				if (!recentPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+					yield return package;
+				}
+			}
+		}
+
+		IEnumerable<IPackage> GetRecentPackages (string searchCriteria)
+		{
+			return recentPackageRepository.Search (searchCriteria, IncludePrerelease);
 		}
 	}
 }

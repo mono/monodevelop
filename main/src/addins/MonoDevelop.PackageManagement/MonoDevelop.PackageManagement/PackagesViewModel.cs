@@ -184,7 +184,18 @@ namespace ICSharpCode.PackageManagement
 		{
 			pages.TotalItems = result.TotalPackages;
 			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
-			UpdatePackageViewModels(result.Packages);
+
+			UpdatePackageViewModels (PrioritizePackages (result));
+		}
+
+		IEnumerable<IPackage> PrioritizePackages (PackagesForSelectedPageResult result)
+		{
+			return PrioritizePackages (result.Packages, GetSearchCriteria ());
+		}
+
+		protected virtual IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, string searchCriteria)
+		{
+			return packages;
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage()

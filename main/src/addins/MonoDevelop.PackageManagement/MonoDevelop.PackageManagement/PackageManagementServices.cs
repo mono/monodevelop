@@ -131,5 +131,9 @@ namespace ICSharpCode.PackageManagement
 		public static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
 			get { return progressMonitorFactory; }
 		}
+
+		public static IRecentPackageRepository RecentPackageRepository {
+			get { return packageRepositoryCache.RecentPackageRepository; }
+		}
 	}
 }
