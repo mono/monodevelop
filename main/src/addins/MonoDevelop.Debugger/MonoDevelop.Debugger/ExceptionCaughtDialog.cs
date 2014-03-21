@@ -640,8 +640,8 @@ namespace MonoDevelop.Debugger
 			OffsetX = 6;
 			File = file;
 			Line = line;
-			closeSelImage = Xwt.Drawing.Image.FromResource ("popup-close-light-16.png");
-			closeSelOverImage = Xwt.Drawing.Image.FromResource ("popup-close-hover-light-16.png");
+			closeSelImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu);
+			closeSelOverImage = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu);
 		}
 
 		protected override void OnLineDeleted ()
