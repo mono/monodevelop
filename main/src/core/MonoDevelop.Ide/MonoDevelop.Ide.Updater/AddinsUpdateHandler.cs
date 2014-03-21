@@ -1,21 +1,21 @@
-// 
+//
 // AddinsUpdateHandler.cs
-//  
+//
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
-// 
+//
 // Copyright (c) 2011 Xamarin Inc.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide.Updater
 		static StatusBarIcon updateIcon;
 		internal static AddinsUpdateHandler Instance;
 		IProgressMonitor updateMonitor;
-		
+
 		public AddinsUpdateHandler ()
 		{
 			Instance = this;
 		}
-		
+
 		public void CheckUpdates (IProgressMonitor monitor, bool automatic)
 		{
 			updateMonitor = monitor;
@@ -65,17 +65,17 @@ namespace MonoDevelop.Ide.Updater
 				updateMonitor = null;
 			}
 		}
-		
+
 		void WarnAvailableUpdates ()
 		{
 			if (!UpdateService.NotifyAddinUpdates)
 				return;
-			
-			updateIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-software-update", IconSize.Menu));
+
+			updateIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-updates", IconSize.Menu));
 			string s = GettextCatalog.GetString ("New add-in updates are available:");
 			for (int n=0; n<updates.Length && n < 10; n++)
 				s += "\n" + updates [n].Addin.Name;
-			
+
 			if (updates.Length > 10)
 				s += "\n...";
 
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Updater
 			updateIcon.SetAlertMode (20);
 			updateIcon.EventBox.ButtonPressEvent += new ButtonPressEventHandler (OnUpdateClicked);
 		}
-		
+
 		void OnUpdateClicked (object s, ButtonPressEventArgs args)
 		{
 			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Updater
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}
 		}
-		
+
 		public static void ShowManager ()
 		{
 			IProgressMonitor m = Instance != null ? Instance.updateMonitor : null;
@@ -101,17 +101,17 @@ namespace MonoDevelop.Ide.Updater
 				monitor.AsyncOperation.WaitForCompleted ();
 			}
 			HideAlert ();
-			
+
 			AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 		}
-		
+
 		internal void QueryAddinUpdates ()
 		{
 			IProgressMonitor monitor = updateMonitor;
 			if (monitor != null)
 				monitor.AsyncOperation.WaitForCompleted ();
 		}
-		
+
 		public static void HideAlert ()
 		{
 			if (updateIcon != null) {

@@ -569,9 +569,6 @@
     <EmbeddedResource Include="icons\syntax-highlighting-16.png">
       <LogicalName>syntax-highlighting-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-software-update-22.png">
-      <LogicalName>system-software-update-22.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-behavior-16.png">
       <LogicalName>text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
