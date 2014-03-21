@@ -641,12 +641,6 @@
     <EmbeddedResource Include="icons\light\workspace-32%402x.png">
       <LogicalName>workspace-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\light\pad-minimize-9.png">
       <LogicalName>pad-minimize-light-9.png</LogicalName>
     </EmbeddedResource>
