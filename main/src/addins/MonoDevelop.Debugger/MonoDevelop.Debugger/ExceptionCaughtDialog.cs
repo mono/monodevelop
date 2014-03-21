@@ -1,22 +1,22 @@
-// 
+//
 // ExceptionCaughtDialog.cs
-//  
+//
 // Authors: Lluis Sanchez Gual <lluis@novell.com>
 //          Jeffrey Stedfast <jeff@xamarin.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
 // Copyright (c) 2011 Xamarin Inc. (http://www.xamarin.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -640,8 +640,8 @@ namespace MonoDevelop.Debugger
 			OffsetX = 6;
 			File = file;
 			Line = line;
-			closeSelImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.Selected.png");
-			closeSelOverImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.Selected.Over.png");
+			closeSelImage = Xwt.Drawing.Image.FromResource ("popup-close-light-16.png");
+			closeSelOverImage = Xwt.Drawing.Image.FromResource ("popup-close-hover-light-16.png");
 		}
 
 		protected override void OnLineDeleted ()
@@ -651,7 +651,7 @@ namespace MonoDevelop.Debugger
 
 		public override Widget CreateWidget ()
 		{
-			var icon = Xwt.Drawing.Image.FromResource ("lightning.png");
+			var icon = Xwt.Drawing.Image.FromResource ("lightning-light-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
 
 			HBox box = new HBox (false, 6);
@@ -740,7 +740,7 @@ namespace MonoDevelop.Debugger
 		{
 			Gtk.EventBox box = new EventBox ();
 			box.VisibleWindow = false;
-			var icon = Xwt.Drawing.Image.FromResource ("lightning.png");
+			var icon = Xwt.Drawing.Image.FromResource ("lightning-light-16.png");
 			box.Add (new Xwt.ImageView (icon).ToGtkWidget ());
 			box.ButtonPressEvent += (o,e) => dlg.ShowButton ();
 			PopoverWidget eb = new PopoverWidget ();
@@ -758,8 +758,8 @@ namespace MonoDevelop.Debugger
 	{
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null && 
-			    !DebuggingService.ExceptionCaughtMessage.IsMinimized && 
+			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();

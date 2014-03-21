@@ -641,9 +641,6 @@
     <EmbeddedResource Include="icons\light\workspace-32%402x.png">
       <LogicalName>workspace-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.png">
-      <LogicalName>MonoDevelop.Close.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
       <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
     </EmbeddedResource>
@@ -740,14 +737,17 @@
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Over.png">
-      <LogicalName>MonoDevelop.Close.Over.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-16.png">
+      <LogicalName>popup-close-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.Over.png">
-      <LogicalName>MonoDevelop.Close.Selected.Over.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-16%402x.png">
+      <LogicalName>popup-close-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.png">
-      <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-hover-16.png">
+      <LogicalName>popup-close-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\popup-close-hover-16%402x.png">
+      <LogicalName>popup-close-hover-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-normal.png">
       <LogicalName>btn-debug-base-left-cap-normal-light.png</LogicalName>
