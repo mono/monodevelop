@@ -158,7 +158,7 @@ namespace MonoDevelop.VersionControl.Tests
 			get { return 1000; }
 		}
 
-		[Test]
+		//[Test]
 		// Tests Repository.GetVersionInfo with query thread.
 		public void QueryThreadWorks ()
 		{
