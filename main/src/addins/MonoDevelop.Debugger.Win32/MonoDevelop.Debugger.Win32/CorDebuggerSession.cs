@@ -14,6 +14,7 @@ using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
+using System.Linq;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -28,6 +29,7 @@ namespace MonoDevelop.Debugger.Win32
 		CorStepper stepper;
 		bool terminated;
 		bool evaluating;
+		bool autoStepInto;
 		int processId;
 
 		static int evaluationTimestamp;
@@ -242,6 +244,18 @@ namespace MonoDevelop.Debugger.Win32
 			OnTargetEvent (args);
 		}
 
+		static bool IsPropertyOrOperatorMethod (MethodInfo method)
+		{
+			if (method == null)
+				return false;
+			string name = method.Name;
+
+			return method.IsSpecialName &&
+			(name.StartsWith ("get_", StringComparison.Ordinal) ||
+			name.StartsWith ("set_", StringComparison.Ordinal) ||
+			name.StartsWith ("op_", StringComparison.Ordinal));
+		}
+
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
 		{
 			lock (debugLock) {
@@ -250,6 +264,46 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
+
+			if (autoStepInto) {
+				autoStepInto = false;
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
+			if (Options.StepOverPropertiesAndOperators && IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			var symbols = e.Thread.ActiveFrame.Function.GetSymbolMethod (this);
+			if (symbols == null || symbols.SequencePointCount == 0) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			uint offset;
+			CorDebugMappingResult mappingResult;
+			e.Thread.ActiveFrame.GetIP (out offset, out mappingResult);
+
+			var seqFirst = symbols.GetSequencePoints ().First ();
+			if (seqFirst.Offset > offset || (seqFirst.Offset == offset && mappingResult == CorDebugMappingResult.MAPPING_APPROXIMATE)) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+			var seqLast = symbols.GetSequencePoints ().Last ();
+			if (seqLast.Offset < offset || (seqLast.Offset == offset && mappingResult == CorDebugMappingResult.MAPPING_APPROXIMATE)) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
 			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
