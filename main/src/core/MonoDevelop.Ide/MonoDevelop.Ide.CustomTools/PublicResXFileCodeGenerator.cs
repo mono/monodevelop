@@ -1,5 +1,5 @@
 //
-// ResXFileCodeGenerator.cs
+// PublicResXFileCodeGenerator.cs
 //
 // Author:
 //   Kenneth Skovhede <kenneth@hexad.dk>
@@ -41,47 +41,11 @@ using System.CodeDom.Compiler;
 
 namespace MonoDevelop.Ide.CustomTools
 {
-	public class ResXFileCodeGenerator : ISingleFileCustomTool
+	public class PublicResXFileCodeGenerator : ISingleFileCustomTool
 	{
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (GenerateFile (file, result, true), result);
-		}
-
-		public static Action GenerateFile (ProjectFile file, SingleFileCustomToolResult result, bool internalClass)
-		{
-			return delegate {
-				var dnp = file.Project as DotNetProject;
-				if (dnp == null) {
-					var err = "ResXFileCodeGenerator can only be used with .NET projects";
-					result.Errors.Add (new CompilerError (null, 0, 0, null, err));
-					return;
-				}
-
-				var provider = dnp.LanguageBinding.GetCodeDomProvider ();
-				if (provider == null) {
-					var err = "ResXFileCodeGenerator can only be used with languages that support CodeDOM";
-					result.Errors.Add (new CompilerError (null, 0, 0, null, err));
-					return;
-				}
-
-				var outputfile = file.FilePath.ChangeExtension (".Designer." + provider.FileExtension);
-				var ns = CustomToolService.GetFileNamespace (file, outputfile);
-				var cn = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
-
-				string[] unmatchable;
-				var ccu = StronglyTypedResourceBuilder.Create (file.FilePath, cn, ns, provider, internalClass, out unmatchable);
-
-				foreach (var p in unmatchable) {
-					var msg = string.Format ("Could not generate property for resource ID '{0}'", p);
-					result.Errors.Add (new CompilerError (file.FilePath, 0, 0, null, msg));
-				}
-
-				using (var w = new StreamWriter (outputfile, false, Encoding.UTF8))
-					provider.GenerateCodeFromCompileUnit (ccu, w, new CodeGeneratorOptions ());
-
-				result.GeneratedFilePath = outputfile;
-			};
+			return new ThreadAsyncOperation (ResXFileCodeGenerator.GenerateFile (file, result, false), result);
 		}
 	}
 }

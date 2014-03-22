@@ -1895,6 +1895,7 @@
     <Compile Include="MonoDevelop.Ide.Extensions\IdeCustomizer.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedTitleBarWindow.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\IExtendedTitleBarWindowBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
