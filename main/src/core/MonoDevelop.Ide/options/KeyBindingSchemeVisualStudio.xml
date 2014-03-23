@@ -60,4 +60,5 @@
 	<binding command="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" shortcut="Control+." />
 	<binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="Control+E|D" />
 	<binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection" shortcut="Control+E|F" />
+	<binding command="MonoDevelop.Debugger.DebugCommands.SelectExceptions" shortcut="Control+Alt+E" />
 </scheme>
