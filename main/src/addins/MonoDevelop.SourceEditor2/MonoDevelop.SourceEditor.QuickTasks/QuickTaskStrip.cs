@@ -42,6 +42,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
 		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
+		public readonly static bool MergeScrollBarAndQuickTasks = !Platform.IsMac;
+
 		static QuickTaskStrip ()
 		{
 			EnableFancyFeatures.Changed += delegate {

@@ -236,12 +236,14 @@ namespace MonoDevelop.SourceEditor
 
 				parent.quickTaskProvider.ForEach (AddQuickTaskProvider);
 
-				// QuickTaskStrip.EnableFancyFeatures.Changed += FancyFeaturesChanged;
-				// FancyFeaturesChanged (null, null);
+				QuickTaskStrip.EnableFancyFeatures.Changed += FancyFeaturesChanged;
+				FancyFeaturesChanged (null, null);
 			}
 
 			void FancyFeaturesChanged (object sender, EventArgs e)
 			{
+				if (!QuickTaskStrip.MergeScrollBarAndQuickTasks)
+					return;
 				if (QuickTaskStrip.EnableFancyFeatures) {
 					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
 					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;

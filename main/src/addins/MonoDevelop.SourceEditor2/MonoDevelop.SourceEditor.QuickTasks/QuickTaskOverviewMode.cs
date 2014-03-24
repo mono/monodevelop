@@ -78,8 +78,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
 			vadjustment = this.parentStrip.VAdjustment;
 
-			vadjustment.ValueChanged += RedrawOnUpdate;
-			vadjustment.Changed += RedrawOnUpdate;
+			vadjustment.ValueChanged += RedrawOnVAdjustmentChange;
+			vadjustment.Changed += RedrawOnVAdjustmentChange;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
 //			TextEditor.Caret.PositionChanged += CaretPositionChanged;
@@ -139,12 +139,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
 			
-			// vadjustment.ValueChanged -= RedrawOnUpdate;
-			// vadjustment.Changed -= RedrawOnUpdate;
+			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
+			vadjustment.Changed -= RedrawOnVAdjustmentChange;
 		}
 		
 		void RedrawOnUpdate (object sender, EventArgs e)
 		{
+			QueueDraw ();
+		}
+
+		void RedrawOnVAdjustmentChange (object sender, EventArgs e)
+		{
+			if (!QuickTaskStrip.MergeScrollBarAndQuickTasks)
+				return;
 			QueueDraw ();
 		}
 
@@ -814,8 +821,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					}
 				}
 				DrawCaret (cr);
-				
-				//DrawBar (cr);
+
+				if (QuickTaskStrip.MergeScrollBarAndQuickTasks)
+					DrawBar (cr);
 				DrawLeftBorder (cr);
 			}
 			
