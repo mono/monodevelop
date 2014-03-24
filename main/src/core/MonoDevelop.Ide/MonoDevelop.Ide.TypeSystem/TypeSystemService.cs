@@ -160,6 +160,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
 			var compilation = TypeSystemService.GetCompilation (project);
 			var ctx = new SimpleTypeResolveContext (compilation.MainAssembly);
 			var resolvedType = def.Resolve (ctx);
