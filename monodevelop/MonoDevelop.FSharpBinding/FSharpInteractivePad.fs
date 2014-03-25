@@ -73,8 +73,8 @@ type FSharpInteractivePad() =
   let setupSession() =
     try
         let ses = InteractiveSession()
-        let textReceived = ses.TextReceived.Subscribe(fun t -> view.WriteOutput t )
-        let promptReady = ses.PromptReady.Subscribe(fun () -> view.Prompt true )
+        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ))
+        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ))
         ses.Exited.Add(fun e -> 
           textReceived.Dispose()
           promptReady.Dispose()

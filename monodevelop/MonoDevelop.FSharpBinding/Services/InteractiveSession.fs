@@ -51,10 +51,10 @@ type InteractiveSession() =
       |> Event.add (fun de -> 
           Debug.WriteLine (sprintf "Interactive: received %s" de.Data)
           if de.Data.Trim() = "SERVER-PROMPT>" then
-            DispatchService.GuiDispatch(fun () -> promptReady.Trigger())
+            promptReady.Trigger()
           elif de.Data.Trim() <> "" then
             let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
-            DispatchService.GuiDispatch(fun () -> textReceived.Trigger(str)) )
+            textReceived.Trigger(str))
     fsiProcess.EnableRaisingEvents <- true
   
   member x.Interrupt() =
