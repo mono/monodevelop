@@ -79,6 +79,7 @@ namespace MonoDevelop.SourceEditor
 			this.Decorated = false;
 
 			TransientFor = (Gtk.Window) editor.Toplevel;
+			IdeApp.CommandService.RegisterWindowForKeyboardShortcuts (this);
 			
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
@@ -128,6 +129,19 @@ namespace MonoDevelop.SourceEditor
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (base.OnKeyPressEvent (evnt)) {
+				return true;
+			} else {
+				if (evnt.Key == Gdk.Key.Escape) {
+					Destroy ();
+					return true;
+				}
+			}
+			return false;
 		}
 
 //		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)
