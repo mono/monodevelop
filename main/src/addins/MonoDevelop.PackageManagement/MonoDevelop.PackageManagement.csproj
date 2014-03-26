@@ -310,6 +310,7 @@
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewCheckBox.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackagesForSelectedPageQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

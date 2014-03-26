@@ -48,6 +48,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> allPackages;
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
+		PackagesForSelectedPageQuery packagesForSelectedPageQuery;
 
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -142,15 +143,18 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateReadPackagesTask()
 		{
+			var query = new PackagesForSelectedPageQuery(this, allPackages, GetSearchCriteria());
+			packagesForSelectedPageQuery = query;
+
 			task = taskFactory.CreateTask(
-				() => GetPackagesForSelectedPageResult(),
-				(result) => OnPackagesReadForSelectedPage(result));
+				() => GetPackagesForSelectedPageResult(query),
+				OnPackagesReadForSelectedPage);
 		}
 		
-		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
+		PackagesForSelectedPageResult GetPackagesForSelectedPageResult(PackagesForSelectedPageQuery query)
 		{
-			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
-			return new PackagesForSelectedPageResult(packages, TotalItems);
+			IEnumerable<IPackage> packages = GetPackagesForSelectedPage(query);
+			return new PackagesForSelectedPageResult(packages, query);
 		}
 		
 		void OnPackagesReadForSelectedPage(ITask<PackagesForSelectedPageResult> task)
@@ -159,14 +163,20 @@ namespace ICSharpCode.PackageManagement
 			IsLoadingNextPage = false;
 			if (task.IsFaulted) {
 				SaveError(task.Exception);
-			} else if (task.IsCancelled) {
-				// Ignore
+			} else if (task.IsCancelled || !IsCurrentQuery(task.Result)) {
+				// Ignore.
+				return;
 			} else {
 				UpdatePackagesForSelectedPage(task.Result);
 			}
 			base.OnPropertyChanged(null);
 		}
-		
+
+		bool IsCurrentQuery(PackagesForSelectedPageResult result)
+		{
+			return packagesForSelectedPageQuery == result.Query;
+		}
+
 		void SaveError(AggregateException ex)
 		{
 			HasError = true;
@@ -184,6 +194,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			pages.TotalItems = result.TotalPackages;
 			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
+			TotalItems = result.TotalPackages;
+			allPackages = result.AllPackages;
 
 			UpdatePackageViewModels (PrioritizePackages (result));
 		}
@@ -198,20 +210,20 @@ namespace ICSharpCode.PackageManagement
 			return packages;
 		}
 		
-		IEnumerable<IPackage> GetPackagesForSelectedPage()
+		IEnumerable<IPackage> GetPackagesForSelectedPage(PackagesForSelectedPageQuery query)
 		{
-			IEnumerable<IPackage> filteredPackages = GetFilteredPackagesBeforePagingResults();
-			return GetPackagesForSelectedPage(filteredPackages);
+			IEnumerable<IPackage> filteredPackages = GetFilteredPackagesBeforePagingResults(query);
+			return GetPackagesForSelectedPage(filteredPackages, query);
 		}
 		
-		IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults()
+		IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(PackagesForSelectedPageQuery query)
 		{
-			if (allPackages == null) {
-				IQueryable<IPackage> packages = GetPackagesFromPackageSource();
-				TotalItems = packages.Count();
-				allPackages = GetFilteredPackagesBeforePagingResults(packages);
+			if (query.AllPackages == null) {
+				IQueryable<IPackage> packages = GetPackagesFromPackageSource(query.SearchCriteria);
+				query.TotalPackages = packages.Count();
+				query.AllPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
-			return allPackages;
+			return query.AllPackages;
 		}
 		
 		/// <summary>
@@ -219,10 +231,15 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		public IQueryable<IPackage> GetPackagesFromPackageSource()
 		{
-			IQueryable<IPackage> packages = GetPackages (GetSearchCriteria ());
-			return OrderPackages (packages);
+			return GetPackagesFromPackageSource(GetSearchCriteria());
 		}
-		
+
+		IQueryable<IPackage> GetPackagesFromPackageSource(string searchCriteria)
+		{
+			IQueryable<IPackage> packages = GetPackages(searchCriteria);
+			return OrderPackages(packages);
+		}
+
 		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
 		{
 			return packages
@@ -236,13 +253,12 @@ namespace ICSharpCode.PackageManagement
 			}
 			return SearchTerms;
 		}
-		
-		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
+
+		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages, PackagesForSelectedPageQuery query)
 		{
-			int packagesToSkip = pages.ItemsBeforeFirstPage;
 			return allPackages
-				.Skip(packagesToSkip)
-				.Take(pages.PageSize);
+				.Skip(query.Skip)
+				.Take(query.Take);
 		}
 		
 		/// <summary>
@@ -325,7 +341,11 @@ namespace ICSharpCode.PackageManagement
 			get { return pages.PageSize; }
 			set { pages.PageSize = value;  }
 		}
-		
+
+		public int ItemsBeforeFirstPage {
+			get { return pages.ItemsBeforeFirstPage; }
+		}
+
 		public bool IsPaged {
 			get { return pages.IsPaged; }
 		}
