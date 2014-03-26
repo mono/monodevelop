@@ -69,7 +69,6 @@ namespace MonoDevelop.Components.Commands
 		
 		// Fields used to keep track of the application focus
 		bool appHasFocus;
-		Gtk.Window lastFocused;
 		DateTime focusCheckDelayTimeout = DateTime.MinValue;
 		
 		internal static readonly object CommandRouteTerminator = new object ();
@@ -422,8 +421,6 @@ namespace MonoDevelop.Components.Commands
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
 			topLevelWindows.Remove (w);
-			if (w == lastFocused)
-				lastFocused = null;
 			RegisterUserInteraction ();
 		}
 		
@@ -431,7 +428,6 @@ namespace MonoDevelop.Components.Commands
 		{
 			disposed = true;
 			bindings.Dispose ();
-			lastFocused = null;
 		}
 		
 		/// <summary>
@@ -1592,28 +1588,22 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Window GetActiveWindow (Gtk.Window win)
 		{
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
-			
+
 			bool hasFocus = false;
-			bool lastFocusedExists = lastFocused == null;
 			Gtk.Window newFocused = null;
 			foreach (Gtk.Window w in wins) {
 				if (w.Visible) {
 					if (w.HasToplevelFocus) {
 						hasFocus = true;
-						newFocused = w;
 					}
 					if (w.IsActive && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
 						if (win == null)
 							win = w;
 					}
-					if (lastFocused == w) {
-						lastFocusedExists = true;
-					}
 				}
 			}
-			
-			lastFocused = newFocused;
-			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
+
+			UpdateAppFocusStatus (hasFocus);
 			
 			if (win != null && win.IsRealized) {
 				RegisterTopWindow (win);
@@ -1777,7 +1767,7 @@ namespace MonoDevelop.Components.Commands
 				VisitCommandTargets (v, null);
 		}
 
-		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)
+		void UpdateAppFocusStatus (bool hasFocus)
 		{
 			if (hasFocus != appHasFocus) {
 				// The last focused window has been destroyed. Wait a few ms since another app's window
