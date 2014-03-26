@@ -87,6 +87,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			return base.OnKeyPressEvent (evnt);
 		}
+
+
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
 			if (evnt.Key == Gdk.Key.Control_L)
@@ -97,6 +99,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 			return base.OnKeyReleaseEvent (evnt);
 		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			Destroy ();
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+		{
+			Destroy ();
+			return base.OnLeaveNotifyEvent (evnt);
+		}
+
 
 		internal static List<DockNotebook> newNotebooks = new List<DockNotebook> ();
 
@@ -120,6 +135,7 @@ namespace MonoDevelop.Components.DockNotebook
 			this.curX = x;
 			this.curY = y;
 			hoverNotebook = null;
+			this.KeepAbove = true;
 			
 			// TODO: Handle z-ordering of floating windows.
 			int ox = 0, oy = 0;

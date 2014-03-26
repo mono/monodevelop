@@ -350,7 +350,12 @@ namespace MonoDevelop.Components.DockNotebook
 				if (placeholderWindow == null) {
 					var tab = notebook.CurrentTab;
 					placeholderWindow = new PlaceholderWindow (tab);
+
+					int ox, oy;
+					GdkWindow.GetOrigin (out ox, out oy);
+					placeholderWindow.MovePosition ((int)evnt.X + ox, (int)evnt.Y + oy); 
 					placeholderWindow.Show ();
+
 					placeholderWindow.Destroyed += delegate {
 						placeholderWindow = null;
 					};
