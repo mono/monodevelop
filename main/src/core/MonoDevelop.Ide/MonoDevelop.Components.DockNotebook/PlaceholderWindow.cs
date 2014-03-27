@@ -343,12 +343,20 @@ namespace MonoDevelop.Components.DockNotebook
 		
 		class DockWindow : Gtk.Window
 		{
+			bool IsChildOfMe (Document d)
+			{
+				Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
+				while (control.Parent != null)
+					control = control.Parent;
+				return control == this;
+			}
+
 			public DockWindow () : base (Gtk.WindowType.Toplevel)
 			{
 				IdeApp.CommandService.RegisterTopWindow (this);
 				AddAccelGroup (IdeApp.CommandService.AccelGroup);
 				this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
-					var documents = IdeApp.Workbench.Documents.Where(d => d.Window.ViewContent.Control.Toplevel == this).ToList ();
+					var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
 //					bool showDirtyDialog = false;
 //					foreach (var content in documents) {
 //						if (content.IsDirty) {
@@ -388,36 +396,10 @@ namespace MonoDevelop.Components.DockNotebook
 			{
 				return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt);
 			}
-			
-			static void RemoveWindows (DockNotebookContainer container)
-			{
-				var notebook = container.TabControl;
-				while (notebook.TabCount > 0) {
-					((SdiWorkspaceWindow)notebook.Tabs[0].Content).CloseWindow (true);
-				}
-				newNotebooks.Remove (notebook); 
-			}
-			
-			void RemoveWindows (Widget widget)
-			{
-				var dockNotebook = widget as DockNotebookContainer;
-				if (dockNotebook != null) {
-					RemoveWindows (dockNotebook);
-					return;
-				}
-				
-				var panedControl = widget as Paned;
-				if (panedControl != null) {
-					RemoveWindows (panedControl.Child1);
-					RemoveWindows (panedControl.Child2);
-					return;
-				}
-			}
 
 			protected override void OnDestroyed ()
 			{
 				RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
-				RemoveWindows (Child);
 				base.OnDestroyed ();
 			}
 		}
