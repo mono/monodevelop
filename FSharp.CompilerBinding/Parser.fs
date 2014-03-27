@@ -201,10 +201,10 @@ module Parsing =
 
   /// Parse F# short-identifier and reverse the resulting string
   let parseBackIdent =  
-    parser { 
+    parser {
         let! x = optional (string "``")
         let! res = many (if x.IsSome then rawIdChar else fsharpIdentCharacter) |> map String.ofReversedSeq 
-        let! _ = optional (string "``") 
+        let! _ = optional (string "``")
         return res }
 
   /// Parse remainder of a long identifier before '.' (e.g. "Name.space.")
@@ -324,12 +324,5 @@ module Parsing =
         |> List.rev
         |> List.head
 
-    if String.IsNullOrEmpty residue &&
-       List.isEmpty longName &&
-       col >= 0 && col <= lineStr.Length &&
-       lineStr.[col - 1] = '.'
-    then
-        None
-    else
-        Some (longName, residue)
+    Some (longName, residue)
 
