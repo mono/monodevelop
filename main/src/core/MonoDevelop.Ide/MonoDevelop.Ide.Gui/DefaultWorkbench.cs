@@ -748,9 +748,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ignorePageSwitch)
 				return;
-			if (sender != null)
+			if (sender != null) {
+				activeTabControl.Destroyed -= HandleActiveTabControlDestroyed;
 				activeTabControl = sender as SdiDragNotebook ?? activeTabControl ?? tabControl;
-
+				activeTabControl.Destroyed += HandleActiveTabControlDestroyed;
+			}
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
 
@@ -773,6 +775,11 @@ namespace MonoDevelop.Ide.Gui
 			if (!closeAll && ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
 			}
+		}
+
+		void HandleActiveTabControlDestroyed (object sender, EventArgs e)
+		{
+			activeTabControl = tabControl;
 		}
 		
 		public PadCodon GetPad(Type type)
