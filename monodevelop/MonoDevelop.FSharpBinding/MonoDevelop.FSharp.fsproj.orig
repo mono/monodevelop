@@ -23,7 +23,7 @@
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
     <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <Externalconsole>True</Externalconsole>
     <GenerateDebugInfo>false</GenerateDebugInfo>
@@ -47,7 +47,7 @@
     <Optimize>True</Optimize>
     <Tailcalls>True</Tailcalls>
     <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Release\</OutputPath>
-    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
+    <DefineConstants>TRACE;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <GenerateDebugInfo>false</GenerateDebugInfo>
     <OptimizeCode>false</OptimizeCode>

@@ -223,6 +223,7 @@ display in a help buffer instead.")
     (sleep-for 0.1)
     (if (process-live-p proc)
         (progn
+	  (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
           (setq fsharp-ac-status 'idle

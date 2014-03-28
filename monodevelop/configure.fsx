@@ -12,7 +12,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.28"
+let FSharpVersion = "3.2.29"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -126,6 +126,7 @@ let xmlFile = "MonoDevelop.FSharpBinding/FSharpBinding.addin.xml"
 
 FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojFile, "INSERT_FSPROJ_MDROOT", mdDir)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
+FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)

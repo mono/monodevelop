@@ -27,7 +27,7 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         | Some (longName, residue) ->
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (checkResults.GetDeclarationsAlternate(None, line, col, lineStr, longName, residue, fun (_,_) -> false)
+            try Some (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
                       |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 
