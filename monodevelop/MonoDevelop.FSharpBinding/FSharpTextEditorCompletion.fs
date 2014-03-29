@@ -232,9 +232,7 @@ type FSharpTextEditorCompletion() =
   // Run completion automatically when the user hits '.'
   // (this means that completion currently also works in comments and strings...)
   override x.HandleCodeCompletion(context, ch, triggerWordLength:byref<int>) =
-      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
-      
-      if ch <> '.' || String.IsNullOrWhiteSpace(lineStr.Substring(0,col-1)) then null else
+      if ch <> '.' then null else
 
       // We generally avoids forcing a re-typecheck on '.' presses by using
       // TryGetRecentTypeCheckResults. Forcing a re-typecheck on a user action can cause a 
