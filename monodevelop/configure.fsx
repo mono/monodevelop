@@ -137,7 +137,7 @@ if installMdbFiles then
   FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
 
 if  isWindows then
-
+  FileReplace(xmlFile, xmlFile, ".mdb\"", ".pdb\"")
   for config in ["Debug";"Release"] do
     System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),
        sprintf """
