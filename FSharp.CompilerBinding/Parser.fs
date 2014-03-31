@@ -324,5 +324,5 @@ module Parsing =
         |> List.rev
         |> List.head
 
-    Some (longName, residue)
+    longName, residue
 
