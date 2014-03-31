@@ -218,7 +218,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			Package = Project
 				.SourceRepository
-				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: true);
+				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: false);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)
