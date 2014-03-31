@@ -78,6 +78,7 @@ let searchPaths =
   | None -> paths
   | Some p -> p :: paths
 
+let installMdbFiles = Array.exists ((=) "--debug") args
 let mutable mdDir = null
 let mutable mdVersion = "4.1.6"
 
@@ -131,6 +132,9 @@ FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
+if installMdbFiles then
+  FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
+  FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
 
 if  isWindows then
 
