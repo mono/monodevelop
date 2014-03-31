@@ -42,6 +42,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			this.project = project;
 		}
 
+		public DotNetProject Project {
+			get { return project; }
+		}
+
 		IEnumerable<PackageReference> GetPackageReferences ()
 		{
 			if (project.HasPackages ()) {

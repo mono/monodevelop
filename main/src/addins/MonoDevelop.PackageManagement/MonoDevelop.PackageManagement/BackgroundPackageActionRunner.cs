@@ -30,6 +30,7 @@ using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -38,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
+		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -47,6 +49,15 @@ namespace MonoDevelop.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 
+		public IEnumerable<InstallPackageAction> PendingInstallActions {
+			get { return pendingInstallActions; }
+		}
+
+		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
+		{
+			return pendingInstallActions.Where (action => action.Project.DotNetProject == project);
+		}
+
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
 			Run (progressMessage, new IPackageAction [] { action });
@@ -54,7 +65,16 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
+			AddInstallActionsToPendingQueue (actions);
+			packageManagementEvents.OnPackageOperationsStarting ();
 			DispatchService.BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+		}
+
+		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
+		{
+			foreach (InstallPackageAction action in actions.OfType<InstallPackageAction> ()) {
+				pendingInstallActions.Add (action);
+			}
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
@@ -72,6 +92,10 @@ namespace MonoDevelop.PackageManagement
 						monitor.ShowPackageConsole ();
 					} finally {
 						monitor.EndTask ();
+						DispatchService.GuiDispatch (() => {
+							RemoveInstallActions (installPackageActions);
+							packageManagementEvents.OnPackageOperationsFinished ();
+						});
 					}
 				}
 			}
@@ -98,6 +122,13 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return true;
+		}
+
+		void RemoveInstallActions (IList<IPackageAction> installPackageActions)
+		{
+			foreach (InstallPackageAction action in installPackageActions.OfType <InstallPackageAction> ()) {
+				pendingInstallActions.Remove (action);
+			}
 		}
 
 		void CheckForPowerShellScripts (IPackageAction action)

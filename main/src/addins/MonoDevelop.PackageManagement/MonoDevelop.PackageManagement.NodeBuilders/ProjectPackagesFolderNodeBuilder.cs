@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gdk;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
@@ -75,7 +76,30 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		IEnumerable<PackageReferenceNode> GetPackageReferencesNodes (object dataObject)
 		{
 			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
-			return projectPackagesNode.GetPackageReferencesNodes ();
+
+			List<PackageReferenceNode> nodes = projectPackagesNode.GetPackageReferencesNodes ().ToList ();
+
+			foreach (InstallPackageAction installAction in GetPendingInstallActions (projectPackagesNode.Project)) {
+				if (!nodes.Any (node => node.Id == installAction.Package.Id)) {
+					nodes.Add (CreatePackageReferenceNode (installAction));
+				}
+			}
+
+			foreach (PackageReferenceNode node in nodes) {
+				yield return node;
+			}
+		}
+
+		IEnumerable<InstallPackageAction> GetPendingInstallActions (DotNetProject project)
+		{
+			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project);
+		}
+
+		PackageReferenceNode CreatePackageReferenceNode (InstallPackageAction installAction)
+		{
+			return new PackageReferenceNode (
+				new PackageReference (installAction.Package.Id, installAction.Package.Version, null, null, false),
+				false);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)

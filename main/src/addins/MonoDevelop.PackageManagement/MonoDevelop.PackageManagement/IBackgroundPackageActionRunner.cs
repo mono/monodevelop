@@ -27,11 +27,15 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	public interface IBackgroundPackageActionRunner
 	{
+		IEnumerable<InstallPackageAction> PendingInstallActions { get; }
+		IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project);
+
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
 		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
 
