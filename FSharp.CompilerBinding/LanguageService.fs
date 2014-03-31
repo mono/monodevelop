@@ -22,9 +22,7 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         match infoOpt with 
         | None -> None
         | Some (checkResults, parseResults) -> 
-        match Parsing.findLongIdentsAndResidue(col, lineStr) with
-        | None -> None
-        | Some (longName, residue) ->
+            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
             try Some (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
