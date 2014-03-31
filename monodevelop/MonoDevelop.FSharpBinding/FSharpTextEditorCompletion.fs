@@ -171,6 +171,8 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
 type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
+  let mutable suppressParameterCompletion = false
+
   override x.ExtendsEditor(doc:Document, editor:IEditableTextBuffer) =
     // Extend any text editor that edits F# files
     CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))
@@ -180,8 +182,10 @@ type FSharpTextEditorCompletion() =
   /// Provide parameter and method overload information when you type '(', '<' or ','
   override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
     try
-     if (completionChar <> '(' && completionChar <> '<' && completionChar <> ',' ) then null else
-      Debug.WriteLine("Getting Parameter Info on completion character {0}", completionChar)
+      if suppressParameterCompletion then
+         suppressParameterCompletion <- false
+         null
+      else
       let doc = x.Document
       let docText = doc.Editor.Text
       let offset = context.TriggerOffset
@@ -196,11 +200,13 @@ type FSharpTextEditorCompletion() =
               elif ((ch = ')' || ch = '}' || ch = ']')) then loop (depth+1) (i-1) 
               elif (ch = '(' || ch = '<') then i
               else loop depth (i-1) 
-          loop 0 offset 
+          loop 0 (offset-1)
 
-      Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
       let config = IdeApp.Workspace.ActiveConfiguration
-      if docText = null || config = null || offset >= docText.Length || offset < 0 then null else
+      if docText = null || config = null || offset >= docText.Length || startOffset < 0 || offset <= 0 then 
+        null 
+      else
+      Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
 
       // Try to get typed result - with the specified timeout
       let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
@@ -211,7 +217,7 @@ type FSharpTextEditorCompletion() =
       match MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) with
       | None -> null
       | Some tyRes ->
-      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
+      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
       let methsOpt = tyRes.GetMethods(line, col, lineStr)
       match methsOpt with 
       | None -> 
@@ -221,13 +227,20 @@ type FSharpTextEditorCompletion() =
           Debug.WriteLine("Getting Parameter Info: methods!")
           new ParameterDataProvider (startOffset, name, meths) :> _ 
     with _ -> null
-        
-  override x.KeyPress (key, keyChar, modifier) =
-      let result = base.KeyPress (key, keyChar, modifier)
-      if ((keyChar = ',' || keyChar = ')') && x.CanRunParameterCompletionCommand ()) then
-          base.RunParameterCompletionCommand ()
-      result
 
+  override x.KeyPress (key, keyChar, modifier) =
+      // base.KeyPress will execute RunParameterCompletionCommand,
+      // so suppress it here.  
+      suppressParameterCompletion <-
+         keyChar <> '(' && keyChar <> '<' && keyChar <> ','
+
+      let result = base.KeyPress (key, keyChar, modifier)
+
+      suppressParameterCompletion <- false
+      if (keyChar = ')' && x.CanRunParameterCompletionCommand ()) then
+          base.RunParameterCompletionCommand ()
+
+      result
 
   // Run completion automatically when the user hits '.'
   // (this means that completion currently also works in comments and strings...)
