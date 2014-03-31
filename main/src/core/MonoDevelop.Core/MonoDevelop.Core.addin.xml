@@ -269,6 +269,9 @@
 		<SolutionItem guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
 			type = "MonoDevelop.Projects.CompiledAssemblyProject"
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
+		<SolutionItem guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
+			type = "MonoDevelop.Projects.SharedProject"
+			handlerType = "MonoDevelop.Projects.Formats.MSBuild.SharedProjectMSBuildHandler" />
 	</Extension>
 	
 	<!--

@@ -456,6 +456,8 @@
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
+    <Compile Include="MonoDevelop.Projects\SharedProject.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SharedProjectMSBuildHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
