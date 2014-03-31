@@ -27,7 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Versioning;
+using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -35,6 +39,7 @@ namespace ICSharpCode.PackageManagement
 	public abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
+		bool hasBeforeExecuteBeenRun;
 		
 		public ProcessPackageAction(
 			IPackageManagementProject project,
@@ -74,18 +79,94 @@ namespace ICSharpCode.PackageManagement
 		public void Execute()
 		{
 			BeforeExecute();
+			CheckForPowerShellScripts ();
+			CheckLicenses ();
 			//if (PackageScriptRunner != null) {
 			//	ExecuteWithScriptRunner();
 			//} else {
 				ExecuteCore();
 			//}
+			LogEmptyLineForFinishedAction ();
 		}
 		
 		protected virtual void BeforeExecute()
 		{
+			if (hasBeforeExecuteBeenRun)
+				return;
+
 			GetLoggerIfMissing();
 			ConfigureProjectLogger();
+			LogStartingMessage ();
 			GetPackageIfMissing();
+
+			hasBeforeExecuteBeenRun = true;
+		}
+
+		void LogStartingMessage ()
+		{
+			if (ShouldLogStartingMessage ()) {
+				Logger.Log (MessageLevel.Info, GetStartingMessage ());
+			}
+		}
+
+		protected virtual bool ShouldLogStartingMessage ()
+		{
+			return true;
+		}
+
+		string GetStartingMessage ()
+		{
+			return String.Format (
+				GettextCatalog.GetString (StartingMessageFormat),
+				GetPackageId ());
+		}
+
+		protected abstract string StartingMessageFormat { get; }
+
+		void LogEmptyLineForFinishedAction ()
+		{
+			if (!ShouldLogEmptyLineForFinishedAction ())
+				return;
+
+			Logger.Log (MessageLevel.Info, String.Empty);
+		}
+
+		protected virtual bool ShouldLogEmptyLineForFinishedAction ()
+		{
+			return true;
+		}
+
+		void CheckForPowerShellScripts ()
+		{
+			if (HasPackageScriptsToRun ()) {
+				ReportPowerShellScriptWarning ();
+			}
+		}
+
+		void ReportPowerShellScriptWarning ()
+		{
+			string message = GettextCatalog.GetString ("{0} Package contains PowerShell scripts which will not be run.", GetPackageId ());
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
+		}
+
+		void CheckLicenses ()
+		{
+			if (!AcceptLicenses ()) {
+				string message = GettextCatalog.GetString ("Licenses not accepted.");
+				throw new ApplicationException (message);
+			}
+		}
+
+		bool AcceptLicenses ()
+		{
+			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
+			var actions = new IPackageAction [] { this };
+			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (actions).ToList ();
+			if (packages.Any ()) {
+				return packageManagementEvents.OnAcceptLicenses (packages);
+			}
+
+			return true;
 		}
 		
 		void ExecuteWithScriptRunner()

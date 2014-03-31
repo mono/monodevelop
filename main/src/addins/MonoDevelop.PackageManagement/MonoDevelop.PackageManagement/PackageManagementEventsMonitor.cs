@@ -121,7 +121,7 @@ namespace MonoDevelop.PackageManagement
 		void ReportLicenseAgreementWarning (IPackage package)
 		{
 			string message = GettextCatalog.GetString (
-				"The package {0} has a license agreement which is available at {1}{2}" +
+				"The {0} package has a license agreement which is available at {1}{2}" +
 				"Please review this license agreement and remove the package if you do not accept the agreement.{2}" +
 				"Check the package for additional dependencies which may also have license agreements.{2}" +
 				"Using this package and any dependencies constitutes your acceptance of these license agreements.",

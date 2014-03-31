@@ -54,5 +54,9 @@ namespace ICSharpCode.PackageManagement
 			Project.InstallPackage(Package, this);
 			OnParentPackageInstalled();
 		}
+
+		protected override string StartingMessageFormat {
+			get { return "Adding {0}..."; }
+		}
 	}
 }

@@ -103,25 +103,10 @@ namespace MonoDevelop.PackageManagement
 
 		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
-			if (!AcceptPackageLicenses (packageActions))
-				return;
-
 			foreach (IPackageAction action in packageActions) {
-				CheckForPowerShellScripts (action);
 				action.Execute ();
 				monitor.Step (1);
 			}
-		}
-
-		bool AcceptPackageLicenses (IList<IPackageAction> packageActions)
-		{
-			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
-			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (packageActions).ToList ();
-			if (packages.Any ()) {
-				return packageManagementEvents.OnAcceptLicenses (packages);
-			}
-
-			return true;
 		}
 
 		void RemoveInstallActions (IList<IPackageAction> installPackageActions)
@@ -129,19 +114,6 @@ namespace MonoDevelop.PackageManagement
 			foreach (InstallPackageAction action in installPackageActions.OfType <InstallPackageAction> ()) {
 				pendingInstallActions.Remove (action);
 			}
-		}
-
-		void CheckForPowerShellScripts (IPackageAction action)
-		{
-			if (action.HasPackageScriptsToRun ()) {
-				ReportPowerShellScriptWarning ();
-			}
-		}
-
-		void ReportPowerShellScriptWarning ()
-		{
-			string message = GettextCatalog.GetString ("Package contains PowerShell scripts which will not be run.");
-			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
 		}
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
