@@ -766,10 +766,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 			}
 
-			foreach (var ext in GetMSBuildExtensions ())
-				ext.LoadProject (EntityItem, msproject);
+			LoadFromMSBuildProject (msproject);
 
 			Item.NeedsReload = false;
+		}
+
+		protected virtual void LoadFromMSBuildProject (MSBuildProject msproject)
+		{
+			foreach (var ext in GetMSBuildExtensions ())
+				ext.LoadProject (EntityItem, msproject);
 		}
 
 		const string RecursiveDirectoryWildcard = "**";
@@ -1309,10 +1314,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 
-			foreach (var ext in GetMSBuildExtensions ())
-				ext.SaveProject (EntityItem, msproject);
+			SaveToMSBuildProject (msproject);
 
 			return msproject;
+		}
+
+		protected void SaveToMSBuildProject (MSBuildProject msproject)
+		{
+			foreach (var ext in GetMSBuildExtensions ())
+				ext.SaveProject (EntityItem, msproject);
 		}
 
 		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue, bool isXml = false)
