@@ -35,7 +35,11 @@
     <StartWorkingDirectory>INSERT_FSPROJ_MDROOT</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="&quot;INSERT_FSPROJ_MDEXE&quot;" workingdir="INSERT_FSPROJ_MDROOT" />
+        <Command type="Execute" command="&quot;INSERT_FSPROJ_MDEXE&quot;" workingdir="INSERT_FSPROJ_MDROOT">
+          <EnvironmentVariables>
+            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
+          </EnvironmentVariables>
+        </Command>
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
