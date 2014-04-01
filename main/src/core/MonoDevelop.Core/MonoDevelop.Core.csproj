@@ -456,9 +456,10 @@
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
-    <Compile Include="MonoDevelop.Projects\SharedProject.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SharedProjectMSBuildHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProject.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -563,6 +564,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core.Web\" />
+    <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; ..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />

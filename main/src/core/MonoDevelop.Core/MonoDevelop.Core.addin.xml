@@ -146,7 +146,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
-		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
@@ -274,10 +274,16 @@
 			type = "MonoDevelop.Projects.CompiledAssemblyProject"
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
 		<SolutionItem guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
-			type = "MonoDevelop.Projects.SharedProject"
-			handlerType = "MonoDevelop.Projects.Formats.MSBuild.SharedProjectMSBuildHandler" />
+			type = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject"
+			extension = "shproj"
+			handlerType = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildHandler" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
+		<Class class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
+	</Extension>
+
+
 	<!--
 	Some info from:
 	http://www.mztools.com/articles/2008/mz2008017.aspx
