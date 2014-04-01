@@ -152,6 +152,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 		}
+
+		public override object GetService (Type t)
+		{
+			foreach (var ex in GetMSBuildExtensions ()) {
+				var s = ex.GetService (t);
+				if (s != null)
+					return s;
+			}
+			return null;
+		}
 		
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
 		{
@@ -372,7 +382,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				RemoveDuplicateItems (p, fileName);
 				
-				Load (monitor, p);
+				LoadProject (monitor, p);
 				return it;
 				
 			} finally {
@@ -597,7 +607,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void Load (IProgressMonitor monitor, MSBuildProject msproject)
+		protected virtual void LoadProject (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			timer.Trace ("Initialize serialization");
 			
@@ -615,31 +625,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			timer.Trace ("Read project items");
 			
-			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
-				ProjectItem it = ReadItem (ser, buildItem);
+			LoadProjectItems (msproject, ser, ProjectItemFlags.None);
 
-				if (it == null) continue;
-
-				if (it is ProjectFile) {
-					var file = (ProjectFile)it;
-
-					if (file.Name.IndexOf ('*') > -1) {
-						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
-						foreach (var expandedItem in ResolveWildcardItems (file))
-							EntityItem.Items.Add (expandedItem);
-
-						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
-						// try to compile and display these nonstandard items
-						EntityItem.WildcardItems.Add (it);
-						continue;
-					}
-					if (ProjectTypeIsUnsupported && !File.Exists (file.FilePath))
-						continue;
-				}
-
-				EntityItem.Items.Add (it);
-			}
-			
 			timer.Trace ("Read configurations");
 			
 			TargetFrameworkMoniker targetFx = null;
@@ -766,15 +753,41 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 			}
 
-			LoadFromMSBuildProject (msproject);
+			LoadFromMSBuildProject (monitor, msproject);
 
 			Item.NeedsReload = false;
 		}
 
-		protected virtual void LoadFromMSBuildProject (MSBuildProject msproject)
+		internal void LoadProjectItems (MSBuildProject msproject, MSBuildSerializer ser, ProjectItemFlags flags)
+		{
+			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
+				ProjectItem it = ReadItem (ser, buildItem);
+				if (it == null)
+					continue;
+				it.Flags = flags;
+				if (it is ProjectFile) {
+					var file = (ProjectFile)it;
+					if (file.Name.IndexOf ('*') > -1) {
+						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
+						foreach (var expandedItem in ResolveWildcardItems (file))
+							EntityItem.Items.Add (expandedItem);
+						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
+						// try to compile and display these nonstandard items
+						EntityItem.WildcardItems.Add (it);
+						continue;
+					}
+					if (ProjectTypeIsUnsupported && !File.Exists (file.FilePath))
+						continue;
+				}
+				EntityItem.Items.Add (it);
+				it.ExtendedProperties ["MSBuild.SourceProject"] = msproject.FileName;
+			}
+		}
+
+		protected virtual void LoadFromMSBuildProject (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			foreach (var ext in GetMSBuildExtensions ())
-				ext.LoadProject (EntityItem, msproject);
+				ext.LoadProject (monitor, EntityItem, msproject);
 		}
 
 		const string RecursiveDirectoryWildcard = "**";
@@ -889,7 +902,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem)
+		internal ProjectItem ReadItem (MSBuildSerializer ser, MSBuildItem buildItem)
 		{
 			Project project = Item as Project;
 			DotNetProject dotNetProject = Item as DotNetProject;
@@ -988,12 +1001,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			// If it is an absolute uri, it's not a valid file
 			try {
-				return !Uri.IsWellFormedUriString (path, UriKind.Absolute);
+				if (Uri.IsWellFormedUriString (path, UriKind.Absolute)) {
+					var f = new Uri (path);
+					return f.Scheme == "file";
+				}
 			} catch {
 				// Old mono versions may crash in IsWellFormedUriString if the path
 				// is not an uri.
-				return true;
 			}
+			return true;
 		}
 		
 		class ConfigData
@@ -1069,7 +1085,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				projectBuilder.Refresh ();
 		}
 
-		MSBuildProject SaveProject (IProgressMonitor monitor)
+		protected virtual MSBuildProject SaveProject (IProgressMonitor monitor)
 		{
 			if (Item is UnknownSolutionItem)
 				return null;
@@ -1255,19 +1271,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			
-			// Remove old items
-			Dictionary<string,ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
-			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.Include + "<" + item.Condition] = new ItemInfo () { Item=item };
-			
-			// Add the new items
-			foreach (object ob in ((SolutionEntityItem)Item).Items.Concat (((SolutionEntityItem)Item).WildcardItems))
-				SaveItem (monitor, toolsFormat, ser, msproject, ob, oldItems);
-
-			foreach (ItemInfo itemInfo in oldItems.Values) {
-				if (!itemInfo.Added)
-					msproject.RemoveItem (itemInfo.Item);
-			}
+			SaveProjectItems (monitor, toolsFormat, ser, msproject);
 			
 			if (dotNetProject != null) {
 				var moniker = dotNetProject.TargetFramework.Id;
@@ -1288,7 +1292,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Impdate the imports section
 			
-			List<string> currentImports = msproject.Imports;
+			List<string> currentImports = msproject.Imports.Select (i => i.Project).ToList ();
 			List<string> imports = new List<string> (currentImports);
 			
 			// If the project is not new, don't add the default project imports,
@@ -1296,7 +1300,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			UpdateImports (imports, dotNetProject, newProject);
 			foreach (string imp in imports) {
 				if (!currentImports.Contains (imp)) {
-					msproject.AddNewImport (imp, null);
+					msproject.AddNewImport (imp);
 					currentImports.Add (imp);
 				}
 			}
@@ -1314,15 +1318,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 
-			SaveToMSBuildProject (msproject);
+			SaveToMSBuildProject (monitor, msproject);
 
 			return msproject;
 		}
 
-		protected void SaveToMSBuildProject (MSBuildProject msproject)
+		internal void SaveProjectItems (IProgressMonitor monitor, MSBuildFileFormat toolsFormat, MSBuildSerializer ser, MSBuildProject msproject, string pathPrefix = null)
+		{
+			// Remove old items
+			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
+			foreach (MSBuildItem item in msproject.GetAllItems ())
+				oldItems [item.Name + "<" + item.Include + "<" + item.Condition] = new ItemInfo () {
+					Item = item
+				};
+			// Add the new items
+			foreach (object ob in ((SolutionEntityItem)Item).Items.Concat (((SolutionEntityItem)Item).WildcardItems).Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
+				SaveItem (monitor, toolsFormat, ser, msproject, ob, oldItems, pathPrefix);
+			foreach (ItemInfo itemInfo in oldItems.Values) {
+				if (!itemInfo.Added)
+					msproject.RemoveItem (itemInfo.Item);
+			}
+		}
+
+		protected void SaveToMSBuildProject (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			foreach (var ext in GetMSBuildExtensions ())
-				ext.SaveProject (EntityItem, msproject);
+				ext.SaveProject (monitor, EntityItem, msproject);
 		}
 
 		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue, bool isXml = false)
@@ -1395,13 +1416,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveItem (IProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems)
+		void SaveItem (IProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
 		{
 			if (ob is ProjectReference) {
 				SaveReference (monitor, fmt, ser, msproject, (ProjectReference) ob, oldItems);
 			}
 			else if (ob is ProjectFile) {
-				SaveProjectFile (ser, msproject, (ProjectFile) ob, oldItems);
+				SaveProjectFile (ser, msproject, (ProjectFile) ob, oldItems, pathPrefix);
 			}
 			else {
 				string itemName;
@@ -1416,13 +1437,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,ItemInfo> oldItems)
+		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
 		{
 			if (file.IsOriginatedFromWildcard) return;
 
 			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
 
-			string path = MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, file.FilePath);
+			string path = pathPrefix + MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, file.FilePath);
 			if (path.Length == 0)
 				return;
 			
@@ -1434,7 +1455,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			WriteBuildItemMetadata (ser, buildItem, file, oldItems);
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
-				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+				buildItem.SetMetadata ("DependentUpon", pathPrefix + MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
 			else
 				buildItem.UnsetMetadata ("DependentUpon");
 
@@ -1457,7 +1478,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				buildItem.UnsetMetadata ("LastGenOutput");
 			
 			if (!string.IsNullOrEmpty (file.Link))
-				buildItem.SetMetadata ("Link", MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
+				buildItem.SetMetadata ("Link", pathPrefix + MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
 			else
 				buildItem.UnsetMetadata ("Link");
 			
@@ -1620,7 +1641,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		IEnumerable<MSBuildExtension> GetMSBuildExtensions ()
 		{
-			return AddinManager.GetExtensionObjects<MSBuildExtension> ("/MonoDevelop/ProjectModel/MSBuildExtensions");
+			foreach (var e in AddinManager.GetExtensionObjects<MSBuildExtension> ("/MonoDevelop/ProjectModel/MSBuildExtensions")) {
+				e.Handler = this;
+				yield return e;
+			}
 		}
 
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)

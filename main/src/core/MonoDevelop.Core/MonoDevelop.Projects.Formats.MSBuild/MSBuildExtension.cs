@@ -24,17 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildExtension
 	{
-		public virtual void LoadProject (SolutionEntityItem item, MSBuildProject project)
+		public MSBuildProjectHandler Handler { get; set; }
+
+		public virtual void LoadProject (IProgressMonitor monitor, SolutionEntityItem item, MSBuildProject project)
 		{
 		}
 
-		public virtual void SaveProject (SolutionEntityItem item, MSBuildProject project)
+		public virtual void SaveProject (IProgressMonitor monitor, SolutionEntityItem item, MSBuildProject project)
 		{
+		}
+
+		public virtual object GetService (Type t)
+		{
+			return null;
 		}
 	}
 }
