@@ -153,7 +153,8 @@
 	<StockIcon stockid = "md-ProtectedOrInternal-static-method" icon = "res:element-method-light-16.png|res:element-visibility-static-overlay-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-property" icon = "res:element-property-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-static-property" icon = "res:element-property-light-16.png|res:element-visibility-static-overlay-light-16element-visibility-static-overlay-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
-  	<StockIcon stockid = "md-ProtectedOrInternal-struct" icon = "res:element-structure-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-ProtectedOrInternal-struct" icon = "res:element-structure-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-package-source" resource = "package-source-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-reference" resource = "reference-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-reference-package" icon = "md-reference" size="Menu" />
 	<StockIcon stockid = "md-reference-folder" icon = "md-reference|md-folder-overlay" size="Menu" />
