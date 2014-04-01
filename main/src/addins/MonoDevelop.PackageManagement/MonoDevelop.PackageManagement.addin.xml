@@ -94,17 +94,19 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id="NuGetPackageManagement" _label="Packages">
+		<Section id="NuGetPackageManagement" _label="Packages" icon="md-reference">
 			<Section
 				id="General"
 				_label="General"
 				fill="true"
-				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" />
+				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel"\
+                icon="md-reference" />
 			<Section
 				id="PackageSources"
 				_label="Sources"
 				fill="true"
-				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" />
+				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel"
+                icon="md-package-source" />
 		</Section>
 	</Extension>
 
