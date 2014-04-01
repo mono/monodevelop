@@ -80,6 +80,7 @@ let searchPaths =
 
 let installMdbFiles = Array.exists ((=) "--debug") args
 let mutable mdDir = null
+let mutable mdExe = null
 let mutable mdVersion = "4.1.6"
 
 // Look for the installation directory
@@ -93,7 +94,7 @@ else
     // Using installed MonoDevelop
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
     if (mdDir <> null) then
-        let mdExe = 
+        mdExe <-
             if (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
                 GetPath[mdDir; "../../XamarinStudio"]
             elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
@@ -130,6 +131,7 @@ FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojF
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
+FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDEXE", mdExe)
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 if installMdbFiles then

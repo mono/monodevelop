@@ -31,11 +31,11 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files (x86)\Xamarin Studio\bin\XamarinStudio.exe</StartProgram>
-    <StartWorkingDirectory>C:\Program Files (x86)\Xamarin Studio\bin</StartWorkingDirectory>
+    <StartProgram>INSERT_FSPROJ_MDEXE</StartProgram>
+    <StartWorkingDirectory>INSERT_FSPROJ_MDROOT</StartWorkingDirectory>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="&quot;/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/XamarinStudio.exe&quot;" workingdir="/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin" />
+        <Command type="Execute" command="&quot;INSERT_FSPROJ_MDEXE&quot;" workingdir="INSERT_FSPROJ_MDROOT" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
