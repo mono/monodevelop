@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide
 		{
 			BuildResult result = null;
 			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
-			foreach (WorkspaceItem it in items) {
+			foreach (WorkspaceItem it in items.Where (i => i.CanRunTarget (target, configuration))) {
 				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
@@ -356,6 +356,15 @@ namespace MonoDevelop.Ide
 				}
 			}
 			return result;
+		}
+
+		bool IBuildTarget.CanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			foreach (WorkspaceItem it in Items.ToArray ()) {
+				if (it.CanRunTarget (target, configuration))
+					return true;
+			}
+			return false;
 		}
 
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

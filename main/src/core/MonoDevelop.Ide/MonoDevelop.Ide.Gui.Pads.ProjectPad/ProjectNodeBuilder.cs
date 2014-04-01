@@ -366,6 +366,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.ShowOptions (project);
 		}
 		
+		[CommandUpdateHandler (ProjectCommands.SetAsStartupProject)]
+		public void UpdateSetAsStartupProject (CommandInfo ci)
+		{
+			Project project = (Project) CurrentNode.DataItem;
+			ci.Visible = project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null), IdeApp.Workspace.ActiveConfiguration);
+		}
+
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
 		public void SetAsStartupProject ()
 		{
