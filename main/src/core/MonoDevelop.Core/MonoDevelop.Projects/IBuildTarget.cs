@@ -35,6 +35,7 @@ namespace MonoDevelop.Projects
 	public interface IBuildTarget: IWorkspaceObject
 	{
 		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
+		bool CanRunTarget (string target, ConfigurationSelector configuration);
 		void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
 		bool NeedsBuilding (ConfigurationSelector configuration);

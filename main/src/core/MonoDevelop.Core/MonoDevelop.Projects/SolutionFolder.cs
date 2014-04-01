@@ -1007,6 +1007,11 @@ namespace MonoDevelop.Projects
 		public void Dispose ()
 		{
 		}
+
+		public object GetService (Type t)
+		{
+			return null;
+		}
 	}
 	
 	public class SolutionFolderFileCollection: System.Collections.ObjectModel.Collection<FilePath>

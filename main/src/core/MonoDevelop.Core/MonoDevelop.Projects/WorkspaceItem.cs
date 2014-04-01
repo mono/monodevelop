@@ -163,8 +163,6 @@ namespace MonoDevelop.Projects
 		
 		public virtual object GetService (Type t)
 		{
-			if (t.IsInstanceOfType (this))
-				return this;
 			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
 		}
 		
@@ -249,6 +247,16 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
+		public bool CanBuild (ConfigurationSelector configuration)
+		{
+			return CanRunTarget (ProjectService.BuildTarget, configuration);
+		}
+
+		public bool CanClean (ConfigurationSelector configuration)
+		{
+			return CanRunTarget (ProjectService.CleanTarget, configuration);
+		}
+
 		public void Clean (IProgressMonitor monitor, string configuration)
 		{
 			Clean (monitor, (SolutionConfigurationSelector) configuration);
@@ -259,6 +267,16 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
+		public bool CanRunTarget (string target, string configuration)
+		{
+			return CanRunTarget (target, (SolutionConfigurationSelector) configuration);
+		}
+
+		public bool CanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			return Services.ProjectService.GetExtensionChain (this).CanRunTarget (this, target, configuration);
+		}
+
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
 			return InternalBuild (monitor, (SolutionConfigurationSelector) configuration);
@@ -408,6 +426,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
+		internal protected virtual bool OnGetCanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		protected virtual void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 		}
@@ -562,7 +585,12 @@ namespace MonoDevelop.Projects
 			if (NameChanged != null)
 				NameChanged (this, e);
 		}
-		
+
+		internal protected virtual object OnGetService (Type t)
+		{
+			return null;
+		}
+
 		protected void NotifyModified ()
 		{
 			OnModified (new WorkspaceItemEventArgs (this));

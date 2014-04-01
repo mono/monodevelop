@@ -82,5 +82,10 @@ namespace MonoDevelop.Projects.Extensions
 		public virtual void OnModified (string hint)
 		{
 		}
+
+		public virtual object GetService (Type t)
+		{
+			return null;
+		}
 	}
 }

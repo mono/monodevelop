@@ -160,14 +160,9 @@ namespace MonoDevelop.Projects
 		/// </param>
 		/// <remarks>
 		/// This method looks for an imlpementation of a service of the given type.
-		/// The default implementation this instance if the type is an interface
-		/// implemented by this instance. Otherwise, it looks for a service in
-		/// the project extension chain.
 		/// </remarks>
 		public virtual object GetService (Type t)
 		{
-			if (t.IsInstanceOfType (this))
-				return this;
 			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
 		}
 		
@@ -478,6 +473,21 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
+		public bool CanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			return Services.ProjectService.GetExtensionChain (this).CanRunTarget (this, target, configuration);
+		}
+
+		public bool CanBuild (ConfigurationSelector configuration)
+		{
+			return CanRunTarget (ProjectService.BuildTarget, configuration);
+		}
+
+		public bool CanClean (ConfigurationSelector configuration)
+		{
+			return CanRunTarget (ProjectService.CleanTarget, configuration);
+		}
+
 		/// <summary>
 		/// Cleans the files produced by this solution item
 		/// </summary>
@@ -602,7 +612,7 @@ namespace MonoDevelop.Projects
 					return true;
 			return false;
 		}
-		
+
 		/// <summary>
 		/// Gets the time of the last build
 		/// </summary>
@@ -1050,6 +1060,11 @@ namespace MonoDevelop.Projects
 			return DateTime.MinValue;
 		}
 		
+		internal protected virtual bool OnGetCanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// Determines whether this solution item can be executed using the specified context and configuration.
 		/// </summary>
@@ -1075,7 +1090,12 @@ namespace MonoDevelop.Projects
 		protected virtual void OnBoundToSolution ()
 		{
 		}
-		
+
+		internal protected virtual object OnGetService (Type t)
+		{
+			return ItemHandler.GetService (t);
+		}
+
 		/// <summary>
 		/// Occurs when the name of the item changes
 		/// </summary>

@@ -643,11 +643,16 @@ namespace MonoDevelop.Projects
 	{
 		Dictionary <SolutionItem,bool> needsBuildingCache;
 		
-		public override object GetService (IBuildTarget item, Type type)
+		public override object GetService (SolutionItem item, Type type)
 		{
-			return null;
+			return item.OnGetService (type);
 		}
 		
+		public override object GetService (WorkspaceItem item, Type type)
+		{
+			return item.OnGetService (type);
+		}
+
 		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{
 			FileService.RequestFileEdit (entry.GetItemFiles (false));
@@ -698,6 +703,16 @@ namespace MonoDevelop.Projects
 			if (res != null)
 				res.SourceTarget = item;
 			return res;
+		}
+
+		public override bool CanRunTarget (IBuildTarget item, string target, ConfigurationSelector configuration)
+		{
+			if (item is WorkspaceItem)
+				return ((WorkspaceItem)item).OnGetCanRunTarget (target, configuration);
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetCanRunTarget (target, configuration);
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
 		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)

@@ -54,7 +54,15 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public virtual object GetService (IBuildTarget item, Type type)
+		public virtual object GetService (SolutionItem item, Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return GetNext (item).GetService (item, type);
+		}
+
+		public virtual object GetService (WorkspaceItem item, Type type)
 		{
 			if (type.IsInstanceOfType (this))
 				return this;
@@ -120,6 +128,34 @@ namespace MonoDevelop.Projects
 				return GetNext (item).RunTarget (monitor, item, target, configuration);
 		}
 		
+		public virtual bool CanRunTarget (IBuildTarget item, string target, ConfigurationSelector configuration)
+		{
+			if (item is SolutionEntityItem)
+				return CanRunTarget ((SolutionEntityItem)item, target, configuration);
+			else if (item is WorkspaceItem)
+				return CanRunTarget ((WorkspaceItem) item, target, configuration);
+			else 
+				return GetNext (item).CanRunTarget (item, target, configuration);
+		}
+
+		protected virtual bool CanRunTarget (SolutionEntityItem item, string target, ConfigurationSelector configuration)
+		{
+			return GetNext (item).CanRunTarget ((IBuildTarget) item, target, configuration);
+		}
+
+		protected virtual bool CanRunTarget (Solution solution, string target, ConfigurationSelector configuration)
+		{
+			return GetNext (solution).CanRunTarget ((IBuildTarget) solution, target, configuration);
+		}
+
+		protected virtual bool CanRunTarget (WorkspaceItem item, string target, ConfigurationSelector configuration)
+		{
+			if (item is Solution)
+				return CanRunTarget ((Solution) item, target, configuration);
+			else
+				return GetNext (item).CanRunTarget ((IBuildTarget) item, target, configuration);
+		}
+
 		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
@@ -173,7 +209,7 @@ namespace MonoDevelop.Projects
 		{
 			return GetNext (solution).RunTarget (monitor, solution, ProjectService.BuildTarget, configuration);
 		}
-		
+
 		public virtual void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
@@ -360,6 +396,11 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
+		public bool CanRunTarget (string target, ConfigurationSelector configuration)
+		{
+			return false;
+		}
+
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;
