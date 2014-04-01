@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "MonoDevelop.FSharp.windows", "MonoDevelop.FSharp.windows.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp.windows", "MonoDevelop.FSharp.windows.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.CompilerBinding", "..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj", "{88F6940F-D300-474C-B2A7-E2ECD5B04B57}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.CompilerBinding", "..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj", "{88F6940F-D300-474C-B2A7-E2ECD5B04B57}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.AutoComplete", "..\..\FSharp.AutoComplete\FSharp.AutoComplete.fsproj", "{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.AutoComplete", "..\..\FSharp.AutoComplete\FSharp.AutoComplete.fsproj", "{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
@@ -66,11 +66,6 @@ Global
 		{FD0D1033-9145-48E5-8ED8-E2365252878C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FD0D1033-9145-48E5-8ED8-E2365252878C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FD0D1033-9145-48E5-8ED8-E2365252878C}.Release|x86.ActiveCfg = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = MonoDevelop.FSharp.windows.fsproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
