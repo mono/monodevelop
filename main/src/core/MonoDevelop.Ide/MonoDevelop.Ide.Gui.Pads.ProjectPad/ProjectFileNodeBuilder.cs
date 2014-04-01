@@ -62,6 +62,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
+			if ((file.Flags & ProjectItemFlags.Hidden) != 0) {
+				attributes |= NodeAttributes.Hidden;
+				return;
+			}
+
 			attributes |= NodeAttributes.AllowRename;
 
 			if (!file.Visible && !treeNavigator.Options ["ShowAllFiles"])
