@@ -219,6 +219,7 @@
 		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
 		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
 		<ProjectBinding id = "PortableDotNet" class = "MonoDevelop.Projects.PortableDotNetProjectBinding" />
+		<ProjectBinding id = "SharedAssetsProject" class = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectBinding" />
 	</Extension>
 	  
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">

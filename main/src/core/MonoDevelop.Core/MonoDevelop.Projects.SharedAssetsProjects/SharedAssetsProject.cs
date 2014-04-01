@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.IO;
+using System.Xml;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
@@ -37,6 +38,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		Solution currentSolution;
 
 		public SharedAssetsProject ()
+		{
+		}
+
+		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 		}
 
