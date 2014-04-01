@@ -40,7 +40,7 @@ namespace MonoDevelop.PackageManagement
 
 		static Xwt.Drawing.Image warningImage = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		const int imageSpacing = 5;
-		const int textSpacing = 5;
+		const int textSpacing = 7;
 
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 
 			using (var layout = new Pango.Layout (widget.PangoContext)) {
 				layout.SetMarkup (GetPackageSourceDescriptionMarkup ());
-				height = GetLayoutSize (layout).Height + 2;
+				height = GetLayoutSize (layout).Height + 8;
 			}
 		}
 	}

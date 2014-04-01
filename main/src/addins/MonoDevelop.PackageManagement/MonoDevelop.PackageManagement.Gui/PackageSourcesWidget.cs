@@ -74,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 			column.AddAttribute (checkBoxRenderer, "active", IsEnabledCheckBoxColumn);
 
 			var iconRenderer = new CellRendererImage ();
-			iconRenderer.StockSize = IconSize.LargeToolbar;
+			iconRenderer.StockSize = IconSize.Dnd;
 			iconRenderer.Xalign = 0;
 			iconRenderer.Xpad = 0;
 			column.PackStart (iconRenderer, false);
