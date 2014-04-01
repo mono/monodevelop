@@ -62,15 +62,21 @@ namespace MonoDevelop.PackageManagement
 		TreeViewColumn CreateTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
-			column.Spacing = 5;
+			column.Spacing = 0;
 			
 			var checkBoxRenderer = new CellRendererToggle ();
 			checkBoxRenderer.Toggled += PackageSourceCheckBoxToggled;
+			checkBoxRenderer.Xpad = 7;
+			checkBoxRenderer.Ypad = 7;
+			checkBoxRenderer.Xalign = 0;
+			checkBoxRenderer.Yalign = 0;
 			column.PackStart (checkBoxRenderer, false);
 			column.AddAttribute (checkBoxRenderer, "active", IsEnabledCheckBoxColumn);
 
 			var iconRenderer = new CellRendererImage ();
 			iconRenderer.StockSize = IconSize.LargeToolbar;
+			iconRenderer.Xalign = 0;
+			iconRenderer.Xpad = 0;
 			column.PackStart (iconRenderer, false);
 			column.AddAttribute (iconRenderer, "icon-id", PackageSourceIconColumn);
 
