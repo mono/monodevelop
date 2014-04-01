@@ -89,8 +89,8 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-nuget-package" resource="packageicon.png" />
-		<StockIcon stockid="md-nuget-package-source" resource="PackageSourceIcon.png" size="Dnd" />
+		<StockIcon stockid="md-nuget-package" resource="reference-light-48.png" />
+		<StockIcon stockid="md-nuget-package-source" resource="package-source-light-32.png" size="Dnd" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">

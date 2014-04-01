@@ -317,13 +317,25 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\PackageSourceIcon.png">
-      <LogicalName>PackageSourceIcon.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-source-32.png">
+      <LogicalName>package-source-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-source-32%402x.png">
+      <LogicalName>package-source-light-32@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\packageicon.png">
-      <LogicalName>packageicon.png</LogicalName>
+    <EmbeddedResource Include="icons\dark\reference-48.png">
+      <LogicalName>reference-dark-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\reference-48%402x.png">
+      <LogicalName>reference-dark-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-48.png">
+      <LogicalName>reference-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-48%402x.png">
+      <LogicalName>reference-light-48@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

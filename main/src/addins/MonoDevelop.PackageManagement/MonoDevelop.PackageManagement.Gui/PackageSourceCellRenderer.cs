@@ -123,7 +123,7 @@ namespace MonoDevelop.PackageManagement
 
 			using (var layout = new Pango.Layout (widget.PangoContext)) {
 				layout.SetMarkup (GetPackageSourceDescriptionMarkup ());
-				height = GetLayoutSize (layout).Height + 10;
+				height = GetLayoutSize (layout).Height + 2;
 			}
 		}
 	}
