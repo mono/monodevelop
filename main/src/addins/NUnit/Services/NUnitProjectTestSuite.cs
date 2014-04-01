@@ -55,7 +55,7 @@ namespace MonoDevelop.NUnit
 		{
 			storeId = Path.GetFileName (project.FileName);
 			resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (project.BaseDirectory);
-			ResultsStore = new XmlResultsStore (resultsPath, storeId);
+			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			this.project = project;
 			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
 			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
