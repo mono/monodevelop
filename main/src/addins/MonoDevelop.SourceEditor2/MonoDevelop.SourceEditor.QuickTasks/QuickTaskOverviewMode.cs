@@ -580,7 +580,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void DrawIndicator (Cairo.Context cr, Xwt.Drawing.Image img)
 		{
-			cr.DrawImage (this, img, (Allocation.Width - img.Width) / 2, -1);
+			cr.DrawImage (this, img, Math.Round ((Allocation.Width - img.Width) / 2), -1);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
