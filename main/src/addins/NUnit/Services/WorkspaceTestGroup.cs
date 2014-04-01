@@ -45,7 +45,7 @@ namespace MonoDevelop.NUnit
 		{
 			string storeId = ws.Name;
 			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (ws.BaseDirectory);
-			ResultsStore = new XmlResultsStore (resultsPath, storeId);
+			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			
 			workspace = ws;
 			workspace.ItemAdded += OnEntryChanged;
