@@ -51,19 +51,26 @@ First get nuget.exe and install the required nuget packages:
 
 Now make:
 
-	cd monodevelop
-	./configure.sh 
-	make 
-	make install
+```bash
+cd monodevelop
+./configure.sh 
+make 
+make install
+```
 
 If Monodevelop is installed in an unusual prefix you will need to invoke `configure.sh` with e.g. `--prefix=/path/to/prefix/lib/monodevelop`. Use `./configure.sh --help` to see a list of the paths searched by default.
 
+If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
+
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
-	cd monodevelop
-	configure.bat
-	.\build-and-install-debug.bat
+```dos
+cd monodevelop
+configure.bat
+build-and-install-debug.bat
+```
 
+If you subsequently make changes to the add-in, you will need to `build-and-install-debug.bat` again and restart MonoDevelop/Xamarin Studio. 
 
 
 ### Using the ASP.NET MVC 4 Template
@@ -105,7 +112,7 @@ created automatically by the configuration script (`configure.bat`)
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.1. 
 
 To be able to debug the add-in in Xamarin Studio or Monodevelop, invoke `./configure.sh --debug` or `configure.bat --debug`. This adds the necessary .mdb files to the add-in. 
-When configured with `--debug` you can simply `Start debugging` in Xamarin Studio. This will launch a debugged instance of Xamarin Studio.
+When configured with `--debug` you can simply `Start debugging` in Xamarin Studio. This will launch a debugged instance of Xamarin Studio. If you have made changes to the add-in, you will need to `make install` or `build-and-install-debug.bat` again.
 
 Note that you can not build the add-in in release mode when configured with `--debug`. To build a release build, first `./configure.sh` without `--debug`
 
