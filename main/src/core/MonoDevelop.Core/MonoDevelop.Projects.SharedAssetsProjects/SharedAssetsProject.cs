@@ -36,6 +36,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 	public class SharedAssetsProject: Project
 	{
 		Solution currentSolution;
+		IDotNetLanguageBinding languageBinding;
+		string languageName;
 
 		public SharedAssetsProject ()
 		{
@@ -43,6 +45,12 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
+			languageName = projectOptions.GetAttribute ("language");
+		}
+
+		public string LanguageName {
+			get { return languageName; }
+			set { languageName = value; }
 		}
 
 		public string DefaultNamespace { get; set; }
@@ -55,8 +63,21 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public override string[] SupportedLanguages {
 			get {
-				return new [] {"C#"};
+				return new [] {languageName};
 			}
+		}
+
+		public IDotNetLanguageBinding LanguageBinding {
+			get {
+				if (languageBinding == null)
+					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName) as IDotNetLanguageBinding;
+				return languageBinding;
+			}
+		}
+
+		public override bool IsCompileable (string fileName)
+		{
+			return LanguageBinding.IsSourceCodeFile (fileName);
 		}
 
 		protected override BuildResult OnBuild (MonoDevelop.Core.IProgressMonitor monitor, ConfigurationSelector configuration)
@@ -114,6 +135,62 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					e.ProjectReference.SetItemsProjectPath (Path.ChangeExtension (FileName, ".projitems"));
 				}
 			}
+		}
+
+		protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			base.OnFilePropertyChangedInProject (e);
+			foreach (var p in GetReferencingProjects ()) {
+				foreach (var f in e) {
+					var pf = (ProjectFile) f.ProjectFile.Clone ();
+					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+					p.Files.Remove (pf.FilePath);
+					p.Files.Add (pf);
+				}
+			}
+		}
+
+		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		{
+			base.OnFileAddedToProject (e);
+			foreach (var p in GetReferencingProjects ()) {
+				foreach (var f in e) {
+					var pf = (ProjectFile) f.ProjectFile.Clone ();
+					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+					p.Files.Add (pf);
+				}
+			}
+		}
+
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		{
+			base.OnFileRemovedFromProject (e);
+			foreach (var p in GetReferencingProjects ()) {
+				foreach (var f in e) {
+					p.Files.Remove (f.ProjectFile.FilePath);
+				}
+			}
+		}
+
+		protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+		{
+			base.OnFileRenamedInProject (e);
+			foreach (var p in GetReferencingProjects ()) {
+				foreach (var f in e) {
+					var pf = (ProjectFile) f.ProjectFile.Clone ();
+					p.Files.Remove (f.OldName);
+					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+					p.Files.Add (pf);
+				}
+			}
+		}
+
+		IEnumerable<DotNetProject> GetReferencingProjects ()
+		{
+			if (ParentSolution == null)
+				return new DotNetProject[0];
+
+			return ParentSolution.GetAllSolutionItems<DotNetProject> ().Where (p => p.References.Any (r => r.GetItemsProjectPath () != null));
 		}
 	}
 

@@ -55,6 +55,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (projitemsFile == null)
 				return;
 
+			// TODO: load the type from msbuild
+			((SharedAssetsProject)EntityItem).LanguageName = "C#";
+
 			projitemsFile = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
 
 			MSBuildProject p = new MSBuildProject ();
@@ -84,6 +87,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			var newProject = EntityItem.FileName == null || !File.Exists (EntityItem.FileName);
 			if (newProject) {
+				var grp = msproject.GetGlobalPropertyGroup ();
+				if (grp == null)
+					grp = msproject.AddNewPropertyGroup (false);
+				grp.SetPropertyValue ("ProjectGuid", EntityItem.ItemId, false);
 				var import = msproject.AddNewImport (@"$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props");
 				import.Condition = @"Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')";
 				msproject.AddNewImport (@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props");
