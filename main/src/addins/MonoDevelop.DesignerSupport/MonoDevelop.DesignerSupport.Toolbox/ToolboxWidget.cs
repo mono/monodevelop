@@ -269,7 +269,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				int width, height;
 				cr.SetSourceColor (CategoryLabelColor);
 				layout.GetPixelSize (out width, out height);
-				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (itemDimension.Height - height) / 2);
+				cr.MoveTo (xpos + CategoryLeftPadding, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 				Pango.CairoHelper.ShowLayout (cr, headerLayout);
 
 				var img = category.IsExpanded ? discloseUp : discloseDown;
@@ -290,7 +290,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					int width, height;
 					layout.GetPixelSize (out width, out height);
 					cr.SetSourceColor (Style.Text (item != this.SelectedItem ? StateType.Normal : StateType.Selected).ToCairoColor ());
-					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (itemDimension.Height - height) / 2);
+					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 					Pango.CairoHelper.ShowLayout (cr, layout);
 				} else {
 					cr.DrawImage (this, item.Icon, xpos + Math.Round ((itemDimension.Width  - item.Icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - item.Icon.Height) / 2));
