@@ -241,11 +241,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			});
 			foreach (var refProject in item.GetReferencedItems (configuration).OfType<Project> ()) {
 				var refConfig = refProject.GetConfiguration (configuration);
-				configs.Add (new ProjectConfigurationInfo () {
-					ProjectFile = refProject.FileName,
-					Configuration = refConfig.Name,
-					Platform = GetExplicitPlatform (refConfig)
-				});
+				if (refConfig != null) {
+					configs.Add (new ProjectConfigurationInfo () {
+						ProjectFile = refProject.FileName,
+						Configuration = refConfig.Name,
+						Platform = GetExplicitPlatform (refConfig)
+					});
+				}
 			}
 			return configs.ToArray ();
 		}
