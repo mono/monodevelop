@@ -296,20 +296,28 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
+
 				foreach (Task t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
 						wc++;
 				}
+
+				var font = Pango.FontDescription.FromString (MonoDevelop.Core.Platform.IsMac ? "Lucida Grande 11" : "Calibri 12");
+
 				errors.Visible = ec > 0;
+				errors.ModifyFont (font);
 				errors.Text = ec.ToString ();
 				errorImage.Visible = ec > 0;
 
 				warnings.Visible = wc > 0;
+				warnings.ModifyFont (font);
 				warnings.Text = wc.ToString ();
 				warningImage.Visible = wc > 0;
+
 				ebox.Visible = ec > 0 || wc > 0;
+
 				UpdateSeparators ();
 			};
 			
