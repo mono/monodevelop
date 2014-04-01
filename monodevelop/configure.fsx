@@ -95,14 +95,14 @@ else
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
     if (mdDir <> null) then
         mdExe <-
-            if (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
-                GetPath[mdDir; "../../XamarinStudio"]
-            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
-                GetPath [mdDir; "../../MonoDevelop"]
-            elif (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
+            if (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
                 GetPath[mdDir; "bin/XamarinStudio.exe"]
             elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
                 GetPath [mdDir; "bin/MonoDevelop.exe"]
+            elif (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
+                GetPath[mdDir; "../../XamarinStudio"]
+            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
+                GetPath [mdDir; "../../MonoDevelop"]
             else
                 null
         if (mdExe <> null) then
