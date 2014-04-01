@@ -653,6 +653,8 @@ namespace MonoDevelop.Ide.Gui
 					ext.Initialize (this);
 				}
 			}
+			if (window is SdiWorkspaceWindow)
+				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
 
 		void DetachExtensionChain ()
@@ -704,9 +706,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			window.Document = this;
-			
-			if (window is SdiWorkspaceWindow)
-				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
 		
 		/// <summary>
@@ -723,6 +722,11 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			e.Document.RunWhenLoaded (action);
+		}
+
+		public void AttachToProject (Project project)
+		{
+			SetProject (project);
 		}
 
 		TypeSystemService.ProjectContentWrapper currentWrapper;
