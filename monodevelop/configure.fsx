@@ -64,6 +64,8 @@ Console.WriteLine "------------------------------------------"
 let args = fsi.CommandLineArgs.[1..]
 if Array.exists ((=) "--help") args then
   Console.WriteLine "Options:\n"
+  Console.WriteLine "--debug\n"
+  Console.WriteLine "  Enable debugging of the add-in\n"
   Console.WriteLine "--prefix=PATH\n"
   Console.WriteLine "  MonoDevelop library directory. Currently searched:\n"
   for p in paths do Console.WriteLine("  {0}", p)
