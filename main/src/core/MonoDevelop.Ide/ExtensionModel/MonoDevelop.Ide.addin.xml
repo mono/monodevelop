@@ -252,11 +252,12 @@
 		<Customizer id="MonoDevelop.Ide.Execution.MonoExecutionCustomizer" _name="Mono Options" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Fonts">
-        <Font name ="Editor" _displayName="Text Editor" default ="_DEFAULT_MONOSPACE"/>
-        <Font name ="Editor(Gutter)" _displayName="Text Editor Line Numbers" default =""/>
-		<Font name ="Pad" _displayName="Pads" default ="_DEFAULT_SANS" defaultMac = "Lucida Grande 11"/>
-		<Font name ="OutputPad" _displayName="Output Pads" default ="_DEFAULT_MONOSPACE"/>
+	<Extension path="/MonoDevelop/Ide/Fonts">
+        <Font name="Editor" _displayName="Text Editor" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 12" />
+        <Font name="Editor(TooltipSource)" _displayName="Text Editor Tooltip Source" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 13" />
+        <Font name="Editor(Gutter)" _displayName="Text Editor Line Numbers" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 13" />
+		<Font name="Pad" _displayName="Pads" default="_DEFAULT_SANS" defaultMac="Lucida Grande 11" />
+		<Font name="OutputPad" _displayName="Output Pads" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 10" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
