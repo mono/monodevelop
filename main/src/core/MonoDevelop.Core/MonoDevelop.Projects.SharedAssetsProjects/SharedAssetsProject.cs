@@ -49,6 +49,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			DefaultNamespace = projectCreateInfo.ProjectName;
 		}
 
+		internal protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
+		{
+			var list = base.OnGetItemFiles (includeReferencedFiles);
+			if (!string.IsNullOrEmpty (FileName))
+				list.Add (FileName.ChangeExtension (".projitems"));
+			return list;
+		}
+
 		public string LanguageName {
 			get { return languageName; }
 			set { languageName = value; }

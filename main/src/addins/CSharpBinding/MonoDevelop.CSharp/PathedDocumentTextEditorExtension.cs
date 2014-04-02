@@ -106,6 +106,8 @@ namespace MonoDevelop.CSharp
 						Document.AttachToProject (pp);
 				}
 			}
+			if (Document.Project == null && ownerProjects.Count > 0)
+				Document.AttachToProject (ownerProjects[0]);
 		}
 
 		#region IPathedDocument implementation

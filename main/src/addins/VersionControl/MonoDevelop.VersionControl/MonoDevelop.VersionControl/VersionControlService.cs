@@ -480,8 +480,8 @@ namespace MonoDevelop.VersionControl
 		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, HashSet<string> files)
 		{
 			if (entry is SolutionEntityItem) {
-				string file = ((SolutionEntityItem)entry).FileName;
-				SolutionItemAddFile (rootPath, files, file);
+				foreach (var file in ((SolutionEntityItem)entry).GetItemFiles (false))
+					SolutionItemAddFile (rootPath, files, file);
 			}
 			
 			if (entry is Project) {
