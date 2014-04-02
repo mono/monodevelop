@@ -768,11 +768,11 @@ namespace MonoDevelop.Ide
 
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
-			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
-			foreach (Solution s in GetAllSolutions ().Where (sol => files.Contains (sol.FileName.CanonicalPath)))
+			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
+			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckWorkspaceItem (s);
 			
-			foreach (Project p in GetAllProjects ().Where (proj => files.Contains (proj.FileName.CanonicalPath)))
+			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckProject (p);
 		}
 		
