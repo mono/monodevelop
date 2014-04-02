@@ -400,15 +400,16 @@ namespace MonoDevelop.SourceEditor
 					drawLayout.SetText (text);
 					int w2, h2;
 					drawLayout.GetPixelSize (out w2, out h2);
-					width = w2 + errorCounterWidth + editor.LineHeight;
+					width = w2 + errorCounterWidth + editor.LineHeight - 2;
 				}
 			}
-			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
-			bubbleDrawY = y;
-			bubbleWidth = width;
 
-			var bubbleHeight = editor.LineHeight - 1;
-			g.RoundedRectangle (sx, y + 1, width, bubbleHeight, roundingRadius);
+			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
+			bubbleDrawY = y + 2;
+			bubbleWidth = width;
+			var bubbleHeight = editor.LineHeight;
+
+			g.RoundedRectangle (sx, y, width, bubbleHeight, roundingRadius);
 			g.SetSourceColor (TagColor.Color);
 			g.Fill ();
 
@@ -416,7 +417,7 @@ namespace MonoDevelop.SourceEditor
 			if (showErrorCount) {
 				var errorCounterHeight = bubbleHeight - 2;
 				var errorCounterX = sx + width - errorCounterWidth - 3;
-				var errorCounterY = y + 1 + (bubbleHeight - errorCounterHeight) / 2;
+				var errorCounterY = Math.Round (y + 1 + (bubbleHeight - errorCounterHeight) / 2);
 
 				g.RoundedRectangle (
 					errorCounterX - 1, 
@@ -448,10 +449,10 @@ namespace MonoDevelop.SourceEditor
 				int ew;
 				errorCountLayout.GetPixelSize (out ew, out eh);
 
-				g.Translate (
-					errorCounterX + (2 + errorCounterWidth - ew) / 2,
-					errorCounterY + (-1 + errorCounterHeight - eh) / 2
-				);
+				var tx = Math.Round (errorCounterX + (2 + errorCounterWidth - ew) / 2);
+				var ty = Math.Round (errorCounterY + (-1 + errorCounterHeight - eh) / 2);
+
+				g.Translate (tx, ty);
 				g.SetSourceColor (CounterColor.SecondColor);
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
@@ -461,29 +462,21 @@ namespace MonoDevelop.SourceEditor
 				// Draw dots
 				double radius = 2 * editor.Options.Zoom;
 				double spacing = 1 * editor.Options.Zoom;
-				double shadowOffset = 1 * editor.Options.Zoom;
 
 				sx += 1 * editor.Options.Zoom + Math.Ceiling((bubbleWidth - 3 * (radius * 2) - 2 * spacing) / 2);
 				for (int i = 0; i < 3; i++) {
-					g.Arc (sx, y + 1 + bubbleHeight / 2 + shadowOffset, radius, 0, Math.PI * 2);
-					g.SetSourceColor (MessageBubbleCache.ShadowColor);
-					g.Fill ();
-
 					g.Arc (sx, y + 1 + bubbleHeight / 2, radius, 0, Math.PI * 2);
 					g.SetSourceColor (TagColor.SecondColor);
 					g.Fill ();
 					sx += radius * 2 + spacing;
 				}
-
 			} else {
 				// Draw label text
-				g.Save ();
-				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + 1);
+				var tx = Math.Round (sx + editor.LineHeight / 2);
+				var ty = Math.Round (y + (editor.LineHeight - layouts [0].Height) / 2) - 1;
 
-				// draw shadow
-				g.SetSourceColor (MessageBubbleCache.ShadowColor);
-				g.ShowLayout (drawLayout);
-				g.Translate (0, -1);
+				g.Save ();
+				g.Translate (tx, ty);
 
 				g.SetSourceColor (TagColor.SecondColor);
 				g.ShowLayout (drawLayout);
@@ -492,7 +485,6 @@ namespace MonoDevelop.SourceEditor
 
 			if (customLayout)
 				drawLayout.Dispose ();
-
 		}
 
 		#region MarginMarker
@@ -529,14 +521,13 @@ namespace MonoDevelop.SourceEditor
 
 		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
+			var tx = Math.Round (metrics.X + (metrics.Width - cache.errorPixbuf.Width) / 2) - 1;
+			var ty = Math.Round (metrics.Y + (metrics.Height - cache.errorPixbuf.Height) / 2);
+
 			cr.Save ();
-			cr.Translate (
-				metrics.X + 0.5 + (metrics.Width - 2 - cache.errorPixbuf.Width) / 2,
-				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
-				);
+			cr.Translate (tx, ty);
 			cr.DrawImage (editor, errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
 			cr.Restore ();
-
 		}
 
 		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
@@ -579,7 +570,9 @@ namespace MonoDevelop.SourceEditor
 			bool isCaretInLine = metrics.TextStartOffset <= editor.Caret.Offset && editor.Caret.Offset <= metrics.TextEndOffset;
 			int errorCounterWidth = GetErrorCountBounds (metrics).Item1;
 
-			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth, editor.TextViewMargin.XOffset + editor.LineHeight / 2);
+			var min = right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth;
+			var max = Math.Round (editor.TextViewMargin.XOffset + editor.LineHeight / 2);
+			double x2 = Math.Max (min, max);
 
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != Mono.TextEditor.SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.Length) : false;
 

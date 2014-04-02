@@ -90,8 +90,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		MessageBubblePopoverWindow popoverWindow;
 
-		internal static readonly Cairo.Color ShadowColor = new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.12 : 0.2);
-
 		class MessageBubblePopoverWindow : PopoverWindow
 		{
 			readonly MessageBubbleCache cache;
@@ -102,7 +100,6 @@ namespace MonoDevelop.SourceEditor
 				this.cache = cache;
 				this.marker = marker;
 				ShowArrow = true;
-				Opacity = 0.93;
 				Theme.ArrowLength = 7;
 				TransientFor = IdeApp.Workbench.RootWindow;
 			}
@@ -184,12 +181,7 @@ namespace MonoDevelop.SourceEditor
 
 						g.Save ();
 
-						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2 + 1);
-						g.SetSourceColor (ShadowColor);
-						g.ShowLayout (drawingLayout);
-
-						g.Translate (0, -1);
-
+						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2);
 						g.SetSourceColor (marker.TagColor.SecondColor);
 						g.ShowLayout (drawingLayout);
 
@@ -199,7 +191,6 @@ namespace MonoDevelop.SourceEditor
 						y += h + verticalTextSpace;
 					}
 				}
-
 			}
 		}
 
@@ -220,7 +211,7 @@ namespace MonoDevelop.SourceEditor
 				if (marker.Layouts == null || marker.Layouts.Count < 2 && !isReduced)
 					return false;
 				popoverWindow = new MessageBubblePopoverWindow (this, marker);
-				popoverWindow.ShowWindowShadow = true;
+				popoverWindow.ShowWindowShadow = false;
 				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight) ,PopupPosition.Top);
 				return false;
 			});
