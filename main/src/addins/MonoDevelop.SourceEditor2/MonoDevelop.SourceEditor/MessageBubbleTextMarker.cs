@@ -392,7 +392,7 @@ namespace MonoDevelop.SourceEditor
 					showErrorCount = false;
 //					drawLayout.SetMarkup ("<span weight='heavy'>···</span>");
 					width = minWidth;
-					roundingRadius = 10 * editor.Options.Zoom;
+					//roundingRadius = 10 * editor.Options.Zoom;
 					sx = Math.Min (sx, editor.Allocation.Width - width);
 				} else {
 					drawLayout.Ellipsize = Pango.EllipsizeMode.End;
@@ -416,27 +416,17 @@ namespace MonoDevelop.SourceEditor
 			// Draw error count icon
 			if (showErrorCount) {
 				var errorCounterHeight = bubbleHeight - 2;
-				var errorCounterX = sx + width - errorCounterWidth - 3;
-				var errorCounterY = Math.Round (y + 1 + (bubbleHeight - errorCounterHeight) / 2);
-
-				g.RoundedRectangle (
-					errorCounterX - 1, 
-					errorCounterY - 1, 
-					errorCounterWidth + 2, 
-					errorCounterHeight + 2, 
-					editor.LineHeight / 2 - 3
-				);
-
-				g.SetSourceColor (new Cairo.Color (0, 0, 0, 0.081));
-				g.Fill ();
+				var errorCounterX = sx + width - errorCounterWidth - 1;
+				var errorCounterY = Math.Round (y + (bubbleHeight - errorCounterHeight) / 2);
 
 				g.RoundedRectangle (
 					errorCounterX, 
 					errorCounterY, 
 					errorCounterWidth, 
 					errorCounterHeight, 
-					editor.LineHeight / 2 - 3
+					editor.LineHeight / 2 - 2
 				);
+
 				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
 					lg.AddColorStop (0, CounterColor.Color);
 					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
@@ -464,8 +454,9 @@ namespace MonoDevelop.SourceEditor
 				double spacing = 1 * editor.Options.Zoom;
 
 				sx += 1 * editor.Options.Zoom + Math.Ceiling((bubbleWidth - 3 * (radius * 2) - 2 * spacing) / 2);
+
 				for (int i = 0; i < 3; i++) {
-					g.Arc (sx, y + 1 + bubbleHeight / 2, radius, 0, Math.PI * 2);
+					g.Arc (sx, y + bubbleHeight / 2, radius, 0, Math.PI * 2);
 					g.SetSourceColor (TagColor.SecondColor);
 					g.Fill ();
 					sx += radius * 2 + spacing;
