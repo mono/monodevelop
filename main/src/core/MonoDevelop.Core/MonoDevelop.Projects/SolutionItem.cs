@@ -473,19 +473,14 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
-		public bool CanRunTarget (string target, ConfigurationSelector configuration)
+		public bool SupportsTarget (string target)
 		{
-			return Services.ProjectService.GetExtensionChain (this).CanRunTarget (this, target, configuration);
+			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
 		}
 
-		public bool CanBuild (ConfigurationSelector configuration)
+		public bool SupportsBuild ()
 		{
-			return CanRunTarget (ProjectService.BuildTarget, configuration);
-		}
-
-		public bool CanClean (ConfigurationSelector configuration)
-		{
-			return CanRunTarget (ProjectService.CleanTarget, configuration);
+			return SupportsTarget (ProjectService.BuildTarget);
 		}
 
 		/// <summary>
@@ -629,7 +624,7 @@ namespace MonoDevelop.Projects
 		
 		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
 		{
-			if (!visited.Add(item))
+			if (!visited.Add(item) || !item.SupportsBuild ())
 				return;
 			
 			referenced.Add (item);
@@ -1060,7 +1055,7 @@ namespace MonoDevelop.Projects
 			return DateTime.MinValue;
 		}
 		
-		internal protected virtual bool OnGetCanRunTarget (string target, ConfigurationSelector configuration)
+		internal protected virtual bool OnGetSupportsTarget (string target)
 		{
 			return true;
 		}

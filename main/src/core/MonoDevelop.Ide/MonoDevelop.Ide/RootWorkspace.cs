@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide
 		{
 			BuildResult result = null;
 			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
-			foreach (WorkspaceItem it in items.Where (i => i.CanRunTarget (target, configuration))) {
+			foreach (WorkspaceItem it in items.Where (i => i.SupportsTarget (target))) {
 				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
@@ -358,10 +358,10 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
-		bool IBuildTarget.CanRunTarget (string target, ConfigurationSelector configuration)
+		bool IBuildTarget.SupportsTarget (string target)
 		{
 			foreach (WorkspaceItem it in Items.ToArray ()) {
-				if (it.CanRunTarget (target, configuration))
+				if (it.SupportsTarget (target))
 					return true;
 			}
 			return false;

@@ -128,32 +128,32 @@ namespace MonoDevelop.Projects
 				return GetNext (item).RunTarget (monitor, item, target, configuration);
 		}
 		
-		public virtual bool CanRunTarget (IBuildTarget item, string target, ConfigurationSelector configuration)
+		public virtual bool SupportsTarget (IBuildTarget item, string target)
 		{
 			if (item is SolutionEntityItem)
-				return CanRunTarget ((SolutionEntityItem)item, target, configuration);
+				return SupportsTarget ((SolutionEntityItem)item, target);
 			else if (item is WorkspaceItem)
-				return CanRunTarget ((WorkspaceItem) item, target, configuration);
+				return SupportsTarget ((WorkspaceItem) item, target);
 			else 
-				return GetNext (item).CanRunTarget (item, target, configuration);
+				return GetNext (item).SupportsTarget (item, target);
 		}
 
-		protected virtual bool CanRunTarget (SolutionEntityItem item, string target, ConfigurationSelector configuration)
+		protected virtual bool SupportsTarget (SolutionEntityItem item, string target)
 		{
-			return GetNext (item).CanRunTarget ((IBuildTarget) item, target, configuration);
+			return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
 		}
 
-		protected virtual bool CanRunTarget (Solution solution, string target, ConfigurationSelector configuration)
+		protected virtual bool SupportsTarget (Solution solution, string target)
 		{
-			return GetNext (solution).CanRunTarget ((IBuildTarget) solution, target, configuration);
+			return GetNext (solution).SupportsTarget ((IBuildTarget) solution, target);
 		}
 
-		protected virtual bool CanRunTarget (WorkspaceItem item, string target, ConfigurationSelector configuration)
+		protected virtual bool SupportsTarget (WorkspaceItem item, string target)
 		{
 			if (item is Solution)
-				return CanRunTarget ((Solution) item, target, configuration);
+				return SupportsTarget ((Solution) item, target);
 			else
-				return GetNext (item).CanRunTarget ((IBuildTarget) item, target, configuration);
+				return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
 		}
 
 		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
@@ -396,7 +396,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public bool CanRunTarget (string target, ConfigurationSelector configuration)
+		public bool SupportsTarget (string target)
 		{
 			return false;
 		}

@@ -94,7 +94,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return new BuildResult ();
 		}
 
-		internal protected override bool OnGetCanRunTarget (string target, ConfigurationSelector configuration)
+		internal protected override bool OnGetSupportsTarget (string target)
 		{
 			return false;
 		}

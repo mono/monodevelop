@@ -247,14 +247,9 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
-		public bool CanBuild (ConfigurationSelector configuration)
+		public bool SupportsBuild ()
 		{
-			return CanRunTarget (ProjectService.BuildTarget, configuration);
-		}
-
-		public bool CanClean (ConfigurationSelector configuration)
-		{
-			return CanRunTarget (ProjectService.CleanTarget, configuration);
+			return SupportsTarget (ProjectService.BuildTarget);
 		}
 
 		public void Clean (IProgressMonitor monitor, string configuration)
@@ -267,14 +262,9 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
-		public bool CanRunTarget (string target, string configuration)
+		public bool SupportsTarget (string target)
 		{
-			return CanRunTarget (target, (SolutionConfigurationSelector) configuration);
-		}
-
-		public bool CanRunTarget (string target, ConfigurationSelector configuration)
-		{
-			return Services.ProjectService.GetExtensionChain (this).CanRunTarget (this, target, configuration);
+			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
 		}
 
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
@@ -426,7 +416,7 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		internal protected virtual bool OnGetCanRunTarget (string target, ConfigurationSelector configuration)
+		internal protected virtual bool OnGetSupportsTarget (string target)
 		{
 			return true;
 		}

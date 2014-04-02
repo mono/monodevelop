@@ -705,12 +705,12 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 
-		public override bool CanRunTarget (IBuildTarget item, string target, ConfigurationSelector configuration)
+		public override bool SupportsTarget (IBuildTarget item, string target)
 		{
 			if (item is WorkspaceItem)
-				return ((WorkspaceItem)item).OnGetCanRunTarget (target, configuration);
+				return ((WorkspaceItem)item).OnGetSupportsTarget (target);
 			else if (item is SolutionItem)
-				return ((SolutionItem)item).OnGetCanRunTarget (target, configuration);
+				return ((SolutionItem)item).OnGetSupportsTarget (target);
 			else
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
