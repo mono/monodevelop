@@ -456,6 +456,13 @@
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ISegment.cs" />
+    <Compile Include="MonoDevelop.Core.Text\UnicodeNewLine.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextChangeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextLocation.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
