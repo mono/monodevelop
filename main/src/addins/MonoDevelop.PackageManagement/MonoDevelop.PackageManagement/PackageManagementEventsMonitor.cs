@@ -36,23 +36,29 @@ namespace MonoDevelop.PackageManagement
 	{
 		IProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
+		IProgressProvider progressProvider;
 		FileConflictResolution lastFileConflictResolution;
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
+		string currentProgressOperation;
 
 		public PackageManagementEventsMonitor (
 			IProgressMonitor progressMonitor,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
+			this.progressProvider = progressProvider;
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
+			progressProvider.ProgressAvailable += ProgressAvailable;
 		}
-
+			
 		public void Dispose ()
 		{
+			progressProvider.ProgressAvailable -= ProgressAvailable;
 			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
@@ -130,6 +136,15 @@ namespace MonoDevelop.PackageManagement
 				Environment.NewLine);
 
 			ReportWarning (message);
+		}
+
+		void ProgressAvailable (object sender, ProgressEventArgs e)
+		{
+			if (currentProgressOperation == e.Operation)
+				return;
+
+			currentProgressOperation = e.Operation;
+			progressMonitor.Log.WriteLine (e.Operation);
 		}
 	}
 }

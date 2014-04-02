@@ -80,7 +80,7 @@ namespace MonoDevelop.PackageManagement
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
-				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
+				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents, PackageManagementServices.ProgressProvider)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
