@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProject
 	{
-		XmlDocument doc;
+		public XmlDocument doc;
 		string file;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
