@@ -27,13 +27,14 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui
 {
 	/// <summary>
 	/// Text editor options that subscribe to MonoDevelop common settings.
 	/// </summary>
-	public class CommonTextEditorOptions : Mono.TextEditor.TextEditorOptions
+	public class CommonTextEditorOptions : TextEditorOptions
 	{
 		bool disposed = false;
 		

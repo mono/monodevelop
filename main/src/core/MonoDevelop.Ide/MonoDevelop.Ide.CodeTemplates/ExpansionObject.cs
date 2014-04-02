@@ -26,17 +26,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor.PopupWindow;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -58,7 +56,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public DocumentLocation InsertPosition {
+		public TextLocation InsertPosition {
 			get;
 			set;
 		}
@@ -134,7 +132,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition), var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
 				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
 					return "Length";
 			}
@@ -166,7 +164,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string var = callback (varName);
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.CaretOffset, var);
 				if (result != null) {
 					var componentType = GetElementType (result.Type);
 					if (componentType.Kind != TypeKind.Unknown) {

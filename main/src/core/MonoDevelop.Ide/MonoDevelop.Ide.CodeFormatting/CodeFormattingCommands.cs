@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
+					formatter.OnTheFlyFormat (doc, 0, doc.Editor.TextLength);
 				}
 			} else {
 				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 
@@ -90,12 +90,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (formatter == null)
 				return;
 
-			TextSegment selection;
+			ISegment selection;
 			var editor = doc.Editor;
 			if (editor.IsSomethingSelected) {
 				selection = editor.SelectionRange;
 			} else {
-				selection = editor.GetLine (editor.Caret.Line).Segment;
+				selection = editor.GetLine (editor.CaretLocation.Line);
 			}
 			
 			using (var undo = editor.OpenUndoGroup ()) {

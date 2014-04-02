@@ -30,7 +30,6 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {

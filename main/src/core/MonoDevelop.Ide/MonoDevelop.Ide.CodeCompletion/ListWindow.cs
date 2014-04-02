@@ -25,21 +25,16 @@
 //
 //
 
-using Gtk;
-using Gdk;
-using Pango;
 using System;
-using System.Xml;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
-using MonoDevelop.Core.Text;
+using System.Linq;
+using Gdk;
+using Gtk;
 using ICSharpCode.NRefactory.Completion;
-using Mono.TextEditor;
-using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

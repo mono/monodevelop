@@ -35,8 +35,6 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
-
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
 

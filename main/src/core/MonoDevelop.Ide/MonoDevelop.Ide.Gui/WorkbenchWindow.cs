@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public WorkbenchWindow (): base (Gtk.WindowType.Toplevel)
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 		}
 
 		class TopLevelChild

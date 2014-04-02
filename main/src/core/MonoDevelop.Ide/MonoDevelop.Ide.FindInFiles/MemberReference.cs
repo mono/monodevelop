@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

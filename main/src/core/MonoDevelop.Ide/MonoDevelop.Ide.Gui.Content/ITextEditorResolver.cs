@@ -26,14 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.TextEditor;
 using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -90,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
 
-			var textEditorResolver = TextEditorResolverService.GetProvider (document.Editor.Document.MimeType);
+			var textEditorResolver = TextEditorResolverService.GetProvider (document.Editor.MimeType);
 			if (textEditorResolver != null) {
 				return textEditorResolver.GetLanguageItem (document, offset, out expressionRegion);
 			}

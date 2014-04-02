@@ -40,6 +40,7 @@ using MonoDevelop.Ide.StandardHeader;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -284,7 +285,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = DocumentFactory.CreateNewDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
@@ -294,7 +295,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
 			
-			foreach (Mono.TextEditor.DocumentLine line in doc.Lines) {
+			foreach (var line in doc.Lines) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);

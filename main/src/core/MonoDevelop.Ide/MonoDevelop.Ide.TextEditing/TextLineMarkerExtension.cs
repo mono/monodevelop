@@ -27,16 +27,46 @@
 using System;
 using System.Linq;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TextEditing
 {
+	public interface ITextLineMarker
+	{
+		IDocumentLine Line {
+			get;
+		}
+
+		bool IsVisible {
+			get;
+			set;
+		}
+	}
+
+
+	public enum UrlType {
+		Unknown,
+		Url,
+		Email
+	}
+
+
+
+	public interface IUrlTextLineMarker : ITextLineMarker
+	{
+		UrlType UrlType {
+			get;
+		}
+
+		string Url {
+			get;
+		}
+	}
 
 	public abstract class TextLineMarkerExtension: FileLineExtension
 	{
-		public abstract TextLineMarker CreateMarker ();
+		public abstract ITextLineMarker CreateMarker ();
 	}
-	
-	}
+}

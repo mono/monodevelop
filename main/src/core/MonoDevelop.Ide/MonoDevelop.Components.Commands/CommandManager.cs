@@ -33,7 +33,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
-using Mono.TextEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
 
@@ -764,7 +763,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 			
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 		
 		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]

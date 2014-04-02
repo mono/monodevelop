@@ -33,7 +33,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
@@ -47,6 +46,8 @@ using MonoDevelop.Core.Assemblies;
 using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -128,7 +129,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
 		}
 
-		public static TextLocation GetLocation (this IType type)
+		public static ICSharpCode.NRefactory.TextLocation GetLocation (this IType type)
 		{
 			return type.GetDefinition ().Region.Begin;
 		}
@@ -400,7 +401,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				if (!File.Exists (fileName))
 					return null;
-				text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
+				text = TextFileUtility.ReadAllText (fileName);
 			} catch (Exception) {
 				return null;
 			}
@@ -466,7 +467,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return ParseFile (project, fileName, mimeType, reader);
 		}
 
-		public static ParsedDocument ParseFile (Project project, TextEditorData data)
+		public static ParsedDocument ParseFile (Project project, ITextEditor data)
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data.Text);
 		}

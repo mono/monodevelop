@@ -50,6 +50,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Components.Docking;
 using System.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -912,11 +913,11 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (Document document in Documents) {
 				if (!String.IsNullOrEmpty (document.FileName)) {
-					DocumentUserPrefs dp = new DocumentUserPrefs ();
+					var dp = new DocumentUserPrefs ();
 					dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
 					if (document.Editor != null) {
-						dp.Line = document.Editor.Caret.Line;
-						dp.Column = document.Editor.Caret.Column;
+						dp.Line = document.Editor.CaretLocation.Line;
+						dp.Column = document.Editor.CaretLocation.Column;
 					}
 					prefs.Files.Add (dp);
 				}
@@ -1315,7 +1316,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
 			if (fileInfo.Line > 0 && ipos != null) {
-				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
+				FileSettingsStore.Remove (fileName);
 				ipos.RunWhenLoaded (JumpToLine); 
 			}
 			

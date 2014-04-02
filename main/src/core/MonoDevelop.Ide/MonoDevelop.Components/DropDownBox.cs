@@ -29,7 +29,6 @@ using System.ComponentModel;
 using Gtk;
 
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {

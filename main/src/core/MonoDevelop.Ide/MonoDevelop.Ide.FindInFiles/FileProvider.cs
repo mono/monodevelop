@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui;
 using System.Text;
 using MonoDevelop.Core;
 using System;
-using Mono.TextEditor.Utils;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -138,7 +138,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						undoGroup.Dispose ();
 						undoGroup = null;
 					}
-					document.Editor.Document.CommitUpdateAll (); });
+					/*document.Editor.Document.CommitUpdateAll (); */
+				});
 				return;
 			}
 			if (buffer != null && somethingReplaced) {

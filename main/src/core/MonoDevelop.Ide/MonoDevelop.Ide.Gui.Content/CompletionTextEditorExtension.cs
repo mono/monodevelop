@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -73,10 +74,10 @@ namespace MonoDevelop.Ide.Gui.Content
 
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
+			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.CaretOffset);
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Document.Editor.Caret.Offset;
+				cpos = Document.Editor.CaretOffset;
 				wlen = 0;
 			}
 			currentCompletionContext.TriggerOffset = cpos;
@@ -127,7 +128,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				return res;
 			
 			// don't complete on block selection
-			if (/*!EnableCodeCompletion ||*/ Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (/*!EnableCodeCompletion ||*/ Document.Editor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
 				return res;
 			
 			// Handle code completion
@@ -136,10 +137,10 @@ namespace MonoDevelop.Ide.Gui.Content
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
-				if (triggerWordLength > 0 && (triggerWordLength < Editor.Caret.Offset
-					|| (triggerWordLength == 1 && Editor.Caret.Offset == 1))) {
+				if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
+					|| (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 					currentCompletionContext
-						= CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);
+						= CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null) {
@@ -163,13 +164,13 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		protected void ShowCompletion (ICompletionDataList completionList, int triggerWordLength, char keyChar)
 		{
-			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (Document.Editor.SelectionMode == SelectionMode.Block)
 				return;
 			if (CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
-				if (triggerWordLength > 0 && triggerWordLength < Editor.Caret.Offset) {
+				if (triggerWordLength > 0 && triggerWordLength < Editor.CaretOffset) {
 					currentCompletionContext =
-						CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);	
+						CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);	
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null)
@@ -210,7 +211,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (Document.Editor.SelectionMode == SelectionMode.Block)
 				return;
 			
 			if (CompletionWindowManager.IsVisible) {
@@ -220,7 +221,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.Caret.Offset;
+				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
@@ -238,7 +239,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.Caret.Offset;
+				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
 			
@@ -263,7 +264,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Editor.Caret.Offset;
+				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
 			try {
@@ -283,12 +284,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block || CompletionWidget == null)
+			if (Document.Editor.SelectionMode == SelectionMode.Block || CompletionWidget == null)
 				return;
 			ParameterDataProvider cp = null;
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
-				cpos = Editor.Caret.Offset;
+				cpos = Editor.CaretOffset;
 			CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
@@ -323,7 +324,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual bool GetCompletionCommandOffset (out int cpos, out int wlen)
 		{
 			cpos = wlen = 0;
-			int pos = Editor.Caret.Offset - 1;
+			int pos = Editor.CaretOffset - 1;
 			while (pos >= 0) {
 				char c = Editor.GetCharAt (pos);
 				if (!char.IsLetterOrDigit (c) && c != '_')
@@ -335,7 +336,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			pos++;
 			cpos = pos;
-			int len = Editor.Length;
+			int len = Editor.TextLength;
 			
 			while (pos < len) {
 				char c = Editor.GetCharAt (pos);
@@ -411,7 +412,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			var cp = HandleParameterCompletion (completionContext, Editor.Document.GetCharAt (pos - 1));
+			var cp = HandleParameterCompletion (completionContext, Editor.GetCharAt (pos - 1));
 			if (cp != null)
 				return cp;
 			return null;
@@ -445,17 +446,17 @@ namespace MonoDevelop.Ide.Gui.Content
 			return -1;
 		}
 		
-		void HandlePaste (int insertionOffset, string text, int insertedChars)
-		{
-			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-			CompletionWindowManager.HideWindow ();
-		}
-
-		void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
-		{
-			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-			CompletionWindowManager.HideWindow ();
-		}
+//		void HandlePaste (int insertionOffset, string text, int insertedChars)
+//		{
+//			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+//			CompletionWindowManager.HideWindow ();
+//		}
+//
+//		void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
+//		{
+//			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+//			CompletionWindowManager.HideWindow ();
+//		}
 
 		public override void Initialize ()
 		{
@@ -464,13 +465,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
-			document.Editor.Caret.PositionChanged += HandlePositionChanged;
-			document.Editor.Paste += HandlePaste;
-			if (document.Editor.Parent != null)
-				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
+			document.Editor.CaretPositionChanged += HandlePositionChanged;
+//			document.Editor.Paste += HandlePaste;
+//			if (document.Editor.Parent != null)
+//				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
 		}
 
-		void HandlePositionChanged (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void HandlePositionChanged (object sender, EventArgs e)
 		{
 			CompletionWindowManager.UpdateCursorPosition ();
 		}
@@ -488,10 +489,10 @@ namespace MonoDevelop.Ide.Gui.Content
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 
 				disposed = true;
-				if (document.Editor.Parent != null)
-					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
-				document.Editor.Paste -= HandlePaste;
-				document.Editor.Caret.PositionChanged -= HandlePositionChanged;
+//				if (document.Editor.Parent != null)
+//					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
+//				document.Editor.Paste -= HandlePaste;
+				document.Editor.CaretPositionChanged -= HandlePositionChanged;
 				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
 				if (CompletionWidget != null)
 					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;

@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+			IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
 		}
 
 	}

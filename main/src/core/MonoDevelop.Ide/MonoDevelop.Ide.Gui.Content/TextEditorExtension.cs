@@ -28,13 +28,11 @@
 
 using System;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -59,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			get { return document; }
 		}
 
-		protected TextEditorData Editor {
+		protected ITextEditor Editor {
 			get { return document != null ? document.Editor : null; }
 		}
 
@@ -80,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if (project != null)
 				return TypeSystemService.GetProjectContext (project);
-			return TypeSystemService.GetContext (file, Document.Editor.Document.MimeType, Document.Editor.Text);
+			return TypeSystemService.GetContext (file, Document.Editor.MimeType, Document.Editor.Text);
 		}
 		
 		protected Ambience GetAmbience ()

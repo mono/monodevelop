@@ -26,12 +26,12 @@
 
 using System;
 using MonoDevelop.Projects.Policies;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			adv.OnTheFlyFormat (doc, startOffset, endOffset);
 		}
 		
-		public void CorrectIndenting (PolicyContainer policyParent, TextEditorData data, int line)
+		public void CorrectIndenting (PolicyContainer policyParent, ITextEditor data, int line)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsCorrectingIndent)

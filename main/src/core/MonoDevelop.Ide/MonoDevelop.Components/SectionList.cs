@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Cairo;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -91,7 +90,7 @@ namespace MonoDevelop.Components
 		
 		public SectionList ()
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 			
 			this.WidgetFlags |= WidgetFlags.NoWindow;
 			WidthRequest = 100;

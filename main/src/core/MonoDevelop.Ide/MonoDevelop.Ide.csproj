@@ -69,16 +69,12 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
@@ -2376,6 +2372,45 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\WordFindStrategy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InsertionPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLink.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ColorScheme.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\AmbientColor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ColorDescriptionAttribute.cs" />
+    <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ChunkStyle.cs" />
+    <Compile Include="MonoDevelop.Components\GtkWorkarounds.cs" />
+    <Compile Include="MonoDevelop.Components\PangoUtil.cs" />
+    <Compile Include="MonoDevelop.Components\HslColor.cs" />
+    <Compile Include="MonoDevelop.Components\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SelectionMode.cs" />
+    <Compile Include="MonoDevelop.Components\GtkGestures.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxModeService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ISyntaxMode.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IStreamProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Chunk.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\CloneableStack.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxMode.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Match.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Rule.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Keywords.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Span.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Regex.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Marker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SemanticRule.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IEditorActionHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InsertionCursorEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EmacsWordFindStrategy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SharpDevelopWordFindStrategy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2419,6 +2454,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
+    <Folder Include="MonoDevelop.Ide.Editor\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

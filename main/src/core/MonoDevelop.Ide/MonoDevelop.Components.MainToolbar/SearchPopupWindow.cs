@@ -34,7 +34,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {

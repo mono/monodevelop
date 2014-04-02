@@ -26,11 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.TextEditor;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		bool SupportsOnTheFlyFormatting { get; }
 		bool SupportsCorrectingIndent { get; }
 		
-		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditorData textEditorData, int line);
+		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, ITextEditor textEditorData, int line);
 		
 		void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset);
 		
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		}
 		
 		public virtual void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, int line)
+			ITextEditor data, int line)
 		{
 			throw new NotSupportedException ();
 		}

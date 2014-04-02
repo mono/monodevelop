@@ -25,14 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {

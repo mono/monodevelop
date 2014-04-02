@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -79,21 +79,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = doc.Editor.TabsToSpaces;
+			result.UseSpaceIndent = doc.Editor.Options.TabsToSpaces;
 			result.EolMarker = doc.Editor.EolMarker;
 			result.TabSize = doc.Editor.Options.TabSize;
 			result.Compilation = doc.Compilation;
 			return result;
 		}
 		
-		public static CodeGenerator CreateGenerator (TextEditorData editor, ICompilation compilation)
+		public static CodeGenerator CreateGenerator (ITextEditor editor, ICompilation compilation)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = editor.TabsToSpaces;
+			result.UseSpaceIndent = editor.Options.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
 			result.TabSize = editor.Options.TabSize;
 			result.Compilation = compilation;

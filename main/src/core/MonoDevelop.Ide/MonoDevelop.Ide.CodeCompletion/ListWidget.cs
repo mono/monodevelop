@@ -31,11 +31,11 @@ using Gdk;
 using Gtk;
 using Pango;
 using ICSharpCode.NRefactory.Completion;
-using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
+using System.ComponentModel.Design;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -140,12 +140,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (itemFont != null)
 				itemFont.Dispose ();
 			itemFont = FontService.GetFontDescription ("Editor").Copy ();
-			var provider = CompletionWidget as ITextEditorDataProvider;
+			var provider = CompletionWidget as IServiceContainer;
 			if (provider != null) {
-				var newSize = (itemFont.Size * provider.GetTextEditorData ().Options.Zoom);
-				if (newSize > 0) {
-					itemFont.Size = (int)newSize;
-					layout.FontDescription = itemFont;
+				var editor = (ITextEditor)provider.GetService (typeof(ITextEditor));
+				if (editor != null) {
+					var newSize = (itemFont.Size * editor.Options.Zoom);
+					if (newSize > 0) {
+						itemFont.Size = (int)newSize;
+						layout.FontDescription = itemFont;
+					}
 				}
 			}
 		}

@@ -25,7 +25,6 @@
 
 using System;
 using System.IO;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
@@ -39,12 +38,10 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 
-using GLib;
 using MonoDevelop.Components.DockToolbars;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
-using Mono.TextEditor;
 using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide.Gui

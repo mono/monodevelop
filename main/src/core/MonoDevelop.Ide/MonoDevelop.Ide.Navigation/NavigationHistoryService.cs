@@ -286,8 +286,8 @@ namespace MonoDevelop.Ide.Navigation
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
 			if (currentDoc.Editor != null) {
-				currentDoc.Editor.Document.TextReplaced += BufferTextChanged;
-				currentDoc.Editor.Caret.PositionChanged += BufferCaretPositionChanged;
+				currentDoc.Editor.TextChanged += BufferTextChanged;
+				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
 			}
 		}
 
@@ -303,8 +303,8 @@ namespace MonoDevelop.Ide.Navigation
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
 			if (currentDoc.Editor != null) {
-				currentDoc.Editor.Document.TextReplaced -= BufferTextChanged;
-				currentDoc.Editor.Caret.PositionChanged -= BufferCaretPositionChanged;
+				currentDoc.Editor.TextChanged -= BufferTextChanged;
+				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
 			}
 			currentDoc = null;
 		}

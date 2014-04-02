@@ -27,13 +27,14 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IEditableTextBuffer, Mono.TextEditor.ITextEditorDataProvider
+	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IEditableTextBuffer, IServiceProvider
 	{
-		Mono.TextEditor.TextEditorData data;
+		ITextEditor editor;
 		
 		public override Gtk.Widget Control {
 			get {
@@ -43,8 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public HiddenTextEditorViewContent ()
 		{
-			document = new Mono.TextEditor.TextDocument ();
-			data = new Mono.TextEditor.TextEditorData (document);
+			editor = DocumentFactory.CreateNewEditor ();
 			Name = "";
 		}
 		
@@ -63,54 +63,53 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int LineCount {
 			get {
-				return document.LineCount;
+				return editor.LineCount;
 			}
 		}
 		
-		Mono.TextEditor.TextDocument document;
 		public string Text {
 			get {
-				return document.Text;
+				return editor.Text;
 			}
 			set {
-				document.Text = value;
+				editor.Text = value;
 			}
 		}
 		
 		public int InsertText (int position, string text)
 		{
-			document.Insert (position, text);
+			editor.Insert (position, text);
 			return text.Length;
 		}
 		
 		public void DeleteText (int position, int length)
 		{
-			document.Replace (position, length, "");
+			editor.Replace (position, length, "");
 		}
 		
 		public int Length {
 			get {
-				return document.TextLength;
+				return editor.TextLength;
 			}
 		}
 		
 		public string GetText (int startPosition, int endPosition)
 		{
-			return document.GetTextBetween (startPosition, endPosition);
+			return editor.GetTextBetween (startPosition, endPosition);
 		}
 		public char GetCharAt (int position)
 		{
-			return document.GetCharAt (position);
+			return editor.GetCharAt (position);
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
-			return document.LocationToOffset (line, column);
+			return editor.LocationToOffset (line, column);
 		}
 		
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
-			Mono.TextEditor.DocumentLocation loc = document.OffsetToLocation (position);
+			var loc = editor.OffsetToLocation (position);
 			line = loc.Line;
 			column = loc.Column;
 		}
@@ -119,32 +118,32 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int CursorPosition {
 			get {
-				return data.Caret.Offset;
+				return editor.CaretOffset;
 			}
 			set {
-				data.Caret.Offset = value;
+				editor.CaretOffset = value;
 			}
 		}
 
 		public int SelectionStartPosition { 
 			get {
-				if (!data.IsSomethingSelected)
-					return data.Caret.Offset;
-				return data.SelectionRange.Offset;
+				if (!editor.IsSomethingSelected)
+					return editor.CaretOffset;
+				return editor.SelectionRange.Offset;
 			}
 		}
 		
 		public int SelectionEndPosition { 
 			get {
-				if (!data.IsSomethingSelected)
-					return data.Caret.Offset;
-				return data.SelectionRange.EndOffset;
+				if (!editor.IsSomethingSelected)
+					return editor.CaretOffset;
+				return editor.SelectionRange.EndOffset;
 			}
 		}
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			data.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
+			editor.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
 		}
 		
 		public void ShowPosition (int position)
@@ -195,11 +194,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return new DisposeStub ();
 		}
-		
-		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+
+		#region IServiceProvider implementation
+
+		object IServiceProvider.GetService (Type serviceType)
 		{
-			return data;
+			if (serviceType.IsInstanceOfType (editor))
+				return editor;
+			return null;
 		}
+
+		#endregion
+
 		public event EventHandler CaretPositionSet;
 		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}

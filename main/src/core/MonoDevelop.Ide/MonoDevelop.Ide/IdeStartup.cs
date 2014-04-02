@@ -51,6 +51,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -112,11 +113,11 @@ namespace MonoDevelop.Ide
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
 
 			//default to Windows IME on Windows
-			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+			if (Platform.IsWindows && GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;
-				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				var val = GtkWorkarounds.GetProperty (settings, "gtk-im-module");
 				if (string.IsNullOrEmpty (val.Val as string))
-					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
 			
 			InternalLog.Initialize ();

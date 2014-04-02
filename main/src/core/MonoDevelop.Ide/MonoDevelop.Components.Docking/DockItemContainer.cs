@@ -30,9 +30,6 @@
 
 using System;
 using Gtk;
-using Mono.Unix;
-using Mono.TextEditor;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {

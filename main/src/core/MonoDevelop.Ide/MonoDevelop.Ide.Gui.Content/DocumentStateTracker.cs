@@ -30,7 +30,8 @@
 
 using System;
 using System.Collections.Generic;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -40,25 +41,25 @@ namespace MonoDevelop.Ide.Gui.Content
 		T currentEngine;
 		Stack<T> cachedEngines = new Stack<T> ();
 		
-		TextEditorData editor;
+		ITextEditor editor;
 		
-		public DocumentStateTracker (T engine, TextEditorData editor)
+		public DocumentStateTracker (T engine, ITextEditor editor)
 		{
 			this.currentEngine = engine;
 			this.editor = editor;
-			editor.Document.TextReplaced += textChanged;
+			editor.TextChanged += textChanged;
 		}
 		
 		public void Dispose ()
 		{
-			editor.Document.TextReplaced -= textChanged;
+			editor.TextChanged -= textChanged;
 		}
 		
 		public T Engine {
 			get { return currentEngine; }
 		}
 		
-		void textChanged (object sender, DocumentChangeEventArgs args)
+		void textChanged (object sender, TextChangeEventArgs args)
 		{
 			if (args.Offset< currentEngine.Position)
 				ResetEngineToPosition (args.Offset);
@@ -85,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 		public void UpdateEngine ()
 		{
-			UpdateEngine (editor.Caret.Offset);
+			UpdateEngine (editor.CaretOffset);
 		}
 		
 		//Makes sure that the smart indent engine's cursor has caught up with the 
@@ -112,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			// get the engine caught up
 			int nextSave = (cachedEngines.Count == 0)? BUFFER_SIZE : cachedEngines.Peek ().Position + BUFFER_SIZE;
 			if (currentEngine.Position + 1 == position) {
-				char ch = editor.Document.GetCharAt (currentEngine.Position);
+				char ch = editor.GetCharAt (currentEngine.Position);
 				currentEngine.Push (ch);
 				ConsoleWrite ("pushing character '{0}'", ch);
 				if (currentEngine.Position == nextSave)
@@ -124,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Content
 					int endCut = currentEngine.Position + BUFFER_SIZE;
 					if (endCut > position)
 						endCut = position;
-					string buffer = editor.Document.GetTextBetween (currentEngine.Position, endCut);
+					string buffer = editor.GetTextBetween (currentEngine.Position, endCut);
 					ConsoleWrite ("getting buffer between {0} and {1}" /* '{2}'"*/, currentEngine.Position, endCut - 1, buffer);
 					foreach (char ch in buffer) {
 						currentEngine.Push (ch);

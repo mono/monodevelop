@@ -31,6 +31,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -41,14 +42,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 		Gtk.TreeStore templateStore;
 		CellRendererText   templateCellRenderer;
 		CellRendererImage pixbufCellRenderer;
-		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
-		Mono.TextEditor.TextEditorOptions options;
+		ITextEditor textEditor = DocumentFactory.CreateNewEditor ();
+		ITextEditorOptions options;
 		
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.Build();
-			scrolledwindow1.Add (textEditor);
-			textEditor.ShowAll ();
+			var control = textEditor.GetGtkWidget ();
+			scrolledwindow1.Add (control);
+			control.ShowAll ();
 			
 			templateStore = new TreeStore (typeof (CodeTemplate), typeof (string), typeof (string));
 			
@@ -79,7 +81,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
 			textEditor.Options = options;
-			textEditor.Document.ReadOnly = true;
+			textEditor.ReadOnly = true;
 			this.buttonAdd.Clicked += ButtonAddClicked;
 			this.buttonEdit.Clicked += ButtonEditClicked;
 			this.buttonRemove.Clicked += ButtonRemoveClicked;
@@ -184,10 +186,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 				CodeTemplate template = templateStore.GetValue (iter, 0) as CodeTemplate;
 				if (template != null) {
 					textEditor.ClearSelection ();
-					textEditor.Document.MimeType = template.MimeType;
-					textEditor.Document.Text     = template.Code;
+					textEditor.MimeType = template.MimeType;
+					textEditor.Text     = template.Code;
 				} else {
-					textEditor.Document.Text = "";
+					textEditor.Text = "";
 				}
 			}
 		}

@@ -43,8 +43,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
-
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -271,9 +270,9 @@ namespace MonoDevelop.Components.MainToolbar
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc != null && doc.Editor != null) {
 						doc.Select ();
-						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+						doc.Editor.CaretLocation = new TextLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 						doc.Editor.CenterToCaret ();
-						doc.Editor.Parent.StartCaretPulseAnimation ();
+						doc.Editor.StartCaretPulseAnimation ();
 					}
 					return;
 				}

@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -98,7 +99,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 
 			foreColor = scheme.PlainText.Foreground;

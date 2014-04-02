@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Extensions;
 using Mono.Addins;
 using System.Threading;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -333,7 +334,7 @@ namespace MonoDevelop.Ide
 				dialog.Title = BrandingService.ApplicationName;
 			PlaceDialog (dialog, parent);
 			OnPopupDialog (EventArgs.Empty);
-			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
+			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 		
 		//make sure modal children are parented on top of other modal children

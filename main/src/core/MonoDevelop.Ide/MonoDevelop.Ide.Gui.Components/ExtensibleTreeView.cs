@@ -30,15 +30,8 @@
 //#define TREE_VERIFY_INTEGRITY
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Xml;
-using System.Resources;
 using System.Text;
 
 using Mono.Addins;
@@ -48,7 +41,6 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
-using Mono.TextEditor;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Components
