@@ -11,8 +11,8 @@ let p = new FSharpAutoCompleteWrapper()
 p.send "outputmode json\n"
 p.project "Test1.fsproj"
 p.parse "Program.fs"
-p.completion "Program.fs" 6 13
 p.parse "Script.fsx"
+p.completion "Program.fs" 6 13
 p.completion "Script.fsx" 6 13
 p.send "quit\n"
 let output = p.finalOutput ()
