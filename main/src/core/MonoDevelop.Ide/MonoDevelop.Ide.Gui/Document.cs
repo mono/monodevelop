@@ -208,8 +208,11 @@ namespace MonoDevelop.Ide.Gui
 
 				if (solution != null && IdeApp.Workspace != null) {
 					var config = IdeApp.Workspace.ActiveConfiguration;
-					if (config != null && !solution.GetConfiguration (config).BuildEnabledForItem (project))
-						return false;
+					if (config != null) {
+						var sc = solution.GetConfiguration (config);
+						if (sc != null && !sc.BuildEnabledForItem (project))
+							return false;
+					}
 				}
 
 				var pf = project.GetProjectFile (FileName);
