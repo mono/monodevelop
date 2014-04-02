@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 			languageName = projectOptions.GetAttribute ("language");
+			DefaultNamespace = projectCreateInfo.ProjectName;
 		}
 
 		public string LanguageName {
