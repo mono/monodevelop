@@ -218,10 +218,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Fonts">
-		<Font name="MessageBubbles" _displayName="Message bubbles" default="Segoe UI Bold 8" defaultMac="Lucida Grande 11" />
-		<Font name="MessageBubbleCounter" _displayName="Message bubbles error count" default="Segoe UI Bold 8" defaultMac="Lucida Grande Bold 11" />
-		<Font name="MessageBubbleTooltip" _displayName="Message bubbles tooltip" default="Segoe UI Bold 8" defaultMac="Lucida Grande Bold 11" />
-		<Font name="LanguageTooltips" _displayName="Editor tooltips" default="Segoe UI 8" defaultMac="Lucida Grande 11" />
+		<Font name="MessageBubbles" _displayName="Message bubbles" default="_DEFAULT_SANS" defaultMac="Lucida Grande 11" /><!-- TODO: VV: "_DEFAULT_SANS" --> "Segoe UI Bold 8" -->
+		<Font name="MessageBubbleCounter" _displayName="Message bubbles error count" default="_DEFAULT_SANS" defaultMac="Lucida Grande Bold 11" /><!-- TODO: VV: "_DEFAULT_SANS" --> "Segoe UI Bold 8" -->
+		<Font name="MessageBubbleTooltip" _displayName="Message bubbles tooltip" default="_DEFAULT_SANS" defaultMac="Lucida Grande Bold 11" /><!-- TODO: VV: "_DEFAULT_SANS" --> "Segoe UI Bold 8" -->
+		<Font name="LanguageTooltips" _displayName="Editor tooltips" default="_DEFAULT_SANS" /><!-- TODO: VV: "_DEFAULT_SANS" --> "Segoe UI Bold 8" -->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
