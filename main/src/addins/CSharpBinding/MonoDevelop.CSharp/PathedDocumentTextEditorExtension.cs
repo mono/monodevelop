@@ -44,6 +44,9 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
+			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
+
 			if (caret != null) {
 				caret.PositionChanged -= UpdatePath;
 				caret = null;
@@ -74,6 +77,14 @@ namespace MonoDevelop.CSharp
 			caret.PositionChanged += UpdatePath;
 			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
+			IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
+			IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
+		}
+
+		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
+		{
+			UpdateOwnerProjects ();
+			UpdatePath (null, null);
 		}
 
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
@@ -424,6 +435,7 @@ namespace MonoDevelop.CSharp
 		string lastTypeMarkup;
 		EntityDeclaration lastMember;
 		string lastMemberMarkup;
+		MonoDevelop.Projects.Project lastProject;
 		AstAmbience amb;
 
 		string GetEntityMarkup (AstNode node)
@@ -453,6 +465,7 @@ namespace MonoDevelop.CSharp
 
 			var curType = (EntityDeclaration)unit.GetNodeAt (loc, n => n is TypeDeclaration || n is DelegateDeclaration);
 
+			var curProject = ownerProjects.Count > 1 ? Document.Project : null;
 
 			var segMember = compExt.GetMemberAt (caretOffset);
 			if (segMember != null) {
@@ -464,13 +477,13 @@ namespace MonoDevelop.CSharp
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
 			if (curType == curMember)
 				curMember = null;
-			if (isPathSet && curType == lastType && lastMember == curMember)
+			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
 				return;
 
 			var curTypeMakeup = GetEntityMarkup (curType);
 			var curMemberMarkup = GetEntityMarkup (curMember);
 			if (isPathSet && curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && curTypeMakeup == lastTypeMarkup &&
-				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && curMemberMarkup == lastMemberMarkup)
+				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && curMemberMarkup == lastMemberMarkup && curProject == lastProject)
 				return;
 
 			lastType = curType;
@@ -478,6 +491,8 @@ namespace MonoDevelop.CSharp
 
 			lastMember = curMember;
 			lastMemberMarkup = curMemberMarkup;
+
+			lastProject = curProject;
 
 			var result = new List<PathEntry> ();
 
