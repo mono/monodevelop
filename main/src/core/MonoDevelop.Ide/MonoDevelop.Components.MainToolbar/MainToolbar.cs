@@ -261,7 +261,7 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
-				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
+				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Segoe UI 9"));
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.Activated += (sender, e) => {

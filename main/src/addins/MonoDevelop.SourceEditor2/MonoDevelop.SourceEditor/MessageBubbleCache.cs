@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
-				double y = verticalTextBorder * 2 - verticalTextSpace + 2;
+				double y = verticalTextBorder * 2 - verticalTextSpace + (MonoDevelop.Core.Platform.IsWindows ? 10 : 2);
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 					drawingLayout.FontDescription = cache.tooltipFontDescription;
