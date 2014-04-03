@@ -17,9 +17,9 @@ namespace MonoDevelop.PackageManagement
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 		ListStore packageSourcesStore;
-		const int IsEnabledCheckBoxColumn = 0;
-		const int PackageSourceIconColumn = 1;
-		const int PackageSourceViewModelColumn = 2;
+		const int IsEnabledCheckBoxColumn = 1;
+		const int PackageSourceIconColumn = 2;
+		const int PackageSourceViewModelColumn = 3;
 		
 		public PackageSourcesWidget (RegisteredPackageSourcesViewModel viewModel)
 		{
@@ -50,7 +50,7 @@ namespace MonoDevelop.PackageManagement
 		
 		void InitializeTreeView ()
 		{
-			packageSourcesStore = new ListStore (typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
+			packageSourcesStore = new ListStore (typeof (object), typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
 			packageSourcesTreeView.Model = packageSourcesStore;
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
@@ -62,15 +62,26 @@ namespace MonoDevelop.PackageManagement
 		TreeViewColumn CreateTreeViewColumn ()
 		{
 			var column = new TreeViewColumn ();
-			column.Spacing = 5;
-			
+			column.Spacing = 0;
+
+			var dummyRenderer = new CellRendererImage ();
+			dummyRenderer.Width = 1;
+			dummyRenderer.Xpad = 0;
+			column.PackStart (dummyRenderer, false);
+
 			var checkBoxRenderer = new CellRendererToggle ();
 			checkBoxRenderer.Toggled += PackageSourceCheckBoxToggled;
+			checkBoxRenderer.Xpad = 7;
+			checkBoxRenderer.Ypad = 12;
+			checkBoxRenderer.Xalign = 0;
+			checkBoxRenderer.Yalign = 0;
 			column.PackStart (checkBoxRenderer, false);
 			column.AddAttribute (checkBoxRenderer, "active", IsEnabledCheckBoxColumn);
 
 			var iconRenderer = new CellRendererImage ();
-			iconRenderer.StockSize = IconSize.LargeToolbar;
+			iconRenderer.StockSize = IconSize.Dnd;
+			iconRenderer.Xalign = 0;
+			iconRenderer.Xpad = 0;
 			column.PackStart (iconRenderer, false);
 			column.AddAttribute (iconRenderer, "icon-id", PackageSourceIconColumn);
 
@@ -97,6 +108,7 @@ namespace MonoDevelop.PackageManagement
 		void AddPackageSourceToTreeView (PackageSourceViewModel packageSourceViewModel)
 		{
 			packageSourcesStore.AppendValues (
+				null,
 				packageSourceViewModel.IsEnabled,
 				new IconId ("md-nuget-package-source"),
 				packageSourceViewModel);

@@ -40,6 +40,8 @@ namespace MonoDevelop.PackageManagement
 
 		static Xwt.Drawing.Image warningImage = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 		const int imageSpacing = 5;
+		const int textSpacing = 7;
+		const int textTopSpacing = 3;
 
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
@@ -56,16 +58,16 @@ namespace MonoDevelop.PackageManagement
 
 				layout.SetMarkup (GetPackageSourceDescriptionMarkup ());
 
-				window.DrawLayout (widget.Style.TextGC (state), cell_area.X, cell_area.Y, layout);
+				window.DrawLayout (widget.Style.TextGC (state), cell_area.X + textSpacing, cell_area.Y + textTopSpacing, layout);
 
 				if (!PackageSourceViewModel.IsValid) {
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						ctx.DrawImage (widget, warningImage, cell_area.X + packageSourceNameWidth + imageSpacing, cell_area.Y);
+						ctx.DrawImage (widget, warningImage, cell_area.X + textSpacing + packageSourceNameWidth + imageSpacing, cell_area.Y + textTopSpacing);
 					}
 
 					layout.SetMarkup (GetPackageSourceErrorMarkup ());
-					int packageSourceErrorTextX = cell_area.X + packageSourceNameWidth + (int)warningImage.Width + (2 * imageSpacing);
-					window.DrawLayout (widget.Style.TextGC (state), packageSourceErrorTextX, cell_area.Y, layout);
+					int packageSourceErrorTextX = cell_area.X + textSpacing + packageSourceNameWidth + (int)warningImage.Width + (2 * imageSpacing);
+					window.DrawLayout (widget.Style.TextGC (state), packageSourceErrorTextX, cell_area.Y + textTopSpacing, layout);
 				}
 			}
 		}
@@ -123,7 +125,7 @@ namespace MonoDevelop.PackageManagement
 
 			using (var layout = new Pango.Layout (widget.PangoContext)) {
 				layout.SetMarkup (GetPackageSourceDescriptionMarkup ());
-				height = GetLayoutSize (layout).Height + 10;
+				height = GetLayoutSize (layout).Height + 8 + textTopSpacing;
 			}
 		}
 	}

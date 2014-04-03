@@ -90,8 +90,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		MessageBubblePopoverWindow popoverWindow;
 
-		internal static readonly Cairo.Color ShadowColor = new Cairo.Color (0, 0, 0, MonoDevelop.Core.Platform.IsMac ? 0.12 : 0.2);
-
 		class MessageBubblePopoverWindow : PopoverWindow
 		{
 			readonly MessageBubbleCache cache;
@@ -102,7 +100,6 @@ namespace MonoDevelop.SourceEditor
 				this.cache = cache;
 				this.marker = marker;
 				ShowArrow = true;
-				Opacity = 0.93;
 				Theme.ArrowLength = 7;
 				TransientFor = IdeApp.Workbench.RootWindow;
 			}
@@ -119,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
-				double y = verticalTextBorder * 2 - verticalTextSpace; // one space get's added too much
+				double y = verticalTextBorder * 2 - verticalTextSpace + (MonoDevelop.Core.Platform.IsWindows ? 10 : 2);
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 					drawingLayout.FontDescription = cache.tooltipFontDescription;
@@ -157,49 +154,39 @@ namespace MonoDevelop.SourceEditor
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 					drawingLayout.FontDescription = cache.tooltipFontDescription;
+
 					double y = verticalTextBorder;
-
 					var showBulletedList = marker.Errors.Count > 1;
-					foreach (var msg in marker.Errors) {
 
+					foreach (var msg in marker.Errors) {
 						var icon = msg.IsError ? cache.errorPixbuf : cache.warningPixbuf;
+						int w, h;
 
 						if (!showBulletedList)
 							drawingLayout.Width = maxTextWidth;
+
 						drawingLayout.SetText (GetFirstLine (msg));
-						int w;
-						int h;
 						drawingLayout.GetPixelSize (out w, out h);
 
 						if (showBulletedList) {
 							g.Save ();
 
-							g.Translate (
-								textBorder,
-								y + verticalTextSpace / 2 + 1 + Math.Max (0, (h - icon.Height) / 2)
-							);
+							g.Translate (textBorder, y + verticalTextSpace / 2 + Math.Max (0, (h - icon.Height) / 2));
 							g.DrawImage (this, icon, 0, 0);
 							g.Restore ();
 						}
 
 						g.Save ();
 
-						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2 + 1);
-						g.SetSourceColor (ShadowColor);
-						g.ShowLayout (drawingLayout);
-
-						g.Translate (0, -1);
-
+						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2);
 						g.SetSourceColor (marker.TagColor.SecondColor);
 						g.ShowLayout (drawingLayout);
 
 						g.Restore ();
 
-
 						y += h + verticalTextSpace;
 					}
 				}
-
 			}
 		}
 
@@ -219,9 +206,11 @@ namespace MonoDevelop.SourceEditor
 
 				if (marker.Layouts == null || marker.Layouts.Count < 2 && !isReduced)
 					return false;
+
 				popoverWindow = new MessageBubblePopoverWindow (this, marker);
-				popoverWindow.ShowWindowShadow = true;
-				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight) ,PopupPosition.Top);
+				popoverWindow.ShowWindowShadow = false;
+				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight), PopupPosition.Top);
+
 				return false;
 			});
 		}

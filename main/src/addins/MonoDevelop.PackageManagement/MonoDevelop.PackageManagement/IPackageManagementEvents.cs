@@ -35,6 +35,7 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagementEvents
 	{
 		event EventHandler PackageOperationsStarting;
+		event EventHandler PackageOperationsFinished;
 		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
 		event EventHandler<SelectProjectsEventArgs> SelectProjects;
 		event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
@@ -46,6 +47,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler PackagesRestored;
 
 		void OnPackageOperationsStarting();
+		void OnPackageOperationsFinished();
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
 		void OnParentPackageInstalled(IPackage package, IPackageManagementProject project);

@@ -1,5 +1,5 @@
 ﻿//
-// ProjectPackagesFolderNode.cs
+// PackageManagementProgressProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,44 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Projects;
 using NuGet;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.PackageManagement
 {
-	public class ProjectPackagesFolderNode
+	public class PackageManagementProgressProvider : IProgressProvider
 	{
-		DotNetProject project;
-
-		public ProjectPackagesFolderNode (DotNetProject project)
+		public PackageManagementProgressProvider (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
 		{
-			this.project = project;
+			repositoryFactoryEvents.RepositoryCreated += RepositoryCreated;
 		}
 
-		public DotNetProject Project {
-			get { return project; }
-		}
-
-		IEnumerable<PackageReference> GetPackageReferences ()
+		void RepositoryCreated (object sender, PackageRepositoryFactoryEventArgs e)
 		{
-			if (project.HasPackages ()) {
-				var packageReferenceFile = new PackageReferenceFile (project.GetPackagesConfigFilePath ());
-				return packageReferenceFile.GetPackageReferences ();
+			var progressProvider = e.Repository as IProgressProvider;
+			if (progressProvider != null) {
+				progressProvider.ProgressAvailable += OnProgressAvailable;
 			}
-			return new PackageReference [0];
 		}
 
-		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
-		{
-			return GetPackageReferences ().Select (reference => CreatePackageReferenceNode (reference));
-		}
+		public event EventHandler<ProgressEventArgs> ProgressAvailable;
 
-		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference)
+		void OnProgressAvailable (object sender, ProgressEventArgs e)
 		{
-			return new PackageReferenceNode (reference, reference.IsPackageInstalled (project));
+			DispatchService.GuiDispatch (() => {
+				if (ProgressAvailable != null) {
+					ProgressAvailable (sender, e);
+				}
+			});
 		}
 	}
 }

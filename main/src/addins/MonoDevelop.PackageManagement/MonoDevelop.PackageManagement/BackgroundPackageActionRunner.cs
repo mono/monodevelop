@@ -30,6 +30,7 @@ using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -38,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
+		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -47,6 +49,15 @@ namespace MonoDevelop.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 
+		public IEnumerable<InstallPackageAction> PendingInstallActions {
+			get { return pendingInstallActions; }
+		}
+
+		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
+		{
+			return pendingInstallActions.Where (action => action.Project.DotNetProject == project);
+		}
+
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
 			Run (progressMessage, new IPackageAction [] { action });
@@ -54,13 +65,22 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
+			AddInstallActionsToPendingQueue (actions);
+			packageManagementEvents.OnPackageOperationsStarting ();
 			DispatchService.BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+		}
+
+		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
+		{
+			foreach (InstallPackageAction action in actions.OfType<InstallPackageAction> ()) {
+				pendingInstallActions.Add (action);
+			}
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
-				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents)) {
+				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents, PackageManagementServices.ProgressProvider)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
@@ -72,6 +92,10 @@ namespace MonoDevelop.PackageManagement
 						monitor.ShowPackageConsole ();
 					} finally {
 						monitor.EndTask ();
+						DispatchService.GuiDispatch (() => {
+							RemoveInstallActions (installPackageActions);
+							packageManagementEvents.OnPackageOperationsFinished ();
+						});
 					}
 				}
 			}
@@ -79,38 +103,17 @@ namespace MonoDevelop.PackageManagement
 
 		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
-			if (!AcceptPackageLicenses (packageActions))
-				return;
-
 			foreach (IPackageAction action in packageActions) {
-				CheckForPowerShellScripts (action);
 				action.Execute ();
 				monitor.Step (1);
 			}
 		}
 
-		bool AcceptPackageLicenses (IList<IPackageAction> packageActions)
+		void RemoveInstallActions (IList<IPackageAction> installPackageActions)
 		{
-			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
-			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (packageActions).ToList ();
-			if (packages.Any ()) {
-				return packageManagementEvents.OnAcceptLicenses (packages);
+			foreach (InstallPackageAction action in installPackageActions.OfType <InstallPackageAction> ()) {
+				pendingInstallActions.Remove (action);
 			}
-
-			return true;
-		}
-
-		void CheckForPowerShellScripts (IPackageAction action)
-		{
-			if (action.HasPackageScriptsToRun ()) {
-				ReportPowerShellScriptWarning ();
-			}
-		}
-
-		void ReportPowerShellScriptWarning ()
-		{
-			string message = GettextCatalog.GetString ("Package contains PowerShell scripts which will not be run.");
-			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Warning, message);
 		}
 
 		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)

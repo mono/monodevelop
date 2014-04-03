@@ -69,5 +69,19 @@ namespace ICSharpCode.PackageManagement
 			}
 			return true;
 		}
+
+		protected override string StartingMessageFormat {
+			get { return "Updating {0}..."; }
+		}
+
+		protected override bool ShouldLogEmptyLineForFinishedAction ()
+		{
+			return ShouldUpdatePackage ();
+		}
+
+		protected override bool ShouldLogStartingMessage ()
+		{
+			return ShouldUpdatePackage ();
+		}
 	}
 }

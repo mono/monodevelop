@@ -313,6 +313,7 @@ namespace MonoDevelop.Ide
 		static DateTime lastIdle;
 		static bool lockupCheckRunning = true;
 
+		[Conditional("DEBUG")]
 		static void StartLockupTracker ()
 		{
 			if (Platform.IsWindows)

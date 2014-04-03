@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Projects;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -43,6 +44,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
 			packageManagementEvents.PackagesRestored += PackagesRestored;
+			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
+			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
 		}
 
 		void ParentPackageInstalled (object sender, ParentPackageOperationEventArgs e)
@@ -56,6 +59,16 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		void PackagesRestored (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void PackageOperationsStarting (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void PackageOperationsFinished (object sender, EventArgs e)
 		{
 			RefreshAllChildNodes ();
 		}
@@ -87,6 +100,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
 			packageManagementEvents.PackagesRestored -= PackagesRestored;
+			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
+			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
 		}
 
 		public override bool CanBuildNode (Type dataType)
@@ -102,7 +117,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		bool ProjectHasPackages (object dataObject)
 		{
 			var project = (DotNetProject) dataObject;
-			return project.HasPackages ();
+			return project.HasPackages () || ProjectHasPendingPackages (project);
+		}
+
+		bool ProjectHasPendingPackages (DotNetProject project)
+		{
+			return PackageManagementServices
+				.BackgroundPackageActionRunner
+				.PendingInstallActionsForProject (project)
+				.Any ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)

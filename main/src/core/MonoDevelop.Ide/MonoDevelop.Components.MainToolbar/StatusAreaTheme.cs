@@ -295,10 +295,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding, StatusArea.RenderArg arg)
 		{
-			LayoutRoundedRectangle (context, new Gdk.Rectangle (bounding.X, bounding.Y, (int) (bounding.Width * progress), bounding.Height));
+			LayoutRoundedRectangle (context, new Gdk.Rectangle (bounding.X, bounding.Y, (int) (bounding.Width * progress), bounding.Height), 0, 0, 1);
 			context.Clip ();
 
-			LayoutRoundedRectangle (context, bounding);
+			LayoutRoundedRectangle (context, bounding, 0, 0, 1);
 			context.SetSourceColor (Styles.WithAlpha (Styles.StatusBarProgressBackgroundColor, Styles.StatusBarProgressBackgroundColor.A * arg.ProgressBarAlpha));
 			context.FillPreserve ();
 
