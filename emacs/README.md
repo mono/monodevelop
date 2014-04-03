@@ -137,7 +137,9 @@ There are a few variables you can adjust to change how fsharp-mode behaves:
   
 - `fsharp-ac-intellisense-enabled`: This mode overrides some aspects of
   auto-complete configuration and runs the background process automatically.
-  Set to nil to prevent this.
+  Set to nil to prevent this. Note that this will only prevent the background
+  process from being launched in the *future*. If it is already running you
+  will also need to quit it using <kbd>C-c C-q</kbd>.
 
 ### Key Bindings
 
