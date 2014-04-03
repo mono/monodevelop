@@ -71,7 +71,7 @@ namespace MonoDevelop.Platform
 				}
 			}
 
-			if (!set)
+			if (!set && Enabled)
 				dialog.SetSelectedControlItem (Id, 0);
 
 			oldCount = Items.Count;

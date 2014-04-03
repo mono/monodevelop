@@ -86,8 +86,7 @@ namespace MonoDevelop.Platform
 						var files = GetSelectedItems (dialog);
 						var file = files.Count == 0 ? null : files[0];
 						FillViewers (viewerCombo, file);
-						if (viewerCombo.Enabled)
-							dialog.ApplyControlPropertyChange ("Items", viewerCombo);
+						dialog.ApplyControlPropertyChange ("Items", viewerCombo);
 					} catch (Exception ex) {
 						LoggingService.LogError (e.ToString ());
 					}
