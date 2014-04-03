@@ -116,14 +116,15 @@ namespace MonoDevelop.CSharp.Formatting
 			var text = data.Editor.GetTextBetween (Math.Max (0, segmentLine.Offset), endOffset);
 			sb.Append (text);
 			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
-			lex.Parse (ch => {
+			lex.Parse ((ch,i) => {
 				if (lex.IsInString || lex.IsInChar || lex.IsInVerbatimString || lex.IsInSingleComment || lex.IsInMultiLineComment || lex.IsInPreprocessorDirective)
-					return;
+					return false;
 				if (ch =='{') {
 					closingBrackets++;
 				} else if (ch =='}') {
 					closingBrackets--;
 				}
+				return false;
 			});
 
 
