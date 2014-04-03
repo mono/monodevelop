@@ -13,7 +13,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
     /// Creates a Vista or Windows 7 Common File Dialog, allowing the user to select one or more files.
     /// </summary>
     /// 
-    public sealed class CommonOpenFileDialog : CommonFileDialog
+    public class CommonOpenFileDialog : CommonFileDialog
     {
         private NativeFileOpenDialog openDialogCoClass;
 

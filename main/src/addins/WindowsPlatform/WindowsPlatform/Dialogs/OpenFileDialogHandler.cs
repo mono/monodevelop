@@ -51,44 +51,61 @@ namespace MonoDevelop.Platform
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			CommonFileDialog dialog;
 			if (data.Action == FileChooserAction.Open)
-				dialog = new CommonOpenFileDialog ();
+				dialog = new CustomCommonOpenFileDialog ();
 			else
 				dialog = new CommonSaveFileDialog ();
 
 			SelectFileDialogHandler.SetCommonFormProperties (data, dialog);
 
-			CommonFileDialogComboBox encodingCombo = null;
+			CustomCommonFileDialogComboBox encodingCombo = null;
 			if (data.ShowEncodingSelector) {
 				encodingCombo = BuildEncodingsCombo (data.Action != FileChooserAction.Save, data.Encoding);
 
 				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:"); 
 				group.Items.Add (encodingCombo);
 				dialog.Controls.Add (group);
+
+				encodingCombo.SelectedIndexChanged += (sender, e) => {
+					if (encodingCombo.SelectedIndex == encodingCombo.Items.Count - 1) {
+						// TODO: Create dialog for stuff.
+					}
+				};
+			}
+
+			CustomCommonFileDialogComboBox viewerCombo = null;
+			if (data.ShowViewerSelector && data.Action == FileChooserAction.Open) {
+				viewerCombo = new CustomCommonFileDialogComboBox ();
+				viewerCombo.Enabled = false;
+				var group = new CommonFileDialogGroupBox ("openWith", "Open with:");
+				group.Items.Add (viewerCombo);
+				dialog.Controls.Add (group);
+
+				// TODO: Add closing workspace.
+				dialog.SelectionChanged += (sender, e) => {
+					try {
+						var files = GetSelectedItems (dialog);
+						var file = files.Count == 0 ? null : files[0];
+						FillViewers (viewerCombo, file);
+						if (viewerCombo.Enabled)
+							dialog.ApplyControlPropertyChange ("Items", viewerCombo);
+					} catch (Exception ex) {
+						LoggingService.LogError (e.ToString ());
+					}
+				};
 			}
 
 			if (!GdkWin32.RunModalWin32Dialog (dialog, parent))
 				return false;
 
-			// Add checkbox to open with default or choose.
 			SelectFileDialogHandler.GetCommonFormProperties (data, dialog);
 			if (encodingCombo != null)
 				data.Encoding = ((EncodingComboItem)encodingCombo.Items [encodingCombo.SelectedIndex]).Encoding;
 
-			var files = GetSelectedItems (dialog);
-			var file = files.Count == 0 ? null : files [0];
-			if (!String.IsNullOrEmpty (file) && File.Exists (file)) {
-				var projectService = IdeApp.Services.ProjectService;
-				if (projectService.IsWorkspaceItemFile (file) || projectService.IsSolutionItemFile (file)) {
-					data.SelectedViewer = null;
-					data.CloseCurrentWorkspace = IdeApp.Workspace.IsOpen;
-				} else {
-					foreach (var vw in DisplayBindingService.GetFileViewers (file, null)) {
-						if (!vw.IsExternal) {
-							if (vw.CanUseAsDefault)
-								data.SelectedViewer = vw;
-						}
-					}
-				}
+			if (viewerCombo != null ) {
+				// TODO: Add closing workspace.
+				//if (closeSolutionButton != null)
+				//	data.CloseCurrentWorkspace = closeSolutionButton.State != NSCellStateValue.Off;
+				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer;
 			}
 
 
@@ -144,9 +161,9 @@ namespace MonoDevelop.Platform
 			return filenames;
 		}
 
-		static CommonFileDialogComboBox BuildEncodingsCombo (bool showAutoDetected, Encoding selectedEncoding)
+		static CustomCommonFileDialogComboBox BuildEncodingsCombo (bool showAutoDetected, Encoding selectedEncoding)
 		{
-			var combo = new CommonFileDialogComboBox ();
+			var combo = new CustomCommonFileDialogComboBox ();
 	
 			var encodings = SelectedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
@@ -168,10 +185,9 @@ namespace MonoDevelop.Platform
 				combo.Items.Add (item);
 				if (encoding.Equals (selectedEncoding))
 					combo.SelectedIndex = i + 1;
-				}
+			}
 
-			//TODO: 
-			//Items.Add (GettextCatalog.GetString ("Add or Remove..."));
+			combo.Items.Add (new CommonFileDialogComboBoxItem (GettextCatalog.GetString ("Add or Remove...")));
 			return combo;
 		}
 
@@ -185,6 +201,26 @@ namespace MonoDevelop.Platform
 			public Encoding Encoding {
 				get; private set;
 			}
+		}
+
+		static void FillViewers (CustomCommonFileDialogComboBox combo, string fileName)
+		{
+			combo.Items.Clear ();
+
+			if (String.IsNullOrEmpty (fileName) || Directory.Exists (fileName)) {
+				combo.Enabled = false;
+				return;
+			}
+
+			var projectService = IdeApp.Services.ProjectService;
+			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName))
+				combo.Items.Add (new ViewerComboItem (null, GettextCatalog.GetString ("Solution Workbench")));
+
+			foreach (var vw in DisplayBindingService.GetFileViewers (fileName, null))
+				if (!vw.IsExternal)
+					combo.Items.Add (new ViewerComboItem (vw, vw.Title));
+
+			combo.Enabled = combo.Items.Count > 1;
 		}
 
 		class ViewerComboItem : CommonFileDialogComboBoxItem

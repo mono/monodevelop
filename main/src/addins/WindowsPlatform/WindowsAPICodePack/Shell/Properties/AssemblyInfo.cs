@@ -40,3 +40,5 @@ using System.Security;
 [assembly: AssemblyFileVersion("1.1.0.0")]
 
 [assembly: NeutralResourcesLanguageAttribute("en")]
+
+[assembly: InternalsVisibleTo("WindowsPlatform")]

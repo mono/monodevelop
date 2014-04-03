@@ -45,7 +45,7 @@ namespace MonoDevelop.Platform
 
 			CommonFileDialog dialog;
 			if (data.Action == FileChooserAction.Open || data.Action == FileChooserAction.SelectFolder)
-				dialog = new CommonOpenFileDialog ();
+				dialog = new CustomCommonOpenFileDialog ();
 			else
 				dialog = new CommonSaveFileDialog ();
 

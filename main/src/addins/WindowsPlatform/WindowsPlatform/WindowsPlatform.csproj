@@ -95,6 +95,8 @@
     </Compile>
     <Compile Include="WindowsSecureStoragePasswordProvider.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="CustomDialogs\CustomCommonOpenFileDialog.cs" />
+    <Compile Include="CustomDialogs\CustomCommonFileDialogComboBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">
@@ -103,4 +105,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CustomDialogs\" />
+  </ItemGroup>
 </Project>

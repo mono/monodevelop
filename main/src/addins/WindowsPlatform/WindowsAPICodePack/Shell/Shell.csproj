@@ -140,6 +140,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\EnumUnknown.cs" />

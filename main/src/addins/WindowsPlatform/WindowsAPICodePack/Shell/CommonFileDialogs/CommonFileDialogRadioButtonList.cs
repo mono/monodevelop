@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Markup;
 using Microsoft.WindowsAPICodePack.Shell.Resources;
-
 namespace Microsoft.WindowsAPICodePack.Dialogs.Controls
 {
     /// <summary>

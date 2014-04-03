@@ -41,7 +41,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
         internal DialogShowState showState = DialogShowState.PreShow;
 
         private IFileDialog nativeDialog;
-        private IFileDialogCustomize customize;
+        internal IFileDialogCustomize customize;
         private NativeDialogEventSink nativeEventSink;
         private bool? canceled;
         private bool resetSelections;
