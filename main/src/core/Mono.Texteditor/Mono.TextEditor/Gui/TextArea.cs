@@ -2800,6 +2800,7 @@ namespace Mono.TextEditor
 				}
 				tipWindow.Destroy ();
 				tipWindow = null;
+				tipItem = null;
 			}
 		}
 		

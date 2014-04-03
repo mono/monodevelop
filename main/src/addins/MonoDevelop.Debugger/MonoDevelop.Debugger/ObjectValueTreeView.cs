@@ -240,6 +240,10 @@ namespace MonoDevelop.Debugger
 			crtValue.Edited -= OnValueEdited;
 			crtValue.EditingCanceled -= OnEditingCancelled;
 
+			typeCol.RemoveNotification ("width", OnColumnWidthChanged);
+			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
+			expCol.RemoveNotification ("width", OnColumnWidthChanged);
+
 			disposed = true;
 			cancellationTokenSource.Cancel ();
 

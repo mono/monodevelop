@@ -375,6 +375,7 @@ namespace MonoDevelop.Debugger
 				busyStatusIcon = null;
 				session = null;
 				console = null;
+				pinnedWatches.InvalidateAll ();
 			}
 
 			if (oldLayout != null) {

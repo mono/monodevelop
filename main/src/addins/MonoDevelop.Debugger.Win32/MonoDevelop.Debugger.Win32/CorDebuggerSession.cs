@@ -338,7 +338,7 @@ namespace MonoDevelop.Debugger.Win32
 				binfo.IncrementHitCount();
 				if (!binfo.HitCountReached)
 					return;
-				
+
 				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
 					if (bp.BreakIfConditionChanges) {
@@ -404,6 +404,7 @@ namespace MonoDevelop.Debugger.Win32
 			// If the main thread stopped, terminate the debugger session
 			if (e.Process.Id == process.Id) {
 				lock (terminateLock) {
+					process.Dispose ();
 					process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{
