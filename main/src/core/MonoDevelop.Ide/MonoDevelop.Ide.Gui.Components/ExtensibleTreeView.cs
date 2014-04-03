@@ -2599,12 +2599,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-			if (overlayBottomLeft != null || overlayBottomRight != null)
+			/*			if (overlayBottomLeft != null || overlayBottomRight != null)
 				height += overlayOverflow;
 			if (overlayTopLeft != null || overlayTopRight != null)
 				height += overlayOverflow;
 			if (overlayBottomRight != null || overlayTopRight != null)
-				width += overlayOverflow;
+				width += overlayOverflow;*/
 		}
 
 		const int overlayOverflow = 2;
