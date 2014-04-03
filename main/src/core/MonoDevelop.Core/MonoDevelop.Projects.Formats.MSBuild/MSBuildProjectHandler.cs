@@ -287,7 +287,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					var br = new BuildResult ();
 					foreach (MSBuildResult res in results) {
-						FilePath file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
+						FilePath file = null;
+						if (res.File != null)
+							file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
 
 						if (res.IsWarning)
 							br.AddWarning (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);

@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Updater
 {
 	public static class UpdateService
 	{
-		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (3);
+		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (1);
 
 		static UpdateService ()
 		{

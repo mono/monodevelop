@@ -197,7 +197,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
-		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Run" >
+		<ItemSet id = "VersionControl" _label = "Versio_n Control" insertafter = "Run" >
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Checkout" />
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
 			<SeparatorItem/>
