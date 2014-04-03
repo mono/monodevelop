@@ -73,7 +73,7 @@ namespace MonoDevelop.SourceEditor
 		void TargetProcessExited (object sender, EventArgs e)
 		{
 			if (tooltip != null) {
-				tooltip.Dispose ();
+				tooltip.Destroy ();
 				tooltip = null;
 			}
 		}
