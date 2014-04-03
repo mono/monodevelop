@@ -79,7 +79,7 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory, context.ExecutionTarget);
 				
 				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.BeforeExecute, localContext, configuration))
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects
 			base.Execute (monitor, entry, context, configuration);
 			
 			if (conf != null && !monitor.IsCancelRequested) {
-				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
+				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory, context.ExecutionTarget);
 				
 				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.AfterExecute, localContext, configuration))
 					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, localContext, configuration);
