@@ -37,12 +37,6 @@ using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-
 namespace MonoDevelop.SourceEditor
 {
 	public class DebugValueTooltipProvider: TooltipProvider, IDisposable
@@ -103,10 +97,16 @@ namespace MonoDevelop.SourceEditor
 					return null;
 
 				var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
-				if (resolver == null)
-					return null;
+				var data = editor.GetTextEditorData ();
 
-				expression = resolver.ResolveExpression (editor.GetTextEditorData (), doc, offset, out startOffset);
+				if (resolver != null) {
+					expression = resolver.ResolveExpression (data, doc, offset, out startOffset);
+				} else {
+					int endOffset = data.FindCurrentWordEnd (offset);
+					startOffset = data.FindCurrentWordStart (offset);
+
+					expression = data.GetTextAt (startOffset, endOffset - startOffset);
+				}
 			}
 			
 			if (string.IsNullOrEmpty (expression))
