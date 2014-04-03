@@ -201,16 +201,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public MSBuildImport AddNewImport (string name)
+		public MSBuildImport AddNewImport (string name, MSBuildImport beforeImport = null)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);
 			elem.SetAttribute ("Project", name);
-			
-			XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
-			if (last != null)
-				doc.DocumentElement.InsertAfter (elem, last);
-			else
-				doc.DocumentElement.AppendChild (elem);
+
+			if (beforeImport != null) {
+				doc.DocumentElement.InsertBefore (elem, beforeImport.Element);
+			} else {
+				XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
+				if (last != null)
+					doc.DocumentElement.InsertAfter (elem, last);
+				else
+					doc.DocumentElement.AppendChild (elem);
+			}
 			return new MSBuildImport (elem);
 		}
 		

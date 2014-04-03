@@ -46,6 +46,6 @@
   <ItemGroup>
     <None Include="Nothing.xml" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="Shared.projitems" Label="Shared" Condition="Exists('Shared.projitems')" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

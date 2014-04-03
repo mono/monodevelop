@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					ip = MSBuildProjectService.ToMSBuildPath (item.ItemDirectory, ip);
 					validProjitems.Add (ip);
 					if (!project.Imports.Any (im => im.Project == ip)) {
-						var im = project.AddNewImport (ip);
+						var im = project.AddNewImport (ip, project.Imports.FirstOrDefault (i => i.Label != "Shared"));
 						im.Label = "Shared";
 						im.Condition = "Exists('" + ip + "')";
 					}
