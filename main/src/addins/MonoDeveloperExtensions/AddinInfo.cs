@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("MonoDeveloperExtensions", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
+	EnabledByDefault = false,
 	Category = "Project Import and Export")]
 
 [assembly:AddinName ("IDE Extensions for developers of the Mono framework")]

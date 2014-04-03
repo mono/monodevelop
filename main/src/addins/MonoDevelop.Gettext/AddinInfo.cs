@@ -3,10 +3,11 @@ using System;
 using Mono.Addins;
 using Mono.Addins.Description;
 
-[assembly:Addin ("Gettext", 
-        Namespace = "MonoDevelop",
-        Version = MonoDevelop.BuildInfo.Version,
-        Category = "IDE extensions")]
+[assembly:Addin ("Gettext",
+	Namespace = "MonoDevelop",
+	Version = MonoDevelop.BuildInfo.Version,
+	EnabledByDefault = false,
+	Category = "IDE extensions")]
 
 [assembly:AddinName ("Gettext Translations Support")]
 [assembly:AddinDescription ("Provides support for adding/editing PO files")]
