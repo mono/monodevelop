@@ -304,7 +304,7 @@ namespace MonoDevelop.Components.MainToolbar
 						wc++;
 				}
 
-				var font = Pango.FontDescription.FromString (MonoDevelop.Core.Platform.IsMac ? "Lucida Grande 11" : "Calibri 12"); // TODO: VV: "Calibri 12" --> "Segoe UI 8"
+				var font = Pango.FontDescription.FromString (MonoDevelop.Core.Platform.IsMac ? "Lucida Grande 11" : "Calibri 12"); // TODO: VV: "Calibri 12" => "Segoe UI 8"
 
 				errors.Visible = ec > 0;
 				errors.ModifyFont (font);
