@@ -29,14 +29,11 @@
 using System;
 using System.Linq;
 
-using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
-
 namespace MonoDevelop.Debugger
-{
+{/*
 	public abstract class DebugTextMarker : MarginMarker
 	{
-		protected DebugTextMarker (TextEditor editor)
+		protected DebugTextMarker (ITextEditor editor)
 		{
 			Editor = editor;
 		}
@@ -45,7 +42,7 @@ namespace MonoDevelop.Debugger
 			get;
 		}
 
-		protected TextEditor Editor {
+		protected ITextEditor Editor {
 			get; private set;
 		}
 
@@ -303,5 +300,5 @@ namespace MonoDevelop.Debugger
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, border, x, y, size);
 		}
-	}
+	}*/
 }

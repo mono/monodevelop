@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Debugger
 {

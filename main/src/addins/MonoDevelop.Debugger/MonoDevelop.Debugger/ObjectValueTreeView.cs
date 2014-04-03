@@ -40,8 +40,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using Mono.TextEditor;
-
 
 namespace MonoDevelop.Debugger
 {
