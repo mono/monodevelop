@@ -38,7 +38,58 @@ namespace MonoDevelop.Ide.Fonts
 		static List<FontDescriptionCodon> fontDescriptions = new List<FontDescriptionCodon> ();
 		static Dictionary<string, FontDescription> loadedFonts = new Dictionary<string, FontDescription> ();
 		static Properties fontProperties;
-		static FontDescription defaultMonospaceFontDescription;
+
+		static string defaultMonospaceFontName, defaultMonospaceSmallFontName, defaultSansFontName, defaultSansSmallFontName;
+		static FontDescription defaultMonospaceFont, defaultMonospaceSmallFont, defaultSansFont, defaultSansSmallFont;
+
+		static void LoadDefaults ()
+		{
+			if (defaultMonospaceFont != null) {
+				defaultMonospaceFont.Dispose ();
+				defaultMonospaceSmallFont.Dispose ();
+				defaultSansFont.Dispose ();
+				defaultSansSmallFont.Dispose ();
+			}
+
+			defaultMonospaceFontName = DesktopService.DefaultFontMonospace;
+			defaultMonospaceFont = FontDescription.FromString (defaultMonospaceFontName);
+
+			defaultMonospaceSmallFontName = DesktopService.DefaultFontMonospaceSmall;
+			if (defaultMonospaceSmallFontName != null) {
+				defaultMonospaceSmallFont = FontDescription.FromString (defaultMonospaceSmallFontName);
+			} else {
+				defaultMonospaceSmallFont = FontDescScaledCopy (defaultMonospaceFont, 0.7d);
+				defaultMonospaceSmallFontName = defaultMonospaceSmallFont.ToString ();
+			}
+
+			defaultSansFontName = DesktopService.DefaultFontSans;
+			if (defaultSansFontName != null) {
+				defaultSansFont = FontDescription.FromString (defaultSansFontName);
+			} else {
+				var label = new Gtk.Label ("");
+				defaultSansFont = label.Style.FontDescription.Copy ();
+				label.Destroy ();
+				defaultSansFontName = defaultSansFont.ToString ();
+			}
+
+			defaultSansSmallFontName = DesktopService.DefaultFontSansSmall;
+			if (defaultSansSmallFontName != null) {
+				defaultSansSmallFont = FontDescription.FromString (defaultSansSmallFontName);
+			} else {
+				defaultSansSmallFont = FontDescScaledCopy (defaultSansFont, 0.7d);
+				defaultSansSmallFontName = defaultSansSmallFont.ToString ();
+			}
+		}
+
+		static FontDescription FontDescScaledCopy (FontDescription font, double factor)
+		{
+			font = font.Copy ();
+			var size = font.Size;
+			if (size == 0)
+				size = 12;
+			font.Size = (int) (Scale.PangoScale * (int) (factor * size / Scale.PangoScale));
+			return font;
+		}
 		
 		internal static IEnumerable<FontDescriptionCodon> FontDescriptions {
 			get {
@@ -62,14 +113,22 @@ namespace MonoDevelop.Ide.Fonts
 						loadedFonts.Remove (codon.Name);
 					break;
 				}
-			}); 
+			});
+
+			LoadDefaults ();
 		}
 
+		public static FontDescription MonospaceFont { get { return defaultMonospaceFont; } }
+		public static FontDescription MonospaceSmallFont { get { return defaultMonospaceSmallFont; } }
+		public static FontDescription SansFont { get { return defaultSansFont; } }
+		public static FontDescription SansSmallFont { get { return defaultSansSmallFont; } }
+
+		[Obsolete ("Use MonospaceFont")]
 		public static FontDescription DefaultMonospaceFontDescription {
 			get {
-				if (defaultMonospaceFontDescription == null)
-					defaultMonospaceFontDescription = LoadFont (DesktopService.DefaultMonospaceFont);
-				return defaultMonospaceFontDescription;
+				if (defaultMonospaceFont == null)
+					defaultMonospaceFont = LoadFont (DesktopService.DefaultMonospaceFont);
+				return defaultMonospaceFont;
 			}
 		}
 
@@ -81,13 +140,17 @@ namespace MonoDevelop.Ide.Fonts
 		
 		public static string FilterFontName (string name)
 		{
-			if (name == "_DEFAULT_MONOSPACE")
-				return DesktopService.DefaultMonospaceFont;
-			if (name == "_DEFAULT_SANS") {
-				var label = new Gtk.Label ("");
-				string result = label.Style.FontDescription.Family + " " + ((int)label.Style.FontDesc.Size / Pango.Scale.PangoScale);
-				label.Destroy ();
-				return result;
+			switch (name) {
+			case "_DEFAULT_MONOSPACE":
+				return defaultMonospaceFontName;
+			case "_DEFAULT_MONOSPACE_SMALL":
+				return defaultMonospaceSmallFontName;
+			case "_DEFAULT_SANS":
+				return defaultSansFontName;
+			case "_DEFAULT_SANS_SMALL":
+				return defaultSansSmallFontName;
+			default:
+				return name;
 			}
 			return name;
 		}

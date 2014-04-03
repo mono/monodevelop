@@ -57,6 +57,36 @@ namespace MonoDevelop.Platform
 			}
 		}
 
+		public override string DefaultMonospaceSmallFont {
+			get {
+				// Vista has the very beautiful Consolas
+				if (Environment.OSVersion.Version.Major >= 6)
+					return "Consolas 10";
+
+				return "Courier New 10";
+			}
+		}
+
+		public override string DefaultSansFont {
+			get {
+				// Vista has the very beautiful Consolas
+				if (Environment.OSVersion.Version.Major >= 6)
+					return "Consolas 10";
+
+				return "Courier New 10";
+			}
+		}
+
+		public override string DefaultSansSmallFont {
+			get {
+				// Vista has the very beautiful Consolas
+				if (Environment.OSVersion.Version.Major >= 6)
+					return "Consolas 10";
+
+				return "Courier New 10";
+			}
+		}
+
 		public override string Name {
 			get { return "Windows"; }
 		}
