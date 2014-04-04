@@ -62,6 +62,9 @@ namespace MonoDevelop.Debugger.Win32
 					catch (Exception ex) {
 						workError = ex;
 					}
+					finally {
+						workDelegate = null;
+					}
 					wordDoneEvent.Set ();
 				}
 				while (Monitor.Wait (threadLock, 60000));

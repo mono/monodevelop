@@ -54,5 +54,6 @@
   <Assembly name="System.ServiceModel.Web" version="3.5.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Windows.Presentation" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Xml.Linq" version="3.5.0.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="FSharp.Core" />
 </Assemblies>
 </TargetFramework>
