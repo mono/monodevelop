@@ -46,7 +46,6 @@ namespace MonoDevelop.VersionControl
 			if (!repo.RequestFileWritePermission (dest))
 				throw new System.IO.IOException ("Write permission denied.");
 
-			repo.RequestFileWritePermission (dest);
 			base.CopyFile (source, dest, overwrite);
 			repo.NotifyFileChanged (dest);
 		}
