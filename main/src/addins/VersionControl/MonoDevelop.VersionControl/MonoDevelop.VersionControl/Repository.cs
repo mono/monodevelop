@@ -246,11 +246,6 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		public void ClearCachedVersionInfo (FilePath rootPath)
-		{
-			infoCache.ClearCachedVersionInfo (rootPath);
-		}
-
 		public void ClearCachedVersionInfo (params FilePath[] paths)
 		{
 			foreach (var p in paths)
