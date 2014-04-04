@@ -9,6 +9,12 @@
     <Import assembly="FSharpBinding.Gui.dll" />
     <Import assembly="FSharp.Compiler.Service.dll" />
 
+  <!--INSTALL_DEBUG
+    <Import file = "FSharp.CompilerBinding.dll.mdb" />
+    <Import file = "FSharpBinding.dll.mdb" />
+    <Import file = "FSharpBinding.Gui.dll.mdb" />
+  INSTALL_DEBUG-->
+    
     <Import file = "templates.EmptyFSharpSource.xft.xml" />
     <Import file = "templates.EmptyFSharpScript.xft.xml" />
     <Import file = "templates.EmptyFSharpSignature.xft.xml" />
@@ -184,8 +190,8 @@
       <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
           _label = "Send selection to F# Interactive"
           _description="Send the selected text to F# Interactive"
-          shortcut="Ctrl|Return"
-          macShortcut="Ctrl|Return"
+          shortcut="Alt|Return"
+          macShortcut="Alt|Return"
           defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
       <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"

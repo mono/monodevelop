@@ -4,9 +4,10 @@
 
 ;; Author: 1993-1997 Xavier Leroy, Jacques Garrigue and Ian T Zimmerman
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
-;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
+;;         2012-2014 Robin Neatherway <robin.neatherway@gmail.com>
+;; Maintainer: Robin Neatherway
 ;; Keywords: languages
-;; Version: 1.1.0
+;; Version: 1.2.0
 
 ;; This file is not part of GNU Emacs.
 

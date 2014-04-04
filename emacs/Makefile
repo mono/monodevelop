@@ -87,6 +87,6 @@ byte-compile : packages
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
           -f batch-byte-compile $(src_files)
 
-run : packages
+run : $(ac_exe) packages
 	HOME=$(tmp_d) ;\
-	$(emacs) $(load_files)
+	$(emacs) $(load_files) -f configure-fsharp-tests

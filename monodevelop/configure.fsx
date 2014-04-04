@@ -64,6 +64,8 @@ Console.WriteLine "------------------------------------------"
 let args = fsi.CommandLineArgs.[1..]
 if Array.exists ((=) "--help") args then
   Console.WriteLine "Options:\n"
+  Console.WriteLine "--debug\n"
+  Console.WriteLine "  Enable debugging of the add-in\n"
   Console.WriteLine "--prefix=PATH\n"
   Console.WriteLine "  MonoDevelop library directory. Currently searched:\n"
   for p in paths do Console.WriteLine("  {0}", p)
@@ -78,7 +80,9 @@ let searchPaths =
   | None -> paths
   | Some p -> p :: paths
 
+let installMdbFiles = Array.exists ((=) "--debug") args
 let mutable mdDir = null
+let mutable mdExe = null
 let mutable mdVersion = "4.1.6"
 
 // Look for the installation directory
@@ -91,15 +95,15 @@ else
     // Using installed MonoDevelop
     mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
     if (mdDir <> null) then
-        let mdExe = 
-            if (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
-                GetPath[mdDir; "../../XamarinStudio"]
-            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
-                GetPath [mdDir; "../../MonoDevelop"]
-            elif (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
+        mdExe <-
+            if (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
                 GetPath[mdDir; "bin/XamarinStudio.exe"]
             elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
                 GetPath [mdDir; "bin/MonoDevelop.exe"]
+            elif (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
+                GetPath[mdDir; "../../XamarinStudio"]
+            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
+                GetPath [mdDir; "../../MonoDevelop"]
             else
                 null
         if (mdExe <> null) then
@@ -128,11 +132,15 @@ FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojF
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
+FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDEXE", mdExe)
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
+if installMdbFiles then
+  FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
+  FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
 
 if  isWindows then
-
+  FileReplace(xmlFile, xmlFile, ".dll.mdb\"", ".pdb\"")
   for config in ["Debug";"Release"] do
     System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),
        sprintf """

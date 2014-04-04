@@ -3,6 +3,7 @@
 [Oo]bj/
 monodevelop/pack/*
 monodevelop/packages/*
+monodevelop/build-and*
 repository/*
 *.suo
 *.pidb
