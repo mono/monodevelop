@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gtk;
@@ -213,7 +212,7 @@ namespace MonoDevelop.Platform
 				if (!vw.IsExternal)
 					combo.Items.Add (new ViewerComboItem (vw, vw.Title));
 
-			combo.Enabled = combo.Items.Count > 1;
+			combo.Enabled = combo.Items.Count >= 1;
 			return hasBench;
 		}
 
