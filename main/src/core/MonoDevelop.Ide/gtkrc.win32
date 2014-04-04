@@ -24,6 +24,7 @@ gtk-auto-mnemonics    = 1
 gtk-alternative-button-order = 1
 gtk-error-bell = 0
 gtk-show-input-method-menu = 0
+gtk-font-name = "Segoe UI 10"
 
 style "default" {
     xthickness = 1

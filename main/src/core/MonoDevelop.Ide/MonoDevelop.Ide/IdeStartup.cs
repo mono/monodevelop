@@ -347,8 +347,9 @@ namespace MonoDevelop.Ide
 				var gtkrc = "gtkrc";
 				if (Platform.IsWindows) {
 					gtkrc += ".win32";
-					if (Environment.OSVersion.Version.Major < 6)
-						gtkrc += "-xp";
+					var osv = Environment.OSVersion.Version;
+					if (osv.Major == 6 && osv.Minor < 1)
+						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
 				}

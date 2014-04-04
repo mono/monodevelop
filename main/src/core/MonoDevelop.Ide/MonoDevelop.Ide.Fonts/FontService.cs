@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Fonts
 			if (defaultMonospaceSmallFontName != null) {
 				defaultMonospaceSmallFont = FontDescription.FromString (defaultMonospaceSmallFontName);
 			} else {
-				defaultMonospaceSmallFont = FontDescScaledCopy (defaultMonospaceFont, 0.7d);
+				defaultMonospaceSmallFont = FontDescScaledCopy (defaultMonospaceFont, 0.8d);
 				defaultMonospaceSmallFontName = defaultMonospaceSmallFont.ToString ();
 			}
 
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Fonts
 			if (defaultSansSmallFontName != null) {
 				defaultSansSmallFont = FontDescription.FromString (defaultSansSmallFontName);
 			} else {
-				defaultSansSmallFont = FontDescScaledCopy (defaultSansFont, 0.7d);
+				defaultSansSmallFont = FontDescScaledCopy (defaultSansFont, 0.8d);
 				defaultSansSmallFontName = defaultSansSmallFont.ToString ();
 			}
 		}
