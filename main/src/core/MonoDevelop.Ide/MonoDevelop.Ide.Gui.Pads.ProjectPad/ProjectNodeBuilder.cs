@@ -370,7 +370,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void UpdateSetAsStartupProject (CommandInfo ci)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-			ci.Visible = project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null), IdeApp.Workspace.ActiveConfiguration);
+			ci.Visible = project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
 		}
 
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
