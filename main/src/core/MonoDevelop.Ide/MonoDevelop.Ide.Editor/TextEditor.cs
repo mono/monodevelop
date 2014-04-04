@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public IEnumerable<IDocumentLine> Lines {
 			get {
-				return textEditorImpl.Lines;
+				return GetLinesStartingAt (1);
 			}
 		}
 
@@ -357,17 +357,30 @@ namespace MonoDevelop.Ide.Editor
 
 		public IEnumerable<IDocumentLine> GetLinesBetween (int startLine, int endLine)
 		{
-			return textEditorImpl.GetLinesBetween (startLine, endLine);
+			var curLine = GetLine (startLine);
+			int count = endLine - startLine;
+			while (curLine != null && count --> 0) {
+				yield return curLine;
+				curLine = curLine.NextLine;
+			}
 		}
 
 		public IEnumerable<IDocumentLine> GetLinesStartingAt (int startLine)
 		{
-			return textEditorImpl.GetLinesStartingAt (startLine);
+			var curLine = GetLine (startLine);
+			while (curLine != null) {
+				yield return curLine;
+				curLine = curLine.NextLine;
+			}
 		}
 
 		public IEnumerable<IDocumentLine> GetLinesReverseStartingAt (int startLine)
 		{
-			return textEditorImpl.GetLinesReverseStartingAt (startLine);
+			var curLine = GetLine (startLine);
+			while (curLine != null) {
+				yield return curLine;
+				curLine = curLine.PreviousLine;
+			}
 		}
 
 		public int LocationToOffset (int line, int column)

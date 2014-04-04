@@ -97,7 +97,6 @@ namespace MonoDevelop.Ide.Editor
 
 		Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin);
 
-
 		/// <summary>
 		/// Gets/Sets the text of the whole document..
 		/// </summary>
@@ -129,16 +128,6 @@ namespace MonoDevelop.Ide.Editor
 		/// Gets the number of lines in the document.
 		/// </summary>
 		int LineCount { get; }
-
-		IEnumerable<IDocumentLine> Lines {
-			get;
-		}
-
-		IEnumerable<IDocumentLine> GetLinesBetween (int startLine, int endLine);
-
-		IEnumerable<IDocumentLine> GetLinesStartingAt (int startLine);
-
-		IEnumerable<IDocumentLine> GetLinesReverseStartingAt (int startLine);
 
 		int LocationToOffset (TextLocation location);
 
