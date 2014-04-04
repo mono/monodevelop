@@ -60,14 +60,16 @@ namespace MonoDevelop.Platform
 			CustomCommonFileDialogComboBox encodingCombo = null;
 			if (data.ShowEncodingSelector) {
 				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:");
+				encodingCombo = new CustomCommonFileDialogComboBox ();
 
-				encodingCombo = BuildEncodingsCombo (data.Action != FileChooserAction.Save, data.Encoding);
+				BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
 				group.Items.Add (encodingCombo);
 				dialog.Controls.Add (group);
 
 				encodingCombo.SelectedIndexChanged += (sender, e) => {
 					if (encodingCombo.SelectedIndex == encodingCombo.Items.Count - 1) {
 						// TODO: Create dialog for stuff.
+
 					}
 				};
 			}
@@ -81,14 +83,16 @@ namespace MonoDevelop.Platform
 					Enabled = false
 				};
 				group.Items.Add (viewerCombo);
+				dialog.Controls.Add (group);
+
+				var group2 = new CommonFileDialogGroupBox ();
 
 				// "Close current workspace" is too long and splits the text on 2 lines.
 				closeSolution = new CommonFileDialogCheckBox ("Close workspace") {
 					Visible = false
 				};
-				group.Items.Add (closeSolution);
-
-				dialog.Controls.Add (group);
+				group2.Items.Add (closeSolution);
+				dialog.Controls.Add (closeSolution);
 
 				dialog.SelectionChanged += (sender, e) => {
 					try {
@@ -150,10 +154,10 @@ namespace MonoDevelop.Platform
 			return filenames;
 		}
 
-		static CustomCommonFileDialogComboBox BuildEncodingsCombo (bool showAutoDetected, Encoding selectedEncoding)
-		{
-			var combo = new CustomCommonFileDialogComboBox ();
-	
+		static void BuildEncodingsCombo (CustomCommonFileDialogComboBox combo, bool showAutoDetected, Encoding selectedEncoding)
+		{	
+			combo.Items.Clear ();
+
 			var encodings = SelectedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
 				encodings = SelectedEncodings.DefaultEncodings;
@@ -175,9 +179,6 @@ namespace MonoDevelop.Platform
 				if (encoding.Equals (selectedEncoding))
 					combo.SelectedIndex = i + 1;
 			}
-
-			combo.Items.Add (new CommonFileDialogComboBoxItem (GettextCatalog.GetString ("Add or Remove...")));
-			return combo;
 		}
 
 		class EncodingComboItem : CommonFileDialogComboBoxItem
