@@ -924,6 +924,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			SetPropertyValue ("MSBuildThisFileDirectory", Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar);
 			SetPropertyValue ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
 			SetPropertyValue ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
+			SetPropertyValue ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
 		}
 
 		public string GetPropertyValue (string name)
