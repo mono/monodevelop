@@ -1,5 +1,5 @@
 //
-// XmlResultsStore.cs
+// AbstractResultsStore.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -36,18 +36,19 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
 {
-	public class XmlResultsStore: IResultsStore
+	public abstract class AbstractResultsStore: IResultsStore
 	{
 		Hashtable fileCache = new Hashtable ();
 		string basePath;
 		string storeId;
 		Hashtable cachedRootList = new Hashtable ();
-		
-		static XmlSerializer serializer = new XmlSerializer (typeof(TestRecord));
-		
-		public XmlResultsStore (string directory, string storeId)
+
+		IResultsStoreSerializer serializer;
+
+		public AbstractResultsStore (IResultsStoreSerializer serializer, string directory, string storeId)
 		{
-			basePath = directory;
+			this.serializer = serializer;
+			this.basePath = directory;
 			this.storeId = storeId;
 		}
 		
@@ -165,7 +166,7 @@ namespace MonoDevelop.NUnit
 			for (int n = dates.Length - 1; n >= 0 && list.Count < count; n--) {
 				if (dates [n] > endDate)
 					continue;
-					
+				
 				TestRecord root = GetRootRecord (configuration, dates [n]);
 				if (root == null) continue;
 
@@ -188,20 +189,19 @@ namespace MonoDevelop.NUnit
 		{
 			if (!Directory.Exists (basePath))
 				Directory.CreateDirectory (basePath);
-
+			
 			foreach (DictionaryEntry entry in fileCache) {
 				TestRecord record = (TestRecord) entry.Value;
 				if (!record.Modified)
 					continue;
-
-				string file = Path.Combine (basePath, (string)entry.Key);
-				StreamWriter writer = new StreamWriter (file);
+				
+				string filePath = Path.Combine (basePath, (string)entry.Key);
 				try {
-					serializer.Serialize (writer, record);
-				} finally {
-					writer.Close ();
+					serializer.Serialize (filePath, record);
+					record.Modified = false;
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
 				}
-				record.Modified = false;
 			}
 			cachedRootList.Clear ();
 		}
@@ -223,7 +223,7 @@ namespace MonoDevelop.NUnit
 				return tr;
 			}
 		}
-		
+
 		TestRecord GetRootRecord (string configuration, DateTime date)
 		{
 			string file = GetRootFileName (configuration, date);
@@ -236,19 +236,17 @@ namespace MonoDevelop.NUnit
 			} catch (Exception) {
 				return null;
 			}
-			if (!File.Exists (filePath))
-				return null;
-
-			StreamReader s = new StreamReader (filePath);
+			
 			try {
-				res = (TestRecord) serializer.Deserialize (s);
+				res = (TestRecord) serializer.Deserialize (filePath);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return null;
-			} finally {
-				s.Close ();
 			}
-			fileCache [file] = res;
+			
+			if (res != null) {
+				fileCache [file] = res;
+			}
 			return res;
 		}
 		
@@ -299,7 +297,7 @@ namespace MonoDevelop.NUnit
 			DateTime[] res = (DateTime[]) cachedRootList [configuration];
 			if (res != null)
 				return res;
-
+			
 			ArrayList dates = new ArrayList ();
 			foreach (string file in Directory.GetFiles (basePath, storeId + "-" + configuration + "-*")) {
 				try {
@@ -313,6 +311,24 @@ namespace MonoDevelop.NUnit
 		}
 	}
 	
+	/// <summary>
+	/// Encapsulates serialization/deserialization logic
+	/// </summary>
+	public interface IResultsStoreSerializer
+	{
+		/// <summary>
+		/// Serialize the record into the specified path.
+		/// </summary>
+		void Serialize(string filePath, TestRecord testRecord);
+		
+		/// <summary>
+		/// Deserialize the TestRecord from the sepcified path if possible.
+		/// Return null if deserialization is impossible.
+		/// </summary>
+		TestRecord Deserialize(string filePath);
+	}
+	
+	[Serializable]
 	public class TestRecord
 	{
 		string name;
@@ -337,6 +353,7 @@ namespace MonoDevelop.NUnit
 		}
 	}
 	
+	[Serializable]
 	public class TestRecordCollection: CollectionBase
 	{
 		public new TestRecord this [int n] {
@@ -358,6 +375,7 @@ namespace MonoDevelop.NUnit
 		}
 	}
 	
+	[Serializable]
 	public class UnitTestResultCollection: CollectionBase
 	{
 		public new UnitTestResult this [int n] {
@@ -370,4 +388,3 @@ namespace MonoDevelop.NUnit
 		}
 	}	
 }
-

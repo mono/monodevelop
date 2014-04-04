@@ -193,7 +193,6 @@
     <Compile Include="Services\NUnitOptions.cs" />
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
-    <Compile Include="Services\XmlResultsStore.cs" />
     <Compile Include="Services\WorkspaceTestGroup.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Services\UnitTestResult.cs" />
@@ -204,6 +203,8 @@
     <Compile Include="Services\TcpTestListener.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="Gui\AbstractUnitTestEditorExtension.cs" />
+    <Compile Include="Services\AbstractResultsStore.cs" />
+    <Compile Include="Services\BinaryResultsStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
