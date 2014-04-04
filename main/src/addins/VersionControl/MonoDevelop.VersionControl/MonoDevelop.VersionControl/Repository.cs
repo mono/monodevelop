@@ -630,18 +630,6 @@ namespace MonoDevelop.VersionControl
 #pragma warning restore 618
 		}
 		
-		// Creates a local directory.
-		public void CreateLocalDirectory (FilePath path)
-		{
-			ClearCachedVersionInfo (path);
-			OnCreateLocalDirectory (path);
-		}
-		
-		protected virtual void OnCreateLocalDirectory (FilePath path)
-		{
-			Directory.CreateDirectory (path);
-		}
-		
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.

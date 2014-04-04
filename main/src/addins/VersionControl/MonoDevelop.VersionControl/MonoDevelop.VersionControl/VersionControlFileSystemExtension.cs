@@ -85,7 +85,8 @@ namespace MonoDevelop.VersionControl
 		public override void CreateDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
-			repo.CreateLocalDirectory (path);
+			repo.ClearCachedVersionInfo (path);
+			System.IO.Directory.CreateDirectory (path);
 			repo.Add (path, false, new NullProgressMonitor ());
 		}
 		
