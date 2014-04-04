@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			get { return document; }
 		}
 
-		protected ITextEditor Editor {
+		protected TextEditor Editor {
 			get { return document != null ? document.Editor : null; }
 		}
 

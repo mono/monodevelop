@@ -41,7 +41,6 @@ using MonoDevelop.Ide.Execution;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components;
 

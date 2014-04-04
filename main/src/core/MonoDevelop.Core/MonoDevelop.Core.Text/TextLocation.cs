@@ -181,6 +181,16 @@ namespace MonoDevelop.Core.Text
 			return !(left < right);
 		}
 
+		public static implicit operator ICSharpCode.NRefactory.TextLocation (TextLocation location)
+		{
+			return new ICSharpCode.NRefactory.TextLocation (location.Line, location.Column);
+		}
+
+		public static implicit operator TextLocation(ICSharpCode.NRefactory.TextLocation location)
+		{
+			return new TextLocation (location.Line, location.Column);
+		}
+
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>

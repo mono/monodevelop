@@ -1655,6 +1655,8 @@ namespace Mono.TextEditor
 		
 		
 		#region Diff
+
+
 		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
 		{
 			int i = 0;

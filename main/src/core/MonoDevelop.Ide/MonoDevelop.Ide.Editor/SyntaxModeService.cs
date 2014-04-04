@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (ITextEditor doc, string mimeType)
+		public static SyntaxMode GetSyntaxMode (TextEditor doc, string mimeType)
 		{
 			if (string.IsNullOrEmpty (mimeType))
 				return null;
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		public static void ScanSpans (IDocument doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
+		public static void ScanSpans (TextEditor doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
 			if (mode == null)
 				return;
@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Editor
 		
 		class UpdateWorker
 		{
-			ITextEditor doc;
+			TextEditor doc;
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Editor
 				private set;
 			}
 			
-			public IDocument Doc {
+			public TextEditor Doc {
 				get { return this.doc; }
 			}
 			
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.Editor
 				get;
 				set;
 			}
-			public UpdateWorker (ITextEditor doc, SyntaxMode mode, int startOffset, int endOffset)
+			public UpdateWorker (TextEditor doc, SyntaxMode mode, int startOffset, int endOffset)
 			{
 				this.doc = doc;
 				this.mode = mode;
@@ -349,7 +349,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		public static void StartUpdate (ITextEditor doc, SyntaxMode mode, int startOffset, int endOffset)
+		public static void StartUpdate (TextEditor doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
 			lock (updateQueue) {
 				updateQueue.Enqueue (new UpdateWorker (doc, mode, startOffset, endOffset));
@@ -357,7 +357,7 @@ namespace MonoDevelop.Ide.Editor
 			queueSignal.Set ();
 		}
 		
-		public static void WaitUpdate (IDocument doc)
+		public static void WaitUpdate (TextEditor doc)
 		{
 			UpdateWorker[] arr;
 			lock (updateQueue) {

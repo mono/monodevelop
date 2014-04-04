@@ -1,5 +1,5 @@
 ﻿//
-// IDocument.cs
+// ITextEditorImpl.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -26,25 +26,77 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
-using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Editor
 {
-	/// <summary>
-	/// A document representing a source code file for refactoring.
-	/// Line and column counting starts at 1.
-	/// Offset counting starts at 0.
-	/// </summary>
-	public interface IDocument : ITextSource, IServiceProvider
+	public interface ITextEditorImpl : ITextSource
 	{
-		/// <summary>
-		/// Gets or sets the type of the MIME.
-		/// </summary>
-		/// <value>The type of the MIME.</value>
-		string MimeType {
+		ISyntaxMode SyntaxMode { get; set; }
+		ITextEditorOptions Options { get; set; }
+
+		TextLocation CaretLocation { get; set; }
+		int CaretOffset { get; set; }
+
+		void Undo ();
+		void Redo ();
+
+		IDisposable OpenUndoGroup();
+
+		bool ReadOnly {
 			get;
 			set;
 		}
+
+		bool IsSomethingSelected { get; }
+
+		SelectionMode SelectionMode { get; }
+
+		ISegment SelectionRange { get; set; }
+		DocumentRegion SelectionRegion { get; set; }
+
+		void SetSelection (int anchorOffset, int leadOffset);
+
+		event EventHandler SelectionChanged;
+
+		event EventHandler CaretPositionChanged;
+
+		void ClearSelection ();
+
+		void CenterToCaret ();
+
+		void StartCaretPulseAnimation ();
+
+		int EnsureCaretIsNotVirtual ();
+
+		void FixVirtualIndentation ();
+
+		IEditorActionHost Actions { get; }
+
+		bool IsInAtomicUndo {
+			get;
+		}
+
+		event EventHandler BeginUndo;
+		event EventHandler EndUndo;
+
+		Gtk.Widget GetGtkWidget ();
+
+		void RunWhenLoaded (Action action);
+
+		string FormatString (TextLocation insertPosition, string code);
+
+		void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action);
+
+		void StartTextLinkMode (List<TextLink> links);
+
+		void RequestRedraw ();
+
+		double LineHeight { get; }
+
+		TextLocation PointToLocation (double xp, double yp, bool endAtEol = false);
+
+		Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin);
+
 
 		/// <summary>
 		/// Gets/Sets the text of the whole document..
@@ -82,16 +134,11 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
-
-		string GetLineText (int line, bool includeDelimiter = false);
-
 		IEnumerable<IDocumentLine> GetLinesBetween (int startLine, int endLine);
 
 		IEnumerable<IDocumentLine> GetLinesStartingAt (int startLine);
 
 		IEnumerable<IDocumentLine> GetLinesReverseStartingAt (int startLine);
-
-		int LocationToOffset (int line, int column);
 
 		int LocationToOffset (TextLocation location);
 
@@ -99,15 +146,9 @@ namespace MonoDevelop.Ide.Editor
 
 		int Insert (int offset, string text);
 
-		void Remove (int offset, int count);
-
 		void Remove (ISegment segment);
 
 		int Replace (int offset, int count, string value);
-
-		string GetTextBetween (int startOffset, int endOffset);
-
-		string GetTextBetween (TextLocation start, TextLocation end);
 
 		IDocumentLine GetLine (int lineNumber);
 
@@ -115,20 +156,9 @@ namespace MonoDevelop.Ide.Editor
 
 		int OffsetToLineNumber (int offset);
 
-		/// <summary>
-		/// Gets the name of the file the document is stored in.
-		/// Could also be a non-existent dummy file name or null if no name has been set.
-		/// </summary>
-		string FileName { get; set; }
-
-		/// <summary>
-		/// Fired when the file name of the document changes.
-		/// </summary>
-		event EventHandler FileNameChanged;
-
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
-		void AddMarker (int lineNumber, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
+
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
 
 		#region Text segment markers
@@ -151,63 +181,9 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		IEnumerable<IFoldSegment> GetFoldingsFromOffset (int offset);
-		IEnumerable<IFoldSegment> GetFoldingContaining (int lineNumber);
 		IEnumerable<IFoldSegment> GetFoldingContaining (IDocumentLine line);
-		IEnumerable<IFoldSegment> GetStartFoldings (int lineNumber);
 		IEnumerable<IFoldSegment> GetStartFoldings (IDocumentLine line);
-		IEnumerable<IFoldSegment> GetEndFoldings (int lineNumber);
 		IEnumerable<IFoldSegment> GetEndFoldings (IDocumentLine line);
-	}
-
-	public static class DocumentExtensions
-	{
-		public static string GetTextBetween (this IDocument document, int startLine, int startColumn, int endLine, int endColumn)
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			return document.GetTextBetween (new TextLocation (startLine, startColumn), new TextLocation (endLine, endColumn));
-		}
-
-		public static string GetLineIndent (this IDocument document, int lineNumber)
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			return document.GetLineIndent (document.GetLine (lineNumber));
-		}
-
-		public static string GetLineIndent (this IDocument document, IDocumentLine segment)
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			if (segment == null)
-				throw new ArgumentNullException ("segment");
-			return segment.GetIndentation (document);
-		}
-
-		static int[] GetDiffCodes (IDocument document, ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
-		{
-			int i = 0;
-			var result = new int[document.LineCount];
-			foreach (var line in document.Lines) {
-				string lineText = document.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
-				int curCode;
-				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
-					codeDictionary[lineText] = curCode = ++codeCounter;
-				}
-				result[i] = curCode;
-				i++;
-			}
-			return result;
-		}
-
-		public static IEnumerable<Hunk> Diff (this IDocument document, IDocument changedDocument, bool includeEol = true)
-		{
-			var codeDictionary = new Dictionary<string, int> ();
-			int codeCounter = 0;
-			return MonoDevelop.Ide.Editor.Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
-				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
-		}
-
 	}
 }
 

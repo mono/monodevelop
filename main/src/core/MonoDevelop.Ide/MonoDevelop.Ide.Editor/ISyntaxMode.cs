@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Gets or sets the document the syntax mode is attached to. To detach it's set to null.
 		/// </summary>
-		ITextEditor Document {
+		TextEditor Document {
 			get;
 			set;
 		}

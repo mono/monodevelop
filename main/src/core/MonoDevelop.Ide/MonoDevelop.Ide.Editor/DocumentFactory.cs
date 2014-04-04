@@ -31,27 +31,27 @@ namespace MonoDevelop.Ide.Editor
 {
 	public static class DocumentFactory
 	{
-		public static IDocument CreateNewDocument ()
+		public static TextEditor CreateNewDocument ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static IDocument CreateNewReadonlyDocument (string text)
+		public static TextEditor CreateNewReadonlyDocument (string text)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static ITextEditor CreateNewEditor ()
+		public static TextEditor CreateNewEditor ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static IUrlTextLineMarker CreateUrlTextMarker (IDocument doc, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
+		public static IUrlTextLineMarker CreateUrlTextMarker (TextEditor doc, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (ITextEditor iTextEditor)
+		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor iTextEditor)
 		{
 			throw new NotImplementedException ();
 		}

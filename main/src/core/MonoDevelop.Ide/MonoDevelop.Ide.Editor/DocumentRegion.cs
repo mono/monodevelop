@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Editor
 			return new DocumentRegion (location.Begin.Line, location.Begin.Column, location.End.Line, location.End.Column);
 		}
 #endif
-		public TextSegment GetSegment (IDocument document)
+		public TextSegment GetSegment (TextEditor document)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");

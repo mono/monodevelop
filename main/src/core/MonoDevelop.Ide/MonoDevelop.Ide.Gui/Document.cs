@@ -305,14 +305,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public ITextEditor Editor {
+		public TextEditor Editor {
 			get {
 				if (provider == null) {
 					provider = GetContent <IServiceProvider> ();
 					if (provider == null)
 						return null;
 				}
-				return (ITextEditor)provider.GetService (typeof(ITextEditor));
+				return (TextEditor)provider.GetService (typeof(TextEditor));
 			}
 		}
 

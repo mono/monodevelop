@@ -2371,9 +2371,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ITextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IDocument.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -2422,6 +2420,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\DefaultSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ViWordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Diff.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

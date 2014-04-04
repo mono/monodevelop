@@ -136,21 +136,21 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return string.Format("[CodeTemplate: Group={0}, Shortcut={1}, CodeTemplateType={2}, MimeType={3}, Description={4}, Code={5}]", Group, Shortcut, CodeTemplateType, MimeType, Description, Code);
 		}
 		
-		static int FindPrevWordStart (ITextEditor editor, int offset)
+		static int FindPrevWordStart (TextEditor editor, int offset)
 		{
 			while (--offset >= 0 && !Char.IsWhiteSpace (editor.GetCharAt (offset))) 
 				;
 			return ++offset;
 		}
 		
-		public static string GetWordBeforeCaret (ITextEditor editor)
+		public static string GetWordBeforeCaret (TextEditor editor)
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
 			return editor.GetTextBetween (start, offset);
 		}
 		
-		static int DeleteWordBeforeCaret (ITextEditor editor)
+		static int DeleteWordBeforeCaret (TextEditor editor)
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return result.ToString ();
 		}
 
-		static void IndentCode (MonoDevelop.Ide.Editor.IDocument data, string lineIndent)
+		static void IndentCode (MonoDevelop.Ide.Editor.TextEditor data, string lineIndent)
 		{
 			for (int i = 1; i < data.LineCount; i++) {
 				var line = data.GetLine (i + 1);

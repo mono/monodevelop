@@ -57,8 +57,8 @@ namespace MonoDevelop.Gettext
 		Catalog catalog;
 		string  poFileName;
 		ITextEditorOptions options = new TextEditorOptions ();
-		ITextEditor texteditorOriginal = DocumentFactory.CreateNewEditor ();
-		ITextEditor texteditorPlural = DocumentFactory.CreateNewEditor ();
+		TextEditor texteditorOriginal = DocumentFactory.CreateNewEditor ();
+		TextEditor texteditorPlural = DocumentFactory.CreateNewEditor ();
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
@@ -468,8 +468,8 @@ namespace MonoDevelop.Gettext
 			this.Catalog = newCatalog;
 			UpdateTasks ();
 		}
-		List<ITextEditor> notebookTranslatedEditors = new List<ITextEditor> ();
-		ITextEditor GetTextView (int index)
+		List<TextEditor> notebookTranslatedEditors = new List<TextEditor> ();
+		TextEditor GetTextView (int index)
 		{
 			return notebookTranslatedEditors[index];
 		}

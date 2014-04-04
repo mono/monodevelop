@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 	public partial class EditTemplateDialog : Gtk.Dialog
 	{
 		CodeTemplate template;
-		ITextEditor textEditor = DocumentFactory.CreateNewEditor ();
+		TextEditor textEditor = DocumentFactory.CreateNewEditor ();
 		ITextEditorOptions options;
 		
 		ListStore variablesListStore;

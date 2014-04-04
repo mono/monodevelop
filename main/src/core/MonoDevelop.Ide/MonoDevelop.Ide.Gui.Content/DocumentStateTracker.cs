@@ -41,9 +41,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		T currentEngine;
 		Stack<T> cachedEngines = new Stack<T> ();
 		
-		ITextEditor editor;
+		TextEditor editor;
 		
-		public DocumentStateTracker (T engine, ITextEditor editor)
+		public DocumentStateTracker (T engine, TextEditor editor)
 		{
 			this.currentEngine = engine;
 			this.editor = editor;

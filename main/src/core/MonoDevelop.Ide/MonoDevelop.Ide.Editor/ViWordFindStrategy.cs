@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Move to next non-whitespace change in character class.
 		/// </summary>
-		public override int FindNextSubwordOffset (IDocument doc, int offset)
+		public override int FindNextSubwordOffset (TextEditor doc, int offset)
 		{
 			int myoffset = offset;
 			if (0 > myoffset || doc.TextLength-1 <= myoffset){ return myoffset; }
@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Move past next whitespace group.
 		/// </summary>
-		public override int FindNextWordOffset (IDocument doc, int offset)
+		public override int FindNextWordOffset (TextEditor doc, int offset)
 		{
 			int myoffset = offset;
 			if (0 > myoffset || doc.TextLength-1 <= myoffset){ return myoffset; }
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Move to previous non-whitespace change in character class.
 		/// </summary>
-		public override int FindPrevSubwordOffset (IDocument doc, int offset)
+		public override int FindPrevSubwordOffset (TextEditor doc, int offset)
 		{
 			int myoffset = offset-1;
 			char c;
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Move to end of previous whitespace group.
 		/// </summary>
-		public override int FindPrevWordOffset (IDocument doc, int offset)
+		public override int FindPrevWordOffset (TextEditor doc, int offset)
 		{
 			--offset;
 			if (0 > offset || doc.TextLength-1 <= offset){ return offset; }

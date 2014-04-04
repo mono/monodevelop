@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return CodeGenerator.CreateGenerator (doc);
 		}
 		
-		public static CodeGenerator CreateCodeGenerator (this ITextEditor data, ICompilation compilation)
+		public static CodeGenerator CreateCodeGenerator (this TextEditor data, ICompilation compilation)
 		{
 			return CodeGenerator.CreateGenerator (data, compilation);
 		}
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
-		public static List<InsertionPoint> GetInsertionPoints (IDocument data, ParsedDocument parsedDocument, IUnresolvedTypeDefinition type)
+		public static List<InsertionPoint> GetInsertionPoints (TextEditor data, ParsedDocument parsedDocument, IUnresolvedTypeDefinition type)
 		{
 			if (data == null)
 				throw new ArgumentNullException ("data");
@@ -371,7 +371,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		static void CheckEndPoint (IDocument doc, InsertionPoint point, bool isStartPoint)
+		static void CheckEndPoint (TextEditor doc, InsertionPoint point, bool isStartPoint)
 		{
 			var line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -383,7 +383,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				point.LineAfter = NewLineInsertion.Eol;
 		}
 		
-		static void CheckStartPoint (IDocument doc, InsertionPoint point, bool isEndPoint)
+		static void CheckStartPoint (TextEditor doc, InsertionPoint point, bool isEndPoint)
 		{
 			var line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
 		
-		static InsertionPoint GetInsertionPosition (IDocument doc, int line, int column)
+		static InsertionPoint GetInsertionPosition (TextEditor doc, int line, int column)
 		{
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
 			var curLine = doc.GetLine (line);

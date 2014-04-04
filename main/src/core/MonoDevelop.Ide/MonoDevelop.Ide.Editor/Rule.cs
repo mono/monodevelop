@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 		}
 		
-		public virtual Rule GetRule (ITextEditor doc, string name)
+		public virtual Rule GetRule (TextEditor doc, string name)
 		{
 			return (doc.SyntaxMode as SyntaxMode).GetRule (doc, name);
 		}

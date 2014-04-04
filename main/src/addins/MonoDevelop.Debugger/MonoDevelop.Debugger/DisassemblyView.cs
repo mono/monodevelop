@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 	public class DisassemblyView: AbstractViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
-		ITextEditor editor;
+		TextEditor editor;
 		int firstLine;
 		int lastLine;
 		Dictionary<string,int> addressLines = new Dictionary<string,int> ();

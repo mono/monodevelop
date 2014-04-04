@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <returns>
 		/// The indentation of the line (all whitespace chars up to the first non ws char).
 		/// </returns>
-		public static string GetIndentation (this IDocumentLine line, IDocument doc)
+		public static string GetIndentation (this IDocumentLine line, TextEditor doc)
 		{
 			var result = new StringBuilder ();
 			int offset = line.Offset;

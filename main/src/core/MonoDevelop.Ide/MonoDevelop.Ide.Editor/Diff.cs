@@ -439,7 +439,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		// LCS()
 
-		static void WriteHunks (Queue<Hunk> qh, IDocument baseDocument, IDocument changedDocument, StringBuilder sb)
+		static void WriteHunks (Queue<Hunk> qh, TextEditor baseDocument, TextEditor changedDocument, StringBuilder sb)
 		{
 			Hunk item;
 			int remStart;
@@ -471,12 +471,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public static string GetDiffString (IDocument baseDocument, IDocument changedDocument)
+		public static string GetDiffString (TextEditor baseDocument, TextEditor changedDocument)
 		{
 			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
 		}
 
-		public static string GetDiffString (IEnumerable<Hunk> diff, IDocument baseDocument, IDocument changedDocument, string baseFileName, string changedFileName)
+		public static string GetDiffString (IEnumerable<Hunk> diff, TextEditor baseDocument, TextEditor changedDocument, string baseFileName, string changedFileName)
 		{
 			if (diff == null)
 				return "";

@@ -39,9 +39,9 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class SyntaxMode : Rule, ISyntaxMode
 	{
-		protected ITextEditor doc;
+		protected TextEditor doc;
 
-		public ITextEditor Document {
+		public TextEditor Document {
 			get {
 				return doc;
 			}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 			SetDelimiter ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?");
 		}
 		
-		public SyntaxMode (ITextEditor doc) : this ()
+		public SyntaxMode (TextEditor doc) : this ()
 		{
 			this.doc = doc;
 		}
@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Editor
 			return ColorToPangoMarkup ((Gdk.Color)((HslColor)color));
 		}
 
-		public static int GetIndentLength (ITextEditor doc, int offset, int length, bool skipFirstLine)
+		public static int GetIndentLength (TextEditor doc, int offset, int length, bool skipFirstLine)
 		{
 			int curOffset = offset;
 			int indentLength = int.MaxValue;
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Editor
 			protected readonly SyntaxMode mode;
 			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
-			protected readonly ITextEditor doc;
+			protected readonly TextEditor doc;
 
 			int maxEnd;
 
@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			readonly string defaultStyle = "Plain Text";
 			protected SpanParser spanParser;
-			protected ITextEditor doc;
+			protected TextEditor doc;
 			protected IDocumentLine line;
 			internal int lineOffset;
 			protected SyntaxMode mode;
@@ -671,7 +671,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public override Rule GetRule (ITextEditor document, string name)
+		public override Rule GetRule (TextEditor document, string name)
 		{
 			if (name == null || name == "<root>") {
 				return this;
@@ -767,7 +767,7 @@ namespace MonoDevelop.Ide.Editor
 
 	public interface ISyntaxModeProvider
 	{
-		SyntaxMode Create (ITextEditor doc);
+		SyntaxMode Create (TextEditor doc);
 	}
 	
 	public class ProtoTypeSyntaxModeProvider : ISyntaxModeProvider
@@ -779,7 +779,7 @@ namespace MonoDevelop.Ide.Editor
 			this.prototype = prototype;
 		}
 		
-		SyntaxMode DeepCopy (ITextEditor doc, SyntaxMode mode)
+		SyntaxMode DeepCopy (TextEditor doc, SyntaxMode mode)
 		{
 			var newMode = new SyntaxMode (doc);
 			
@@ -807,7 +807,7 @@ namespace MonoDevelop.Ide.Editor
 			return newMode;
 		}
 		
-		Rule DeepCopy (ITextEditor doc, SyntaxMode mode, Rule rule)
+		Rule DeepCopy (TextEditor doc, SyntaxMode mode, Rule rule)
 		{
 			var newRule = new Rule ();
 			newRule.spans = new Span[rule.Spans.Length];
@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide.Editor
 			return newRule;
 		}
 		
-		public SyntaxMode Create (ITextEditor doc)
+		public SyntaxMode Create (TextEditor doc)
 		{
 			return DeepCopy (doc, prototype);
 		}
@@ -837,14 +837,14 @@ namespace MonoDevelop.Ide.Editor
 	
 	public class SyntaxModeProvider : ISyntaxModeProvider
 	{
-		Func<ITextEditor, SyntaxMode> createFunction;
+		Func<TextEditor, SyntaxMode> createFunction;
 		
-		public SyntaxModeProvider (Func<ITextEditor, SyntaxMode> createFunction)
+		public SyntaxModeProvider (Func<TextEditor, SyntaxMode> createFunction)
 		{
 			this.createFunction = createFunction;
 		}
 		
-		public SyntaxMode Create (ITextEditor doc)
+		public SyntaxMode Create (TextEditor doc)
 		{
 			return createFunction (doc);
 		}

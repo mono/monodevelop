@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Editor
 			return string.Format ("[InsertionPoint: Location={0}, LineBefore={1}, LineAfter={2}]", Location, LineBefore, LineAfter);
 		}
 
-		public void InsertNewLine (ITextEditor editor, NewLineInsertion insertion, ref int offset)
+		public void InsertNewLine (TextEditor editor, NewLineInsertion insertion, ref int offset)
 		{
 			string str = null;
 			switch (insertion) {
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Editor
 			offset += editor.Insert (offset, str);
 		}
 
-		public int Insert (ITextEditor editor, string text)
+		public int Insert (TextEditor editor, string text)
 		{
 			int offset = editor.LocationToOffset (Location);
 			using (var undo = editor.OpenUndoGroup ()) {

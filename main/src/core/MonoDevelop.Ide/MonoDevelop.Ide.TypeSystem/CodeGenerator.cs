@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 		
-		public static CodeGenerator CreateGenerator (ITextEditor editor, ICompilation compilation)
+		public static CodeGenerator CreateGenerator (TextEditor editor, ICompilation compilation)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))

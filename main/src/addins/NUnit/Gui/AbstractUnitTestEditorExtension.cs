@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using System.Threading;
-using Mono.TextEditor;
 using MonoDevelop.NUnit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -417,6 +416,7 @@ namespace MonoDevelop.NUnit
 				}
 			}
 		}
+
 		public class UnitTestLocation
 		{
 			public int LineNumber { get; set; }

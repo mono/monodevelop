@@ -467,7 +467,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return ParseFile (project, fileName, mimeType, reader);
 		}
 
-		public static ParsedDocument ParseFile (Project project, IDocument data)
+		public static ParsedDocument ParseFile (Project project, TextEditor data)
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data.Text);
 		}

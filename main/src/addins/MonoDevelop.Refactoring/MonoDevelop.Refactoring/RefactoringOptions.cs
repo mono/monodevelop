@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public ITextEditor GetTextEditorData ()
+		public TextEditor GetTextEditorData ()
 		{
 			return Document.Editor;
 		}

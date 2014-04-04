@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		Gtk.TreeStore templateStore;
 		CellRendererText   templateCellRenderer;
 		CellRendererImage pixbufCellRenderer;
-		ITextEditor textEditor = DocumentFactory.CreateNewEditor ();
+		TextEditor textEditor = DocumentFactory.CreateNewEditor ();
 		ITextEditorOptions options;
 		
 		public CodeTemplatePanelWidget (OptionsDialog parent)

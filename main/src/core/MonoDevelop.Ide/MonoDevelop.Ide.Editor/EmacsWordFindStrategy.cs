@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Editor
 			this.treat_ = treat_;
 		}
 		
-		int FindNextWordOffset (IDocument doc, int offset, bool subword)
+		int FindNextWordOffset (TextEditor doc, int offset, bool subword)
 		{
 			if (offset + 1 >= doc.TextLength)
 				return doc.TextLength;
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 		
-		int FindPrevWordOffset (IDocument doc, int offset, bool subword)
+		int FindPrevWordOffset (TextEditor doc, int offset, bool subword)
 		{
 			if (offset <= 0)
 				return 0;
@@ -131,22 +131,22 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 		
-		public override int FindNextWordOffset (IDocument doc, int offset)
+		public override int FindNextWordOffset (TextEditor doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, false);
 		}
 		
-		public override int FindPrevWordOffset (IDocument doc, int offset)
+		public override int FindPrevWordOffset (TextEditor doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, false);
 		}
 		
-		public override int FindNextSubwordOffset (IDocument doc, int offset)
+		public override int FindNextSubwordOffset (TextEditor doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, true);
 		}
 		
-		public override int FindPrevSubwordOffset (IDocument doc, int offset)
+		public override int FindPrevSubwordOffset (TextEditor doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, true);
 		}

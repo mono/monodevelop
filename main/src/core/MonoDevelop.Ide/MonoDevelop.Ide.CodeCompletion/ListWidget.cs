@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			itemFont = FontService.GetFontDescription ("Editor").Copy ();
 			var provider = CompletionWidget as IServiceContainer;
 			if (provider != null) {
-				var editor = (ITextEditor)provider.GetService (typeof(ITextEditor));
+				var editor = (TextEditor)provider.GetService (typeof(TextEditor));
 				if (editor != null) {
 					var newSize = (itemFont.Size * editor.Options.Zoom);
 					if (newSize > 0) {

@@ -578,11 +578,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 
-		readonly Dictionary<string, IDocument> documents = new Dictionary<string, IDocument> ();
+		readonly Dictionary<string, TextEditor> documents = new Dictionary<string, TextEditor> ();
 		
-		IDocument GetDocument (SearchResult result)
+		TextEditor GetDocument (SearchResult result)
 		{
-			IDocument doc;
+			TextEditor doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
 				var content = result.FileProvider.ReadString ();
 				if (content == null)
