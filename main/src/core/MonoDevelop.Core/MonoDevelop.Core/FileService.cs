@@ -584,16 +584,6 @@ namespace MonoDevelop.Core
 		}
 		
 		/// <summary>
-		/// Creates a directory if it does not already exist.
-		/// </summary>
-		[Obsolete("Use Directory.CreateDirectory")]
-		public static void EnsureDirectoryExists (string directory)
-		{
-			if (!Directory.Exists (directory))
-				Directory.CreateDirectory (directory);
-		}
-		
-		/// <summary>
 		/// Makes the path separators native.
 		/// </summary>
 		public static string MakePathSeparatorsNative (string path)

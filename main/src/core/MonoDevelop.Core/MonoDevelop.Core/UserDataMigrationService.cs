@@ -146,7 +146,7 @@ namespace MonoDevelop.Core
 			
 				LoggingService.LogInfo ("Migrating '{0}' to '{1}'", source, target);
 				if (!sourceIsDirectory)
-					FileService.EnsureDirectoryExists (target.ParentDirectory);
+					Directory.CreateDirectory (target.ParentDirectory);
 				
 				var handler = node.GetHandler ();
 				if (handler != null) {
