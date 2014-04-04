@@ -1461,17 +1461,17 @@
     <EmbeddedResource Include="icons\light\add-16%402x.png">
       <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16.png">
-      <LogicalName>bubble-error-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-15.png">
+      <LogicalName>bubble-error-light-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16%402x.png">
-      <LogicalName>bubble-error-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-15%402x.png">
+      <LogicalName>bubble-error-light-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16.png">
-      <LogicalName>bubble-warning-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-warning-15.png">
+      <LogicalName>bubble-warning-light-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
-      <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-warning-15%402x.png">
+      <LogicalName>bubble-warning-light-15@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9.png">
       <LogicalName>warning-overlay-light-9.png</LogicalName>
