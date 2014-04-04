@@ -39,6 +39,7 @@ using Mono.TextEditor;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -327,17 +328,18 @@ namespace MonoDevelop.Components.MainToolbar
 						wc++;
 				}
 
-				var font = Pango.FontDescription.FromString (MonoDevelop.Core.Platform.IsMac ? "Lucida Grande 11" : "Calibri 12"); // TODO: VV: "Calibri 12" => "Segoe UI 8"
 
-				errors.Visible = ec > 0;
-				errors.ModifyFont (font);
-				errors.Text = ec.ToString ();
-				errorImage.Visible = ec > 0;
+				using (var font = FontService.SansFont.CopyModified (0.8d)) {
+					errors.Visible = ec > 0;
+					errors.ModifyFont (font);
+					errors.Text = ec.ToString ();
+					errorImage.Visible = ec > 0;
 
-				warnings.Visible = wc > 0;
-				warnings.ModifyFont (font);
-				warnings.Text = wc.ToString ();
-				warningImage.Visible = wc > 0;
+					warnings.Visible = wc > 0;
+					warnings.ModifyFont (font);
+					warnings.Text = wc.ToString ();
+					warningImage.Visible = wc > 0;
+				}
 
 				ebox.Visible = ec > 0 || wc > 0;
 
