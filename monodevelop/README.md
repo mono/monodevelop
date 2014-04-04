@@ -112,7 +112,9 @@ created automatically by the configuration script (`configure.bat`)
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.1. 
 
 To be able to debug the add-in in Xamarin Studio or Monodevelop, invoke `./configure.sh --debug` or `configure.bat --debug`. This adds the necessary .mdb files to the add-in. 
-When configured with `--debug` you can simply `Start debugging` in Xamarin Studio. This will launch a debugged instance of Xamarin Studio. If you have made changes to the add-in, you will need to `make install` or `build-and-install-debug.bat` again.
+When configured with `--debug` you can simply `Start debugging` in Xamarin Studio. This will launch a debugged instance of Xamarin Studio. 
+
+On Mac, if you make changes to the add-in after debugging, you will need to restart Xamarin Studio or MonoDevelop before rebuilding. 
 
 Note that you can not build the add-in in release mode when configured with `--debug`. To build a release build, first `./configure.sh` without `--debug`
 
