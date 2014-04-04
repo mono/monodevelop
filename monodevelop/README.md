@@ -51,19 +51,26 @@ First get nuget.exe and install the required nuget packages:
 
 Now make:
 
-	cd monodevelop
-	./configure.sh 
-	make 
-	make install
+```bash
+cd monodevelop
+./configure.sh 
+make 
+make install
+```
 
 If Monodevelop is installed in an unusual prefix you will need to invoke `configure.sh` with e.g. `--prefix=/path/to/prefix/lib/monodevelop`. Use `./configure.sh --help` to see a list of the paths searched by default.
 
+If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
+
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
-	cd monodevelop
-	configure.bat
-	.\build-and-install-debug.bat
+```dos
+cd monodevelop
+configure.bat
+build-and-install-debug.bat
+```
 
+If you subsequently make changes to the add-in, you will need to `build-and-install-debug.bat` again and restart MonoDevelop/Xamarin Studio. 
 
 
 ### Using the ASP.NET MVC 4 Template
@@ -103,6 +110,14 @@ Be aware that this is not the original file, which is `MonoDevelop.FSharp.fsproj
 created automatically by the configuration script (`configure.bat`)
 
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.1. 
+
+To be able to debug the add-in in Xamarin Studio or Monodevelop, invoke `./configure.sh --debug` or `configure.bat --debug`. This adds the necessary .mdb files to the add-in. 
+When configured with `--debug` you can simply `Start debugging` in Xamarin Studio. This will launch a debugged instance of Xamarin Studio. 
+
+On Mac, if you make changes to the add-in after debugging, you will need to restart Xamarin Studio or MonoDevelop before rebuilding. 
+
+Note that you can not build the add-in in release mode when configured with `--debug`. To build a release build, first `./configure.sh` without `--debug`
+
 
 On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MonoDevelop you can use the command:  
 ```

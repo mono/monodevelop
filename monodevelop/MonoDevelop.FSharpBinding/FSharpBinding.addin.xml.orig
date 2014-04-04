@@ -9,6 +9,12 @@
     <Import assembly="FSharpBinding.Gui.dll" />
     <Import assembly="FSharp.Compiler.Service.dll" />
 
+  <!--INSTALL_DEBUG
+    <Import file = "FSharp.CompilerBinding.dll.mdb" />
+    <Import file = "FSharpBinding.dll.mdb" />
+    <Import file = "FSharpBinding.Gui.dll.mdb" />
+  INSTALL_DEBUG-->
+    
     <Import file = "templates.EmptyFSharpSource.xft.xml" />
     <Import file = "templates.EmptyFSharpScript.xft.xml" />
     <Import file = "templates.EmptyFSharpSignature.xft.xml" />
