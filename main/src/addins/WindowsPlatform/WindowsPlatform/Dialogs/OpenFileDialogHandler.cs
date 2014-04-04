@@ -59,9 +59,9 @@ namespace MonoDevelop.Platform
 
 			CustomCommonFileDialogComboBox encodingCombo = null;
 			if (data.ShowEncodingSelector) {
-				encodingCombo = BuildEncodingsCombo (data.Action != FileChooserAction.Save, data.Encoding);
+				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:");
 
-				var group = new CommonFileDialogGroupBox ("encoding", "Encoding:"); 
+				encodingCombo = BuildEncodingsCombo (data.Action != FileChooserAction.Save, data.Encoding);
 				group.Items.Add (encodingCombo);
 				dialog.Controls.Add (group);
 
@@ -73,19 +73,28 @@ namespace MonoDevelop.Platform
 			}
 
 			CustomCommonFileDialogComboBox viewerCombo = null;
+			CommonFileDialogCheckBox closeSolution = null;
 			if (data.ShowViewerSelector && data.Action == FileChooserAction.Open) {
-				viewerCombo = new CustomCommonFileDialogComboBox ();
-				viewerCombo.Enabled = false;
 				var group = new CommonFileDialogGroupBox ("openWith", "Open with:");
+
+				viewerCombo = new CustomCommonFileDialogComboBox {
+					Enabled = false
+				};
 				group.Items.Add (viewerCombo);
+
+				// "Close current workspace" is too long and splits the text on 2 lines.
+				closeSolution = new CommonFileDialogCheckBox ("Close workspace") {
+					Visible = false
+				};
+				group.Items.Add (closeSolution);
+
 				dialog.Controls.Add (group);
 
-				// TODO: Add closing workspace.
 				dialog.SelectionChanged += (sender, e) => {
 					try {
 						var files = GetSelectedItems (dialog);
 						var file = files.Count == 0 ? null : files[0];
-						FillViewers (viewerCombo, file);
+						closeSolution.Visible = FillViewers (viewerCombo, file);
 						dialog.ApplyControlPropertyChange ("Items", viewerCombo);
 					} catch (Exception ex) {
 						LoggingService.LogError (e.ToString ());
@@ -101,9 +110,8 @@ namespace MonoDevelop.Platform
 				data.Encoding = ((EncodingComboItem)encodingCombo.Items [encodingCombo.SelectedIndex]).Encoding;
 
 			if (viewerCombo != null ) {
-				// TODO: Add closing workspace.
-				//if (closeSolutionButton != null)
-				//	data.CloseCurrentWorkspace = closeSolutionButton.State != NSCellStateValue.Off;
+				if (closeSolution != null)
+					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
 				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer;
 			}
 
@@ -202,24 +210,28 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		static void FillViewers (CustomCommonFileDialogComboBox combo, string fileName)
+		static bool FillViewers (CustomCommonFileDialogComboBox combo, string fileName)
 		{
 			combo.Items.Clear ();
 
 			if (String.IsNullOrEmpty (fileName) || Directory.Exists (fileName)) {
 				combo.Enabled = false;
-				return;
+				return false;
 			}
 
+			bool hasBench = false;
 			var projectService = IdeApp.Services.ProjectService;
-			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName))
+			if (projectService.IsWorkspaceItemFile (fileName) || projectService.IsSolutionItemFile (fileName)) {
+				hasBench = true;
 				combo.Items.Add (new ViewerComboItem (null, GettextCatalog.GetString ("Solution Workbench")));
+			}
 
 			foreach (var vw in DisplayBindingService.GetFileViewers (fileName, null))
 				if (!vw.IsExternal)
 					combo.Items.Add (new ViewerComboItem (vw, vw.Title));
 
 			combo.Enabled = combo.Items.Count > 1;
+			return hasBench;
 		}
 
 		class ViewerComboItem : CommonFileDialogComboBoxItem

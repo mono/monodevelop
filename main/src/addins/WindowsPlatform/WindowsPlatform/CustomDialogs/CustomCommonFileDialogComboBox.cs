@@ -31,7 +31,6 @@ namespace MonoDevelop.Platform
 {
 	public class CustomCommonFileDialogComboBox : CommonFileDialogComboBox
 	{
-		string oldText = string.Empty;
 		int oldCount;
 
 		public CustomCommonFileDialogComboBox ()
@@ -45,9 +44,10 @@ namespace MonoDevelop.Platform
 		internal override void Attach (IFileDialogCustomize dialog)
 		{
 			base.Attach (dialog);
-			oldCount = Items.Count;
+
+			// Keep track of old selection.
 			SelectedIndexChanged += delegate {
-				oldText = Items [SelectedIndex].Text;
+				oldCount = Items.Count;
 			};
 		}
 
@@ -55,24 +55,23 @@ namespace MonoDevelop.Platform
 		{
 			Debug.Assert(dialog != null, "CommonFileDialogComboBox.Attach: dialog parameter can not be null");
 
-			bool set = false;
-
-			// Add the combo box items
+			// Remove the control items.
+			// Don't do RemoveAllControlItems. It's not implemented natively.
 			for (int index = 0; index < oldCount; ++index)
 				dialog.RemoveControlItem (Id, index);
 
+			// Re-add the combo box items
 			for (int index = 0; index < Items.Count; ++index) {
 				string text = Items [index].Text;
 
 				dialog.AddControlItem (Id, index, text);
-				if (!set && oldText == text) {
-					set = true;
-					dialog.SetSelectedControlItem (Id, index);
-				}
 			}
 
-			if (!set && Enabled)
-				dialog.SetSelectedControlItem (Id, 0);
+			// If we didn't, go select.
+			if (Enabled) {
+				SelectedIndex = 0;
+				ApplyPropertyChange ("SelectedIndex");
+			}
 
 			oldCount = Items.Count;
 
