@@ -57,7 +57,7 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		public override string DefaultMonospaceSmallFont {
+		public override string DefaultFontMonospaceSmall {
 			get {
 				// Vista has the very beautiful Consolas
 				if (Environment.OSVersion.Version.Major >= 6)
@@ -67,7 +67,7 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		public override string DefaultSansFont {
+		public override string DefaultFontSans {
 			get {
 				// Vista has the very beautiful Consolas
 				if (Environment.OSVersion.Version.Major >= 6)
@@ -77,7 +77,7 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		public override string DefaultSansSmallFont {
+		public override string DefaultFontSansSmall {
 			get {
 				// Vista has the very beautiful Consolas
 				if (Environment.OSVersion.Version.Major >= 6)
