@@ -38,6 +38,7 @@
 		<ProjectTemplate id = "CSharpEmptyProject" resource = "EmptyProject.xpt.xml"/>
 		<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
 		<ProjectTemplate id = "CSharpLibrary" resource = "Library.xpt.xml"/>
+		<ProjectTemplate id = "CSharpSharedAssetsProject" resource = "SharedAssetsProject.xpt.xml"/>
 		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
 			<ProjectTemplate id = "CSharpPortableLibrary" resource = "PortableLibrary.xpt.xml" />
 		</Condition>

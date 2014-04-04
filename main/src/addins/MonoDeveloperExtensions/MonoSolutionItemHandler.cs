@@ -351,5 +351,10 @@ namespace MonoDeveloper
 			get { return unitTest; }
 			set { unitTest = value; }
 		}
+
+		public object GetService (Type t)
+		{
+			return null;
+		}
 	}
 }

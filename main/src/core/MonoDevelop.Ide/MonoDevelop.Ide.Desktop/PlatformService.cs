@@ -51,6 +51,10 @@ namespace MonoDevelop.Ide.Desktop
 		const bool UsePlatformFileIcons = false;
 		
 		public abstract string DefaultMonospaceFont { get; }
+		public virtual string DefaultFontMonospaceSmall { get { return null; } }
+		public virtual string DefaultFontSans { get { return null; } }
+		public virtual string DefaultFontSansSmall { get { return null; } }
+
 		public abstract string Name { get; }
 
 		/// <summary>

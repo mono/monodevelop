@@ -168,7 +168,7 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			var widget = Toolkit.CurrentEngine.GetNativeWidget (ParentWidget);
-			var checkbox = new PackageCellViewCheckBox ();
+			var checkbox = new PackageCellViewCheckBox (ParentWidget.ParentWindow.Screen.ScaleFactor);
 			checkbox.Container = (Gtk.Widget)widget;
 			checkbox.Size = (int)checkBoxImageSize.Width + 1;
 
@@ -224,11 +224,10 @@ namespace MonoDevelop.PackageManagement
 
 		void DrawPackageImage (Context ctx, Rectangle cellArea)
 		{
-			double imageAlpha = 1;
 			Image image = GetValue (ImageField);
+
 			if (image == null) {
-				image = defaultPackageImage;
-				imageAlpha = GetImageAlphaForDefaultPackageImage ();
+				image = Selected ? defaultPackageImageDark : defaultPackageImageLight;
 			}
 
 			if (PackageImageNeedsResizing (image)) {
@@ -236,26 +235,16 @@ namespace MonoDevelop.PackageManagement
 				ctx.DrawImage (
 					image,
 					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
-					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
+					Math.Round( cellArea.Top + packageImagePadding.Top + imageLocation.Y),
 					maxPackageImageSize.Width,
-					maxPackageImageSize.Height,
-					imageAlpha);
+					maxPackageImageSize.Height);
 			} else {
 				Point imageLocation = GetPackageImageLocation (image.Size, cellArea);
 				ctx.DrawImage (
 					image,
 					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
-					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
-					imageAlpha);
+					Math.Round (cellArea.Top + packageImagePadding.Top + imageLocation.Y));
 			}
-		}
-
-		double GetImageAlphaForDefaultPackageImage ()
-		{
-			if (Selected) {
-				return 0.5;
-			}
-			return 0.2;
 		}
 
 		bool PackageImageNeedsResizing (Image image)
@@ -319,16 +308,17 @@ namespace MonoDevelop.PackageManagement
 		Size checkBoxImageSize = new Size (16, 16);
 		Rectangle checkBoxImageClickableRectangle = new Rectangle (0, 10, 40, 50);
 
-		static Image whiteCheckedCheckBoxImage;
-		static Image whiteUncheckedCheckBoxImage;
-		static Image greyCheckedCheckBoxImage;
-		static Image greyUncheckedCheckBoxImage;
-		static Image blueCheckedCheckBoxImage;
-		static Image blueUncheckedCheckBoxImage;
-		static Image checkedCheckBoxWithBackgroundColorImage;
-		static Image uncheckedCheckBoxWithBackgroundColorImage;
+		Image whiteCheckedCheckBoxImage;
+		Image whiteUncheckedCheckBoxImage;
+		Image greyCheckedCheckBoxImage;
+		Image greyUncheckedCheckBoxImage;
+		Image blueCheckedCheckBoxImage;
+		Image blueUncheckedCheckBoxImage;
+		Image checkedCheckBoxWithBackgroundColorImage;
+		Image uncheckedCheckBoxWithBackgroundColorImage;
 
-		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "packageicon.png");
+		static readonly Image defaultPackageImageLight = Image.FromResource (typeof(PackageCellView), "reference-light-48.png");
+		static readonly Image defaultPackageImageDark = Image.FromResource (typeof(PackageCellView), "reference-dark-48.png");
 	}
 }
 

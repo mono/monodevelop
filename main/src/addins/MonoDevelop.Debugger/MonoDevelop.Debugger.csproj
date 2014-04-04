@@ -150,6 +150,7 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -248,14 +249,11 @@
     <EmbeddedResource Include="icons\light\bug-16%402x.png">
       <LogicalName>bug-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\lightning.png">
-      <LogicalName>lightning.png</LogicalName>
+    <EmbeddedResource Include="icons\light\lightning-16.png">
+      <LogicalName>lightning-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.Close.Selected.Over.png">
-      <LogicalName>MonoDevelop.Close.Selected.Over.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\MonoDevelop.Close.Selected.png">
-      <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
+    <EmbeddedResource Include="icons\light\lightning-16%402x.png">
+      <LogicalName>lightning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\exception-icon.png">
       <LogicalName>exception-icon.png</LogicalName>

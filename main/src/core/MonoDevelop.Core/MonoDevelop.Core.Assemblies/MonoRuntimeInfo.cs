@@ -120,14 +120,14 @@ namespace MonoDevelop.Core.Assemblies
 			SetupPkgconfigPaths (null, null);
 			
 			string ver = output.ToString ();
-			int i = ver.IndexOf ("version");
+			int i = ver.IndexOf ("version", StringComparison.Ordinal);
 			if (i == -1)
 				return false;
 			i += 8;
 			int j = ver.IndexOf (' ', i);
 			if (j == -1)
 				return false;
-			
+
 			monoVersion = ver.Substring (i, j - i);
 
 			i = ver.IndexOf ('(');
@@ -138,6 +138,9 @@ namespace MonoDevelop.Core.Assemblies
 					j = ver.IndexOf (')', i);
 				if (j != -1) {
 					var rev = ver.Substring (i, j - i);
+					i = rev.IndexOf ('/');
+					if (i != -1 && i + 1 < rev.Length)
+						rev = rev.Substring (i + 1);
 					if (rev != "tarball")
 						monoVersion += " (" + rev + ")";
 				}

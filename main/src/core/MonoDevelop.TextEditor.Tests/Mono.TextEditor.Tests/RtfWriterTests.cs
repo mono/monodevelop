@@ -39,7 +39,7 @@ namespace Mono.TextEditor.Tests
 			if (Platform.IsWindows)
 				Assert.Inconclusive ();
 			var data = Create ("class Foo {}");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedRtf = RtfWriter.GenerateRtf (data);
 			Assert.AreEqual (
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red0\green150\blue149;\red68\green68\blue68;}\viewkind4\uc1\pard
+{\colortbl ;\red51\green100\blue164;\red0\green0\blue0;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 class\cf2  Foo \{\}\line
@@ -63,14 +63,14 @@ namespace Mono.TextEditor.Tests
 			if (Platform.IsWindows)
 				Assert.Inconclusive ();
 			var data = Create ("class Foo {}");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			string generatedRtf = RtfWriter.GenerateRtf (data);
 			Assert.AreEqual (
 				@"{\rtf1\ansi\deff0\adeflang1025
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red68\green68\blue68;}\viewkind4\uc1\pard
+{\colortbl ;\red0\green0\blue0;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 class Foo \{\}\line
@@ -86,14 +86,14 @@ namespace Mono.TextEditor.Tests
 			if (Platform.IsWindows)
 				Assert.Inconclusive ();
 			var data = Create ("✔");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			string generatedRtf = RtfWriter.GenerateRtf (data);
 			Assert.AreEqual (
 				@"{\rtf1\ansi\deff0\adeflang1025
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red68\green68\blue68;}\viewkind4\uc1\pard
+{\colortbl ;\red0\green0\blue0;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 \uc1\u10004*\line
@@ -111,10 +111,11 @@ namespace Mono.TextEditor.Tests
 	attr1 = ""1""
 	attr2 = ""2""
 />");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
 
 			string generatedRtf = RtfWriter.GenerateRtf (data);
+
 			Assert.AreEqual (
 				@"{\rtf1\ansi\deff0\adeflang1025
 {\fonttbl

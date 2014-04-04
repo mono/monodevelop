@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProject
 	{
-		public XmlDocument doc;
+		XmlDocument doc;
 		string file;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
@@ -66,6 +66,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return file; }
 		}
 		
+		public XmlDocument Document {
+			get { return doc; }
+		}
+
 		public MSBuildProject ()
 		{
 			doc = new XmlDocument ();
@@ -170,7 +174,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Evaluate ()
 		{
-			MSBuildEvaluationContext context = new MSBuildEvaluationContext (this);
+			Evaluate (new MSBuildEvaluationContext ());
+		}
+
+		public void Evaluate (MSBuildEvaluationContext context)
+		{
+			context.InitEvaluation (this);
 			foreach (var pg in PropertyGroups)
 				pg.Evaluate (context);
 			foreach (var pg in ItemGroups)
@@ -192,16 +201,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public void AddNewImport (string name, string condition)
+		public MSBuildImport AddNewImport (string name, MSBuildImport beforeImport = null)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);
 			elem.SetAttribute ("Project", name);
-			
-			XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
-			if (last != null)
-				doc.DocumentElement.InsertAfter (elem, last);
-			else
-				doc.DocumentElement.AppendChild (elem);
+
+			if (beforeImport != null) {
+				doc.DocumentElement.InsertBefore (elem, beforeImport.Element);
+			} else {
+				XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
+				if (last != null)
+					doc.DocumentElement.InsertAfter (elem, last);
+				else
+					doc.DocumentElement.AppendChild (elem);
+			}
+			return new MSBuildImport (elem);
 		}
 		
 		public void RemoveImport (string name)
@@ -214,13 +228,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Console.WriteLine ("ppnf:");
 		}
 		
-		public List<string> Imports {
+		public IEnumerable<MSBuildImport> Imports {
 			get {
-				List<string> ims = new List<string> ();
-				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager)) {
-					ims.Add (elem.GetAttribute ("Project"));
-				}
-				return ims;
+				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager))
+					yield return new MSBuildImport (elem);
 			}
 		}
 		
@@ -438,7 +449,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			elem.AppendChild (e);
 			return e;
 		}
-		
+
+		public string Label {
+			get { return EvaluatedElement.GetAttribute ("Label"); }
+			set { Element.SetAttribute ("Label", value); }
+		}
+
 		public string Condition {
 			get {
 				return Element.GetAttribute ("Condition");
@@ -453,6 +469,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal virtual void Evaluate (MSBuildEvaluationContext context)
 		{
+		}
+	}
+
+	public class MSBuildImport: MSBuildObject
+	{
+		public MSBuildImport (XmlElement elem): base (elem)
+		{
+		}
+
+		public string Project {
+			get { return EvaluatedElement.GetAttribute ("Project"); }
+			set { Element.SetAttribute ("Project", value); }
 		}
 	}
 	
@@ -878,15 +906,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	internal class MSBuildEvaluationContext: IExpressionContext
+	public class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
 		bool allResolved;
 		MSBuildProject project;
 
-		public MSBuildEvaluationContext (MSBuildProject project)
+		public MSBuildEvaluationContext ()
+		{
+		}
+
+		internal void InitEvaluation (MSBuildProject project)
 		{
 			this.project = project;
+			SetPropertyValue ("MSBuildThisFile", Path.GetFileName (project.FileName));
+			SetPropertyValue ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
+			SetPropertyValue ("MSBuildThisFileDirectory", Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar);
+			SetPropertyValue ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
+			SetPropertyValue ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
+			SetPropertyValue ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
 		}
 
 		public string GetPropertyValue (string name)

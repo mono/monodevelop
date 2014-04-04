@@ -51,13 +51,8 @@ namespace ICSharpCode.PackageManagement
 			this.savedRecentPackages = recentPackages;
 			this.aggregateRepository = aggregateRepository;
 			this.packageManagementEvents = packageManagementEvents;
-			
-			this.packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
-		}
-		
-		void ParentPackageInstalled(object sender, ParentPackageOperationEventArgs e)
-		{
-			AddPackage(e.Package);
+
+			//UpdatePackages ();
 		}
 		
 		public string Source {
@@ -69,7 +64,7 @@ namespace ICSharpCode.PackageManagement
 			RemovePackageIfAlreadyAdded(package);
 			AddPackageAtBeginning(package);
 			RemoveLastPackageIfCurrentPackageCountExceedsMaximum();
-			UpdateRecentPackagesInOptions();
+			//UpdateRecentPackagesInOptions();
 		}
 		
 		void RemovePackageIfAlreadyAdded(IPackage package)
@@ -124,7 +119,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IQueryable<IPackage> GetPackages()
 		{
-			UpdatePackages();
+			//UpdatePackages();
 			return packages.AsQueryable();
 		}
 		

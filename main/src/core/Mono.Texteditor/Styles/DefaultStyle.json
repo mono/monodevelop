@@ -23,8 +23,8 @@
 		{ "name":"aluminium5", "value":"#555753" },
 		{ "name":"aluminium6", "value":"#2e3436" },
 
-		{ "name":"text-black", "value":"#444" },
-		{ "name":"comment-gray", "value":"#999988" },
+		{ "name":"text-black", "value":"#333" },
+		{ "name":"comment-gray", "value":"#888" },
 		{ "name":"literal-orange", "value":"#F57E00" },
 		{ "name":"literal-escape", "value":"#A53E00" },
 		{ "name":"keyword-teal", "value":"#009695" },

@@ -860,50 +860,33 @@
         <child>
           <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
+            <property name="WidthRequest">300</property>
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Label" id="label1">
+              <widget class="MonoDevelop.Components.SearchEntry" id="searchEntry">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">_Search:</property>
-                <property name="UseUnderline">True</property>
-                <property name="MnemonicWidget">searchEntry</property>
+                <property name="WidthRequest">250</property>
+                <property name="ForceFilterButtonVisible">True</property>
+                <property name="HasFrame">True</property>
+                <property name="RoundedShape">True</property>
+                <property name="IsCheckMenu">False</property>
+                <property name="ActiveFilterID">0</property>
+                <property name="Ready">False</property>
+                <property name="HasFocus">False</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Entry" id="searchEntry">
+              <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">●</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Button" id="clearFilterButton">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">Custom</property>
-                <child>
-                  <widget class="Gtk.Image" id="image25">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-clear Menu</property>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">2</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -5403,7 +5386,6 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

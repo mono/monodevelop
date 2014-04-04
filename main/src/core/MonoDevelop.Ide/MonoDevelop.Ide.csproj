@@ -542,11 +542,17 @@
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\project-reference-16.png">
-      <LogicalName>project-reference-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-source-16.png">
+      <LogicalName>package-source-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\project-reference-16%402x.png">
-      <LogicalName>project-reference-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-source-16%402x.png">
+      <LogicalName>package-source-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-16.png">
+      <LogicalName>reference-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-16%402x.png">
+      <LogicalName>reference-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\solution-16.png">
       <LogicalName>solution-light-16.png</LogicalName>
@@ -568,9 +574,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\syntax-highlighting-16.png">
       <LogicalName>syntax-highlighting-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\system-software-update-22.png">
-      <LogicalName>system-software-update-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-behavior-16.png">
       <LogicalName>text-editor-behavior-16.png</LogicalName>
@@ -640,15 +643,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\workspace-32%402x.png">
       <LogicalName>workspace-light-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.png">
-      <LogicalName>MonoDevelop.Close.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp">
-      <LogicalName>MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\light\pad-minimize-9.png">
       <LogicalName>pad-minimize-light-9.png</LogicalName>
@@ -740,14 +734,17 @@
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Over.png">
-      <LogicalName>MonoDevelop.Close.Over.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-16.png">
+      <LogicalName>popup-close-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.Over.png">
-      <LogicalName>MonoDevelop.Close.Selected.Over.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-16%402x.png">
+      <LogicalName>popup-close-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.png">
-      <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
+    <EmbeddedResource Include="icons\light\popup-close-hover-16.png">
+      <LogicalName>popup-close-hover-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\popup-close-hover-16%402x.png">
+      <LogicalName>popup-close-hover-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\light\btn-debug-base-left-cap-normal.png">
       <LogicalName>btn-debug-base-left-cap-normal-light.png</LogicalName>
@@ -1584,6 +1581,18 @@
     <EmbeddedResource Include="icons\light\unstar-overlay-hover-16%402x.png">
       <LogicalName>unstar-overlay-hover-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\remove-16.png">
+      <LogicalName>remove-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\remove-16%402x.png">
+      <LogicalName>remove-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\properties-16.png">
+      <LogicalName>properties-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\properties-16%402x.png">
+      <LogicalName>properties-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2373,6 +2382,8 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2403,7 +2414,6 @@
     <Folder Include="MonoDevelop.Ide\" />
     <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
-    <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
     <Folder Include="MonoDevelop.Ide.Navigation\" />
     <Folder Include="MonoDevelop.Components.AutoTest\" />
     <Folder Include="MonoDevelop.Ide.Fonts\" />
@@ -2425,6 +2435,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="gtkrc.win32-xp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

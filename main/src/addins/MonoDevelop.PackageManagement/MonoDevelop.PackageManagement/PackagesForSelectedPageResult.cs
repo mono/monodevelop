@@ -36,15 +36,19 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackagesForSelectedPageResult
 	{
-		public PackagesForSelectedPageResult(IEnumerable<IPackage> packages, int totalPackages)
+		public PackagesForSelectedPageResult(IEnumerable<IPackage> packages, PackagesForSelectedPageQuery query)
 		{
 			this.Packages = packages;
 			this.TotalPackagesOnPage = packages.Count();
-			this.TotalPackages = totalPackages;
+			this.TotalPackages = query.TotalPackages;
+			this.AllPackages = query.AllPackages;
+			this.Query = query;
 		}
-		
+
+		public PackagesForSelectedPageQuery Query { get; set; }
 		public IEnumerable<IPackage> Packages { get; set; }
 		public int TotalPackagesOnPage { get; set; }
 		public int TotalPackages { get; set; }
+		public IEnumerable<IPackage> AllPackages { get; set; }
 	}
 }

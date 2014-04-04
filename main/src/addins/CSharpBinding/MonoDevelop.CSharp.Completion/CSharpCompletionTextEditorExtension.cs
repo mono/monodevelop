@@ -25,37 +25,42 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Project;
 using System.Linq;
-using MonoDevelop.CSharp.Formatting;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Text;
-using MonoDevelop.Ide.CodeTemplates;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using Mono.TextEditor;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Mono.TextEditor;
+
+using MonoDevelop.Core;
+using MonoDevelop.Debugger;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.CodeGeneration;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.CodeTemplates;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Components.Commands;
+
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+
+using MonoDevelop.CSharp.Project;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
+	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider, IDebuggerExpressionResolver
 	{
 		internal Mono.TextEditor.TextEditorData TextEditorData {
 			get {
@@ -1325,6 +1330,162 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new TypeParameterDataProvider (startOffset, this, methods);
 		}
+		#endregion
+
+		#region IDebuggerExpressionResolver implementation
+
+		static string GetIdentifierName (TextEditorData editor, Identifier id, out int startOffset)
+		{
+			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
+
+			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
+		}
+
+		internal static string ResolveExpression (TextEditorData editor, ResolveResult result, AstNode node, out int startOffset)
+		{
+			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
+			startOffset = -1;
+
+			if (result is NamespaceResolveResult ||
+				result is ConversionResolveResult ||
+				result is ConstantResolveResult ||
+				result is ForEachResolveResult ||
+				result is TypeIsResolveResult ||
+				result is TypeOfResolveResult ||
+				result is ErrorResolveResult)
+				return null;
+
+			if (result.IsCompileTimeConstant)
+				return null;
+
+			startOffset = editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
+
+			if (result is InvocationResolveResult) {
+				var ir = (InvocationResolveResult) result;
+				if (ir.Member.Name == ".ctor") {
+					// if the user is hovering over something like "new Abc (...)", we want to show them type information for Abc
+					return ir.Member.DeclaringType.FullName;
+				}
+
+				// do not support general method invocation for tooltips because it could cause side-effects
+				return null;
+			} else if (result is LocalResolveResult) {
+				if (node is ParameterDeclaration) {
+					// user is hovering over a method parameter, but we don't want to include the parameter type
+					var param = (ParameterDeclaration) node;
+
+					return GetIdentifierName (editor, param.NameToken, out startOffset);
+				}
+
+				if (node is VariableInitializer) {
+					// user is hovering over something like "int fubar = 5;", but we don't want the expression to include the " = 5"
+					var variable = (VariableInitializer) node;
+
+					return GetIdentifierName (editor, variable.NameToken, out startOffset);
+				}
+			} else if (result is MemberResolveResult) {
+				var mr = (MemberResolveResult) result;
+
+				if (node is PropertyDeclaration) {
+					var prop = (PropertyDeclaration) node;
+					var name = GetIdentifierName (editor, prop.NameToken, out startOffset);
+
+					// if the property is static, then we want to return "Full.TypeName.Property"
+					if (prop.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					// otherwise we want to return "this.Property" so that it won't conflict with anything else in the local scope
+					return "this." + name;
+				}
+
+				if (node is FieldDeclaration) {
+					var field = (FieldDeclaration) node;
+					var name = GetIdentifierName (editor, field.NameToken, out startOffset);
+
+					// if the field is static, then we want to return "Full.TypeName.Field"
+					if (field.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
+					return "this." + name;
+				}
+
+				if (node is VariableInitializer) {
+					// user is hovering over a field declaration that includes initialization
+					var variable = (VariableInitializer) node;
+					var name = GetIdentifierName (editor, variable.NameToken, out startOffset);
+
+					// walk up the AST to find the FieldDeclaration so that we can determine if it is static or not
+					var field = variable.GetParent<FieldDeclaration> ();
+
+					// if the field is static, then we want to return "Full.TypeName.Field"
+					if (field.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
+					return "this." + name;
+				}
+
+				if (node is NamedExpression) {
+					// user is hovering over 'Property' in an expression like: var fubar = new Fubar () { Property = baz };
+					var variable = node.GetParent<VariableInitializer> ();
+					if (variable != null) {
+						var variableName = GetIdentifierName (editor, variable.NameToken, out startOffset);
+						var name = GetIdentifierName (editor, ((NamedExpression) node).NameToken, out startOffset);
+
+						return variableName + "." + name;
+					}
+				}
+			} else if (result is TypeResolveResult) {
+				return ((TypeResolveResult) result).Type.FullName;
+			}
+
+			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
+		}
+
+		static bool TryResolveAt (Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+
+			result = null;
+			node = null;
+
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return false;
+
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+
+			if (unit == null || parsedFile == null)
+				return false;
+
+			try {
+				result = ResolveAtLocation.Resolve (new Lazy<ICompilation> (() => doc.Compilation), parsedFile, unit, loc, out node);
+				if (result == null || node is Statement)
+					return false;
+			} catch {
+				return false;
+			}
+
+			return true;
+		}
+
+		string IDebuggerExpressionResolver.ResolveExpression (TextEditorData editor, Document doc, int offset, out int startOffset)
+		{
+			ResolveResult result;
+			AstNode node;
+
+			var loc = editor.OffsetToLocation (offset);
+			if (!TryResolveAt (doc, loc, out result, out node)) {
+				startOffset = -1;
+				return null;
+			}
+
+			return ResolveExpression (editor, result, node, out startOffset);
+		}
+
 		#endregion
 		
 		#region TypeSystemSegmentTree

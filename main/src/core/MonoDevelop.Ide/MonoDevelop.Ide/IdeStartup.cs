@@ -313,6 +313,7 @@ namespace MonoDevelop.Ide
 		static DateTime lastIdle;
 		static bool lockupCheckRunning = true;
 
+		[Conditional("DEBUG")]
 		static void StartLockupTracker ()
 		{
 			if (Platform.IsWindows)
@@ -346,6 +347,8 @@ namespace MonoDevelop.Ide
 				var gtkrc = "gtkrc";
 				if (Platform.IsWindows) {
 					gtkrc += ".win32";
+					if (Environment.OSVersion.Version.Major < 6)
+						gtkrc += "-xp";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
 				}

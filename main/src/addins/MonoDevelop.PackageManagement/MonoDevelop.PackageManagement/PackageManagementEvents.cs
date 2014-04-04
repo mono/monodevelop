@@ -43,6 +43,15 @@ namespace ICSharpCode.PackageManagement
 				PackageOperationsStarting(this, new EventArgs());
 			}
 		}
+
+		public event EventHandler PackageOperationsFinished;
+
+		public void OnPackageOperationsFinished()
+		{
+			if (PackageOperationsFinished != null) {
+				PackageOperationsFinished(this, new EventArgs());
+			}
+		}
 		
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		

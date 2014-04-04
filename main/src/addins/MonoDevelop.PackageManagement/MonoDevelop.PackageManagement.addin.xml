@@ -89,22 +89,24 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-nuget-package" resource="packageicon.png" />
-		<StockIcon stockid="md-nuget-package-source" resource="PackageSourceIcon.png" size="Dnd" />
+		<StockIcon stockid="md-nuget-package" resource="reference-light-48.png" />
+		<StockIcon stockid="md-nuget-package-source" resource="package-source-light-32.png" size="Dnd" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id="NuGetPackageManagement" _label="Packages">
+		<Section id="NuGetPackageManagement" _label="Packages" icon="md-reference">
 			<Section
 				id="General"
 				_label="General"
 				fill="true"
-				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" />
+				class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel"
+				icon="md-reference" />
 			<Section
 				id="PackageSources"
 				_label="Sources"
 				fill="true"
-				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" />
+				class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel"
+				icon="md-package-source" />
 		</Section>
 	</Extension>
 

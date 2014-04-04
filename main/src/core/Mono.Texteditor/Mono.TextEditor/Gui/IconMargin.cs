@@ -35,13 +35,11 @@ namespace Mono.TextEditor
 	{
 		TextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
-		Pango.Layout layout;
-		int marginWidth = 18;
+		const int marginWidth = 23;
 		
 		public IconMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = PangoUtil.CreateLayout (editor);
 		}
 		
 		public override double Width {
@@ -50,22 +48,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void Dispose ()
-		{
-			layout = layout.Kill ();
-		}
-		
 		internal protected override void OptionsChanged ()
 		{
 			backgroundColor = editor.ColorStyle.IndicatorMargin.Color;
 			separatorColor = editor.ColorStyle.IndicatorMarginSeparator.Color;
-			
-			layout.FontDescription = editor.Options.Font;
-			layout.SetText ("!");
-			int tmp;
-			layout.GetPixelSize (out tmp, out this.marginWidth);
-			marginWidth *= 12;
-			marginWidth /= 10;
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)

@@ -153,8 +153,9 @@
 	<StockIcon stockid = "md-ProtectedOrInternal-static-method" icon = "res:element-method-light-16.png|res:element-visibility-static-overlay-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-property" icon = "res:element-property-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-ProtectedOrInternal-static-property" icon = "res:element-property-light-16.png|res:element-visibility-static-overlay-light-16element-visibility-static-overlay-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
-  	<StockIcon stockid = "md-ProtectedOrInternal-struct" icon = "res:element-structure-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
-	<StockIcon stockid = "md-reference" resource = "project-reference-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-ProtectedOrInternal-struct" icon = "res:element-structure-light-16.png|res:element-visibility-internal-or-protected-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-package-source" resource = "package-source-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-reference" resource = "reference-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-reference-package" icon = "md-reference" size="Menu" />
 	<StockIcon stockid = "md-reference-folder" icon = "md-reference|md-folder-overlay" size="Menu" />
 	<StockIcon stockid = "md-reference-project" icon = "md-reference|md-project-overlay" size="Menu" />
@@ -196,8 +197,6 @@
 	<StockIcon stockid = "md-package" resource = "package-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-package" resource = "package-light-48.png" size = "Dialog" />
 	<StockIcon stockid = "md-select-all" resource = "edit-select-all-16.png" size = "Menu" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" />
-	<StockIcon stockid = "md-software-update" resource = "system-software-update-22.png" size = "Button" />
 	<StockIcon stockid = "md-comment" resource = "comment-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-workspace" resource = "workspace-light-16.png" size="Menu"/>
 	<StockIcon stockid = "md-workspace" resource = "workspace-light-32.png" size="Dnd" />
@@ -227,7 +226,7 @@
 	<StockIcon stockid = "md-text-editor" resource = "text-editor-16.png" size="Menu"/>
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-16.png" size="Menu" />
 	<StockIcon stockid = "md-feedback" resource = "feedback-light-16.png" size = "Menu" />
-	<StockIcon stockid = "md-software-update-available" resource = "updates-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-updates" resource = "updates-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-disclose-arrow-up" resource = "disclose-arrow-up-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-disclose-arrow-down" resource = "disclose-arrow-down-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-link-overlay" resource = "link-overlay-light-16.png" size="Menu" />
@@ -278,6 +277,11 @@
 	<StockIcon stockid = "md-error" resource = "error-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-error" resource = "error-light-48.png" size="Dialog" />
 	<StockIcon stockid = "md-done" resource = "done-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-delete" resource = "remove-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-properties" resource = "properties-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-popup-close" resource = "popup-close-light-16.png" size="Menu" />
+	<StockIcon stockid = "md-popup-close-hover" resource = "popup-close-hover-light-16.png" size="Menu" />
+
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-16.png" size="Menu" />
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="Button" />
 	<StockIcon stockid = "gtk-dialog-error" resource = "error-light-24.png" size="LargeToolbar" />
@@ -289,6 +293,9 @@
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-24.png" size="Button" />
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-32.png" size="Dnd" />
 	<StockIcon stockid = "gtk-dialog-warning" resource = "warning-light-48.png" size="Dialog" />
+	<StockIcon stockid = "gtk-delete" resource = "remove-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-properties" resource = "properties-light-16.png" size="Menu" />
+	<StockIcon stockid = "gtk-clear" resource = "clear-light-16.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>

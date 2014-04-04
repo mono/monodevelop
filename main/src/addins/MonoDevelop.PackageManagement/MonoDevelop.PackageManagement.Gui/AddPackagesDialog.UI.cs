@@ -73,7 +73,7 @@ namespace MonoDevelop.PackageManagement
 			// Top part of dialog:
 			// Package sources and search.
 			var topHBox = new HBox ();
-			topHBox.Margin = new WidgetSpacing (5, 5, 5, 5);
+			topHBox.Margin = new WidgetSpacing (8, 5, 6, 5);
 
 			packageSourceComboBox = new ComboBox ();
 			packageSourceComboBox.MinWidth = 200;
@@ -314,7 +314,7 @@ namespace MonoDevelop.PackageManagement
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.
 			var bottomHBox = new HBox ();
-			bottomHBox.Margin = new WidgetSpacing (10, 5, 10, 10);
+			bottomHBox.Margin = new WidgetSpacing (8, 5, 14, 10);
 			bottomHBox.Spacing = 5;
 			mainVBox.PackStart (bottomHBox);
 

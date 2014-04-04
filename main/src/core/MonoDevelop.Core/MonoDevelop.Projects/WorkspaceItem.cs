@@ -163,8 +163,6 @@ namespace MonoDevelop.Projects
 		
 		public virtual object GetService (Type t)
 		{
-			if (t.IsInstanceOfType (this))
-				return this;
 			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
 		}
 		
@@ -249,6 +247,11 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
+		public bool SupportsBuild ()
+		{
+			return SupportsTarget (ProjectService.BuildTarget);
+		}
+
 		public void Clean (IProgressMonitor monitor, string configuration)
 		{
 			Clean (monitor, (SolutionConfigurationSelector) configuration);
@@ -259,6 +262,11 @@ namespace MonoDevelop.Projects
 			Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, ProjectService.CleanTarget, configuration);
 		}
 		
+		public bool SupportsTarget (string target)
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
+		}
+
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
 			return InternalBuild (monitor, (SolutionConfigurationSelector) configuration);
@@ -408,6 +416,11 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
+		internal protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return true;
+		}
+
 		protected virtual void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 		}
@@ -562,7 +575,12 @@ namespace MonoDevelop.Projects
 			if (NameChanged != null)
 				NameChanged (this, e);
 		}
-		
+
+		internal protected virtual object OnGetService (Type t)
+		{
+			return null;
+		}
+
 		protected void NotifyModified ()
 		{
 			OnModified (new WorkspaceItemEventArgs (this));

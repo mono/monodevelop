@@ -40,6 +40,7 @@ using MonoDevelop.Ide.StandardHeader;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -338,7 +339,13 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			//need a default namespace or if there is no project, substitutions can get very messed up
-			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "Application";
+			string ns;
+			if (netProject != null)
+				ns = netProject.GetDefaultNamespace (fileName);
+			else if (project is SharedAssetsProject)
+				ns = ((SharedAssetsProject)project).DefaultNamespace;
+			else
+				ns = "Application";
 			
 			//need an 'identifier' for tag substitution, e.g. class name or page name
 			//if not given an identifier, use fileName

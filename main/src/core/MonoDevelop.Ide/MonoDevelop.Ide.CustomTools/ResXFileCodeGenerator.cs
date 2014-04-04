@@ -4,9 +4,11 @@
 // Author:
 //   Kenneth Skovhede <kenneth@hexad.dk>
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//   Bernhard Johannessen <bernhard@voytsje.com>
 //
 // Copyright (C) 2013 Kenneth Skovhede
 // Copyright (C) 2013 Xamarin Inc.
+// Copyright (C) 2014 Bernhard Johannessen
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -43,7 +45,12 @@ namespace MonoDevelop.Ide.CustomTools
 	{
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (delegate {
+			return new ThreadAsyncOperation (GenerateFile (file, result, true), result);
+		}
+
+		public static Action GenerateFile (ProjectFile file, SingleFileCustomToolResult result, bool internalClass)
+		{
+			return delegate {
 				var dnp = file.Project as DotNetProject;
 				if (dnp == null) {
 					var err = "ResXFileCodeGenerator can only be used with .NET projects";
@@ -63,7 +70,7 @@ namespace MonoDevelop.Ide.CustomTools
 				var cn = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
 
 				string[] unmatchable;
-				var ccu = StronglyTypedResourceBuilder.Create (file.FilePath, cn, ns, provider, true, out unmatchable);
+				var ccu = StronglyTypedResourceBuilder.Create (file.FilePath, cn, ns, provider, internalClass, out unmatchable);
 
 				foreach (var p in unmatchable) {
 					var msg = string.Format ("Could not generate property for resource ID '{0}'", p);
@@ -74,7 +81,7 @@ namespace MonoDevelop.Ide.CustomTools
 					provider.GenerateCodeFromCompileUnit (ccu, w, new CodeGeneratorOptions ());
 
 				result.GeneratedFilePath = outputfile;
-			}, result);
+			};
 		}
 	}
 }

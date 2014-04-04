@@ -132,8 +132,7 @@ namespace ICSharpCode.PackageManagement
 		void CreateRecentPackageRepository()
 		{
 			if (recentPackageRepository == null) {
-				IPackageRepository aggregateRepository = CreateAggregateRepository();
-				CreateRecentPackageRepository(recentPackages, aggregateRepository);
+				CreateRecentPackageRepository(recentPackages, NuGet.MachineCache.Default);
 			}
 		}
 		

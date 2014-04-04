@@ -47,6 +47,7 @@ namespace ICSharpCode.PackageManagement
 		void RegisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting += RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished += RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -62,6 +63,7 @@ namespace ICSharpCode.PackageManagement
 		void UnregisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting -= RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished -= RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -82,7 +84,21 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public event EventHandler PackageOperationsStarting;
-		
+
+		void RaisePackageOperationFinishedEventIfHasSubscribers(object sender, EventArgs e)
+		{
+			if (PackageOperationsFinished != null) {
+				DispatchService.GuiSyncDispatch (() => RaisePackageOperationFinishedEvent (sender, e));
+			}
+		}
+
+		void RaisePackageOperationFinishedEvent(object sender, EventArgs e)
+		{
+			PackageOperationsFinished(sender, e);
+		}
+
+		public event EventHandler PackageOperationsFinished;
+
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
@@ -147,6 +163,11 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.OnPackageOperationsStarting();
 		}
 		
+		public void OnPackageOperationsFinished()
+		{
+			unsafeEvents.OnPackageOperationsFinished();
+		}
+
 		public void OnPackageOperationError(Exception ex)
 		{
 			unsafeEvents.OnPackageOperationError(ex);

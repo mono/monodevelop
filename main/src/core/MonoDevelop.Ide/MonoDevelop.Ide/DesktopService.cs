@@ -89,9 +89,26 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetApplications (filename);
 		}
-		
-		public static string DefaultMonospaceFont {
+
+		[Obsolete ("Use FontService")]
+		internal static string DefaultMonospaceFont {
 			get { return PlatformService.DefaultMonospaceFont; }
+		}
+		
+		internal static string DefaultFontMonospace {
+			get { return PlatformService.DefaultMonospaceFont; }
+		}
+
+		internal static string DefaultFontMonospaceSmall {
+			get { return PlatformService.DefaultFontMonospaceSmall; }
+		}
+
+		internal static string DefaultFontSans {
+			get { return PlatformService.DefaultFontSans; }
+		}
+
+		internal static string DefaultFontSansSmall {
+			get { return PlatformService.DefaultFontSansSmall; }
 		}
 		
 		public static string PlatformName {
