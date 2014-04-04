@@ -1651,11 +1651,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		IEnumerable<MSBuildExtension> GetMSBuildExtensions ()
-		{
-			return AddinManager.GetExtensionObjects<MSBuildExtension> ("/MonoDevelop/ProjectModel/MSBuildExtensions");
-		}
-
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)
 		{
 			DataItem ditem = new DataItem ();
