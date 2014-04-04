@@ -190,8 +190,8 @@
       <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
           _label = "Send selection to F# Interactive"
           _description="Send the selected text to F# Interactive"
-          shortcut="Ctrl|Return"
-          macShortcut="Ctrl|Return"
+          shortcut="Alt|Return"
+          macShortcut="Alt|Return"
           defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
       <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
