@@ -43,12 +43,11 @@ namespace MonoDevelop.VersionControl
 		public override void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
 			Repository repo = GetRepository (dest);
-			if (repo.RequestFileWritePermission (dest)) {
-				base.CopyFile (source, dest, overwrite);
-				repo.NotifyFileChanged (dest);
-			}
-			else
-				throw new System.IO.IOException ("Write permission denied");
+			if (!repo.RequestFileWritePermission (dest))
+				throw new System.IO.IOException ("Write permission denied.");
+
+			base.CopyFile (source, dest, overwrite);
+			repo.NotifyFileChanged (dest);
 		}
 		
 		public override void MoveFile (FilePath source, FilePath dest)
@@ -85,7 +84,8 @@ namespace MonoDevelop.VersionControl
 		public override void CreateDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
-			repo.CreateLocalDirectory (path);
+			repo.ClearCachedVersionInfo (path);
+			System.IO.Directory.CreateDirectory (path);
 			repo.Add (path, false, new NullProgressMonitor ());
 		}
 		
@@ -110,11 +110,10 @@ namespace MonoDevelop.VersionControl
 			repo.DeleteDirectory (path, true, new NullProgressMonitor (), false);
 		}
 
-		[Obsolete ("This will be removed. Override RequestFileEdit (IEnumerable<FilePath>) instead")]
-		public override bool RequestFileEdit (FilePath file)
+		public override void RequestFileEdit (IEnumerable<FilePath> files)
 		{
-			Repository repo = GetRepository (file);
-			return repo.RequestFileWritePermission (file);
+			Repository repo = GetRepository (FilePath.GetCommonRootPath (files));
+			repo.RequestFileWritePermission (files.ToArray ());
 		}
 		
 		public override void NotifyFilesChanged (IEnumerable<FilePath> files)

@@ -51,7 +51,7 @@ namespace CBinding.Parser
 		static CTagsManager ()
 		{
 			try {
-				FileService.EnsureDirectoryExists (SystemTagsDirectory);
+				Directory.CreateDirectory (SystemTagsDirectory);
 			} catch (IOException ioe) {
 				LoggingService.LogError ("Error creating system tags directory", ioe);
 			}

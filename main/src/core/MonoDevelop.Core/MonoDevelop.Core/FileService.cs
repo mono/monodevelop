@@ -240,16 +240,11 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		[Obsolete ("Replaced by RequestFileEdit(fileName,throwIfFails)")]
-		public static bool RequestFileEdit (string fileName)
-		{
-			return RequestFileEdit (fileName, false);
-		}
-
 		/// <summary>
 		/// Requests permission for modifying a file
 		/// </summary>
 		/// <param name="fileName">The file to be modified</param>
+		/// <param name="throwIfFails">If set to false, it will catch the exception that would've been thrown.</param>
 		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
 		public static bool RequestFileEdit (FilePath fileName, bool throwIfFails = true)
 		{
@@ -581,16 +576,6 @@ namespace MonoDevelop.Core
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
 			if (Directory.Exists (directory) && !Directory.GetFiles (directory).Any ())
 				Directory.Delete (directory);
-		}
-		
-		/// <summary>
-		/// Creates a directory if it does not already exist.
-		/// </summary>
-		[Obsolete("Use Directory.CreateDirectory")]
-		public static void EnsureDirectoryExists (string directory)
-		{
-			if (!Directory.Exists (directory))
-				Directory.CreateDirectory (directory);
 		}
 		
 		/// <summary>

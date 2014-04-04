@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects
 			get { return formatManager; }
 		}
 		
-		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
+		internal ProjectServiceExtension GetExtensionChain (IBuildTarget target)
 		{
 			ProjectServiceExtension chain;
 			if (target != null) {
@@ -176,12 +176,6 @@ namespace MonoDevelop.Projects
 			set {
 				defaultTargetFramework = value;
 			}
-		}
-
-		[Obsolete ("Use DefaultFileFormat.Id")]
-		public string DefaultFileFormatId {
-			get { return defaultFormat.Id; }
-			set { /* nop */ }
 		}
 
 		public FileFormat DefaultFileFormat {

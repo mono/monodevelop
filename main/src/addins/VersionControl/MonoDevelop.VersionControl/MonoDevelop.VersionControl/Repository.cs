@@ -246,11 +246,6 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		public void ClearCachedVersionInfo (FilePath rootPath)
-		{
-			infoCache.ClearCachedVersionInfo (rootPath);
-		}
-
 		public void ClearCachedVersionInfo (params FilePath[] paths)
 		{
 			foreach (var p in paths)
@@ -589,15 +584,7 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
-
-		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteFiles (localPaths, force, monitor);
-#pragma warning restore 618
-		}
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
@@ -620,32 +607,12 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
-
-		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteDirectories (localPaths, force, monitor);
-#pragma warning restore 618
-		}
-		
-		// Creates a local directory.
-		public void CreateLocalDirectory (FilePath path)
-		{
-			ClearCachedVersionInfo (path);
-			OnCreateLocalDirectory (path);
-		}
-		
-		protected virtual void OnCreateLocalDirectory (FilePath path)
-		{
-			Directory.CreateDirectory (path);
-		}
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 		
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual bool RequestFileWritePermission (FilePath path)
+		public virtual bool RequestFileWritePermission (params FilePath[] paths)
 		{
 			return true;
 		}
