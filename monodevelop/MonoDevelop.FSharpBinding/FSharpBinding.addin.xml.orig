@@ -15,18 +15,18 @@
     <Import file = "FSharpBinding.Gui.dll.mdb" />
   INSTALL_DEBUG-->
     
-    <Import file = "templates.EmptyFSharpSource.xft.xml" />
-    <Import file = "templates.EmptyFSharpScript.xft.xml" />
-    <Import file = "templates.EmptyFSharpSignature.xft.xml" />
-    <Import file = "templates.FSharpConsoleProject.xpt.xml" />
-    <Import file = "templates.FSharpLibraryProject.xpt.xml" />
-    <Import file = "templates.FSharpTutorialProject.xpt.xml" />
-    <Import file = "templates.FSharpGtkProject.xpt.xml" />
-    <Import file = "templates.AssemblyInfo.xft.xml" />
-    <Import file = "templates.FSharpProjectMvc4Razor.xpt.xml" />
-    <Import file = "templates.FSharpProjectMvc4Razor.windows.xpt.xml" />
-    <Import file = "templates.FSharpNUnitLibraryProject.xpt.xml" />
-    <Import file = "templates.FSharpNUnitTestType.xft.xml" />
+    <Import file = "Templates/EmptyFSharpSource.xft.xml" />
+    <Import file = "Templates/EmptyFSharpScript.xft.xml" />
+    <Import file = "Templates/EmptyFSharpSignature.xft.xml" />
+    <Import file = "Templates/FSharpConsoleProject.xpt.xml" />
+    <Import file = "Templates/FSharpLibraryProject.xpt.xml" />
+    <Import file = "Templates/FSharpTutorialProject.xpt.xml" />
+    <Import file = "Templates/FSharpGtkProject.xpt.xml" />
+    <Import file = "Templates/AssemblyInfo.xft.xml" />
+    <Import file = "Templates/FSharpProjectMvc4Razor.xpt.xml" />
+    <Import file = "Templates/FSharpProjectMvc4Razor.windows.xpt.xml" />
+    <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
+    <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
     <Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
@@ -83,33 +83,33 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/FileTemplates">
-    <FileTemplate id="EmptyFSharpSource" file="templates.EmptyFSharpSource.xft.xml"/>
-    <FileTemplate id="EmptyFSharpScript" file="templates.EmptyFSharpScript.xft.xml"/>
-    <FileTemplate id="EmptyFSharpSignature" file="templates.EmptyFSharpSignature.xft.xml"/>
-    <FileTemplate id="FSharpAssemblyInfo" file="templates.AssemblyInfo.xft.xml" />
-    <FileTemplate id="FSharpNUnitTestType" file="templates.FSharpNUnitTestType.xft.xml" />
+    <FileTemplate id="EmptyFSharpSource" file="Templates/EmptyFSharpSource.xft.xml"/>
+    <FileTemplate id="EmptyFSharpScript" file="Templates/EmptyFSharpScript.xft.xml"/>
+    <FileTemplate id="EmptyFSharpSignature" file="Templates/EmptyFSharpSignature.xft.xml"/>
+    <FileTemplate id="FSharpAssemblyInfo" file="Templates/AssemblyInfo.xft.xml" />
+    <FileTemplate id="FSharpNUnitTestType" file="Templates/FSharpNUnitTestType.xft.xml" />
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/ProjectTemplates">
-    <ProjectTemplate id="FSharpConsoleProject" file="templates.FSharpConsoleProject.xpt.xml"/>
-    <ProjectTemplate id="FSharpLibraryProject" file="templates.FSharpLibraryProject.xpt.xml"/>
+    <ProjectTemplate id="FSharpConsoleProject" file="Templates/FSharpConsoleProject.xpt.xml"/>
+    <ProjectTemplate id="FSharpLibraryProject" file="Templates/FSharpLibraryProject.xpt.xml"/>
     <!-- Only include the tutorial project if an F# 3.0 or 3.1 target is available as this includes F# 3.0 specific features -->
 	<ComplexCondition>
 		<Or>
 			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
 			<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
 		</Or>
-		<ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpTutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
 	</ComplexCondition>
       
-    <ProjectTemplate id="FSharpGtkProject" file="templates.FSharpGtkProject.xpt.xml"/>
+    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
     <Condition id="Platform" value="windows">
-      <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.windows.xpt.xml"/>
+      <ProjectTemplate id="FSharpMvc4Project" file="Templates/FSharpProjectMvc4Razor.windows.xpt.xml"/>
     </Condition>
     <Condition id="Platform" value="!windows">
-      <ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.xpt.xml"/>
+      <ProjectTemplate id="FSharpMvc4Project" file="Templates/FSharpProjectMvc4Razor.xpt.xml"/>
     </Condition>
-    <ProjectTemplate id="FSharpNUnitLibraryProject" file="templates.FSharpNUnitLibraryProject.xpt.xml"/>
+    <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
