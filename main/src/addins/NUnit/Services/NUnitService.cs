@@ -56,6 +56,7 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
+			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}

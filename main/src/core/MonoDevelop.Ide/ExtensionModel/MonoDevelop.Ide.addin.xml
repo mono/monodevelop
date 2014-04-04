@@ -285,6 +285,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
+		<Tool name="PublicResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.PublicResXFileCodeGenerator" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">

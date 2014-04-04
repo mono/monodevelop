@@ -119,7 +119,9 @@ namespace MonoDevelop.NUnit.External
 			// The name of inherited tests include the base class name as prefix.
 			// That prefix has to be removed
 			string tname = test.TestName.Name;
-			int i = tname.LastIndexOf ('.');
+			// Find the last index of the dot character that is not a part of the test parameters
+			int j = tname.IndexOf ('(');
+			int i = tname.LastIndexOf ('.', (j == -1) ? 0 : j);
 			if (i != -1)
 				tname = tname.Substring (i + 1);
 			if (test.FixtureType != null) {

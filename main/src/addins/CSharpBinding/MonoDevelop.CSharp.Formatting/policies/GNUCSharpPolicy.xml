@@ -159,4 +159,5 @@ THE SOFTWARE.
 	<BlankLinesBetweenMembers>1</BlankLinesBetweenMembers>
 	<BlankLinesInsideRegion>1</BlankLinesInsideRegion>
 	<BlankLinesAroundRegion>1</BlankLinesAroundRegion>
+	<IndentBlocksInsideExpressions>False</IndentBlocksInsideExpressions>
 </CSharpFormattingPolicy>

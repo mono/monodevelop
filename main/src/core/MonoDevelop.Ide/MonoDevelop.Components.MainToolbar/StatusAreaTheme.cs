@@ -43,6 +43,11 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	internal class StatusAreaTheme : IDisposable
 	{
+		public bool IsEllipsized {
+			get;
+			private set;
+		}
+
 		SurfaceWrapper backgroundSurface, errorSurface;
 		
 		public void Dispose ()
@@ -347,6 +352,9 @@ namespace MonoDevelop.Components.MainToolbar
 			context.SetSourceColor (Styles.WithAlpha (FontColor (), opacity));
 
 			Pango.CairoHelper.ShowLayout (context, pl);
+
+			IsEllipsized = pl.IsEllipsized;
+
 			pl.Dispose ();
 			context.Restore ();
 		}

@@ -189,8 +189,11 @@ namespace MonoDevelop.CSharp.Formatting
 				indentEngine = new NullIStateMachineIndentEngine (textEditorData.Document);
 			}
 			stateTracker = new CacheIndentEngine (indentEngine);
-			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
-
+			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+				textEditorData.IndentationTracker = new DefaultIndentationTracker (textEditorData.Document);
+			} else {
+				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
+			}
 
 			if (textEditorData.Options.IndentStyle == IndentStyle.Auto || textEditorData.Options.IndentStyle == IndentStyle.None) {
 				textEditorData.TextPasteHandler = null;
@@ -817,6 +820,10 @@ namespace MonoDevelop.CSharp.Formatting
 			SafeUpdateIndentEngine (cursor);
 			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)
 				return;
+			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
+				textEditorData.FixVirtualIndentation ();
+				return;
+			}
 			var line = textEditorData.Document.GetLineByOffset (cursor);
 
 			// Get context to the end of the line w/o changing the main engine's state

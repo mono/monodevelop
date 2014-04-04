@@ -271,7 +271,7 @@ namespace MonoDevelop.Debugger
 		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
 		{
 			FeatureCheckerHandlerFactory fc = new FeatureCheckerHandlerFactory ();
-			ExecutionContext ctx = new ExecutionContext (fc, null);
+			ExecutionContext ctx = new ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
 			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
 			return fc.SupportedFeatures;
 		}
@@ -375,6 +375,7 @@ namespace MonoDevelop.Debugger
 				busyStatusIcon = null;
 				session = null;
 				console = null;
+				pinnedWatches.InvalidateAll ();
 			}
 
 			if (oldLayout != null) {

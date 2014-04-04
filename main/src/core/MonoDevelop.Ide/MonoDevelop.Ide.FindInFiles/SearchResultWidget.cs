@@ -485,17 +485,19 @@ namespace MonoDevelop.Ide.FindInFiles
 				GLib.Markup.EscapeText (lineText);
 				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 
-				uint start;
-				uint end;
-				try {
-					start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-					end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
-				} catch (Exception e) {
-					LoggingService.LogError ("Exception while translating index to utf8 (column was:" +col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
-					return;
+				if (col >= 0) {
+					uint start;
+					uint end;
+					try {
+						start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+						end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
+					} catch (Exception e) {
+						LoggingService.LogError ("Exception while translating index to utf8 (column was:" + col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
+						return;
+					}
+					searchResult.StartIndex = start;
+					searchResult.EndIndex = end;
 				}
-				searchResult.StartIndex = start;
-				searchResult.EndIndex = end;
 			}
 
 
@@ -516,13 +518,15 @@ namespace MonoDevelop.Ide.FindInFiles
 						}
 						searchColor = color1;
 					}
-					var attr = new Pango.AttrBackground ((ushort)(searchColor.R * ushort.MaxValue), (ushort)(searchColor.G * ushort.MaxValue), (ushort)(searchColor.B * ushort.MaxValue));
-					attr.StartIndex = searchResult.StartIndex;
-					attr.EndIndex = searchResult.EndIndex;
+					if (searchResult.StartIndex != searchResult.EndIndex) {
+						var attr = new Pango.AttrBackground ((ushort)(searchColor.R * ushort.MaxValue), (ushort)(searchColor.G * ushort.MaxValue), (ushort)(searchColor.B * ushort.MaxValue));
+						attr.StartIndex = searchResult.StartIndex;
+						attr.EndIndex = searchResult.EndIndex;
 
-					using (var list = textRenderer.Attributes.Copy ()) {
-						list.Insert (attr);
-						textRenderer.Attributes = list;
+						using (var list = textRenderer.Attributes.Copy ()) {
+							list.Insert (attr);
+							textRenderer.Attributes = list;
+						}
 					}
 				}
 			} catch (Exception e) {

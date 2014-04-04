@@ -162,4 +162,5 @@ THE SOFTWARE.
 	<IndentPreprocessorDirectives>True</IndentPreprocessorDirectives>
 	<AlignToFirstIndexerArgument>False</AlignToFirstIndexerArgument>
 	<AlignToFirstMethodCallArgument>False</AlignToFirstMethodCallArgument>
+	<IndentBlocksInsideExpressions>False</IndentBlocksInsideExpressions>
 </CSharpFormattingPolicy>

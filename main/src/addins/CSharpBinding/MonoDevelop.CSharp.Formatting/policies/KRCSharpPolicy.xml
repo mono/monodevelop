@@ -160,4 +160,5 @@ THE SOFTWARE.
 	<BlankLinesInsideRegion>1</BlankLinesInsideRegion>
 	<BlankLinesAroundRegion>1</BlankLinesAroundRegion>
 	<IndentPreprocessorDirectives>True</IndentPreprocessorDirectives>
+	<IndentBlocksInsideExpressions>False</IndentBlocksInsideExpressions>
 </CSharpFormattingPolicy>

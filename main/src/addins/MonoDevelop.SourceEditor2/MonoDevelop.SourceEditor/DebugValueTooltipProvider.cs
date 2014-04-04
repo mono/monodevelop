@@ -72,8 +72,10 @@ namespace MonoDevelop.SourceEditor
 
 		void TargetProcessExited (object sender, EventArgs e)
 		{
-			if (tooltip != null)
-				tooltip.Hide ();
+			if (tooltip != null) {
+				tooltip.Destroy ();
+				tooltip = null;
+			}
 		}
 
 		#region ITooltipProvider implementation

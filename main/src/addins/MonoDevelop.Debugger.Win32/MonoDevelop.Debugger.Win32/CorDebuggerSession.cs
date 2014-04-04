@@ -14,6 +14,7 @@ using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
+using System.Linq;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -28,6 +29,7 @@ namespace MonoDevelop.Debugger.Win32
 		CorStepper stepper;
 		bool terminated;
 		bool evaluating;
+		bool autoStepInto;
 		int processId;
 
 		static int evaluationTimestamp;
@@ -87,6 +89,20 @@ namespace MonoDevelop.Debugger.Win32
 
 			// There is no explicit way of disposing the metadata objects, so we have
 			// to rely on the GC to do it.
+
+			foreach (var module in modules.Values) {
+				var disposable = module.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
+
+			//Same readers are already disposed in previous loop but
+			//seems more proper to do it again
+			foreach (var doc in documents.Values) {
+				var disposable = doc.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
 
 			modules = null;
 			documents = null;
@@ -228,6 +244,18 @@ namespace MonoDevelop.Debugger.Win32
 			OnTargetEvent (args);
 		}
 
+		static bool IsPropertyOrOperatorMethod (MethodInfo method)
+		{
+			if (method == null)
+				return false;
+			string name = method.Name;
+
+			return method.IsSpecialName &&
+			(name.StartsWith ("get_", StringComparison.Ordinal) ||
+			name.StartsWith ("set_", StringComparison.Ordinal) ||
+			name.StartsWith ("op_", StringComparison.Ordinal));
+		}
+
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
 		{
 			lock (debugLock) {
@@ -236,6 +264,46 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
+
+			if (autoStepInto) {
+				autoStepInto = false;
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
+			if (Options.StepOverPropertiesAndOperators && IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			var symbols = e.Thread.ActiveFrame.Function.GetSymbolMethod (this);
+			if (symbols == null || symbols.SequencePointCount == 0) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			uint offset;
+			CorDebugMappingResult mappingResult;
+			e.Thread.ActiveFrame.GetIP (out offset, out mappingResult);
+
+			var seqFirst = symbols.GetSequencePoints ().First ();
+			if (seqFirst.Offset > offset || (seqFirst.Offset == offset && mappingResult == CorDebugMappingResult.MAPPING_APPROXIMATE)) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+			var seqLast = symbols.GetSequencePoints ().Last ();
+			if (seqLast.Offset < offset || (seqLast.Offset == offset && mappingResult == CorDebugMappingResult.MAPPING_APPROXIMATE)) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
 			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
@@ -270,7 +338,7 @@ namespace MonoDevelop.Debugger.Win32
 				binfo.IncrementHitCount();
 				if (!binfo.HitCountReached)
 					return;
-				
+
 				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
 					if (bp.BreakIfConditionChanges) {
@@ -323,6 +391,9 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolDocument doc in reader.GetDocuments ()) {
 				Console.WriteLine (doc.URL);
 			}
+			var disposable = reader as IDisposable;
+			if (disposable != null)
+				disposable.Dispose ();
 			e.Continue = true;
 		}
 
@@ -333,6 +404,7 @@ namespace MonoDevelop.Debugger.Win32
 			// If the main thread stopped, terminate the debugger session
 			if (e.Process.Id == process.Id) {
 				lock (terminateLock) {
+					process.Dispose ();
 					process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{

@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("?/?");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("1/1");
 			this.hbox1.Add (this.label3);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w6.PackType = ((global::Gtk.PackType)(1));

@@ -84,8 +84,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headlabel.FontDescription = des;
 			
 			headlabel.Wrap = Pango.WrapMode.WordChar;
-			headlabel.BreakOnCamelCasing = true;
-			headlabel.BreakOnPunctuation = true;
+			headlabel.BreakOnCamelCasing = false;
+			headlabel.BreakOnPunctuation = false;
 			descriptionBox.Spacing = 4;
 			VBox vb = new VBox (false, 0);
 			vb.PackStart (headlabel, true, true, 0);
@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			lastParam = currentParam;
 			ClearDescriptions ();
-			var o = provider.CreateTooltipInformation (overload, _currentParam, false);
+			var o = provider.CreateTooltipInformation (overload, currentParam, false);
 
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
