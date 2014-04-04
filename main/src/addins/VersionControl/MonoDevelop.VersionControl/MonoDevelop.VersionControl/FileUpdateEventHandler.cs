@@ -12,6 +12,12 @@ namespace MonoDevelop.VersionControl
 		public FileUpdateEventArgs ()
 		{
 		}
+
+		public FileUpdateEventArgs (Repository repo, params FilePath[] filePaths)
+		{
+			foreach (var p in filePaths)
+				Add (new FileUpdateEventInfo (repo, p, false));
+		}
 		
 		public FileUpdateEventArgs (Repository repo, FilePath filePath, bool isDirectory)
 		{

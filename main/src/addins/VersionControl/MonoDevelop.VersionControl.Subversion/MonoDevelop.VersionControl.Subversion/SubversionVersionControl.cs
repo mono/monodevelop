@@ -84,14 +84,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		/// <param name='revision'>
 		/// Revision.
 		/// </param>
-		[Obsolete ("Use the overload with rootPath parameter")]
-		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
+		public abstract string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath);
 
-		public virtual string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
-		{
-			return GetTextAtRevision (repositoryPath, revision);
-		}
-		
 		internal protected virtual VersionControlOperation GetSupportedOperations (Repository repo, VersionInfo vinfo, VersionControlOperation defaultValue)
 		{
 			if (vinfo.IsVersioned && File.Exists (vinfo.LocalPath) && !Directory.Exists (vinfo.LocalPath) && vinfo.HasLocalChange (VersionStatus.ScheduledDelete))

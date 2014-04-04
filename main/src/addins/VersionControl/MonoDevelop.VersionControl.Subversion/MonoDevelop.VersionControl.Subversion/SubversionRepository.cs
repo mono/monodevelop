@@ -106,23 +106,32 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Svn.GetSupportedOperations (this, vinfo, base.GetSupportedOperations (vinfo));
 		}
 
-		public override bool RequestFileWritePermission (FilePath path)
+		public override void RequestFileWritePermission (params FilePath[] paths)
 		{
-			if (!File.Exists (path))
-				return true;
-			if ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
-				return true;
-			AlertButton but = new AlertButton ("Lock File");
-			if (!MessageService.Confirm (GettextCatalog.GetString ("File locking required"), GettextCatalog.GetString ("The file '{0}' must be locked before editing.", path), but))
-				return false;
-			try {
-				Svn.Lock (null, "", false, path);
-			} catch (SubversionException ex) {
-				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be unlocked", path), ex.Message);
-				return false;
+			var toLock = new List<FilePath>();
+
+			foreach (var path in paths) {
+				if (!File.Exists (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
+					continue;
+				toLock.Add (path);
 			}
-			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, path, false));
-			return true;
+
+			if (toLock.Count == 0)
+				return;
+
+			AlertButton but = new AlertButton ("Lock File");
+			if (!MessageService.Confirm (GettextCatalog.GetString ("The following files must be locked before editing."),
+				String.Join ("\n", toLock.Select (u => u.ToString ())), but))
+				return;
+
+			try {
+				Svn.Lock (null, "", false, toLock.ToArray ());
+			} catch (SubversionException ex) {
+				MessageService.ShowError (GettextCatalog.GetString ("File could not be unlocked."), ex.Message);
+				return;
+			}
+
+			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, toLock.ToArray ()));
 		}
 
 		protected override void OnLock (IProgressMonitor monitor, params FilePath[] localPaths)
@@ -440,11 +449,6 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-		}
-
 		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (string path in localPaths) {
@@ -471,11 +475,6 @@ namespace MonoDevelop.VersionControl.Subversion
 						File.Delete (path);
 				}
 			}
-		}
-
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
 		}
 
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)

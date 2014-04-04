@@ -589,15 +589,7 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
-
-		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteFiles (localPaths, force, monitor);
-#pragma warning restore 618
-		}
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
@@ -620,22 +612,13 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
-
-		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteDirectories (localPaths, force, monitor);
-#pragma warning restore 618
-		}
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 		
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual bool RequestFileWritePermission (FilePath path)
+		public virtual void RequestFileWritePermission (params FilePath[] paths)
 		{
-			return true;
 		}
 		
 		// Called after a file has been modified.
