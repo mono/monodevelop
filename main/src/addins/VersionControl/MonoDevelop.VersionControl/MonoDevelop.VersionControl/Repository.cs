@@ -612,8 +612,9 @@ namespace MonoDevelop.VersionControl
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual void RequestFileWritePermission (params FilePath[] paths)
+		public virtual bool RequestFileWritePermission (params FilePath[] paths)
 		{
+			return true;
 		}
 		
 		// Called after a file has been modified.

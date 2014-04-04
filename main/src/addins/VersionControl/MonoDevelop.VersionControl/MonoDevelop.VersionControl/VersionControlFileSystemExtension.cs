@@ -43,6 +43,9 @@ namespace MonoDevelop.VersionControl
 		public override void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
 			Repository repo = GetRepository (dest);
+			if (!repo.RequestFileWritePermission (dest))
+				throw new System.IO.IOException ("Write permission denied.");
+
 			repo.RequestFileWritePermission (dest);
 			base.CopyFile (source, dest, overwrite);
 			repo.NotifyFileChanged (dest);
