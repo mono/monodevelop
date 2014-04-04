@@ -202,13 +202,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 	sealed class UnixSvnBackend : SubversionBackend
 	{
-		protected static LibApr apr {
+		static LibApr apr {
 			get {
 				return SvnClient.Apr;
 			}
 		}
 		
-		protected static LibSvnClient svn {
+		static LibSvnClient svn {
 			get {
 				return SvnClient.Svn;
 			}

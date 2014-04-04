@@ -150,11 +150,6 @@ namespace MonoDevelop.VersionControl.Subversion
 			return list.ToArray ();
 		}
 
-		public virtual IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision)
-		{
-			return Status (repo, path, revision, false, false, false);
-		}
-
 		public abstract IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus);
 
 		public abstract void Update (FilePath path, bool recurse, IProgressMonitor monitor);

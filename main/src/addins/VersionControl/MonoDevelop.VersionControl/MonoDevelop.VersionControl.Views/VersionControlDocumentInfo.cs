@@ -89,23 +89,24 @@ namespace MonoDevelop.VersionControl.Views
 					DispatchService.GuiDispatch (delegate {
 						OnUpdated (EventArgs.Empty);
 					});
-					isUpdated = true;
+					mre.Set ();
 				}
 			});
 		}
-		
+
 		object updateLock = new object ();
-		bool isUpdated = false;
+		ManualResetEvent mre = new ManualResetEvent (false);
 		
 		public void RunAfterUpdate (Action act) 
 		{
-			if (isUpdated) {
+			if (mre == null) {
 				act ();
 				return;
 			}
-			while (!isUpdated)
-				Thread.Sleep (10);
+			mre.WaitOne ();
 			act ();
+			mre.Dispose ();
+			mre = null;
 		}
 		
 		protected virtual void OnUpdated (EventArgs e)

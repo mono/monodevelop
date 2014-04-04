@@ -30,12 +30,13 @@ namespace MonoDevelop.VersionControl.Subversion
 
 			}
 		}
-		
+
+		// TODO: Handle externals.
 		public override bool HasChildRepositories {
-			get { return true; }
+			get { return false; }
 		}
 		
-		public override IEnumerable<Repository> ChildRepositories {
+		/*public override IEnumerable<Repository> ChildRepositories {
 			get {
 				List<Repository> list = new List<Repository> ();
 				
@@ -48,14 +49,14 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 				return list;
 			}
-		}
+		}*/
 
 		new SubversionVersionControl VersionControlSystem {
 			get { return (SubversionVersionControl)base.VersionControlSystem; }
 		}
 
 		SubversionBackend backend;
-		protected internal SubversionBackend Svn {
+		internal SubversionBackend Svn {
 			get {
 				if (backend == null)
 					backend = VersionControlSystem.CreateBackend ();
