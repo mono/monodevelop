@@ -242,12 +242,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		[Obsolete ("Use OpenTerminal")]
-		public static void OpenInTerminal (FilePath directory)
-		{
-			OpenTerminal (directory, null, null);
-		}
-
 		/// <summary>
 		/// Opens an external terminal window.
 		/// </summary>
