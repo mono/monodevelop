@@ -178,12 +178,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		[Obsolete ("Use DefaultFileFormat.Id")]
-		public string DefaultFileFormatId {
-			get { return defaultFormat.Id; }
-			set { /* nop */ }
-		}
-
 		public FileFormat DefaultFileFormat {
 			get { return defaultFormat; }
 		}

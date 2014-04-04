@@ -240,16 +240,11 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		[Obsolete ("Replaced by RequestFileEdit(fileName,throwIfFails)")]
-		public static bool RequestFileEdit (string fileName)
-		{
-			return RequestFileEdit (fileName, false);
-		}
-
 		/// <summary>
 		/// Requests permission for modifying a file
 		/// </summary>
 		/// <param name="fileName">The file to be modified</param>
+		/// <param name="throwIfFails">If set to false, it will catch the exception that would've been thrown.</param>
 		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
 		public static bool RequestFileEdit (FilePath fileName, bool throwIfFails = true)
 		{

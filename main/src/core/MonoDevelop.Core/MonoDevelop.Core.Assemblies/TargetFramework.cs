@@ -164,12 +164,6 @@ namespace MonoDevelop.Core.Assemblies
 			return profile == pattern;
 		}
 
-		[Obsolete ("Use CanReferenceAssembliesTargetingFramework() instead")]
-		public bool IsCompatibleWithFramework (TargetFrameworkMoniker fxId)
-		{
-			return CanReferenceAssembliesTargetingFramework (fxId);
-		}
-
 		public bool CanReferenceAssembliesTargetingFramework (TargetFrameworkMoniker fxId)
 		{
 			var fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);

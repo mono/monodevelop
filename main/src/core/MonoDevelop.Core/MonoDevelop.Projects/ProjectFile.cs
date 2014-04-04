@@ -464,12 +464,6 @@ namespace MonoDevelop.Projects
 			if (project != null)
 				project.NotifyFilePropertyChangedInProject (this, property);
 		}
-
-		[Obsolete ("Use OnChanged(string property) instead.")]
-		protected virtual void OnChanged ()
-		{
-			OnChanged (null);
-		}
 	}
 
 	internal class ProjectFileVirtualPathChangedEventArgs : EventArgs

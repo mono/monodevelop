@@ -204,18 +204,6 @@ namespace MonoDevelop.Components.Commands
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (ctx, addinPath));
 		}
 		
-		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (string addinPath)
-		{
-			ShowContextMenu (CreateCommandEntrySet (addinPath));
-		}
-		
-		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (ExtensionContext ctx, string addinPath)
-		{
-			ShowContextMenu (CreateCommandEntrySet (ctx, addinPath));
-		}
-		
 		/// <summary>
 		/// Creates a command entry set.
 		/// </summary>
@@ -765,39 +753,6 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget, Gdk.EventButton evt)
-		{
-			if (menu is CommandMenu) {
-				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
-			}
-			ShowContextMenu (null, evt, menu, initialCommandTarget);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (CommandEntrySet entrySet)
-		{
-			ShowContextMenu (entrySet, null);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (CommandEntrySet entrySet, object initialTarget)
-		{
-			ShowContextMenu (CreateMenu (entrySet, initialTarget));
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu)
-		{
-			ShowContextMenu (menu, null, (Gdk.EventButton) null);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
-		{
-			ShowContextMenu (menu, initialCommandTarget, null);
 		}
 		
 		/// <summary>
