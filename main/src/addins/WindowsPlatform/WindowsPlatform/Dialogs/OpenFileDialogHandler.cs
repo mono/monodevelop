@@ -41,6 +41,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
+using Microsoft.WindowsAPICodePack.Shell;
 
 namespace MonoDevelop.Platform
 {
@@ -122,27 +123,13 @@ namespace MonoDevelop.Platform
 		//for some reason, the API pack doesn't expose this method from the COM interface
 		static List<string> GetSelectedItems (CommonFileDialog dialog)
 		{
-			var f = typeof (CommonFileDialog).GetField ("nativeDialog", BindingFlags.NonPublic | BindingFlags.Instance);
-
-			var cfd = typeof(CommonFileDialog);
-			var ife = cfd.Assembly.GetType ("Microsoft.WindowsAPICodePack.Dialogs.IFileOpenDialog");
-			var isi = cfd.Assembly.GetType ("Microsoft.WindowsAPICodePack.Shell.IShellItem");
-			var isia = cfd.Assembly.GetType ("Microsoft.WindowsAPICodePack.Shell.IShellItemArray");
-
-			var gsi = ife.GetMethod ("GetSelectedItems"); // out IShellItemArray
-			//HResult GetCount (out int)
-			var gc = isia.GetMethod ("GetCount");
-			// string GetFileNameFromShellItem(IShellItem item)
-			var gffsi = cfd.GetMethod ("GetFileNameFromShellItem", BindingFlags.NonPublic | BindingFlags.Static);
-			// IShellItem GetShellItemAt(IShellItemArray array, int i)
-			var gsia = cfd.GetMethod ("GetShellItemAt", BindingFlags.NonPublic | BindingFlags.Static);
-
 			var filenames = new List<string> ();
-			var obj = f.GetValue (dialog);
-			var p1 = new object[1];
+			var nativeDialog = (IFileOpenDialog)dialog.nativeDialog;
+			IShellItemArray resultsArray;
+			uint count;
 
 			try {
-				gsi.Invoke (obj, p1);
+				nativeDialog.GetSelectedItems (out resultsArray);
 			} catch (Exception ex) {
 				//we get E_FAIL when there is no selection
 				var ce = ex.InnerException as COMException;
@@ -151,17 +138,13 @@ namespace MonoDevelop.Platform
 				throw;
 			}
 
-			var p2 = new object[1];
-			var hr = (int) gc.Invoke (p1[0], p2);
+			var hr = (int)resultsArray.GetCount (out count);
 			if (hr != 0)
 				throw Marshal.GetExceptionForHR (hr);
 
-			var count = (uint) p2[0];
-			var p3 = new[] { p1[0], 0 };
-			var p4 = new object[1];
-			for (int i = 0; i < count; i++) {
-				p4[0] = gsia.Invoke (null, p3);
-				string val = (string)gffsi.Invoke (null, p4);
+			for (int i = 0; i < count; ++i) {
+				var item = CommonFileDialog.GetShellItemAt (resultsArray, i);
+				string val = CommonFileDialog.GetFileNameFromShellItem (item);
 				filenames.Add (val);
 			}
 
@@ -244,8 +227,6 @@ namespace MonoDevelop.Platform
 			public FileViewer Viewer {
 				get; private set;
 			}
-
-
 		}
 	}
 }

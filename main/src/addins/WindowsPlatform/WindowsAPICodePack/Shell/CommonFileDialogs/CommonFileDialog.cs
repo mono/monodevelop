@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
         internal readonly Collection<IShellItem> items;
         internal DialogShowState showState = DialogShowState.PreShow;
 
-        private IFileDialog nativeDialog;
+        internal IFileDialog nativeDialog;
         internal IFileDialogCustomize customize;
         private NativeDialogEventSink nativeEventSink;
         private bool? canceled;
