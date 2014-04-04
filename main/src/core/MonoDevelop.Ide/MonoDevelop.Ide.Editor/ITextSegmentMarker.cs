@@ -1,5 +1,5 @@
 ﻿//
-// DocumentFactory.cs
+// ITextSegmentMarker.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,52 +24,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public static class DocumentFactory
+	public interface ITextSegmentMarker : ISegment
 	{
-		public static IDocument CreateNewDocument ()
-		{
-			throw new NotImplementedException ();
+		bool IsVisible {
+			get;
+			set;
 		}
 
-		public static IDocument CreateNewReadonlyDocument (string text)
-		{
-			throw new NotImplementedException ();
+		object Tag {
+			get;
+			set;
 		}
 
-		public static ITextEditor CreateNewEditor ()
-		{
-			throw new NotImplementedException ();
-		}
+		event EventHandler<TextMarkerMouseEventArgs> MousePressed;
+		event EventHandler<TextMarkerMouseEventArgs> MouseHover;
+	}
 
-		public static IUrlTextLineMarker CreateUrlTextMarker (IDocument doc, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
-		{
-			throw new NotImplementedException ();
-		}
+	public enum TextSegmentMarkerEffect {
+		/// <summary>
+		/// The region is marked as waved underline.
+		/// </summary>
+		WavedLine,
 
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (ITextEditor iTextEditor)
-		{
-			throw new NotImplementedException ();
-		}
+		/// <summary>
+		/// The region is marked as dotted line.
+		/// </summary>
+		DottedLine,
 
-		public static ITextLineMarker CreateAsmLineMarker ()
-		{
-			throw new NotImplementedException ();
-		}
+		/// <summary>
+		/// The text is grayed out.
+		/// </summary>
+		GrayOut,
 
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
-		{
-			throw new NotImplementedException ();
-		}
+		/// <summary>
+		/// The start of the region is marked with a smart tag
+		/// </summary>
+		SmartTag
+	}
 
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, ISegment segment)
-		{
-			throw new NotImplementedException ();
-		}
+	public interface IGenericTextSegmentMarker : ITextSegmentMarker
+	{
+		TextSegmentMarkerEffect Effect { get; }
+
+		Cairo.Color Color { get; set; }
 	}
 }
 

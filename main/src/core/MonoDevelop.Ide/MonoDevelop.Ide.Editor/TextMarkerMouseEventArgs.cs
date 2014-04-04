@@ -1,5 +1,5 @@
-﻿//
-// DocumentFactory.cs
+//
+// ITextSegmentMarker.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,52 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public static class DocumentFactory
+	public abstract class TextMarkerMouseEventArgs : EventArgs
 	{
-		public static IDocument CreateNewDocument ()
-		{
-			throw new NotImplementedException ();
+		public double X {
+			get;
+			private set;
 		}
 
-		public static IDocument CreateNewReadonlyDocument (string text)
-		{
-			throw new NotImplementedException ();
+		public double Y {
+			get;
+			private set;
 		}
 
-		public static ITextEditor CreateNewEditor ()
-		{
-			throw new NotImplementedException ();
-		}
+		public object OverwriteCursor { get; set; }
 
-		public static IUrlTextLineMarker CreateUrlTextMarker (IDocument doc, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
-		{
-			throw new NotImplementedException ();
-		}
+		public string TooltipMarkup { get; set; }
 
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (ITextEditor iTextEditor)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static ITextLineMarker CreateAsmLineMarker ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, ISegment segment)
-		{
-			throw new NotImplementedException ();
-		}
+		public abstract bool TriggersContextMenu ();
 	}
 }
 

@@ -2318,7 +2318,6 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\TopLevelWidgetExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\VerticalAlignment.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\HorizontalAlignment.cs" />
-    <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextFileEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\LineCountEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtension.cs" />
@@ -2411,6 +2410,18 @@
     <Compile Include="MonoDevelop.Ide.Editor\EmacsWordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SharpDevelopWordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextLineMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IQuickTaskProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IUsageProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\QuickTask.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TooltipProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentRegion.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMarkerMouseEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DefaultSourceEditorOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ViWordFindStrategy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Diff.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

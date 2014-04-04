@@ -49,6 +49,12 @@ namespace MonoDevelop.Ide.Editor
 		void Backspace ();
 
 		void Delete ();
+
+		void ClipboardCopy ();
+		void ClipboardCut ();
+		void ClipboardPaste ();
+
+		void SelectAll ();
 	}
 
 }

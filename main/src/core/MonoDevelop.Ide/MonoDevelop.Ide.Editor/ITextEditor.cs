@@ -35,6 +35,10 @@ namespace MonoDevelop.Ide.Editor
 		ITextEditorOptions Options { get; set; }
 
 		TextLocation CaretLocation { get; set; }
+
+		int CaretLine { get; set; }
+		int CaretColumn { get; set; }
+
 		int CaretOffset { get; set; }
 
 		void Undo ();
@@ -52,12 +56,16 @@ namespace MonoDevelop.Ide.Editor
 		SelectionMode SelectionMode { get; }
 
 		ISegment SelectionRange { get; set; }
+		DocumentRegion SelectionRegion { get; set; }
 
 		string SelectedText { get; }
 
 		void SetSelection (int anchorOffset, int leadOffset);
 
 		void SetSelection (TextLocation anchor, TextLocation lead);
+
+
+		event EventHandler SelectionChanged;
 
 		event EventHandler CaretPositionChanged;
 
@@ -88,7 +96,17 @@ namespace MonoDevelop.Ide.Editor
 
 		void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action);
 
+		void StartTextLinkMode (List<TextLink> links);
+
 		void RequestRedraw ();
+
+		void InsertAtCaret (string text);
+
+		double LineHeight { get; }
+
+		TextLocation PointToLocation (double xp, double yp, bool endAtEol = false);
+
+		Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin);
 	}
 }
 

@@ -127,8 +127,28 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler FileNameChanged;
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
+		void AddMarker (int lineNumber, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
+
+		#region Text segment markers
+
+		IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment);
+		IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset);
+
+		/// <summary>
+		/// Adds a marker to the document.
+		/// </summary>
+		void AddMarker (ITextSegmentMarker marker);
+
+		/// <summary>
+		/// Removes a marker from the document.
+		/// </summary>
+		/// <returns><c>true</c>, if marker was removed, <c>false</c> otherwise.</returns>
+		/// <param name="marker">Marker.</param>
+		bool RemoveMarker (ITextSegmentMarker marker);
+
+		#endregion
 
 		IEnumerable<IFoldSegment> GetFoldingsFromOffset (int offset);
 		IEnumerable<IFoldSegment> GetFoldingContaining (int lineNumber);
@@ -163,6 +183,31 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("segment");
 			return segment.GetIndentation (document);
 		}
+
+		static int[] GetDiffCodes (IDocument document, ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
+		{
+			int i = 0;
+			var result = new int[document.LineCount];
+			foreach (var line in document.Lines) {
+				string lineText = document.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
+				int curCode;
+				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
+					codeDictionary[lineText] = curCode = ++codeCounter;
+				}
+				result[i] = curCode;
+				i++;
+			}
+			return result;
+		}
+
+		public static IEnumerable<Hunk> Diff (this IDocument document, IDocument changedDocument, bool includeEol = true)
+		{
+			var codeDictionary = new Dictionary<string, int> ();
+			int codeCounter = 0;
+			return MonoDevelop.Ide.Editor.Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
+				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
+		}
+
 	}
 }
 
