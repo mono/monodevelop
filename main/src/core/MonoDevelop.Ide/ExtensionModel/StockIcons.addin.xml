@@ -193,6 +193,7 @@
 	<StockIcon stockid = "md-web-search-icon" resource = "web-search-16.png" size="Menu" />
 	<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-light-16.png" size = "Menu" />
 	<StockIcon stockid = "md-xml-file-icon" resource = "file-xml-light-32.png" size = "Dnd" />
+	<StockIcon stockid = "md-package" resource = "package-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-package" resource = "package-light-22.png" />
 	<StockIcon stockid = "md-package" resource = "package-light-32.png" size = "Dnd" />
 	<StockIcon stockid = "md-package" resource = "package-light-48.png" size = "Dialog" />
