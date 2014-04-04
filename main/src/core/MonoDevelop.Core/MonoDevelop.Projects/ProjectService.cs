@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects
 			get { return formatManager; }
 		}
 		
-		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
+		internal ProjectServiceExtension GetExtensionChain (IBuildTarget target)
 		{
 			ProjectServiceExtension chain;
 			if (target != null) {
