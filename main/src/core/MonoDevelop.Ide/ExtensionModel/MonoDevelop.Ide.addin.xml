@@ -255,7 +255,7 @@
 	<Extension path="/MonoDevelop/Ide/Fonts">
         <Font name="Editor" _displayName="Text Editor" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 12" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 10" -->
         <Font name="Editor(TooltipSource)" _displayName="Text Editor Tooltip Source" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 13" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 10" -->
-        <Font name="Editor(Gutter)" _displayName="Text Editor Line Numbers" default="_DEFAULTmake_MONOSPACE" defaultMac="Menlo 11" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 10" -->
+        <Font name="Editor(Gutter)" _displayName="Text Editor Line Numbers" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 11" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 10" -->
 		<Font name="Pad" _displayName="Pads" default="_DEFAULT_SANS" defaultMac="Lucida Grande 11" /><!-- TODO: VV: "_DEFAULT_SANS" => "Segoe UI 9" -->
 		<Font name="OutputPad" _displayName="Output Pads" default="_DEFAULT_MONOSPACE" defaultMac="Menlo 11" /><!-- TODO: VV: "_DEFAULT_MONOSPACE" => "Consolas 9" -->
 	</Extension>
