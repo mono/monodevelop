@@ -92,7 +92,7 @@ namespace MonoDevelop.Platform
 					Visible = false
 				};
 				group2.Items.Add (closeSolution);
-				dialog.Controls.Add (closeSolution);
+				dialog.Controls.Add (group2);
 
 				dialog.SelectionChanged += (sender, e) => {
 					try {
