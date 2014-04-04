@@ -27,8 +27,8 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Refactoring;
-using Mono.TextEditor;
 using System;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeIssues
 {

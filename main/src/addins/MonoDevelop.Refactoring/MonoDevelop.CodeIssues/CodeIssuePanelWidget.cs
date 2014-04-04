@@ -28,14 +28,13 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Core;
 using System.Linq;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using GLib;
 using MonoDevelop.Components;
 using Gdk;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -143,13 +142,13 @@ namespace MonoDevelop.CodeIssues
 			case Severity.None:
 				return Style.Base (StateType.Normal);
 			case Severity.Error:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
 			case Severity.Warning:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
 			case Severity.Hint:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
 			case Severity.Suggestion:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -222,7 +221,7 @@ namespace MonoDevelop.CodeIssues
 						r,
 						0,
 						Math.PI * 2); 
-					ctx.SetSourceColor ((Mono.TextEditor.HslColor)Color); 
+					ctx.SetSourceColor ((HslColor)Color); 
 					ctx.Fill ();
 				}
 

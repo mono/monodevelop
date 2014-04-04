@@ -26,10 +26,8 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Gtk;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.SourceEditor.QuickTasks;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory;
@@ -40,6 +38,9 @@ using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.CodeActions
 {
@@ -84,9 +85,9 @@ namespace MonoDevelop.CodeActions
 		void RemoveWidget ()
 		{
 			if (currentSmartTag != null) {
-				document.Editor.Document.RemoveMarker (currentSmartTag);
+				document.Editor.RemoveMarker (currentSmartTag);
 				currentSmartTag = null;
-				currentSmartTagBegin = DocumentLocation.Empty;
+				currentSmartTagBegin = MonoDevelop.Core.Text.TextLocation.Empty;
 			}
 			CancelSmartTagPopupTimeout ();
 
@@ -98,7 +99,7 @@ namespace MonoDevelop.CodeActions
 			CancelQuickFixTimer ();
 			document.Editor.SelectionChanged -= HandleSelectionChanged;
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
-			document.Editor.Parent.BeginHover -= HandleBeginHover;
+			// document.Editor.Parent.BeginHover -= HandleBeginHover;
 			RemoveWidget ();
 			Fixes = null;
 			base.Dispose ();
@@ -140,11 +141,11 @@ namespace MonoDevelop.CodeActions
 		public override void CursorPositionChanged ()
 		{
 			CancelQuickFixTimer ();
-			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
+			if (AnalysisOptions.EnableFancyFeatures &&  Document.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
-					var loc = Document.Editor.Caret.Location;
+					var loc = Document.Editor.CaretLocation;
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
 						if (!fixes.Any ()) {
 							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
@@ -251,22 +252,23 @@ namespace MonoDevelop.CodeActions
 				menu.Destroy ();
 				return;
 			}
-			document.Editor.SuppressTooltips = true;
-			document.Editor.Parent.HideTooltip ();
+//			document.Editor.SuppressTooltips = true;
+//			document.Editor.Parent.HideTooltip ();
 			if (menuAction != null)
 				menuAction (menu);
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menu.Hidden += delegate {
-				document.Editor.SuppressTooltips = false;
+				// document.Editor.SuppressTooltips = false;
 			};
-			var container = document.Editor.Parent;
+			var container = document.Editor;
 
 			var p = container.LocationToPoint (currentSmartTagBegin);
+			var widget = container.GetGtkWidget ();
 			var rect = new Gdk.Rectangle (
-				p.X + container.Allocation.X , 
-				p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
-			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
+				(int)p.X + widget.Allocation.X , 
+				(int)p.Y + (int)document.Editor.LineHeight + widget.Allocation.Y, 0, 0);
+			GtkWorkarounds.ShowContextMenu (menu, widget, null, rect);
 		}
 
 		public void PopulateFixes (Gtk.Menu menu, ref int items)
@@ -405,98 +407,101 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
-		{
-			CodeActionEditorExtension codeActionEditorExtension;
-			internal List<CodeAction> fixes;
-			DocumentLocation loc;
+//		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
+//		{
+//			CodeActionEditorExtension codeActionEditorExtension;
+//			internal List<CodeAction> fixes;
+//			TextLocation loc;
+//
+//			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, List<CodeAction> fixes, MonoDevelop.Core.Text.TextLocation loc) : base (offset, 0)
+//			{
+//				this.codeActionEditorExtension = codeActionEditorExtension;
+//				this.fixes = fixes;
+//				this.loc = loc;
+//			}
+//
+//			public SmartTagMarker (int offset) : base (offset, 0)
+//			{
+//			}
+//			const double tagMarkerWidth = 8;
+//			const double tagMarkerHeight = 2;
+//			public override void Draw (ITextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+//			{
+//				var line = editor.GetLine (loc.Line);
+//				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
+//
+//				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
+//
+//				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
+//					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
+//				} else {
+//					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
+//				}
+//				cr.Stroke ();
+//			}
+//
+//			#region IActionTextLineMarker implementation
+//
+//			bool IActionTextLineMarker.MousePressed (TextEditor editor, MarginMouseEventArgs args)
+//			{
+//				return false;
+//			}
+//
+//			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
+//			{
+//				if (args.Button != 0)
+//					return;
+//				var line = editor.GetLine (loc.Line);
+//				if (line == null)
+//					return;
+//				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
+//				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
+//				if (args.X - x >= 0 * editor.Options.Zoom && 
+//				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
+//				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
+//					result.Cursor = null;
+//					Popup ();
+//				} else {
+//					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
+//				}
+//			}
+//
+//			public void Popup ()
+//			{
+//				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
+//					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
+//						codeActionEditorExtension.codeActionMenu = menu;
+//						menu.MotionNotifyEvent += (o, args) => {
+//							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
+//								codeActionEditorExtension.StartMenuCloseTimer ();
+//							} else {
+//								codeActionEditorExtension.CancelMenuCloseTimer ();
+//							}
+//						};
+//					});
+//					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
+//					return false;
+//				});
+//			}
+//
+//
+//			#endregion
+//		}
 
-			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, List<CodeAction> fixes, DocumentLocation loc) : base (offset, 0)
-			{
-				this.codeActionEditorExtension = codeActionEditorExtension;
-				this.fixes = fixes;
-				this.loc = loc;
-			}
+		IGenericTextSegmentMarker currentSmartTag;
+		MonoDevelop.Core.Text.TextLocation currentSmartTagBegin;
 
-			public SmartTagMarker (int offset) : base (offset, 0)
-			{
-			}
-			const double tagMarkerWidth = 8;
-			const double tagMarkerHeight = 2;
-			public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
-			{
-				var line = editor.GetLine (loc.Line);
-				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
+		List<CodeAction> currentSmartTagfixes;
 
-				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
-
-				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
-				} else {
-					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
-				}
-				cr.Stroke ();
-			}
-
-			#region IActionTextLineMarker implementation
-
-			bool IActionTextLineMarker.MousePressed (TextEditor editor, MarginMouseEventArgs args)
-			{
-				return false;
-			}
-
-			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
-			{
-				if (args.Button != 0)
-					return;
-				var line = editor.GetLine (loc.Line);
-				if (line == null)
-					return;
-				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
-				if (args.X - x >= 0 * editor.Options.Zoom && 
-				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
-					result.Cursor = null;
-					Popup ();
-				} else {
-					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
-				}
-			}
-
-			public void Popup ()
-			{
-				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
-						codeActionEditorExtension.codeActionMenu = menu;
-						menu.MotionNotifyEvent += (o, args) => {
-							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
-								codeActionEditorExtension.StartMenuCloseTimer ();
-							} else {
-								codeActionEditorExtension.CancelMenuCloseTimer ();
-							}
-						};
-					});
-					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
-					return false;
-				});
-			}
-
-
-			#endregion
-		}
-
-		SmartTagMarker currentSmartTag;
-		DocumentLocation currentSmartTagBegin;
-		void CreateSmartTag (List<CodeAction> fixes, DocumentLocation loc)
+		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Core.Text.TextLocation loc)
 		{
 			Fixes = fixes;
-			if (!QuickTaskStrip.EnableFancyFeatures) {
+			if (!AnalysisOptions.EnableFancyFeatures) {
 				RemoveWidget ();
 				return;
 			}
 			var editor = document.Editor;
-			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized) {
+			if (editor == null) {
 				RemoveWidget ();
 				return;
 			}
@@ -505,13 +510,13 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
-			var container = editor.Parent;
-			if (container == null) {
-				RemoveWidget ();
-				return;
-			}
+//			var container = editor.Parent;
+//			if (container == null) {
+//				RemoveWidget ();
+//				return;
+//			}
 			bool first = true;
-			DocumentLocation smartTagLocBegin = loc;
+			var smartTagLocBegin = loc;
 			foreach (var fix in fixes) {
 				if (fix.DocumentRegion.IsEmpty)
 					continue;
@@ -521,7 +526,7 @@ namespace MonoDevelop.CodeActions
 				first = false;
 			}
 			if (smartTagLocBegin.Line != loc.Line)
-				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
+				smartTagLocBegin = new MonoDevelop.Core.Text.TextLocation (loc.Line, 1);
 			// got no fix location -> try to search word start
 			if (first) {
 				int offset = document.Editor.LocationToOffset (smartTagLocBegin);
@@ -535,29 +540,83 @@ namespace MonoDevelop.CodeActions
 			}
 
 			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
-				currentSmartTag.fixes = fixes;
+				currentSmartTagfixes = fixes;
 				return;
 			}
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
 			var line = document.Editor.GetLine (smartTagLocBegin.Line);
-			currentSmartTag = new SmartTagMarker ((line.NextLine ?? line).Offset, this, fixes, smartTagLocBegin);
-			document.Editor.Document.AddMarker (currentSmartTag);
+			currentSmartTag = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.SmartTag,
+				(line.NextLine ?? line).Offset + smartTagLocBegin.Column - 1,
+				1
+			);
+			document.Editor.AddMarker (currentSmartTag);
 		}
-		
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			document.DocumentParsed += HandleDocumentDocumentParsed;
-			document.Editor.SelectionChanged += HandleSelectionChanged;
-			document.Editor.Parent.BeginHover += HandleBeginHover;
+//			document.DocumenInitializetParsed += HandleDocumentDocumentParsed;
+//			document.Editor.SelectionChanged += HandleSelectionChanged;
+//			Initializedocument.Editor.Parent.BeginHover += HandleBeginHover;
 		}
 
-		void HandleBeginHover (object sender, EventArgs e)
-		{
-			CancelSmartTagPopupTimeout ();
-			CancelMenuCloseTimer ();
-		}
+//		void HandleBeginHover (object sender, EventArgs e)
+//		{
+//			Fixes = fixes;
+//			if (!AnalysisOptions.EnableFancyFeatures) {
+//				RemoveWidget ();
+//				return;
+//			}
+//			var editor = document.Editor;
+//			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized) {
+//				RemoveWidget ();
+//				return;
+//			}
+//			if (document.ParsedDocument == null || document.ParsedDocument.IsInvalid) {
+//				RemoveWidget ();
+//				return;
+//			}
+//
+//			var containerInitialize = editor.Parent;
+//			if (container == null) {
+//				RemoveWidget ();
+//				return;
+//			}
+//			bool first = true;
+//			DocumentLocation smartTagLocBegin = loc;
+//			foreach (var fix in fixes) {
+//				if (fix.DocumentRegion.IsEmpty)
+//					continue;
+//				if (first || loc < fix.DocumentRegion.Begin) {
+//					smartTagLocBegin = fix.DocumentRegion.Begin;
+//				}
+//				first = false;
+//			}
+//			if (smartTagLocBegin.Line != loc.Line)
+//				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
+//			// got no fix location -> try to search word start
+//			if (first) {
+//				int offset = document.Editor.LocationToOffset (smartTagLocBegin);
+//				while (offset > 0) {
+//					char ch = document.Editor.GetCharAt (offset - 1);
+//					if (!char.IsLetterOrDigit (ch) && ch != '_')
+//						break;
+//					offset--;
+//				}
+//				smartTagLocBegin = document.Editor.OffsetToLocation (offset);
+//			}
+//
+//			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
+//				currentSmartTag.fixes = fixes;
+//				return;
+//			}
+//			RemoveWidget ();
+//			currentSmartTagBegin = smartTagLocBegin;
+//			var line = document.Editor.GetLine (smartTagLocBegin.Line);
+//			currentSmartTag = new SmartTagMarker ((line.NextLine ?? line).Offset, this, fixes, smartTagLocBegin);
+//			document.Editor.Document.AddMarker (currentSmartTag);
+//		}
 
 		void StartMenuCloseTimer ()
 		{
@@ -585,33 +644,39 @@ namespace MonoDevelop.CodeActions
 		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
 		public void UpdateQuickFixCommand (CommandInfo ci)
 		{
-			if (QuickTaskStrip.EnableFancyFeatures) {
+			if (AnalysisOptions.EnableFancyFeatures) {
 				ci.Enabled = currentSmartTag != null;
 			} else {
 				ci.Enabled = true;
 			}
 		}
+
+		void CurrentSmartTagPopup ()
+		{
+			// TODO
+			throw new NotImplementedException ();
+		}
 		
 		[CommandHandler(RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures) {
-				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result;
-				currentSmartTagBegin = Document.Editor.Caret.Location;
+			if (!AnalysisOptions.EnableFancyFeatures) {
+				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.CaretLocation).Result;
+				currentSmartTagBegin = Document.Editor.CaretLocation;
 				PopupQuickFixMenu (null, null); 
 
 				return;
 			}
 			if (currentSmartTag == null)
 				return;
-			currentSmartTag.Popup ();
+			CurrentSmartTagPopup ();
 		}
 
 		internal List<CodeAction> GetCurrentFixes ()
 		{
 			if (currentSmartTag == null)
-				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
-			return currentSmartTag.fixes;
+				return RefactoringService.GetValidActions (document, document.Editor.CaretLocation).Result.ToList ();
+			return currentSmartTagfixes;
 		}
 	}
 }

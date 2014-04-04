@@ -32,8 +32,6 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
@@ -67,27 +65,27 @@ namespace MonoDevelop.AnalysisCore
 		
 		protected override void Run ()
 		{
-			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
-			var view = doc.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (view == null) {
-				LoggingService.LogWarning ("ShowFixesHandler could not find a SourceEditorView");
-				return;
-			}
-			var widget = view.TextEditor;
-			var pt = view.DocumentToScreenLocation (doc.Editor.Caret.Location);
-			
-			var ces = new CommandEntrySet ();
-			ces.AddItem (AnalysisCommands.FixOperations);
-			var menu = MonoDevelop.Ide.IdeApp.CommandService.CreateMenu (ces);
-			
-			menu.Popup (null, null, delegate (Menu mn, out int x, out int y, out bool push_in) {
-				x = pt.X;
-				y = pt.Y;
-				push_in = true;
-				//if the menu would be off the bottom of the screen, "drop" it upwards
-				if (y + mn.Requisition.Height > widget.Screen.Height)
-					y -= mn.Requisition.Height + (int)widget.LineHeight;
-			}, 0, Global.CurrentEventTime);
+//			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+//			var view = doc.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+//			if (view == null) {
+//				LoggingService.LogWarning ("ShowFixesHandler could not find a SourceEditorView");
+//				return;
+//			}
+//			var widget = view.TextEditor;
+//			var pt = view.DocumentToScreenLocation (doc.Editor.Caret.Location);
+//			
+//			var ces = new CommandEntrySet ();
+//			ces.AddItem (AnalysisCommands.FixOperations);
+//			var menu = MonoDevelop.Ide.IdeApp.CommandService.CreateMenu (ces);
+//			
+//			menu.Popup (null, null, delegate (Menu mn, out int x, out int y, out bool push_in) {
+//				x = pt.X;
+//				y = pt.Y;
+//				push_in = true;
+//				//if the menu would be off the bottom of the screen, "drop" it upwards
+//				if (y + mn.Requisition.Height > widget.Screen.Height)
+//					y -= mn.Requisition.Height + (int)widget.LineHeight;
+//			}, 0, Global.CurrentEventTime);
 		}
 	}
 	
@@ -142,7 +140,7 @@ namespace MonoDevelop.AnalysisCore
 			if (ext == null)
 				return false;
 			
-			var list = ext.GetResultsAtOffset (document.Editor.Caret.Offset).OfType<FixableResult> ().ToList ();
+			var list = ext.GetResultsAtOffset (document.Editor.CaretOffset).OfType<FixableResult> ().ToList ();
 			list.Sort (ResultCompareImportanceDesc);
 			results = list;
 

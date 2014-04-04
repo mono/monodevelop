@@ -36,13 +36,12 @@ using MonoDevelop.Refactoring;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
 using System.Diagnostics;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -57,7 +56,7 @@ namespace MonoDevelop.CodeIssues
 
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
+			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
 				return Enumerable.Empty<Result> ();
 
 			#if PROFILE
@@ -66,10 +65,10 @@ namespace MonoDevelop.CodeIssues
 			var editor = input.Editor;
 			if (editor == null)
 				return Enumerable.Empty<Result> ();
-			var loc = editor.Caret.Location;
+			var loc = editor.CaretLocation;
 			var result = new BlockingCollection<Result> ();
 		
-			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType).ToArray ();
+			var codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
 				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
 			Parallel.ForEach (codeIssueProvider, (parentProvider) => {

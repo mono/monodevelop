@@ -40,9 +40,9 @@ using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Linq;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring
 			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					var cache = new Dictionary<string, TextEditorData> ();
+					var cache = new Dictionary<string, IDocument> ();
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for derived classes in solution..."), projects.Count);
 
 					Parallel.ForEach (projects, p => {
@@ -75,7 +75,7 @@ namespace MonoDevelop.Refactoring
 						foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
 							if (!type.IsDerivedFrom (importedType)) 
 								continue;
-							TextEditorData textFile;
+							IDocument textFile;
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
 								cache [type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
 							}
@@ -98,23 +98,23 @@ namespace MonoDevelop.Refactoring
 								keyword = "class";
 								break;
 							}
-							while (position < textFile.Length - keyword.Length) {
+							while (position < textFile.TextLength - keyword.Length) {
 								if (textFile.GetTextAt (position, keyword.Length) == keyword) {
 									position += keyword.Length;
-									while (position < textFile.Length && textFile.GetCharAt (position) == ' ' || textFile.GetCharAt (position) == '\t')
+									while (position < textFile.TextLength && textFile.GetCharAt (position) == ' ' || textFile.GetCharAt (position) == '\t')
 										position++;
 									break;
 								}
 								position++;
 							}
-							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
+							monitor.ReportResult (new SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
 						}
 						monitor.Step (1);
 					});
-					foreach (var tf in cache.Values) {
-						if (tf.Parent == null)
-							tf.Dispose ();
-					}
+//					foreach (var tf in cache.Values) {
+//						if (tf.Parent == null)
+//							tf.Dispose ();
+//					}
 					monitor.EndTask ();
 				}
 			});

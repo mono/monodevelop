@@ -25,10 +25,10 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory;
 using System;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeActions
 {

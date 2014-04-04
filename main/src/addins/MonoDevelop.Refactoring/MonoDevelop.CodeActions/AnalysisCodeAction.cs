@@ -31,7 +31,6 @@ using System.Threading;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.AnalysisCore.Fixes;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeActions
@@ -55,7 +54,7 @@ namespace MonoDevelop.CodeActions
 			Description = result.Message;
 		}
 		
-		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
+		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken)
 		{
 			yield return new AnalysisCodeAction (Action, Result) {
 				DocumentRegion = Action.DocumentRegion

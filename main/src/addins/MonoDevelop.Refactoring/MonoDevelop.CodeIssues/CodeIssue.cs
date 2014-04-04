@@ -24,11 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -87,7 +87,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (IssueMarker issueMarker, string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)
+		public CodeIssue (IssueMarker issueMarker, string description, string fileName, TextLocation start, TextLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)
 		{
 		}
 		

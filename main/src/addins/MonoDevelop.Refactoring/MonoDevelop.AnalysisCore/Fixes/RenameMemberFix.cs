@@ -33,7 +33,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

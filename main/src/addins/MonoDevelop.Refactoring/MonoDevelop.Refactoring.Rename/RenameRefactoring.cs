@@ -27,11 +27,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide;
 using System.Linq;
-using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.ProgressMonitoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -39,6 +37,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 
 namespace MonoDevelop.Refactoring.Rename
@@ -204,11 +204,11 @@ namespace MonoDevelop.Refactoring.Rename
 				if (col == null)
 					return;
 				var data = options.Document != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
-				var editor = data.Parent;
-				if (editor == null) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
-					return;
-				}
+//				var editor = data.Parent;
+//				if (editor == null) {
+//					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+//					return;
+//				}
 				
 				var links = new List<TextLink> ();
 				var link = new TextLink ("name");
@@ -218,7 +218,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				foreach (MemberReference r in col) {
 					var segment = new TextSegment (r.Offset - baseOffset, r.Length);
-					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
+					if (segment.Offset <= data.CaretOffset - baseOffset && data.CaretOffset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
@@ -226,26 +226,27 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				
 				links.Add (link);
-				if (editor.CurrentMode is TextLinkEditMode)
-					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
-				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
-				tle.SetCaretPosition = false;
-				tle.SelectPrimaryLink = true;
-				if (tle.ShouldStartTextLinkMode) {
-					var helpWindow = new TableLayoutModeHelpWindow ();
-					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
-					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
-					tle.HelpWindow = helpWindow;
-					tle.Cancel += delegate {
-						if (tle.HasChangedText)
-							editor.Document.Undo ();
-					};
-					tle.OldMode = data.CurrentMode;
-					tle.StartMode ();
-					data.CurrentMode = tle;
-				}
+				data.StartTextLinkMode (links);
+//				if (editor.CurrentMode is TextLinkEditMode)
+//					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
+//				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
+//				tle.SetCaretPosition = false;
+//				tle.SelectPrimaryLink = true;
+//				if (tle.ShouldStartTextLinkMode) {
+//					var helpWindow = new TableLayoutModeHelpWindow ();
+//					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
+//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
+//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+//					tle.HelpWindow = helpWindow;
+//					tle.Cancel += delegate {
+//						if (tle.HasChangedText)
+//							editor.Document.Undo ();
+//					};
+//					tle.OldMode = data.CurrentMode;
+//					tle.StartMode ();
+//					data.CurrentMode = tle;
+//				}
 			} else {
 				MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 			}

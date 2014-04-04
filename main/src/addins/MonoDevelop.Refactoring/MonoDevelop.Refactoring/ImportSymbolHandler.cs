@@ -40,7 +40,6 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
@@ -66,10 +65,10 @@ namespace MonoDevelop.Refactoring
 				return result;
 			result = new GenerateNamespaceImport ();
 			cache[type.Namespace] = result;
-			TextEditorData data = doc.Editor;
+			var data = doc.Editor;
 			
 			result.InsertNamespace  = false;
-			var loc = new TextLocation (data.Caret.Line, data.Caret.Column);
+			var loc = new TextLocation (data.CaretLine, data.CaretColumn);
 			foreach (var ns in RefactoringOptions.GetUsedNamespaces (doc, loc)) {
 				if (type.Namespace == ns) {
 					result.GenerateUsing = false;

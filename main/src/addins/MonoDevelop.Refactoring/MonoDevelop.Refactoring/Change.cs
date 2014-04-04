@@ -28,11 +28,10 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
-using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -84,26 +83,26 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		static List<TextEditorData> textEditorDatas = new List<TextEditorData> ();
+		static List<ITextEditor> textEditorDatas = new List<ITextEditor> ();
 		static List<IDisposable> undoGroups = new List<IDisposable> ();
 		
 		public static void FinishRefactoringOperation ()
 		{
-			foreach (TextEditorData data in textEditorDatas) {
-				data.Document.CommitUpdateAll ();
+			foreach (var data in textEditorDatas) {
+				data.RequestRedraw ();
 			}
 			textEditorDatas.Clear ();
 			undoGroups.ForEach (grp => grp.Dispose ());
 			undoGroups.Clear ();
 		}
 		
-		internal static TextEditorData GetTextEditorData (string fileName)
+		internal static ITextEditor GetTextEditorData (string fileName)
 		{
 			if (IdeApp.Workbench == null)
 				return null;
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == fileName) {
-					TextEditorData result = doc.Editor;
+					var result = doc.Editor;
 					if (result != null) {
 						textEditorDatas.Add (result);
 						undoGroups.Add (result.OpenUndoGroup ());
@@ -113,7 +112,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
-		protected virtual TextEditorData TextEditorData {
+		protected virtual ITextEditor TextEditorData {
 			get {
 				return GetTextEditorData (FileName);
 			}
@@ -123,7 +122,7 @@ namespace MonoDevelop.Refactoring
 			if (rctx == null)
 				throw new InvalidOperationException ("Refactory context not available.");
 			
-			TextEditorData textEditorData = this.TextEditorData;
+			var textEditorData = this.TextEditorData;
 			bool saveEditor = false;
 			bool hadBom = true;
 			System.Text.Encoding encoding = System.Text.Encoding.UTF8;
@@ -135,21 +134,21 @@ namespace MonoDevelop.Refactoring
 			}
 		
 			
-			int offset = textEditorData.Caret.Offset;
+			int offset = textEditorData.CaretOffset;
 			int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
 			if (MoveCaretToReplace) {
-				textEditorData.Caret.Offset = Offset + charsInserted;
+				textEditorData.CaretOffset = Offset + charsInserted;
 			} else {
 				if (Offset < offset) {
 					int rem = RemovedChars;
 					if (Offset + rem > offset)
 						rem = offset - Offset;
-					textEditorData.Caret.Offset = offset - rem + charsInserted;
+					textEditorData.CaretOffset = offset - rem + charsInserted;
 				}
 			}
 			
 			if (saveEditor)
-				Mono.TextEditor.Utils.TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
+				TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
 		}
 		
 		public override string ToString ()

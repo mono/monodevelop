@@ -33,12 +33,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
@@ -199,7 +197,7 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var editor = doc.Editor;
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
@@ -230,7 +228,7 @@ namespace MonoDevelop.Refactoring
 			}, cancellationToken);
 		}
 
-		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+		public static void QueueQuickFixAnalysis (Document doc, MonoDevelop.Core.Text.TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
@@ -294,7 +292,7 @@ namespace MonoDevelop.Refactoring
 			return appliedFixes;
 		}
 
-		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
+		public static MonoDevelop.Core.Text.TextLocation GetCorrectResolveLocation (Document doc, MonoDevelop.Core.Text.TextLocation location)
 		{
 			if (doc == null)
 				return location;
@@ -303,14 +301,14 @@ namespace MonoDevelop.Refactoring
 				return location;
 
 			if (editor.IsSomethingSelected)
-				return editor.MainSelection.Start;
+				return editor.SelectionRegion.Begin;
 
 			var line = editor.GetLine (location.Line);
 			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;
 			int offset = editor.LocationToOffset (location);
 			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
-				return new DocumentLocation (location.Line, location.Column - 1);
+				return new MonoDevelop.Core.Text.TextLocation (location.Line, location.Column - 1);
 			return location;
 		}
 

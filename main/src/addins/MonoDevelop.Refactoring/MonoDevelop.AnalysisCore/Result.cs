@@ -27,9 +27,7 @@
 using System;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.AnalysisCore.Extensions;
-using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore

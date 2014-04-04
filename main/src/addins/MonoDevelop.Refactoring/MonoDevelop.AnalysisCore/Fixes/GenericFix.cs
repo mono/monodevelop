@@ -29,8 +29,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

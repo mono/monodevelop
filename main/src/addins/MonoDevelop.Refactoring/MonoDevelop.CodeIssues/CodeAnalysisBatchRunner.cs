@@ -39,11 +39,11 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -107,7 +107,7 @@ namespace MonoDevelop.CodeIssues
 			if (file.BuildAction != BuildAction.Compile)
 				return;
 
-			TextEditorData editor;
+			IDocument editor;
 			try {
 				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
 			} catch (FileNotFoundException) {

@@ -36,9 +36,9 @@ using System.Threading;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor.Utils;
 using System.Text;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 			return appliedActions;
 		}
 
-		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
+		static IList<CodeIssue> GetIssues (ITextEditor data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
 			
@@ -131,7 +131,7 @@ namespace MonoDevelop.CodeIssues
 			return issues;
 		}
 
-		static IList<CodeIssueProvider> GetInspectors (TextEditorData editor, ICollection<string> inspectorIds)
+		static IList<CodeIssueProvider> GetInspectors (ITextEditor editor, ICollection<string> inspectorIds)
 		{
 			var inspectors = RefactoringService.GetInspectors (editor.MimeType).ToList ();
 			return inspectors

@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Analysis;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.TypeSystem;
@@ -66,10 +65,10 @@ namespace MonoDevelop.Refactoring
 
 							var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (method.Region.FileName);
 							var start = tf.LocationToOffset (method.Region.Begin); 
-							tf.SearchRequest.SearchPattern = method.Name;
-							var sr = tf.SearchForward (start); 
-							if (sr != null)
-								start = sr.Offset;
+//							tf.SearchRequest.SearchPattern = method.Name;
+//							var sr = tf.SearchForward (start); 
+//							if (sr != null)
+//								start = sr.Offset;
 							monitor.ReportResult (new MemberReference (method, method.Region, start, method.Name.Length));
 						}
 					}

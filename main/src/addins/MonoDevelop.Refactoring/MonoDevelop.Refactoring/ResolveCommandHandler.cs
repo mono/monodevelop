@@ -35,7 +35,6 @@ using MonoDevelop.Ide;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Completion;
@@ -49,6 +48,7 @@ using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring
 				return false;
 			}
 			if (!InternalResolveAt (doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.Caret.Location);
+				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.CaretLocation);
 				resolveResult = GetHeuristicResult (doc, location, ref node);
 				if (resolveResult == null)
 					return false;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Refactoring
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.CaretLocation);
 				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
@@ -159,20 +159,20 @@ namespace MonoDevelop.Refactoring
 		{
 			if (offset <= 0)
 				return "";
-			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.Length, offset));
+			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.TextLength, offset));
 			var stub = new StringBuilder (text);
 			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, false);
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
+		static ResolveResult GetHeuristicResult (Document doc, TextLocation location, ref AstNode node)
 		{
 			var editor = doc.Editor;
-			if (editor == null || editor.Caret == null)
+			if (editor == null)
 				return null;
-			int offset = editor.Caret.Offset;
+			int offset = editor.CaretOffset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
-			while (offset < editor.Length) {
+			while (offset < editor.TextLength) {
 				char ch = editor.GetCharAt (offset);
 				bool isLetter = char.IsLetterOrDigit (ch) || ch == '_';
 				bool isWhiteSpace = char.IsWhiteSpace (ch);
@@ -216,7 +216,7 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentNullException ("doc");
 			if (node == null)
 				throw new ArgumentNullException ("node");
-			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.CaretLocation);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
 				resolveResult = GetHeuristicResult (doc, location, ref node) ?? resolveResult;
@@ -307,7 +307,7 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, TextLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
@@ -511,7 +511,7 @@ namespace MonoDevelop.Refactoring
 			
 			public void Run ()
 			{
-				var loc = doc.Editor.Caret.Location;
+				var loc = doc.Editor.CaretLocation;
 
 				if (reference != null) {
 					var project = doc.Project;
@@ -526,7 +526,7 @@ namespace MonoDevelop.Refactoring
 //					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 					int offset = doc.Editor.LocationToOffset (node.StartLocation);
 					doc.Editor.Insert (offset, ns + ".");
-					doc.Editor.Document.CommitLineUpdate (loc.Line);
+					//doc.Editor.Document.CommitLineUpdate (loc.Line);
 					return;
 				}
 

@@ -38,13 +38,13 @@ using MonoDevelop.Ide;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
-using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
+using MonoDevelop.Core.Text;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.Refactoring
 {
@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 		{
 			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 			if (textEditorResolver != null)
-				return textEditorResolver.GetLanguageItem (doc.Editor.Caret.Offset);
+				return textEditorResolver.GetLanguageItem (doc.Editor.CaretOffset);
 			return null;
 		}
 		
@@ -212,7 +212,7 @@ namespace MonoDevelop.Refactoring
 		}
 
 
-		DocumentLocation lastLocation;
+		TextLocation lastLocation;
 
 		static bool HasOverloads (Solution solution, object item)
 		{
@@ -281,11 +281,11 @@ namespace MonoDevelop.Refactoring
 				refactoringInfo = new RefactoringDocumentInfo ();
 				doc.AddAnnotation (refactoringInfo);
 			}
-			var loc = doc.Editor.Caret.Location;
+			var loc = doc.Editor.CaretLocation;
 			bool first = true;
 			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
 
-				if (QuickTaskStrip.EnableFancyFeatures) {
+				if (AnalysisOptions.EnableFancyFeatures) {
 					var ext = doc.GetContent <CodeActionEditorExtension> ();
 					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
 				} else {

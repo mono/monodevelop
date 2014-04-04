@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
-using Mono.TextEditor;
 
 namespace MonoDevelop.CodeIssues
 {

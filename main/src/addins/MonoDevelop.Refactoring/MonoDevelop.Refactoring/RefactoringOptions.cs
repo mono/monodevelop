@@ -39,6 +39,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -75,7 +76,7 @@ namespace MonoDevelop.Refactoring
 		
 		public TextLocation Location {
 			get {
-				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+				return new TextLocation (Document.Editor.CaretLine, Document.Editor.CaretColumn);
 			}
 		}
 		public readonly SyntaxTree Unit;
@@ -96,7 +97,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+		public ITextEditor GetTextEditorData ()
 		{
 			return Document.Editor;
 		}
@@ -104,7 +105,7 @@ namespace MonoDevelop.Refactoring
 		public static string GetWhitespaces (Document document, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.Editor.Length; i++) {
+			for (int i = insertionOffset; i < document.Editor.TextLength; i++) {
 				char ch = document.Editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
@@ -138,7 +139,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static string GetIndent (Document document, IEntity member)
 		{
-			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Region.BeginLine, 1));
+			return GetWhitespaces (document, document.Editor.LocationToOffset (member.Region.BeginLine, 1));
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
@@ -194,7 +195,7 @@ namespace MonoDevelop.Refactoring
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
+			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.CaretLocation);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

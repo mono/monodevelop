@@ -30,11 +30,11 @@ using MonoDevelop.Ide.Gui.Content;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -64,7 +64,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
-				Document.Editor.Document.RemoveMarker (markers.Dequeue ());
+				Document.Editor.RemoveMarker (markers.Dequeue ());
 			tasks.Clear ();
 			disposed = true;
 		}
@@ -121,7 +121,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures)
+			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
 			var doc = Document.ParsedDocument;
 			if (doc == null)
@@ -158,7 +158,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			
 			public void Update ()
 			{
-				if (!QuickTaskStrip.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
+				if (!AnalysisOptions.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
 					return;
 				ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
@@ -171,13 +171,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (cancellationToken.IsCancellationRequested)
 					return false;
 				var editor = ext.Editor;
-				if (editor == null || editor.Document == null)
+				if (editor == null)
 					return false;
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					editor.Document.RemoveMarker (ext.markers.Dequeue ());
+					editor.RemoveMarker (ext.markers.Dequeue ());
 					oldMarkers--;
 				}
 				//add in the new markers
@@ -191,21 +191,23 @@ namespace MonoDevelop.AnalysisCore.Gui
 					var currentResult = (Result)enumerator.Current;
 
 					if (currentResult.InspectionMark != IssueMarker.None) {
-						int start = editor.LocationToOffset (currentResult.Region.Begin);
-						int end = editor.LocationToOffset (currentResult.Region.End);
+						int start = editor.LocationToOffset (currentResult.Region.Begin.Line, currentResult.Region.Begin.Column);
+						int end = editor.LocationToOffset (currentResult.Region.End.Line, currentResult.Region.End.Column);
 						if (start >= end)
 							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = new GrayOutMarker (currentResult, TextSegment.FromBounds (start, end));
+							var marker = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
-							editor.Document.AddMarker (marker);
+							marker.Tag = currentResult;
+							editor.AddMarker (marker);
 							ext.markers.Enqueue (marker);
-							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
-							editor.Parent.QueueDraw ();
+//							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
+//							editor.Parent.QueueDraw ();
 						} else {
-							var marker = new ResultMarker (currentResult, TextSegment.FromBounds (start, end));
+							var marker = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.WavedLine, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
-							editor.Document.AddMarker (marker);
+							marker.Tag = currentResult;
+							editor.AddMarker (marker);
 							ext.markers.Enqueue (marker);
 						}
 					}
@@ -217,7 +219,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 		
 		//all markers known to be in the editor
-		Queue<ResultMarker> markers = new Queue<ResultMarker> ();
+		Queue<IGenericTextSegmentMarker> markers = new Queue<IGenericTextSegmentMarker> ();
 		
 		const int UPDATE_COUNT = 20;
 		
@@ -227,19 +229,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 //			var line = Editor.GetLineByOffset (offset);
 			
 			var list = new List<Result> ();
-			foreach (var marker in Editor.Document.GetTextSegmentMarkersAt (offset)) {
+			foreach (var marker in Editor.GetTextSegmentMarkersAt (offset)) {
 				if (token.IsCancellationRequested)
 					break;
-				var resultMarker = marker as ResultMarker;
-				if (resultMarker != null)
-					list.Add (resultMarker.Result);
+				var resultMarker = marker as IGenericTextSegmentMarker;
+				if (resultMarker != null && resultMarker.Tag is Result)
+					list.Add (resultMarker.Tag as Result);
 			}
 			return list;
 		}
 		
 		public IEnumerable<Result> GetResults ()
 		{
-			return markers.Select (m => m.Result);
+			return markers.Select (m => m.Tag).OfType<Result> ();
 		}
 
 		#region IQuickTaskProvider implementation

@@ -30,10 +30,11 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 
 namespace MonoDevelop.Refactoring
@@ -106,9 +107,9 @@ namespace MonoDevelop.Refactoring
 				return;
 			}
 			
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
-			doc.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
-			DocumentLocation loc = doc.OffsetToLocation (replaceChange.Offset);
+			var doc = DocumentFactory.CreateNewDocument ();
+			doc.Text = TextFileUtility.ReadAllText (replaceChange.FileName);
+			var loc = doc.OffsetToLocation (replaceChange.Offset);
 			
 			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), loc.Line, loc.Column);
 			if (treeviewPreview.Selection.IterIsSelected (iter)) {
@@ -135,21 +136,21 @@ namespace MonoDevelop.Refactoring
 					return;
 			
 				var openDocument = IdeApp.Workbench.GetDocument (replaceChange.FileName);
-				Mono.TextEditor.TextDocument originalDocument = new Mono.TextEditor.TextDocument ();
+				var originalDocument = DocumentFactory.CreateNewDocument ();
 				originalDocument.FileName = replaceChange.FileName;
 				if (openDocument == null) {
-					originalDocument.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
+					originalDocument.Text = TextFileUtility.ReadAllText (replaceChange.FileName);
 				} else {
-					originalDocument.Text = openDocument.Editor.Document.Text;
+					originalDocument.Text = openDocument.Editor.Text;
 				}
 				
-				Mono.TextEditor.TextDocument changedDocument = new Mono.TextEditor.TextDocument ();
+				var changedDocument = DocumentFactory.CreateNewDocument ();
 				changedDocument.FileName = replaceChange.FileName;
 				changedDocument.Text = originalDocument.Text;
 				
 				changedDocument.Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 				
-				string diffString = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument);
+				string diffString = Diff.GetDiffString (originalDocument, changedDocument);
 				
 				cellRendererDiff.InitCell (treeviewPreview, true, diffString, replaceChange.FileName);
 			} catch (Exception e) {
