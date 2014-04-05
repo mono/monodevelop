@@ -43,14 +43,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
 
-		[Obsolete("Use GetDisplayDescription (bool isSelected)")]
-		public virtual string DisplayDescription { get; set; }
-
 		public virtual string GetDisplayDescription (bool isSelected)
 		{
-#pragma warning disable 618
-			return DisplayDescription;
-#pragma warning restore 618
+			return null;
 		}
 
 		public virtual string GetRightSideDescription (bool isSelected)

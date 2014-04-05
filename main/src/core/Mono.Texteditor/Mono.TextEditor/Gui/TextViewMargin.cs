@@ -1578,10 +1578,6 @@ namespace Mono.TextEditor
 				}
 			}
 
-
-			bool drawBg = true;
-			bool drawText = true;
-
 			var metrics  = new LineMetrics {
 				LineSegment = line,
 				Layout = layout,
@@ -1606,15 +1602,6 @@ namespace Mono.TextEditor
 				if (marker.DrawBackground (textEditor, cr, y, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
-
-#pragma warning disable 618
-				var bgMarker = marker as IBackgroundMarker;
-				if (bgMarker != null) {
-					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
-					drawText &= bgMarker.DrawBackground (textEditor, cr, metrics.Layout, metrics.SelectionStart, metrics.SelectionEnd, metrics.TextStartOffset, metrics.TextEndOffset, y, metrics.TextRenderStartPosition, metrics.TextRenderEndPosition, ref drawBg);
-					continue;
-				}
-#pragma warning restore 618
 			}
 
 			if (DecorateLineBg != null)

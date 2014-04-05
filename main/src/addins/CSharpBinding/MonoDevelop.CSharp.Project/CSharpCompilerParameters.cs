@@ -189,14 +189,6 @@ namespace MonoDevelop.CSharp.Project
 			else
 				definesymbols = string.Empty;
 		}
-
-		[Obsolete ("Use GetDefineSymbols")]
-		public ReadOnlyCollection<string> AllDefineSymbols
-		{ 
-			get { 
-				return new ReadOnlyCollection<string> (GetDefineSymbols ().ToArray ());
-			} 
-		}
 		
 		public string DefineSymbols {
 			get {

@@ -1771,7 +1771,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TransactedTreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\INavigable.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IUrlHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\IOpenNamedElementHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />

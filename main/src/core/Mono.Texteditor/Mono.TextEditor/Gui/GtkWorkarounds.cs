@@ -717,24 +717,6 @@ namespace Mono.TextEditor
 			}
 			list.Add (item);
 		}
-		
-		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
-		/// <param name='evt'>The raw key event</param>
-		/// <param name='key'>The decomposed accelerator key</param>
-		/// <param name='mod'>The decomposed accelerator modifiers</param>
-		/// <param name='keyval'>The fully mapped keyval</param>
-		[Obsolete ("Use MapKeys")]
-		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
-		{
-			Gdk.Key mappedKey;
-			Gdk.ModifierType mappedMod;
-			KeyboardShortcut[] accels;
-			MapKeys (evt, out mappedKey, out mappedMod, out accels);
-			
-			keyval = (uint) mappedKey;
-			key = accels[0].Key;
-			mod = accels[0].Modifier;
-		}
 
 		[System.Runtime.InteropServices.DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);

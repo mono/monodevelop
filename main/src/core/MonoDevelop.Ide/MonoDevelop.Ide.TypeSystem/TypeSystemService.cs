@@ -52,27 +52,6 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class TypeSystemServiceExt
 	{
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
-		public static Project GetProject (this IProjectContent content)
-		{
-			return TypeSystemService.GetProject (content.Location);
-		}
-
-		[Obsolete ("Use TryGetSourceProject.")]
-		public static Project GetSourceProject (this ITypeDefinition type)
-		{
-			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
-			if (string.IsNullOrEmpty (location))
-				return null;
-			return TypeSystemService.GetProject (location);
-		}
-
-		[Obsolete ("Use TryGetSourceProject.")]
-		public static Project GetSourceProject (this IType type)
-		{
-			return type.GetDefinition ().GetSourceProject ();
-		}
-
 		/// <summary>
 		/// Tries to the get source project for a given type definition. This operation may fall if it was called on an outdated
 		/// compilation unit or the correspondening project was unloaded.
@@ -119,13 +98,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Project GetProjectWhereTypeIsDefined (this IType type)
 		{
-			return type.GetDefinition ().GetSourceProject ();
-		}
-
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
-		public static IProjectContent GetProjectContent (this IType type)
-		{
-			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
+			Project project;
+			TryGetSourceProject (type, out project);
+			return project;
 		}
 
 		public static TextLocation GetLocation (this IType type)
@@ -166,41 +141,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			var ctx = new SimpleTypeResolveContext (compilation.MainAssembly);
 			var resolvedType = def.Resolve (ctx);
 			return resolvedType;
-		}
-
-		[Obsolete ("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
-		public static ITypeDefinition LookupType (this ICompilation compilation, string ns, string name, int typeParameterCount = -1)
-		{
-			var tc = Math.Max (typeParameterCount, 0);
-			ITypeDefinition result;
-			foreach (var refAsm in compilation.Assemblies) {
-				result = refAsm.GetTypeDefinition (ns, name, tc);
-				if (result != null)
-					return result;
-			}
-			if (typeParameterCount < 0) {
-				for (int i = 1; i < 50; i++) {
-					result = LookupType (compilation, ns, name, i);
-					if (result != null)
-						return result;
-				}
-			}
-			return null;
-		}
-
-		[Obsolete ("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
-		public static ITypeDefinition LookupType (this ICompilation compilation, string fullName, int typeParameterCount = -1)
-		{
-			int idx = fullName.LastIndexOf ('.');
-			string ns, name;
-			if (idx > 0) {
-				ns = fullName.Substring (0, idx);
-				name = fullName.Substring (idx + 1);
-			} else {
-				ns = "";
-				name = fullName;
-			}
-			return compilation.LookupType (ns, name, typeParameterCount);
 		}
 	}
 
