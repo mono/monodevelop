@@ -96,17 +96,23 @@ namespace MonoDevelop.VersionControl.Views
 
 		object updateLock = new object ();
 		ManualResetEvent mre = new ManualResetEvent (false);
-		
+
+		// Runs an action in the GUI thread.
 		public void RunAfterUpdate (Action act) 
 		{
 			if (mre == null) {
 				act ();
 				return;
 			}
-			mre.WaitOne ();
-			act ();
-			mre.Dispose ();
-			mre = null;
+
+			ThreadPool.QueueUserWorkItem (delegate {
+				mre.WaitOne ();
+				mre.Dispose ();
+				mre = null;
+				DispatchService.GuiDispatch (delegate {
+					act ();
+				});
+			});
 		}
 		
 		protected virtual void OnUpdated (EventArgs e)
