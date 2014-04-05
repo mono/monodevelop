@@ -25,11 +25,7 @@ module ColorHelpers =
     let colorToStr (c:Color) =
         sprintf "#%04X%04X%04X" c.Red c.Green c.Blue
         
-    let cairoToHsl (c:Cairo.Color) = HslColor.op_Implicit(c)
-    let gdkToHsl (c:Gdk.Color) = HslColor.op_Implicit(c)
-    let hslToCairo (c:HslColor) : Cairo.Color = HslColor.op_Implicit(c)
-    let hslToGdk (c:HslColor) : Gdk.Color = HslColor.op_Implicit(c)
-    let cairoToGdk = cairoToHsl >> hslToGdk
+    let cairoToGdk (c:Cairo.Color) = GtkUtil.ToGdkColor(c)
 
 [<AutoOpen>]
 module EventHandlerHelpers = 
@@ -213,7 +209,7 @@ type FSharpInteractivePad() =
     | _ -> ()
     
   member x.UpdateFont() = 
-    let fontName = DesktopService.DefaultMonospaceFont
+    let fontName = MonoDevelop.Ide.Fonts.FontService.DefaultMonospaceFontDescription.Family;
     let fontName = PropertyService.Get<string>("FSharpBinding.FsiFontName", fontName)
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
