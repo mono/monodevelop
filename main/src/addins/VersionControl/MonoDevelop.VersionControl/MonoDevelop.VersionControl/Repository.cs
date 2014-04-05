@@ -563,22 +563,12 @@ namespace MonoDevelop.VersionControl
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file delete.
-		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor)
-		{
-			DeleteFile (localPath, force, monitor, true);
-		}
-
-		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteFiles (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-			DeleteFiles (localPaths, force, monitor, true);
-		}
-
-		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			OnDeleteFiles (localPaths, force, monitor, keepLocal);
 			ClearCachedVersionInfo (localPaths);
@@ -586,22 +576,12 @@ namespace MonoDevelop.VersionControl
 
 		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 
-		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
-		{
-			DeleteDirectory (localPath, force, monitor, true);
-		}
-
-		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteDirectories (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-			DeleteDirectories (localPaths, force, monitor, true);
-		}
-
-		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
 			ClearCachedVersionInfo (localPaths);

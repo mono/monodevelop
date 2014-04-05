@@ -1202,34 +1202,6 @@ namespace MonoDevelop.VersionControl.Git
 			return Encoding.UTF8.GetString (s.ToArray ());
 		}
 
-		DiffInfo[] GetUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
-		{
-			basePath = basePath.FullPath;
-			List<DiffInfo> list = new List<DiffInfo> ();
-			using (StringReader sr = new StringReader (diffContent)) {
-				string line;
-				StringBuilder content = new StringBuilder ();
-				string fileName = null;
-				
-				while ((line = sr.ReadLine ()) != null) {
-					if (line.StartsWith ("+++ ", StringComparison.Ordinal) || line.StartsWith ("--- ", StringComparison.Ordinal)) {
-						string newFile = RootPath.Combine (line.Substring (6));
-						if (fileName != null && fileName != newFile) {
-							list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-							content = new StringBuilder ();
-						}
-						fileName = newFile;
-					} else if (!line.StartsWith ("diff", StringComparison.Ordinal) && !line.StartsWith ("index", StringComparison.Ordinal)) {
-						content.Append (line).Append ('\n');
-					}
-				}
-				if (fileName != null) {
-					list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-				}
-			}
-			return list.ToArray ();
-		}
-
 		public string GetCurrentRemote ()
 		{
 			List<string> remotes = new List<string> (GetRemotes ().Select (r => r.Name));

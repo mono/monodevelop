@@ -96,6 +96,4 @@ namespace MonoDevelop.VersionControl
 			VersionControlService.InternalStoreRepositoryReference (repo, path, id);
 		}
 	}
-
-	public delegate void UpdateCallback (FilePath path, string action);
 }
