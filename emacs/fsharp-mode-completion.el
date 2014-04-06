@@ -128,10 +128,7 @@ display in a help buffer instead.")
   (interactive
   ;; Prompt user for an fsproj, searching for a default.
    (list (read-file-name
-          "Path to project: "
-          (fsharp-mode/find-fsproj buffer-file-name)
-          (fsharp-mode/find-fsproj buffer-file-name))))
-
+          "Path to project: " nil (fsharp-mode/find-fsproj buffer-file-name) t)))
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
     (when (not (fsharp-ac--process-live-p))

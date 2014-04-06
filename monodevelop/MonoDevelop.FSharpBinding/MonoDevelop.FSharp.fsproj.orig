@@ -78,40 +78,40 @@
     <EmbeddedResource Include="icons.fsharp-file-icon.png" />
     <EmbeddedResource Include="icons.fsharp-project-icon.png" />
     <EmbeddedResource Include="icons.fsharp-script-icon.png" />
-    <None Include="templates.EmptyFSharpSource.xft.xml">
+    <None Include="Templates/EmptyFSharpSource.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.EmptyFSharpScript.xft.xml">
+    <None Include="Templates/EmptyFSharpScript.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.EmptyFSharpSignature.xft.xml">
+    <None Include="Templates/EmptyFSharpSignature.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpNUnitTestType.xft.xml">
+    <None Include="Templates/FSharpNUnitTestType.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpConsoleProject.xpt.xml">
+    <None Include="Templates/FSharpConsoleProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpLibraryProject.xpt.xml">
+    <None Include="Templates/FSharpLibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpTutorialProject.xpt.xml">
+    <None Include="Templates/FSharpTutorialProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpGtkProject.xpt.xml">
+    <None Include="Templates/FSharpGtkProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.AssemblyInfo.xft.xml">
+    <None Include="Templates/AssemblyInfo.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpProjectMvc4Razor.xpt.xml">
+    <None Include="Templates/FSharpProjectMvc4Razor.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpProjectMvc4Razor.windows.xpt.xml">
+    <None Include="Templates/FSharpProjectMvc4Razor.windows.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpNUnitLibraryProject.xpt.xml">
+    <None Include="Templates/FSharpNUnitLibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="FSharpBinding.addin.xml">
