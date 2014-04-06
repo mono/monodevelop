@@ -81,12 +81,11 @@ type FSharpSettingsPanel() =
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
     let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
-    let default_interp_font = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
 
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
 
-    let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
+    let fontName = MonoDevelop.Ide.Fonts.FontService.DefaultMonospaceFontDescription.Family
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
     
         
