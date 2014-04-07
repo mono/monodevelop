@@ -118,7 +118,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void PopulateNode (TreeIter parent)
 		{
 			Node node = (Node)store.GetValue (parent, 1);
-			foreach (Node n in node.ChildNodes) {
+			if (node.Nodes == null)
+				return;
+
+			foreach (Node n in node.Nodes) {
 				store.AppendValues (parent, n.Caption, n);
 			}
 		}
