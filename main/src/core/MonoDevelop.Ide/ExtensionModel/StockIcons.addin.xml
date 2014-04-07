@@ -177,6 +177,7 @@
 	<StockIcon stockid = "md-library-overlay" resource = "project-library-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-web-overlay" resource = "project-web-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-library" icon = "md-project|md-library-overlay" size="Dnd" />
+	<StockIcon stockid = "md-project-shared-assets" icon = "md-project|res:project-shared-assets-overlay-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-project-web" icon = "md-project|md-web-overlay" size="Dnd" />
 	<StockIcon stockid = "md-struct" resource = "element-structure-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-task-list-icon" resource = "pad-task-list-light-16.png" size="Menu"/>
