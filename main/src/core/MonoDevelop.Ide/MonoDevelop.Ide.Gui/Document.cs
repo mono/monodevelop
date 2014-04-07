@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Gui
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
 		Mono.TextEditor.ITextEditorDataProvider provider = null;
+		Microsoft.CodeAnalysis.Document analysisDocument;
 
 		const int ParseDelay = 600;
 
@@ -555,6 +556,8 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
+			if (analysisDocument != null)
+				RoslynTypeSystemService.Workspace.CloseDocument (analysisDocument.Id);
 			DetachExtensionChain ();
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
@@ -841,6 +844,11 @@ namespace MonoDevelop.Ide.Gui
 			string currentParseFile = FileName;
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
+			if (analysisDocument == null) {
+				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
+				if (analysisDocument != null)
+					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument.Id);
+			}
 			CancelParseTimeout ();
 			if (IsProjectContextInUpdate)
 				return;
@@ -848,10 +856,14 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null || IsProjectContextInUpdate) {
 					parseTimeout = 0;
-					return false;
+					return false;	
 				}
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
+
+				if (analysisDocument != null) {
+					analysisDocument = analysisDocument.WithText (Microsoft.CodeAnalysis.Text.SourceText.From (currentParseText)); 
+				}
 				ThreadPool.QueueUserWorkItem (delegate {
 					if (IsProjectContextInUpdate)
 						return;

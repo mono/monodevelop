@@ -974,6 +974,7 @@ namespace MonoDevelop.Ide
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
 				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item);
+				MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
 //				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
 			} catch (Exception ex) {
