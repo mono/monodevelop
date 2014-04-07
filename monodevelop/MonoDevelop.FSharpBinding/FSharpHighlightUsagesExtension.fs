@@ -186,7 +186,7 @@ module NRefactory =
          let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
 
          //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
-         if symbolUse.FileName = fileNameOfRef && symbolUse.IsDefinition then
+         if symbolUse.FileName = fileNameOfRef && symbolUse.IsFromDefinition then
             memberRef.ReferenceUsageType <- ReferenceUsageType.Write
 
          memberRef

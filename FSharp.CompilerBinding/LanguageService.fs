@@ -32,58 +32,62 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
     member x.GetToolTip(line, col, lineStr) =
+      async {
         match infoOpt with 
-        | None -> None
+        | None -> return None
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> None
+        | None -> return None
         | Some(col,identIsland) ->
-          let res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
+          let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
           Debug.WriteLine("Result: Got something, returning")
-          Some (res, (col - (Seq.last identIsland).Length, col))
-
+          return Some (res, (col - 10, col))
+      }
     member x.GetDeclarationLocation(line, col, lineStr) =
+      async {
         match infoOpt with 
-        | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
+        | None -> return FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
-        | Some(col,identIsland) ->
-            let res = checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, true)
-            Debug.WriteLine("Result: Got something, returning")
-            res 
-
+        | None -> return FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
+        | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, true)
+      }
     member x.GetMethods(line, col, lineStr) =
+      async { 
         match infoOpt with 
-        | None -> None
+        | None -> return None
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
-        | None -> None
+        | None -> return None
         | Some(col,identIsland) ->
-            let res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
+            let! res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
             Debug.WriteLine("Result: Got something, returning")
-            Some (res.MethodName, res.Methods) 
+            return Some (res.MethodName, res.Methods) 
+      }
 
     member x.GetSymbol(line, col, lineStr) =
+      async {
         match infoOpt with 
-        | None -> None
+        | None -> return None
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> None
+        | None -> return None
         | Some(colu, identIsland) ->
-            checkResults.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland)
-
+            return! checkResults.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland)
+      }
     member x.GetSymbolAtLocation(line, col, lineStr, identIsland) =
+      async {
         match infoOpt with 
-        | None -> None
+        | None -> return None
         | Some (checkResults, parseResults) -> 
-            checkResults.GetSymbolAtLocationAlternate(line, col, lineStr, identIsland)
-
+            return! checkResults.GetSymbolAtLocationAlternate (line, col, lineStr, identIsland)
+      }
     member x.GetUsesOfSymbolInFile(symbol) =
+      async {
         match infoOpt with 
-        | None -> [| |]
-        | Some (checkResults, parseResults) -> checkResults.GetUsesOfSymbolInFile(symbol)
-
+        | None -> return [| |]
+        | Some (checkResults, parseResults) -> return! checkResults.GetUsesOfSymbolInFile(symbol)
+      }
     member x.GetErrors() =
         match infoOpt with 
         | None -> None
@@ -213,6 +217,7 @@ type LanguageService(dirtyNotify) =
           let fileName = fixFileName(fileName)
           Debug.WriteLine (sprintf "GetScriptCheckerOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename)
+                     |> Async.RunSynchronously
           
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
@@ -284,22 +289,24 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework)  : Option<ParseAndCheckResults> = 
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout, targetFramework) = 
+   async {
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", box fileName)
     // Try to get recent results from the F# service
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
     | Some _ as results ->
         Debug.WriteLine(sprintf "Parsing: using stale results")
-        results
+        return results
     | None -> 
         Debug.WriteLine(sprintf "Worker: Not using stale results - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
-
+        return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+   }
   member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale, targetFramework) = 
    async { 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
+
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
     | Some results -> return results
     | None -> return! mbox.PostAndAsyncReply(fun reply -> (fileName, src, opts, reply))
@@ -313,11 +320,11 @@ type LanguageService(dirtyNotify) =
     | Some(colu, identIsland) ->
 
         let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource, targetFramework=targetFramework)
-
-        match checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland) with
-        | Some symbol ->
+        let! symbolResults = checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+        match symbolResults with
+        | Some symbol -> 
             let lastIdent = Seq.last identIsland
-            let refs = checkResults.GetUsesOfSymbolInFile(symbol)
+            let! refs = checkResults.GetUsesOfSymbolInFile(symbol)
             return Some(lastIdent, refs)
         | None -> return None
     | None -> return None 
@@ -330,7 +337,7 @@ type LanguageService(dirtyNotify) =
     //parse and retrieve Checked Project results, this has the entity graph and errors etc
     let! projectResults = checker.ParseAndCheckProject(projectOptions) 
   
-    let refs = projectResults.GetUsesOfSymbol(symbol)
+    let! refs = projectResults.GetUsesOfSymbol(symbol)
     return refs }
 
   member x.InvalidateConfiguration(options) = checker.InvalidateConfiguration(options)
