@@ -21,23 +21,22 @@ open ICSharpCode.NRefactory.Completion
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, glyph) =
+type internal FSharpMemberCompletionData(name, getTip, glyph) =
     inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 
                            DisplayText = name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
 
-    let description = lazy (TipFormatter.formatTip datatipLazy.Value)
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
 
-    new (name, datatip:ToolTipText, glyph) =  new FSharpMemberCompletionData(name, lazy datatip, glyph)
-    new (mi:Declaration) =  new FSharpMemberCompletionData(mi.Name, lazy mi.DescriptionText, mi.Glyph)
+    new (name, datatip:ToolTipText, glyph) = new FSharpMemberCompletionData(name, (fun () -> datatip), glyph)
+    new (mi:Declaration) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
 
     override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
 
     /// Check if the datatip has multiple overloads
     override x.HasOverloads = 
-        match datatipLazy.Value with 
+        match getTip() with 
         | ToolTipText [xs] ->
             match xs with 
             | ToolTipElementGroup ttg -> true 
@@ -46,7 +45,7 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, gl
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
-        match datatipLazy.Value with 
+        match getTip() with 
         | ToolTipText xs -> 
             seq{for tooltipElement in xs do
                 match tooltipElement with
@@ -66,8 +65,8 @@ type internal FSharpMemberCompletionData(name, datatipLazy:Lazy<ToolTipText>, gl
     override x.CreateTooltipInformation (smartWrap: bool) = 
       
       Debug.WriteLine("computing tooltip for {0}", name)
-
-      match description.Value with
+      let description = TipFormatter.formatTip (getTip())
+      match description with
       | [signature,comment] -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature)
       //With multiple tips just take the head.  
       //This shouldnt happen anyway as we split them in the resolver provider
