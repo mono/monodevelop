@@ -498,8 +498,9 @@ module internal Main =
               main state
           
           | FindDeclaration ->
-
-            match tyRes.GetDeclarationLocation(line + 1,col,lineStr) with
+            let declarations = tyRes.GetDeclarationLocation(line + 1,col,lineStr)
+                               |> Async.RunSynchronously
+            match declarations with
             | FindDeclResult.DeclNotFound _ -> printMsg "ERROR" "Could not find declaration"
             | FindDeclResult.DeclFound range ->
               
