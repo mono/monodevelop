@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild {
 		}
 
 		public MDConsoleLogger (LoggerVerbosity verbosity)
-			: this (LoggerVerbosity.Normal, null, null, null)
+			: this (verbosity, null, null, null)
 		{
 		}
 		
