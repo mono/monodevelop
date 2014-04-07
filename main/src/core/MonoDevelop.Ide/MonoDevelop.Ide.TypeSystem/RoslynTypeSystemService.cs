@@ -35,12 +35,12 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Reflection;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	class MonoDevelopWorkspace : CustomWorkspace
 	{
-		readonly BackgroundParser parser;
 		readonly MetadataReferenceProvider referenceProvider = new MetadataReferenceProvider ();
 		Solution currentSolution;
 
@@ -50,29 +50,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public BackgroundParser Parser {
-			get {
-				return parser;
-			}
-		}
-
 		public MonoDevelopWorkspace (string activeConfiguration) : base (MonoDevelopWorkspaceFeatures.Features, "MonoDevelopWorkspace")
 		{
-			parser = new BackgroundParser (this);
 		}
 
 		public Solution LoadSolution (MonoDevelop.Projects.Solution solution)
 		{
-			parser.Stop ();
-			var solutionInfo = SolutionInfo.Create (
-				                   SolutionId.CreateNewId (solution.Name),
-				                   VersionStamp.Create (),
-				                   solution.FileName,
-				                   solution.GetAllProjects ().AsParallel ().Select (p => LoadProject (p))
-			                   );
-			currentSolution = CreateSolution (solutionInfo); 
-			AddSolution (solutionInfo); 
-			parser.Start ();
+			currentSolution = CreateSolution (SolutionId.CreateNewId (solution.Name));
+
+			foreach (var p in solution.GetAllProjects () ) {
+				currentSolution = currentSolution.AddProject (LoadProject (p)); 
+			}
 			return currentSolution;
 		}
 
@@ -108,6 +96,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly ProjectId projectId;
 			readonly Dictionary<string, DocumentId> documentIdMap = new Dictionary<string, DocumentId> ();
 
+			public ProjectInfo Info {
+				get;
+				set;
+			}
+
 			public ProjectData (ProjectId projectId)
 			{
 				this.projectId = projectId;
@@ -137,12 +130,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var projectId = GetProjectId (p);
 			var projectData = GetProjectData (projectId); 
-			return ProjectInfo.Create (
+			var info = ProjectInfo.Create (
 				projectId,
 				VersionStamp.Create (),
 				p.Name,
 				p.Name,
-				"C#",
+				LanguageNames.CSharp,
 				p.FileName,
 				p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration),
 				null,
@@ -151,6 +144,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				GetProjectReferences (p),
 				GetMetadataReferences (p)
 			);
+			projectData.Info = info;
+			OnProjectAdded (info); 
+			return info;
 		}
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
@@ -214,21 +210,62 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		#region Open documents
+		List<DocumentId> openDocuments = new List<DocumentId>();
+
+		public override bool CanOpenDocuments {
+			get {
+				return true;
+			}
+		}
+
+		public override IEnumerable<DocumentId> GetOpenDocumentIds (ProjectId projectId = null)
+		{
+			foreach (var document in openDocuments) {
+				if (projectId == null || document.ProjectId == projectId)
+					yield return document;
+			}
+		}
+
+		public override bool IsDocumentOpen (DocumentId documentId)
+		{
+			return openDocuments.Contains (documentId);
+		}
+
+		public override void OpenDocument (DocumentId documentId, bool activate = true)
+		{
+			openDocuments.Add (documentId); 
+		}
+
+		public override void CloseDocument (DocumentId documentId)
+		{
+			openDocuments.Remove (documentId);
+		}
+
+		protected override void ChangedDocumentText(DocumentId documentId, SourceText text)
+		{
+			var document = CurrentSolution.GetDocument(documentId);
+			if (document != null)
+				OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);
+		}
+
+		#endregion
+
+
 		public Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = currentSolution.GetProject (documentId.ProjectId, cancellationToken); 
-			Console.WriteLine ("project:"+ project);
-			if (project == null)
+			var projectData = GetProjectData (documentId.ProjectId); 
+			if (projectData == null)
 				return null;
-			Console.WriteLine (" get document id : " + documentId);
-			//	parser.Parse (); 
-			return project.GetDocument (documentId);
+
+			return currentSolution.GetDocument (documentId); 
 		}
 	}
 
 	static class MonoDevelopWorkspaceFeatures
 	{
 		static FeaturePack pack;
+
 		public static FeaturePack Features {
 			get {
 				if (pack == null)
@@ -246,7 +283,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			LoadAssembly (assemblies, "Microsoft.CodeAnalysis.CSharp.Workspaces");
 			// LoadAssembly (assemblies, "Microsoft.CodeAnalysis.VisualBasic.Workspaces");
 
-			var catalogs = assemblies.Select(a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog(a));
+			var catalogs = assemblies.Select (a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog (a));
 
 			return new MefExportPack (catalogs);
 		}
@@ -255,7 +292,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				var loadedAssembly = Assembly.Load (assemblyName);
-				Console.WriteLine (assemblyName  +"/" + assemblies);
 				assemblies.Add (loadedAssembly);
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Couldn't load assembly:" + assemblyName);
@@ -301,6 +337,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			var documentId = workspace.GetDocumentId (projectId, fileName);
 
 			return workspace.GetDocument (documentId);
+		}
+
+		public static void UpdateDocument (Project project, FilePath fileName, string currentParseText)
+		{
 		}
 	}
 }

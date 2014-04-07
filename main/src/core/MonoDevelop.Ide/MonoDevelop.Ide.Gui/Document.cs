@@ -846,6 +846,10 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			if (analysisDocument == null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
+//				Console.WriteLine ("Get document :" + analysisDocument);
+//				Console.WriteLine (analysisDocument.GetTextAsync ().Result.ToString () );
+//				Console.WriteLine ("-----");
+//				Console.WriteLine (analysisDocument.GetSyntaxTreeAsync ().Result.GetText ());
 				if (analysisDocument != null)
 					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument.Id);
 			}
