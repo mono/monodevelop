@@ -162,10 +162,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new List<FilePath> ();
 		}
 
-		public void InitializeSolutionItem (SolutionItem item)
-		{
-		}
-
 		public void ConvertToFormat (object obj)
 		{
 			if (obj == null)
