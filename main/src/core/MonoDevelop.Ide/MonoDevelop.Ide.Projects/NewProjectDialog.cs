@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Projects {
 		CombineEntryFeatureSelector featureList;
 		IWorkspaceFileObject newItem;
 		Category recentCategory;
-		List<string> recentIds = new List<string> ();
+		List<string> recentTemplates = new List<string> ();
 			
 		public NewProjectDialog (SolutionFolder parentFolder, bool openCombine, string basePath)
 		{
@@ -108,11 +108,13 @@ namespace MonoDevelop.Ide.Projects {
 			SelectTemplate (iter, id);
 		}
 		
-		ProjectTemplate GetTemplate (string id)
+		ProjectTemplate GetTemplate (string language, string id)
 		{
 			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
-				if (template.Id == id)
-					return template;
+				if (template.Id == id) {
+					if (language == null || template.LanguageName == language)
+						return template;
+				}
 			}
 			return null;
 		}
@@ -388,11 +390,18 @@ namespace MonoDevelop.Ide.Projects {
 		{
 			if (templateView.CurrentlySelected != null) {
 				PropertyService.Set ("Dialogs.NewProjectDialog.LastSelectedCategory",  ((ProjectTemplate)templateView.CurrentlySelected).Category);
-				recentIds.Remove (templateView.CurrentlySelected.Id);
-				recentIds.Insert (0, templateView.CurrentlySelected.Id);
-				if (recentIds.Count > 15)
-					recentIds.RemoveAt (recentIds.Count - 1);
-				string strRecent = string.Join (",", recentIds.ToArray ());
+				string template;
+				// keep the old format if the language is not specified
+				if (String.IsNullOrEmpty(templateView.CurrentlySelected.LanguageName)) {
+					template = templateView.CurrentlySelected.Id;
+				} else { // use the newer format with language before id
+					template = templateView.CurrentlySelected.LanguageName + "/" + templateView.CurrentlySelected.Id;
+				}
+				recentTemplates.Remove (template);
+				recentTemplates.Insert (0, template);
+				if (recentTemplates.Count > 15)
+					recentTemplates.RemoveAt (recentTemplates.Count - 1);
+				string strRecent = string.Join (",", recentTemplates.ToArray ());
 				PropertyService.Set ("Dialogs.NewProjectDialog.RecentTemplates", strRecent);
 				PropertyService.SaveProperties ();
 				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
@@ -629,10 +638,22 @@ namespace MonoDevelop.Ide.Projects {
 			
 			recentCategory = new Category (GettextCatalog.GetString ("Recent"));
 			string strRecent = PropertyService.Get<string> ("Dialogs.NewProjectDialog.RecentTemplates", "");
-			recentIds = new List<string> (strRecent.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries));
 
-			foreach (string id in recentIds) {
-				ProjectTemplate pt = GetTemplate (id);
+			recentTemplates = new List<string> ();
+			foreach (string template in strRecent.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries)) {
+				// Some templates can't be identified using only id, sometimes language is needed too
+				string id, language = null;
+				// If the string was serialized with old format leave null value for the language variable
+				int separator = template.IndexOf ('/');
+				if (separator == -1) {
+					id = template;
+				} else { // In other case extract the language
+					language = template.Substring (0, separator);
+					id = template.Substring (separator + 1);
+				}
+				recentTemplates.Add (template);
+
+				ProjectTemplate pt = GetTemplate (language, id);
 				if (pt != null)
 					recentCategory.Templates.Add (new TemplateItem (pt) { DisplayCategory = true });
 			}
