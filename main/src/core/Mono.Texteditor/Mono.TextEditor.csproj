@@ -140,7 +140,6 @@
     <Compile Include="Mono.TextEditor\TextMarkerEvent.cs" />
     <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\HeightTree.cs" />
-    <Compile Include="Mono.TextEditor\Annotatable.cs" />
     <Compile Include="Mono.TextEditor\IndentStyle.cs" />
     <Compile Include="Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
@@ -213,7 +212,6 @@
     <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\TextWeight.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\IStreamProvider.cs" />
