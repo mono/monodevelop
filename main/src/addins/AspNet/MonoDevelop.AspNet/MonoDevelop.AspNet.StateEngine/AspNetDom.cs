@@ -256,7 +256,7 @@ namespace MonoDevelop.AspNet.StateEngine
 
 		public static IEnumerable<T> WithName<T> (this IEnumerable<XNode> nodes, XName name, bool ignoreCase) where T : XNode, INamedXObject
 		{
-			return nodes.OfType<T> ().Where (el => XName.Equals (el.Name, name, true));
+			return nodes.OfType<T> ().Where (el => XName.Equals (el.Name, name, ignoreCase));
 		}
 
 		public static IEnumerable<string> GetAllPlaceholderIds (this XDocument doc)
