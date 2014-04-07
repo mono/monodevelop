@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionListWindow : ListWindow, IListDataProvider
 	{
 		const int declarationWindowMargin = 3;
-		
-		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
+
+		TooltipInformationWindow declarationviewwindow;
 		ICompletionData currentData;
 		Widget parsingMessage;
 		int initialWordLength;
@@ -541,8 +541,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void RepositionDeclarationViewWindow ()
 		{
-			if (declarationviewwindow == null || base.GdkWindow == null)
+			if (base.GdkWindow == null)
 				return;
+			if (declarationviewwindow == null)
+				declarationviewwindow = new TooltipInformationWindow ();
 			var selectedItem = List.SelectedItem;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
