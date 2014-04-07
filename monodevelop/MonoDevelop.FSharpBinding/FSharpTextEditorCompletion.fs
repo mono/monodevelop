@@ -214,11 +214,14 @@ type FSharpTextEditorCompletion() =
       let args = CompilerArguments.getArgumentsFromProject(proj, config)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
 
-      match MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) with
+      let typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
+                              |> Async.RunSynchronously
+
+      match typedParseResults with
       | None -> null
       | Some tyRes ->
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
-      let methsOpt = tyRes.GetMethods(line, col, lineStr)
+      let methsOpt = tyRes.GetMethods(line, col, lineStr) |> Async.RunSynchronously
       match methsOpt with 
       | None -> 
           Debug.WriteLine("Getting Parameter Info: no methods")
@@ -295,7 +298,10 @@ type FSharpTextEditorCompletion() =
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
-      match MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework) with
+      let typedParseResults = 
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
+          |> Async.RunSynchronously
+      match typedParseResults with
       | None ->
         let result = CompletionDataList()
         result.Add(FSharpTryAgainMemberCompletionData())
