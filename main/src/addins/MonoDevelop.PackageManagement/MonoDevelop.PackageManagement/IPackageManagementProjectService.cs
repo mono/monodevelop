@@ -39,7 +39,7 @@ namespace ICSharpCode.PackageManagement
 
 		void Save(Solution solution);
 		
-		IEnumerable<Project> GetOpenProjects();
+		IEnumerable<DotNetProject> GetOpenProjects();
 		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 		

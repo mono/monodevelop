@@ -48,13 +48,13 @@ namespace ICSharpCode.PackageManagement
 			get { return IdeApp.ProjectOperations.CurrentSelectedSolution; }
 		}
 		
-		public IEnumerable<Project> GetOpenProjects()
+		public IEnumerable<DotNetProject> GetOpenProjects()
 		{
 			Solution solution = OpenSolution;
 			if (solution != null) {
-				return solution.GetAllProjects();
+				return solution.GetAllProjects ().OfType<DotNetProject> ();
 			}
-			return new Project[0];
+			return new DotNetProject [0];
 		}
 		
 		public void Save(Solution solution)
