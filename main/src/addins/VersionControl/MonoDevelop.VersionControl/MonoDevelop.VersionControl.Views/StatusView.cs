@@ -750,8 +750,7 @@ namespace MonoDevelop.VersionControl.Views
 				TreeIter iter;
 				filestore.IterChildren (out iter, args.Iter);
 				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
-				bool remoteDiff = (bool) filestore.GetValue (args.Iter, ColStatusRemoteDiff);
-				FillDiffInfo (iter, fileName, GetDiffData (remoteDiff));
+				FillDiffInfo (iter, fileName, GetDiffData (remoteStatus));
 			}
 		}
 
@@ -1057,10 +1056,9 @@ namespace MonoDevelop.VersionControl.Views
 				bool filled = (bool) filestore.GetValue (it, ColFilled);
 				if (filled) {
 					string fileName = (string) filestore.GetValue (it, ColFullPath);
-					bool remoteDiff = (bool) filestore.GetValue (it, ColStatusRemoteDiff);
 					TreeIter citer;
 					filestore.IterChildren (out citer, it);
-					FillDiffInfo (citer, fileName, GetDiffData (remoteDiff));
+					FillDiffInfo (citer, fileName, GetDiffData (remoteStatus));
 				}
 			}
 			while (filestore.IterNext (ref it));
