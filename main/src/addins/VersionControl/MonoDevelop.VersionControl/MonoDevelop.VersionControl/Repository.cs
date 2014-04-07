@@ -125,6 +125,10 @@ namespace MonoDevelop.VersionControl
 		public virtual bool AllowLocking {
 			get { return true; }
 		}
+
+		public virtual bool SupportsRemoteStatus {
+			get { return false; }
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{

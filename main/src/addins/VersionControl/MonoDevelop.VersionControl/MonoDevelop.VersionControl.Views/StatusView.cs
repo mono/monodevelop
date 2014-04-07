@@ -311,7 +311,8 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (buttonRevert);
 
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
-			toolbar.Add (showRemoteStatus);
+			if (vc.SupportsRemoteStatus)
+				toolbar.Add (showRemoteStatus);
 
 			var btnCreatePatch = new Gtk.Button () {
 				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("diff-light-16.png")).ToGtkWidget (),
