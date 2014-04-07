@@ -36,6 +36,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		public PolicyTypeAttribute ([NodeAttribute ("description")] string description)
 		{
+			Description = description;
 		}
 		
 		[NodeAttribute ("description")]
