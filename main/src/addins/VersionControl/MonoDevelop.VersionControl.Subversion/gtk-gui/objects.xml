@@ -63,6 +63,19 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Components.IconView" palette-category="General" allow-children="false" base-type="Gtk.ScrolledWindow">
+    <itemgroups />
+    <signals>
+      <itemgroup label="IconView Signals">
+        <signal name="IconSelected" />
+        <signal name="IconDoubleClicked" />
+      </itemgroup>
+    </signals>
+  </object>
+  <object type="MonoDevelop.Components.NotebookButtonBar" palette-category="General" allow-children="false" base-type="Gtk.Toolbar">
+    <itemgroups />
+    <signals />
+  </object>
   <object type="MonoDevelop.Components.MenuButton" palette-category="General" allow-children="false" base-type="Gtk.Button">
     <itemgroups>
       <itemgroup label="MenuButton Properties">
@@ -85,6 +98,22 @@
       </itemgroup>
     </itemgroups>
     <signals />
+  </object>
+  <object type="MonoDevelop.Components.ListView" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups>
+      <itemgroup label="ListView Properties">
+        <property name="AllowMultipleSelection" />
+        <property name="SelectedRow" />
+        <property name="SelectionDisabled" />
+        <property name="Page" />
+      </itemgroup>
+    </itemgroups>
+    <signals>
+      <itemgroup label="ListView Signals">
+        <signal name="SelectionChanged" />
+        <signal name="ItemActivated" />
+      </itemgroup>
+    </signals>
   </object>
   <object type="MonoDevelop.Components.FolderListSelector" palette-category="General" allow-children="false" base-type="Gtk.Bin">
     <itemgroups />
@@ -220,6 +249,10 @@
     <signals />
   </object>
   <object type="MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.ProgressControl" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups />
     <signals />
   </object>
