@@ -61,7 +61,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			if (!packageReferenceNode.Installed) {
 				nodeInfo.Label = "<span color='#c99c00'>" + packageReferenceNode.Name + "</span>";
-				nodeInfo.Icon = Context.GetIcon (Stock.ReferenceWarning);
+				if (!packageReferenceNode.IsInstallPending) {
+					nodeInfo.Icon = Context.GetIcon (Stock.ReferenceWarning);
+				}
 			}
 		}
 	}
