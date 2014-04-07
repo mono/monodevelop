@@ -208,12 +208,12 @@
     <ProjectTemplate id="FSharpXamMacProjectEmpty" file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
 
     <!--- F# Android project templates -->
-    <ProjectTemplate id="FSharp.MonoDroidLibraryProject" file ="templates-fsharp/MonoDroidLibraryProject.xpt.xml" />
-    <ProjectTemplate id="FSharp.MonoDroidApplicationProject" file ="templates-fsharp/MonoDroidApplicationProject.xpt.xml"/>
-    <ProjectTemplate id="FSharp.MonoDroidApplicationLv12Project" file ="templates-fsharp/MonoDroidApplicationProjectLv12.xpt.xml"/>
-    <ProjectTemplate id="FSharp.MonoDroidApplicationLv15Project" file ="templates-fsharp/MonoDroidApplicationProjectLv15.xpt.xml"/>
-    <ProjectTemplate id="FSharp.MonoDroidOpenGLProject" file ="templates-fsharp/MonoDroidOpenGLProject.xpt.xml"/>
-    <ProjectTemplate id="FSharp.MonoDroidUnitTestProject" file ="templates-fsharp/MonoDroidUnitTestProject.xpt.xml"/>
+    <ProjectTemplate id="FSharp.MonoDroidLibraryProject" file ="Templates/Android/MonoDroidLibraryProject.xpt.xml" />
+    <ProjectTemplate id="FSharp.MonoDroidApplicationProject" file ="Templates/Android/MonoDroidApplicationProject.xpt.xml"/>
+    <ProjectTemplate id="FSharp.MonoDroidApplicationLv12Project" file ="Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml"/>
+    <ProjectTemplate id="FSharp.MonoDroidApplicationLv15Project" file ="Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml"/>
+    <ProjectTemplate id="FSharp.MonoDroidOpenGLProject" file ="Templates/Android/MonoDroidOpenGLProject.xpt.xml"/>
+    <ProjectTemplate id="FSharp.MonoDroidUnitTestProject" file ="Templates/Android/MonoDroidUnitTestProject.xpt.xml"/>
 
     <!--- F# ios project templates -->
     <ProjectTemplate id="FSharpIOSEmptyIPadProject" file="Templates/ios/Empty/ProjectIPad.xpt.xml"/>
