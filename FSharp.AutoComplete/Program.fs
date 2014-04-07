@@ -440,6 +440,7 @@ module internal Main =
           // TODO: Deny recent typecheck results under some circumstances (after bracketed expr..)
           let timeout = match timeout with Some x -> x | _ -> 20000
           let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, files, args, AllowStaleResults.MatchingFileName, timeout, framework)
+                         |> Async.RunSynchronously
           match tyResOpt with
           | None -> printMsg "ERROR" "Timeout when fetching typed parse result"; main state
           | Some tyRes ->
@@ -479,6 +480,7 @@ module internal Main =
           | ToolTip ->
 
               let tipopt = tyRes.GetToolTip(line, col, lineStr)
+                           |> Async.RunSynchronously
 
               match tipopt with
               | None -> printMsg "INFO" "No tooltip information"
