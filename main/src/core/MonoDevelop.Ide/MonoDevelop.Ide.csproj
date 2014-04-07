@@ -551,6 +551,12 @@
     <EmbeddedResource Include="icons\light\project-shared-assets-overlay-32%402x.png">
       <LogicalName>project-shared-assets-overlay-light-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32.png">
+      <LogicalName>project-package-overlay-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32%402x.png">
+      <LogicalName>project-package-overlay-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
     </EmbeddedResource>
