@@ -252,7 +252,6 @@
     <None Include="Templates/ios/Common/Info_Universal.Storyboard.plist.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    </None>
     <None Include="Templates/ios/Common/Entitlements.plist.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
