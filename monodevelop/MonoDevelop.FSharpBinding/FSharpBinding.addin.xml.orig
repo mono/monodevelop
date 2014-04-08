@@ -33,6 +33,70 @@
     <Import file = "packages/AspNetMvc4/System.Web.WebPages.Razor.dll" />
     <Import file = "packages/AspNetMvc4/System.Web.WebPages.dll" />
 
+    <!--- F# MonoMac templates -->
+    <Import file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
+    <Import file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
+    <Import file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
+    <Import file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
+    <Import file="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
+    <Import file="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
+
+    <Import file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
+    <Import file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
+    <Import file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
+    <Import file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
+    <Import file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
+    <Import file="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
+
+    <!--- F# Android templates -->
+    <Import file = "Templates/Android/MonoDroidActivity.xft.xml" />
+    <Import file = "Templates/Android/MonoDroidApplication/AboutAssets.txt" />
+    <Import file = "Templates/Android/MonoDroidApplication/AboutResources.txt" />
+    <Import file = "Templates/Android/MonoDroidApplication/MainActivity.fs" />
+    <Import file = "Templates/Android/MonoDroidApplication/AssemblyInfo.fs" />
+    <Import file = "Templates/Android/MonoDroidApplication/Resource.fs" />
+    <Import file = "Templates/Android/MonoDroidApplication/Icon-hd.png" />
+    <Import file = "Templates/Android/MonoDroidApplication/Icon-ld.png" />
+    <Import file = "Templates/Android/MonoDroidApplication/Icon-md.png" />
+    <Import file = "Templates/Android/MonoDroidApplication/Main.axml" />
+    <Import file = "Templates/Android/MonoDroidApplicationProject.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidBroadcastReceiver.xft.xml" />
+    <Import file = "Templates/Android/MonoDroidClass.xft.xml" />
+    <Import file = "Templates/Android/MonoDroidFragment.xft.xml" />
+    <Import file = "Templates/Android/MonoDroidInterface.xft.xml" />
+    <Import file = "Templates/Android/MonoDroidLibraryProject.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidOpenGLProject.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidUnitTestProject.xpt.xml" />
+    <Import file = "Templates/Android/MonoDroidView.xft.xml" />
+    <Import file = "Templates/Android/OpenGLApplication/MainActivity.fs" />
+    <Import file = "Templates/Android/OpenGLApplication/GLView1.fs" />
+    <Import file = "Templates/Android/OpenGLApplication/Main.axml" />
+    <Import file = "Templates/Android/OpenGLApplication/Resource.fs" />
+    <Import file = "Templates/Android/UnitTestProject/MainActivity.fs" />
+    <Import file = "Templates/Android/UnitTestProject/TestsSample.fs" />
+
+    <!--- F# ios templates -->
+    <Import file="Templates/ios/Common/Info_iPad.plist.xml" />
+    <Import file="Templates/ios/Common/Info_iPhone.plist.xml" />
+    <Import file="Templates/ios/Common/Info_Universal.plist.xml" />
+    <Import file="Templates/ios/Common/Info_iPad.Storyboard.plist.xml" />
+    <Import file="Templates/ios/Common/Info_iPhone.Storyboard.plist.xml" />
+    <Import file="Templates/ios/Common/Info_Universal.Storyboard.plist.xml" />
+    <Import file="Templates/ios/Common/Entitlements.plist.xml" />
+    <Import file="Templates/ios/Empty/AppDelegate.fs" />
+    <Import file="Templates/ios/Empty/ProjectIPad.xpt.xml" />
+    <Import file="Templates/ios/Empty/ProjectIPhone.xpt.xml" />
+    <Import file="Templates/ios/Empty/ProjectUniversal.xpt.xml" />
+    <Import file="Templates/ios/SingleView/Common/AppDelegate.fs" />
+    <Import file="Templates/ios/SingleView/IPad/ViewController.fs" />
+    <Import file="Templates/ios/SingleView/IPhone/ViewController.fs" />
+    <Import file="Templates/ios/SingleView/Universal/ViewController.fs" />
+    <Import file="Templates/ios/SingleView/ProjectIPad.xpt.xml" />
+    <Import file="Templates/ios/SingleView/ProjectIPhone.xpt.xml" />
+    <Import file="Templates/ios/SingleView/ProjectUniversal.xpt.xml" />
+    <Import file="Templates/ios/LibraryProject.xpt.xml" />
 
   </Runtime>
 
@@ -41,6 +105,7 @@
     <Addin id="Ide" version="INSERT_FSPROJ_MDVERSION4"/>
     <Addin id="SourceEditor2" version="INSERT_FSPROJ_MDVERSION4"/>
     <Addin id="Refactoring" version="INSERT_FSPROJ_MDVERSION4"/>
+
   </Dependencies>
 
   <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
@@ -54,9 +119,7 @@
 
             <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
             <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-
-
-    </Extension>
+  </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
@@ -124,8 +187,6 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Core/StockIcons">
-    <!-- Not used <StockIcon stockid="md-fs-logo32"   resource="icons.fsharp-icon-32.png" /> -->
-    <!-- Not used <StockIcon stockid="md-fs-script32" resource="icons.fsharp-script-32.png" /> -->
     <StockIcon stockid="md-fs-file"    resource="icons.fsharp-file-icon.png" size="Menu" />
     <StockIcon stockid="md-fs-script"  resource="icons.fsharp-script-icon.png" size="Menu" />
     <StockIcon stockid="md-fs-project" resource="icons.fsharp-project-icon.png" size="Menu" />
@@ -225,7 +286,6 @@
     </Category>
   </Extension>
 
-
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
     <SeparatorItem id = "FSharpInteractiveStart" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
@@ -238,5 +298,99 @@
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
   </Extension>
+
+  <!--- F# Android -->
+  <Module>
+    <Dependencies>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MonoAndroid" version="5.0"/>
+    </Dependencies>
+
+    <Extension path="/MonoDevelop/Ide/FileTemplates">
+      <FileTemplate id= "FSharp.MonoDroidView" file ="Templates/Android/MonoDroidView.xft.xml"/>
+      <FileTemplate id= "FSharp.MonoDroidActivity" file ="Templates/Android/MonoDroidActivity.xft.xml"/>
+      <FileTemplate id= "FSharp.MonoDroidBroadcastReceiver" file ="Templates/Android/MonoDroidBroadcastReceiver.xft.xml"/>
+      <FileTemplate id= "FSharp.MonoDroidClass" file ="Templates/Android/MonoDroidClass.xft.xml"/>
+      <FileTemplate id= "FSharp.MonoDroidFragment" file ="Templates/Android/MonoDroidFragment.xft.xml"/>
+      <FileTemplate id= "FSharp.MonoDroidInterface" file ="Templates/Android/MonoDroidInterface.xft.xml"/>
+    </Extension>
+
+    <Extension path="/MonoDevelop/Ide/ProjectTemplates">
+      <ProjectTemplate id="FSharp.MonoDroidLibraryProject" file ="Templates/Android/MonoDroidLibraryProject.xpt.xml" />
+      <ProjectTemplate id="FSharp.MonoDroidApplicationProject" file ="Templates/Android/MonoDroidApplicationProject.xpt.xml"/>
+      <ProjectTemplate id="FSharp.MonoDroidApplicationLv12Project" file ="Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml"/>
+      <ProjectTemplate id="FSharp.MonoDroidApplicationLv15Project" file ="Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml"/>
+      <ProjectTemplate id="FSharp.MonoDroidOpenGLProject" file ="Templates/Android/MonoDroidOpenGLProject.xpt.xml"/>
+      <ProjectTemplate id="FSharp.MonoDroidUnitTestProject" file ="Templates/Android/MonoDroidUnitTestProject.xpt.xml"/>
+    </Extension>
+
+<!--     <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+      <DotNetProjectSubtype 
+        guid="{F278D4AB-4730-4720-B08E-FE5E31564D9E}"
+        type="MonoDevelop.MonoDroid.MonoDroidProject"
+        useXBuild="true">
+        <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.FSharp.targets" />
+        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
+          <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+          <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </DotNetProjectSubtype>
+    </Extension> -->
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.MonoDroid.MonoDroidProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
+  </Module>
+
+  <!-- ios-->
+  <Module>
+    <Dependencies>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MacPlatform" version="5.0"/>
+      <Addin id="IPhone" version="5.0"/>
+    </Dependencies>
+
+    <Extension path="/MonoDevelop/Ide/ProjectTemplates">
+      <ProjectTemplate id="FSharpIOSEmptyIPadProject" file="Templates/ios/Empty/ProjectIPad.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSEmptyIPhoneProject" file="Templates/ios/Empty/ProjectIPhone.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSEmptyUniversalProject" file="Templates/ios/Empty/ProjectUniversal.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSSingleViewIPadProject" file="Templates/ios/SingleView/ProjectIPad.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSSingleViewIPhoneProject" file="Templates/ios/SingleView/ProjectIPhone.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSSingleViewUniversalProject" file="Templates/ios/SingleView/ProjectUniversal.xpt.xml"/>
+      <ProjectTemplate id="FSharpIOSLibraryProject" file="Templates/ios/LibraryProject.xpt.xml"/>
+    </Extension>
+  </Module>
+
+  <!-- MonoMac-->
+  <Module>
+    <Dependencies>    
+      <Addin id="MacDev" version="5.0"/>
+      <Addin id="MacPlatform" version="5.0"/>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MonoMac" version="5.0"/>
+    </Dependencies>
+
+    <Extension path="/MonoDevelop/Ide/FileTemplates">
+      <FileTemplate id="FSharpMonoMacPlist" file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
+      <FileTemplate id="FSharpMonoMacApplicationManifest" file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
+      <FileTemplate id="FSharpMonoMacApplicationDocumentManifest" file ="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
+      <FileTemplate id="FSharpMonoMacWindowWithControllerXib" file ="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
+      <FileTemplate id="FSharpXamMacPlist" file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
+      <FileTemplate id="FSharpXamMacApplicationManifest" file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
+      <FileTemplate id="FSharpXamMacApplicationDocumentManifest" file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
+      <FileTemplate id="FSharpXamMacWindowWithControllerXib" file ="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
+    </Extension>
+
+    <Extension path="/MonoDevelop/Ide/ProjectTemplates">
+      <ProjectTemplate id="FSharpMonoMacProject" file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
+      <ProjectTemplate id="FSharpMonoMacProjectEmpty" file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
+      <ProjectTemplate id="FSharpXamMacProject" file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
+      <ProjectTemplate id="FSharpXamMacProjectEmpty" file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
+    </Extension>
+  </Module>
 
 </Addin>

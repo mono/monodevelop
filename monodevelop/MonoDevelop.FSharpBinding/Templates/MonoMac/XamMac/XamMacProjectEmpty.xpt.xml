@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson" created="2010/06/07">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Empty Xamarin.Mac Project</_Name>
+		<_Category>F#/Mac</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description>Creates an empty Xamarin.Mac project.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+			<OtherFlags>--noframework</OtherFlags>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "XamMac">
+			<Options />
+			<References>
+				<Reference type="Gac" refto="mscorlib" />
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Xml" />
+				<Reference type="Gac" refto="System.Core" />
+				<Reference type="Gac" refto="System.Xml.Linq" />
+				<Reference type="Gac" refto="System.Drawing" />
+				<Reference type="Gac" refto="FSharp.Core" />
+				<Reference type="Gac" refto="XamMac" SpecificVersion="false" />
+			</References>
+			<Files>
+				<Directory name="Resources" />
+				<FileTemplateReference TemplateID="FSharpXamMacApplicationManifest" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

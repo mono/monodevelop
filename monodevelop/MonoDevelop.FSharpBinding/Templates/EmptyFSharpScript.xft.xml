@@ -2,7 +2,7 @@
 <Template Originator="Community" Language="F#" Created="10/6/2010" LastModified="10/6/2010">
   <TemplateConfiguration>
     <_Name>F# Script File</_Name>
-    <Icon>md-text-file-icon|md-fs-script32</Icon>
+    <Icon>md-text-file-icon</Icon>
     <_Description>Creates an empty F# script file.</_Description>
 
     <!--This would create F#/General, which is a bit annoying if we have just two simple templates

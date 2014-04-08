@@ -8,7 +8,7 @@
     <TemplateConfiguration>
         <_Name>Assembly Information</_Name>
         <_Category>Misc</_Category>
-        <Icon>md-text-file-icon</Icon>
+        <Icon>md-file-source</Icon>
         <LanguageName>F#</LanguageName>
         <DefaultFilename IsFixed="True">AssemblyInfo.fs</DefaultFilename>
         <_Description>A file defining assembly information attributes.</_Description>
