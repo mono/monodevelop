@@ -99,6 +99,14 @@ namespace MonoDevelop.Debugger
 			return style;
 		}
 
+		protected void DrawImage (Cairo.Context cr, Image image, double x, double y, double size)
+		{
+			var deltaY = (size / 2) - (image.Height / 2);
+			var deltaX = (size / 2) - (image.Width / 2);
+
+			cr.DrawImage (Editor, image, x + deltaX, y + deltaY);
+		}
+
 		protected virtual void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
 		}
@@ -106,8 +114,8 @@ namespace MonoDevelop.Debugger
 
 	public class BreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-15");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-15");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-15.png");
 
 		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -129,14 +137,14 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class DisabledBreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-15");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-15");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-15.png");
 
 		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -153,14 +161,14 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class InvalidBreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-15");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-15");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-15.png");
 
 		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -177,13 +185,13 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class CurrentDebugLineTextMarker : DebugTextMarker
 	{
-		static readonly Image currentLine = Image.FromResource ("gutter-execution-15");
+		static readonly Image currentLine = Image.FromResource ("gutter-execution-15.png");
 
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
@@ -200,13 +208,13 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			cr.DrawImage (Editor, currentLine, x, y);
+			DrawImage (cr, currentLine, x, y, size);
 		}
 	}
 
 	public class DebugStackLineTextMarker : DebugTextMarker
 	{
-		static readonly Image stackLine = Image.FromResource ("gutter-execution-15");
+		static readonly Image stackLine = Image.FromResource ("gutter-execution-15.png");
 
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{
@@ -223,7 +231,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			cr.DrawImage (Editor, stackLine, x, y);
+			DrawImage (cr, stackLine, x, y, size);
 		}
 	}
 }
