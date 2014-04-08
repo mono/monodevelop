@@ -32,7 +32,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Gtk;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Dialogs.Controls;
 using MonoDevelop.Core;
@@ -41,6 +40,8 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 using Microsoft.WindowsAPICodePack.Shell;
+using System.Windows;
+using Gtk;
 
 namespace MonoDevelop.Platform
 {
@@ -68,8 +69,15 @@ namespace MonoDevelop.Platform
 
 				encodingCombo.SelectedIndexChanged += (sender, e) => {
 					if (encodingCombo.SelectedIndex == encodingCombo.Items.Count - 1) {
-						// TODO: Create dialog for stuff.
-
+						var dlg = new System.Windows.Window {
+							Title = "Choose encodings",
+							Content = new SelectEncodingControl(),
+							SizeToContent = SizeToContent.WidthAndHeight
+						};
+						if (dlg.ShowDialog ().Value) {
+							BuildEncodingsCombo (encodingCombo, data.Action != FileChooserAction.Save, data.Encoding);
+							dialog.ApplyControlPropertyChange ("Items", encodingCombo);
+						}
 					}
 				};
 			}
@@ -155,30 +163,27 @@ namespace MonoDevelop.Platform
 		}
 
 		static void BuildEncodingsCombo (CustomCommonFileDialogComboBox combo, bool showAutoDetected, Encoding selectedEncoding)
-		{	
+		{
 			combo.Items.Clear ();
-
-			var encodings = SelectedEncodings.ConversionEncodings;
-			if (encodings == null || encodings.Length == 0)
-				encodings = SelectedEncodings.DefaultEncodings;
 
 			if (showAutoDetected) {
 				combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Auto Detected")));
 				combo.SelectedIndex = 0;
 			}
 
+			var encodings = TextEncoding.ConversionEncodings;
 			for (int i = 0; i < encodings.Length; i++) {
-				var codePage = encodings[i];
-				var encoding = Encoding.GetEncoding (codePage);
-				var mdEnc = TextEncoding.SupportedEncodings.FirstOrDefault (t => t.CodePage == codePage);
+				var e = encodings [i];
+				var mdEnc = TextEncoding.SupportedEncodings.FirstOrDefault (t => t.CodePage == e.CodePage);
 				string name = mdEnc != null
 					? mdEnc.Name + " (" + mdEnc.Id + ")"
-					: encoding.EncodingName + " (" + encoding.WebName + ")"; 
-				var item = new EncodingComboItem (encoding, name);
+					: e.Name + " (" + e.Id + ")"; 
+				var item = new EncodingComboItem (Encoding.GetEncoding (e.CodePage), name);
 				combo.Items.Add (item);
-				if (encoding.Equals (selectedEncoding))
+				if (e.Equals (selectedEncoding))
 					combo.SelectedIndex = i + 1;
 			}
+			combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Add or Remove...")));
 		}
 
 		class EncodingComboItem : CommonFileDialogComboBoxItem

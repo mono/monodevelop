@@ -34,6 +34,8 @@ using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using MonoDevelop.Core;
 using CustomControls.OS;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace MonoDevelop.Platform
 {
@@ -92,6 +94,33 @@ namespace MonoDevelop.Platform
 			bool result;
 			try {
 				result = dialog.ShowDialog (ph) == CommonFileDialogResult.Ok;
+			} finally {
+				if (hdlg != IntPtr.Zero)
+					ClearGtkDialogHook (hdlg);
+			}
+			return result;
+		}
+
+		public static bool RunModalWPFDialog (Window dialog, Gtk.Window parent)
+		{
+			while (Gtk.Application.EventsPending ())
+				Gtk.Application.RunIteration ();
+
+			IntPtr ph = HgdiobjGet (parent.GdkWindow);
+
+			IntPtr hdlg = IntPtr.Zero;
+			dialog.Loaded += delegate {
+				try {
+					hdlg = new WindowInteropHelper (dialog).Handle;
+					SetGtkDialogHook (hdlg);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to hook win32 dialog messages", ex);
+				}
+			};
+
+			bool result;
+			try {
+				result = dialog.ShowDialog ().Value;
 			} finally {
 				if (hdlg != IntPtr.Zero)
 					ClearGtkDialogHook (hdlg);
@@ -255,7 +284,7 @@ namespace MonoDevelop.Platform
 		int Show ([In] IntPtr parent);
 	}
 	
-	public class GtkWin32Proxy : IWin32Window
+	public class GtkWin32Proxy : System.Windows.Forms.IWin32Window
 	{
 		public GtkWin32Proxy (Gtk.Window gtkWindow)
 		{

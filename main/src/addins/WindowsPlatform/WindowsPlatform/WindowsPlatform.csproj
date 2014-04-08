@@ -80,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />
+    <Compile Include="Dialogs\SelectEncodingControl.xaml.cs">
+      <DependentUpon>SelectEncodingControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\SelectFileDialogHandler.cs" />
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
@@ -104,8 +107,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <ItemGroup>
-    <Folder Include="CustomDialogs\" />
+    <Page Include="Dialogs\SelectEncodingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
