@@ -302,8 +302,8 @@
   <!--- F# Android -->
   <Module>
     <Dependencies>
-      <Addin id="Xamarin.Ide" version="4.0.3"/>
-      <Addin id="MonoAndroid" version="4.0.3"/>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MonoAndroid" version="5.0"/>
     </Dependencies>
 
     <Extension path="/MonoDevelop/Ide/FileTemplates">
@@ -349,9 +349,9 @@
   <!-- ios-->
   <Module>
     <Dependencies>
-      <Addin id="Xamarin.Ide" version="4.0.3"/>
-      <Addin id="MacPlatform" version="4.0.3"/>
-      <Addin id="IPhone" version="4.0.3"/>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MacPlatform" version="5.0"/>
+      <Addin id="IPhone" version="5.0"/>
     </Dependencies>
 
     <Extension path="/MonoDevelop/Ide/ProjectTemplates">
@@ -368,10 +368,10 @@
   <!-- MonoMac-->
   <Module>
     <Dependencies>    
-      <Addin id="MacDev" version="4.0.3"/>
-      <Addin id="MacPlatform" version="4.0.3"/>
-      <Addin id="Xamarin.Ide" version="4.0.3"/>
-      <Addin id="MonoMac" version="4.0.3"/>
+      <Addin id="MacDev" version="5.0"/>
+      <Addin id="MacPlatform" version="5.0"/>
+      <Addin id="Xamarin.Ide" version="5.0"/>
+      <Addin id="MonoMac" version="5.0"/>
     </Dependencies>
 
     <Extension path="/MonoDevelop/Ide/FileTemplates">
