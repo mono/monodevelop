@@ -12,6 +12,7 @@
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <Choose>
     <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
@@ -85,6 +86,15 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\..\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\..\..\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\..\..\roslyn\bootstrap\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core.Web\Utility.cs" />

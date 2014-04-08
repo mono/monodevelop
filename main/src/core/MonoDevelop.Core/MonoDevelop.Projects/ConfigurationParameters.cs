@@ -76,6 +76,9 @@ namespace MonoDevelop.Projects
 	public abstract class DotNetConfigurationParameters : ConfigurationParameters
 	{
 		public abstract bool NoStdLib { get; set; }
+
+		public abstract Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ();
+		public abstract Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ();
 	}
 
 }
