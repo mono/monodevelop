@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Fonts
 		
 		internal static void Initialize ()
 		{
-			if (fontProperties == null)
+			if (fontProperties != null)
 				throw new InvalidOperationException ("Already initialized");
 
 			fontProperties = PropertyService.Get ("FontProperties", new Properties ());
