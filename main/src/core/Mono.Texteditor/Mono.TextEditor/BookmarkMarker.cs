@@ -51,8 +51,10 @@ namespace Mono.TextEditor
 
 		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			DrawIcon (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
+			DrawBookmarkFunc (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
 		}
+
+		public static Action<TextEditor, Cairo.Context, DocumentLine, double, double, double, double> DrawBookmarkFunc = DrawIcon;
 
 		static void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height)
 		{
