@@ -485,6 +485,13 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual (type, val.TypeName);
 
 			val = Eval (variable);
+			if (!allowTargetInvokes && val.IsNotSupported) {
+				var options = ds.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+			}
+
 			Assert.AreEqual (value, val.Value);
 			Assert.AreEqual (type, val.TypeName);
 		}
