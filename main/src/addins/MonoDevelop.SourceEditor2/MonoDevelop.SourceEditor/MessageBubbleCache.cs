@@ -54,8 +54,8 @@ namespace MonoDevelop.SourceEditor
 		public MessageBubbleCache (TextEditor editor)
 		{
 			this.editor = editor;
-			errorPixbuf = ImageService.GetIcon ("md-bubble-error", Gtk.IconSize.Menu);
-			warningPixbuf = ImageService.GetIcon ("md-bubble-warning", Gtk.IconSize.Menu);
+			errorPixbuf = ImageService.GetIcon ("md-gutter-error", Gtk.IconSize.Menu);
+			warningPixbuf = ImageService.GetIcon ("md-gutter-warning", Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
 			editor.TextArea.LeaveNotifyEvent += HandleLeaveNotifyEvent;
