@@ -33,6 +33,8 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
 using System.Linq;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -42,7 +44,8 @@ namespace MonoDevelop.CSharp.Project
 		ISO_2   = 2,
 		Version3 = 3,
 		Version4 = 4,
-		Version5 = 5
+		Version5 = 5,
+		Version6 = 6
 	}
 	
 	/// <summary>
@@ -145,6 +148,57 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 	
+
+		public override Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ()
+		{
+			CSharpProjectParameters cparams;
+			if (ParentConfiguration != null && ParentConfiguration.ProjectParameters != null) {
+				cparams = (CSharpProjectParameters)ParentConfiguration.ProjectParameters;
+			} else {
+				cparams = new CSharpProjectParameters ();
+			}
+
+			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
+				OutputKind.ConsoleApplication,
+				null,
+				cparams.MainClass,
+				"Script",
+				null,
+				Optimize,
+				GenerateOverflowChecks,
+				UnsafeCode,
+				null,
+				null,
+				null,
+				0,
+				0,
+				Microsoft.CodeAnalysis.Platform.AnyCpu,
+				ReportDiagnostic.Default,
+				WarningLevel,
+				null,
+				false,
+				DebugInformationKind.None,
+				SubsystemVersion.None,
+				null,
+				true,
+				null,
+				null,
+				null,
+				null
+			);
+		}
+
+		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ()
+		{
+			return new Microsoft.CodeAnalysis.CSharp.CSharpParseOptions (
+				GetRoslynLanguageVersion (langVersion),
+				Microsoft.CodeAnalysis.DocumentationMode.Parse,
+				Microsoft.CodeAnalysis.SourceCodeKind.Regular,
+				ImmutableArray<string>.Empty.AddRange (GetDefineSymbols ())
+			);
+
+		}
+
 
 		public LangVersion LangVersion {
 			get {
@@ -319,7 +373,21 @@ namespace MonoDevelop.CSharp.Project
 			case "3": return LangVersion.Version3;
 			case "4": return LangVersion.Version4;
 			case "5": return LangVersion.Version5;
+			case "6": return LangVersion.Version6;
 			default: return null;
+			}
+		}
+
+		Microsoft.CodeAnalysis.CSharp.LanguageVersion GetRoslynLanguageVersion (string value)
+		{
+			switch (value) {
+			case "ISO-1": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
+			case "ISO-2": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
+			case "3": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
+			case "4": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
+			case "5": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
+			case "6": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
+			default: return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 			}
 		}
 
@@ -332,6 +400,7 @@ namespace MonoDevelop.CSharp.Project
 			case LangVersion.Version3: return "3";
 			case LangVersion.Version4: return "4";
 			case LangVersion.Version5: return "5";
+			case LangVersion.Version6: return "6";
 			default: return null;
 			}
 		}
