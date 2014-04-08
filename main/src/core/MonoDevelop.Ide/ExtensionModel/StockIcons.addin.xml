@@ -261,11 +261,6 @@
 	<StockIcon stockid = "md-errors-list-has-warnings" resource = "pad-error-list-warnings-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-gutter-error" resource = "gutter-error-light-15.png" size="Menu" />
 	<StockIcon stockid = "md-gutter-warning" resource = "gutter-warning-light-15.png" size="Menu" />
-	<StockIcon stockid = "md-gutter-breakpoint" resource = "gutter-breakpoint-light-15.png" size="Menu" />
-	<StockIcon stockid = "md-gutter-tracepoint" resource = "gutter-tracepoint-light-15.png" size="Menu" />
-	<StockIcon stockid = "md-gutter-breakpoint-disabled" resource = "gutter-breakpoint-disabled-light-15.png" size="Menu" />
-	<StockIcon stockid = "md-gutter-tracepoint-disabled" resource = "gutter-tracepoint-disabled-light-15.png" size="Menu" />
-	<StockIcon stockid = "md-gutter-execution" resource = "gutter-execution-light-15.png" size="Menu" />
 	<StockIcon stockid = "md-file-source" resource = "file-source-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-file-source" resource = "file-source-light-32.png" size="Dnd" />
 	<StockIcon stockid = "md-file-header" resource = "file-header-light-16.png" size="Menu" />

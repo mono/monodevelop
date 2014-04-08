@@ -32,6 +32,10 @@ using System.Linq;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 
+using MonoDevelop.Components;
+
+using Xwt.Drawing;
+
 namespace MonoDevelop.Debugger
 {
 	public abstract class DebugTextMarker : MarginMarker
@@ -98,70 +102,13 @@ namespace MonoDevelop.Debugger
 		protected virtual void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
 		}
-
-		protected static void DrawCircle (Cairo.Context cr, double x, double y, double size)
-		{
-			x += 0.5; y += 0.5;
-			cr.NewPath ();
-			cr.Arc (x + size/2, y + size / 2, (size-4)/2, 0, 2 * Math.PI);
-			cr.ClosePath ();
-		}
-
-		protected static void DrawDiamond (Cairo.Context cr, double x, double y, double size)
-		{
-			x += 0.5; y += 0.5;
-			size -= 2;
-			cr.NewPath ();
-			cr.MoveTo (x + size/2, y);
-			cr.LineTo (x + size, y + size/2);
-			cr.LineTo (x + size/2, y + size);
-			cr.LineTo (x, y + size/2);
-			cr.LineTo (x + size/2, y);
-			cr.ClosePath ();
-		}
-
-		protected static void DrawArrow (Cairo.Context cr, double x, double y, double size)
-		{
-			y += 2.5;
-			x += 2.5;
-			size -= 4;
-			double awidth = 0.5;
-			double aheight = 0.4;
-			double pich = (size - (size * aheight)) / 2;
-			cr.NewPath ();
-			cr.MoveTo (x + size * awidth, y);
-			cr.LineTo (x + size, y + size / 2);
-			cr.LineTo (x + size * awidth, y + size);
-			cr.RelLineTo (0, -pich);
-			cr.RelLineTo (-size * awidth, 0);
-			cr.RelLineTo (0, -size * aheight);
-			cr.RelLineTo (size * awidth, 0);
-			cr.RelLineTo (0, -pich);
-			cr.ClosePath ();
-		}
-
-		protected static void FillGradient (Cairo.Context cr, Cairo.Color color1, Cairo.Color color2, double x, double y, double size)
-		{
-			using (var pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4)) {
-				pat.AddColorStop (0, color1);
-				pat.AddColorStop (1, color2);
-				cr.SetSource (pat);
-				cr.FillPreserve ();
-			}
-		}
-
-		protected static void DrawBorder (Cairo.Context cr, Cairo.Color color, double x, double y, double size)
-		{
-			using (var pat = new Cairo.LinearGradient (x, y + size, x + size, y)) {
-				pat.AddColorStop (0, color);
-				cr.SetSource (pat);
-				cr.Stroke ();
-			}
-		}
 	}
 
 	public class BreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-15");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-15");
+
 		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -182,19 +129,15 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.BreakpointMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.BreakpointMarker.SecondColor;
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, color2, x, y, size);
+			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
 		}
 	}
 
 	public class DisabledBreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-15");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-15");
+
 		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -210,18 +153,15 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = Editor.ColorStyle.BreakpointText.Background;
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-			//FillGradient (cr, new Cairo.Color (1,1,1), new Cairo.Color (1,0.8,0.8), x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
 		}
 	}
 
 	public class InvalidBreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-15");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-15");
+
 		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -237,22 +177,14 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.InvalidBreakpointMarker.Color;
-			Cairo.Color color2 = color1;
-			Cairo.Color border = Editor.ColorStyle.InvalidBreakpointMarker.SecondColor;
-
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			cr.DrawImage (Editor, IsTracepoint ? tracepoint : breakpoint, x, y);
 		}
 	}
 
 	public class CurrentDebugLineTextMarker : DebugTextMarker
 	{
+		static readonly Image currentLine = Image.FromResource ("gutter-execution-15");
+
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
 		}
@@ -268,18 +200,14 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.DebuggerCurrentLineMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.DebuggerCurrentLineMarker.SecondColor;
-			Cairo.Color border = Editor.ColorStyle.DebuggerCurrentLineMarker.BorderColor;
-
-			DrawArrow (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			cr.DrawImage (Editor, currentLine, x, y);
 		}
 	}
 
 	public class DebugStackLineTextMarker : DebugTextMarker
 	{
+		static readonly Image stackLine = Image.FromResource ("gutter-execution-15");
+
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{
 		}
@@ -295,13 +223,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.DebuggerStackLineMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.DebuggerStackLineMarker.SecondColor;
-			Cairo.Color border = Editor.ColorStyle.DebuggerStackLineMarker.BorderColor;
-
-			DrawArrow (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			cr.DrawImage (Editor, stackLine, x, y);
 		}
 	}
 }
