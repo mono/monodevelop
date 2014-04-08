@@ -1491,6 +1491,36 @@
     <EmbeddedResource Include="icons\light\gutter-warning-15%402x.png">
       <LogicalName>gutter-warning-light-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-15.png">
+      <LogicalName>gutter-breakpoint-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-15%402x.png">
+      <LogicalName>gutter-breakpoint-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-disabled-15.png">
+      <LogicalName>gutter-breakpoint-disabled-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-disabled-15%402x.png">
+      <LogicalName>gutter-breakpoint-disabled-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-15.png">
+      <LogicalName>gutter-tracepoint-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-15%402x.png">
+      <LogicalName>gutter-tracepoint-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-disabled-15.png">
+      <LogicalName>gutter-tracepoint-disabled-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-disabled-15%402x.png">
+      <LogicalName>gutter-tracepoint-disabled-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-execution-15.png">
+      <LogicalName>gutter-execution-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-execution-15%402x.png">
+      <LogicalName>gutter-execution-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9.png">
       <LogicalName>warning-overlay-light-9.png</LogicalName>
     </EmbeddedResource>
