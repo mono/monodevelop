@@ -26,41 +26,32 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.MacIntegration;
+using MonoDevelop.Ide;
 
 namespace MacPlatform.Tests
 {
-	class MacPlatformServiceTest : global::MonoDevelop.MacIntegration.MacPlatformService
-	{
-		public string GetMimeType (string url)
-		{
-			return base.OnGetMimeTypeForUri (url);
-		}
-	}
-	
 	[TestFixture]
 	public class MacPlatformTest
 	{
-		MacPlatformServiceTest platform = new MacPlatformServiceTest ();
-
 		[Test]
 		public void GetMimeType_text ()
 		{
 			// Verify no exception is thrown
-			platform.GetMimeType ("test.txt");
+			DesktopService.GetMimeTypeForUri ("test.txt");
 		}
 
 		[Test]
 		public void GetMimeType_NoExtension ()
 		{
 			// Verify no exception is thrown
-			platform.GetMimeType ("test");
+			DesktopService.GetMimeTypeForUri ("test");
 		}
 
 		[Test]
 		public void GetMimeType_Null ()
 		{
 			// Verify no exception is thrown
-			platform.GetMimeType (null);
+			DesktopService.GetMimeTypeForUri (null);
 		}
 	}
 }
