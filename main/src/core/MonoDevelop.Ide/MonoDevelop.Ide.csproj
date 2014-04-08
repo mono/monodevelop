@@ -2397,6 +2397,8 @@
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\RoslynTypeSystemService.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTextLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceTextContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

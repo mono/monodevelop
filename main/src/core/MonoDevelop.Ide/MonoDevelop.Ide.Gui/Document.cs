@@ -52,6 +52,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -229,7 +230,19 @@ namespace MonoDevelop.Ide.Gui
 				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
 		}
-		
+
+		public bool TryGetCompilation (out Microsoft.CodeAnalysis.Compilation compilation)
+		{
+			var project = RoslynTypeSystemService.GetProject (Project); 
+			return project.TryGetCompilation (out compilation);
+		}
+
+		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var project = RoslynTypeSystemService.GetProject (Project, cancellationToken); 
+			return project.GetCompilationAsync (cancellationToken);
+		}
+
 		public virtual ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
@@ -846,10 +859,6 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			if (analysisDocument == null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
-//				Console.WriteLine ("Get document :" + analysisDocument);
-//				Console.WriteLine (analysisDocument.GetTextAsync ().Result.ToString () );
-//				Console.WriteLine ("-----");
-//				Console.WriteLine (analysisDocument.GetSyntaxTreeAsync ().Result.GetText ());
 				if (analysisDocument != null)
 					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument.Id);
 			}
