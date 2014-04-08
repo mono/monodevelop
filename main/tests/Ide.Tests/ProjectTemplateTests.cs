@@ -78,8 +78,11 @@ namespace MonoDevelop.Ide
 						SolutionPath = TempDir
 					};
 					template.CreateWorkspaceItem (cinfo);
-				} catch {
+				} catch (Exception ex) {
 					builder.AppendFormat ("Could not create a project from the template '{0} / {1}'", template.Category, template.Name);
+					builder.AppendLine ();
+					builder.AppendLine ();
+					builder.AppendLine (ex.ToString ());
 					builder.AppendLine ();
 				}
 			}
