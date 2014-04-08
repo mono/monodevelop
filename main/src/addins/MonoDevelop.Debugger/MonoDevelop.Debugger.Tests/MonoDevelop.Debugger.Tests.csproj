@@ -38,10 +38,8 @@
   <ItemGroup>
     <Compile Include="DebugTests.cs" />
     <Compile Include="SdbEvaluationTests.cs" />
-    <Compile Include="MdbEvaluationTests.cs" />
     <Compile Include="EvaluationTests.cs" />
     <Compile Include="StackFrameTests.cs" />
-    <Compile Include="MdbStackFrameTests.cs" />
     <Compile Include="SdbStackFrameTests.cs" />
     <Compile Include="CorEvaluationTests.cs" />
     <Compile Include="CorStackFrameTests.cs" />

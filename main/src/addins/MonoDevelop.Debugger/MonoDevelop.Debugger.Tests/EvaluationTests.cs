@@ -32,18 +32,22 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class EvaluationTests: DebugTests
 	{
+		readonly bool allowTargetInvokes;
 		DebuggerSession ds;
 		StackFrame frame;
 		
-		protected EvaluationTests (string de): base (de)
+		protected EvaluationTests (string de, bool allowTargetInvokes): base (de)
 		{
+			this.allowTargetInvokes = allowTargetInvokes;
 		}
 
 		[TestFixtureSetUp]
 		public override void SetUp ()
 		{
 			base.SetUp ();
-			ds = Start ("TestEvaluation");
+
+			ds = Start ("TestEvaluation", allowTargetInvokes);
+
 			if (ds == null)
 				Assert.Ignore ("Engine not found: {0}", EngineId);
 
@@ -54,12 +58,12 @@ namespace MonoDevelop.Debugger.Tests
 		public override void TearDown ()
 		{
 			base.TearDown ();
+
 			if (ds != null) {
 				ds.Exit ();
 				ds.Dispose ();
 			}
 		}
-
 
 		ObjectValue Eval (string exp)
 		{
