@@ -472,37 +472,102 @@ namespace MonoDevelop.Debugger.Tests
 		public virtual void Assignment ()
 		{
 			ObjectValue val;
-			Eval ("n = 6");
-			val = Eval ("n");
-			Assert.AreEqual ("6", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-			Eval ("n = 32");
-			val = Eval ("n");
-			Assert.AreEqual ("32", val.Value);
-			
-			Eval ("someString = \"test\"");
-			val = Eval ("someString");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("someString = \"hi\"");
-			val = Eval ("someString");
-			Assert.AreEqual ("\"hi\"", val.Value);
-			
-			Eval ("numbers[0] = \"test\"");
-			val = Eval ("numbers[0]");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("numbers[0] = \"one\"");
-			val = Eval ("numbers[0]");
-			Assert.AreEqual ("\"one\"", val.Value);
 
-			Eval ("alist[0] = 6");
-			val = Eval ("alist[0]");
-			Assert.AreEqual ("6", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-			Eval ("alist[0] = 1");
-			val = Eval ("alist[0]");
-			Assert.AreEqual ("1", val.Value);
+			val = Eval ("n = 6");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("6", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+
+				val = Eval ("n");
+				Assert.AreEqual ("6", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("n = 32");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("32", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+
+				val = Eval ("n");
+				Assert.AreEqual ("32", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+			
+			val = Eval ("someString = \"test\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("someString");
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("someString = \"hi\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"hi\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("someString");
+				Assert.AreEqual ("\"hi\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("numbers[0] = \"test\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("numbers[0]");
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("numbers[0] = \"one\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"one\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("numbers[0]");
+				Assert.AreEqual ("\"one\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("alist[0] = 6");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("6", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+
+				val = Eval ("alist[0]");
+				Assert.AreEqual ("6", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("alist[0] = 1");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("1", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+
+				val = Eval ("alist[0]");
+				Assert.AreEqual ("1", val.Value);
+				Assert.AreEqual ("int", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
 		}
 		
 		[Test]
@@ -510,13 +575,29 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 			
-			Eval ("staticString = \"test\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("staticString = \"some static\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"some static\"", val.Value);
+			val = Eval ("staticString = \"test\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("staticString");
+				Assert.AreEqual ("\"test\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
+
+			val = Eval ("staticString = \"some static\"");
+			if (allowTargetInvokes) {
+				Assert.AreEqual ("\"some static\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+
+				val = Eval ("staticString");
+				Assert.AreEqual ("\"some static\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			} else {
+				Assert.IsTrue (val.IsNotSupported);
+			}
 		}
 		
 		[Test]
