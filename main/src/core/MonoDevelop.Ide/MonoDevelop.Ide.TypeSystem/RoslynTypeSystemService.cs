@@ -36,7 +36,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	class MonoDevelopWorkspace : CustomWorkspace
+	class MonoDevelopWorkspace : Workspace
 	{
 		readonly MetadataReferenceProvider referenceProvider = new MetadataReferenceProvider ();
 
@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				solution.FileName,
 				solution.GetAllProjects ().AsParallel ().Select (p => LoadProject (p))
 			);
-			AddSolution (solutionInfo); 
+			OnSolutionAdded (solutionInfo); 
 			return CurrentSolution;
 		}
 
@@ -176,11 +176,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				.Where (f => f.BuildAction == MonoDevelop.Projects.BuildAction.Compile)
 				.Select (f => DocumentInfo.Create (
 				id.GetDocumentId (f.Name),
-				f.FilePath.FileNameWithoutExtension,
+					f.FilePath,
 				null,
 				SourceCodeKind.Regular,
 				new MonoDevelopTextLoader (f.Name),
-				f.FilePath,
+				f.Name,
 				false
 			));
 		}
@@ -240,7 +240,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
-			OnDocumentOpened (documentId, new MonoDevelopSourceTextContainer (CurrentSolution.GetDocument (documentId)) ); 
+			var document = CurrentSolution.GetDocument (documentId);
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (document);
+			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}
 
 		public override void CloseDocument (DocumentId documentId)

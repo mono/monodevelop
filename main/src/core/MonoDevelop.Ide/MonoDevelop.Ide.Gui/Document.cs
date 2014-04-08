@@ -231,6 +231,18 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public bool TryGetSyntaxTree (out Microsoft.CodeAnalysis.SyntaxTree syntaxTree)
+		{
+			var doc = RoslynTypeSystemService.GetDocument (Project, FileName); 
+			return doc.TryGetSyntaxTree (out syntaxTree);
+		}
+
+		public Task<Microsoft.CodeAnalysis.SyntaxTree> GetSyntaxTreeAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var doc = RoslynTypeSystemService.GetDocument (Project, FileName); 
+			return doc.GetSyntaxTreeAsync (cancellationToken);
+		}
+
 		public bool TryGetCompilation (out Microsoft.CodeAnalysis.Compilation compilation)
 		{
 			var project = RoslynTypeSystemService.GetProject (Project); 
