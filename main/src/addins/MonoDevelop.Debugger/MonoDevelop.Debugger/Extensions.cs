@@ -38,7 +38,7 @@ namespace MonoDevelop.Debugger
 	{
 		public static bool CanDebug (this ProjectOperations opers, IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.CanExecute (entry, context);
 		}
 
@@ -56,13 +56,13 @@ namespace MonoDevelop.Debugger
 
 		public static bool CanDebugFile (this ProjectOperations opers, string file)
 		{
-			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.CanExecuteFile (file, context);
 		}
 
 		public static IAsyncOperation DebugFile (this ProjectOperations opers, string file)
 		{
-			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.ExecuteFile (file, context);
 		}
 

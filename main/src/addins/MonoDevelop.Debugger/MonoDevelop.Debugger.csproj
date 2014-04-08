@@ -141,7 +141,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\TextVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
-    <Compile Include="MonoDevelop.Debugger.Visualizer\IValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathComparer.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathReference.cs" />

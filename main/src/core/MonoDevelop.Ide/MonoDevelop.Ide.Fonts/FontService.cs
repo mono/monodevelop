@@ -39,56 +39,25 @@ namespace MonoDevelop.Ide.Fonts
 		static Dictionary<string, FontDescription> loadedFonts = new Dictionary<string, FontDescription> ();
 		static Properties fontProperties;
 
-		static string defaultMonospaceFontName, defaultMonospaceSmallFontName, defaultSansFontName, defaultSansSmallFontName;
-		static FontDescription defaultMonospaceFont, defaultMonospaceSmallFont, defaultSansFont, defaultSansSmallFont;
+		static string defaultMonospaceFontName, defaultSansFontName;
+		static FontDescription defaultMonospaceFont, defaultSansFont;
 
 		static void LoadDefaults ()
 		{
 			if (defaultMonospaceFont != null) {
 				defaultMonospaceFont.Dispose ();
-				defaultMonospaceSmallFont.Dispose ();
 				defaultSansFont.Dispose ();
-				defaultSansSmallFont.Dispose ();
 			}
 
-			defaultMonospaceFontName = DesktopService.DefaultFontMonospace;
+			#pragma warning disable 618
+			defaultMonospaceFontName = DesktopService.DefaultMonospaceFont;
 			defaultMonospaceFont = FontDescription.FromString (defaultMonospaceFontName);
+			#pragma warning restore 618
 
-			defaultMonospaceSmallFontName = DesktopService.DefaultFontMonospaceSmall;
-			if (defaultMonospaceSmallFontName != null) {
-				defaultMonospaceSmallFont = FontDescription.FromString (defaultMonospaceSmallFontName);
-			} else {
-				defaultMonospaceSmallFont = FontDescScaledCopy (defaultMonospaceFont, 0.7d);
-				defaultMonospaceSmallFontName = defaultMonospaceSmallFont.ToString ();
-			}
-
-			defaultSansFontName = DesktopService.DefaultFontSans;
-			if (defaultSansFontName != null) {
-				defaultSansFont = FontDescription.FromString (defaultSansFontName);
-			} else {
-				var label = new Gtk.Label ("");
-				defaultSansFont = label.Style.FontDescription.Copy ();
-				label.Destroy ();
-				defaultSansFontName = defaultSansFont.ToString ();
-			}
-
-			defaultSansSmallFontName = DesktopService.DefaultFontSansSmall;
-			if (defaultSansSmallFontName != null) {
-				defaultSansSmallFont = FontDescription.FromString (defaultSansSmallFontName);
-			} else {
-				defaultSansSmallFont = FontDescScaledCopy (defaultSansFont, 0.7d);
-				defaultSansSmallFontName = defaultSansSmallFont.ToString ();
-			}
-		}
-
-		static FontDescription FontDescScaledCopy (FontDescription font, double factor)
-		{
-			font = font.Copy ();
-			var size = font.Size;
-			if (size == 0)
-				size = 12;
-			font.Size = (int) (Scale.PangoScale * (int) (factor * size / Scale.PangoScale));
-			return font;
+			var label = new Gtk.Label ("");
+			defaultSansFont = label.Style.FontDescription.Copy ();
+			label.Destroy ();
+			defaultSansFontName = defaultSansFont.ToString ();
 		}
 		
 		internal static IEnumerable<FontDescriptionCodon> FontDescriptions {
@@ -119,9 +88,7 @@ namespace MonoDevelop.Ide.Fonts
 		}
 
 		public static FontDescription MonospaceFont { get { return defaultMonospaceFont; } }
-		public static FontDescription MonospaceSmallFont { get { return defaultMonospaceSmallFont; } }
 		public static FontDescription SansFont { get { return defaultSansFont; } }
-		public static FontDescription SansSmallFont { get { return defaultSansSmallFont; } }
 
 		[Obsolete ("Use MonospaceFont")]
 		public static FontDescription DefaultMonospaceFontDescription {
@@ -135,7 +102,7 @@ namespace MonoDevelop.Ide.Fonts
 		static FontDescription LoadFont (string name)
 		{
 			var fontName = FilterFontName (name);
-			return Pango.FontDescription.FromString (fontName);
+			return FontDescription.FromString (fontName);
 		}
 		
 		public static string FilterFontName (string name)
@@ -143,16 +110,11 @@ namespace MonoDevelop.Ide.Fonts
 			switch (name) {
 			case "_DEFAULT_MONOSPACE":
 				return defaultMonospaceFontName;
-			case "_DEFAULT_MONOSPACE_SMALL":
-				return defaultMonospaceSmallFontName;
 			case "_DEFAULT_SANS":
 				return defaultSansFontName;
-			case "_DEFAULT_SANS_SMALL":
-				return defaultSansSmallFontName;
 			default:
 				return name;
 			}
-			return name;
 		}
 		
 		public static string GetUnderlyingFontName (string name)
@@ -226,6 +188,34 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
+		}
+	}
+
+	public static class FontExtensions
+	{
+		public static FontDescription CopyModified (this FontDescription font, double? scale = null, Pango.Weight? weight = null)
+		{
+			font = font.Copy ();
+
+			if (scale.HasValue)
+				Scale (font, scale.Value);
+
+			if (weight.HasValue)
+				font.Weight = weight.Value;
+
+			return font;
+		}
+
+		static void Scale (FontDescription font, double scale)
+		{
+			if (font.SizeIsAbsolute) {
+				font.AbsoluteSize = scale * font.Size;
+			} else {
+				var size = font.Size;
+				if (size == 0)
+					size = 10;
+				font.Size = (int)(Pango.Scale.PangoScale * (int)(scale * size / Pango.Scale.PangoScale));
+			}
 		}
 	}
 }

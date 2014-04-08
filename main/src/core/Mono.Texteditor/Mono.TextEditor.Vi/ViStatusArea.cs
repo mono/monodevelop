@@ -75,7 +75,8 @@ namespace Mono.TextEditor.Vi
 			if (!Visible)
 				Show ();
 			allocation.Height -= (int)textArea.LineHeight;
-			if (lastAllocation == allocation)
+			if (lastAllocation.Width == allocation.Width &&
+				lastAllocation.Height == allocation.Height || allocation.Height <= 1)
 				return;
 			lastAllocation = allocation;
 

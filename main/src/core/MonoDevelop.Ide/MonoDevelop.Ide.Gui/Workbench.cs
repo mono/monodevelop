@@ -581,12 +581,6 @@ namespace MonoDevelop.Ide.Gui
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
 
-		[Obsolete("Will be replaced by 'ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)'")]
-		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
-		{
-			ShowGlobalPreferencesDialog (parentWindow, panelId, null);
-		}
-
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
 			if (parentWindow == null)
@@ -1193,12 +1187,6 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
-
-
-		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project)")]
-		public FileOpenInformation ()
-		{
-		}
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options) 

@@ -99,7 +99,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return new PackageReferenceNode (
 				new PackageReference (installAction.Package.Id, installAction.Package.Version, null, null, false),
-				false);
+				false,
+				true);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)

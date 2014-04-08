@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl.Views
 					double center_x = cell_area.X + Math.Round ((double) (cell_area.Width / 2d));
 					double center_y = cell_area.Y + Math.Round ((double) (cell_area.Height / 2d));
 					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
-					cr.Color = new Cairo.Color (0, 0, 0);
+					cr.SetSourceRGBA (0, 0, 0, 1);
 					cr.Stroke ();
 					if (!FirstNode) {
 						cr.MoveTo (center_x, cell_area.Y - 2);

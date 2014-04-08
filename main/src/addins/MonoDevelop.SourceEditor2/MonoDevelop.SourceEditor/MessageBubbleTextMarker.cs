@@ -513,7 +513,7 @@ namespace MonoDevelop.SourceEditor
 		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var tx = Math.Round (metrics.X + (metrics.Width - cache.errorPixbuf.Width) / 2) - 1;
-			var ty = Math.Round (metrics.Y + (metrics.Height - cache.errorPixbuf.Height) / 2);
+			var ty = Math.Floor (metrics.Y + (metrics.Height - cache.errorPixbuf.Height) / 2);
 
 			cr.Save ();
 			cr.Translate (tx, ty);

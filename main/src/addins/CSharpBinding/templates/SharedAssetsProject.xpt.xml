@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Shared Assets Project</_Name>
 		<_Category>C#</_Category>
-		<Icon>md-project-library</Icon>
+		<Icon>md-project-shared-assets</Icon>
 		<_Description>Creates an empty shared assets project</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
 		<LanguageName>C#</LanguageName>

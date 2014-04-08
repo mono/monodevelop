@@ -192,13 +192,6 @@ namespace MonoDevelop.Debugger
 					if (vv.CanVisualize (val))
 						yield return vv;
 				}
-#pragma warning disable 618
-				if (v is IValueVisualizer) {
-					var vv = (IValueVisualizer)v;
-					if (vv.CanVisualize (val))
-						yield return new ValueVisualizerWrapper (vv);
-				}
-#pragma warning restore 618
 			}
 		}
 		
@@ -272,7 +265,7 @@ namespace MonoDevelop.Debugger
 		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
 		{
 			var fc = new FeatureCheckerHandlerFactory ();
-			var ctx = new ExecutionContext (fc, null);
+			var ctx = new ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
 
 			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
 
@@ -378,6 +371,7 @@ namespace MonoDevelop.Debugger
 				busyStatusIcon = null;
 				session = null;
 				console = null;
+				pinnedWatches.InvalidateAll ();
 			}
 
 			if (oldLayout != null) {

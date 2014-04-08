@@ -311,7 +311,8 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (buttonRevert);
 
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
-			toolbar.Add (showRemoteStatus);
+			if (vc.SupportsRemoteStatus)
+				toolbar.Add (showRemoteStatus);
 
 			var btnCreatePatch = new Gtk.Button () {
 				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("diff-light-16.png")).ToGtkWidget (),
@@ -750,8 +751,7 @@ namespace MonoDevelop.VersionControl.Views
 				TreeIter iter;
 				filestore.IterChildren (out iter, args.Iter);
 				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
-				bool remoteDiff = (bool) filestore.GetValue (args.Iter, ColStatusRemoteDiff);
-				FillDiffInfo (iter, fileName, GetDiffData (remoteDiff));
+				FillDiffInfo (iter, fileName, GetDiffData (remoteStatus));
 			}
 		}
 
@@ -1028,7 +1028,7 @@ namespace MonoDevelop.VersionControl.Views
 					// the value. Do not capture the TreeIter as it may invalidate
 					// before the diff data has asyncronously loaded.
 					GC.KeepAlive (info.Diff.Value);
-					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (GetDiffData (this.remoteStatus)); });
+					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (); });
 				});
 			} else if (info.Exception != null) {
 				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") + info.Exception.Message };
@@ -1043,7 +1043,7 @@ namespace MonoDevelop.VersionControl.Views
 			filestore.SetValue (iter, ColPath, text);
 		}
 
-		void FillDifs (List<DiffData> ddata)
+		void FillDifs ()
 		{
 			if (disposed)
 				return;
@@ -1057,10 +1057,9 @@ namespace MonoDevelop.VersionControl.Views
 				bool filled = (bool) filestore.GetValue (it, ColFilled);
 				if (filled) {
 					string fileName = (string) filestore.GetValue (it, ColFullPath);
-					bool remoteDiff = (bool) filestore.GetValue (it, ColStatusRemoteDiff);
 					TreeIter citer;
 					filestore.IterChildren (out citer, it);
-					FillDiffInfo (citer, fileName, GetDiffData (remoteDiff));
+					FillDiffInfo (citer, fileName, GetDiffData (remoteStatus));
 				}
 			}
 			while (filestore.IterNext (ref it));

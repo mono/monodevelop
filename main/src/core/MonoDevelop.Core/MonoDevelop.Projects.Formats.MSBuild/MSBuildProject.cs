@@ -496,16 +496,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal bool Overwritten { get; set; }
 
-		[Obsolete]
-		public string Value {
-			get {
-				return EvaluatedElement.InnerText; 
-			}
-			set {
-				Element.InnerText = value;
-			}
-		}
-
 		public string GetValue (bool isXml = false)
 		{
 			if (isXml)

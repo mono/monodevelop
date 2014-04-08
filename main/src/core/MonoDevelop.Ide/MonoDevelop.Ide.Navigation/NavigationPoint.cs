@@ -35,14 +35,8 @@ namespace MonoDevelop.Ide.Navigation
 		public abstract string DisplayName { get; }
 		//public abstract string Tooltip { get; }
 
-		[Obsolete ("Will be removed. Please use ShowDocument.")]
-		public abstract void Show ();
-
 		public virtual Document ShowDocument ()
 		{
-#pragma warning disable 618
-			Show ();
-#pragma warning restore 618
 			return null;
 		}
 		

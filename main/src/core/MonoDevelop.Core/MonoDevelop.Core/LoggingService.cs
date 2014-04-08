@@ -126,11 +126,6 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 
-		[Obsolete ("Use CreateLogFile")]
-		public static DateTime LogTimestamp {
-			get { return timestamp; }
-		}
-
 		/// <summary>
 		/// Creates a session log file with the given identifier.
 		/// </summary>

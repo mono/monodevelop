@@ -91,24 +91,8 @@ namespace MonoDevelop.Ide
 		}
 
 		[Obsolete ("Use FontService")]
-		internal static string DefaultMonospaceFont {
+		public static string DefaultMonospaceFont {
 			get { return PlatformService.DefaultMonospaceFont; }
-		}
-		
-		internal static string DefaultFontMonospace {
-			get { return PlatformService.DefaultMonospaceFont; }
-		}
-
-		internal static string DefaultFontMonospaceSmall {
-			get { return PlatformService.DefaultFontMonospaceSmall; }
-		}
-
-		internal static string DefaultFontSans {
-			get { return PlatformService.DefaultFontSans; }
-		}
-
-		internal static string DefaultFontSansSmall {
-			get { return PlatformService.DefaultFontSansSmall; }
 		}
 		
 		public static string PlatformName {
@@ -240,12 +224,6 @@ namespace MonoDevelop.Ide
 			get {
 				return PlatformService.CanOpenTerminal;
 			}
-		}
-
-		[Obsolete ("Use OpenTerminal")]
-		public static void OpenInTerminal (FilePath directory)
-		{
-			OpenTerminal (directory, null, null);
 		}
 
 		/// <summary>

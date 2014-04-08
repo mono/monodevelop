@@ -1,5 +1,5 @@
 //
-// IUrlHandler.cs
+// IOpenNamedElementHandler.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -30,12 +30,6 @@ using System;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	[Obsolete("Got replaced by IOpenNamedElementHandler")]
-	public interface IUrlHandler
-	{
-		void Open (string url);
-	}
-
 	public interface IOpenNamedElementHandler
 	{
 		void Open (ICSharpCode.NRefactory.TypeSystem.INamedElement element);

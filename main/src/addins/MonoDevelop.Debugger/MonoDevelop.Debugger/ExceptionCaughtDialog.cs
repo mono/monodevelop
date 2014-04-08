@@ -37,6 +37,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
@@ -409,7 +410,7 @@ namespace MonoDevelop.Debugger
 
 	class StackFrameCellRenderer : CellRenderer
 	{
-		static readonly Pango.FontDescription LineNumberFont = Pango.FontDescription.FromString ("Menlo 9");
+		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (0.9d);
 		const int RoundedRectangleRadius = 2;
 		const int RoundedRectangleHeight = 14;
 		const int RoundedRectangleWidth = 28;

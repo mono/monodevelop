@@ -11,7 +11,7 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path="/MonoDevelop/Debugging/ValueVisualizers">
-		<Description>Value visualizers. Specified classes must implement MonoDevelop.Debugger.IValueVisualizer</Description>
+		<Description>Value visualizers. Specified classes must extend MonoDevelop.Debugger.ValueVisualizer</Description>
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 

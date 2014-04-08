@@ -515,12 +515,6 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
-		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
-		{
-			Rebase (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
-		}
-
 		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
@@ -643,12 +637,6 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				monitor.EndTask ();
 			}
-		}
-
-		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
-		public void Merge (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
-		{
-			Merge (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 		}
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
@@ -1041,11 +1029,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-		}
-
 		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
@@ -1064,11 +1047,6 @@ namespace MonoDevelop.VersionControl.Git
 						File.Delete (path);
 				}
 			}
-		}
-
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
 		}
 
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
@@ -1222,34 +1200,6 @@ namespace MonoDevelop.VersionControl.Git
 			var formatter = new DiffFormatter (s);
 			formatter.Format (edits, text1, text2);
 			return Encoding.UTF8.GetString (s.ToArray ());
-		}
-
-		DiffInfo[] GetUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
-		{
-			basePath = basePath.FullPath;
-			List<DiffInfo> list = new List<DiffInfo> ();
-			using (StringReader sr = new StringReader (diffContent)) {
-				string line;
-				StringBuilder content = new StringBuilder ();
-				string fileName = null;
-				
-				while ((line = sr.ReadLine ()) != null) {
-					if (line.StartsWith ("+++ ", StringComparison.Ordinal) || line.StartsWith ("--- ", StringComparison.Ordinal)) {
-						string newFile = RootPath.Combine (line.Substring (6));
-						if (fileName != null && fileName != newFile) {
-							list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-							content = new StringBuilder ();
-						}
-						fileName = newFile;
-					} else if (!line.StartsWith ("diff", StringComparison.Ordinal) && !line.StartsWith ("index", StringComparison.Ordinal)) {
-						content.Append (line).Append ('\n');
-					}
-				}
-				if (fileName != null) {
-					list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-				}
-			}
-			return list.ToArray ();
 		}
 
 		public string GetCurrentRemote ()

@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl
 		{
 			this.Build();
 			
-			textview.ModifyFont (FontService.MonospaceSmallFont);
+			textview.ModifyFont (FontService.MonospaceFont.CopyModified (0.8d));
 			textview.AcceptsTab = true;
 		}
 		

@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnOpenInTerminal ()
 		{
 			foreach (var dir in GetCurrentDirectories ())
-				DesktopService.OpenInTerminal (dir);
+				DesktopService.OpenTerminal (dir);
 		}
 		
 		IEnumerable<String> GetCurrentDirectories ()

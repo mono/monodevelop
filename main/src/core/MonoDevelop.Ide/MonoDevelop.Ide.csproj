@@ -485,6 +485,12 @@
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-16.png">
+      <LogicalName>package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-16%402x.png">
+      <LogicalName>package-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\package-22.png">
       <LogicalName>package-light-22.png</LogicalName>
     </EmbeddedResource>
@@ -538,6 +544,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\project-library-overlay-32%402x.png">
       <LogicalName>project-library-overlay-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-shared-assets-overlay-32.png">
+      <LogicalName>project-shared-assets-overlay-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-shared-assets-overlay-32%402x.png">
+      <LogicalName>project-shared-assets-overlay-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32.png">
+      <LogicalName>project-package-overlay-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32%402x.png">
+      <LogicalName>project-package-overlay-light-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
@@ -1461,17 +1479,17 @@
     <EmbeddedResource Include="icons\light\add-16%402x.png">
       <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16.png">
-      <LogicalName>bubble-error-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-15.png">
+      <LogicalName>bubble-error-light-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16%402x.png">
-      <LogicalName>bubble-error-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-error-15%402x.png">
+      <LogicalName>bubble-error-light-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16.png">
-      <LogicalName>bubble-warning-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-warning-15.png">
+      <LogicalName>bubble-warning-light-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
-      <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\bubble-warning-15%402x.png">
+      <LogicalName>bubble-warning-light-15@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9.png">
       <LogicalName>warning-overlay-light-9.png</LogicalName>
@@ -1765,7 +1783,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TransactedTreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\INavigable.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IUrlHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\IOpenNamedElementHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />
@@ -2437,7 +2455,7 @@
     <Content Include="gtkrc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="gtkrc.win32-xp">
+    <Content Include="gtkrc.win32-vista">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

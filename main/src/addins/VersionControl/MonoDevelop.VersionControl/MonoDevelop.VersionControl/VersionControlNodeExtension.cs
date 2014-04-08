@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl
 			base.PrepareChildNodes (dataObject);
 		}
 */		
-		void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
+		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
 		{
 			Xwt.Drawing.Image overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder);

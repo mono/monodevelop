@@ -191,17 +191,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			current_overload = 0;
 		}
 
-		[Obsolete("Will get removed in later versions.")]
-		public void SetFixedWidth (int w)
-		{
-			/*		if (w != -1) {
-				headlabel.MaxWidth = w;
-			} else {
-				headlabel.MaxWidth = -1;
-			}*/
-			QueueResize ();
-		}
-
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
 			var vbox = new VBox ();
