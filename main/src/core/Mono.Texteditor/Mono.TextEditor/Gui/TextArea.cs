@@ -199,8 +199,8 @@ namespace Mono.TextEditor
 			HideTooltip (false);
 			double value = this.textEditorData.HAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.HAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.HAdjustment.Value = value;
 			}
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
@@ -223,8 +223,8 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			double value = this.textEditorData.VAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.VAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.VAdjustment.Value = value;
 			}
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
