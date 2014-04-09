@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
 		Mono.TextEditor.ITextEditorDataProvider provider = null;
-		Microsoft.CodeAnalysis.Document analysisDocument;
+		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
 
@@ -233,13 +233,13 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool TryGetSyntaxTree (out Microsoft.CodeAnalysis.SyntaxTree syntaxTree)
 		{
-			var doc = RoslynTypeSystemService.GetDocument (Project, FileName); 
+			var doc = RoslynTypeSystemService.Workspace.GetDocument (analysisDocument); 
 			return doc.TryGetSyntaxTree (out syntaxTree);
 		}
 
 		public Task<Microsoft.CodeAnalysis.SyntaxTree> GetSyntaxTreeAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var doc = RoslynTypeSystemService.GetDocument (Project, FileName); 
+			var doc = RoslynTypeSystemService.Workspace.GetDocument (analysisDocument); 
 			return doc.GetSyntaxTreeAsync (cancellationToken);
 		}
 
@@ -582,7 +582,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			if (analysisDocument != null)
-				RoslynTypeSystemService.Workspace.CloseDocument (analysisDocument.Id);
+				RoslynTypeSystemService.Workspace.CloseDocument (analysisDocument);
 			DetachExtensionChain ();
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
@@ -872,11 +872,15 @@ namespace MonoDevelop.Ide.Gui
 			if (analysisDocument == null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
 				if (analysisDocument != null)
-					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument.Id);
+					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument);
 			}
 			CancelParseTimeout ();
 			if (IsProjectContextInUpdate)
 				return;
+			if (analysisDocument != null) {
+				RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
+			}
+
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
 				if (editor == null || IsProjectContextInUpdate) {
@@ -886,9 +890,6 @@ namespace MonoDevelop.Ide.Gui
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
 
-				if (analysisDocument != null) {
-					analysisDocument = analysisDocument.WithText (Microsoft.CodeAnalysis.Text.SourceText.From (currentParseText)); 
-				}
 				ThreadPool.QueueUserWorkItem (delegate {
 					if (IsProjectContextInUpdate)
 						return;

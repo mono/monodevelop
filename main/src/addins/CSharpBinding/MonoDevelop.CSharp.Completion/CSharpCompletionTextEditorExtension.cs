@@ -52,6 +52,7 @@ using MonoDevelop.CodeGeneration;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Recommendations;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -346,65 +347,79 @@ namespace MonoDevelop.CSharp.Completion
 				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
 			}
-			if (Unit == null || CSharpUnresolvedFile == null)
-				return null;
-			if(unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-				return null;
-
+//			if (Unit == null || CSharpUnresolvedFile == null)
+//				return null;
+//			if(unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
+//				return null;
+//
 			var list = new CSharpCompletionDataList ();
-			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
-			var ctx = CreateTypeResolveContext ();
-			if (ctx == null)
-				return null;
-			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
-			if (MDRefactoringCtx == null) {
-				src.Cancel ();
-				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
-			}
-
-			var engine = new MonoCSharpCompletionEngine (
-				this,
-				data.Document,
-				CreateContextProvider (),
-				completionDataFactory,
-				Document.GetProjectContext (),
-				ctx
-			);
-			completionDataFactory.Engine = engine;
-			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
-			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
-			engine.CompletionEngineCache = cache;
-			if (FilterCompletionListByEditorBrowsable) {
-				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
-			} else {
-				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
-			}
-			if (Document.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
-				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-				if (par != null)
-					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
-			}
-
-			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
-			engine.EolMarker = data.EolMarker;
-			engine.IndentString = data.Options.IndentationString;
 			try {
-				foreach (var cd in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
-					list.Add (cd);
-					if (cd is IListData)
-						((IListData)cd).List = list;
+				Microsoft.CodeAnalysis.Compilation compilation;
+				compilation = document.GetCompilationAsync ().Result; 
+
+				if (compilation != null) {
+					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
+					foreach (var symbol in Recommender.GetRecommendedSymbolsAtPosition (compilation.GetSemanticModel (syntaxTree), Editor.Caret.Offset, RoslynTypeSystemService.Workspace)) {
+						list.Add (new CompletionData (symbol.Name, null, symbol.ToString (), symbol.Name)); 
+					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting completion data.", e);
+				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
-			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
-			list.AutoCompleteEmptyMatchOnCurlyBrace = engine.AutoCompleteEmptyMatchOnCurlyBracket;
-			list.AutoSelect = engine.AutoSelect;
-			list.DefaultCompletionString = engine.DefaultCompletionString;
-			list.CloseOnSquareBrackets = engine.CloseOnSquareBrackets;
-			if (ctrlSpace)
-				list.AutoCompleteUniqueMatch = true;
+
+//			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
+//			var ctx = CreateTypeResolveContext ();
+//			if (ctx == null)
+//				return null;
+			//			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
+//			if (MDRefactoringCtx == null) {
+//				src.Cancel ();
+//				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
+//			}
+//
+//			var engine = new MonoCSharpCompletionEngine (
+//				this,
+//				data.Document,
+//				CreateContextProvider (),
+//				completionDataFactory,
+//				Document.GetProjectContext (),
+//				ctx
+//			);
+//			completionDataFactory.Engine = engine;
+//			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
+//			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
+//			engine.CompletionEngineCache = cache;
+//			if (FilterCompletionListByEditorBrowsable) {
+//				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
+//			} else {
+//				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
+//			}
+//			if (Document.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
+//				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+//				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+//				if (par != null)
+//					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
+//			}
+//
+//			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
+//			engine.EolMarker = data.EolMarker;
+//			engine.IndentString = data.Options.IndentationString;
+//			try {
+//				foreach (var cd in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
+//					list.Add (cd);
+//					if (cd is IListData)
+//						((IListData)cd).List = list;
+//				}
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Error while getting completion data.", e);
+//			}
+//			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
+//			list.AutoCompleteEmptyMatchOnCurlyBrace = engine.AutoCompleteEmptyMatchOnCurlyBracket;
+//			list.AutoSelect = engine.AutoSelect;
+//			list.DefaultCompletionString = engine.DefaultCompletionString;
+//			list.CloseOnSquareBrackets = engine.CloseOnSquareBrackets;
+//			if (ctrlSpace)
+//				list.AutoCompleteUniqueMatch = true;
 			return list.Count > 0 ? list : null;
 		}
 		

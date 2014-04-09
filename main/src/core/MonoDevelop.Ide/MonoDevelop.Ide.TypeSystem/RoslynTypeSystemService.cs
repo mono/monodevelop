@@ -36,7 +36,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	class MonoDevelopWorkspace : Workspace
+	public class MonoDevelopWorkspace : Workspace
 	{
 		readonly MetadataReferenceProvider referenceProvider = new MetadataReferenceProvider ();
 
@@ -309,7 +309,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		static MonoDevelopWorkspace workspace;
 
-		public static Workspace Workspace {
+		public static MonoDevelopWorkspace Workspace {
 			get {
 				return workspace;
 			}
@@ -337,14 +337,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static Document GetDocument (MonoDevelop.Projects.Project project, string fileName)
+		public static DocumentId GetDocument (MonoDevelop.Projects.Project project, string fileName)
 		{
 			var projectId = workspace.GetProjectId (project);
-			var documentId = workspace.GetDocumentId (projectId, fileName);
-
-			return workspace.GetDocument (documentId);
+			return workspace.GetDocumentId (projectId, fileName);
 		}
-
 
 		public static Project GetProject (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
