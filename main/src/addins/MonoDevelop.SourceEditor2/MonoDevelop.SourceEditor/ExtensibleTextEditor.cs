@@ -68,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 
 		static ExtensibleTextEditor ()
 		{
-			var icon = Xwt.Drawing.Image.FromResource (typeof(ImageService), "star-light-16.png");
+			var icon = Xwt.Drawing.Image.FromResource (typeof(ImageService), "gutter-bookmark-light-15.png");
 
 			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
 				if (!lineSegment.IsBookmarked)

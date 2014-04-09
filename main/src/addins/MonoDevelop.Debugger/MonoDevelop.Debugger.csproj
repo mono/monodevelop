@@ -260,12 +260,6 @@
     <EmbeddedResource Include="icons\exception-icon%402x.png">
       <LogicalName>exception-icon@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-bookmark-15.png">
-      <LogicalName>gutter-bookmark-light-15.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-bookmark-15%402x.png">
-      <LogicalName>gutter-bookmark-light-15@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\gutter-breakpoint-15.png">
       <LogicalName>gutter-breakpoint-light-15.png</LogicalName>
     </EmbeddedResource>
