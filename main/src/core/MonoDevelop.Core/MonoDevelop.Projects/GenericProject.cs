@@ -26,8 +26,8 @@
 //
 
 
-using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -48,9 +48,10 @@ namespace MonoDevelop.Projects
 			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);
 			return conf;
 		}
-		
-		public override string ProjectType {
-			get { return "GenericProject"; }
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "GenericProject";
 		}
 	}
 	

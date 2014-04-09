@@ -64,10 +64,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public string DefaultNamespace { get; set; }
 
-		public override string ProjectType {
-			get {
-				return "SharedAssets";
-			}
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "SharedAssets";
+			yield return "DotNet";
 		}
 
 		public override string[] SupportedLanguages {

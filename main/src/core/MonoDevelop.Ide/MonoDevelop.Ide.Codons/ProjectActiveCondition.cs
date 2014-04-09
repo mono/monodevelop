@@ -34,6 +34,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Codons
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.Codons
 			if (activeproject == "*") {
 				return project != null;
 			}
-			return project != null && project.ProjectType == activeproject;
+			return project != null && project.GetProjectTypes ().All (p => p != activeproject);
 		}
 	}
 
