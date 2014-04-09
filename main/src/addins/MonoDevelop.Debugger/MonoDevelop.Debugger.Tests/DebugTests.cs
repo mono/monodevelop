@@ -94,7 +94,7 @@ namespace MonoDevelop.Debugger.Tests
 			if (Platform.IsWindows) {
 				var monoRuntime = runtime as MonoTargetRuntime;
 				if (monoRuntime != null) {
-					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "lib", "mono", "4.5", "pdb2mdb.exe"), cmd.Command);
+					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), cmd.Command);
 					psi.UseShellExecute = false;
 					psi.CreateNoWindow = true;
 					System.Diagnostics.Process.Start (psi).WaitForExit ();
