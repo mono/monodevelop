@@ -214,7 +214,7 @@ namespace MonoDevelop.Debugger
 
 	public class DebugStackLineTextMarker : DebugTextMarker
 	{
-		static readonly Image stackLine = Image.FromResource ("gutter-execution-light-15.png");
+		static readonly Image stackLine = Image.FromResource ("gutter-stack-light-15.png");
 
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{
