@@ -91,6 +91,16 @@ namespace MonoDevelop.Debugger.Tests
 			cmd.Arguments = test;
 			cmd.TargetRuntime = runtime;
 
+			if (Platform.IsWindows) {
+				var monoRuntime = runtime as MonoTargetRuntime;
+				if (monoRuntime != null) {
+					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "lib", "mono", "4.5", "pdb2mdb.exe"), cmd.Command);
+					psi.UseShellExecute = false;
+					psi.CreateNoWindow = true;
+					System.Diagnostics.Process.Start (psi).WaitForExit ();
+				}
+			}
+
 			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
 			DebuggerSession session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
