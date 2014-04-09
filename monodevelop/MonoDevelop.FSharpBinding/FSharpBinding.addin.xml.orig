@@ -27,11 +27,6 @@
     <Import file = "Templates/FSharpProjectMvc4Razor.windows.xpt.xml" />
     <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
-    <Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
-    <Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
-    <Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
-    <Import file = "packages/AspNetMvc4/System.Web.WebPages.Razor.dll" />
-    <Import file = "packages/AspNetMvc4/System.Web.WebPages.dll" />
 
     <!--- F# MonoMac templates -->
     <Import file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
