@@ -67,7 +67,6 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(Mvc4Files)" DestinationFolder="$(OutputPath)\packages\AspNetMvc4" />
   </Target>
   <Target Name="AfterClean">
     <RemoveDir Directories="$(OutputPath)\packages" />
@@ -312,21 +311,6 @@
     <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Helpers.dll">
-      <Link>System.Web.Helpers.dll</Link>
-    </Mvc4Files>
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Mvc.dll">
-      <Link>System.Web.Mvc.dll</Link>
-    </Mvc4Files>
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.Razor.dll">
-      <Link>System.Web.Razor.dll</Link>
-    </Mvc4Files>
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.WebPages.dll">
-      <Link>System.Web.WebPages.dll</Link>
-    </Mvc4Files>
-    <Mvc4Files Include="..\dependencies\AspNetMvc4\System.Web.WebPages.Razor.dll">
-      <Link>System.Web.WebPages.Razor.dll</Link>
-    </Mvc4Files>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp">
