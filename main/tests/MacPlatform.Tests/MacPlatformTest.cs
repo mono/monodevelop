@@ -27,11 +27,12 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.MacIntegration;
 using MonoDevelop.Ide;
+using UnitTests;
 
 namespace MacPlatform.Tests
 {
 	[TestFixture]
-	public class MacPlatformTest
+	public class MacPlatformTest : TestBase
 	{
 		[Test]
 		public void GetMimeType_text ()
