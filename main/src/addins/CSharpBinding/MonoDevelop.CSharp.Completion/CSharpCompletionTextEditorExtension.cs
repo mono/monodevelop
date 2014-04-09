@@ -347,11 +347,20 @@ namespace MonoDevelop.CSharp.Completion
 				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
 			}
-//			if (Unit == null || CSharpUnresolvedFile == null)
-//				return null;
-//			if(unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-//				return null;
-//
+			var offset = Editor.Caret.Offset;
+
+			char prevCh = offset > 2 ? Editor.GetCharAt(offset - 2) : ';';
+			char nextCh = offset < Editor.Length ? Editor.GetCharAt(offset) : ' ';
+			const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
+			var charIsIdentiferStart = char.IsLetter (completionChar) || completionChar == '_'
+				|| completionChar == '.';
+
+			if (!charIsIdentiferStart && !char.IsLetterOrDigit (prevCh)) {
+				if (!ctrlSpace)
+					return null;
+			}
+
+
 			var list = new CSharpCompletionDataList ();
 			try {
 				Microsoft.CodeAnalysis.Compilation compilation;
@@ -359,8 +368,8 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (compilation != null) {
 					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
-					foreach (var symbol in Recommender.GetRecommendedSymbolsAtPosition (compilation.GetSemanticModel (syntaxTree), Editor.Caret.Offset, RoslynTypeSystemService.Workspace)) {
-						list.Add (new CompletionData (symbol.Name, null, symbol.ToString (), symbol.Name)); 
+					foreach (var symbol in Recommender.GetRecommendedSymbolsAtPosition (compilation.GetSemanticModel (syntaxTree), offset, RoslynTypeSystemService.Workspace)) {
+						list.Add (new RoslynSymbolCompletionData (symbol)); 
 					}
 				}
 			} catch (Exception e) {

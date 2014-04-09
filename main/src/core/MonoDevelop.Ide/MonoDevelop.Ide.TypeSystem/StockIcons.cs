@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			Stock.Event, Stock.PrivateEvent, Stock.Event, Stock.ProtectedEvent, Stock.InternalEvent, Stock.ProtectedOrInternalEvent, Stock.InternalAndProtectedEvent
 		};
 
-		public static string GetStockIcon (this INamedElement element)
+		public static IconId GetStockIcon (this INamedElement element)
 		{
 			if (element is IType)
 				return ((IType)element).GetStockIcon ();
@@ -133,12 +133,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ((IEntity)element).GetStockIcon ();
 		}
 		
-		public static string GetStockIcon (this ITypeDefinition entity)
+		public static IconId GetStockIcon (this ITypeDefinition entity)
 		{
 			return GetStockIcon ((IType)entity);
 		}
-		
-		public static string GetStockIcon (this IType entity)
+
+		public static IconId GetStockIcon (this IType entity)
 		{
 			var def = entity.GetDefinition ();
 			if (def == null)
@@ -158,8 +158,73 @@ namespace MonoDevelop.Ide.TypeSystem
 				return typeIconTable [0, (int)def.Accessibility];
 			}
 		}
-		
-		public static string GetStockIcon (this IUnresolvedTypeDefinition def)
+
+		static int GetIndex (Microsoft.CodeAnalysis.Accessibility accessibility)
+		{
+			switch (accessibility) {
+			case Microsoft.CodeAnalysis.Accessibility.NotApplicable:
+				return 0;
+			case Microsoft.CodeAnalysis.Accessibility.Private:
+				return 1;
+			case Microsoft.CodeAnalysis.Accessibility.ProtectedAndInternal:
+				return 5;
+			case Microsoft.CodeAnalysis.Accessibility.Protected:
+				return 3;
+			case Microsoft.CodeAnalysis.Accessibility.Internal:
+				return 4;
+			case Microsoft.CodeAnalysis.Accessibility.ProtectedOrInternal:
+				return 5;
+			case Microsoft.CodeAnalysis.Accessibility.Public:
+				return 2;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
+
+		public static IconId GetStockIcon (this Microsoft.CodeAnalysis.ISymbol symbol)
+		{
+			switch (symbol.Kind) {
+			case Microsoft.CodeAnalysis.SymbolKind.Alias:
+			case Microsoft.CodeAnalysis.SymbolKind.ArrayType:
+			case Microsoft.CodeAnalysis.SymbolKind.Assembly:
+			case Microsoft.CodeAnalysis.SymbolKind.DynamicType:
+			case Microsoft.CodeAnalysis.SymbolKind.ErrorType:
+			case Microsoft.CodeAnalysis.SymbolKind.Label:
+			case Microsoft.CodeAnalysis.SymbolKind.Local:
+			case Microsoft.CodeAnalysis.SymbolKind.NetModule:
+			case Microsoft.CodeAnalysis.SymbolKind.PointerType:
+				return Field;
+			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
+				var namedTypeSymbol = (Microsoft.CodeAnalysis.INamedTypeSymbol)symbol;
+				return typeIconTable [GetTypeIndex(namedTypeSymbol.TypeKind ), GetIndex (namedTypeSymbol.DeclaredAccessibility)];
+			case Microsoft.CodeAnalysis.SymbolKind.Event:
+				var evtSymbol = (Microsoft.CodeAnalysis.IEventSymbol)symbol;
+				return eventIconTable [GetIndex (evtSymbol.DeclaredAccessibility)];
+			case Microsoft.CodeAnalysis.SymbolKind.Field:
+				var fieldSymbol = (Microsoft.CodeAnalysis.IFieldSymbol)symbol;
+				return fieldIconTable [GetIndex (fieldSymbol.DeclaredAccessibility)];
+			case Microsoft.CodeAnalysis.SymbolKind.Method:
+				var methodSymbol = (Microsoft.CodeAnalysis.IMethodSymbol)symbol;
+				return methodIconTable [GetIndex (methodSymbol.DeclaredAccessibility)];
+			case Microsoft.CodeAnalysis.SymbolKind.Namespace:
+				return Namespace;
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+				return Field;
+			case Microsoft.CodeAnalysis.SymbolKind.Property:
+				var propertySymbol = (Microsoft.CodeAnalysis.IPropertySymbol)symbol;
+				return propertyIconTable [GetIndex (propertySymbol.DeclaredAccessibility)];
+			case Microsoft.CodeAnalysis.SymbolKind.RangeVariable:
+				return Field;
+			case Microsoft.CodeAnalysis.SymbolKind.TypeParameter:
+				return Stock.typeIconTable [0, 0];
+			case Microsoft.CodeAnalysis.SymbolKind.Preprocessing:
+				return Field;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
+
+		public static IconId GetStockIcon (this IUnresolvedTypeDefinition def)
 		{
 			switch (def.Kind) {
 			case TypeKind.Class:
@@ -176,28 +241,61 @@ namespace MonoDevelop.Ide.TypeSystem
 				return typeIconTable [0, (int)def.Accessibility];
 			}
 		}
+
+		static int GetTypeIndex (Microsoft.CodeAnalysis.TypeKind typeKind)
+		{
+			switch (typeKind) {
+			case Microsoft.CodeAnalysis.TypeKind.Unknown:
+			case Microsoft.CodeAnalysis.TypeKind.ArrayType:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Class:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Delegate:
+				return 4;
+			case Microsoft.CodeAnalysis.TypeKind.DynamicType:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Enum:
+				return 1;
+			case Microsoft.CodeAnalysis.TypeKind.Error:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Interface:
+				return 2;
+			case Microsoft.CodeAnalysis.TypeKind.Module:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.PointerType:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Struct:
+				return 3;
+			case Microsoft.CodeAnalysis.TypeKind.TypeParameter:
+				return 0;
+			case Microsoft.CodeAnalysis.TypeKind.Submission:
+				return 0;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
 		
-		public static string GetStockIcon (this IField field)
+		public static IconId GetStockIcon (this IField field)
 		{
 			return GetStockIcon ((IEntity)field);
 		}
 		
-		public static string GetStockIcon (this IVariable variable)
+		public static IconId GetStockIcon (this IVariable variable)
 		{
 			return Field;
 		}
 		
-		public static string GetStockIcon (this IParameter parameter)
+		public static IconId GetStockIcon (this IParameter parameter)
 		{
 			return Field;
 		}
 		
-		public static string GetStockIcon (this IUnresolvedTypeParameter parameter)
+		public static IconId GetStockIcon (this IUnresolvedTypeParameter parameter)
 		{
 			return Field;
 		}
 		
-		public static string GetStockIcon (this IEntity entity, bool showAccessibility = true)
+		public static IconId GetStockIcon (this IEntity entity, bool showAccessibility = true)
 		{
 			switch (entity.SymbolKind) {
 			case SymbolKind.TypeDefinition:
@@ -234,7 +332,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return "";
 		}
-		public static string GetStockIcon (this IUnresolvedEntity entity, bool showAccessibility = true)
+		public static IconId GetStockIcon (this IUnresolvedEntity entity, bool showAccessibility = true)
 		{
 			switch (entity.SymbolKind) {
 			case SymbolKind.TypeDefinition:

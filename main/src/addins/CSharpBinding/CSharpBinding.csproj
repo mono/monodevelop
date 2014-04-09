@@ -332,6 +332,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
