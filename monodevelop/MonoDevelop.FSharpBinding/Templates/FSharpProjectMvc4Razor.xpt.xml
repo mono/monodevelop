@@ -5,7 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# ASP.NET MVC 4 (Razor)</_Name>
     <Icon>md-project-web</Icon>
-    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views. *** NOTE NOTE On Max and Linux you may need to manually edit the project file to use v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0. NOTE NOTE ***  </_Description>
+    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views. *** NOTE On Mac and Linux you may need to manually edit the project file to use v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0. NOTE ***  </_Description>
     <_Category>F#/ASP.NET</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
@@ -41,7 +41,7 @@
 				<Reference type="Package" refto="System.Core" />
 			</References>
 			<Packages>
-				<Package Id="Microsoft.AspNet.Mvc"/> 
+				<Package Id="Microsoft.AspNet.Mvc" Version="4.0.30506"/>
 			</Packages>
 			<Files>
 				<Directory name="Content" />
