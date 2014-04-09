@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
-using MonoDevelop.Core.Web;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Xamarin.Components.Ide.Web
+namespace MonoDevelop.Core.Web
 {
 	public static class RequestHelper
 	{
+		public static Task<WebResponse> GetResponseAsync (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest, CancellationToken token)
+		{
+			//TODO: make this really async under the covers
+			return Task.Factory.StartNew (() =>  GetResponse (createRequest, prepareRequest, token), token);
+		}
+
 		/// <summary>
 		/// Keeps sending requests until a response code that doesn't require authentication happens or if
 		/// the request requires authentication and the user has stopped trying to enter them (i.e. they hit cancel when they are prompted).
 		/// </summary>
-		internal static WebResponse GetResponse (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest)
+		public static WebResponse GetResponse (Func<WebRequest> createRequest, Action<WebRequest> prepareRequest, CancellationToken token)
 		{
 			var proxyCache = WebService.ProxyCache;
 			var credentialCache = WebService.CredentialCache;
@@ -23,12 +30,26 @@ namespace Xamarin.Components.Ide.Web
 			var continueIfFailed = true;
 			int proxyCredentialsRetryCount = 0, credentialsRetryCount = 0;
 
+			HttpWebRequest request = null;
+
+			token.Register (() => {
+				var r = request;
+				if (r != null)
+					r.Abort ();
+			});
+
 			while (true) {
 				// Create the request
-				var request = (HttpWebRequest)createRequest ();
+				// NOTE: .NET blocks on DNS here, see http://stackoverflow.com/questions/1232139#1232930
+				request = (HttpWebRequest)createRequest ();
 				request.Proxy = proxyCache.GetProxy (request.RequestUri);
 
-				if (request.Proxy != null && request.Proxy.Credentials == null) {
+				if (token.IsCancellationRequested) {
+					request.Abort ();
+					throw new OperationCanceledException (token);
+				}
+
+				if (request.Proxy != null && request.Proxy.Credentials == null && request.Proxy is WebProxy) {
 					var proxyAddress = ((WebProxy)request.Proxy).Address;
 					request.Proxy.Credentials = credentialCache.GetCredentials (proxyAddress, CredentialType.ProxyCredentials) ??
 						CredentialCache.DefaultCredentials;
@@ -60,20 +81,20 @@ namespace Xamarin.Components.Ide.Web
 
 					SetKeepAliveHeaders (request, previousResponse);
 
-					// Prepare the request, we do something like write to the request stream
-					// which needs to happen last before the request goes out
-					prepareRequest (request);
-
 					// Wrap the credentials in a CredentialCache in case there is a redirect
 					// and credentials need to be kept around.
 					request.Credentials = request.Credentials.AsCredentialCache (request.RequestUri);
 
+					// Prepare the request, we do something like write to the request stream
+					// which needs to happen last before the request goes out
+					prepareRequest (request);
 					var response = request.GetResponse ();
 
 					// Cache the proxy and credentials
 					if (request.Proxy != null) {
 						proxyCache.Add (request.Proxy);
-						credentialCache.Add (((WebProxy)request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
+						if (request.Proxy is WebProxy)
+							credentialCache.Add (((WebProxy)request.Proxy).Address, request.Proxy.Credentials, CredentialType.ProxyCredentials);
 					}
 
 					credentialCache.Add (request.RequestUri, credentials, CredentialType.RequestCredentials);
@@ -81,7 +102,10 @@ namespace Xamarin.Components.Ide.Web
 
 					return response;
 				} catch (WebException ex) {
-					using (var response = GetResponse (ex.Response)) {
+					if (ex.Status == WebExceptionStatus.RequestCanceled)
+						token.ThrowIfCancellationRequested ();
+
+					using (var response = GetResponse(ex.Response)) {
 						if (response == null && ex.Status != WebExceptionStatus.SecureChannelFailure) {
 							// No response, something went wrong so just rethrow
 							throw;
@@ -181,34 +205,26 @@ namespace Xamarin.Components.Ide.Web
 				this.response = response;
 			}
 
-			public string AuthType
-			{
-				get
-				{
-					return response.Headers[HttpResponseHeader.WwwAuthenticate];
+			public string AuthType {
+				get {
+					return response.Headers [HttpResponseHeader.WwwAuthenticate];
 				}
 			}
 
-			public HttpStatusCode StatusCode
-			{
-				get
-				{
+			public HttpStatusCode StatusCode {
+				get {
 					return response.StatusCode;
 				}
 			}
 
-			public Uri ResponseUri
-			{
-				get
-				{
+			public Uri ResponseUri {
+				get {
 					return response.ResponseUri;
 				}
 			}
 
-			public NameValueCollection Headers
-			{
-				get
-				{
+			public NameValueCollection Headers {
+				get {
 					return response.Headers;
 				}
 			}
@@ -218,6 +234,21 @@ namespace Xamarin.Components.Ide.Web
 				if (response != null) {
 					response.Close ();
 				}
+			}
+		}
+
+		public static bool IsCannotReachInternetError (this WebExceptionStatus status)
+		{
+			switch (status) {
+			case WebExceptionStatus.NameResolutionFailure:
+			case WebExceptionStatus.ConnectFailure:
+			case WebExceptionStatus.ConnectionClosed:
+			case WebExceptionStatus.ProxyNameResolutionFailure:
+			case WebExceptionStatus.SendFailure:
+			case WebExceptionStatus.Timeout:
+				return true;
+			default:
+				return false;
 			}
 		}
 	}
