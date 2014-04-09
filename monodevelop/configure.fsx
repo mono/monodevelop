@@ -1,4 +1,3 @@
-
 // Configuration script to create
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.mac-linux.fsproj (unix)
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj (windows)
@@ -12,7 +11,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.31"
+let FSharpVersion = "3.2.30"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
