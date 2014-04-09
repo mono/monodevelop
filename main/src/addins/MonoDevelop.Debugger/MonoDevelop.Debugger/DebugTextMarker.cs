@@ -55,7 +55,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool CanDrawBackground (Margin margin)
 		{
-			return false;
+			return margin is TextViewMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
@@ -68,7 +68,10 @@ namespace MonoDevelop.Debugger
 			// check, if a message bubble is active in that line.
 			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
 				return false;
-
+			const int roundingRadius = 4;
+			cr.RoundedRectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, metrics.LineHeight, roundingRadius);
+			cr.SetSourceColor (BackgroundColor); 
+			cr.Fill ();
 			return base.DrawBackground (editor, cr, y, metrics);
 		}
 
@@ -93,7 +96,7 @@ namespace MonoDevelop.Debugger
 				return null;
 
 			var style = new ChunkStyle (baseStyle);
-			style.Background = BackgroundColor;
+			//			style.Background = BackgroundColor;
 			SetForegroundColor (style);
 
 			return style;
