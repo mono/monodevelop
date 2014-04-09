@@ -114,8 +114,8 @@ namespace MonoDevelop.Debugger
 
 	public class BreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-15.png");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-15.png");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-light-15.png");
 
 		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -143,8 +143,8 @@ namespace MonoDevelop.Debugger
 
 	public class DisabledBreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-15.png");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-15.png");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-light-15.png");
 
 		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -167,8 +167,8 @@ namespace MonoDevelop.Debugger
 
 	public class InvalidBreakpointTextMarker : DebugTextMarker
 	{
-		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-15.png");
-		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-15.png");
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-light-15.png");
 
 		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -191,7 +191,7 @@ namespace MonoDevelop.Debugger
 
 	public class CurrentDebugLineTextMarker : DebugTextMarker
 	{
-		static readonly Image currentLine = Image.FromResource ("gutter-execution-15.png");
+		static readonly Image currentLine = Image.FromResource ("gutter-execution-light-15.png");
 
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
@@ -214,7 +214,7 @@ namespace MonoDevelop.Debugger
 
 	public class DebugStackLineTextMarker : DebugTextMarker
 	{
-		static readonly Image stackLine = Image.FromResource ("gutter-execution-15.png");
+		static readonly Image stackLine = Image.FromResource ("gutter-execution-light-15.png");
 
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{
