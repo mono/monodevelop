@@ -181,21 +181,15 @@
     </Condition>
   </Extension>
 
-  <Extension path="/MonoDevelop/Core/StockIcons">
-    <StockIcon stockid="md-fs-file"    resource="icons.fsharp-file-icon.png" size="Menu" />
-    <StockIcon stockid="md-fs-script"  resource="icons.fsharp-script-icon.png" size="Menu" />
-    <StockIcon stockid="md-fs-project" resource="icons.fsharp-project-icon.png" size="Menu" />
-  </Extension>
-
   <Extension path="/MonoDevelop/Core/MimeTypes">
-    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-fs-file" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Source File" icon="md-file-source" isText="true">
       <File pattern="*.fs" />
     </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-file-source" isText="true">
       <File pattern="*.fsx" />
       <File pattern="*.fsscript" />
         </MimeType>
-    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-fs-file" isText="true">
+    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-file-source" isText="true">
       <File pattern="*.fsi" />
         </MimeType>
     <MimeType id="application/fsproject+xml" _description="F# project file" baseType="application/xml">
@@ -226,7 +220,7 @@
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">
-    <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-fs-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
+    <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

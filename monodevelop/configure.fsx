@@ -1,4 +1,3 @@
-
 // Configuration script to create
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.mac-linux.fsproj (unix)
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj (windows)

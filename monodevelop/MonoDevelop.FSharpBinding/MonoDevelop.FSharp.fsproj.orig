@@ -72,11 +72,6 @@
     <RemoveDir Directories="$(OutputPath)\packages" />
   </Target>
   <ItemGroup>
-    <EmbeddedResource Include="icons.fsharp-icon-32.png" />
-    <EmbeddedResource Include="icons.fsharp-script-32.png" />
-    <EmbeddedResource Include="icons.fsharp-file-icon.png" />
-    <EmbeddedResource Include="icons.fsharp-project-icon.png" />
-    <EmbeddedResource Include="icons.fsharp-script-icon.png" />
     <None Include="Templates/EmptyFSharpSource.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
