@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 	{
 		TextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
-		const int marginWidth = 23;
+		const int marginWidth = 22;
 		
 		public IconMargin (TextEditor editor)
 		{

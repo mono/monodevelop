@@ -101,10 +101,10 @@ namespace MonoDevelop.Debugger
 
 		protected void DrawImage (Cairo.Context cr, Image image, double x, double y, double size)
 		{
-			var deltaY = (size / 2) - (image.Height / 2);
-			var deltaX = (size / 2) - (image.Width / 2);
+			var deltaX = size / 2 - image.Width / 2 + 0.5f;
+			var deltaY = size / 2 - image.Height / 2;
 
-			cr.DrawImage (Editor, image, x + deltaX, y + deltaY);
+			cr.DrawImage (Editor, image, Math.Round (x + deltaX), Math.Round (y + deltaY));
 		}
 
 		protected virtual void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
