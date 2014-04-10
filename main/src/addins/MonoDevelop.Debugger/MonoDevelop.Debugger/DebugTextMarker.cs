@@ -72,9 +72,12 @@ namespace MonoDevelop.Debugger
 			var sidePadding = 4;
 			var rounding = editor.LineHeight / 2 - 1;
 
-			cr.RoundedRectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition + sidePadding, metrics.LineHeight, rounding);
-			cr.SetSourceColor (BackgroundColor); 
-			cr.Fill ();
+			var d = metrics.TextRenderEndPosition - metrics.TextRenderStartPosition;
+			if (d > 0) {
+				cr.RoundedRectangle (metrics.TextRenderStartPosition, y, d + sidePadding, metrics.LineHeight, rounding);
+				cr.SetSourceColor (BackgroundColor); 
+				cr.Fill ();
+			}
 
 			return base.DrawBackground (editor, cr, y, metrics);
 		}
