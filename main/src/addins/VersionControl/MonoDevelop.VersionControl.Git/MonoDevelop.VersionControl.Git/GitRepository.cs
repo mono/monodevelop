@@ -239,7 +239,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
 		{
-			return GetDirectoryVersionInfo (FilePath.Null, paths, getRemoteStatus, false);
+			return GetDirectoryVersionInfo (FilePath.Null, paths.Where (p => !p.IsDirectory), getRemoteStatus, false);
 		}
 
 		protected override VersionInfo[] OnGetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
