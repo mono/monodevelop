@@ -169,7 +169,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "C/C++" id = "C/C++">
 			<Command id = "CBinding.CProjectCommands.AddPackage" _label = "Edit Packages..." />
-			<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update" />
+			<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" />
 			<Command id = "CBinding.CProjectCommands.ShowPackageDetails" _label = "Details..." />
 		</Category>
 	</Extension>
