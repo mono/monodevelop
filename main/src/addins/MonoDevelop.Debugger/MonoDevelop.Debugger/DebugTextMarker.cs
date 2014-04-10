@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger
 			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
 				return false;
 			const int roundingRadius = 4;
-			cr.RoundedRectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, metrics.LineHeight, roundingRadius);
+			cr.RoundedRectangle (metrics.TextRenderStartPosition, y, metrics.WholeLineWidth, metrics.LineHeight, roundingRadius);
 			cr.SetSourceColor (BackgroundColor); 
 			cr.Fill ();
 			return base.DrawBackground (editor, cr, y, metrics);
