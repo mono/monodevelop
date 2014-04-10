@@ -1,6 +1,6 @@
 {
 	"name":"Default",
-	"version":"1.1",
+	"version":"1.2",
 	"description": "Bright and friendly, just like Xamarin.",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -211,12 +211,11 @@
 
 		{ "name": "Syntax Error", "fore":"invalid-red" },
 		
-		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
-		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
+		{ "name": "Breakpoint Text", "fore":"text-black", "back":"#f6cdcb" },
+		{ "name": "Breakpoint Text(Invalid)", "fore":"text-black", "back":"#fbeeed" },
 	
-		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
-		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" },
-		
+		{ "name": "Debugger Current Statement", "fore":"text-black", "back":"#e8d2b3" },
+		{ "name": "Debugger Stack Line", "fore":"text-black", "back":"#d8f3c1" },
 		
 		{ "name": "Diff Line(Added)", "fore":"skyblue2"  },
 		{ "name": "Diff Line(Removed)", "fore":"scarletred1"  },
