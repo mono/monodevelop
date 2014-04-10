@@ -70,19 +70,13 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\..\..\roslyn2\Binaries\Debug\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\..\roslyn2\Binaries\Debug\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\..\..\roslyn\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\..\roslyn2\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\..\..\roslyn2\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
