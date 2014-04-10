@@ -368,13 +368,16 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (compilation != null) {
 					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
-					foreach (var symbol in Recommender.GetRecommendedSymbolsAtPosition (compilation.GetSemanticModel (syntaxTree), offset, RoslynTypeSystemService.Workspace)) {
-						list.Add (new RoslynSymbolCompletionData (symbol)); 
+					var engine = new ICSharpCode.NRefactory6.CSharp.Completion.CSharpCompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory ());
+
+					foreach (var symbol in engine.GetCompletionData (compilation.GetSemanticModel (syntaxTree), offset)) {
+						list.Add ((ICompletionData)symbol); 
 					}
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
+
 
 //			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
 //			var ctx = CreateTypeResolveContext ();

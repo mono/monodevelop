@@ -172,6 +172,9 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\..\..\roslyn\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp">
+      <HintPath>..\..\..\..\..\roslyn\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -330,6 +333,7 @@
     <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

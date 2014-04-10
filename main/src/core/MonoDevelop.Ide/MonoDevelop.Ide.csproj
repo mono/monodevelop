@@ -77,6 +77,12 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\..\..\roslyn\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory6.CSharp">
+      <HintPath>..\..\..\..\..\roslyn\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory6.CSharp.Refactoring">
+      <HintPath>..\..\..\..\..\roslyn\ICSharpCode.NRefactory6.CSharp.Refactoring.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">

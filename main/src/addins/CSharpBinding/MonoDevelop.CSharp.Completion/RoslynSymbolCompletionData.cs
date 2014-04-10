@@ -30,7 +30,31 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynSymbolCompletionData : CompletionData
+	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
+	{
+		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+		{
+			throw new NotImplementedException ();
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.CompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory {
+			get;
+			set;
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags {
+			get;
+			set;
+		}
+
+		System.Collections.Generic.IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+	}
+
+	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
 	{
 		readonly ISymbol symbol;
 
