@@ -165,7 +165,7 @@ namespace MonoDevelop.VersionControl.Git
 		Tuple<FilePath, NGit.Repository>[] cachedSubmodules = new Tuple<FilePath, NGit.Repository>[0];
 		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
 			get {
-				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
+				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodules"));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
 					cachedSubmoduleTime = submoduleWriteTime;
 					cachedSubmodules = new NGit.Api.Git (RootRepository)
