@@ -54,7 +54,7 @@ namespace MonoDevelop.MacIntegration
 
 					NSView view = new NSView (new RectangleF (0, 0, 313, 91));
 
-					var creds = Utility.GetCredentialsForUriFromICredentials (uri, existingCredentials);
+					var creds = CredentialsUtility.GetCredentialsForUriFromICredentials (uri, existingCredentials);
 
 					var usernameLabel = new NSTextField (new RectangleF (17, 55, 71, 17)) {
 						Identifier = "usernameLabel",

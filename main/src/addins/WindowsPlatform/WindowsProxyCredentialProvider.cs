@@ -45,7 +45,7 @@ namespace MonoDevelop.Platform.Windows
 
 			NetworkCredential currentCredentials = null;
 			if (existingCredential != null)
-				currentCredentials = Utility.GetCredentialsForUriFromICredentials (uri, existingCredential);
+				currentCredentials = CredentialsUtility.GetCredentialsForUriFromICredentials (uri, existingCredential);
 
 			var form = new PlaceholderForm (credentialType, uri, currentCredentials);
 			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);

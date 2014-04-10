@@ -35,6 +35,8 @@ using MonoDevelop.Components;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace MonoDevelop.Ide
 {
@@ -258,34 +260,6 @@ namespace MonoDevelop.Ide
 			return null;
 		}
 		
-		static Dictionary<string,ImageLoader> userIcons = new Dictionary<string, ImageLoader> ();
-
-		public static ImageLoader GetUserIcon (string email, int size)
-		{
-			string key = email + size;
-			ImageLoader img;
-			if (!userIcons.TryGetValue (key, out img)) {
-				var md5 = System.Security.Cryptography.MD5.Create ();
-				byte[] hash = md5.ComputeHash (Encoding.UTF8.GetBytes (email.Trim ().ToLower ()));
-				StringBuilder sb = new StringBuilder ();
-				foreach (byte b in hash)
-					sb.Append (b.ToString ("x2"));
-				string url = "http://www.gravatar.com/avatar/" + sb.ToString () + "?d=mm&s=" + size;
-				userIcons [key] = img = new ImageLoader (url);
-			}
-			return img;
-		}
-		
-		public static void LoadUserIcon (this Gtk.Image image, string email, int size)
-		{
-			image.WidthRequest = size;
-			image.HeightRequest = size;
-			ImageLoader loader = GetUserIcon (email, size);
-			loader.LoadOperation.Completed += delegate {
-				image.Pixbuf = loader.Image.ToPixbuf ();
-			};
-		}
-		
 		internal static void EnsureStockIconIsLoaded (string stockId)
 		{
 			if (string.IsNullOrEmpty (stockId))
@@ -493,7 +467,7 @@ namespace MonoDevelop.Ide
 
 		static string InternalGetStockIdFromResource (RuntimeAddin addin, string id, Gtk.IconSize size)
 		{
-			if (!id.StartsWith ("res:"))
+			if (!id.StartsWith ("res:", StringComparison.Ordinal))
 				return id;
 
 			id = id.Substring (4);
@@ -736,6 +710,58 @@ namespace MonoDevelop.Ide
 		{
 			ainfo.Dispose ();
 			animatedImages.RemoveAll (a => (AnimatedImageInfo)a.Target == ainfo);
+		}
+
+		//TODO: size-limit this cache
+		static Dictionary<string,ImageLoader> gravatars = new Dictionary<string,ImageLoader> ();
+
+		public static ImageLoader GetUserIcon (string email, int size, Xwt.Screen screen = null)
+		{
+
+			if (screen == null) {
+				screen = Xwt.Desktop.PrimaryScreen;
+			}
+
+			//only support integer scaling for now
+			var scaleFactor = (int) screen.ScaleFactor;
+			size = size * scaleFactor;
+
+			var hash = GetMD5Hash (email);
+			string key = hash + "@" + size + "x" + size;
+
+			if (scaleFactor != 1) {
+				key += "x" + scaleFactor;
+			}
+
+			ImageLoader loader;
+			if (!gravatars.TryGetValue (key, out loader)) {
+				var cacheFile = UserProfile.Current.TempDir.Combine ("Gravatars", key);
+				string url = "https://www.gravatar.com/avatar/" + hash + "?d=404&s=" + size;
+				gravatars[key] = loader = new ImageLoader (cacheFile, url, scaleFactor);
+			}
+
+			return loader;
+		}
+
+		static string GetMD5Hash (string email)
+		{
+			var md5 = System.Security.Cryptography.MD5.Create ();
+			byte[] hash = md5.ComputeHash (Encoding.UTF8.GetBytes (email.Trim ().ToLower ()));
+			StringBuilder sb = new StringBuilder ();
+			foreach (byte b in hash)
+				sb.Append (b.ToString ("x2"));
+			return sb.ToString ();
+		}
+
+		public static void LoadUserIcon (this Gtk.Image image, string email, int size)
+		{
+			image.WidthRequest = size;
+			image.HeightRequest = size;
+			ImageLoader gravatar = GetUserIcon (email, size);
+			gravatar.Completed += delegate {
+				if (gravatar.Image != null)
+					image.Pixbuf = gravatar.Image.ToPixbuf ();
+			};
 		}
 	}
 

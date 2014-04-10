@@ -527,15 +527,13 @@ namespace MonoDevelop.VersionControl.Views
 			if (string.IsNullOrEmpty (rev.Email))
 				return;
 			ImageLoader img = ImageService.GetUserIcon (rev.Email, 16);
-			if (img.LoadOperation.IsCompleted)
-				renderer.Image = img.Image;
-			else {
-				renderer.Image = null;
-				img.LoadOperation.Completed += delegate {
-					Gtk.Application.Invoke (delegate {
-						if (logstore.IterIsValid (iter))
-							model.EmitRowChanged (model.GetPath (iter), iter);
-					});
+
+			renderer.Image = img.Image;
+			if (img.Downloading) {
+				img.Completed += (sender, e) => {
+					renderer.Image = img.Image;
+					if (logstore.IterIsValid (iter))
+						model.EmitRowChanged (model.GetPath (iter), iter);
 				};
 			}
 		}

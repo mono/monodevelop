@@ -29,7 +29,6 @@
 using System;
 using System.Net;
 using NuGet;
-using WebService = MonoDevelop.Core.Web.WebService;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -37,10 +36,11 @@ namespace ICSharpCode.PackageManagement
 	{
 		public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
-			if (WebService.CredentialProvider == null)
+			var pah = MonoDevelop.Core.WebRequestHelper.ProxyAuthenticationHandler;
+			if (pah == null)
 				return null;
 
-			return WebService.CredentialProvider.GetCredentials (uri, proxy, GetCredentialType (credentialType), null, retrying);
+			return pah.GetCredentialsFromUser (uri, proxy, GetCredentialType (credentialType), null, retrying);
 		}
 
 		MonoDevelop.Core.Web.CredentialType GetCredentialType (CredentialType credentialType)
