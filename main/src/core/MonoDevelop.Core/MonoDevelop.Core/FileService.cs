@@ -659,7 +659,7 @@ namespace MonoDevelop.Core
 			Func<Stream,bool> validateDownload = null, CancellationToken ct = default (CancellationToken))
 		{
 			return WebRequestHelper.GetResponseAsync (
-				() => WebRequest.CreateHttp (url),
+				() => (HttpWebRequest)WebRequest.Create (url),
 				r => {
 					//check to see if the online file has been modified since it was last downloaded
 					var localNewsXml = new FileInfo (cacheFile);

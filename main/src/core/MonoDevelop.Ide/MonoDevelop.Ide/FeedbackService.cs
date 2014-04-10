@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide
 			string body = feedbackElem.InnerText;
 
 			WebRequestHelper.GetResponseAsync (
-				() => WebRequest.CreateHttp (feedbackUrl.Value + "?m=" + email),
+				() => (HttpWebRequest)WebRequest.Create (feedbackUrl.Value + "?m=" + email),
 				r => {
 					r.Method = "POST";
 					using (var sw = new StreamWriter (r.GetRequestStream ())) {

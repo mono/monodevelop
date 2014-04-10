@@ -63,7 +63,7 @@ namespace MonoDevelop.Components
 			var finfo = new FileInfo (cachePath);
 
 			WebRequestHelper.GetResponseAsync (
-				() => WebRequest.CreateHttp (url),
+				() => (HttpWebRequest)WebRequest.Create (url),
 				r => {
 					if (finfo.Exists)
 						r.IfModifiedSince = finfo.LastWriteTime;
