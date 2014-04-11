@@ -98,6 +98,7 @@ style "default" {
         colorize_scrollbar = FALSE
         progressbarstyle = 0
         trough_shades = { 0.842, 0.886 }
+        treeview_expander_color = { 0.415686275, 0.419607843, 0.431372549 }
     }
 }
 
