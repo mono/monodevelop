@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Dialog
 	{
-		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-icon.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-light-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 		protected TreeView StackTraceTreeView { get; private set; }
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
