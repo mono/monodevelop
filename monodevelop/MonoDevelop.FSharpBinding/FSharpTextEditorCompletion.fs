@@ -9,6 +9,7 @@ open System.Linq
 open System.Diagnostics
 open MonoDevelop.Core
 open MonoDevelop.Components
+open MonoDevelop.Debugger
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
@@ -18,6 +19,11 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 open ICSharpCode.NRefactory.Editor
 open ICSharpCode.NRefactory.Completion
+open MonoDevelop.FSharp.NRefactory
+
+open ICSharpCode.NRefactory.Semantics
+open ICSharpCode.NRefactory.TypeSystem
+open ICSharpCode.NRefactory.TypeSystem.Implementation
 
 /// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
 /// Description is generated lazily because it is quite slow and there can be numerous.
@@ -350,6 +356,22 @@ type FSharpTextEditorCompletion() =
           let res = loop 0 i 1
           res
 
+  interface IDebuggerExpressionResolver with
+    member x.ResolveExpression(editor, doc, offset, startOffset) =
+        if doc.ParsedDocument = null then
+            startOffset <- -1
+            null 
+        else
+            let resolveResult, dom = doc.GetLanguageItem(offset)
+            match resolveResult.GetSymbol() with
+            //we are only going to process FSharpResolvedVariable types all other types will not be resolved.
+            //This will cause the tooltip to be displayed as usual for member lookups etc.  
+            | :? FSharpResolvedVariable as resolvedVariable ->
+                startOffset <- dom.BeginColumn
+                (resolvedVariable :> IVariable).Name
+            | _ ->
+                startOffset <- -1
+                null
 
 open Microsoft.FSharp.Compiler.Range
 
