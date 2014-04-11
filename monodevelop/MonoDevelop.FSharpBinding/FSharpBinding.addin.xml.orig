@@ -132,10 +132,6 @@
     <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-    <DataType class = "MonoDevelop.FSharp.FSharpCompilerParameters" />
-  </Extension>
-
   <Extension path="/MonoDevelop/Ide/FileFilters">
     <FileFilter id="F#" insertbefore="AllFiles" _label="F# Source Files" extensions="*.fs;*.fsi;*.fsx;*.fsscript"/>
   </Extension>
