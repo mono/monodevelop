@@ -633,7 +633,7 @@ namespace Mono.TextEditor.Highlighting
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
 
-			if (result.Name != "Default")
+			if (result.Name != TextEditorOptions.DefaultColorStyle)
 				result.CopyValues (SyntaxModeService.DefaultColorStyle);
 
 			var version = Version.Parse (root.XPathSelectElement("version").Value);
@@ -731,7 +731,7 @@ namespace Mono.TextEditor.Highlighting
 				if (!string.IsNullOrEmpty (BaseScheme))
 					writer.WriteLine ("\t\"baseScheme\":\"{0}\",", BaseScheme);
 
-				var baseStyle = SyntaxModeService.GetColorStyle (BaseScheme ?? "Default");
+				var baseStyle = SyntaxModeService.GetColorStyle (BaseScheme ?? TextEditorOptions.DefaultColorStyle);
 
 				writer.WriteLine ("\t\"colors\":[");
 				bool first = true;
@@ -928,7 +928,7 @@ namespace Mono.TextEditor.Highlighting
 			result.TooltipBorder = new AmbientColor ();
 			result.TooltipBorder.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.5)));
 
-			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
+			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : TextEditorOptions.DefaultColorStyle);
 
 			foreach (var color in textColors.Values) {
 				if (color.Info.GetValue (result, null) == null)

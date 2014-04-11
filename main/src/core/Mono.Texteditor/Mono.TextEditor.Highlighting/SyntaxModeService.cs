@@ -74,7 +74,7 @@ namespace Mono.TextEditor.Highlighting
 				LoadStyle (name);
 				return GetColorStyle (name);
 			}
-			return GetColorStyle ("Default");
+			return GetColorStyle (TextEditorOptions.DefaultColorStyle);
 		}
 		
 		public static IStreamProvider GetProvider (SyntaxMode mode)
@@ -423,6 +423,8 @@ namespace Mono.TextEditor.Highlighting
 				} else if (file.EndsWith (".json", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string styleName = ScanStyle (stream);
+						if (styleName == TextEditorOptions.DefaultColorStyle)
+							continue;
 						if (!string.IsNullOrEmpty (styleName)) {
 							styleLookup [styleName] = new UrlStreamProvider (file);
 						} else {
@@ -432,6 +434,8 @@ namespace Mono.TextEditor.Highlighting
 				} else if (file.EndsWith (".vssettings", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string styleName = Path.GetFileNameWithoutExtension (file);
+						if (styleName == TextEditorOptions.DefaultColorStyle)
+							continue;
 						styleLookup [styleName] = new UrlStreamProvider (file);
 					}
 				}
@@ -526,7 +530,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public static ColorScheme DefaultColorStyle {
 			get {
-				return GetColorStyle ("Default");
+				return GetColorStyle (TextEditorOptions.DefaultColorStyle);
 			}
 		}
 		
