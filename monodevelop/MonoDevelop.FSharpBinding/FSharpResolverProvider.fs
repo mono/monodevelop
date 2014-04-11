@@ -182,7 +182,7 @@ type FSharpResolverProvider() =
         | None -> null
         | Some tyRes ->
         // Get the declaration location from the language service
-        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(doc.Editor.Caret.Offset, doc.Editor.Document)
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
         let loc = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.RunSynchronously
         let lastIdent = 
             match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
