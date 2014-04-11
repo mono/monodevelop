@@ -126,6 +126,7 @@
     <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
+    <Compile Include="Services\NRefactory.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpLanguageBinding.fs" />
@@ -220,6 +221,10 @@
     <Reference Include="MonoDevelop.Refactoring">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Debugger">
+      <Private>False</Private>
+      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
       <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>
