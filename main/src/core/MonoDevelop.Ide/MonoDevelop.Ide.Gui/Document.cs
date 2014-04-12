@@ -84,6 +84,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
+				if (analysisDocument == null)
+					return null;
 				return RoslynTypeSystemService.Workspace.GetDocument (analysisDocument);
 			}
 		}
@@ -587,8 +589,10 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			if (analysisDocument != null)
-				RoslynTypeSystemService.Workspace.CloseDocument (analysisDocument);
+			if (analysisDocument != null) {
+				RoslynTypeSystemService.Workspace.InformDocumentClose (analysisDocument, FileName);
+				analysisDocument = null;
+			}
 			DetachExtensionChain ();
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
@@ -878,13 +882,13 @@ namespace MonoDevelop.Ide.Gui
 			if (analysisDocument == null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
 				if (analysisDocument != null)
-					RoslynTypeSystemService.Workspace.OpenDocument (analysisDocument);
+					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
 			}
 			CancelParseTimeout ();
 			if (IsProjectContextInUpdate)
 				return;
-			if (analysisDocument != null && RoslynTypeSystemService.Workspace.IsDocumentOpen (analysisDocument))
-				RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
+			//if (analysisDocument != null && RoslynTypeSystemService.Workspace.IsDocumentOpen (analysisDocument))
+			//	RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
 
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;

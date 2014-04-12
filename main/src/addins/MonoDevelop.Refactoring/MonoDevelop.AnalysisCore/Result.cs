@@ -31,19 +31,20 @@ using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class Result
 	{
-		public Result (DomRegion region, string message, bool underLine = true)
+		public Result (TextSpan region, string message, bool underLine = true)
 		{
 			this.Region = region;
 			this.Message = message;
 			this.Underline = underLine;
 		}
 		
-		public Result (DomRegion region, string message, Severity level, IssueMarker inspectionMark, bool underline = true)
+		public Result (TextSpan region, string message, Severity level, IssueMarker inspectionMark, bool underline = true)
 		{
 			this.Region = region;
 			this.Message = message;
@@ -68,7 +69,7 @@ namespace MonoDevelop.AnalysisCore
 		public string Message { get; private set; }
 		public Severity Level { get; private set; }
 		public IssueMarker InspectionMark { get; private set; }
-		public DomRegion Region { get; private set; }
+		public TextSpan Region { get; private set; }
 		
 		public bool Underline { get; private set; }
 		

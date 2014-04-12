@@ -244,11 +244,11 @@ namespace MonoDevelop.Refactoring
 						var fresult = r as FixableResult;
 						if (fresult == null)
 							continue;
-						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
-								DocumentRegion = action.DocumentRegion
-							});
-						}
+//						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+//							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
+//								DocumentRegion = action.DocumentRegion
+//							});
+//						}
 					}
 					result.AddRange (GetValidActions (doc, loc).Result);
 					callback (result);

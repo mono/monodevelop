@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -123,7 +124,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.projectId = projectId;
 			}
 
-			public DocumentId GetDocumentId (string name)
+			public DocumentId GetOrCreateDocumentId (string name)
 			{
 				lock (documentIdMap) {
 					DocumentId result;
@@ -133,6 +134,14 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					return result;
 				}
+			}
+			
+			public DocumentId GetDocumentId (string name)
+			{
+				DocumentId result;
+				if (!documentIdMap.TryGetValue (name, out result))
+					return null;
+				return result;
 			}
 		}
 
@@ -175,7 +184,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return p.Files
 				.Where (f => f.BuildAction == MonoDevelop.Projects.BuildAction.Compile)
 				.Select (f => DocumentInfo.Create (
-				id.GetDocumentId (f.Name),
+				id.GetOrCreateDocumentId (f.Name),
 					f.FilePath,
 				null,
 				SourceCodeKind.Regular,
@@ -243,20 +252,58 @@ namespace MonoDevelop.Ide.TypeSystem
 			var document = CurrentSolution.GetDocument (documentId);
 			if (document == null)
 				return;
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (document);
+			MonoDevelop.Projects.Project prj = null;
+			foreach (var curPrj in IdeApp.Workspace.GetAllProjects ()) {
+				if (GetProjectId (curPrj) == documentId.ProjectId) {
+					prj = curPrj;
+					break;
+				}
+			}
+			IdeApp.Workbench.OpenDocument (new MonoDevelop.Ide.Gui.FileOpenInformation (
+				document.FilePath,
+				prj,
+				activate
+			)); 
+		}
+
+		internal void InformDocumentOpen (DocumentId documentId, TextEditorData editor)
+		{
+			var document = CurrentSolution.GetDocument (documentId);
+			if (document == null)
+				return;
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (editor);
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}
-
-		public override void CloseDocument (DocumentId documentId)
-		{
-			OnDocumentClosed (documentId, new MonoDevelopTextLoader (CurrentSolution.GetDocument (documentId).FilePath)); 
+		
+		internal override bool CanChangeActiveContextDocument {
+			get {
+				return true;
+			}
 		}
 
+		public void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, string filePath)
+		{
+			OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
+
+		}
+		
+		public override void CloseDocument (DocumentId documentId)
+		{
+		}
+		
 		protected override void ChangedDocumentText(DocumentId documentId, SourceText text)
 		{
-			var document = CurrentSolution.GetDocument(documentId);
-			if (document != null)
-				OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);
+			var document = CurrentSolution.GetDocument (documentId);
+			
+			if (document == null)
+				return;
+			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath);
+			
+			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result)) {
+				data.Replace (change.Span.Start, change.Span.Length, change.NewText);
+			}
+			
+			OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);
 		}
 		#endregion
 

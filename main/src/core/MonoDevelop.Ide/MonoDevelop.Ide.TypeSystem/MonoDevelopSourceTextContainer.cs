@@ -36,29 +36,76 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopSourceTextContainer : SourceTextContainer
+	class MonoDevelopSourceText : SourceText
 	{
-		Document document;
+		readonly Mono.TextEditor.TextDocument doc;
 
-		public MonoDevelopSourceTextContainer (Document document)
+		public MonoDevelopSourceText (Mono.TextEditor.TextDocument doc)
 		{
-			this.document = document;
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			this.doc = doc;
+		}
+
+		#region implemented abstract members of SourceText
+		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
+		{
+			while (count --> 0) {
+				destination[destinationIndex++] = doc.GetCharAt (sourceIndex++);
+			}
+		}
+		
+		public override int Length {
+			get {
+				return doc.TextLength;
+			}
+		}
+		public override char this [int index] {
+			get {
+				return doc.GetCharAt (index);
+			}
+		}
+		#endregion
+		
+	}
+	class MonoDevelopSourceTextContainer : SourceTextContainer
+	{
+		readonly Mono.TextEditor.TextDocument document;
+
+		public MonoDevelopSourceTextContainer (Mono.TextEditor.TextEditorData document)
+		{
+			this.document = document.Document;
+			this.document.TextReplacing += HandleTextReplacing;
+			this.document.TextReplaced += HandleTextReplaced;
+		}
+		
+		~MonoDevelopSourceTextContainer ()
+		{
+			document.TextReplaced -= HandleTextReplaced;
+			document.TextReplaced -= HandleTextReplacing;
+		}
+
+		SourceText oldText;
+		void HandleTextReplacing (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
+		{
+			oldText = SourceText.From (document.Text);
+		}
+		
+		void HandleTextReplaced (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
+		{
+			var handler = TextChanged;
+			if (handler != null)
+				handler (this, new TextChangeEventArgs (oldText, CurrentText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
 		}
 
 		#region implemented abstract members of SourceTextContainer
 		public override SourceText CurrentText {
 			get {
-				Console.WriteLine ("get current text !!! " + document.FilePath);
-				return SourceText.From (TextFileProvider.Instance.GetTextEditorData (document.FilePath).Text);
+				return new MonoDevelopSourceText (document);
 			}
 		}
 
 		public override event EventHandler<TextChangeEventArgs> TextChanged;
 		#endregion
 	}
-
-
-	
-
-	
 }

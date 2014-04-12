@@ -64,6 +64,13 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\external\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory6.CSharp.Refactoring">
+      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.Refactoring.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -161,6 +168,7 @@
     <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProjectGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\FileGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

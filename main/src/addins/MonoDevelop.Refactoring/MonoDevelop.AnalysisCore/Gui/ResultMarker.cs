@@ -42,17 +42,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 			this.result = result;
 		}
 		
-		static bool IsOneLine (Result result)
-		{
-			return result.Region.BeginLine == result.Region.EndLine;
-		}
-		
 		public Result Result { get { return result; } }
 		
 		//utility for debugging
-		public int Line { get { return result.Region.BeginLine; } }
-		public int ColStart { get { return IsOneLine (result)? (result.Region.BeginColumn) : 0; } }
-		public int ColEnd   { get { return IsOneLine (result)? (result.Region.EndColumn) : 0; } }
 		public string Message { get { return result.Message; } }
 		
 		static Cairo.Color GetColor (TextEditor editor, Result result)

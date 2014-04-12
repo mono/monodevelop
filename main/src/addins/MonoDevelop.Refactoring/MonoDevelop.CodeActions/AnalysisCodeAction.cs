@@ -57,9 +57,7 @@ namespace MonoDevelop.CodeActions
 		
 		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{
-			yield return new AnalysisCodeAction (Action, Result) {
-				DocumentRegion = Action.DocumentRegion
-			};
+			yield  break;
 		}
 
 		internal class AnalysisCodeAction : CodeAction
@@ -99,16 +97,16 @@ namespace MonoDevelop.CodeActions
 
 			public void ShowOptions (object sender, EventArgs e)
 			{
-				var inspectorResults = Result as InspectorResults;
-				if (inspectorResults != null)
-					inspectorResults.ShowResultOptionsDialog ();
+//				var inspectorResults = Result as InspectorResults;
+//				if (inspectorResults != null)
+//					inspectorResults.ShowResultOptionsDialog ();
 			}
 
 			public void HideCodeIssue (object sender, EventArgs e)
 			{
-				var inspectorResults = Result as InspectorResults;
-				if (inspectorResults != null)
-					inspectorResults.Inspector.SetIsEnabled (false);
+//				var inspectorResults = Result as InspectorResults;
+//				if (inspectorResults != null)
+//					inspectorResults.Inspector.SetIsEnabled (false);
 			}
 		}
 	}

@@ -28,11 +28,9 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
 using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {

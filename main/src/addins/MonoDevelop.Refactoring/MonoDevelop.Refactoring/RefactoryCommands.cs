@@ -287,7 +287,7 @@ namespace MonoDevelop.Refactoring
 
 				if (QuickTaskStrip.EnableFancyFeatures) {
 					var ext = doc.GetContent <CodeActionEditorExtension> ();
-					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
+					//refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
 				} else {
 					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
 				}
@@ -298,18 +298,18 @@ namespace MonoDevelop.Refactoring
 			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
 				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
 
-				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-						continue;
-					var fix = fix_;
-					if (first) {
-						first = false;
-						if (ciset.CommandInfos.Count > 0)
-							ciset.CommandInfos.AddSeparator ();
-					}
-
-					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
-				}
+//				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+//					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
+//						continue;
+//					var fix = fix_;
+//					if (first) {
+//						first = false;
+//						if (ciset.CommandInfos.Count > 0)
+//							ciset.CommandInfos.AddSeparator ();
+//					}
+//
+//					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+//				}
 			}
 
 			if (ciset.CommandInfos.Count > 0) {

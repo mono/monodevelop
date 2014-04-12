@@ -191,8 +191,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 					var currentResult = (Result)enumerator.Current;
 
 					if (currentResult.InspectionMark != IssueMarker.None) {
-						int start = editor.LocationToOffset (currentResult.Region.Begin);
-						int end = editor.LocationToOffset (currentResult.Region.End);
+						int start = currentResult.Region.Start;
+						int end = currentResult.Region.End;
 						if (start >= end)
 							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
@@ -209,7 +209,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							ext.markers.Enqueue (marker);
 						}
 					}
-					ext.tasks.Add (new QuickTask (currentResult.Message, editor.LocationToOffset (currentResult.Region.Begin), currentResult.Level));
+					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Start, currentResult.Level));
 				}
 				
 				return true;

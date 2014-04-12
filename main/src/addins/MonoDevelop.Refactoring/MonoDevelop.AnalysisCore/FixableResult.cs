@@ -32,12 +32,13 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class FixableResult : Result
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
+		public FixableResult (TextSpan region, string message, Severity level,
 			IssueMarker mark, params IAnalysisFix[] fixes)
 			: base (region, message, level, mark)
 		{
@@ -62,7 +63,7 @@ namespace MonoDevelop.AnalysisCore
 	{
 		string Label { get; }
 		bool SupportsBatchFix { get; }
-		DocumentRegion DocumentRegion { get; }
+		TextSpan DocumentRegion { get; }
 		string IdString { get; }
 		void Fix ();
 		void BatchFix ();
