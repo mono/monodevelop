@@ -55,17 +55,14 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\..\roslyn\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

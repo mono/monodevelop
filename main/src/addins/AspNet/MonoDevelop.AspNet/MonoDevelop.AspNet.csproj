@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.AspNet</AssemblyName>
     <RootNamespace>MonoDevelop.AspNet</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -141,7 +142,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

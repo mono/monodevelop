@@ -153,23 +153,26 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="ICSharpCode.NRefactory6.CSharp">
+      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory6.CSharp.Refactoring">
+      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.Refactoring.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\..\roslyn\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory6.CSharp">
-      <HintPath>..\..\..\..\..\roslyn\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
