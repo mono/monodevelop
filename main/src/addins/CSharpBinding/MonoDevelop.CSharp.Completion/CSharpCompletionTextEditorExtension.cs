@@ -349,18 +349,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			var offset = Editor.Caret.Offset;
 
-			char prevCh = offset > 2 ? Editor.GetCharAt(offset - 2) : ';';
-			char nextCh = offset < Editor.Length ? Editor.GetCharAt(offset) : ' ';
-			const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
-			var charIsIdentiferStart = char.IsLetter (completionChar) || completionChar == '_'
-				|| completionChar == '.';
-
-			if (!charIsIdentiferStart && !char.IsLetterOrDigit (prevCh)) {
-				if (!ctrlSpace)
-					return null;
-			}
-
-
 			var list = new CSharpCompletionDataList ();
 			try {
 				Microsoft.CodeAnalysis.Compilation compilation;
@@ -369,8 +357,8 @@ namespace MonoDevelop.CSharp.Completion
 				if (compilation != null) {
 					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
 					var engine = new ICSharpCode.NRefactory6.CSharp.Completion.CSharpCompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory ());
-
-					foreach (var symbol in engine.GetCompletionData (compilation.GetSemanticModel (syntaxTree), offset)) {
+					
+					foreach (var symbol in engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace)) {
 						list.Add ((ICompletionData)symbol); 
 					}
 				}

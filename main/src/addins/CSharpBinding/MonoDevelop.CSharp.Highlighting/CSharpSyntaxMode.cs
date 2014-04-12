@@ -37,20 +37,16 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Analysis;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp.Analysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -71,9 +67,9 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	class CSharpSyntaxMode : SyntaxMode, IQuickTaskProvider, IDisposable
 	{
-		readonly Document guiDocument;
+		readonly MonoDevelop.Ide.Gui.Document guiDocument;
 
-		CSharpAstResolver resolver;
+		SemanticModel resolver;
 		CancellationTokenSource src;
 
 		public bool SemanticHighlightingEnabled {
@@ -151,7 +147,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null) {
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
-						var newResolverTask = guiDocument.GetSharedResolver ();
+						var newResolverTask = guiDocument.AnalysisDocument.GetSemanticModelAsync ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							if (newResolverTask == null)
@@ -161,7 +157,7 @@ namespace MonoDevelop.CSharp.Highlighting
 								return;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
-								newResolver.RootNode.AcceptVisitor (visitor);
+								visitor.Visit (newResolver.SyntaxTree.GetRoot ());
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
 								return;
@@ -202,23 +198,15 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		class HighlightingVisitior : SemanticHighlightingVisitor<string>
 		{
-			readonly int lineNumber;
-			readonly int lineOffset;
-			readonly int lineLength;
+			readonly TextSpan textSpan;
 			internal HighlightingSegmentTree tree = new HighlightingSegmentTree ();
 
-			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
+			public HighlightingVisitior (SemanticModel resolver, CancellationToken cancellationToken, TextSpan textSpan) : base (resolver)
 			{
 				if (resolver == null)
 					throw new ArgumentNullException ("resolver");
-				this.resolver = resolver;
 				this.cancellationToken = cancellationToken;
-				this.lineNumber = lineNumber;
-				this.lineOffset = lineOffset;
-				this.lineLength = lineLength;
-				regionStart = new TextLocation (lineNumber, 1);
-				regionEnd  = new TextLocation (lineNumber, lineLength);
-
+				this.textSpan = textSpan;
 				Setup ();
 			}
 
@@ -261,91 +249,84 @@ namespace MonoDevelop.CSharp.Highlighting
 				stringFormatItemColor = "String Format Items";
 			}
 
-			protected override void Colorize(TextLocation start, TextLocation end, string color)
+			protected override void Colorize (TextSpan span, string color)
 			{
-				int startOffset;
-				if (start.Line == lineNumber) {
-					startOffset = lineOffset + start.Column - 1;
-				} else {
-					if (start.Line > lineNumber)
-						return;
-					startOffset = lineOffset;
+				if (this.textSpan.IntersectsWith (span)) {
+					tree.AddStyle (span.Start, span.End, color);
 				}
-				int endOffset;
-				if (end.Line == lineNumber) {
-					endOffset = lineOffset +end.Column - 1;
-				} else {
-					if (end.Line < lineNumber)
-						return;
-					endOffset = lineOffset + lineLength;
-				}
-				tree.AddStyle (startOffset, endOffset, color);
 			}
 		}
 
-		class QuickTaskVisitor : DepthFirstAstVisitor
+		class QuickTaskVisitor : CSharpSyntaxVisitor
 		{
 			internal List<QuickTask> QuickTasks = new List<QuickTask> ();
-			readonly CSharpAstResolver resolver;
+			readonly SemanticModel resolver;
 			readonly CancellationToken cancellationToken;
 
-			public QuickTaskVisitor (CSharpAstResolver resolver, CancellationToken cancellationToken)
+			public QuickTaskVisitor (SemanticModel resolver, CancellationToken cancellationToken)
 			{
 				this.resolver = resolver;
 				this.cancellationToken = cancellationToken;
 			}
 			
-			protected override void VisitChildren (AstNode node)
+			public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
-				base.VisitChildren (node);
+				cancellationToken.ThrowIfCancellationRequested ();
+				base.VisitBlock (node);
 			}
-
-			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+			
+			public override void VisitIdentifierName (Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax node)
 			{
-				base.VisitIdentifierExpression (identifierExpression);
-				var result = resolver.Resolve (identifierExpression, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
+				base.VisitIdentifierName (node);
+				var info = resolver.GetSymbolInfo (node, cancellationToken); 
+				if (info.Symbol == null)  {
+					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", node.GetText ()), node.SpanStart, ICSharpCode.NRefactory.Refactoring.Severity.Error));
 				}
 			}
-
-			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
-			{
-				base.VisitMemberReferenceExpression (memberReferenceExpression);
-				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
-				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitSimpleType (SimpleType simpleType)
-			{
-				base.VisitSimpleType (simpleType);
-				var result = resolver.Resolve (simpleType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitMemberType (MemberType memberType)
-			{
-				base.VisitMemberType (memberType);
-				var result = resolver.Resolve (memberType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment)
-			{
-			}
+			
+//			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+//			{
+//				base.VisitIdentifierExpression (identifierExpression);
+//				var result = resolver.Resolve (identifierExpression, cancellationToken);
+//				if (result.IsError) {
+//				}
+//			}
+//
+//			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
+//			{
+//				base.VisitMemberReferenceExpression (memberReferenceExpression);
+//				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
+//				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
+//					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
+//				}
+//			}
+//
+//			public override void VisitSimpleType (SimpleType simpleType)
+//			{
+//				base.VisitSimpleType (simpleType);
+//				var result = resolver.Resolve (simpleType, cancellationToken);
+//				if (result.IsError) {
+//					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
+//				}
+//			}
+//
+//			public override void VisitMemberType (MemberType memberType)
+//			{
+//				base.VisitMemberType (memberType);
+//				var result = resolver.Resolve (memberType, cancellationToken);
+//				if (result.IsError) {
+//					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
+//				}
+//			}
+//
+//			public override void VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment)
+//			{
+//			}
 		}
 		
 		static CSharpSyntaxMode ()
 		{
-			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
+			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<MonoDevelop.Ide.Gui.DocumentEventArgs> (OnDisableConditionalCompilation));
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += delegate {
 					foreach (var doc in IdeApp.Workbench.Documents) {
@@ -377,7 +358,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 		
-		static void OnDisableConditionalCompilation (object s, DocumentEventArgs e)
+		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
 		{
 			var mode = e.Document.Editor.Document.SyntaxMode as CSharpSyntaxMode;
 			if (mode == null)
@@ -438,7 +419,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		public CSharpSyntaxMode (Document document)
+		public CSharpSyntaxMode (MonoDevelop.Ide.Gui.Document document)
 		{
 			this.guiDocument = document;
 			guiDocument.DocumentParsed += HandleDocumentParsed;
@@ -626,9 +607,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 		
-		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
+		protected class CSharpChunkParser : ChunkParser
 		{
-
 			HashSet<string> tags = new HashSet<string> ();
 			
 			CSharpSyntaxMode csharpSyntaxMode;
@@ -641,31 +621,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 
-			}
-
-			#region IResolveVisitorNavigator implementation
-			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
-			{
-				if (node is SimpleType || node is MemberType
-					|| node is IdentifierExpression || node is MemberReferenceExpression
-					|| node is InvocationExpression) {
-					return ResolveVisitorNavigationMode.Resolve;
-				}
-				return ResolveVisitorNavigationMode.Scan;
-			}
-			
-			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
-			{
-			}
-			
-			void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
-			{
-			}
-			#endregion
-			static int TokenLength (AstNode node)
-			{
-				Debug.Assert (node.StartLocation.Line == node.EndLocation.Line);
-				return node.EndLocation.Column - node.StartLocation.Column;
 			}
 
 			protected override void AddRealChunk (Chunk chunk)
@@ -684,9 +639,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						HighlightingVisitior visitor;
 						if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
 							var resolver = csharpSyntaxMode.resolver;
-							visitor = new HighlightingVisitior (resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
+							visitor = new HighlightingVisitior (resolver, default (CancellationToken), new TextSpan (line.Offset, line.Length));
 							visitor.tree.InstallListener (doc);
-							resolver.RootNode.AcceptVisitor (visitor);
+							visitor.Visit (resolver.SyntaxTree.GetRoot ()); 
 							csharpSyntaxMode.lineSegments[line] = visitor;
 						}
 						string style;
@@ -726,7 +681,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return (CSharpSyntaxMode)mode;
 				}
 			}
-			class ConditinalExpressionEvaluator : DepthFirstAstVisitor<object, object>
+			class ConditinalExpressionEvaluator : ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor<object, object>
 			{
 				HashSet<string> symbols;
 
@@ -785,39 +740,39 @@ namespace MonoDevelop.CSharp.Highlighting
 					}*/
 				}
 				
-				public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+				public override object VisitIdentifierExpression (ICSharpCode.NRefactory.CSharp.IdentifierExpression identifierExpression, object data)
 				{
 					return symbols.Contains (identifierExpression.Identifier);
 				}
 				
-				public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
+				public override object VisitUnaryOperatorExpression (ICSharpCode.NRefactory.CSharp.UnaryOperatorExpression unaryOperatorExpression, object data)
 				{
 					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? false);
-					if (unaryOperatorExpression.Operator ==  UnaryOperatorType.Not)
+					if (unaryOperatorExpression.Operator ==  ICSharpCode.NRefactory.CSharp.UnaryOperatorType.Not)
 						return !result;
 					return result;
 				}
 
 
-				public override object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
+				public override object VisitPrimitiveExpression (ICSharpCode.NRefactory.CSharp.PrimitiveExpression primitiveExpression, object data)
 				{
 					if (primitiveExpression.Value is bool)
 						return primitiveExpression.Value;
 					return false;
 				}
 
-				public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
+				public override object VisitBinaryOperatorExpression (ICSharpCode.NRefactory.CSharp.BinaryOperatorExpression binaryOperatorExpression, object data)
 				{
 					bool left = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? false);
 					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? false);
 					switch (binaryOperatorExpression.Operator) {
-					case BinaryOperatorType.InEquality:
+					case ICSharpCode.NRefactory.CSharp.BinaryOperatorType.InEquality:
 						return left != right;
-					case BinaryOperatorType.Equality:
+					case ICSharpCode.NRefactory.CSharp.BinaryOperatorType.Equality:
 						return left == right;
-					case BinaryOperatorType.ConditionalOr:
+					case ICSharpCode.NRefactory.CSharp.BinaryOperatorType.ConditionalOr:
 						return left || right;
-					case BinaryOperatorType.ConditionalAnd:
+					case ICSharpCode.NRefactory.CSharp.BinaryOperatorType.ConditionalAnd:
 						return left && right;
 					}
 					
@@ -825,7 +780,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return left;
 				}
 
-				public override object VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
+				public override object VisitParenthesizedExpression (ICSharpCode.NRefactory.CSharp.ParenthesizedExpression parenthesizedExpression, object data)
 				{
 					return parenthesizedExpression.Expression.AcceptVisitor (this, data);
 				}
@@ -895,7 +850,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				int length = end - textOffset;
 				string parameter = CurText.Substring (textOffset + 3, length - 3);
-				AstNode expr = new CSharpParser ().ParseExpression (parameter);
+				var expr = new ICSharpCode.NRefactory.CSharp.CSharpParser ().ParseExpression (parameter);
 				bool result = false;
 				if (expr != null && !expr.IsNull) {
 					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
@@ -937,7 +892,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				DocumentLine line = doc.GetLineByOffset (i);
 				int length = line.Offset + line.Length - i;
 				string parameter = doc.GetTextAt (i + 5, length - 5);
-				AstNode expr= new CSharpParser ().ParseExpression (parameter);
+				var expr= new ICSharpCode.NRefactory.CSharp.CSharpParser ().ParseExpression (parameter);
 				bool result;
 				if (expr != null && !expr.IsNull) {
 					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);

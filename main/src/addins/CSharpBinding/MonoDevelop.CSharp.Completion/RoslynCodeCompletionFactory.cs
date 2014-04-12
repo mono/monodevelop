@@ -59,30 +59,12 @@ namespace MonoDevelop.CSharp.Completion
 	class RoslynCodeCompletionFactory : ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory
 	{
 		#region ICompletionDataFactory implementation
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateCodeTemplateCompletionData ()
-		{
-			throw new NotImplementedException ();
-		}
 
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateKeyword (string keyword)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateGenericData (string data, ICSharpCode.NRefactory6.CSharp.Completion.GenericDataType genericDataType)
 		{
 			return new RoslynCompletionData {
-				CompletionText = keyword,
-				DisplayText = keyword,
-				Icon = "md-keyword"
-			};
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePreprocessorKeyword (string preProcessorKeyword)
-		{
-			return new RoslynCompletionData {
-				CompletionText = preProcessorKeyword,
-				DisplayText = preProcessorKeyword,
+				CompletionText = data,
+				DisplayText = data,
 				Icon = "md-keyword"
 			};
 		}
