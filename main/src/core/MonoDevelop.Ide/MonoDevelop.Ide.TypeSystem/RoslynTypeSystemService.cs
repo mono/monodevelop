@@ -241,6 +241,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
 			var document = CurrentSolution.GetDocument (documentId);
+			if (document == null)
+				return;
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (document);
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}

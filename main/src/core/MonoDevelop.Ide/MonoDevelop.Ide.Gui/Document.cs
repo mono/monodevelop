@@ -81,6 +81,12 @@ namespace MonoDevelop.Ide.Gui
 		public TextEditorExtension EditorExtension {
 			get { return this.editorExtension; }
 		}
+
+		public Microsoft.CodeAnalysis.Document AnalysisDocument {
+			get {
+				return RoslynTypeSystemService.Workspace.GetDocument (analysisDocument);
+			}
+		}
  		
 		public T GetContent<T> () where T : class
 		{
@@ -877,9 +883,8 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			if (IsProjectContextInUpdate)
 				return;
-			if (analysisDocument != null) {
+			if (analysisDocument != null && RoslynTypeSystemService.Workspace.IsDocumentOpen (analysisDocument))
 				RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
-			}
 
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;

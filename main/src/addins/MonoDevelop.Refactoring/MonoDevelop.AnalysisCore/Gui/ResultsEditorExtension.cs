@@ -209,7 +209,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 							ext.markers.Enqueue (marker);
 						}
 					}
-					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
+					ext.tasks.Add (new QuickTask (currentResult.Message, editor.LocationToOffset (currentResult.Region.Begin), currentResult.Level));
 				}
 				
 				return true;

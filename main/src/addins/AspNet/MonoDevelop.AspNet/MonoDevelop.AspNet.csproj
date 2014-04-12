@@ -140,6 +140,9 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\..\..\..\roslyn\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.AspNet.addin.xml">
