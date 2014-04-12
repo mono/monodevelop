@@ -255,7 +255,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		internal enum HoverMode { NextMessage, NextWarning, NextError }
 		internal QuickTask SearchNextTask (HoverMode mode)
 		{
-			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			var curLoc = TextEditor.Caret.Offset;
 			QuickTask firstTask = null;
 			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
 				bool isNextTask = task.Location > curLoc;
@@ -273,7 +273,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		internal QuickTask SearchPrevTask (HoverMode mode)
 		{
-			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			var curLoc = TextEditor.Caret.Offset;
 			QuickTask firstTask = null;
 			foreach (var task in AllTasks.OrderByDescending (t => t.Location) ) {
 				bool isNextTask = task.Location < curLoc;
@@ -293,10 +293,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (quickTask == null)
 				return;
-			var line = quickTask.Location.Line;
-			if (line < 1 || line >= TextEditor.LineCount)
-				return;
-			TextEditor.Caret.Location = new TextLocation (line, Math.Max (1, quickTask.Location.Column));
+			TextEditor.Caret.Offset = quickTask.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();

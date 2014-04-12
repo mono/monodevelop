@@ -297,7 +297,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			QuickTask hoverTask = null;
 			foreach (var task in AllTasks) {
-				double ty = GetYPosition (task.Location.Line);
+				double ty = GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
 				if (Math.Abs (ty - y) < 3) {
 					hoverTask = task;
 				}
@@ -520,14 +520,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		void MoveToTask (QuickTask task)
 		{
-			if (task.Location.IsEmpty) {
-				Console.WriteLine ("empty:" + task.Description);
-			}
-			var loc = new DocumentLocation (
-				Math.Max (DocumentLocation.MinLine, task.Location.Line),
-				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
-			);
-			TextEditor.Caret.Location = loc;
+//			var loc = new DocumentLocation (
+//				Math.Max (DocumentLocation.MinLine, task.Location.Line),
+//				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
+//			);
+			TextEditor.Caret.Offset = task.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();
@@ -660,7 +657,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 */
 			foreach (var task in AllTasks) {
-				double y = GetYPosition (task.Location.Line);
+				double y = GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
 
 				cr.SetSourceColor (GetBarColor (task.Severity));
 				cr.Rectangle (0, Math.Round (y) - 1, Allocation.Width, 2);
