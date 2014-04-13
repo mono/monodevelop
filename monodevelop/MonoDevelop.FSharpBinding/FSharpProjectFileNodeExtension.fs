@@ -35,6 +35,14 @@ type FSharpProjectNodeCommandHandler() =
     ///partially apply the default namespace of msbuild to xs
     let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
 
+    // If the "Compile" element contains a "Link" element then it is a linked file,
+    // so use that value for comparison when finding the node.
+    let nodeName (node:XElement) = 
+       let link = node.Descendants(xd "Link") |> firstOrNone
+       match link with
+       | Some l -> l.Value
+       | None   -> node |> attributeValue "Include"
+
     //open project file
     use file = IO.File.Open(projectFile, FileMode.Open)
     let xdoc = XElement.Load(file)
@@ -44,7 +52,7 @@ type FSharpProjectNodeCommandHandler() =
     let compileNodes = xdoc |> descendants (xd "Compile")
 
     let findByIncludeFile name seq = 
-        seq |> where (fun elem -> (elem |> attributeValue "Include") = Path.GetFileName(name) )
+        seq |> where (fun elem -> nodeName elem = name )
             |> firstOrNone
     
     let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
