@@ -85,7 +85,8 @@ namespace MonoDevelop.Debugger
 
 			var d = metrics.TextRenderEndPosition - metrics.TextRenderStartPosition;
 			if (d > 0) {
-				cr.RoundedRectangle (metrics.TextRenderStartPosition, y, d + sidePadding, metrics.LineHeight, rounding);
+				cr.LineWidth = 1;
+				cr.RoundedRectangle (metrics.TextRenderStartPosition, Math.Floor (y) + 0.5, d + sidePadding, metrics.LineHeight, rounding);
 				cr.SetSourceColor (BackgroundColor); 
 				cr.FillPreserve ();
 				cr.SetSourceColor (BorderColor); 
