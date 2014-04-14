@@ -193,7 +193,7 @@ type FSharpResolverProvider() =
 
         match fsSymbolOpt with 
         | None ->  null
-        | Some fsSymbol -> 
+        | Some fsSymbolUse -> 
             let reg = 
                 match loc with
                 | FindDeclResult.DeclFound(m) -> 
@@ -208,7 +208,7 @@ type FSharpResolverProvider() =
                     DomRegion.Empty
             region <- reg
             // This is the NRefactory symbol for the item - the Region is used for goto-definition
-            let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbol, lastIdent, reg)
+            let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, reg)
             resolveResult
 
       with exn -> 
