@@ -48,6 +48,17 @@ namespace MonoDevelop.Debugger
 		protected abstract Cairo.Color BackgroundColor {
 			get;
 		}
+		
+		protected abstract Cairo.Color BorderColor {
+			get;
+		}
+		
+		protected Cairo.Color GetBorderColor (AmbientColor color) 
+		{
+			if (color.HasBorderColor)
+				return color.BorderColor;
+			return color.Color;
+		}
 
 		protected TextEditor Editor {
 			get; private set;
@@ -76,7 +87,9 @@ namespace MonoDevelop.Debugger
 			if (d > 0) {
 				cr.RoundedRectangle (metrics.TextRenderStartPosition, y, d + sidePadding, metrics.LineHeight, rounding);
 				cr.SetSourceColor (BackgroundColor); 
-				cr.Fill ();
+				cr.FillPreserve ();
+				cr.SetSourceColor (BorderColor); 
+				cr.Stroke ();
 			}
 
 			return base.DrawBackground (editor, cr, y, metrics);
@@ -137,7 +150,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointText.Background; }
+			get { return Editor.ColorStyle.BreakpointMarker.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
@@ -168,6 +185,10 @@ namespace MonoDevelop.Debugger
 		protected override Cairo.Color BackgroundColor {
 			get { return Editor.ColorStyle.BreakpointMarkerDisabled.Color; }
 		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerDisabled); }
+		}
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
@@ -190,7 +211,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointTextInvalid.Background; }
+			get { return Editor.ColorStyle.InvalidBreakpointMarker.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.InvalidBreakpointMarker); }
 		}
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
@@ -208,7 +233,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerCurrentLine.Background; }
+			get { return Editor.ColorStyle.DebuggerCurrentLineMarker.Color; }
+		}
+
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.DebuggerCurrentLineMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
@@ -231,7 +260,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerStackLine.Background; }
+			get { return Editor.ColorStyle.DebuggerStackLineMarker.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.DebuggerStackLineMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
