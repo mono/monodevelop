@@ -73,14 +73,14 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> return None
         | Some(colu, identIsland) ->
-            return! checkResults.GetSymbolAtLocationAlternate(line, colu, lineStr, identIsland)
+            return! checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
       }
     member x.GetSymbolAtLocation(line, col, lineStr, identIsland) =
       async {
         match infoOpt with 
         | None -> return None
         | Some (checkResults, parseResults) -> 
-            return! checkResults.GetSymbolAtLocationAlternate (line, col, lineStr, identIsland)
+            return! checkResults.GetSymbolUseAtLocation (line, col, lineStr, identIsland)
       }
     member x.GetUsesOfSymbolInFile(symbol) =
       async {
@@ -322,9 +322,9 @@ type LanguageService(dirtyNotify) =
         let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource, targetFramework=targetFramework)
         let! symbolResults = checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland)
         match symbolResults with
-        | Some symbol -> 
+        | Some symbolUse -> 
             let lastIdent = Seq.last identIsland
-            let! refs = checkResults.GetUsesOfSymbolInFile(symbol)
+            let! refs = checkResults.GetUsesOfSymbolInFile(symbolUse.Symbol)
             return Some(lastIdent, refs)
         | None -> return None
     | None -> return None 
