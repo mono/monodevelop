@@ -117,16 +117,16 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor ChangingUsagesRectangle { get; private set; }
 
-		[ColorDescription("Breakpoint Marker")]
+		[ColorDescription("Breakpoint Marker", VSSetting = "color=Breakpoint (Enabled)/Background")]
 		public AmbientColor BreakpointMarker { get; private set; }
 
-		[ColorDescription("Breakpoint Marker(Invalid)")]
+		[ColorDescription("Breakpoint Marker(Invalid)", VSSetting = "color=Breakpoint (Disabled)/Background")]
 		public AmbientColor InvalidBreakpointMarker { get; private set; }
 
 		[ColorDescription("Breakpoint Marker(Disabled)")]
 		public AmbientColor BreakpointMarkerDisabled { get; private set; }
 
-		[ColorDescription("Debugger Current Line Marker")]
+		[ColorDescription("Debugger Current Line Marker", VSSetting = "color=Current Statement/Background")]
 		public AmbientColor DebuggerCurrentLineMarker { get; private set; }
 
 		[ColorDescription("Debugger Stack Line Marker")]
