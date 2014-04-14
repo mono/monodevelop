@@ -65,15 +65,15 @@
 		{ "name": "Usages(Rectangle)", "color":"#527F99", "secondcolor":"#527F99", "bordercolor":"#527F99" },
 		{ "name": "Changing usages(Rectangle)", "color":"#996E75", "secondcolor":"#996E75", "bordercolor":"#996E75" },
 		
-		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#762C2C" },
-		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#eddcdc" },
-		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
+		{ "name": "Breakpoint Marker", "color":"#762C2C" },
+		{ "name": "Breakpoint Marker(Disabled)", "color":"#eddcdc" },
+		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc" },
 		
-		{ "name": "Current Line Marker", "color":"#323229", "secondcolor":"#323229"},
-		{ "name": "Current Line Marker(Inactive)", "color":"#2F2F28", "secondcolor":"#2F2F28"},
+		{ "name": "Current Line Marker", "color":"#323229"},
+		{ "name": "Current Line Marker(Inactive)", "color":"#2F2F28"},
 
-		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffff00", "bordercolor":"#666600" },
-		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
+		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "bordercolor":"#666600" },
+		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "bordercolor":"#336633"},
 
 		{ "name": "Primary Link", "color":"monokai-white", "secondcolor":"#7f4a81"},
 		{ "name": "Primary Link(Highlighted)", "color":"monokai-white", "secondcolor":"#b167b3"},

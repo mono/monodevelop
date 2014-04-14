@@ -76,13 +76,6 @@
 		{ "name": "Brace Matching(Rectangle)", "color":"aluminium1", "secondcolor":"aluminium2" },
 		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
 		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
-		
-		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
-		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
-		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
-		
-		{ "name": "Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2"},
-		{ "name": "Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3"},
 
 		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
 		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
@@ -194,9 +187,6 @@
 		
 		{ "name": "String Format Items", "fore":"chocolate2" },
 
-		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
-		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
-	
 		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
 		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" },
 		
