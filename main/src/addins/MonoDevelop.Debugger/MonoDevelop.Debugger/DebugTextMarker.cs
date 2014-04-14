@@ -86,7 +86,7 @@ namespace MonoDevelop.Debugger
 			var d = metrics.TextRenderEndPosition - metrics.TextRenderStartPosition;
 			if (d > 0) {
 				cr.LineWidth = 1;
-				cr.RoundedRectangle (metrics.TextRenderStartPosition, Math.Floor (y) + 0.5, d + sidePadding, metrics.LineHeight, rounding);
+				cr.RoundedRectangle (metrics.TextRenderStartPosition, Math.Floor (y) + 0.5, d + sidePadding, metrics.LineHeight - 1, rounding);
 				cr.SetSourceColor (BackgroundColor); 
 				cr.FillPreserve ();
 				cr.SetSourceColor (BorderColor); 
@@ -212,11 +212,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.InvalidBreakpointMarker.Color; }
+			get { return Editor.ColorStyle.BreakpointMarkerInvalid.Color; }
 		}
 		
 		protected override Cairo.Color BorderColor {
-			get { return GetBorderColor (Editor.ColorStyle.InvalidBreakpointMarker); }
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerInvalid); }
 		}
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)

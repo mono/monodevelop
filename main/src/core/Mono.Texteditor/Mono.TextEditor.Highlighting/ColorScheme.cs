@@ -45,6 +45,7 @@ namespace Mono.TextEditor.Highlighting
 		public string FileName { get; set; }
 
 		#region Ambient Colors
+
 		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
 		public AmbientColor BackgroundReadOnly { get; private set; }
 		
@@ -121,7 +122,7 @@ namespace Mono.TextEditor.Highlighting
 		public AmbientColor BreakpointMarker { get; private set; }
 
 		[ColorDescription("Breakpoint Marker(Invalid)", VSSetting = "color=Breakpoint (Disabled)/Background")]
-		public AmbientColor InvalidBreakpointMarker { get; private set; }
+		public AmbientColor BreakpointMarkerInvalid { get; private set; }
 
 		[ColorDescription("Breakpoint Marker(Disabled)")]
 		public AmbientColor BreakpointMarkerDisabled { get; private set; }
@@ -198,17 +199,6 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Message Bubble Warning IconMargin")]
 		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 
-		[ColorDescription("Code Analysis Status All Good")]
-		public AmbientColor AnalysisStatusAllGoodIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Suggestions")]
-		public AmbientColor AnalysisStatusSuggestionsIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Warnings")]
-		public AmbientColor AnalysisStatusWarningsIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Errors")]
-		public AmbientColor AnalysisStatusErrorsIcon { get; private set; }
 		#endregion
 
 		#region Text Colors
@@ -423,15 +413,11 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Breakpoint Text", VSSetting = "Breakpoint (Enabled)")]
 		public ChunkStyle BreakpointText { get; private set; }
 
-		[ColorDescription("Breakpoint Text(Invalid)", VSSetting = "Breakpoint (Disabled)")]
-		public ChunkStyle BreakpointTextInvalid { get; private set; }
-
 		[ColorDescription("Debugger Current Statement", VSSetting = "Current Statement")]
 		public ChunkStyle DebuggerCurrentLine { get; private set; }
 
 		[ColorDescription("Debugger Stack Line")] // not defined
 		public ChunkStyle DebuggerStackLine { get; private set; }
-
 
 		[ColorDescription("Diff Line(Added)")] //not defined
 		public ChunkStyle DiffLineAdded { get; private set; }
@@ -484,7 +470,6 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Razor Code", VSSetting="Razor Code")]
 		public ChunkStyle RazorCode { get; private set; }
 
-
 		[ColorDescription("Css Comment", VSSetting="CSS Comment")]
 		public ChunkStyle CssComment { get; private set; }
 
@@ -520,7 +505,6 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Script String", VSSetting="Script String")]
 		public ChunkStyle ScriptString { get; private set; }
-
 
 		#endregion
 
