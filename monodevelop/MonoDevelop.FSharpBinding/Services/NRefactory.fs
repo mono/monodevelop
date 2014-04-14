@@ -54,9 +54,9 @@ module NRefactory =
         interface ISymbol with
             member x.SymbolKind = SymbolKind.Variable 
             member x.Name = name
-            member x.ToReference() =
-                { new ISymbolReference with 
-                  member x.Resolve(context) = this :> _}
+            //member x.ToReference() =
+            //    { new ISymbolReference with 
+            //      member x.Resolve(context) = this :> _}
         interface IVariable with 
             member x.Name = name
             member x.Region = region
