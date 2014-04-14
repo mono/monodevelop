@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
+			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 
 				var wrapper = GetProjectContentWrapper (project);

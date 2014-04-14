@@ -362,14 +362,14 @@ namespace MonoDevelop.VersionControl.Views
 		void AdjustmentChanged (object sender, EventArgs e)
 		{
 			vAdjustment.SetBounds (0, 1.0,
-				attachedVAdjustments.Select (adj => adj.StepIncrement / (adj.Upper - adj.Lower)).Min (),
-				attachedVAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
-				attachedVAdjustments.Select (adj => adj.PageSize / (adj.Upper - adj.Lower)).Min ());
+				attachedVAdjustments.Min (adj => adj.StepIncrement / (adj.Upper - adj.Lower)),
+				attachedVAdjustments.Min (adj => adj.PageIncrement / (adj.Upper - adj.Lower)),
+				attachedVAdjustments.Min (adj => adj.PageSize / (adj.Upper - adj.Lower)));
 			
 			hAdjustment.SetBounds (0, 1.0,
-				attachedHAdjustments.Select (adj => adj.StepIncrement / (adj.Upper - adj.Lower)).Min (),
-				attachedHAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
-				attachedHAdjustments.Select (adj => adj.PageSize / (adj.Upper - adj.Lower)).Min ());
+				attachedHAdjustments.Min (adj => adj.StepIncrement / (adj.Upper - adj.Lower)),
+				attachedHAdjustments.Min (adj => adj.PageIncrement / (adj.Upper - adj.Lower)),
+				attachedHAdjustments.Min (adj => adj.PageSize / (adj.Upper - adj.Lower)));
 			
 		}
 

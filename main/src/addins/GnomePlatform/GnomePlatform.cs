@@ -386,8 +386,8 @@ namespace MonoDevelop.Platform
 				return true;
 			}
 		}
-		
-		public override void OpenInTerminal (FilePath directory)
+
+		public override void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
 		{
 			ProbeTerminal ();
 			Runtime.ProcessService.StartProcess (terminal_command, openDirectoryRunner(directory), directory, null);

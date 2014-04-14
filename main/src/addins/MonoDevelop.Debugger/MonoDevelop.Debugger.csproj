@@ -260,6 +260,60 @@
     <EmbeddedResource Include="icons\exception-icon%402x.png">
       <LogicalName>exception-icon@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-15.png">
+      <LogicalName>gutter-breakpoint-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-15%402x.png">
+      <LogicalName>gutter-breakpoint-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-disabled-15.png">
+      <LogicalName>gutter-breakpoint-disabled-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-disabled-15%402x.png">
+      <LogicalName>gutter-breakpoint-disabled-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-invalid-15.png">
+      <LogicalName>gutter-breakpoint-invalid-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-breakpoint-invalid-15%402x.png">
+      <LogicalName>gutter-breakpoint-invalid-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-execution-15.png">
+      <LogicalName>gutter-execution-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-execution-15%402x.png">
+      <LogicalName>gutter-execution-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-stack-15.png">
+      <LogicalName>gutter-stack-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-stack-15%402x.png">
+      <LogicalName>gutter-stack-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-15.png">
+      <LogicalName>gutter-tracepoint-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-15%402x.png">
+      <LogicalName>gutter-tracepoint-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-disabled-15.png">
+      <LogicalName>gutter-tracepoint-disabled-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-disabled-15%402x.png">
+      <LogicalName>gutter-tracepoint-disabled-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-invalid-15.png">
+      <LogicalName>gutter-tracepoint-invalid-light-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\gutter-tracepoint-invalid-15%402x.png">
+      <LogicalName>gutter-tracepoint-invalid-light-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\stack-pointer-16.png">
+      <LogicalName>stack-pointer-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\stack-pointer-16%402x.png">
+      <LogicalName>stack-pointer-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

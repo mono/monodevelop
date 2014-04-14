@@ -656,111 +656,72 @@ namespace MonoDevelop.Core
 		}
 
 		public static Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
-			Func<Stream,bool> validateDownload = null, CancellationToken ct = new CancellationToken ())
+			Func<Stream,bool> validateDownload = null, CancellationToken ct = default (CancellationToken))
 		{
-			var tcs = new TaskCompletionSource<bool> ();
-
-			//HACK: .NET blocks on DNS in BeginGetResponse, so use a threadpool thread
-			// see http://stackoverflow.com/questions/1232139#1232930
-			System.Threading.ThreadPool.QueueUserWorkItem ((state) => {
-				var request = (HttpWebRequest)WebRequest.Create (url);
-
-				try {
+			return WebRequestHelper.GetResponseAsync (
+				() => (HttpWebRequest)WebRequest.Create (url),
+				r => {
 					//check to see if the online file has been modified since it was last downloaded
 					var localNewsXml = new FileInfo (cacheFile);
 					if (localNewsXml.Exists)
-						request.IfModifiedSince = localNewsXml.LastWriteTime;
-
-					request.BeginGetResponse (HandleResponse, new CacheFileDownload {
-						Request = request,
-						Url = url,
-						CacheFile = cacheFile,
-						ValidateDownload = validateDownload,
-						CancellationToken = ct,
-						Tcs = tcs,
-					});
-				} catch (Exception ex) {
-					tcs.SetException (ex);
-				}
-			});
-
-			return tcs.Task;
-		}
-
-		class CacheFileDownload
-		{
-			public HttpWebRequest Request;
-			public string CacheFile, Url;
-			public Func<Stream,bool> ValidateDownload;
-			public CancellationToken CancellationToken;
-			public TaskCompletionSource<bool> Tcs;
-		}
-
-		static void HandleResponse (IAsyncResult ar)
-		{
-			var c = (CacheFileDownload) ar.AsyncState;
-			bool deleteTempFile = true;
-			var tempFile = c.CacheFile + ".temp";
-
-			try {
-				if (c.CancellationToken.IsCancellationRequested)
-					c.Tcs.TrySetCanceled ();
+						r.IfModifiedSince = localNewsXml.LastWriteTime;
+				},
+				ct
+			).ContinueWith (t => {
+				bool deleteTempFile = true;
+				var tempFile = cacheFile + ".temp";
 
 				try {
-					//TODO: limit this size in case open wifi hotspots provide bad data
-					var response = (HttpWebResponse) c.Request.EndGetResponse (ar);
+					ct.ThrowIfCancellationRequested ();
+
+					if (t.IsFaulted) {
+						var wex = t.Exception.Flatten ().InnerException as WebException;
+						if (wex != null) {
+							var resp = wex.Response as HttpWebResponse;
+							if (resp != null && resp.StatusCode == HttpStatusCode.NotModified)
+								return false;
+						}
+					}
+
+					//TODO: limit this size in case open wifi hotspots provide junk data
+					var response = t.Result;
 					if (response.StatusCode == HttpStatusCode.OK) {
 						using (var fs = File.Create (tempFile))
-							response.GetResponseStream ().CopyTo (fs, 2048);
+								response.GetResponseStream ().CopyTo (fs, 2048);
 					}
-				} catch (WebException wex) {
-					var httpResp = wex.Response as HttpWebResponse;
-					if (httpResp != null) {
-						if (httpResp.StatusCode == HttpStatusCode.NotModified) {
-							c.Tcs.TrySetResult (false);
-							return;
-						}
-						//is this valid? should we just return the WebException directly?
-						else if (httpResp.StatusCode == HttpStatusCode.NotFound) {
-							c.Tcs.TrySetException (new FileNotFoundException ("File not found on server", c.Url, wex));
-							return;
-						}
-					}
-					throw;
-				}
 
-				//check the document is valid, might get bad ones from wifi hotspots etc
-				if (c.ValidateDownload != null) {
-					if (c.CancellationToken.IsCancellationRequested)
-						c.Tcs.TrySetCanceled ();
+					//check the document is valid, might get bad ones from wifi hotspots etc
+					if (validateDownload != null) {
+						ct.ThrowIfCancellationRequested ();
 
-					using (var f = File.OpenRead (tempFile)) {
-						try {
-							if (!c.ValidateDownload (f)) {
-								c.Tcs.TrySetException (new Exception ("Failed to validate downloaded file"));
-								return;
+						using (var f = File.OpenRead (tempFile)) {
+							bool validated;
+							try {
+								validated = validateDownload (f);
+							} catch (Exception ex) {
+								throw new Exception ("Failed to validate downloaded file", ex);
 							}
+							if (!validated) {
+								throw new Exception ("Failed to validate downloaded file");
+							}
+						}
+					}
+
+					ct.ThrowIfCancellationRequested ();
+
+					SystemRename (tempFile, cacheFile);
+					deleteTempFile = false;
+					return true;
+				} finally {
+					if (deleteTempFile) {
+						try {
+							File.Delete (tempFile);
 						} catch (Exception ex) {
-							c.Tcs.TrySetException (new Exception ("Failed to validate downloaded file", ex));
+							LoggingService.LogError ("Failed to delete temp download file", ex);
 						}
 					}
 				}
-
-				if (c.CancellationToken.IsCancellationRequested)
-					c.Tcs.TrySetCanceled ();
-
-				SystemRename (tempFile, c.CacheFile);
-				deleteTempFile = false;
-				c.Tcs.TrySetResult (true);
-			} catch (Exception ex) {
-				c.Tcs.TrySetException (ex);
-			} finally {
-				if (deleteTempFile) {
-					try {
-						File.Delete (tempFile);
-					} catch {}
-				}
-			}
+			}, ct);
 		}
 	}
 	

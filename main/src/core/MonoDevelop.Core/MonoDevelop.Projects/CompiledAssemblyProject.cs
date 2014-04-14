@@ -45,11 +45,10 @@ namespace MonoDevelop.Projects
 		{
 			AddNewConfiguration ("Default");
 		}
-		
-		public override string ProjectType {
-			get {
-				return "CompiledAssembly";
-			}
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "CompiledAssembly";
 		}
 		
 		public override IconId StockIcon {
@@ -58,7 +57,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return new ProjectConfiguration (name);

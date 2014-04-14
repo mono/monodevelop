@@ -1,6 +1,6 @@
 {
 	"name":"Default",
-	"version":"1.0",
+	"version":"1.2",
 	"description": "Bright and friendly, just like Xamarin.",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -22,7 +22,6 @@
 		{ "name":"aluminium4", "value":"#888a85" },
 		{ "name":"aluminium5", "value":"#555753" },
 		{ "name":"aluminium6", "value":"#2e3436" },
-
 		{ "name":"text-black", "value":"#333" },
 		{ "name":"comment-gray", "value":"#888" },
 		{ "name":"literal-orange", "value":"#F57E00" },
@@ -30,7 +29,6 @@
 		{ "name":"keyword-teal", "value":"#009695" },
 		{ "name":"selection-bg", "value":"#b5d5ff" },
 		{ "name":"invalid-red", "value":"#C44D58" },
-
 		{ "name":"orangesicle", "value":"#fdab75" },
 		{ "name":"orangesicle-light", "value":"#fed9c0" }
 	],
@@ -77,39 +75,39 @@
 		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
 		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
 		
-		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
-		{ "name": "Breakpoint Marker(Disabled)", "color":"#AB616B", "secondcolor":"white" },
-		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
+		{ "name": "Breakpoint Marker", "color":"#f6cdcb" },
+		{ "name": "Breakpoint Marker(Disabled)", "color":"#f1f1f1" },
+		{ "name": "Breakpoint Marker(Invalid)", "color":"#fbeeed" },
 		
-		{ "name": "Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2"},
-		{ "name": "Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3"},
+		{ "name": "Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2" },
+		{ "name": "Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3" },
 
-		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
-		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
+		{ "name": "Debugger Current Line Marker", "color":"#e8d2b3" },
+		{ "name": "Debugger Stack Line Marker", "color":"#d8f3c1" },
 
-		{ "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
-		{ "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
-		{ "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
-		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
+		{ "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2" },
+		{ "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1" },
+		{ "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white" },
+		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1" },
 
-		{ "name": "Message Bubble Error Marker", "color":"#df6962"},
-		{ "name": "Message Bubble Error Tag", "color":"#d83f3f", "secondcolor":"white"},
-		{ "name": "Message Bubble Error Counter", "color":"white", "secondcolor":"#d83f3f"},
-		{ "name": "Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#b12a2a"},
-		{ "name": "Message Bubble Error Line", "color":"#fbe4e6"},
-		{ "name": "Message Bubble Error Tooltip", "color":"#D10B0B"},
+		{ "name": "Message Bubble Error Marker", "color":"#df6962" },
+		{ "name": "Message Bubble Error Tag", "color":"#d83f3f", "secondcolor":"white" },
+		{ "name": "Message Bubble Error Counter", "color":"white", "secondcolor":"#d83f3f" },
+		{ "name": "Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#b12a2a" },
+		{ "name": "Message Bubble Error Line", "color":"#fbe4e6" },
+		{ "name": "Message Bubble Error Tooltip", "color":"#D10B0B" },
 
-		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
-		{ "name": "Message Bubble Warning Tag", "color":"#e68100", "secondcolor":"white"},
-		{ "name": "Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100"},
-		{ "name": "Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00"},
-		{ "name": "Message Bubble Warning Line", "color":"#fff1da"},
-		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B"},
+		{ "name": "Message Bubble Warning Marker", "color":"#b28d37" },
+		{ "name": "Message Bubble Warning Tag", "color":"#e68100", "secondcolor":"white" },
+		{ "name": "Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100" },
+		{ "name": "Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00" },
+		{ "name": "Message Bubble Warning Line", "color":"#fff1da" },
+		{ "name": "Message Bubble Warning Tooltip", "color":"#D1590B" },
 
-		{ "name": "Code Analysis Status All Good", "color":"#B1E479", "bordercolor":"#7CCD2F"},
-		{ "name": "Code Analysis Status Suggestions", "color":"#77ABE9", "bordercolor":"#4A90E2"},
-		{ "name": "Code Analysis Status Warnings", "color":"#F7C46F", "bordercolor":"#F5A623"},
-		{ "name": "Code Analysis Status Errors", "color":"#E67A79", "bordercolor":"#E05F5E"}
+		{ "name": "Code Analysis Status All Good", "color":"#B1E479", "bordercolor":"#7CCD2F" },
+		{ "name": "Code Analysis Status Suggestions", "color":"#77ABE9", "bordercolor":"#4A90E2" },
+		{ "name": "Code Analysis Status Warnings", "color":"#F7C46F", "bordercolor":"#F5A623" },
+		{ "name": "Code Analysis Status Errors", "color":"#E67A79", "bordercolor":"#E05F5E" }
 	],
 
 	"text":[
@@ -119,7 +117,7 @@
 
 		{ "name": "Collapsed Text", "fore":"aluminium4", "back":"white" },
 
-		{ "name": "Line Numbers", "fore":"aluminium4", "back":"white"},
+		{ "name": "Line Numbers", "fore":"aluminium4", "back":"white" },
 
 		{ "name": "Punctuation", "fore":"text-black" },
 		{ "name": "Punctuation(Brackets)", "fore":"text-black" },
@@ -131,11 +129,11 @@
 		{ "name": "Comment Tag", "fore":"comment-gray", "weight":"bold" },
 		{ "name": "Excluded Code", "fore":"comment-gray" },
 
-		{ "name": "String", "fore":"literal-orange"},
-		{ "name": "String(Escape)", "fore":"literal-escape"},
-		{ "name": "String(C# @ Verbatim)", "fore":"literal-orange"},
+		{ "name": "String", "fore":"literal-orange" },
+		{ "name": "String(Escape)", "fore":"literal-escape" },
+		{ "name": "String(C# @ Verbatim)", "fore":"literal-orange" },
 
-		{ "name": "Number", "fore":"literal-orange"},
+		{ "name": "Number", "fore":"literal-orange" },
 
 		{ "name": "Preprocessor", "fore":"#c12dad" },
 		{ "name": "Preprocessor(Region Name)", "fore":"#c12dad" },
@@ -213,12 +211,11 @@
 
 		{ "name": "Syntax Error", "fore":"invalid-red" },
 		
-		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
-		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
+		{ "name": "Breakpoint Text", "fore":"text-black", "back":"#f6cdcb" },
+		{ "name": "Breakpoint Text(Invalid)", "fore":"text-black", "back":"#fbeeed" },
 	
-		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
-		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" },
-		
+		{ "name": "Debugger Current Statement", "fore":"text-black", "back":"#e8d2b3" },
+		{ "name": "Debugger Stack Line", "fore":"text-black", "back":"#d8f3c1" },
 		
 		{ "name": "Diff Line(Added)", "fore":"skyblue2"  },
 		{ "name": "Diff Line(Removed)", "fore":"scarletred1"  },

@@ -32,34 +32,74 @@ using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
+	[Obsolete ("Use WebRequestHelper.ProxyAuthenticationHandler")]
 	public static class WebService
 	{
-		const string WebCredentialProvidersPath = "/MonoDevelop/Core/WebCredentialProviders";
+		static IProxyCache proxyCache = new ForwardingProxyCache ();
+		static ICredentialCache credentialCache = new ForwardingCredentialCache ();
+		static ICredentialProvider credentialProvider = new ForwardingCredentialProvider ();
 
-		public static IProxyCache ProxyCache { get; private set; }
-		public static ICredentialCache CredentialCache { get; private set; }
-		public static ICredentialProvider CredentialProvider { get; private set; }
+		public static IProxyCache ProxyCache { get { return proxyCache; } }
+		public static ICredentialCache CredentialCache { get { return credentialCache; } }
+		public static ICredentialProvider CredentialProvider { get { return credentialProvider; } }
 
-		internal static void Initialize ()
-		{
-			CredentialCache = new CredentialStore ();
-			ProxyCache = new ProxyCache ();
-			CredentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
-
-			if (CredentialProvider == null) {
-				LoggingService.LogWarning ("No proxy credential provider was found");
-
-			}
-		}
-
-		class NullCredentialsProvider : ICredentialProvider
+		class ForwardingCredentialProvider : ICredentialProvider
 		{
 			public ICredentials GetCredentials (
 				Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying)
 			{
-				return null;
+				var pah = WebRequestHelper.ProxyAuthenticationHandler;
+				return pah != null ? pah.GetCredentialsFromUser (uri, proxy, credentialType, existingCredentials, retrying) : null;
 			}
 		}
+
+		class ForwardingProxyCache : IProxyCache
+		{
+			public void Add (IWebProxy proxy)
+			{
+				var pah = WebRequestHelper.ProxyAuthenticationHandler;
+				if (pah != null)
+					pah.AddProxyToCache (proxy);
+			}
+
+			public IWebProxy GetProxy (Uri uri)
+			{
+				var pah = WebRequestHelper.ProxyAuthenticationHandler;
+				return pah != null ? pah.GetCachedProxy (uri) : null;
+			}
+		}
+
+		class ForwardingCredentialCache : ICredentialCache
+		{
+			public void Add (Uri uri, ICredentials credentials, CredentialType credentialType)
+			{
+				var pah = WebRequestHelper.ProxyAuthenticationHandler;
+				if (pah != null)
+					pah.AddCredentialsToCache (uri, credentials, credentialType);
+			}
+
+			public ICredentials GetCredentials (Uri uri, CredentialType credentialType)
+			{
+				var pah = WebRequestHelper.ProxyAuthenticationHandler;
+				return pah != null ? pah.GetCachedCredentials (uri, credentialType) : null;
+			}
+		}
+	}
+
+	[Obsolete ("Use WebRequestHelper.ProxyAuthenticationHandler")]
+	public interface IProxyCache
+	{
+		void Add (IWebProxy proxy);
+
+		IWebProxy GetProxy (Uri uri);
+	}
+
+	[Obsolete ("Use WebRequestHelper.ProxyAuthenticationHandler")]
+	public interface ICredentialCache
+	{
+		void Add (Uri uri, ICredentials credentials, CredentialType credentialType);
+
+		ICredentials GetCredentials (Uri uri, CredentialType credentialType);
 	}
 }
 

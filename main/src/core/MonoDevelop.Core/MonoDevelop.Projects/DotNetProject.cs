@@ -184,8 +184,9 @@ namespace MonoDevelop.Projects
 			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
-		public override string ProjectType {
-			get { return "DotNet"; }
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "DotNet";
 		}
 
 		private string languageName;

@@ -1479,18 +1479,6 @@
     <EmbeddedResource Include="icons\light\add-16%402x.png">
       <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-15.png">
-      <LogicalName>bubble-error-light-15.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-15%402x.png">
-      <LogicalName>bubble-error-light-15@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-15.png">
-      <LogicalName>bubble-warning-light-15.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-15%402x.png">
-      <LogicalName>bubble-warning-light-15@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9.png">
       <LogicalName>warning-overlay-light-9.png</LogicalName>
     </EmbeddedResource>
@@ -2189,7 +2177,6 @@
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\ICodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\IAdvancedCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
@@ -2202,8 +2189,6 @@
     <Compile Include="MonoDevelop.Ide.Extensions\StartupHandlerExtensionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ReferencesFinder.cs" />
     <Compile Include="MonoDevelop.Components\SectionList.cs" />
-    <Compile Include="MonoDevelop.Ide.OnlineTemplates\OnlineTemplateService.cs" />
-    <Compile Include="MonoDevelop.Ide.OnlineTemplates\ProjectTemplateIndex.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
@@ -2402,6 +2387,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

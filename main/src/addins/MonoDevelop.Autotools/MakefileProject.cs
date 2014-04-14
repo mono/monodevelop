@@ -1,6 +1,7 @@
 
 using System;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Autotools
 {
@@ -17,11 +18,10 @@ namespace MonoDevelop.Autotools
 			return conf;
 		}
 		
-		public override string ProjectType {
-			get { return "MakefileProject"; }
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "MakefileProject";
 		}
-
-
 	}
 	
 	public class MakefileProjectConfiguration: ProjectConfiguration

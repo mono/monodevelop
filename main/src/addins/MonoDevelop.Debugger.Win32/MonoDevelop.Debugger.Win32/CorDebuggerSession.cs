@@ -265,6 +265,11 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 
+			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+				e.Continue = true;
+				return;
+			}
+
 			if (autoStepInto) {
 				autoStepInto = false;
 				Step (true);
@@ -363,7 +368,12 @@ namespace MonoDevelop.Debugger.Win32
 					}
 				}
 			}
-			
+
+			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+				e.Continue = true;
+				return;
+			}
+
 			OnStopped ();
 			e.Continue = false;
 			// If a breakpoint is hit while stepping, cancel the stepping operation
@@ -902,6 +912,8 @@ namespace MonoDevelop.Debugger.Win32
 			MtaThread.Run (delegate
 			{
 				activeThread = null;
+				if (stepper != null && stepper.IsActive ())
+					stepper.Deactivate ();
 				stepper = null;
 				foreach (CorThread t in process.Threads) {
 					if (t.Id == threadId) {
@@ -915,6 +927,9 @@ namespace MonoDevelop.Debugger.Win32
 		void SetActiveThread (CorThread t)
 		{
 			activeThread = t;
+			if (stepper != null && stepper.IsActive ()) {
+				stepper.Deactivate ();
+			}
 			stepper = activeThread.CreateStepper (); 
 			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
 			stepper.SetJmcStatus (true);

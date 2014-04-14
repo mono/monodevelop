@@ -46,9 +46,12 @@ namespace MonoDevelop.Projects
 			: base (languageName, projectCreateInfo, projectOptions)
 		{
 		}
-		
-		public override string ProjectType {
-			get { return "PortableDotNet"; }
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "PortableDotNet";
+			foreach (var t in base.GetProjectTypes ())
+				yield return t;
 		}
 		
 		public override bool SupportsFormat (FileFormat format)

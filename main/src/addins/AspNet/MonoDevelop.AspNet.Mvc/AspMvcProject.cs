@@ -57,11 +57,14 @@ namespace MonoDevelop.AspNet.Mvc
 			conf.CopyFrom (base.CreateConfiguration (name));			
 			return conf;
 		}
-		
-		public override string ProjectType {
-			get  { return "AspNetMvc"; }
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "AspNetMvc";
+			foreach (var t in base.GetProjectTypes ())
+				yield return t;
 		}
-		
+
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
 			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_3_5);

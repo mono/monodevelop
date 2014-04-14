@@ -45,6 +45,8 @@ namespace MonoDevelop.Projects
 		Project,
 		Package,
 		Custom,
+		[Obsolete ("Use Package")]
+		Gac = Package
 	}
 	
 	/// <summary>

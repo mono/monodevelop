@@ -32,18 +32,22 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class EvaluationTests: DebugTests
 	{
+		readonly bool allowTargetInvokes;
 		DebuggerSession ds;
 		StackFrame frame;
 		
-		protected EvaluationTests (string de): base (de)
+		protected EvaluationTests (string de, bool allowTargetInvokes): base (de)
 		{
+			this.allowTargetInvokes = allowTargetInvokes;
 		}
 
 		[TestFixtureSetUp]
 		public override void SetUp ()
 		{
 			base.SetUp ();
-			ds = Start ("TestEvaluation");
+
+			ds = Start ("TestEvaluation", allowTargetInvokes);
+
 			if (ds == null)
 				Assert.Ignore ("Engine not found: {0}", EngineId);
 
@@ -54,12 +58,12 @@ namespace MonoDevelop.Debugger.Tests
 		public override void TearDown ()
 		{
 			base.TearDown ();
+
 			if (ds != null) {
 				ds.Exit ();
 				ds.Dispose ();
 			}
 		}
-
 
 		ObjectValue Eval (string exp)
 		{
@@ -463,64 +467,66 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
 		}
-		
+
+		void AssertAssignment (string assignment, string variable, string value, string type)
+		{
+			ObjectValue val;
+
+			val = Eval (assignment);
+			if (!allowTargetInvokes) {
+				var options = ds.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+			}
+
+			Assert.AreEqual (value, val.Value);
+			Assert.AreEqual (type, val.TypeName);
+
+			val = Eval (variable);
+			if (!allowTargetInvokes && val.IsNotSupported) {
+				var options = ds.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+			}
+
+			Assert.AreEqual (value, val.Value);
+			Assert.AreEqual (type, val.TypeName);
+		}
+
 		[Test]
 		public virtual void Assignment ()
 		{
-			ObjectValue val;
-			Eval ("n = 6");
-			val = Eval ("n");
-			Assert.AreEqual ("6", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-			Eval ("n = 32");
-			val = Eval ("n");
-			Assert.AreEqual ("32", val.Value);
-			
-			Eval ("someString = \"test\"");
-			val = Eval ("someString");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("someString = \"hi\"");
-			val = Eval ("someString");
-			Assert.AreEqual ("\"hi\"", val.Value);
-			
-			Eval ("numbers[0] = \"test\"");
-			val = Eval ("numbers[0]");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("numbers[0] = \"one\"");
-			val = Eval ("numbers[0]");
-			Assert.AreEqual ("\"one\"", val.Value);
+			AssertAssignment ("n = 6", "n", "6", "int");
+			AssertAssignment ("n = 32", "n", "32", "int");
 
-			Eval ("alist[0] = 6");
-			val = Eval ("alist[0]");
-			Assert.AreEqual ("6", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-			Eval ("alist[0] = 1");
-			val = Eval ("alist[0]");
-			Assert.AreEqual ("1", val.Value);
+			AssertAssignment ("someString = \"test\"", "someString", "\"test\"", "string");
+			AssertAssignment ("someString = \"hi\"", "someString", "\"hi\"", "string");
+
+			AssertAssignment ("numbers[0] = \"test\"", "numbers[0]", "\"test\"", "string");
+			AssertAssignment ("numbers[0] = \"one\"", "numbers[0]", "\"one\"", "string");
+
+			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
+			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
 		}
 		
 		[Test]
 		public virtual void AssignmentStatic ()
 		{
-			ObjectValue val;
-			
-			Eval ("staticString = \"test\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"test\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			Eval ("staticString = \"some static\"");
-			val = Eval ("staticString");
-			Assert.AreEqual ("\"some static\"", val.Value);
+			AssertAssignment ("staticString = \"test\"", "staticString", "\"test\"", "string");
+			AssertAssignment ("staticString = \"some static\"", "staticString", "\"some static\"", "string");
 		}
 		
 		[Test]
 		public void FormatBool ()
 		{
 			ObjectValue val;
+
 			val = Eval ("true");
 			Assert.AreEqual ("true", val.Value);
+
 			val = Eval ("false");
 			Assert.AreEqual ("false", val.Value);
 		}

@@ -70,11 +70,14 @@ namespace MonoDevelop.AspNet
 		CodeBehindTypeNameCache codebehindTypeNameCache;
 		
 		#region properties
-		
-		public override string ProjectType {
-			get  { return "AspNetApp"; }
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "AspNetApp";
+			foreach (var t in base.GetProjectTypes ())
+				yield return t;
 		}
-		
+
 		public override bool IsLibraryBasedProjectType {
 			get { return true; }
 		}

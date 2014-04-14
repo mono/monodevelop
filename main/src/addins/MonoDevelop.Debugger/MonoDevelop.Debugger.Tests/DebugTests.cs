@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -50,7 +51,7 @@ namespace MonoDevelop.Debugger.Tests
 		[TestFixtureSetUp]
 		public virtual void SetUp ()
 		{
-			foreach (DebuggerEngine e in DebuggingService.GetDebuggerEngines ()) {
+			foreach (var e in DebuggingService.GetDebuggerEngines ()) {
 				if (e.Id == EngineId) {
 					engine = e;
 					break;
@@ -63,16 +64,16 @@ namespace MonoDevelop.Debugger.Tests
 		{
 		}
 
-		
-		protected DebuggerSession Start (string test)
+		protected DebuggerSession Start (string test, bool allowTargetInvoke)
 		{
 			TargetRuntime runtime;
+
 			switch (EngineId) {
 			case "MonoDevelop.Debugger.Win32":
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
 				break;
 			case "Mono.Debugger.Soft":
-				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("Mono");
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ().OfType<MonoTargetRuntime> ().FirstOrDefault ();
 				break;
 			default:
 				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -90,10 +91,21 @@ namespace MonoDevelop.Debugger.Tests
 			cmd.Arguments = test;
 			cmd.TargetRuntime = runtime;
 
+			if (Platform.IsWindows) {
+				var monoRuntime = runtime as MonoTargetRuntime;
+				if (monoRuntime != null) {
+					var psi = new System.Diagnostics.ProcessStartInfo (Path.Combine (monoRuntime.Prefix, "bin", "pdb2mdb.bat"), cmd.Command);
+					psi.UseShellExecute = false;
+					psi.CreateNoWindow = true;
+					System.Diagnostics.Process.Start (psi).WaitForExit ();
+				}
+			}
+
 			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
 			DebuggerSession session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
+			ops.EvaluationOptions.AllowTargetInvoke = allowTargetInvoke;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
 			path = path.ParentDirectory.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;

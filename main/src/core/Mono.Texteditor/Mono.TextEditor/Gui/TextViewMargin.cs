@@ -2623,6 +2623,8 @@ namespace Mono.TextEditor
 
 			// Check if line is beyond the document length
 			if (line == null) {
+				DrawScrollShadow (cr, x, y, _lineHeight);
+
 				var marker = Document.GetExtendingTextMarker (lineNr);
 				if (marker != null)
 					marker.Draw (textEditor, cr, lineNr, lineArea);
@@ -2833,17 +2835,22 @@ namespace Mono.TextEditor
 			}
 
 			lastLineRenderWidth = position;
+			DrawScrollShadow (cr, x, y, _lineHeight);
+			if (wrapper != null && wrapper.IsUncached)
+				wrapper.Dispose ();
+		}
+
+		void DrawScrollShadow (Cairo.Context cr, double x, double y, double _lineHeight)
+		{
 			if (textEditor.HAdjustment.Value > 0) {
 				cr.LineWidth = textEditor.Options.Zoom;
 				for (int i = 0; i < verticalShadowAlphaTable.Length; i++) {
-					cr.SetSourceRGBA (0, 0, 0, 1 - verticalShadowAlphaTable[i]);
+					cr.SetSourceRGBA (0, 0, 0, 1 - verticalShadowAlphaTable [i]);
 					cr.MoveTo (x + i * cr.LineWidth + 0.5, y);
 					cr.LineTo (x + i * cr.LineWidth + 0.5, y + 1 + _lineHeight);
 					cr.Stroke ();
 				}
 			}
-			if (wrapper != null && wrapper.IsUncached)
-				wrapper.Dispose ();
 		}
 
 		static double[] verticalShadowAlphaTable = new [] { 0.71, 0.84, 0.95 };

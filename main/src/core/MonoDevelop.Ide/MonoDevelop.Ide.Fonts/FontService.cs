@@ -66,8 +66,11 @@ namespace MonoDevelop.Ide.Fonts
 			}
 		}
 		
-		static FontService ()
+		internal static void Initialize ()
 		{
+			if (fontProperties != null)
+				throw new InvalidOperationException ("Already initialized");
+
 			fontProperties = PropertyService.Get ("FontProperties", new Properties ());
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Fonts", delegate(object sender, ExtensionNodeEventArgs args) {

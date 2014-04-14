@@ -170,6 +170,7 @@ namespace MonoDevelop.CSharp.Formatting
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
 		}
 
+		bool indentationDisabled;
 
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
@@ -195,7 +196,8 @@ namespace MonoDevelop.CSharp.Formatting
 				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, stateTracker);
 			}
 
-			if (textEditorData.Options.IndentStyle == IndentStyle.Auto || textEditorData.Options.IndentStyle == IndentStyle.None) {
+			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+			if (indentationDisabled) {
 				textEditorData.TextPasteHandler = null;
 			} else {
 				textEditorData.TextPasteHandler = new TextPasteIndentEngine (stateTracker, options, policy);
@@ -463,7 +465,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			//do the smart indent
-			if (textEditorData.Options.IndentStyle == IndentStyle.Smart || textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
+			if (!indentationDisabled) {
 				bool retval;
 				//capture some of the current state
 				int oldBufLen = textEditorData.Length;

@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectTemplateTests.cs" />
-    <Compile Include="TestBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -52,6 +51,10 @@
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
       <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UnitTests\UnitTests.csproj">
+      <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
+      <Name>UnitTests</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
