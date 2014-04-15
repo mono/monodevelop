@@ -1247,13 +1247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public IEnumerable<Project> ReferencedProjects {
 				get {
-					foreach (var pr in Project.GetReferencedItems (ConfigurationSelector.Default)) {
-						var referencedProject = pr as Project;
-						if (pr is SharedAssetsProject)
-							continue;
-						if (referencedProject != null)
-							yield return referencedProject;
-					}
+					return Project.GetReferencedItems (ConfigurationSelector.Default).OfType<DotNetProject> ();
 				}
 			}
 
