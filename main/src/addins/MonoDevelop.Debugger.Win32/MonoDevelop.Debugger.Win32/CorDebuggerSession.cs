@@ -583,7 +583,13 @@ namespace MonoDevelop.Debugger.Win32
 				OnTargetEvent (args);	
 			}
 		}
-		
+
+		public bool IsExternalCode (SourceLocation sourceLocation)
+		{
+			return sourceLocation == null || string.IsNullOrWhiteSpace (sourceLocation.FileName)
+				|| !documents.ContainsKey (sourceLocation.FileName);
+		}
+
 		private bool IsCatchpoint (CorException2EventArgs e)
 		{
 			// Build up the exception type hierachy
