@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -40,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 		FileConflictResolution lastFileConflictResolution;
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
 		string currentProgressOperation;
+		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
 
 		public PackageManagementEventsMonitor (
 			IProgressMonitor progressMonitor,
@@ -53,15 +56,19 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
+			packageManagementEvents.FileChanged += FileChanged;
 			progressProvider.ProgressAvailable += ProgressAvailable;
 		}
 			
 		public void Dispose ()
 		{
 			progressProvider.ProgressAvailable -= ProgressAvailable;
+			packageManagementEvents.FileChanged -= FileChanged;
 			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
+
+			NotifyFilesChanged ();
 		}
 
 		void ResolveFileConflict(object sender, ResolveFileConflictEventArgs e)
@@ -145,6 +152,23 @@ namespace MonoDevelop.PackageManagement
 
 			currentProgressOperation = e.Operation;
 			progressMonitor.Log.WriteLine (e.Operation);
+		}
+
+		void FileChanged (object sender, FileEventArgs e)
+		{
+			fileChangedEvents.Add (e);
+		}
+
+		void NotifyFilesChanged ()
+		{
+			DispatchService.GuiSyncDispatch (() => {
+				FilePath[] files = fileChangedEvents
+					.SelectMany (fileChangedEvent => fileChangedEvent.ToArray ())
+					.Select (fileInfo => fileInfo.FileName)
+					.ToArray ();
+
+				FileService.NotifyFilesChanged (files);
+			});
 		}
 	}
 }

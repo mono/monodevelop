@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -45,6 +46,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		event EventHandler PackagesRestored;
+		event EventHandler<FileEventArgs> FileChanged;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -57,5 +59,6 @@ namespace ICSharpCode.PackageManagement
 		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
 		FileConflictResolution OnResolveFileConflict(string message);
 		void OnPackagesRestored();
+		void OnFileChanged(string path);
 	}
 }
