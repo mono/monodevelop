@@ -1584,7 +1584,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				this.IsDirty = true;
-				this.widget.TextEditor.Document.Text = value;
+				TextDocument document = this.widget.TextEditor.Document;
+				document.Replace (0, document.TextLength, value);
 			}
 		}
 		
