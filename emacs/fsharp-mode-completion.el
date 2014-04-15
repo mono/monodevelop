@@ -429,7 +429,6 @@ The current buffer must be an F# file that exists on disk."
 (defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
-(make-local-variable 'fsharp-ac-errors)
 
 (defvar fsharp-ac-last-parsed-ticks 0
   "BUFFER's tick counter, when the file was parsed")
