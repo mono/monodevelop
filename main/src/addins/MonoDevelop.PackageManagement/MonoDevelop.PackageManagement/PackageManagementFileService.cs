@@ -34,6 +34,18 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementFileService : IPackageManagementFileService
 	{
+		IPackageManagementEvents packageManagementEvents;
+
+		public PackageManagementFileService ()
+			: this (PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public PackageManagementFileService (IPackageManagementEvents packageManagementEvents)
+		{
+			this.packageManagementEvents = packageManagementEvents;
+		}
+
 		public void RemoveFile(string path)
 		{
 			FileService.DeleteFile(path);
@@ -42,6 +54,11 @@ namespace ICSharpCode.PackageManagement
 		public void RemoveDirectory(string path)
 		{
 			FileService.DeleteDirectory(path);
+		}
+
+		public void OnFileChanged (string path)
+		{
+			packageManagementEvents.OnFileChanged (path);
 		}
 	}
 }

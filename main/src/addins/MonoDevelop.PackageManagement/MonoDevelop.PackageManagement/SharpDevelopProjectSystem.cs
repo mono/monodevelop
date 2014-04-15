@@ -258,12 +258,18 @@ namespace ICSharpCode.PackageManagement
 			if (ShouldAddFileToProject(path)) {
 				AddFileProjectItemToProject(path);
 			}
+			OnFileChanged (path);
 			LogAddedFileToProject(path);
 		}
 		
 		bool ShouldAddFileToProject(string path)
 		{
 			return !IsBinDirectory(path) && !FileExistsInProject(path);
+		}
+
+		void OnFileChanged (string path)
+		{
+			GuiSyncDispatch (() => fileService.OnFileChanged (GetFullPath (path)));
 		}
 		
 		bool IsBinDirectory(string path)
@@ -393,6 +399,18 @@ namespace ICSharpCode.PackageManagement
 				project.RemoveImport (relativeTargetPath);
 				project.Save ();
 			});
+		}
+
+		/// <summary>
+		/// NuGet sometimes uses CreateFile to replace an existing file.
+		/// This happens when the XML transformation (web.config.transform) is reverted on 
+		/// uninstalling a NuGet package. It also happens when an XML document transform 
+		/// (.install.xdt, .uninstall.xdt) is run.
+		/// </summary>
+		public override Stream CreateFile (string path)
+		{
+			OnFileChanged (path);
+			return base.CreateFile (path);
 		}
 
 		T GuiSyncDispatch<T> (Func<T> action)
