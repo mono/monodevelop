@@ -171,8 +171,6 @@ type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) 
 type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
-  let getTemplates doc = CodeTemplateService.GetCodeTemplatesForFile(doc)        
-     
   let mutable suppressParameterCompletion = false
 
   override x.ExtendsEditor(doc:Document, editor:IEditableTextBuffer) =
@@ -320,7 +318,7 @@ type FSharpTextEditorCompletion() =
     
     // Add the code templates
     let doc = x.Document
-    let templates = getTemplates (x.Document.FileName.ToString())
+    let templates = CodeTemplateService.GetCodeTemplatesForFile(x.Document.FileName.ToString())
                     |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
                     |> Seq.cast<ICompletionData>
     result.AddRange(templates)

@@ -18,8 +18,8 @@ open Mono.TextEditor
 type FSharpFormatter() =
     inherit AbstractAdvancedFormatter()
 
-    override x.SupportsOnTheFlyFormatting with get() = true
-    override x.SupportsCorrectingIndent with get() = true
+    override x.SupportsOnTheFlyFormatting = true
+    override x.SupportsCorrectingIndent = true
 
     override x.CorrectIndenting(policyParent:PolicyContainer, mimeTypeChain: string seq, data:TextEditorData, line:int) = ()
 
