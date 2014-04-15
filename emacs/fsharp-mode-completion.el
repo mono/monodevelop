@@ -96,15 +96,17 @@ display in a help buffer instead.")
   (process-send-string proc str))
 
 (defun fsharp-ac-parse-current-buffer ()
-  (save-restriction
-    (let ((file (expand-file-name (buffer-file-name))))
-      (widen)
-      (fsharp-ac--log (format "Parsing \"%s\"\n" file))
-      (process-send-string
-       fsharp-ac-completion-process
-       (format "parse \"%s\"\n%s\n<<EOF>>\n"
-               file
-               (buffer-substring-no-properties (point-min) (point-max)))))))
+  (if (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
+      (save-restriction
+	(let ((file (expand-file-name (buffer-file-name))))
+	  (widen)
+	  (fsharp-ac--log (format "Parsing \"%s\"\n" file))
+	  (process-send-string
+	   fsharp-ac-completion-process
+	   (format "parse \"%s\"\n%s\n<<EOF>>\n"
+		   file
+		   (buffer-substring-no-properties (point-min) (point-max)))))
+	(setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
 
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
@@ -256,7 +258,7 @@ display in a help buffer instead.")
   (let* ((ticks (s-match "^``\\(.*\\)``$" item))
          (key (if ticks (cadr ticks) item))
          (prop (gethash key fsharp-ac-current-helptext)))
-    (let ((help 
+    (let ((help
            (if prop prop
              (log-psendstr fsharp-ac-completion-process
                            (format "helptext %s\n" key))
@@ -273,7 +275,7 @@ display in a help buffer instead.")
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
      (clrhash fsharp-ac-current-helptext)
-     
+
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
@@ -337,7 +339,7 @@ display in a help buffer instead.")
   "Regexp for a dotted ident with a raw residue")
 
 (defun fsharp-ac--residue ()
-  (let ((result 
+  (let ((result
          (let ((line (buffer-substring-no-properties (line-beginning-position) (point))))
            (- (point)
               (cadr
@@ -428,6 +430,9 @@ The current buffer must be an F# file that exists on disk."
 
 (defvar fsharp-ac-errors)
 (make-local-variable 'fsharp-ac-errors)
+
+(defvar fsharp-ac-last-parsed-ticks 0
+  "BUFFER's tick counter, when the file was parsed")
 
 (defun fsharp-ac--parse-current-file ()
   (when (fsharp-ac-can-make-request)
@@ -611,7 +616,7 @@ around to the start of the buffer."
          ((s-equals? "finddecl" kind) (fsharp-ac-visit-definition data))
        (t
         (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
-      
+
     (setq msg (fsharp-ac--get-msg proc)))))
 
 (defun fsharp-ac-handle-completion (data)
