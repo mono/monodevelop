@@ -161,18 +161,27 @@ namespace MonoDevelop.VersionControl.Git
 			return new StashCollection (repository);
 		}
 
+		IEnumerable<string> GetSubmodulePaths ()
+		{
+			var lines = File.ReadAllLines (RootPath.Combine (Constants.DOT_GIT_MODULES));
+			// Parses .gitmodules to get all submodules paths.
+			return lines.Where (l => l.Contains ("path = ")).Select (l => l.Substring (l.LastIndexOf (" ", StringComparison.Ordinal)));
+		}
+
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
 		Tuple<FilePath, NGit.Repository>[] cachedSubmodules = new Tuple<FilePath, NGit.Repository>[0];
 		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
 			get {
-				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodules"));
+				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(Constants.DOT_GIT_MODULES));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
 					cachedSubmoduleTime = submoduleWriteTime;
-					cachedSubmodules = new NGit.Api.Git (RootRepository)
-					.SubmoduleStatus ()
-					.Call ()
-					.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
-					.ToArray ();
+					var submoduleStatus = new NGit.Api.Git (RootRepository).SubmoduleStatus ();
+					foreach (var submodule in GetSubmodulePaths ())
+						submoduleStatus.AddPath (submodule);
+
+					cachedSubmodules = submoduleStatus.Call ()
+						.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
+						.ToArray ();
 				}
 				return cachedSubmodules;
 			}
