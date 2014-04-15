@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=7e42bbfdce9fd16b24095cda871a514da9466807
+DEP_NEEDED_VERSION[0]=fa7140343c0200dfba57ac02185341ca3fdba1fa
 DEP_BRANCH_AND_REMOTE[0]="retina origin/retina"
 
 # heap-shot
