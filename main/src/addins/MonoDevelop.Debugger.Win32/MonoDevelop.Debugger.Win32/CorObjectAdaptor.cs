@@ -149,6 +149,24 @@ namespace MonoDevelop.Debugger.Win32
 			return ((CorType) type).Base;
 		}
 
+		protected override object GetBaseTypeWithAttribute (EvaluationContext ctx, object type, object attrType)
+		{
+			var wctx = (CorEvaluationContext) ctx;
+			var attr = ((CorType) attrType).GetTypeInfo (wctx.Session);
+			var tm = type as CorType;
+
+			while (tm != null) {
+				var t = tm.GetTypeInfo (wctx.Session);
+
+				if (t.GetCustomAttributes (attr, false).Any ())
+					return tm;
+
+				tm = tm.Base;
+			}
+
+			return null;
+		}
+
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
 			CorType[] types = ((CorType)type).TypeParameters;
