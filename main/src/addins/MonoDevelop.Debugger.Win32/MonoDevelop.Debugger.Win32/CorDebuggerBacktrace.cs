@@ -92,7 +92,6 @@ namespace MonoDevelop.Debugger.Win32
 			string type = "";
 			bool hasDebugInfo = false;
 			bool hidden = false;
-			bool external = true;
 
 			if (frame.FrameType == CorFrameType.ILFrame) {
 				if (frame.Function != null) {
@@ -147,7 +146,7 @@ namespace MonoDevelop.Debugger.Win32
 				method = "<Unknown>";
 
 			var loc = new SourceLocation (method, file, line, column);
-			return new StackFrame ((long) address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
+			return new StackFrame ((long) address, addressSpace, loc, lang, session.IsExternalCode(loc), hasDebugInfo, hidden, null, null);
 		}
 
 		#endregion
