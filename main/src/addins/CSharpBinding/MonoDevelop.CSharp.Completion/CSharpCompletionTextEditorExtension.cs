@@ -358,9 +358,18 @@ namespace MonoDevelop.CSharp.Completion
 					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
 					var engine = new ICSharpCode.NRefactory6.CSharp.Completion.CSharpCompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory ());
 					
-					foreach (var symbol in engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace)) {
+					var completionResult = engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
+					foreach (var symbol in completionResult.Data) {
 						list.Add ((ICompletionData)symbol); 
 					}
+					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
+					// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
+					list.AutoSelect = completionResult.AutoSelect;
+					list.DefaultCompletionString = completionResult.DefaultCompletionString;
+					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
+					if (ctrlSpace)
+						list.AutoCompleteUniqueMatch = true;
+
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
@@ -413,13 +422,6 @@ namespace MonoDevelop.CSharp.Completion
 //			} catch (Exception e) {
 //				LoggingService.LogError ("Error while getting completion data.", e);
 //			}
-//			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
-//			list.AutoCompleteEmptyMatchOnCurlyBrace = engine.AutoCompleteEmptyMatchOnCurlyBracket;
-//			list.AutoSelect = engine.AutoSelect;
-//			list.DefaultCompletionString = engine.DefaultCompletionString;
-//			list.CloseOnSquareBrackets = engine.CloseOnSquareBrackets;
-//			if (ctrlSpace)
-//				list.AutoCompleteUniqueMatch = true;
 			return list.Count > 0 ? list : null;
 		}
 		

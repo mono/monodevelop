@@ -45,21 +45,24 @@ namespace MonoDevelop.CodeIssues
 			if (diagnostic == null)
 				throw new ArgumentNullException ("diagnostic");
 			this.diagnostic = diagnostic;
-			SetSeverity (ConvertSeverity (diagnostic.Severity), ConvertIssueMarker (diagnostic.Kind)); 
+			var marker = IssueMarker.WavedLine;
+//			var nrefactoryDiagnostic = diagnostic as NRefactoryDiagnostic;
+			
+			SetSeverity (ConvertSeverity (diagnostic.Severity), marker); 
 		}
 
-		static IssueMarker ConvertIssueMarker (string kind)
-		{
-			switch (kind) {
-			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.WavedLine:
-				return IssueMarker.WavedLine;
-			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.DottedLine:
-				return IssueMarker.DottedLine;
-			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.GrayOut:
-				return IssueMarker.GrayOut;
-			}
-			return IssueMarker.WavedLine;
-		}
+//		static IssueMarker ConvertIssueMarker (string kind)
+//		{
+//			switch (kind) {
+//			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.WavedLine:
+//				return IssueMarker.WavedLine;
+//			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.DottedLine:
+//				return IssueMarker.DottedLine;
+//			case ICSharpCode.NRefactory6.CSharp.Refactoring.IssueKinds.GrayOut:
+//				return IssueMarker.GrayOut;
+//			}
+//			return IssueMarker.WavedLine;
+//		}
 
 		static Severity ConvertSeverity (Microsoft.CodeAnalysis.DiagnosticSeverity severity)
 		{

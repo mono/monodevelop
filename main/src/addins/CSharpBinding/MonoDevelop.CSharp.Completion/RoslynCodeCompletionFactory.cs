@@ -25,34 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Project;
-using System.Linq;
-using MonoDevelop.CSharp.Formatting;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Text;
-using MonoDevelop.Ide.CodeTemplates;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using Mono.TextEditor;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Recommendations;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -68,7 +40,12 @@ namespace MonoDevelop.CSharp.Completion
 				Icon = "md-keyword"
 			};
 		}
-
+		
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (Microsoft.CodeAnalysis.IFieldSymbol field)
+		{
+			return new RoslynSymbolCompletionData (field, field.Type.Name + "." + field.Name);
+		}
+		
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (string format, string description, object example)
 		{
 			throw new NotImplementedException ();
@@ -82,6 +59,11 @@ namespace MonoDevelop.CSharp.Completion
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol)
 		{
 			return new RoslynSymbolCompletionData (symbol);
+		}
+		
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol, string text)
+		{
+			return new RoslynSymbolCompletionData (symbol, text);
 		}
 		#endregion
 	}

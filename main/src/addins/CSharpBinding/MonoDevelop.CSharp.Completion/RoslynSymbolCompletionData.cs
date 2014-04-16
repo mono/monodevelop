@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string DisplayText {
 			get {
-				return symbol.Name;
+				return text ?? symbol.Name;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string CompletionText {
 			get {
-				return symbol.Name;
+				return text ?? symbol.Name;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -91,8 +91,11 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public RoslynSymbolCompletionData (ISymbol symbol) : base ()
+		readonly string text;
+
+		public RoslynSymbolCompletionData (ISymbol symbol, string text = null) : base ()
 		{
+			this.text = text;
 			this.symbol = symbol;
 		}
 	}
