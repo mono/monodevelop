@@ -189,16 +189,8 @@ display in a help buffer instead.")
   (when (fsharp-ac--process-live-p)
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
-    (when (process-live-p fsharp-ac-completion-process)
-      (kill-process fsharp-ac-completion-process)))
-  (when fsharp-ac-idle-timer
-    (cancel-timer fsharp-ac-idle-timer))
-  (setq fsharp-ac-status 'idle
-        fsharp-ac-completion-process nil
-        fsharp-ac-project-files nil
-        fsharp-ac-idle-timer nil
-        fsharp-ac-verbose nil)
-  (fsharp-ac-clear-errors))
+    (when (and fsharp-ac-completion-process (process-live-p fsharp-ac-completion-process))
+      (kill-process fsharp-ac-completion-process))))
 
 (defun fsharp-ac/start-process ()
   "Launch the F# completion process in the background"
@@ -215,6 +207,23 @@ display in a help buffer instead.")
      (setq fsharp-ac-intellisense-enabled nil)
      (message "Failed to start fsautocomplete. Disabling intellisense."))))
 
+(defun fsharp-ac--process-sentinel (process event)
+  "Default sentinel used by `fsharp-ac--configure-proc"
+  (when (memq (process-status process) '(exit signal))
+    (when fsharp-ac-idle-timer
+      (cancel-timer fsharp-ac-idle-timer))
+    (mapc (lambda (buf)
+	    (with-current-buffer buf
+	      (when (eq major-mode 'fsharp-mode)
+		(setq fsharp-ac-last-parsed-ticks 0)
+		(fsharp-ac-clear-errors))))
+	  (buffer-list))
+    (setq fsharp-ac-status 'idle
+	  fsharp-ac-completion-process nil
+	  fsharp-ac-project-files nil
+	  fsharp-ac-idle-timer nil
+	  fsharp-ac-verbose nil)))
+
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
                 (apply 'start-process "fsharp-complete" "*fsharp-complete*"
@@ -222,6 +231,7 @@ display in a help buffer instead.")
     (sleep-for 0.1)
     (if (process-live-p proc)
         (progn
+	  (set-process-sentinel proc #'fsharp-ac--process-sentinel)
 	  (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
