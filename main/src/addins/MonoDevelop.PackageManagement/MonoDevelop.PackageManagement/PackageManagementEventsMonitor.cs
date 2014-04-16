@@ -117,7 +117,7 @@ namespace MonoDevelop.PackageManagement
 		public void ReportResult (ProgressMonitorStatusMessage progressMessage)
 		{
 			if (HasWarnings) {
-				progressMonitor.ReportSuccess (progressMessage.Warning);
+				progressMonitor.ReportWarning (progressMessage.Warning);
 			} else {
 				progressMonitor.ReportSuccess (progressMessage.Success);
 			}
