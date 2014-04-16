@@ -14,6 +14,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.CodeTemplates
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
@@ -295,6 +296,7 @@ type FSharpTextEditorCompletion() =
       x.CodeCompletionCommandImpl(context, true)
 
   member x.CodeCompletionCommandImpl(context, allowAnyStale) =
+    let result = CompletionDataList()
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
       let proj = x.Document.Project :?> MonoDevelop.Projects.DotNetProject
@@ -307,10 +309,7 @@ type FSharpTextEditorCompletion() =
           MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
           |> Async.RunSynchronously
       match typedParseResults with
-      | None ->
-        let result = CompletionDataList()
-        result.Add(FSharpTryAgainMemberCompletionData())
-        result :> ICompletionDataList
+      | None       -> result.Add(FSharpTryAgainMemberCompletionData())
       | Some tyRes ->
         // Get declarations and generate list for MonoDevelop
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
@@ -318,14 +317,19 @@ type FSharpTextEditorCompletion() =
         | Some(decls, residue) when decls.Items.Any() ->
               let items = decls.Items
                           |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
-              let result = CompletionDataList()
               result.AddRange(items)
-              result :> ICompletionDataList
-        | _ -> null
+        | _ -> ()
     with
-    | e -> let result = CompletionDataList()
-           result.Add(FSharpErrorCompletionData(e))
-           result :> ICompletionDataList
+    | e -> result.Add(FSharpErrorCompletionData(e))
+    
+    // Add the code templates
+    let doc = x.Document
+    let templates = CodeTemplateService.GetCodeTemplatesForFile(x.Document.FileName.ToString())
+                    |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
+                    |> Seq.cast<ICompletionData>
+    result.AddRange(templates)
+
+    result :> ICompletionDataList
 
   // T find out what this is used for
   override x.GetParameterCompletionCommandOffset(cpos:byref<int>) = false
