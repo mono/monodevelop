@@ -153,6 +153,10 @@
                      class = "MonoDevelop.FSharp.FSharpReferenceFinder" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/CodeFormatters">
+    <Formatter mimeType="text/x-fsharp" class="MonoDevelop.FSharp.FSharpFormatter" />
+  </Extension>
+
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
