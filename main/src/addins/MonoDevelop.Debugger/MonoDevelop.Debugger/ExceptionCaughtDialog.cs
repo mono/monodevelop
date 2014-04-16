@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 
 using Gtk;
 
@@ -294,8 +295,12 @@ namespace MonoDevelop.Debugger
 
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 
-			if (frame != null && !string.IsNullOrEmpty (frame.File))
-				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
+			if (frame != null && !string.IsNullOrEmpty (frame.File)) {
+				try {
+					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column);
+				} catch (FileNotFoundException) {
+				}
+			}
 		}
 
 		static bool IsUserCode (ExceptionStackFrame frame)
