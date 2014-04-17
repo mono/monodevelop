@@ -49,7 +49,6 @@ using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
-
 	public static class DebuggingService
 	{
 		const string FactoriesPath = "/MonoDevelop/Debugging/DebuggerEngines";
@@ -68,13 +67,14 @@ namespace MonoDevelop.Debugger
 		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
+		static RunToCursorBreakpoint rtc;
 		static int currentFrame;
 		
 		static ExceptionCaughtMessage exceptionDialog;
 		
 		static BusyEvaluatorDialog busyDialog;
-		static bool isBusy;
 		static StatusBarIcon busyStatusIcon;
+		static bool isBusy;
 
 		static public event EventHandler DebugSessionStarted;
 		static public event EventHandler PausedEvent;
@@ -301,9 +301,7 @@ namespace MonoDevelop.Debugger
 				HideExceptionCaughtDialog ();
 				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
 				exceptionDialog.ShowButton ();
-				exceptionDialog.Closed += (o, args) => {
-					exceptionDialog = null;
-				};
+				exceptionDialog.Closed += (o, args) => exceptionDialog = null;
 			}
 		}
 
@@ -468,6 +466,18 @@ namespace MonoDevelop.Debugger
 		{
 			if (CheckIsBusy ())
 				return;
+			session.Continue ();
+			NotifyLocationChanged ();
+		}
+
+		public static void RunToCursor (string fileName, int line, int column)
+		{
+			if (CheckIsBusy ())
+				return;
+
+			rtc = new RunToCursorBreakpoint (fileName, line, column);
+			Breakpoints.Add (rtc);
+
 			session.Continue ();
 			NotifyLocationChanged ();
 		}
@@ -656,19 +666,27 @@ namespace MonoDevelop.Debugger
 		{
 			try {
 				switch (args.Type) {
-					case TargetEventType.TargetExited:
-						Cleanup ();
-						break;
-					case TargetEventType.TargetSignaled:
-					case TargetEventType.TargetStopped:
-					case TargetEventType.TargetHitBreakpoint:
-					case TargetEventType.TargetInterrupted:
-					case TargetEventType.UnhandledException:
-					case TargetEventType.ExceptionThrown:
-						SetCurrentBacktrace (args.Backtrace);
-						NotifyPaused ();
-						NotifyException (args);
-						break;
+				case TargetEventType.TargetExited:
+					if (rtc != null) {
+						Breakpoints.Remove (rtc);
+						rtc = null;
+					}
+					Cleanup ();
+					break;
+				case TargetEventType.TargetSignaled:
+				case TargetEventType.TargetStopped:
+				case TargetEventType.TargetHitBreakpoint:
+				case TargetEventType.TargetInterrupted:
+				case TargetEventType.UnhandledException:
+				case TargetEventType.ExceptionThrown:
+					if (rtc != null) {
+						Breakpoints.Remove (rtc);
+						rtc = null;
+					}
+					SetCurrentBacktrace (args.Backtrace);
+					NotifyPaused ();
+					NotifyException (args);
+					break;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error handling debugger target event", ex);

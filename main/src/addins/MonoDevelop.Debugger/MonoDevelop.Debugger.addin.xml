@@ -159,6 +159,12 @@
 				_description = "Stops the execution of the expression being evaluated by the debugger"
 				defaultHandler = "MonoDevelop.Debugger.StopEvaluationHandler"
 				_label = "Stop Evaluation" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.RunToCursor"
+				defaultHandler = "MonoDevelop.Debugger.RunToCursorHandler"
+				_label = "Run To Cursor"
+				_description = "Run To Cursor"
+				shortcut = "Control|F10"
+				macShortcut = "Control|Shift|Meta|O" />
 		</Category>
 	</Extension>
 
@@ -168,6 +174,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Debug" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Run"/>
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Stop"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StopEvaluation" />
 		<SeparatorItem id = "MonoDevelop.Debugger.ExternalDebuggingSection" />

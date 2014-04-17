@@ -63,7 +63,8 @@ namespace MonoDevelop.Debugger
 		ShowCurrentExecutionLine,
 		AddTracepoint,
 		AddWatch,
-		StopEvaluation
+		StopEvaluation,
+		RunToCursor
 	}
 
 	class DebugHandler: CommandHandler
@@ -217,7 +218,6 @@ namespace MonoDevelop.Debugger
 			BuildBeforeRun,
 			Run
 		}
-			
 	}
 	
 	class DebugEntryHandler: CommandHandler
@@ -595,6 +595,27 @@ namespace MonoDevelop.Debugger
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && IdeApp.Workspace.IsOpen;
+		}
+	}
+
+	class RunToCursorHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.RunToCursor (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			if (IdeApp.Workbench.ActiveDocument != null && 
+				IdeApp.Workbench.ActiveDocument.Editor != null &&
+				IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+				!DebuggingService.Breakpoints.IsReadOnly) {
+				info.Enabled = DebuggingService.IsPaused;
+			} else {
+				info.Enabled = false;
+			}
 		}
 	}
 	
