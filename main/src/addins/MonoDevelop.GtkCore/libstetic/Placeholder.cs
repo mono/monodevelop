@@ -106,7 +106,7 @@ namespace Stetic {
 			using (var pat = new Cairo.LinearGradient (rect.X + rect.Width*fx, rect.Y + rect.Height*fy, rect.X + rect.Width*fw, rect.Y + rect.Height*fh)) {
 				pat.AddColorStop (0, c1);
 				pat.AddColorStop (1, c2);
-				cr.SetSource (pat);
+				cr.Source = pat;
 				cr.FillPreserve ();
 			}
 		}
