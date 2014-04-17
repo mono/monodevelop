@@ -74,6 +74,8 @@ let getPrefix args =
         | _ -> None
     Array.tryPick tryGet args
 
+let installMdbFiles = Array.exists ((=) "--debug") args
+
 let getExeVersion exe =
     let outp = Run(exe, "/?").ReadLine()
     outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
@@ -150,6 +152,10 @@ match getMdExe mdDir with
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 
+if installMdbFiles then
+    FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
+    FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
+    
 if isWindows then
   FileReplace(xmlFile, xmlFile, ".dll.mdb\"", ".pdb\"")
   for config in ["Debug";"Release"] do
