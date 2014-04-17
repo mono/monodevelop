@@ -207,7 +207,9 @@ and whether it is in a project directory.")
           ac-auto-start
           ac-use-comphist
           ac-auto-show-menu
-          popup-tip-max-width))
+          popup-tip-max-width
+	  fsharp-ac-last-parsed-ticks
+	  fsharp-ac-errors))
 
   (setq major-mode               'fsharp-mode
         mode-name                "fsharp"
