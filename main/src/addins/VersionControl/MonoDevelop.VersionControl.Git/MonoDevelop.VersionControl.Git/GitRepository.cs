@@ -1141,14 +1141,14 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = GetRepository (baseLocalPath);
 				if ((versionInfo.Status & VersionStatus.ScheduledAdd) != 0) {
 					var ctxt = GetFileContent (versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (EmptyContent, ctxt));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (EmptyContent, ctxt, repository));
 				} else if ((versionInfo.Status & VersionStatus.ScheduledDelete) != 0) {
 					var ctxt = GetCommitContent (GetHeadCommit (repository), versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt, EmptyContent));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt, EmptyContent, repository));
 				} else if ((versionInfo.Status & VersionStatus.Modified) != 0 || (versionInfo.Status & VersionStatus.Conflicted) != 0) {
 					var ctxt1 = GetCommitContent (GetHeadCommit (repository), versionInfo.LocalPath);
 					var ctxt2 = GetFileContent (versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt1, ctxt2));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt1, ctxt2, repository));
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not get diff for file '" + versionInfo.LocalPath + "'", ex);
@@ -1176,7 +1176,7 @@ namespace MonoDevelop.VersionControl.Git
 		byte[] GetCommitContent (RevCommit c, FilePath file)
 		{
 			var repository = GetRepository (file);
-			TreeWalk tw = TreeWalk.ForPath (repository, repository.ToGitPath (file), c.Tree);
+			TreeWalk tw = TreeWalk.ForPath (repository, file.IsAbsolute ? repository.ToGitPath (file) : (string)file, c.Tree);
 			if (tw == null)
 				return EmptyContent;
 			ObjectId id = tw.GetObjectId (0);
@@ -1191,7 +1191,7 @@ namespace MonoDevelop.VersionControl.Git
 			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		
-		static string GenerateDiff (byte[] data1, byte[] data2)
+		static string GenerateDiff (byte[] data1, byte[] data2, NGit.Repository repo)
 		{
 			if (RawText.IsBinary (data1) || RawText.IsBinary (data2)) {
 				if (data1.Length != data2.Length)
@@ -1211,6 +1211,7 @@ namespace MonoDevelop.VersionControl.Git
 					.Diff (RawTextComparator.DEFAULT, text1, text2);
 			MemoryStream s = new MemoryStream ();
 			var formatter = new DiffFormatter (s);
+			formatter.SetRepository (repo);
 			formatter.Format (edits, text1, text2);
 			return Encoding.UTF8.GetString (s.ToArray ());
 		}
@@ -1563,17 +1564,17 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
 				string diff;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.DELETE:
-					diff = GenerateDiff (EmptyContent, GetCommitContent (c2, change.GetOldPath ()));
+					diff = GenerateDiff (GetCommitContent (c2, change.GetOldPath ()), EmptyContent, RootRepository);
 					break;
 				case DiffEntry.ChangeType.ADD:
-					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), EmptyContent);
+					diff = GenerateDiff (EmptyContent, GetCommitContent (c1, change.GetNewPath ()), RootRepository);
 					break;
 				default:
-					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), GetCommitContent (c2, change.GetNewPath ()));
+					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), GetCommitContent (c2, change.GetNewPath ()), RootRepository);
 					break;
 				}
 				DiffInfo di = new DiffInfo (RootPath, RootRepository.FromGitPath (change.GetNewPath ()), diff);

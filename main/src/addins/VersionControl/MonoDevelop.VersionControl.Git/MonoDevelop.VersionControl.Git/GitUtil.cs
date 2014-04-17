@@ -106,14 +106,12 @@ namespace MonoDevelop.VersionControl.Git
 
 			var firstTree = new CanonicalTreeParser ();
 			firstTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (reference));
-			diff.SetNewTree (firstTree);
-			
+			diff.SetOldTree (firstTree);
+
 			if (compared != ObjectId.ZeroId) {
 				var secondTree = new CanonicalTreeParser ();
 				secondTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (compared));
-
-				if (compared != ObjectId.ZeroId)
-					diff.SetOldTree (secondTree);
+				diff.SetNewTree (secondTree);
 			}
 			return diff.Call ();
 		}
