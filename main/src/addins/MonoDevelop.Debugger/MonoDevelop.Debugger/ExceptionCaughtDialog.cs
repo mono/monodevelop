@@ -295,7 +295,7 @@ namespace MonoDevelop.Debugger
 
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 
-			if (frame != null && !string.IsNullOrEmpty (frame.File)) {
+			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
 				try {
 					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column);
 				} catch (FileNotFoundException) {
