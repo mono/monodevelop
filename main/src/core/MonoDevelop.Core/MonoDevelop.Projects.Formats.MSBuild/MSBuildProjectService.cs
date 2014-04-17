@@ -487,6 +487,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					toolsVersion = "4.0";
 				}
 
+				// HACK: the f# targets file for android is broken and won't work with build tools v12.
+				if (file.EndsWith (".fsproj") && minToolsVersion != "12.0")
+					toolsVersion = "4.0";
+
 				//check the ToolsVersion we found can handle the project
 				Version tv, mtv;
 				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
