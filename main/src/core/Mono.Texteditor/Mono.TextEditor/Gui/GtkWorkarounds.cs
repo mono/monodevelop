@@ -1075,10 +1075,10 @@ namespace Mono.TextEditor
 		
 		static bool supportsHiResIcons = true;
 
-		[DllImport (PangoUtil.LIBQUARTZ)]
+		[DllImport (PangoUtil.LIBGTK)]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
 		
-		[DllImport (PangoUtil.LIBQUARTZ)]
+		[DllImport (PangoUtil.LIBGTK)]
 		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
 		
 		[DllImport (PangoUtil.LIBGTK)]
