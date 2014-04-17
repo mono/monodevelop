@@ -168,7 +168,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			var lines = File.ReadAllLines (RootPath.Combine (Constants.DOT_GIT_MODULES));
 			// Parses .gitmodules to get all submodules paths.
-			return lines.Where (l => l.Contains ("path = ")).Select (l => l.Substring (l.LastIndexOf (" ", StringComparison.Ordinal)));
+			var res = lines.Where (l => l.Contains ("path = ")).Select (l => l.Substring (l.LastIndexOf (" ", StringComparison.Ordinal) + 1));
+			return res;
 		}
 
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
