@@ -262,8 +262,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		// Used for checking if we will dupe data.
 		// This way we reduce the number of GitRevisions created and RevWalks done.
-		NGit.Repository versionInfoCacheRepository;
-		GitRevision versionInfoCacheRevision;
+		Dictionary<NGit.Repository, GitRevision> versionInfoCacheRevision = new Dictionary<NGit.Repository, GitRevision> ();
+		Dictionary<NGit.Repository, GitRevision> versionInfoCacheEmptyRevision = new Dictionary<NGit.Repository, GitRevision> ();
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, IEnumerable<FilePath> localFileNames, bool getRemoteStatus, bool recursive)
 		{
 			List<VersionInfo> versions = new List<VersionInfo> ();
@@ -274,7 +274,11 @@ namespace MonoDevelop.VersionControl.Git
 				var localFiles = new List<FilePath> ();
 				foreach (var group in GroupByRepository (localFileNames)) {
 					var repository = group.Key;
-					var arev = new GitRevision (this, repository, "");
+					GitRevision arev;
+					if (!versionInfoCacheEmptyRevision.TryGetValue (repository, out arev)) {
+						arev = new GitRevision (this, repository, "");
+						versionInfoCacheEmptyRevision.Add (repository, arev);
+					}
 					foreach (var p in group) {
 						if (Directory.Exists (p)) {
 							if (recursive)
@@ -300,7 +304,11 @@ namespace MonoDevelop.VersionControl.Git
 				CollectFiles (existingFiles, directories, localDirectory, recursive);
 				foreach (var group in GroupByRepository (directories)) {
 					var repository = group.Key;
-					var arev = new GitRevision (this, repository, "");
+					GitRevision arev;
+					if (!versionInfoCacheEmptyRevision.TryGetValue (repository, out arev)) {
+						arev = new GitRevision (this, repository, "");
+						versionInfoCacheEmptyRevision.Add (repository, arev);
+					}
 					foreach (var p in group)
 						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 				}
@@ -324,15 +332,16 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 
 				GitRevision rev = null;
-				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
-					versionInfoCacheRepository = repository;
-					RevCommit headCommit = GetHeadCommit (repository);
-					if (headCommit != null) {
+				RevCommit headCommit = GetHeadCommit (repository);
+				if (headCommit != null) {
+					if (!versionInfoCacheRevision.TryGetValue (repository, out rev)) {
 						rev = new GitRevision (this, repository, headCommit.Id.Name);
-						versionInfoCacheRevision = rev;
+						versionInfoCacheRevision.Add (repository, rev);
+					} else if (rev.ToString () != headCommit.Id.Name) {
+						rev = new GitRevision (this, repository, headCommit.Id.Name);
+						versionInfoCacheRevision [repository] = rev;
 					}
-				} else
-					rev = versionInfoCacheRevision;
+				}
 
 				GetDirectoryVersionInfoCore (repository, rev, group, existingFiles, nonVersionedMissingFiles, versions);
 				
