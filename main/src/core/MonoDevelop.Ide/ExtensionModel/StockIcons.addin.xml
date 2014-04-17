@@ -217,7 +217,7 @@
 	<StockIcon stockid = "md-text-editor-behavior" resource = "text-editor-behavior-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-text-quickfix" resource = "text-quickfix-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-message-log" resource = "pad-application-output-light-16.png" size = "Menu"/>
-	<StockIcon stockid = "md-assembly-project" resource = "assembly-project-16.png" size="Menu" />
+	<StockIcon stockid = "md-assembly-project" resource = "assembly-project-light-16.png" size="Menu" />
 	<StockIcon stockid = "md-parser" resource = "parser-light-16.png" size="Menu" />
 	<!-- for some reason both pairs next/previous and forward/back are in use -->
 	<StockIcon stockid = "md-navigate-forward" resource = "navigate-next-16.png" size="Menu" />

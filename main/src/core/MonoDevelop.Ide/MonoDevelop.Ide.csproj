@@ -275,8 +275,11 @@
     <EmbeddedResource Include="icons\add-namespace-16.png">
       <LogicalName>add-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16.png">
-      <LogicalName>assembly-project-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\assembly-project-16.png">
+      <LogicalName>assembly-project-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\assembly-project-16%402x.png">
+      <LogicalName>assembly-project-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\breakpoint-16.png">
       <LogicalName>breakpoint-light-16.png</LogicalName>
