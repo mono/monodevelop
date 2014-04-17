@@ -13,7 +13,10 @@ repository/*
 *.pdb
 *.cache
 *.swp
+<<<<<<< HEAD
 *.orig
+=======
+>>>>>>> 9021f23741ac3401c82c14b2681ede4370342ce9
 *~
 pack/*
 lib/NUnit.*

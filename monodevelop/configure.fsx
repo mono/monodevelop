@@ -51,9 +51,9 @@ let Run (file, args) =
     currentProcess.Start () |> ignore
     currentProcess.StandardOutput
 
+let defaultVersion = "4.1.6"
 let args = fsi.CommandLineArgs.[1..]
 let searchPaths = if isWindows then WindowsPaths else UnixPaths
-let installMdbFiles = Array.exists ((=) "--debug") args
 
 Console.WriteLine "MonoDevelop F# add-in configuration script"
 Console.WriteLine "------------------------------------------"
@@ -63,7 +63,7 @@ if Array.exists ((=) "--help") args then
   Console.WriteLine "--debug\n"
   Console.WriteLine "  Enable debugging of the add-in\n"
   Console.WriteLine "--prefix=PATH\n"
-  Console.WriteLine "  Set MonoDevelop library directory. Currently searched:\n"
+  Console.WriteLine "  MonoDevelop library directory. Currently searched:\n"
   for p in searchPaths do Console.WriteLine("  {0}", p)
   exit 0
 
@@ -74,7 +74,9 @@ let getPrefix args =
         | _ -> None
     Array.tryPick tryGet args
 
-let defaultVersion = "4.1.6"
+let getExeVersion exe =
+    let outp = Run(exe, "/?").ReadLine()
+    outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
 
 // Look for the installation directory
 let getMdExe mdDir =
@@ -87,16 +89,11 @@ let getMdExe mdDir =
     |> function 
        | exe :: _ -> Some exe
        | _ -> None
-
-let getExeVersion exe =
-    let outp = Run(exe, "/?").ReadLine()
-    outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
-
+        
 let getMdExeVersion mdDir =
     match getMdExe mdDir with
-    | Some exe ->
-        getExeVersion exe
-    | None -> defaultVersion 
+    | Some exe -> getExeVersion exe
+    | _ -> defaultVersion
 
 let (mdDir, mdVersion) =
     match getPrefix args with
@@ -152,10 +149,6 @@ match getMdExe mdDir with
 
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
-
-if installMdbFiles then
-  FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
-  FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
 
 if isWindows then
   FileReplace(xmlFile, xmlFile, ".dll.mdb\"", ".pdb\"")
