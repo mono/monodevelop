@@ -185,8 +185,11 @@
     <EmbeddedResource Include="icons\light\project-reference-overlay-16%402x.png">
       <LogicalName>project-reference-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\parser-16.png">
-      <LogicalName>parser-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\parser-16.png">
+      <LogicalName>parser-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\parser-16%402x.png">
+      <LogicalName>parser-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\GenericProject.xpt.xml">
       <LogicalName>GenericProject.xpt.xml</LogicalName>
