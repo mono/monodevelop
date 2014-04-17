@@ -71,7 +71,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
+		<PadOption id = "ShowVersionControlOverlays" _label = "Show Version Control Overlay Icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "MonoDevelop.VersionControl.VersionControlNodeExtension"/>
 	</Extension>
 
