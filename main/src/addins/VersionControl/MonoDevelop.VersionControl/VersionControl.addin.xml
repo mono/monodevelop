@@ -81,8 +81,8 @@
 		<StockIcon stockid = "vc-resolve-command" resource = "vcs-conflicted-16.png" size="Menu" />
 		<StockIcon stockid = "vc-revert-command" resource = "revert-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-diff" resource = "diff-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-log" resource = "menu_log.png" size="Menu" />
-		<StockIcon stockid = "vc-status" resource = "menu_status.png" size="Menu" />
+		<StockIcon stockid = "vc-log" resource = "log-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-status" resource = "local-status-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-update" resource = "pull-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-push" resource = "push-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-commit" resource = "commit-light-16.png" size="Menu" />
