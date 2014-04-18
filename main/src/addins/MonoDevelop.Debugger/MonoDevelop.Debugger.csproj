@@ -254,11 +254,11 @@
     <EmbeddedResource Include="icons\light\lightning-16%402x.png">
       <LogicalName>lightning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-icon.png">
-      <LogicalName>exception-icon.png</LogicalName>
+    <EmbeddedResource Include="icons\light\exception-48.png">
+      <LogicalName>exception-light-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-icon%402x.png">
-      <LogicalName>exception-icon@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\exception-48%402x.png">
+      <LogicalName>exception-light-48@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\gutter-breakpoint-15.png">
       <LogicalName>gutter-breakpoint-light-15.png</LogicalName>
