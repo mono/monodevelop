@@ -308,12 +308,6 @@
     <EmbeddedResource Include="icons\light\gutter-tracepoint-invalid-15%402x.png">
       <LogicalName>gutter-tracepoint-invalid-light-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\stack-pointer-16.png">
-      <LogicalName>stack-pointer-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\stack-pointer-16%402x.png">
-      <LogicalName>stack-pointer-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
