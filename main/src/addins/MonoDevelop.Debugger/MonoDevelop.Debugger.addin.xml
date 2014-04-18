@@ -174,7 +174,6 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Debug" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Run"/>
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Stop"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StopEvaluation" />
 		<SeparatorItem id = "MonoDevelop.Debugger.ExternalDebuggingSection" />

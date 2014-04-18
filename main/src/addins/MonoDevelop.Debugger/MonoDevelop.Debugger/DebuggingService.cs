@@ -67,7 +67,6 @@ namespace MonoDevelop.Debugger
 		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
-		static RunToCursorBreakpoint rtc;
 		static int currentFrame;
 		
 		static ExceptionCaughtMessage exceptionDialog;
@@ -475,8 +474,8 @@ namespace MonoDevelop.Debugger
 			if (CheckIsBusy ())
 				return;
 
-			rtc = new RunToCursorBreakpoint (fileName, line, column);
-			Breakpoints.Add (rtc);
+			var bp = new RunToCursorBreakpoint (fileName, line, column);
+			Breakpoints.Add (bp);
 
 			session.Continue ();
 			NotifyLocationChanged ();
@@ -667,10 +666,7 @@ namespace MonoDevelop.Debugger
 			try {
 				switch (args.Type) {
 				case TargetEventType.TargetExited:
-					if (rtc != null) {
-						Breakpoints.Remove (rtc);
-						rtc = null;
-					}
+					Breakpoints.RemoveRunToCursorBreakpoints ();
 					Cleanup ();
 					break;
 				case TargetEventType.TargetSignaled:
@@ -679,10 +675,7 @@ namespace MonoDevelop.Debugger
 				case TargetEventType.TargetInterrupted:
 				case TargetEventType.UnhandledException:
 				case TargetEventType.ExceptionThrown:
-					if (rtc != null) {
-						Breakpoints.Remove (rtc);
-						rtc = null;
-					}
+					Breakpoints.RemoveRunToCursorBreakpoints ();
 					SetCurrentBacktrace (args.Backtrace);
 					NotifyPaused ();
 					NotifyException (args);

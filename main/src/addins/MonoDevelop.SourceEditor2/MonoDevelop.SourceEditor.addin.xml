@@ -148,14 +148,16 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<SeparatorItem id = "Separator2" />
+		<SeparatorItem id = "Separator3" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
-		<SeparatorItem id = "Separator3" />
+		<SeparatorItem id = "Separator4" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>
 
