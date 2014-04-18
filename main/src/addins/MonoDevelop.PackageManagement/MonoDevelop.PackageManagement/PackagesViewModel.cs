@@ -320,9 +320,19 @@ namespace ICSharpCode.PackageManagement
 		
 		PackageViewModel CreatePackageViewModel(IPackage package)
 		{
-			var repository = registeredPackageRepositories.ActiveRepository;
-			var packageFromRepository = new PackageFromRepository(package, repository);
+			PackageFromRepository packageFromRepository = CreatePackageFromRepository (package);
 			return packageViewModelFactory.CreatePackageViewModel(this, packageFromRepository);
+		}
+
+		PackageFromRepository CreatePackageFromRepository (IPackage package)
+		{
+			var packageFromRepository = package as PackageFromRepository;
+			if (packageFromRepository != null) {
+				return packageFromRepository;
+			}
+
+			var repository = registeredPackageRepositories.ActiveRepository;
+			return new PackageFromRepository(package, repository);
 		}
 		
 		public int SelectedPageNumber {
