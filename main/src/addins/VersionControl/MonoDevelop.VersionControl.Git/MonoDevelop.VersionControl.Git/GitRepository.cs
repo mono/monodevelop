@@ -1545,7 +1545,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
 				VersionStatus status;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.ADD:
