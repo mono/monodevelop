@@ -256,7 +256,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				"TextViewMargin.cs",
 			};
 			
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit + "^"), repo.Resolve (commit)).ToArray ();
 			Assert.AreEqual (11, changes.Length, "#1");
 			
 			foreach (var file in changedFiles)
