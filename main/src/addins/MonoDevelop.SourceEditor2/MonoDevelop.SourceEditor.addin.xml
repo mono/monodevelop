@@ -149,6 +149,8 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.RunToCursor" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement" />
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />

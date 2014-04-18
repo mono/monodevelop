@@ -25,7 +25,7 @@
 //
 //
 
-
+using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
@@ -64,7 +64,9 @@ namespace MonoDevelop.Debugger
 		AddTracepoint,
 		AddWatch,
 		StopEvaluation,
-		RunToCursor
+		RunToCursor,
+		SetNextStatement,
+		ShowNextStatement
 	}
 
 	class DebugHandler: CommandHandler
@@ -729,6 +731,47 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsDebugging && DebuggingService.IsPaused && DebuggingService.DebuggerSession.CanCancelAsyncEvaluations;
+		}
+	}
+
+	class SetNextStatementHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+
+			if (doc != null && doc.FileName != FilePath.Null && doc.Editor != null && DebuggingService.IsDebuggingSupported) {
+				info.Enabled = DebuggingService.IsPaused && DebuggingService.DebuggerSession.CanSetNextStatement;
+				info.Visible = DebuggingService.IsPaused;
+			} else {
+				info.Visible = false;
+				info.Enabled = false;
+			}
+		}
+
+		protected override void Run ()
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+
+			try {
+				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			} catch (NotSupportedException) {
+				MessageService.ShowError ("Unable to set the next statement to this location.");
+			}
+		}
+	}
+
+	class ShowNextStatementHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsDebuggingSupported;
+			info.Enabled = DebuggingService.IsPaused;
+		}
+
+		protected override void Run ()
+		{
+			DebuggingService.ShowNextStatement ();
 		}
 	}
 }

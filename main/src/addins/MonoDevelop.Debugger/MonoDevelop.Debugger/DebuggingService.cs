@@ -63,7 +63,8 @@ namespace MonoDevelop.Debugger
 		
 		static IConsole console;
 		static string oldLayout;
-		
+
+		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
 		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
@@ -364,6 +365,7 @@ namespace MonoDevelop.Debugger
 				currentSession = session;
 				currentConsole = console;
 
+				nextStatementLocations.Clear ();
 				currentBacktrace = null;
 				busyStatusIcon = null;
 				session = null;
@@ -465,6 +467,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (CheckIsBusy ())
 				return;
+
 			session.Continue ();
 			NotifyLocationChanged ();
 		}
@@ -478,6 +481,18 @@ namespace MonoDevelop.Debugger
 			Breakpoints.Add (bp);
 
 			session.Continue ();
+			NotifyLocationChanged ();
+		}
+
+		public static void SetNextStatement (string fileName, int line, int column)
+		{
+			if (!IsDebugging || IsRunning || CheckIsBusy ())
+				return;
+
+			session.SetNextStatement (fileName, line, column);
+
+			var location = new SourceLocation (CurrentFrame.SourceLocation.MethodName, fileName, line);
+			nextStatementLocations[session.ActiveThread.Id] = location;
 			NotifyLocationChanged ();
 		}
 
@@ -650,7 +665,9 @@ namespace MonoDevelop.Debugger
 		
 		static void OnStarted (object s, EventArgs a)
 		{
+			nextStatementLocations.Clear ();
 			currentBacktrace = null;
+
 			DispatchService.GuiDispatch (delegate {
 				HideExceptionCaughtDialog ();
 				if (ResumedEvent != null)
@@ -663,6 +680,8 @@ namespace MonoDevelop.Debugger
 		
 		static void OnTargetEvent (object sender, TargetEventArgs args)
 		{
+			nextStatementLocations.Clear ();
+
 			try {
 				switch (args.Type) {
 				case TargetEventType.TargetExited:
@@ -779,6 +798,17 @@ namespace MonoDevelop.Debugger
 			get { return currentBacktrace; }
 		}
 
+		public static SourceLocation NextStatementLocation {
+			get {
+				SourceLocation location = null;
+
+				if (IsPaused)
+					nextStatementLocations.TryGetValue (session.ActiveThread.Id, out location);
+
+				return location;
+			}
+		}
+
 		public static StackFrame CurrentFrame {
 			get {
 				if (currentBacktrace != null && currentFrame != -1)
@@ -840,6 +870,7 @@ namespace MonoDevelop.Debugger
 			DispatchService.GuiDispatch (delegate {
 				NotifyCallStackChanged ();
 				NotifyCurrentFrameChanged ();
+				NotifyLocationChanged ();
 			});
 		}
 		
@@ -848,9 +879,21 @@ namespace MonoDevelop.Debugger
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (sf != null && !string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
-					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
+					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
 					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
+			}
+		}
+
+		public static void ShowNextStatement ()
+		{
+			var location = NextStatementLocation;
+
+			if (location != null && System.IO.File.Exists (location.FileName)) {
+				Document document = IdeApp.Workbench.OpenDocument (location.FileName, null, location.Line, 1, OpenDocumentOptions.Debugger);
+				OnDisableConditionalCompilation (new DocumentEventArgs (document));
+			} else {
+				ShowCurrentExecutionLine ();
 			}
 		}
 		

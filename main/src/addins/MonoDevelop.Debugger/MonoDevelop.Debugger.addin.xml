@@ -163,8 +163,15 @@
 				defaultHandler = "MonoDevelop.Debugger.RunToCursorHandler"
 				_label = "Run To Cursor"
 				_description = "Run To Cursor"
-				shortcut = "Control|F10"
-				macShortcut = "Control|Shift|Meta|O" />
+				shortcut = "Control|F10" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement"
+				defaultHandler = "MonoDevelop.Debugger.SetNextStatementHandler"
+				_label = "Set Next Statement"
+				_description = "Set Next Statement"
+				shortcut = "Control|Shift|F10" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"
+				_label = "Show Next Statement"
+				defaultHandler = "MonoDevelop.Debugger.ShowNextStatementHandler" />
 		</Category>
 	</Extension>
 
