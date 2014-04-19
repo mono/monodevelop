@@ -34,8 +34,11 @@ dest_bin  = $(HOME)/.emacs.d/fsharp-mode/bin/
 
 # Building
 
-$(ac_exe) : $(bin_d)
+$(ac_exe) : $(bin_d) ~/.config/.mono/certs
 	xbuild $(ac_fsproj) /property:OutputPath="$(bin_d)"
+
+~/.config/.mono/certs:
+	mozroots --import --sync --quiet
 
 install : $(ac_exe) $(dest_root) $(dest_bin)
 # Install elisp packages
