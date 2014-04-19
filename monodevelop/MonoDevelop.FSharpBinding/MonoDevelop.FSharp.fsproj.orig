@@ -302,6 +302,7 @@
     <Compile Include="FSharpResourceIdBuilder.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
+    <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
     <Compile Include="FSharpHighlightUsagesExtension.fs" />

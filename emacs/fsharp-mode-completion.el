@@ -96,15 +96,17 @@ display in a help buffer instead.")
   (process-send-string proc str))
 
 (defun fsharp-ac-parse-current-buffer ()
-  (save-restriction
-    (let ((file (expand-file-name (buffer-file-name))))
-      (widen)
-      (fsharp-ac--log (format "Parsing \"%s\"\n" file))
-      (process-send-string
-       fsharp-ac-completion-process
-       (format "parse \"%s\"\n%s\n<<EOF>>\n"
-               file
-               (buffer-substring-no-properties (point-min) (point-max)))))))
+  (if (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
+      (save-restriction
+	(let ((file (expand-file-name (buffer-file-name))))
+	  (widen)
+	  (fsharp-ac--log (format "Parsing \"%s\"\n" file))
+	  (process-send-string
+	   fsharp-ac-completion-process
+	   (format "parse \"%s\"\n%s\n<<EOF>>\n"
+		   file
+		   (buffer-substring-no-properties (point-min) (point-max)))))
+	(setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
 
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
@@ -187,16 +189,8 @@ display in a help buffer instead.")
   (when (fsharp-ac--process-live-p)
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
-    (when (process-live-p fsharp-ac-completion-process)
-      (kill-process fsharp-ac-completion-process)))
-  (when fsharp-ac-idle-timer
-    (cancel-timer fsharp-ac-idle-timer))
-  (setq fsharp-ac-status 'idle
-        fsharp-ac-completion-process nil
-        fsharp-ac-project-files nil
-        fsharp-ac-idle-timer nil
-        fsharp-ac-verbose nil)
-  (fsharp-ac-clear-errors))
+    (when (and fsharp-ac-completion-process (process-live-p fsharp-ac-completion-process))
+      (kill-process fsharp-ac-completion-process))))
 
 (defun fsharp-ac/start-process ()
   "Launch the F# completion process in the background"
@@ -213,6 +207,23 @@ display in a help buffer instead.")
      (setq fsharp-ac-intellisense-enabled nil)
      (message "Failed to start fsautocomplete. Disabling intellisense."))))
 
+(defun fsharp-ac--process-sentinel (process event)
+  "Default sentinel used by `fsharp-ac--configure-proc"
+  (when (memq (process-status process) '(exit signal))
+    (when fsharp-ac-idle-timer
+      (cancel-timer fsharp-ac-idle-timer))
+    (mapc (lambda (buf)
+	    (with-current-buffer buf
+	      (when (eq major-mode 'fsharp-mode)
+		(setq fsharp-ac-last-parsed-ticks 0)
+		(fsharp-ac-clear-errors))))
+	  (buffer-list))
+    (setq fsharp-ac-status 'idle
+	  fsharp-ac-completion-process nil
+	  fsharp-ac-project-files nil
+	  fsharp-ac-idle-timer nil
+	  fsharp-ac-verbose nil)))
+
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
                 (apply 'start-process "fsharp-complete" "*fsharp-complete*"
@@ -220,6 +231,7 @@ display in a help buffer instead.")
     (sleep-for 0.1)
     (if (process-live-p proc)
         (progn
+	  (set-process-sentinel proc #'fsharp-ac--process-sentinel)
 	  (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
@@ -256,7 +268,7 @@ display in a help buffer instead.")
   (let* ((ticks (s-match "^``\\(.*\\)``$" item))
          (key (if ticks (cadr ticks) item))
          (prop (gethash key fsharp-ac-current-helptext)))
-    (let ((help 
+    (let ((help
            (if prop prop
              (log-psendstr fsharp-ac-completion-process
                            (format "helptext %s\n" key))
@@ -273,7 +285,7 @@ display in a help buffer instead.")
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
      (clrhash fsharp-ac-current-helptext)
-     
+
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
@@ -337,7 +349,7 @@ display in a help buffer instead.")
   "Regexp for a dotted ident with a raw residue")
 
 (defun fsharp-ac--residue ()
-  (let ((result 
+  (let ((result
          (let ((line (buffer-substring-no-properties (line-beginning-position) (point))))
            (- (point)
               (cadr
@@ -427,7 +439,9 @@ The current buffer must be an F# file that exists on disk."
 (defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
-(make-local-variable 'fsharp-ac-errors)
+
+(defvar fsharp-ac-last-parsed-ticks 0
+  "BUFFER's tick counter, when the file was parsed")
 
 (defun fsharp-ac--parse-current-file ()
   (when (fsharp-ac-can-make-request)
@@ -611,7 +625,7 @@ around to the start of the buffer."
          ((s-equals? "finddecl" kind) (fsharp-ac-visit-definition data))
        (t
         (fsharp-ac-message-safely "Error: unrecognised message kind: '%s'" kind))))
-      
+
     (setq msg (fsharp-ac--get-msg proc)))))
 
 (defun fsharp-ac-handle-completion (data)
