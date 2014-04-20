@@ -283,30 +283,31 @@ type FSharpTextEditorCompletion() =
 
       Debug.WriteLine("allowAnyStale = {0}", allowAnyStale)
 
-      x.CodeCompletionCommandImpl(context, allowAnyStale)
+      x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto = true)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
   override x.CodeCompletionCommand(context) =
-      x.CodeCompletionCommandImpl(context, true)
+      x.CodeCompletionCommandImpl(context, allowAnyStale = true, dottedInto = false)
 
-  member x.CodeCompletionCommandImpl(context, allowAnyStale) =
+  member x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto) =
     let result = CompletionDataList()
+    let doc = x.Document
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
-      let proj = x.Document.Project :?> MonoDevelop.Projects.DotNetProject
-      let files = CompilerArguments.getSourceFiles(x.Document.Project.Items) |> Array.ofList
+      let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
+      let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
       let args = CompilerArguments.getArgumentsFromProject(proj, config)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
       let typedParseResults = 
-          MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.Document.Project.FileName.ToString(), x.Document.FileName.ToString(), x.Document.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.FileName.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
           |> Async.RunSynchronously
       match typedParseResults with
       | None       -> result.Add(FSharpTryAgainMemberCompletionData())
       | Some tyRes ->
         // Get declarations and generate list for MonoDevelop
-        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Document.Editor.Document)
+        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, doc.Editor.Document)
         match tyRes.GetDeclarations(line, col, lineStr) with
         | Some(decls, residue) when decls.Items.Any() ->
               let items = decls.Items
@@ -317,11 +318,11 @@ type FSharpTextEditorCompletion() =
     | e -> result.Add(FSharpErrorCompletionData(e))
     
     // Add the code templates
-    let doc = x.Document
-    let templates = CodeTemplateService.GetCodeTemplatesForFile(x.Document.FileName.ToString())
-                    |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
-                    |> Seq.cast<ICompletionData>
-    result.AddRange(templates)
+    if not dottedInto then
+      let templates = CodeTemplateService.GetCodeTemplatesForFile(doc.FileName.ToString())
+                      |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
+                      |> Seq.cast<ICompletionData>
+      result.AddRange(templates)
 
     result :> ICompletionDataList
 
