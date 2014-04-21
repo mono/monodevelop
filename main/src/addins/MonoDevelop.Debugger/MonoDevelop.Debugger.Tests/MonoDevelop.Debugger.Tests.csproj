@@ -43,6 +43,9 @@
     <Compile Include="SdbStackFrameTests.cs" />
     <Compile Include="CorEvaluationTests.cs" />
     <Compile Include="CorStackFrameTests.cs" />
+    <Compile Include="BreakpointsAndSteppingTests.cs" />
+    <Compile Include="CorBreakpointsAndSteppingTests.cs" />
+    <Compile Include="SdbBreakpointsAndSteppingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">

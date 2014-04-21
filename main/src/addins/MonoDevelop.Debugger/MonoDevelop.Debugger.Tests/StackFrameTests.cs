@@ -32,13 +32,9 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class StackFrameTests: DebugTests
 	{
-		readonly bool allowTargetInvoke;
-		DebuggerSession ds;
-		StackFrame frame;
-		
 		protected StackFrameTests (string de, bool allowTargetInvoke): base (de)
 		{
-			this.allowTargetInvoke = allowTargetInvoke;
+			AllowTargetInvokes = allowTargetInvoke;
 		}
 
 		[TestFixtureSetUp]
@@ -46,26 +42,7 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			base.SetUp ();
 
-			ds = Start ("TestEvaluation", allowTargetInvoke);
-
-			if (ds == null)
-				Assert.Ignore ("Engine not found: {0}", EngineId);
-
-			frame = ds.ActiveThread.Backtrace.GetFrame (0);
-		}
-
-		[TestFixtureTearDown]
-		public override void TearDown ()
-		{
-			base.TearDown ();
-			if (ds != null) {
-				ds.Exit ();
-				ds.Dispose ();
-			}
-		}
-		
-		public StackFrame Frame {
-			get { return frame; }
+			Start ("TestEvaluation");
 		}
 
 		[Test]

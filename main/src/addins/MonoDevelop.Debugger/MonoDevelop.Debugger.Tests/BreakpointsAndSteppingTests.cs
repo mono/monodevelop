@@ -1,0 +1,674 @@
+﻿//
+// BreakpointsAndSteppingTests.cs
+//
+// Author:
+//       David Karlaš <david.karlas@xamarin.com>
+//
+// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+using System;
+using NUnit.Framework;
+using Mono.Debugging.Client;
+
+namespace MonoDevelop.Debugger.Tests
+{
+	[TestFixture]
+	public abstract class BreakpointsAndSteppingTests:DebugTests
+	{
+		public BreakpointsAndSteppingTests (string de)
+			: base (de)
+		{
+		}
+
+		[TestFixtureSetUp]
+		public override void SetUp ()
+		{
+			base.SetUp ();
+			Start ("BreakpointsAndStepping");
+		}
+
+		[Test]
+		public void OneLineProperty ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StartTest ("OneLineProperty");
+			CheckPosition ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StepIn ("3722cad3-7da1-4c86-a398-bb2cf6cc65a9", "{");
+			StepIn ("3722cad3-7da1-4c86-a398-bb2cf6cc65a9", "return");
+			StepIn ("3722cad3-7da1-4c86-a398-bb2cf6cc65a9", "}");
+			StepIn ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StepIn ("36c0a44a-44ac-4676-b99b-9a58b73bae9d");
+		}
+
+		[Test]
+		/// <summary>
+		/// Bug 775
+		/// </summary>
+		public void StepOverPropertiesAndOperatorsSetting ()
+		{
+			InitializeTest ();
+			//This is default but lets set again for code readability
+			Session.Options.StepOverPropertiesAndOperators = false;
+			AddBreakpoint ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StartTest ("OneLineProperty");
+			CheckPosition ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StepIn ("3722cad3-7da1-4c86-a398-bb2cf6cc65a9");
+
+
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StartTest ("OneLineProperty");
+			CheckPosition ("8e7787ed-699f-4512-b52a-5a0629a0b9eb");
+			StepIn ("36c0a44a-44ac-4676-b99b-9a58b73bae9d");
+
+
+			InitializeTest ();
+			//This is default but lets set again for code readability
+			Session.Options.StepOverPropertiesAndOperators = false;
+			AddBreakpoint ("6049ea77-e04a-43ba-907a-5d198727c448");
+			StartTest ("TestOperators");
+			CheckPosition ("6049ea77-e04a-43ba-907a-5d198727c448");
+			StepIn ("5a3eb8d5-88f5-49c0-913f-65018e5a1c5c");
+
+
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("6049ea77-e04a-43ba-907a-5d198727c448");
+			StartTest ("TestOperators");
+			CheckPosition ("6049ea77-e04a-43ba-907a-5d198727c448");
+			StepIn ("49737db6-e62b-4c5e-8758-1a9d655be11a");
+		}
+
+		[Test]
+		public void StaticConstructorStepping ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("6c42f31b-ca4f-4963-bca1-7d7c163087f1");
+			StartTest ("StaticConstructorStepping");
+			CheckPosition ("6c42f31b-ca4f-4963-bca1-7d7c163087f1");
+			StepOver ("7e6862cd-bf31-486c-94fe-19933ae46094");
+		}
+
+		[Test]
+		public void SteppingInsidePropertyWhenStepInPropertyDisabled ()
+		{
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("e0082b9a-26d7-4279-8749-31cd13866abf");
+			StartTest ("SteppingInsidePropertyWhenStepInPropertyDisabled");
+			CheckPosition ("e0082b9a-26d7-4279-8749-31cd13866abf");
+			StepIn ("04f1ce38-121a-4ce7-b4ba-14fb3f6184a2");
+		}
+
+		[Test]
+		public void CheckIfNull ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("d42a19ec-98db-4166-a3b4-fc102ebd7905");
+			StartTest ("CheckIfNull");
+			CheckPosition ("d42a19ec-98db-4166-a3b4-fc102ebd7905");
+			StepIn ("c5361deb-aff5-468f-9293-0d2e50fc62fd");
+			StepIn ("10e0f5c7-4c77-4897-8324-deef9aae0192");
+			StepIn ("40f0acc2-2de2-44c8-8e18-3867151ba8da");
+			StepIn ("3c0316e9-eace-48e8-b9ed-03a8c6306c66", 1);
+			StepIn ("d42a19ec-98db-4166-a3b4-fc102ebd7905");
+			StepIn ("f633d197-cb92-418a-860c-4d8eadbe2342");
+			StepIn ("c5361deb-aff5-468f-9293-0d2e50fc62fd");
+			StepIn ("10e0f5c7-4c77-4897-8324-deef9aae0192");
+			StepIn ("ae71a41d-0c90-433d-b925-0b236b8119a9");
+			StepIn ("3c0316e9-eace-48e8-b9ed-03a8c6306c66", 1);
+			StepIn ("f633d197-cb92-418a-860c-4d8eadbe2342");
+			StepIn ("6d50c480-1cd1-49a9-9758-05f65c07c037");
+		}
+
+		/// <summary>
+		/// Bug 4015
+		/// </summary>
+		[Test]
+		public void SimpleConstrutor ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("d62ff7ab-02fa-4205-a432-b4569709eab6");
+			StartTest ("SimpleConstrutor");
+			CheckPosition ("d62ff7ab-02fa-4205-a432-b4569709eab6");
+			StepIn ("1f37aea1-77a1-40c1-9ea5-797db48a14f9", 1, "public");
+			StepIn ("494fddfb-85f1-4ad0-b5b3-9b2f990bb6d0", -1, "{");
+			StepIn ("494fddfb-85f1-4ad0-b5b3-9b2f990bb6d0", "int");
+			StepIn ("494fddfb-85f1-4ad0-b5b3-9b2f990bb6d0", 1, "}");
+			StepIn ("d62ff7ab-02fa-4205-a432-b4569709eab6", "var");
+			StepIn ("d62ff7ab-02fa-4205-a432-b4569709eab6", 1, "}");
+		}
+
+		[Test]
+		/// <summary>
+		/// Bug 3262
+		/// </summary>
+		public void NoConstructor ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("84fc04b2-ede2-4d8b-acc4-28441e1c5f55");
+			StartTest ("NoConstructor");
+			CheckPosition ("84fc04b2-ede2-4d8b-acc4-28441e1c5f55");
+			StepIn ("84fc04b2-ede2-4d8b-acc4-28441e1c5f55", 1);
+		}
+
+		[Test]
+		public void IfPropertyStepping ()
+		{
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("0c64d51c-40b3-4d20-b7e3-4e3e641ec52a");
+			StartTest ("IfPropertyStepping");
+			CheckPosition ("0c64d51c-40b3-4d20-b7e3-4e3e641ec52a");
+			StepIn ("ac7625ef-ebbd-4543-b7ff-c9c5d26fd8b4");
+		}
+
+		/// <summary>
+		/// Bug 3565
+		/// </summary>
+		[Test]
+		public void DebuggerHiddenMethod ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b0abae8d-fbd0-4bde-b586-bb511b954d8a");
+			StartTest ("DebuggerHiddenMethod");
+			CheckPosition ("b0abae8d-fbd0-4bde-b586-bb511b954d8a");
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("b0abae8d-fbd0-4bde-b586-bb511b954d8a");
+			StepIn ("b0abae8d-fbd0-4bde-b586-bb511b954d8a", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("b0abae8d-fbd0-4bde-b586-bb511b954d8a", 1);
+			StepIn ("b0abae8d-fbd0-4bde-b586-bb511b954d8a", 2);
+			StepIn ("b0abae8d-fbd0-4bde-b586-bb511b954d8a", 3);
+		}
+
+		/// <summary>
+		/// Bug 3565
+		/// </summary>
+		[Test]
+		public void DebuggerNonUserCodeMethod ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = false;
+			AddBreakpoint ("02757896-0e76-40b8-8235-d09d2110da78");
+			StartTest ("DebuggerNonUserCodeMethod");
+			CheckPosition ("02757896-0e76-40b8-8235-d09d2110da78");
+			//entering testClass.DebuggerNonUserCodeMethod (true);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			//entering EmptyTestMethod
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			//exited EmptyTestMethod
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78");
+			//exited testClass.DebuggerNonUserCodeMethod (true);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
+			//entering testClass.DebuggerNonUserCodeMethod (true, 3); starts here
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -2);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			//entering resursion
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -2);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			//entering resursion
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -2);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", -1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			//entering EmptyTestMethod
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			//exited EmptyTestMethod
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			//returning resursion
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 2);
+
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			//entering EmptyTestMethod
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			//exited EmptyTestMethod
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			//returning resursion
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 2);
+
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			//entering EmptyTestMethod
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			//exited EmptyTestMethod
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			//returning resursion
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7");
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 1);
+			StepIn ("6b2c05cd-1cb8-48fe-b6bf-c4949121d4c7", 2);
+
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			//entering EmptyTestMethod
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			//exited EmptyTestMethod
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce");
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
+			//exited testClass.DebuggerNonUserCodeMethod (true, 3);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
+			//entering testClass.DebuggerNonUserCodeMethod (false);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", -1);
+			StepIn ("5b9b96b6-ce24-413f-8660-715fccfc412f", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -2);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", -1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 1);
+			StepIn ("754272b8-a14b-4de0-9075-6a911c37e6ce", 2);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
+			//exited testClass.DebuggerNonUserCodeMethod (false);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 3);
+
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("02757896-0e76-40b8-8235-d09d2110da78");
+			StartTest ("DebuggerNonUserCodeMethod");
+			CheckPosition ("02757896-0e76-40b8-8235-d09d2110da78");
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78");
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
+			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 3);
+		}
+
+		/// <summary>
+		/// Bug 3565
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("0b7eef17-af79-4b34-b4fc-cede110f20fe");
+			AddBreakpoint ("806c13f8-8a59-4ae0-83a2-33191368af47");
+			StartTest ("DebuggerStepperBoundaryMethod");
+			CheckPosition ("0b7eef17-af79-4b34-b4fc-cede110f20fe");
+			StepIn ("806c13f8-8a59-4ae0-83a2-33191368af47");//This actually means it hit 2nd breakpoint
+			//because [DebuggerStepperBoundary] actually means if you step into this method
+			//its looks like pressing F5
+		}
+
+		/// <summary>
+		/// Bug 3565
+		/// </summary>
+		[Test]
+		public void DebuggerStepThroughMethod ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("707ccd6c-3464-4700-8487-a83c948aa0c3");
+			StartTest ("DebuggerStepThroughMethod");
+			CheckPosition ("707ccd6c-3464-4700-8487-a83c948aa0c3");
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsDebuggerHidden);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsDebuggerHidden);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("707ccd6c-3464-4700-8487-a83c948aa0c3");
+			StepIn ("707ccd6c-3464-4700-8487-a83c948aa0c3", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
+			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
+			StepIn ("707ccd6c-3464-4700-8487-a83c948aa0c3", 1);
+			StepIn ("707ccd6c-3464-4700-8487-a83c948aa0c3", 2);
+			StepIn ("707ccd6c-3464-4700-8487-a83c948aa0c3", 3);
+		}
+
+		/// <summary>
+		/// This test is very specific because of Win32 debugger bug
+		/// Placing breakpoint inside delegate fails if some other
+		/// breakpoint adding failed before this(invalidBreakpointAtEndOfFile)
+		/// </summary>
+		[Test]
+		public void BreakpointInsideDelegate ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("f3b6862d-732b-4f68-81f5-f362d5a092e2");
+			StartTest ("BreakpointInsideDelegate");
+			CheckPosition ("f3b6862d-732b-4f68-81f5-f362d5a092e2");
+			AddBreakpoint ("invalidBreakpointAtEndOfFile");
+			AddBreakpoint ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
+		}
+
+		[Test]
+		/// <summary>
+		/// Bug 2851
+		/// </summary>
+		public void ForeachEnumerable ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
+			StartTest ("ForeachEnumerable");
+			CheckPosition ("b73bec88-2c43-4157-8574-ad517730bc74");
+			StepOver ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "foreach");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("1463a77d-f27e-4bcd-8f92-89a682faa1c7", -1, "{");
+			StepIn ("1463a77d-f27e-4bcd-8f92-89a682faa1c7", "yield return 1;");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			StepIn ("69dba3ab-0941-47e9-99fa-10222a2e894d", -1, "{");
+			StepIn ("69dba3ab-0941-47e9-99fa-10222a2e894d", 1, "}");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("1463a77d-f27e-4bcd-8f92-89a682faa1c7", 1, "yield return 2;");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			StepIn ("69dba3ab-0941-47e9-99fa-10222a2e894d", -1, "{");
+			StepIn ("69dba3ab-0941-47e9-99fa-10222a2e894d", 1, "}");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("1463a77d-f27e-4bcd-8f92-89a682faa1c7", 2, "}");
+			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			StepIn ("e01a5428-b067-4ca3-ac8c-a19d5d800228", 1, "}");
+		}
+
+		/// <summary>
+		/// Bug 4032
+		/// </summary>
+		[Test]
+		public void PListSchemeTest ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("41eb3a30-3b19-4ea5-a7dc-e4c76871f391");
+			StartTest ("PListSchemeTest");
+			CheckPosition ("41eb3a30-3b19-4ea5-a7dc-e4c76871f391");
+			StepIn ("c9b18785-1348-42e3-a479-9cac1e7c5360", -1);
+		}
+
+		/// <summary>
+		/// Bug 4433
+		/// </summary>
+		[Test]
+		public void Bug4433 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StartTest ("Bug4433Test");
+			CheckPosition ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StepIn ("ad9b8803-eef0-438c-bf2b-9156782f4027", -1);
+		}
+
+		/// <summary>
+		/// Bug 5386
+		/// </summary>
+		[Test]
+		public void EmptyForLoopTest ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("946d5781-a162-4cd9-a7b6-c320564cc594", -1);
+			StartTest ("EmptyForLoopTest");
+			CheckPosition ("946d5781-a162-4cd9-a7b6-c320564cc594", -1);
+			//make 3 loops...
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", -1);
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", 1);
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", -1);
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", 1);
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", -1);
+			StepIn ("a2ff92da-3796-47e3-886a-4bd786a07547", 1);
+		}
+
+		/// <summary>
+		/// Bug 6724
+		/// </summary>
+		[Test]
+		public void CallMethodWithPropertyAsArgument ()
+		{
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("1c3e65ca-3201-42ba-9c6e-6f9a45ddac44");
+			StartTest ("CallMethodWithPropertyAsArgument");
+			CheckPosition ("1c3e65ca-3201-42ba-9c6e-6f9a45ddac44");
+			StepIn ("c25be44e-ead3-4891-ab42-0e4cf8450f7a", -1);
+			StepOut ("1c3e65ca-3201-42ba-9c6e-6f9a45ddac44");
+			StepIn ("1c3e65ca-3201-42ba-9c6e-6f9a45ddac44", 1);
+			StepIn ("c25be44e-ead3-4891-ab42-0e4cf8450f7a", -1);
+		}
+/**/
+
+
+		/// <summary>
+		/// Bug 7901
+		/// </summary>
+		[Test]
+		public void Bug7901 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("956bd9fd-39fe-4587-9d9e-a2a817d76286");
+			StartTest ("TestBug7901");
+			CheckPosition ("956bd9fd-39fe-4587-9d9e-a2a817d76286");
+			StepIn ("f456a9b0-9c1a-4b34-bef4-d80b8541ebdb", -1);
+			StepIn ("f456a9b0-9c1a-4b34-bef4-d80b8541ebdb", 1);
+			StepIn ("11259de1-944d-4052-b970-62662e21876a", -1);
+			StepIn ("11259de1-944d-4052-b970-62662e21876a");
+			StepIn ("11259de1-944d-4052-b970-62662e21876a", 1);
+			StepIn ("11259de1-944d-4052-b970-62662e21876a", 2);
+			StepIn ("4863ebb7-8c90-4704-af8b-66a9f53657b9");
+			StepOut ("956bd9fd-39fe-4587-9d9e-a2a817d76286");
+		}
+
+		/// <summary>
+		/// Bug 10782
+		/// </summary>
+		[Test]
+		public void Bug10782 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("cdcabe93-4f55-4dbb-821e-912097c4f727");
+			StartTest ("TestBug10782");
+			CheckPosition ("cdcabe93-4f55-4dbb-821e-912097c4f727");
+			StepIn ("1f37aea1-77a1-40c1-9ea5-797db48a14f9", 1);
+			StepOut ("cdcabe93-4f55-4dbb-821e-912097c4f727");
+			StepIn ("3bda6643-6d06-4504-a4da-91bc8c5eb887", -1);
+		}
+
+		/// <summary>
+		/// Bug 11868
+		/// </summary>
+		[Test]
+		[Ignore("Todo")]
+		public void AwaitCall ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", -1);
+			StartTest ("TestAwaitCall");
+			CheckPosition ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", -1);
+			StepOver ("a221c9d4-6d00-4fce-99e6-d712e9a23c02");
+			StepOver ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", 1);
+			StepOver ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", 2);
+		}
+
+		/// <summary>
+		/// Bug 13396
+		/// </summary>
+		[Test]
+		[Ignore ("This is not working in VS as well is this doable or should bug be closed as invalid?")]
+		public void StepInsideAwaitTaskRun ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", -1);
+			StartTest ("StepInsideAwaitTaskRun");
+			CheckPosition ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", -1);
+			StepIn ("a221c9d4-6d00-4fce-99e6-d712e9a23c02");
+			StepIn ("a221c9d4-6d00-4fce-99e6-d712e9a23c02");//Now we are on delegate
+			//entering EmptyMethod
+			StepIn ("3c27f60f-fdfa-44c0-b58f-552ecaaa77f1", -1);
+			StepIn ("3c27f60f-fdfa-44c0-b58f-552ecaaa77f1", 1);
+			StepIn ("a221c9d4-6d00-4fce-99e6-d712e9a23c02");//Back at delegate
+			StepIn ("a221c9d4-6d00-4fce-99e6-d712e9a23c02");//Back at await?
+			StepIn ("a221c9d4-6d00-4fce-99e6-d712e9a23c02", 1);
+		}
+
+		/// <summary>
+		/// Bug 13640
+		/// </summary>
+		[Test]
+		public void Bug13640 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b64e6497-e976-4125-9741-801909e5eeb1");
+			StartTest ("Bug13640");
+			CheckPosition ("b64e6497-e976-4125-9741-801909e5eeb1");
+			StepIn ("b64e6497-e976-4125-9741-801909e5eeb1", 1, "foreach");
+			StepIn ("b64e6497-e976-4125-9741-801909e5eeb1", 1, "l");
+			StepIn ("b64e6497-e976-4125-9741-801909e5eeb1", 1, "in");
+			StepIn ("a90ba766-0891-4837-9b1d-e5458f6b8e07", "return");
+			StepIn ("a90ba766-0891-4837-9b1d-e5458f6b8e07", 1, "}");
+		}
+	}
+}
+
