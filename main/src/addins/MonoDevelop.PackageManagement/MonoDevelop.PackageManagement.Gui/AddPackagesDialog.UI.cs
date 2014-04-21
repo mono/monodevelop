@@ -162,8 +162,7 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox = new VBox ();
 			var packageInfoFrame = new FrameBox ();
 			packageInfoFrame.BackgroundColor = packageInfoBackgroundColor;
-			packageInfoFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
-			packageInfoFrame.BorderColor = lineBorderColor;
+			packageInfoFrame.BorderWidth = new WidgetSpacing ();
 			packageInfoFrame.Content = packageInfoVBox;
 			packageInfoVBox.Margin = new WidgetSpacing (15, 12, 15, 12);
 			var packageInfoContainerVBox = new VBox ();
@@ -174,7 +173,13 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollView.BorderVisible = false;
 			packageInfoScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			packageInfoScrollView.Content = packageInfoContainerVBox;
-			middleHBox.PackEnd (packageInfoScrollView);
+			packageInfoScrollView.BackgroundColor = packageInfoBackgroundColor;
+			var packageInfoScrollViewFrame = new FrameBox ();
+			packageInfoScrollViewFrame.BackgroundColor = packageInfoBackgroundColor;
+			packageInfoScrollViewFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
+			packageInfoScrollViewFrame.BorderColor = lineBorderColor;
+			packageInfoScrollViewFrame.Content = packageInfoScrollView;
+			middleHBox.PackEnd (packageInfoScrollViewFrame);
 
 			// Package name and version.
 			var packageNameHBox = new HBox ();
