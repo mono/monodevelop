@@ -25,14 +25,20 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Reflection;
+using System.Collections.Generic;
+
+using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using System.IO;
-using System.Threading;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Assemblies;
+
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
@@ -40,11 +46,11 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class DebugTests
 	{
+		readonly ManualResetEvent targetStoppedEvent = new ManualResetEvent (false);
 		readonly string EngineId;
 		DebuggerEngine engine;
 		string TestName = "";
 		TextFile SourceFile;
-		ManualResetEvent targetStoppedEvent = new ManualResetEvent (false);
 
 		SourceLocation lastStoppedPosition;
 
@@ -103,9 +109,10 @@ namespace MonoDevelop.Debugger.Tests
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
 
 			var cmd = new DotNetExecutionCommand ();
-			cmd.Command = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
+			cmd.Command = exe;
 			cmd.Arguments = test;
 			cmd.TargetRuntime = runtime;
 
@@ -119,7 +126,16 @@ namespace MonoDevelop.Debugger.Tests
 				}
 			}
 
-			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
+			DebuggerStartInfo dsi = engine.CreateDebuggerStartInfo (cmd);
+			var soft = dsi as SoftDebuggerStartInfo;
+
+			if (soft != null) {
+				var assemblyName = AssemblyName.GetAssemblyName (exe);
+
+				soft.UserAssemblyNames = new List<AssemblyName> ();
+				soft.UserAssemblyNames.Add (assemblyName);
+			}
+
 			Session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
@@ -148,7 +164,7 @@ namespace MonoDevelop.Debugger.Tests
 				targetStoppedEvent.Set ();
 			};
 
-			Session.Run (si, ops);
+			Session.Run (dsi, ops);
 			if (!done.WaitOne (3000))
 				throw new Exception ("Timeout while waiting for initial breakpoint");
 		}

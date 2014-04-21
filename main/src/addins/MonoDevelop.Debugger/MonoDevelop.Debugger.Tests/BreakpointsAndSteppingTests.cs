@@ -32,7 +32,7 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class BreakpointsAndSteppingTests:DebugTests
 	{
-		public BreakpointsAndSteppingTests (string de)
+		protected BreakpointsAndSteppingTests (string de)
 			: base (de)
 		{
 		}
@@ -58,10 +58,10 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("36c0a44a-44ac-4676-b99b-9a58b73bae9d");
 		}
 
-		[Test]
 		/// <summary>
 		/// Bug 775
 		/// </summary>
+		[Test]
 		public void StepOverPropertiesAndOperatorsSetting ()
 		{
 			InitializeTest ();
@@ -158,10 +158,10 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("d62ff7ab-02fa-4205-a432-b4569709eab6", 1, "}");
 		}
 
-		[Test]
 		/// <summary>
 		/// Bug 3262
 		/// </summary>
+		[Test]
 		public void NoConstructor ()
 		{
 			InitializeTest ();
@@ -485,10 +485,10 @@ namespace MonoDevelop.Debugger.Tests
 			AddBreakpoint ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
 		}
 
-		[Test]
 		/// <summary>
 		/// Bug 2851
 		/// </summary>
+		[Test]
 		public void ForeachEnumerable ()
 		{
 			InitializeTest ();

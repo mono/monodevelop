@@ -92,6 +92,10 @@
       <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_0</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
+      <Name>Mono.Debugging.Soft</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

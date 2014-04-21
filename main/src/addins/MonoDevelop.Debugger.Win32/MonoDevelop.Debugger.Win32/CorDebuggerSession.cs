@@ -245,7 +245,7 @@ namespace MonoDevelop.Debugger.Win32
 			OnTargetEvent (args);
 		}
 
-		bool StepTrough (MethodInfo methodInfo)
+		bool StepThrough (MethodInfo methodInfo)
 		{
 			var m = methodInfo.GetCustomAttributes (true);
 			if (Options.ProjectAssembliesOnly) {
@@ -315,7 +315,7 @@ namespace MonoDevelop.Debugger.Win32
 				return;
 			}
 
-			if (StepTrough (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+			if (StepThrough (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
 				stepInsideDebuggerHidden = e.StepReason == CorDebugStepReason.STEP_CALL;
 				RawContinue (true, true);
 				e.Continue = true;
