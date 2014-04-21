@@ -324,16 +324,16 @@
       <LogicalName>build-solution-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-16.png">
-      <LogicalName>element-template-16.png</LogicalName>
+      <LogicalName>element-template-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-16%402x.png">
-      <LogicalName>element-template-16@2x.png</LogicalName>
+      <LogicalName>element-template-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-surroundwith-16.png">
-      <LogicalName>element-template-surroundwith-16.png</LogicalName>
+      <LogicalName>element-template-surroundwith-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-surroundwith-16%402x.png">
-      <LogicalName>element-template-surroundwith-16@2x.png</LogicalName>
+      <LogicalName>element-template-surroundwith-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\comment-16.png">
       <LogicalName>comment-light-16.png</LogicalName>
@@ -474,10 +474,10 @@
       <LogicalName>formatting-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16.png">
-      <LogicalName>element-keyword-16.png</LogicalName>
+      <LogicalName>element-keyword-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16%402x.png">
-      <LogicalName>element-keyword-16@2x.png</LogicalName>
+      <LogicalName>element-keyword-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\markers-rulers-16.png">
       <LogicalName>markers-rulers-16.png</LogicalName>
