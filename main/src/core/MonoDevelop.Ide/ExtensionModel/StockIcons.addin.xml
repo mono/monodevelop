@@ -92,6 +92,7 @@
 	<StockIcon stockid="md-help" resource="pad-help-light-16.png" size="Menu" />
 	<StockIcon stockid="md-html-file-icon" resource="file-web-light-16.png" size="Menu" />
 	<StockIcon stockid="md-html-file-icon" resource="file-web-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-information" resource="information-light-16.png" size="Menu" />
 	<StockIcon stockid="md-interface" resource="element-interface-light-16.png" size="Menu" />
 	<StockIcon stockid="md-interface-file" resource="file-interface-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-keyword" resource="element-keyword-light-16.png" size="Menu" />
@@ -158,26 +159,12 @@
 	<StockIcon stockid="gtk-dialog-warning" resource="warning-light-32.png" size="Dnd" />
 	<StockIcon stockid="gtk-dialog-warning" resource="warning-light-48.png" size="Dialog" />
 
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-16.png" />
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-16.png" size="Menu" />
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-24.png" size="Button" />
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-24.png" size="LargeToolbar" />
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-32.png" size="Dnd" />
-	<StockIcon stockid="gtk-dialog-info" resource="information-light-48.png" size="Dialog" />
-
 	<StockIcon stockid="md-error" resource="error-light-16.png" />
 	<StockIcon stockid="md-error" resource="error-light-16.png" size="Menu" />
 	<StockIcon stockid="md-error" resource="error-light-24.png" size="Button" />
 	<StockIcon stockid="md-error" resource="error-light-24.png" size="LargeToolbar" />
 	<StockIcon stockid="md-error" resource="error-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-error" resource="error-light-48.png" size="Dialog" />
-
-	<StockIcon stockid="md-information" resource="information-light-16.png" />
-	<StockIcon stockid="md-information" resource="information-light-16.png" size="Menu" />
-	<StockIcon stockid="md-information" resource="information-light-24.png" size="Button" />
-	<StockIcon stockid="md-information" resource="information-light-24.png" size="LargeToolbar" />
-	<StockIcon stockid="md-information" resource="information-light-32.png" size="Dnd" />
-	<StockIcon stockid="md-information" resource="information-light-48.png" size="Dialog" />
 
 	<StockIcon stockid="md-package" resource="package-light-16.png" />
 	<StockIcon stockid="md-package" resource="package-light-16.png" size="Menu" />
