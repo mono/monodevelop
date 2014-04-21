@@ -1185,6 +1185,24 @@
     <EmbeddedResource Include="icons\light\information-16%402x.png">
       <LogicalName>information-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-24.png">
+      <LogicalName>information-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-24%402x.png">
+      <LogicalName>information-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-32.png">
+      <LogicalName>information-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-32%402x.png">
+      <LogicalName>information-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-48.png">
+      <LogicalName>information-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-48%402x.png">
+      <LogicalName>information-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\command-16.png">
       <LogicalName>command-light-16.png</LogicalName>
     </EmbeddedResource>
