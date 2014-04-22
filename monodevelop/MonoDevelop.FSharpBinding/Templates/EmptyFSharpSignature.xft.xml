@@ -8,10 +8,8 @@
     A signature file contains information about the public signatures of a set of F# program elements, such as types, namespaces, and modules. 
     
     It can be used to specify the accessibility of these program elements.</_Description>
-    <!--This would create F#/General, which is a bit annoying if we have just two simple templates
     <_Category>General</_Category>
-    <LanguageName>F#</LanguageName> -->
-    <_Category>F#</_Category>
+    <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
 
   <TemplateFiles>
