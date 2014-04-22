@@ -236,7 +236,7 @@ and whether it is in a project directory.")
         )
 
   ; Syntax highlighting
-  (setq font-lock-defaults '(fsharp-font-lock-keywords nil t))
+  (setq font-lock-defaults '(fsharp-font-lock-keywords))
   (setq syntax-propertize-function 'fsharp--syntax-propertize-function)
   ;; Error navigation
   (setq next-error-function 'fsharp-ac/next-error)
