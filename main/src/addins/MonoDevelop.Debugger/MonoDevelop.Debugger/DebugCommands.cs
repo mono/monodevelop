@@ -636,7 +636,7 @@ namespace MonoDevelop.Debugger
 				if (IdeApp.Workspace.IsOpen) {
 					var target = DebugHandler.GetRunTarget ();
 
-					info.Enabled =  target != null && IdeApp.ProjectOperations.CanDebug (target) && IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+					info.Enabled =  target != null && IdeApp.ProjectOperations.CanDebug (target);
 				} else {
 					info.Enabled = doc.IsBuildTarget && doc.CanDebug ();
 				}
