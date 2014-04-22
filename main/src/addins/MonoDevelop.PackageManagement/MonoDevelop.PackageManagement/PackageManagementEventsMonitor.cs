@@ -170,6 +170,15 @@ namespace MonoDevelop.PackageManagement
 				FileService.NotifyFilesChanged (files);
 			});
 		}
+
+		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
+		{
+			LoggingService.LogInternalError (ex);
+			progressMonitor.Log.WriteLine (ex.Message);
+			progressMonitor.ReportError (progressMessage.Error, null);
+			progressMonitor.ShowPackageConsole ();
+			packageManagementEvents.OnPackageOperationError (ex);
+		}
 	}
 }
 
