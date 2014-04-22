@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -1007,6 +1008,12 @@ namespace MonoDevelop.Ide.Gui
 		public void DisableAutoScroll ()
 		{
 			Mono.TextEditor.Utils.FileSettingsStore.Remove (FileName);
+		}
+
+		public OptionSet GetOptionSet ()
+		{
+			// TODO
+			return null;
 		}
 	}
 	

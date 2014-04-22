@@ -50,9 +50,9 @@ namespace MonoDevelop.CSharp.Completion
 			var textEditorData = ext.TextEditorData;
 			var formattingPolicy = ext.FormattingPolicy;
 			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
-			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
+			var sig = new SignatureMarkupCreator (ext.Document);
 			sig.HighlightParameter = currentParameter;
-			tooltipInfo.SignatureMarkup = sig.GetArrayIndexerMarkup (arrayType);
+//			tooltipInfo.SignatureMarkup = sig.GetArrayIndexerMarkup (arrayType);
 			return tooltipInfo;
 		}
 

@@ -356,7 +356,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (compilation != null) {
 					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
-					var engine = new ICSharpCode.NRefactory6.CSharp.Completion.CSharpCompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory ());
+					var engine = new ICSharpCode.NRefactory6.CSharp.Completion.CSharpCompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 					
 					var completionResult = engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
 					foreach (var symbol in completionResult.Data) {

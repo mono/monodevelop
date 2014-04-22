@@ -266,9 +266,7 @@
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs">
-      <DependentUpon>IndexerParameterDataProvider.cs</DependentUpon>
-    </Compile>
+    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />

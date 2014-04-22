@@ -132,49 +132,49 @@ namespace MonoDevelop.CSharp.Completion
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
-			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
-			sig.HighlightParameter = currentParameter;
-			sig.BreakLineAfterReturnType = smartWrap;
-			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
-			} catch (Exception e) {
-				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
-				return new TooltipInformation ();
-			}
-			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
-			
-			if (entity is IMethod) {
-				var method = (IMethod)entity;
-				if (method.IsExtensionMethod) {
-					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.DeclaringTypeDefinition.FullName);
-				}
-			}
-			int paramIndex = currentParameter;
-
-			if (entity is IMethod && ((IMethod)entity).IsExtensionMethod)
-				paramIndex++;
-			paramIndex = Math.Min (entity.Parameters.Count - 1, paramIndex);
-
-			var curParameter = paramIndex >= 0  && paramIndex < entity.Parameters.Count ? entity.Parameters [paramIndex] : null;
-			if (curParameter != null) {
-
-				string docText = AmbienceService.GetDocumentation (entity);
-				if (!string.IsNullOrEmpty (docText)) {
-					string text = docText;
-					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					Match match = paramRegex.Match (docText);
-					
-					if (match.Success) {
-						text = AmbienceService.GetDocumentationMarkup (entity, match.Groups [1].Value);
-						if (!string.IsNullOrWhiteSpace (text))
-							tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
-					}
-				}
-		
-				if (curParameter.Type.Kind == TypeKind.Delegate)
-					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (curParameter.Type));
-			}
+//			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
+//			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
+//			sig.HighlightParameter = currentParameter;
+//			sig.BreakLineAfterReturnType = smartWrap;
+//			try {
+//				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+//				return new TooltipInformation ();
+//			}
+//			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
+//			
+//			if (entity is IMethod) {
+//				var method = (IMethod)entity;
+//				if (method.IsExtensionMethod) {
+//					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.DeclaringTypeDefinition.FullName);
+//				}
+//			}
+//			int paramIndex = currentParameter;
+//
+//			if (entity is IMethod && ((IMethod)entity).IsExtensionMethod)
+//				paramIndex++;
+//			paramIndex = Math.Min (entity.Parameters.Count - 1, paramIndex);
+//
+//			var curParameter = paramIndex >= 0  && paramIndex < entity.Parameters.Count ? entity.Parameters [paramIndex] : null;
+//			if (curParameter != null) {
+//
+//				string docText = AmbienceService.GetDocumentation (entity);
+//				if (!string.IsNullOrEmpty (docText)) {
+//					string text = docText;
+//					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+//					Match match = paramRegex.Match (docText);
+//					
+//					if (match.Success) {
+//						text = AmbienceService.GetDocumentationMarkup (entity, match.Groups [1].Value);
+//						if (!string.IsNullOrWhiteSpace (text))
+//							tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
+//					}
+//				}
+//		
+//				if (curParameter.Type.Kind == TypeKind.Delegate)
+//					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (curParameter.Type));
+//			}
 			return tooltipInfo;
 		}
 

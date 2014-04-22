@@ -32,12 +32,13 @@ using System.Collections.Generic;
 using Mono.Addins;
 using System.Xml;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
-using ICSharpCode.NRefactory.Documentation;
+using Microsoft.CodeAnalysis;
+using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -63,9 +64,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		public static Ambience GetAmbience (IMember member)
+		public static Ambience GetAmbience (ISymbol member)
 		{
-			return GetAmbienceForFile (member.DeclaringTypeDefinition.Region.FileName) ?? new NetAmbience ();
+			if (!member.Locations.First ().IsInSource)
+				return new NetAmbience ();
+			return GetAmbienceForFile (member.Locations.First ().SourceTree.FilePath) ?? new NetAmbience ();
 		}
 		
 		public static Ambience GetAmbienceForFile (string fileName)
@@ -146,11 +149,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static string GetSummaryMarkup (IEntity member)
+		public static string GetSummaryMarkup (ISymbol member, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (member == null || member.Documentation == null)
+			if (member == null)
 				return null;
-			string documentation = member.Documentation.Xml.Text;
+			string documentation = member.GetDocumentationCommentXml ();
+			if (string.IsNullOrEmpty (documentation))
+				return null;
+
 			if (!string.IsNullOrEmpty (documentation)) {
 				int idx1 = documentation.IndexOf ("<summary>");
 				int idx2 = documentation.IndexOf ("</summary>");
@@ -191,16 +197,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return string.IsNullOrWhiteSpace (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
 		}
 		
-		public static string GetDocumentation (IEntity member)
+		public static string GetDocumentation (ISymbol member)
 		{
 			if (member == null)
 				return null;
-			if (member.Documentation != null)
-				return CleanEmpty (member.Documentation);
+			var documentation = member.GetDocumentationCommentXml ();
+			if (documentation != null)
+				return CleanEmpty (documentation);
 			return null;
 		}
 		
-		static string GetCref (ITypeResolveContext ctx, string cref)
+		static string GetCref (ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext ctx, string cref)
 		{
 			if (cref == null)
 				return "";
@@ -208,11 +215,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (cref.Length < 2)
 				return cref;
 			try {
-				var entity = new DocumentationComment ("", ctx).ResolveCref (cref.Replace("<", "{").Replace(">", "}"));
+				var entity = new ICSharpCode.NRefactory.Documentation.DocumentationComment ("", ctx).ResolveCref (cref.Replace("<", "{").Replace(">", "}"));
 	
 				if (entity != null) {
 					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
-					ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
+					ambience.ConversionFlags = ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterList | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowParameterNames | ICSharpCode.NRefactory.TypeSystem.ConversionFlags.ShowTypeParameterList;
 					return ambience.ConvertEntity (entity);
 				}
 			} catch (Exception e) {
@@ -347,17 +354,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		
-		public static string GetDocumentationMarkup (IEntity member, string doc)
+		public static string GetDocumentationMarkup (ISymbol member, string doc)
 		{
 			return GetDocumentationMarkup (member, doc, DocumentationFormatOptions.Empty);
 		}
 		
-		static string ParseBody (IEntity member, XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
+		static string ParseBody (ISymbol member, XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
 		{
 			StringBuilder result = new StringBuilder (); 
 			bool wasWhiteSpace = true;
 			bool appendSpace = false;
-			ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
+			//ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
 			while (xml.Read ()) {
 				switch (xml.NodeType) {
 				case XmlNodeType.EndElement:
@@ -376,7 +383,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							wasWhiteSpace = true;
 						}
 						result.Append ("<i>");
-						string name = (GetCref (ctx, xml ["cref"]) + xml ["langword"]).Trim ();
+						string name = (xml ["cref"] + xml ["langword"]).Trim ();
 						if (options.Ambience != null)
 							name = options.Ambience.GetIntrinsicTypeName (name);
 						result.Append (EscapeText (name));
@@ -422,7 +429,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result.ToString ().Trim ();
 		}
 		
-		public static string GetDocumentationMarkup (IEntity member, string doc, DocumentationFormatOptions options)
+		public static string GetDocumentationMarkup (ISymbol member, string doc, DocumentationFormatOptions options)
 		{
 			if (string.IsNullOrEmpty (doc))
 				return null;
@@ -474,7 +481,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (options.SmallText)
 								exceptions.Append ("<small>");
 							exceptions.Append ("<b>");
-							exceptions.Append (EscapeText (GetCref (member.Compilation.TypeResolveContext, xml ["cref"])));
+							exceptions.Append (EscapeText (xml ["cref"]));
 							exceptions.Append (": ");
 							exceptions.Append ("</b>");
 							if (options.SmallText)
@@ -517,7 +524,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						case "seealso":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
 								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
-								ret.Append (" " + EscapeText (GetCref (member.Compilation.TypeResolveContext, xml ["cref"]) + xml ["langword"]));
+								ret.Append (" " + EscapeText (xml ["cref"] + xml ["langword"]));
 							}
 							break;
 						}

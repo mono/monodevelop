@@ -682,72 +682,10 @@ namespace MonoDevelop.CSharp.Completion
 			return CreateTooltipInformation (compilation, file, null, textEditorData, formattingPolicy, entity, smartWrap, createFooter);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, CSharpResolver resolver, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
-		{
-			var tooltipInfo = new TooltipInformation ();
-			if (resolver == null)
-				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
-			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
-			sig.BreakLineAfterReturnType = smartWrap;
-			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
-			} catch (Exception e) {
-				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
-				return new TooltipInformation ();
-			}
-			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
-			
-			if (entity is IMember) {
-				var evt = (IMember)entity;
-				if (evt.ReturnType.Kind == TypeKind.Delegate) {
-					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (evt.ReturnType));
-				}
-			}
-			if (entity is IMethod) {
-				var method = (IMethod)entity;
-				if (method.IsExtensionMethod) {
-					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.DeclaringTypeDefinition.FullName);
-				}
-			}
-			if (createFooter) {
-				tooltipInfo.FooterMarkup = sig.CreateFooter (entity);
-			}
-			return tooltipInfo;
-		}
+		
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
-		{
-			var tooltipInfo = new TooltipInformation ();
-			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
-			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
-			sig.BreakLineAfterReturnType = smartWrap;
-			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
-			} catch (Exception e) {
-				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
-				return new TooltipInformation ();
-			}
-			if (type.IsParameterized) {
-				var typeInfo = new StringBuilder ();
-				for (int i = 0; i < type.TypeParameterCount; i++) {
-					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
-				}
-				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
-			}
+		
 
-			var def = type.GetDefinition ();
-			if (def != null) {
-				if (createFooter)
-					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
-				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
-			}
-			return tooltipInfo;
-		}
-
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
-		{
-			return CreateTooltipInformation (compilation, file, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, Entity, smartWrap);
-		}
 		#region IOverloadedCompletionData implementation 
 	
 		class OverloadSorter : IComparer<ICompletionData>

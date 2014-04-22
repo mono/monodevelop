@@ -181,176 +181,176 @@ namespace MonoDevelop.SourceEditor
 
 		TooltipInformation CreateTooltip (ToolTipData data, int offset, Ambience ambience, Gdk.ModifierType modifierState)
 		{
-			ResolveResult result = data.Result;
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return null;
-			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
-			var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			if (file == null)
-				return null;
-			try {
-
-				if (result is AliasNamespaceResolveResult) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetAliasedNamespaceTooltip ((AliasNamespaceResolveResult)result);
-				}
-				
-				if (result is AliasTypeResolveResult) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetAliasedTypeTooltip ((AliasTypeResolveResult)result);
-				}
-				
-				if (data.Node is TypeOfExpression) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetTypeOfTooltip ((TypeOfExpression)data.Node, result as TypeOfResolveResult);
-				}
-				if (data.Node is PrimitiveType && data.Node.Parent is Constraint) {
-					var t = (PrimitiveType)data.Node;
-					if (t.Keyword == "class" || t.Keyword == "new" || t.Keyword == "struct") {
-						var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-						var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-						sig.BreakLineAfterReturnType = false;
-						return sig.GetConstraintTooltip (t.Keyword);
-					}
-					return null;
-				}
-				if (data.Node is ExternAliasDeclaration) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetExternAliasTooltip ((ExternAliasDeclaration)data.Node, doc.Project as DotNetProject);
-				}
-				if (result == null && data.Node is CSharpTokenNode) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetKeywordTooltip (data.Node);
-				}
-				if (data.Node is PrimitiveType && ((PrimitiveType)data.Node).KnownTypeCode == KnownTypeCode.Void) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetKeywordTooltip ("void", null);
-				}
-				if (data.Node is NullReferenceExpression) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					return sig.GetKeywordTooltip ("null", null);
-				}
-
-				if (result is UnknownIdentifierResolveResult) {
-					return new TooltipInformation () {
-						SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier)
-					};
-				} else if (result is UnknownMemberResolveResult) {
-					var ur = (UnknownMemberResolveResult)result;
-					if (ur.TargetType.Kind != TypeKind.Unknown) {
-						return new TooltipInformation () {
-							SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName)
-						};
-					}
-				} else if (result.IsError) {
-					return new TooltipInformation () {
-						SignatureMarkup = "Unknown resolve error."
-					};
-				}
-				if (result is LocalResolveResult) {
-					var lr = (LocalResolveResult)result;
-					var tooltipInfo = new TooltipInformation ();
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (lr.Variable);
-					return tooltipInfo;
-				} else if (result is MethodGroupResolveResult) {
-					var mrr = (MethodGroupResolveResult)result;
-					var allMethods = new List<IMethod> (mrr.Methods);
-					foreach (var l in mrr.GetExtensionMethods ()) {
-						allMethods.AddRange (l);
-					}
-				
-					var method = allMethods.FirstOrDefault ();
-					if (method != null) {
-//						return MemberCompletionData.CreateTooltipInformation (
-//							doc.Compilation,
-//							file,
-//							doc.Editor,
-//							doc.GetFormattingPolicy (),
-//							method,
-//							false,
-//							createFooter);
-					}
-				} else if (result is CSharpInvocationResolveResult) {
-					var invocationResult = (CSharpInvocationResolveResult)result;
-					var member = (IMember)invocationResult.ReducedMethod ?? invocationResult.Member;
-//						return MemberCompletionData.CreateTooltipInformation (
-//							doc.Compilation,
-//							file,
-//							doc.Editor,
-//							doc.GetFormattingPolicy (),
-//							member, 
-//							false,
-//							createFooter);
-				} else if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-//					return MemberCompletionData.CreateTooltipInformation (
-//						doc.Compilation,
-//						file,
-//						doc.Editor,
-//						doc.GetFormattingPolicy (),
-//						member, 
-//						false,
-//						createFooter);
-				} else if (result is NamespaceResolveResult) {
-					var tooltipInfo = new TooltipInformation ();
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					try {
-						tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
-					} catch (Exception e) {
-						LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
-						return new TooltipInformation ();
-					}
-					return tooltipInfo;
-				} else if (result is OperatorResolveResult) {
-					var or = result as OperatorResolveResult;
-					var tooltipInfo = new TooltipInformation ();
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-					sig.BreakLineAfterReturnType = false;
-					try {
-						var method = or.UserDefinedOperatorMethod;
-						if (method == null)
-							return null;
-						tooltipInfo.SignatureMarkup = sig.GetMarkup (method);
-					} catch (Exception e) {
-						LoggingService.LogError ("Got exception while creating markup for :" + result, e);
-						return new TooltipInformation ();
-					}
-					return tooltipInfo;
-				} else {
-//					return MemberCompletionData.CreateTooltipInformation (
-//						doc.Compilation,
-//						file,
-//						doc.Editor,
-//						doc.GetFormattingPolicy (),
-//						result.Type, 
-//						false,
-//						createFooter);
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while creating tooltip.", e);
-				return null;
-			}
+//			ResolveResult result = data.Result;
+//			var doc = IdeApp.Workbench.ActiveDocument;
+//			if (doc == null)
+//				return null;
+//			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
+//			var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+//			if (file == null)
+//				return null;
+//			try {
+//
+//				if (result is AliasNamespaceResolveResult) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (doc);
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetAliasedNamespaceTooltip ((AliasNamespaceResolveResult)result);
+//				}
+//				
+//				if (result is AliasTypeResolveResult) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (doc);
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetAliasedTypeTooltip ((AliasTypeResolveResult)result);
+//				}
+//				
+//				if (data.Node is TypeOfExpression) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetTypeOfTooltip ((TypeOfExpression)data.Node, result as TypeOfResolveResult);
+//				}
+//				if (data.Node is PrimitiveType && data.Node.Parent is Constraint) {
+//					var t = (PrimitiveType)data.Node;
+//					if (t.Keyword == "class" || t.Keyword == "new" || t.Keyword == "struct") {
+//						var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//						var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//						sig.BreakLineAfterReturnType = false;
+//						return sig.GetConstraintTooltip (t.Keyword);
+//					}
+//					return null;
+//				}
+//				if (data.Node is ExternAliasDeclaration) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetExternAliasTooltip ((ExternAliasDeclaration)data.Node, doc.Project as DotNetProject);
+//				}
+//				if (result == null && data.Node is CSharpTokenNode) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetKeywordTooltip (data.Node);
+//				}
+//				if (data.Node is PrimitiveType && ((PrimitiveType)data.Node).KnownTypeCode == KnownTypeCode.Void) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetKeywordTooltip ("void", null);
+//				}
+//				if (data.Node is NullReferenceExpression) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetKeywordTooltip ("null", null);
+//				}
+//
+//				if (result is UnknownIdentifierResolveResult) {
+//					return new TooltipInformation () {
+//						SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier)
+//					};
+//				} else if (result is UnknownMemberResolveResult) {
+//					var ur = (UnknownMemberResolveResult)result;
+//					if (ur.TargetType.Kind != TypeKind.Unknown) {
+//						return new TooltipInformation () {
+//							SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName)
+//						};
+//					}
+//				} else if (result.IsError) {
+//					return new TooltipInformation () {
+//						SignatureMarkup = "Unknown resolve error."
+//					};
+//				}
+//				if (result is LocalResolveResult) {
+//					var lr = (LocalResolveResult)result;
+//					var tooltipInfo = new TooltipInformation ();
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (lr.Variable);
+//					return tooltipInfo;
+//				} else if (result is MethodGroupResolveResult) {
+//					var mrr = (MethodGroupResolveResult)result;
+//					var allMethods = new List<IMethod> (mrr.Methods);
+//					foreach (var l in mrr.GetExtensionMethods ()) {
+//						allMethods.AddRange (l);
+//					}
+//				
+//					var method = allMethods.FirstOrDefault ();
+//					if (method != null) {
+////						return MemberCompletionData.CreateTooltipInformation (
+////							doc.Compilation,
+////							file,
+////							doc.Editor,
+////							doc.GetFormattingPolicy (),
+////							method,
+////							false,
+////							createFooter);
+//					}
+//				} else if (result is CSharpInvocationResolveResult) {
+//					var invocationResult = (CSharpInvocationResolveResult)result;
+//					var member = (IMember)invocationResult.ReducedMethod ?? invocationResult.Member;
+////						return MemberCompletionData.CreateTooltipInformation (
+////							doc.Compilation,
+////							file,
+////							doc.Editor,
+////							doc.GetFormattingPolicy (),
+////							member, 
+////							false,
+////							createFooter);
+//				} else if (result is MemberResolveResult) {
+//					var member = ((MemberResolveResult)result).Member;
+////					return MemberCompletionData.CreateTooltipInformation (
+////						doc.Compilation,
+////						file,
+////						doc.Editor,
+////						doc.GetFormattingPolicy (),
+////						member, 
+////						false,
+////						createFooter);
+//				} else if (result is NamespaceResolveResult) {
+//					var tooltipInfo = new TooltipInformation ();
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					try {
+//						tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
+//					} catch (Exception e) {
+//						LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
+//						return new TooltipInformation ();
+//					}
+//					return tooltipInfo;
+//				} else if (result is OperatorResolveResult) {
+//					var or = result as OperatorResolveResult;
+//					var tooltipInfo = new TooltipInformation ();
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					try {
+//						var method = or.UserDefinedOperatorMethod;
+//						if (method == null)
+//							return null;
+//						tooltipInfo.SignatureMarkup = sig.GetMarkup (method);
+//					} catch (Exception e) {
+//						LoggingService.LogError ("Got exception while creating markup for :" + result, e);
+//						return new TooltipInformation ();
+//					}
+//					return tooltipInfo;
+//				} else {
+////					return MemberCompletionData.CreateTooltipInformation (
+////						doc.Compilation,
+////						file,
+////						doc.Editor,
+////						doc.GetFormattingPolicy (),
+////						result.Type, 
+////						false,
+////						createFooter);
+//				}
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Error while creating tooltip.", e);
+//				return null;
+//			}
 		
 			return null;
 		}

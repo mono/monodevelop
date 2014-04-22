@@ -30,6 +30,15 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class RoslynCodeCompletionFactory : ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory
 	{
+		readonly CSharpCompletionTextEditorExtension ext;
+
+		public RoslynCodeCompletionFactory (CSharpCompletionTextEditorExtension ext)
+		{
+			if (ext == null)
+				throw new ArgumentNullException ("ext");
+			this.ext = ext;
+		}
+
 		#region ICompletionDataFactory implementation
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateGenericData (string data, ICSharpCode.NRefactory6.CSharp.Completion.GenericDataType genericDataType)
@@ -43,7 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (Microsoft.CodeAnalysis.IFieldSymbol field)
 		{
-			return new RoslynSymbolCompletionData (field, field.Type.Name + "." + field.Name);
+			return new RoslynSymbolCompletionData (ext, field, field.Type.Name + "." + field.Name);
 		}
 		
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (string format, string description, object example)
@@ -58,12 +67,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol)
 		{
-			return new RoslynSymbolCompletionData (symbol);
+			return new RoslynSymbolCompletionData (ext, symbol);
 		}
 		
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol, string text)
 		{
-			return new RoslynSymbolCompletionData (symbol, text);
+			return new RoslynSymbolCompletionData (ext, symbol, text);
 		}
 		#endregion
 	}
