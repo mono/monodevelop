@@ -5,7 +5,7 @@
     <Icon>md-gui-file</Icon>
     <_Category>Gtk</_Category>
     <LanguageName>*</LanguageName>
-    <ProjectType>DotNet</ProjectType>
+    <ProjectType>DotNetAssembly</ProjectType>
     <_Description>Creates a custom Gtk.DrawingArea subclass.</_Description>
     <DefaultFilename>DrawingArea</DefaultFilename>
   </TemplateConfiguration>
