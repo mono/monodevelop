@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal void LoadFromFile (StreamReader reader)
 		{
-			var xr = System.Xml.XmlReader.Create (reader);
+			var xr = XmlReader.Create (reader);
 			LoadFromXml (xr);
 		}
 		
@@ -180,8 +180,9 @@ namespace MonoDevelop.Projects.Policies
 			foreach (ScopedPolicy policyPair in PolicyService.DiffDeserializeXml (reader)) {
 				PolicyKey key = new PolicyKey (policyPair.PolicyType, policyPair.Scope);
 				if (policies.ContainsKey (key))
-					throw new InvalidOperationException ("Cannot add second policy of type '" +  
-					                                     key.ToString () + "' to policy set '" + Id + "'");
+					throw new InvalidOperationException (
+						"Cannot add second policy of type '" + key + "' to policy set '" + Id + "'"
+					);
 				policies[key] = policyPair.Policy;
 			}
 		}
