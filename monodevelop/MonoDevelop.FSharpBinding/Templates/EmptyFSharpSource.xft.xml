@@ -4,11 +4,8 @@
     <_Name>F# Source File</_Name>
     <Icon>md-text-file-icon</Icon>
     <_Description>Creates an empty F# source file</_Description>
-
-    <!--This would create F#/General, which is a bit annoying if we have just two simple templates
     <_Category>General</_Category>
-    <LanguageName>F#</LanguageName> -->
-    <_Category>F#</_Category>
+    <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
 
   <TemplateFiles>
