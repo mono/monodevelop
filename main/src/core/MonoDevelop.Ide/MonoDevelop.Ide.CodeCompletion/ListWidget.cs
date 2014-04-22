@@ -30,7 +30,7 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using Pango;
-using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;

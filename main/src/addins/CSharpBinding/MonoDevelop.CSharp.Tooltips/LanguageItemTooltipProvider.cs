@@ -279,36 +279,36 @@ namespace MonoDevelop.SourceEditor
 				
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
-						return MemberCompletionData.CreateTooltipInformation (
-							doc.Compilation,
-							file,
-							doc.Editor,
-							doc.GetFormattingPolicy (),
-							method,
-							false,
-							createFooter);
+//						return MemberCompletionData.CreateTooltipInformation (
+//							doc.Compilation,
+//							file,
+//							doc.Editor,
+//							doc.GetFormattingPolicy (),
+//							method,
+//							false,
+//							createFooter);
 					}
 				} else if (result is CSharpInvocationResolveResult) {
 					var invocationResult = (CSharpInvocationResolveResult)result;
 					var member = (IMember)invocationResult.ReducedMethod ?? invocationResult.Member;
-					return MemberCompletionData.CreateTooltipInformation (
-						doc.Compilation,
-						file,
-						doc.Editor,
-						doc.GetFormattingPolicy (),
-						member, 
-						false,
-						createFooter);
+//						return MemberCompletionData.CreateTooltipInformation (
+//							doc.Compilation,
+//							file,
+//							doc.Editor,
+//							doc.GetFormattingPolicy (),
+//							member, 
+//							false,
+//							createFooter);
 				} else if (result is MemberResolveResult) {
 					var member = ((MemberResolveResult)result).Member;
-					return MemberCompletionData.CreateTooltipInformation (
-						doc.Compilation,
-						file,
-						doc.Editor,
-						doc.GetFormattingPolicy (),
-						member, 
-						false,
-						createFooter);
+//					return MemberCompletionData.CreateTooltipInformation (
+//						doc.Compilation,
+//						file,
+//						doc.Editor,
+//						doc.GetFormattingPolicy (),
+//						member, 
+//						false,
+//						createFooter);
 				} else if (result is NamespaceResolveResult) {
 					var tooltipInfo = new TooltipInformation ();
 					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
@@ -338,14 +338,14 @@ namespace MonoDevelop.SourceEditor
 					}
 					return tooltipInfo;
 				} else {
-					return MemberCompletionData.CreateTooltipInformation (
-						doc.Compilation,
-						file,
-						doc.Editor,
-						doc.GetFormattingPolicy (),
-						result.Type, 
-						false,
-						createFooter);
+//					return MemberCompletionData.CreateTooltipInformation (
+//						doc.Compilation,
+//						file,
+//						doc.Editor,
+//						doc.GetFormattingPolicy (),
+//						result.Type, 
+//						false,
+//						createFooter);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating tooltip.", e);

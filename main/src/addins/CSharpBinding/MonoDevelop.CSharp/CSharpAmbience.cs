@@ -203,14 +203,15 @@ namespace MonoDevelop.CSharp
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			return MonoDevelop.CSharp.Completion.MemberCompletionData.CreateTooltipInformation (
-				entity.Compilation,
-				null,
-				null,
-				new CSharpFormattingPolicy (),
-				entity,
-				false,
-				true);
+			return null;
+//			return MonoDevelop.CSharp.Completion.MemberCompletionData.CreateTooltipInformation (
+//				entity.Compilation,
+//				null,
+//				null,
+//				new CSharpFormattingPolicy (),
+//				entity,
+//				false,
+//				true);
 		}
 
 		static string GetString (TypeKind classType)

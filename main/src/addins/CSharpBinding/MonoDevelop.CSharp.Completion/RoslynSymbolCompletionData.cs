@@ -25,16 +25,34 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
+using GLib;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 	{
+		List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
+		
+		public override bool HasOverloads {
+			get {
+				return overloads != null;
+			}
+		}
+		
 		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
 		{
-			throw new NotImplementedException ();
+			if (overloads == null)
+				overloads = new List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
+			overloads.Add (data);
+			sorted = null;
+//			//if any of the overloads is obsolete, we should not mark the item obsolete
+//			if (!(overload.Entity as IMember).IsObsolete ())
+//				DisplayFlags &= ~DisplayFlags.Obsolete;
+
 		}
 
 		ICSharpCode.NRefactory6.CSharp.Completion.CompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory {
@@ -47,11 +65,50 @@ namespace MonoDevelop.CSharp.Completion
 			set;
 		}
 
-		System.Collections.Generic.IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+		List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> sorted;
+
+		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
 			get {
-				throw new NotImplementedException ();
+				if (overloads == null)
+					return new ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData[] { this };
+				
+				if (sorted == null) {
+					sorted = new List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> (overloads);
+					sorted.Add (this);
+					// sorted.Sort (new OverloadSorter ());
+				}
+				return sorted;
 			}
 		}
+		
+//		class OverloadSorter : IComparer<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>
+//		{
+//			public OverloadSorter ()
+//			{
+//			}
+//
+//			public int Compare (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData x, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData y)
+//			{
+//				var mx = ((RoslynCompletionData)x).Entity as IMember;
+//				var my = ((RoslynCompletionData)y).Entity as IMember;
+//				int result;
+//				
+//				if (mx is ITypeDefinition && my is ITypeDefinition) {
+//					result = ((((ITypeDefinition)mx).TypeParameters.Count).CompareTo (((ITypeDefinition)my).TypeParameters.Count));
+//					if (result != 0)
+//						return result;
+//				}
+//				
+//				if (mx is IMethod && my is IMethod) {
+//					return MethodParameterDataProvider.MethodComparer ((IMethod)mx, (IMethod)my);
+//				}
+//				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
+//				string sy = my.ReflectionName;// ambience.GetString (my, flags);
+//				result = sx.Length.CompareTo (sy.Length);
+//				return result == 0 ? string.Compare (sx, sy) : result;
+//			}
+//		}
+
 	}
 
 	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
@@ -63,7 +120,7 @@ namespace MonoDevelop.CSharp.Completion
 				return symbol;
 			}
 		}
-
+		
 		public override string DisplayText {
 			get {
 				return text ?? symbol.Name;

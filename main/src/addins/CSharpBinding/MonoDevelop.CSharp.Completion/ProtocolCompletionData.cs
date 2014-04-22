@@ -40,10 +40,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
-		{
-			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
-		}
+//		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+//		{
+//			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
+//		}
 
 		public ProtocolCompletionData (MonoCSharpCompletionEngine engine, int declarationBegin, IMember member) : base (null)
 		{

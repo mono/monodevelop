@@ -60,6 +60,9 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="ICSharpCode.NRefactory6.CSharp">
+      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

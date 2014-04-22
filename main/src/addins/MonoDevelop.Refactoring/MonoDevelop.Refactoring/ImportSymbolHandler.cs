@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring
 			this.ambience = AmbienceService.GetAmbience (doc.Editor.MimeType);
 			this.type = type;
 			this.unit = doc.ParsedDocument;
-			this.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.IsImportCompletion;
+			this.DisplayFlags |= ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags.IsImportCompletion;
 		}
 		
 		bool initialized = false;

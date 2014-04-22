@@ -55,19 +55,19 @@ namespace MonoDevelop.CSharp.Completion
 			this.ext = ext;
 		}
 
-		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
-		{
-			base.AddVirtuals (alreadyInserted, col, modifiers, curType, declarationBegin);
-			foreach (var member in GetProtocolMembers (curType)) {
-				if (alreadyInserted.Contains (member))
-					continue;
-				if (BaseExportCodeGenerator.IsImplemented (curType, member))
-					continue;
-				alreadyInserted.Add (member);
-				var data = new ProtocolCompletionData (this, declarationBegin, member);
-				col.Add (data);
-			}
-		}
+//		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+//		{
+//			base.AddVirtuals (alreadyInserted, col, modifiers, curType, declarationBegin);
+//			foreach (var member in GetProtocolMembers (curType)) {
+//				if (alreadyInserted.Contains (member))
+//					continue;
+//				if (BaseExportCodeGenerator.IsImplemented (curType, member))
+//					continue;
+//				alreadyInserted.Add (member);
+//				var data = new ProtocolCompletionData (this, declarationBegin, member);
+//				col.Add (data);
+//			}
+//		}
 
 		IEnumerable<IMember> GetProtocolMembers (IType curType)
 		{

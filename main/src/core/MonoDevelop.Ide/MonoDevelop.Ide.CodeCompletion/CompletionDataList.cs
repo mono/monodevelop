@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

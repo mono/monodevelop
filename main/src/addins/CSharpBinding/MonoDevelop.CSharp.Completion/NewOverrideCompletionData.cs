@@ -38,7 +38,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class NewOverrideCompletionData : CompletionData
+	/*class NewOverrideCompletionData : CompletionData
 	{
 		CSharpCompletionTextEditorExtension ext;
 		IMember member;
@@ -115,5 +115,5 @@ namespace MonoDevelop.CSharp.Completion
 				editor.Caret.Offset = targetCaretPosition;
 			}
 		}
-	}
+	}*/
 }

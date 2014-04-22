@@ -31,7 +31,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class VariableCompletionData : CompletionData, IVariableCompletionData
+	/*class VariableCompletionData : CompletionData, IVariableCompletionData
 	{
 		readonly CSharpCompletionTextEditorExtension ext;
 
@@ -55,6 +55,6 @@ namespace MonoDevelop.CSharp.Completion
 			this.ext = ext;
 			this.Variable = variable;
 		}
-	}
+	}*/
 }
 

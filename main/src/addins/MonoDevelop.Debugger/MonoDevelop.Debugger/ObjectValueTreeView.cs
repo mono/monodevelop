@@ -1705,7 +1705,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<ICSharpCode.NRefactory.Completion.ICompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)

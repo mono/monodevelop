@@ -32,7 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
-using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeCompletion

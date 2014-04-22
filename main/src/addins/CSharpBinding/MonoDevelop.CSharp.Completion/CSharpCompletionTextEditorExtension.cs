@@ -360,7 +360,7 @@ namespace MonoDevelop.CSharp.Completion
 					
 					var completionResult = engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
 					foreach (var symbol in completionResult.Data) {
-						list.Add ((ICompletionData)symbol); 
+						list.Add (symbol); 
 					}
 					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 					// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
@@ -735,7 +735,7 @@ namespace MonoDevelop.CSharp.Completion
 			return parentheses != 1 || bracket > 0 ? -1 : index;
 		}*/
 
-
+/*
 		#region ICompletionDataFactory implementation
 		internal class CompletionDataFactory : ICompletionDataFactory
 		{
@@ -803,12 +803,12 @@ namespace MonoDevelop.CSharp.Completion
 					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
-				protected List<ICompletionData> overloads;
+				protected List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
 				public override bool HasOverloads {
 					get { return overloads != null && overloads.Count > 0; }
 				}
 
-				public override IEnumerable<ICompletionData> OverloadedData {
+				public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> OverloadedData {
 					get {
 						return overloads;
 					}
@@ -1303,7 +1303,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		}
 		#endregion
-
+*/
 		#region IParameterCompletionDataFactory implementation
 		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider (int startOffset, IType type)
 		{

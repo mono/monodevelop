@@ -50,7 +50,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class MemberCompletionData : CompletionData, IEntityCompletionData
+/*	class MemberCompletionData : CompletionData, IEntityCompletionData
 	{
 		CSharpCompletionTextEditorExtension editorCompletion;
 		OutputFlags flags;
@@ -242,7 +242,7 @@ namespace MonoDevelop.CSharp.Completion
 				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
 				while (exprStart > line.Offset) {
 					char ch = Editor.GetCharAt (exprStart);
-					if (ch != '.' && ch != '_' && /*ch != '<' && ch != '>' && */!char.IsLetterOrDigit (ch))
+					if (ch != '.' && ch != '_' && !char.IsLetterOrDigit (ch))
 						break;
 					exprStart--;
 				}
@@ -858,5 +858,5 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return string.Format ("[MemberCompletionData: Entity={0}]", Entity);
 		}
-	}
+	}*/
 }
