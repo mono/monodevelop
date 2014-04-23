@@ -1172,6 +1172,19 @@ namespace Mono.TextEditor
 			supportsHiResIcons = false;
 			return 1;
 		}
+
+		public static double GetScaleFactor ()
+		{
+			return GetScaleFactor (Gdk.Screen.Default, 0);
+		}
+
+		public static double GetPixelScale ()
+		{
+			if (Platform.IsWindows)
+				return GetScaleFactor ();
+			else
+				return 1d;
+		}
 		
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)
 		{

@@ -109,10 +109,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal");
 
-		public static readonly int StatusFontPixelHeight = 11;
-		public static readonly int ProgressBarHeight = 18;
-		public static readonly int ProgressBarInnerPadding = 4;
-		public static readonly int ProgressBarOuterPadding = 4;
+		public static int StatusFontPixelHeight { get { return (int)(11 * PixelScale); } }
+		public static int ProgressBarHeight { get { return (int)(18 * PixelScale); } }
+		public static int ProgressBarInnerPadding { get { return (int)(4 * PixelScale); } }
+		public static int ProgressBarOuterPadding { get { return (int)(4 * PixelScale); } }
+
+		static readonly double PixelScale = Mono.TextEditor.GtkWorkarounds.GetPixelScale ();
 
 		// Toolbar
 
