@@ -58,6 +58,10 @@
 
     </Extension>
 
+  <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
+    <Source class ="MonoDevelop.FSharp.NRefactoryCodeActionSource"/>
+  </Extension>
+
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
   </Extension>

@@ -1,3 +1,4 @@
+namespace MonoDevelop.FSharp
 open System
 open System.IO
 open System.Diagnostics
