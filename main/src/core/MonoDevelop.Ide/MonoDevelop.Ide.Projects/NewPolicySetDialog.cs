@@ -36,10 +36,16 @@ namespace MonoDevelop.Ide.Projects
 		public NewPolicySetDialog (List<PolicySet> sets)
 		{
 			this.Build ();
+
 			this.sets = sets;
 			foreach (var ps in sets)
 				comboSets.AppendText (ps.Name);
 			comboSets.Active = 0;
+
+			buttonOk.Sensitive = false;
+			entryName.Changed += delegate {
+				buttonOk.Sensitive = !string.IsNullOrWhiteSpace (entryName.Text);
+			};
 		}
 		
 		public string PolicyName {
