@@ -1012,8 +1012,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public OptionSet GetOptionSet ()
 		{
-			// TODO
-			return null;
+			return RoslynTypeSystemService.Workspace.GetOptions ();
 		}
 	}
 	

@@ -43,6 +43,7 @@ using Microsoft.CodeAnalysis.CSharp.Formatting;
 using System.Collections.Immutable;
 using MonoDevelop.NUnit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -166,8 +167,18 @@ namespace MonoDevelop.CSharp
 					break;
 				}
 				break;
+			case Microsoft.CodeAnalysis.SymbolKind.Namespace:
+				result = GetNamespaceMarkup ((INamespaceSymbol)entity);
+				break;
+			case Microsoft.CodeAnalysis.SymbolKind.Local:
+				result = GetLocalVariableMarkup ((ILocalSymbol)entity);
+				break;
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+				result = GetParameterVariableMarkup ((IParameterSymbol)entity);
+				break;
 			default:
-				throw new ArgumentOutOfRangeException ();
+				Console.WriteLine (entity.Kind);
+				return null;
 			}
 			// TODO
 //			if (entity.IsObsolete (out reason)) {
@@ -177,7 +188,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		public string GetMarkup (INamespaceSymbol ns)
+		string GetNamespaceMarkup (INamespaceSymbol ns)
 		{
 			var result = new StringBuilder ();
 			result.Append (Highlight ("namespace ", colorStyle.KeywordNamespace));
@@ -558,7 +569,7 @@ namespace MonoDevelop.CSharp
 		public string GetDelegateInfo (ITypeSymbol type)
 		{
 			if (type == null)
-				throw new ArgumentNullException ("returnType");
+				throw new ArgumentNullException ("type");
 			var t = type;
 
 			var result = new StringBuilder ();
@@ -595,12 +606,13 @@ namespace MonoDevelop.CSharp
 		string GetDelegateMarkup (INamedTypeSymbol delegateType)
 		{
 			var result = new StringBuilder ();
-			
-			var method = delegateType.GetDelegateInvokeMethod ();
+			var type = delegateType.IsUnboundGenericType ? delegateType.OriginalDefinition : delegateType;
+			var method = type.GetDelegateInvokeMethod ();
 
-			AppendModifiers (result, delegateType);
+			AppendModifiers (result, type);
 			result.Append (Highlight ("delegate ", colorStyle.KeywordDeclaration));
-			result.Append (GetTypeReferenceString (method.ReturnType));
+			if (method != null)
+				result.Append (GetTypeReferenceString (method.ReturnType));
 			if (BreakLineAfterReturnType) {
 				result.AppendLine ();
 			} else {
@@ -608,14 +620,14 @@ namespace MonoDevelop.CSharp
 			}
 			
 			
-			result.Append (FilterEntityName (delegateType.Name));
+			result.Append (FilterEntityName (type.Name));
 			
-			if (delegateType.TypeArguments.Length > 0) {
-				AppendTypeArgumentList (result, delegateType);
+			if (type.TypeArguments.Length > 0) {
+				AppendTypeArgumentList (result, type);
 			} else {
-				AppendTypeParameterList (result, delegateType);
+				AppendTypeParameterList (result, type);
 			}
-//  TODOκκκκ
+//  TODO
 //			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
 //				result.Append (" ");
 			
@@ -629,32 +641,52 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		public string GetLocalVariableMarkup (ILocalSymbol variable)
+		string GetLocalVariableMarkup (ILocalSymbol local)
 		{
-			if (variable == null)
-				throw new ArgumentNullException ("variable");
+			if (local == null)
+				throw new ArgumentNullException ("local");
 			
 			var result = new StringBuilder ();
 
-			if (variable.IsConst)
+			if (local.IsConst)
 				result.Append (Highlight ("const ", colorStyle.KeywordModifiers));
 
-			result.Append (GetTypeReferenceString (variable.Type));
+			result.Append (GetTypeReferenceString (local.Type));
 			if (BreakLineAfterReturnType) {
 				result.AppendLine ();
 			} else {
 				result.Append (" ");
 			}
 	
-			result.Append (FilterEntityName (variable.Name));
+			result.Append (FilterEntityName (local.Name));
 			
-			if (variable.IsConst) {
+			if (local.IsConst) {
 				if (options.GetOption (CSharpFormattingOptions.SpacingAroundBinaryOperator) == BinaryOperatorSpacingOptions.Single) {
 					result.Append (" = ");
 				} else {
 					result.Append ("=");
 				}
-				AppendConstant (result, variable.Type, variable.ConstantValue);
+				AppendConstant (result, local.Type, local.ConstantValue);
+			}
+			
+			return result.ToString ();
+		}
+		
+		string GetParameterVariableMarkup (IParameterSymbol parameter)
+		{
+			if (parameter == null)
+				throw new ArgumentNullException ("parameter");
+			
+			var result = new StringBuilder ();
+			AppendParameter (result, parameter);
+			
+			if (parameter.HasExplicitDefaultValue) {
+				if (options.GetOption (CSharpFormattingOptions.SpacingAroundBinaryOperator) == BinaryOperatorSpacingOptions.Single) {
+					result.Append (" = ");
+				} else {
+					result.Append ("=");
+				}
+				AppendConstant (result, parameter.Type, parameter.ExplicitDefaultValue);
 			}
 			
 			return result.ToString ();
@@ -897,13 +929,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		public TooltipInformation GetKeywordTooltip (SyntaxToken node, SyntaxNode hintNode = null)
-		{
-			node.CSharpKind (); 
-			return GetKeywordTooltip (node.ToFullString (), hintNode);
-		}
-
-		public TooltipInformation GetKeywordTooltip (string keyword, SyntaxNode hintNode = null)
+		public TooltipInformation GetKeywordTooltip (SyntaxToken node)
 		{
 			var result = new TooltipInformation ();
 
@@ -912,52 +938,52 @@ namespace MonoDevelop.CSharp
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
-			switch (keyword) {
-			case "abstract":
+			switch (node.CSharpKind ()) {
+			case SyntaxKind.AbstractKeyword:
 				result.SignatureMarkup = Highlight ("abstract", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("abstract", colorStyle.KeywordModifiers) + " modifier can be used with classes, methods, properties, indexers, and events.";
 				break;
-			case "add":
+			case SyntaxKind.AddKeyword:
 				result.SignatureMarkup = Highlight ("add", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", "[modifiers] " + Highlight ("add", colorStyle.KeywordContext) + " { accessor-body }");
 				result.SummaryMarkup = "The " + Highlight ("add", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.";
 				break;
-			case "ascending":
+			case SyntaxKind.AscendingKeyword:
 				result.SignatureMarkup = Highlight ("ascending", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("ascending", colorStyle.KeywordContext));
 				result.SummaryMarkup = "The " + Highlight ("ascending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.";
 				break;
-			case "async":
+			case SyntaxKind.AsyncKeyword:
 				result.SignatureMarkup = Highlight ("async", colorStyle.KeywordContext) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("async", colorStyle.KeywordContext) + " modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.";
 				break;
-			case "as":
+			case SyntaxKind.AsKeyword:
 				result.SignatureMarkup = Highlight ("as", colorStyle.KeywordOperators) + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("as", colorStyle.KeywordOperators) + " type");
 				result.SummaryMarkup = "The " + Highlight ("as", colorStyle.KeywordOperators) + " operator is used to perform conversions between compatible types. ";
 				break;
-			case "await":
+			case SyntaxKind.AwaitKeyword:
 				result.SignatureMarkup = Highlight ("await", colorStyle.KeywordContext) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("await", colorStyle.KeywordContext) + " operator is used to specify that an " + Highlight ("async", colorStyle.KeywordContext) + " method is to have its execution suspended until the " + Highlight ("await", colorStyle.KeywordContext) +
 				" task has completed.";
 				break;
-			case "base":
+			case SyntaxKind.BaseKeyword:
 				result.SignatureMarkup = Highlight ("base", colorStyle.KeywordAccessors) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("base", colorStyle.KeywordAccessors) + " keyword is used to access members of the base class from within a derived class.";
 				break;
-			case "break":
+			case SyntaxKind.BreakKeyword:
 				result.SignatureMarkup = Highlight ("break", colorStyle.KeywordJump) + keywordSign;
 				result.AddCategory ("Form", Highlight ("break", colorStyle.KeywordJump) + ";");
 				result.SummaryMarkup = "The " + Highlight ("break", colorStyle.KeywordJump) + " statement terminates the closest enclosing loop or switch statement in which it appears.";
 				break;
-			case "case":
+			case SyntaxKind.CaseKeyword:
 				result.SignatureMarkup = Highlight ("case", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
 				"  statement" + Environment.NewLine +
 				"  jump-statement");
 				result.SummaryMarkup = "";
 				break;
-			case "catch":
+			case SyntaxKind.CatchKeyword:
 				result.SignatureMarkup = Highlight ("catch", colorStyle.KeywordException) + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
 				"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
@@ -966,37 +992,37 @@ namespace MonoDevelop.CSharp
 				Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
 				result.SummaryMarkup = "";
 				break;
-			case "checked":
+			case SyntaxKind.CheckedKeyword:
 				result.SignatureMarkup = Highlight ("checked", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("checked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
 				"or" + Environment.NewLine +
 				Highlight ("checked", colorStyle.KeywordOther) + " (expression)");
 				result.SummaryMarkup = "The " + Highlight ("checked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions. It can be used as an operator or a statement.";
 				break;
-			case "class":
+			case SyntaxKind.ClassKeyword:
 				result.SignatureMarkup = Highlight ("class", colorStyle.KeywordDeclaration) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
 				result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
 				break;
-			case "const":
+			case SyntaxKind.ConstKeyword:
 				result.SignatureMarkup = Highlight ("const", colorStyle.KeywordModifiers) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("const", colorStyle.KeywordModifiers) + " type declarators;");
 				result.SummaryMarkup = "The " + Highlight ("const", colorStyle.KeywordModifiers) + " keyword is used to modify a declaration of a field or local variable. It specifies that the value of the field or the local variable cannot be modified. ";
 				break;
-			case "continue":
+			case SyntaxKind.ContinueKeyword:
 				result.SignatureMarkup = Highlight ("continue", colorStyle.KeywordJump) + keywordSign;
 				result.AddCategory ("Form", Highlight ("continue", colorStyle.KeywordJump) + ";");
 				result.SummaryMarkup = "The " + Highlight ("continue", colorStyle.KeywordJump) + " statement passes control to the next iteration of the enclosing iteration statement in which it appears.";
 				break;
-			case "default":
+			case SyntaxKind.DefaultKeyword:
 				result.SignatureMarkup = Highlight ("default", colorStyle.KeywordSelection) + keywordSign;
 				result.SummaryMarkup = "";
-				if (hintNode != null) {
-					if (hintNode.Parent is DefaultExpressionSyntax) {
+				if (node.Parent != null) {
+					if (node.Parent is DefaultExpressionSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("default", colorStyle.KeywordSelection) + " (Type)");
 						break;
-					} else if (hintNode.Parent is SwitchStatementSyntax) {
+					} else if (node.Parent is SwitchStatementSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
 							"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
@@ -1011,36 +1037,40 @@ namespace MonoDevelop.CSharp
 				}
 				result.AddCategory ("Form",
 					Highlight ("default", colorStyle.KeywordSelection) + " (Type)" + Environment.NewLine + Environment.NewLine +
-						"or" + Environment.NewLine + Environment.NewLine +
+					"or" + Environment.NewLine + Environment.NewLine +
 					Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
-						"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-						"    statement" + Environment.NewLine +
-						"    jump-statement" + Environment.NewLine +
-						"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-						"    statement" + Environment.NewLine +
-						"    jump-statement]" + Environment.NewLine +
-						"}");
+					"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
+					"    statement" + Environment.NewLine +
+					"    jump-statement" + Environment.NewLine +
+					"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
+					"    statement" + Environment.NewLine +
+					"    jump-statement]" + Environment.NewLine +
+					"}");
 				break;
-			case "delegate":
+			case SyntaxKind.DelegateKeyword:
 				result.SignatureMarkup = Highlight ("delegate", colorStyle.KeywordDeclaration) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
-			case "dynamic":
-				result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
+			case SyntaxKind.IdentifierName:
+				if (node.ToFullString () == "dynamic") {
+					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
+					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
+				} else {
+					return null;
+				}
 				break;
-			case "descending":
+			case SyntaxKind.DescendingKeyword:
 				result.SignatureMarkup = Highlight ("descending", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("descending", colorStyle.KeywordContext));
 				result.SummaryMarkup = "The " + Highlight ("descending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from largest to smallest in a query expression.";
 				break;
-			case "do":
+			case SyntaxKind.DoKeyword:
 				result.SignatureMarkup = Highlight ("do", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("do", colorStyle.KeywordIteration) + " statement " + Highlight ("while", colorStyle.KeywordIteration) + " (expression);");
 				result.SummaryMarkup = "The " + Highlight ("do", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
 				break;
-			case "else":
+			case SyntaxKind.ElseKeyword:
 				result.SignatureMarkup = Highlight ("else", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
 					"  statement1" + Environment.NewLine +
@@ -1048,69 +1078,69 @@ namespace MonoDevelop.CSharp
 					"  statement2]");
 				result.SummaryMarkup = "";
 				break;
-			case "enum":
+			case SyntaxKind.EnumKeyword:
 				result.SignatureMarkup = Highlight ("enum", colorStyle.KeywordDeclaration) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("enum", colorStyle.KeywordDeclaration) + " identifier [:base-type] {enumerator-list} [;]");
 				result.SummaryMarkup = "The " + Highlight ("enum", colorStyle.KeywordDeclaration) + " keyword is used to declare an enumeration, a distinct type consisting of a set of named constants called the enumerator list.";
 				break;
-			case "event":
+			case SyntaxKind.EventKeyword:
 				result.SignatureMarkup = Highlight ("event", colorStyle.KeywordModifiers) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type declarator;" + Environment.NewLine +
 					"[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type member-name {accessor-declarations};");
 				result.SummaryMarkup = "Specifies an event.";
 				break;
-			case "explicit":
+			case SyntaxKind.ExplicitKeyword:
 				result.SignatureMarkup = Highlight ("explicit", colorStyle.KeywordOperatorDeclaration) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("explicit", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an explicit user-defined type conversion operator.";
 				break;
-			case "extern":
+			case SyntaxKind.ExternKeyword:
 				result.SignatureMarkup = Highlight ("extern", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "Use the " + Highlight ("extern", colorStyle.KeywordModifiers) + " modifier in a method declaration to indicate that the method is implemented externally. A common use of the extern modifier is with the DllImport attribute.";
 				break;
-			case "finally":
+			case SyntaxKind.FinallyKeyword:
 				result.SignatureMarkup = Highlight ("finally", colorStyle.KeywordException) + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("finally", colorStyle.KeywordException) + " finally-block");
 				result.SummaryMarkup = "The " + Highlight ("finally", colorStyle.KeywordException) + " block is useful for cleaning up any resources allocated in the try block. Control is always passed to the finally block regardless of how the try block exits.";
 				break;
-			case "fixed":
+			case SyntaxKind.FixedKeyword:
 				result.SignatureMarkup = Highlight ("fixed", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("fixed", colorStyle.KeywordOther) + " ( type* ptr = expr ) statement");
 				result.SummaryMarkup = "Prevents relocation of a variable by the garbage collector.";
 				break;
-			case "for":
+			case SyntaxKind.ForKeyword:
 				result.SignatureMarkup = Highlight ("for", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("for", colorStyle.KeywordIteration) + " ([initializers]; [expression]; [iterators]) statement");
 				result.SummaryMarkup = "The " + Highlight ("for", colorStyle.KeywordIteration) + " loop executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
 				break;
-			case "foreach":
+			case SyntaxKind.ForEachKeyword:
 				result.SignatureMarkup = Highlight ("foreach", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("foreach", colorStyle.KeywordIteration) + " statement repeats a group of embedded statements for each element in an array or an object collection. ";
 				break;
-			case "from":
+			case SyntaxKind.FromKeyword:
 				result.SignatureMarkup = Highlight ("from", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration)
 				+ " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
 				result.SummaryMarkup = "The " + Highlight ("from", colorStyle.KeywordContext) + " keyword marks the beginning of a query expression and defines the data source and local variable to represent the elements in the sequence.";
 				break;
-			case "get":
+			case SyntaxKind.GetKeyword:
 				result.SignatureMarkup = Highlight ("get", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", "[modifiers] " + Highlight ("get", colorStyle.KeywordContext) + " [ { accessor-body } ]");
 				result.SummaryMarkup = "The " + Highlight ("get", colorStyle.KeywordContext) + " keyword is used to define an accessor method to retrieve the value of the property or indexer element.";
 				break;
-			case "global":
+			case SyntaxKind.GlobalKeyword:
 				result.SignatureMarkup = Highlight ("global", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", Highlight ("global", colorStyle.KeywordContext) + " :: type");
 				result.SummaryMarkup = "The " + Highlight ("global", colorStyle.KeywordContext) + " keyword is used to specify a type is within the global namespace.";
 				break;
-			case "goto":
+			case SyntaxKind.GotoKeyword:
 				result.SignatureMarkup = Highlight ("goto", colorStyle.KeywordJump) + keywordSign;
 				result.AddCategory ("Form", Highlight ("goto", colorStyle.KeywordJump) + " identifier;" + Environment.NewLine +
 				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression;" + Environment.NewLine +
 				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("default", colorStyle.KeywordSelection) + ";");
 				result.SummaryMarkup = "The " + Highlight ("goto", colorStyle.KeywordJump) + " statement transfers the program control directly to a labeled statement. ";
 				break;
-			case "group":
+			case SyntaxKind.GroupKeyword:
 				result.SignatureMarkup = Highlight ("group", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + "key-value"
 					+ Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
@@ -1118,7 +1148,7 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("group", colorStyle.KeywordContext) + " keyword groups elements together from a query which match the key value and stores the result in an "
 					+ Highlight ("IGrouping&lt;TKey, TElement&gt;", colorStyle.KeywordTypes) + ". It can also be stored in a group for further use in the query with 'into'.";
 				break;
-			case "if":
+			case SyntaxKind.IfKeyword:
 				result.SignatureMarkup = Highlight ("if", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
 					"  statement1" + Environment.NewLine +
@@ -1126,29 +1156,29 @@ namespace MonoDevelop.CSharp
 					"  statement2]");
 				result.SummaryMarkup = "The " + Highlight ("if", colorStyle.KeywordSelection) + " statement selects a statement for execution based on the value of a Boolean expression. ";
 				break;
-			case "into":
+			case SyntaxKind.IntoKeyword:
 				result.SignatureMarkup = Highlight ("into", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + " key-value " + Highlight ("into", colorStyle.KeywordContext) + " group-name ");
 				result.SummaryMarkup = "The " + Highlight ("into", colorStyle.KeywordContext) + " keyword stores the result of a group statement for further use in the query.";
 				break;
-			case "implicit":
+			case SyntaxKind.ImplicitKeyword:
 				result.SignatureMarkup = Highlight ("implicit", colorStyle.KeywordOperatorDeclaration) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("implicit", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an implicit user-defined type conversion operator.";
 				break;
-			case "in":
+			case SyntaxKind.InKeyword:
 				result.SignatureMarkup = Highlight ("in", colorStyle.KeywordIteration) + keywordSign;
-				if (hintNode != null) {
-					if (hintNode.Parent is ForEachStatementSyntax) {
+				if (node.Parent != null) {
+					if (node.Parent is ForEachStatementSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
 						break;
 					}
-					if (hintNode.Parent is FromClauseSyntax) {
+					if (node.Parent is FromClauseSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
 						break;
 					}
-					if (hintNode.Parent is TypeParameterConstraintClauseSyntax) {
+					if (node.Parent is TypeParameterConstraintClauseSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}");
 						break;
@@ -1161,52 +1191,52 @@ namespace MonoDevelop.CSharp
 				Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}"
 				);
 				break;
-			case "interface":
+			case SyntaxKind.InterfaceKeyword:
 				result.SignatureMarkup = Highlight ("interface", colorStyle.KeywordDeclaration) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("interface", colorStyle.KeywordDeclaration) + " identifier [:base-list] {interface-body}[;]");
 				result.SummaryMarkup = "An interface defines a contract. A class or struct that implements an interface must adhere to its contract.";
 				break;
-			case "internal":
+			case SyntaxKind.InternalKeyword:
 				result.SignatureMarkup = Highlight ("internal", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("internal", colorStyle.KeywordModifiers) + " keyword is an access modifier for types and type members. Internal members are accessible only within files in the same assembly.";
 				break;
-			case "is":
+			case SyntaxKind.IsKeyword:
 				result.SignatureMarkup = Highlight ("is", colorStyle.KeywordOperators) + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("is", colorStyle.KeywordOperators) + " type");
 				result.SummaryMarkup = "The " + Highlight ("is", colorStyle.KeywordOperators) + " operator is used to check whether the run-time type of an object is compatible with a given type.";
 				break;
-			case "join":
+			case SyntaxKind.JoinKeyword:
 				result.SignatureMarkup = Highlight ("join", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("join", colorStyle.KeywordContext) + " range-variable2 " + Highlight ("in", colorStyle.KeywordContext) + " range2 " + Highlight ("on", colorStyle.KeywordContext)
 					+ " statement1 " + Highlight ("equals", colorStyle.KeywordContext) + " statement2 [ " + Highlight ("into", colorStyle.KeywordContext) + " group-name ]");
 				result.SummaryMarkup = "The " + Highlight ("join", colorStyle.KeywordContext) + " clause produces a new sequence of elements from two source sequences on a given equality condition.";
 				break;
-			case "let":
+			case SyntaxKind.LetKeyword:
 				result.SignatureMarkup = Highlight ("let", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("let", colorStyle.KeywordContext) + " range-variable = expression");
 				result.SummaryMarkup = "The " + Highlight ("let", colorStyle.KeywordContext) + " clause allows for a sub-expression to have its value stored in a new range variable for use later in the query.";
 				break;
-			case "lock":
+			case SyntaxKind.LockKeyword:
 				result.SignatureMarkup = Highlight ("lock", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("lock", colorStyle.KeywordOther) + " (expression) statement_block");
 				result.SummaryMarkup = "The " + Highlight ("lock", colorStyle.KeywordOther) + " keyword marks a statement block as a critical section by obtaining the mutual-exclusion lock for a given object, executing a statement, and then releasing the lock. ";
 				break;
-			case "namespace":
+			case SyntaxKind.NamespaceKeyword:
 				result.SignatureMarkup = Highlight ("namespace", colorStyle.KeywordNamespace) + keywordSign;
 				result.AddCategory ("Form", Highlight ("namespace", colorStyle.KeywordNamespace) + " name[.name1] ...] {" + Environment.NewLine +
 					"type-declarations" + Environment.NewLine +
 					" }");
 				result.SummaryMarkup = "The " + Highlight ("namespace", colorStyle.KeywordNamespace) + " keyword is used to declare a scope. ";
 				break;
-			case "new":
+			case SyntaxKind.NewKeyword:
 				result.SignatureMarkup = Highlight ("new", colorStyle.KeywordOperators) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
 				break;
-			case "null":
+			case SyntaxKind.NullKeyword:
 				result.SignatureMarkup = Highlight ("null", colorStyle.KeywordConstants) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("null", colorStyle.KeywordConstants) + " keyword is a literal that represents a null reference, one that does not refer to any object. " + Highlight ("null", colorStyle.KeywordConstants) + " is the default value of reference-type variables.";
 				break;
-			case "operator":
+			case SyntaxKind.OperatorKeyword:
 				result.SignatureMarkup = Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " unary-operator ( op-type operand )" + Environment.NewLine +
 				Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " binary-operator (" + Environment.NewLine +
@@ -1218,20 +1248,20 @@ namespace MonoDevelop.CSharp
 				);
 				result.SummaryMarkup = "The " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an operator in a class or struct declaration.";
 				break;
-			case "orderby":
+			case SyntaxKind.OrderByKeyword:
 				result.SignatureMarkup = Highlight ("orderby", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " order-key1 [ " + Highlight ("ascending", colorStyle.KeywordContext) + "|" + Highlight ("descending", colorStyle.KeywordContext) + " , [order-key2, ...]");
 				result.SummaryMarkup = "The " + Highlight ("orderby", colorStyle.KeywordContext) + " clause specifies for the returned sequence to be sorted on a given element in either ascending or descending order.";
 				break;
-			case "out":
+			case SyntaxKind.OutKeyword:
 				result.SignatureMarkup = Highlight ("out", colorStyle.KeywordParameter) + keywordSign;
-				if (hintNode != null) {
-					if (hintNode.Parent is TypeParameterSyntax) {
+				if (node.Parent != null) {
+					if (node.Parent is TypeParameterSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}");
 						break;
 					}
-					if (hintNode.Parent is ParameterSyntax) {
+					if (node.Parent is ParameterSyntax) {
 						result.AddCategory ("Form",
 							Highlight ("out", colorStyle.KeywordParameter) + " parameter-name");
 						result.SummaryMarkup = "The " + Highlight ("out", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
@@ -1245,22 +1275,22 @@ namespace MonoDevelop.CSharp
 					Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}"
 				);
 				break;
-			case "override":
+			case SyntaxKind.OverrideKeyword:
 				result.SignatureMarkup = Highlight ("override", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("override", colorStyle.KeywordModifiers) + " modifier is used to override a method, a property, an indexer, or an event.";
 				break;
-			case "params":
+			case SyntaxKind.ParamKeyword:
 				result.SignatureMarkup = Highlight ("params", colorStyle.KeywordParameter) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("params", colorStyle.KeywordParameter) + " keyword lets you specify a method parameter that takes an argument where the number of arguments is variable.";
 				break;
-			case "partial":
+			case SyntaxKind.PartialKeyword:
 				result.SignatureMarkup = Highlight ("partial", colorStyle.KeywordContext) + keywordSign;
-				if (hintNode != null) {
-					if (hintNode.Parent is TypeDeclarationSyntax) {
+				if (node.Parent != null) {
+					if (node.Parent is TypeDeclarationSyntax) {
 						result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration");
 						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a type declaration allows for the definition to be split into multiple files.";
 						break;
-					} else if (hintNode.Parent is MethodDeclarationSyntax) {
+					} else if (node.Parent is MethodDeclarationSyntax) {
 						result.AddCategory ("Form", Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
 						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a method declaration allows for the implementation of a method to be defined in another part of the partial class.";
 					}
@@ -1268,70 +1298,70 @@ namespace MonoDevelop.CSharp
 					result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration" + Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
 					Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
 				break;
-			case "private":
+			case SyntaxKind.PrivateKeyword:
 				result.SignatureMarkup = Highlight ("private", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("private", colorStyle.KeywordModifiers) + " keyword is a member access modifier. Private access is the least permissive access level. Private members are accessible only within the body of the class or the struct in which they are declared.";
 				break;
-			case "protected":
+			case SyntaxKind.ProtectedKeyword:
 				result.SignatureMarkup = Highlight ("protected", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("protected", colorStyle.KeywordModifiers) + " keyword is a member access modifier. A protected member is accessible from within the class in which it is declared, and from within any class derived from the class that declared this member.";
 				break;
-			case "public":
+			case SyntaxKind.PublicKeyword:
 				result.SignatureMarkup = Highlight ("public", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("public", colorStyle.KeywordModifiers) + " keyword is an access modifier for types and type members. Public access is the most permissive access level. There are no restrictions on accessing public members.";
 				break;
-			case "readonly":
+			case SyntaxKind.ReadOnlyKeyword:
 				result.SignatureMarkup = Highlight ("readonly", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("readonly", colorStyle.KeywordModifiers) + " keyword is a modifier that you can use on fields. When a field declaration includes a " + Highlight ("readonly", colorStyle.KeywordModifiers) + " modifier, assignments to the fields introduced by the declaration can only occur as part of the declaration or in a constructor in the same class.";
 				break;
-			case "ref":
+			case SyntaxKind.RefKeyword:
 				result.SignatureMarkup = Highlight ("ref", colorStyle.KeywordParameter) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("ref", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 				break;
-			case "remove":
+			case SyntaxKind.RemoveKeyword:
 				result.SignatureMarkup = Highlight ("remove", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", "[modifiers] " + Highlight ("remove", colorStyle.KeywordContext) + " { accessor-body }");
 				result.SummaryMarkup = "The " + Highlight ("remove", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.";
 				break;
-			case "return":
+			case SyntaxKind.ReturnKeyword:
 				result.SignatureMarkup = Highlight ("return", colorStyle.KeywordJump) + keywordSign;
 				result.AddCategory ("Form", Highlight ("return", colorStyle.KeywordJump) + " [expression];");
 				result.SummaryMarkup = "The " + Highlight ("return", colorStyle.KeywordJump) + " statement terminates execution of the method in which it appears and returns control to the calling method.";
 				break;
-			case "select":
+			case SyntaxKind.SelectKeyword:
 				result.SignatureMarkup = Highlight ("select", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Query Form", Highlight ("select", colorStyle.KeywordContext) + " return-type");
 				result.SummaryMarkup = "The " + Highlight ("select", colorStyle.KeywordContext) + " clause specifies the type of value to return from the query.";
 				break;
-			case "sealed":
+			case SyntaxKind.SealedKeyword:
 				result.SignatureMarkup = Highlight ("sealed", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "A sealed class cannot be inherited.";
 				break;
-			case "set":
+			case SyntaxKind.SetKeyword:
 				result.SignatureMarkup = Highlight ("set", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", "[modifiers] " + Highlight ("set", colorStyle.KeywordContext) + " [ { accessor-body } ]");
 				result.SummaryMarkup = "The " + Highlight ("set", colorStyle.KeywordContext) + " keyword is used to define an accessor method to assign to the value of the property or indexer element.";
 				break;
-			case "sizeof":
+			case SyntaxKind.SizeOfKeyword:
 				result.SignatureMarkup = Highlight ("sizeof", colorStyle.KeywordOperators) + keywordSign;
 				result.AddCategory ("Form", Highlight ("sizeof", colorStyle.KeywordOperators) + " (type)");
 				result.SummaryMarkup = "The " + Highlight ("sizeof", colorStyle.KeywordOperators) + " operator is used to obtain the size in bytes for a value type.";
 				break;
-			case "stackalloc":
+			case SyntaxKind.StackAllocKeyword:
 				result.SignatureMarkup = Highlight ("stackalloc", colorStyle.KeywordOperators) + keywordSign;
 				result.AddCategory ("Form", "type * ptr = " + Highlight ("stackalloc", colorStyle.KeywordOperators) + " type [ expr ];");
 				result.SummaryMarkup = "Allocates a block of memory on the stack.";
 				break;
-			case "static":
+			case SyntaxKind.StaticKeyword:
 				result.SignatureMarkup = Highlight ("static", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "Use the " + Highlight ("static", colorStyle.KeywordModifiers) + " modifier to declare a static member, which belongs to the type itself rather than to a specific object.";
 				break;
-			case "struct":
+			case SyntaxKind.StructKeyword:
 				result.SignatureMarkup = Highlight ("struct", colorStyle.KeywordDeclaration) + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
 				result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
 				break;
-			case "switch":
+			case SyntaxKind.SwitchKeyword:
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
 				result.AddCategory ("Form", Highlight ("switch", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
 					" {" + Environment.NewLine +
@@ -1344,16 +1374,16 @@ namespace MonoDevelop.CSharp
 					" }");
 				result.SummaryMarkup = "The " + Highlight ("switch", colorStyle.KeywordSelection) + " statement is a control statement that handles multiple selections by passing control to one of the " + Highlight ("case", colorStyle.KeywordSelection) + " statements within its body.";
 				break;
-			case "this":
+			case SyntaxKind.ThisKeyword:
 				result.SignatureMarkup = Highlight ("this", colorStyle.KeywordAccessors) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("this", colorStyle.KeywordAccessors) + " keyword refers to the current instance of the class.";
 				break;
-			case "throw":
+			case SyntaxKind.ThrowKeyword:
 				result.SignatureMarkup = Highlight ("throw", colorStyle.KeywordException) + keywordSign;
 				result.AddCategory ("Form", Highlight ("throw", colorStyle.KeywordException) + " [expression];");
 				result.SummaryMarkup = "The " + Highlight ("throw", colorStyle.KeywordException) + " statement is used to signal the occurrence of an anomalous situation (exception) during the program execution.";
 				break;
-			case "try":
+			case SyntaxKind.TryKeyword:
 				result.SignatureMarkup = Highlight ("try", colorStyle.KeywordException) + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
 					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1 " + Environment.NewLine +
@@ -1362,48 +1392,48 @@ namespace MonoDevelop.CSharp
 					Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
 				result.SummaryMarkup = "The try-catch statement consists of a " + Highlight ("try", colorStyle.KeywordException) + " block followed by one or more " + Highlight ("catch", colorStyle.KeywordException) + " clauses, which specify handlers for different exceptions.";
 				break;
-			case "typeof":
+			case SyntaxKind.TypeOfKeyword:
 				result.SignatureMarkup = Highlight ("typeof", colorStyle.KeywordOperators) + keywordSign;
 				result.AddCategory ("Form", Highlight ("typeof", colorStyle.KeywordOperators) + "(type)");
 				result.SummaryMarkup = "The " + Highlight ("typeof", colorStyle.KeywordOperators) + " operator is used to obtain the System.Type object for a type.";
 				break;
-			case "unchecked":
+			case SyntaxKind.UncheckedKeyword:
 				result.SignatureMarkup = Highlight ("unchecked", colorStyle.KeywordOther) + keywordSign;
 				result.AddCategory ("Form", Highlight ("unchecked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
 				Highlight ("unchecked", colorStyle.KeywordOther) + " (expression)");
 				result.SummaryMarkup = "The " + Highlight ("unchecked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.";
 				break;
-			case "unsafe":
+			case SyntaxKind.UnsafeKeyword:
 				result.SignatureMarkup = Highlight ("unsafe", colorStyle.KeywordOther) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("unsafe", colorStyle.KeywordOther) + " keyword denotes an unsafe context, which is required for any operation involving pointers.";
 				break;
-			case "using":
+			case SyntaxKind.UsingKeyword:
 				result.SignatureMarkup = Highlight ("using", colorStyle.KeywordNamespace) + keywordSign;
 				result.AddCategory ("Form", Highlight ("using", colorStyle.KeywordNamespace) + " (expression | type identifier = initializer) statement" + Environment.NewLine +
 				Highlight ("using", colorStyle.KeywordNamespace) + " [alias = ]class_or_namespace;");
 				result.SummaryMarkup = "The " + Highlight ("using", colorStyle.KeywordNamespace) + " directive creates an alias for a namespace or imports types defined in other namespaces. The " + Highlight ("using", colorStyle.KeywordNamespace) + " statement defines a scope at the end of which an object will be disposed.";
 				break;
-			case "virtual":
+			case SyntaxKind.VirtualKeyword:
 				result.SignatureMarkup = Highlight ("virtual", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method or property declaration, in which case the method or the property is called a virtual member.";
 				break;
-			case "volatile":
+			case SyntaxKind.VolatileKeyword:
 				result.SignatureMarkup = Highlight ("volatile", colorStyle.KeywordModifiers) + keywordSign;
 				result.AddCategory ("Form", Highlight ("volatile", colorStyle.KeywordModifiers) + " declaration");
 				result.SummaryMarkup = "The " + Highlight ("volatile", colorStyle.KeywordModifiers) + " keyword indicates that a field can be modified in the program by something such as the operating system, the hardware, or a concurrently executing thread.";
 				break;
-			case "void":
+			case SyntaxKind.VoidKeyword:
 				result.SignatureMarkup = Highlight ("void", colorStyle.KeywordTypes) + keywordSign;
 				break;
-			case "where":
+			case SyntaxKind.WhereKeyword:
 				result.SignatureMarkup = Highlight ("where", colorStyle.KeywordContext) + keywordSign;
-				if (hintNode != null) {
-					if (hintNode.Parent is WhereClauseSyntax) {
+				if (node.Parent != null) {
+					if (node.Parent is WhereClauseSyntax) {
 						result.AddCategory ("Query Form", Highlight ("where", colorStyle.KeywordContext) + " condition");
 						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause specifies which elements from the data source to be returned according to a given condition.";
 						break;
 					}
-					if (hintNode.Parent is TypeConstraintSyntax) {
+					if (node.Parent is TypeConstraintSyntax) {
 						result.AddCategory ("Form", "generic-class-declaration " + Highlight ("where", colorStyle.KeywordContext) + " type-parameter : type-constraint");
 						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause constrains which types can be used as the type parameter in a generic declaration.";
 						break;
@@ -1414,23 +1444,25 @@ namespace MonoDevelop.CSharp
 					" condition" + " [query-clauses]");
 				}
 				break;
-			case "yield":
+			case SyntaxKind.YieldKeyword:
 				result.SignatureMarkup = Highlight ("yield", colorStyle.KeywordContext) + keywordSign;
 				result.AddCategory ("Form", Highlight ("yield", colorStyle.KeywordContext) + Highlight ("break", colorStyle.KeywordJump) + Environment.NewLine
 				+ Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine
 				+ Highlight ("yield", colorStyle.KeywordContext) + Highlight ("return", colorStyle.KeywordJump) + " expression");
 				result.SummaryMarkup = "The " + Highlight ("yield", colorStyle.KeywordContext) + " keyword is used to indicate that a method, get accessor, or operator is an iterator.";
 				break;
-			case "while":
+			case SyntaxKind.WhileKeyword:
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", colorStyle.KeywordIteration) + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
 				break;
+			default:
+				return null;
 			}
 			return result;
 		}
 
-		public TooltipInformation GetConstraintTooltip (string keyword)
+		public TooltipInformation GetConstraintTooltip (SyntaxToken keyword)
 		{
 			var result = new TooltipInformation ();
 
@@ -1439,16 +1471,16 @@ namespace MonoDevelop.CSharp
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
-			result.SignatureMarkup = Highlight (keyword, colorStyle.KeywordTypes) + keywordSign;
+			result.SignatureMarkup = Highlight (keyword.ToFullString (), colorStyle.KeywordTypes) + keywordSign;
 
-			switch (keyword) {
-			case "class":
+			switch (keyword.Parent.CSharpKind ()) {
+			case SyntaxKind.ClassConstraint:
 				result.AddCategory ("Constraint", "The type argument must be a reference type; this applies also to any class, interface, delegate, or array type.");
 				break;
-			case "new":
+			case SyntaxKind.ConstructorConstraint:
 				result.AddCategory ("Constraint", "The type argument must have a public parameterless constructor. When used together with other constraints, the new() constraint must be specified last.");
 				break;
-			case "struct":
+			case SyntaxKind.StructConstraint:
 				result.AddCategory ("Constraint", "The type argument must be a value type. Any value type except Nullable can be specified. See Using Nullable Types (C# Programming Guide) for more information.");
 				break;
 			}
