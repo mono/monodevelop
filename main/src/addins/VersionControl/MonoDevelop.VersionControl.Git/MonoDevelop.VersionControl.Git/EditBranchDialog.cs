@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetIcon ("md-web-search-icon", IconSize.Menu));
+					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu));
 			}
 				
 			UpdateStatus ();
