@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring
 {
@@ -43,17 +44,15 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-
-			ResolveResult resolveResoult;
-			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
-			var entity = item as INamedElement;
-			if (entity != null) {
-				IdeApp.ProjectOperations.JumpToDeclaration (entity);
-			} else {
-				var v = item as IVariable;
-				if (v != null)
-					IdeApp.ProjectOperations.JumpToDeclaration (v);
-			}
+			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymolInfoAsync (doc).Result);
+		}
+		
+		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, SymbolInfo info)
+		{
+			if (info.Symbol != null)
+				IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, doc.Project);
+			if (info.CandidateSymbols.Length > 0)
+				IdeApp.ProjectOperations.JumpToDeclaration (info.CandidateSymbols[0], doc.Project);
 		}
 	}
 }

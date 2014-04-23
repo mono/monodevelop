@@ -33,18 +33,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
+using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -77,61 +73,33 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 		
-		public static ResolveResult GetResolveResult (MonoDevelop.Ide.Gui.Document doc)
+//		public static ResolveResult GetResolveResult (MonoDevelop.Ide.Gui.Document doc)
+//		{
+//			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
+//			if (textEditorResolver != null)
+//				return textEditorResolver.GetLanguageItem (doc.Editor.Caret.Offset);
+//			return null;
+//		}
+//
+		public static object GetItem (MonoDevelop.Ide.Gui.Document doc, out ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult)
 		{
-			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
-			if (textEditorResolver != null)
-				return textEditorResolver.GetLanguageItem (doc.Editor.Caret.Offset);
+			resolveResult = null;
 			return null;
 		}
 		
-		public static object GetItem (MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
+		public static async Task<SymbolInfo> GetSymolInfoAsync (MonoDevelop.Ide.Gui.Document doc, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			resolveResult = GetResolveResult (doc);
-			if (resolveResult is LocalResolveResult) 
-				return ((LocalResolveResult)resolveResult).Variable;
-			if (resolveResult is MemberResolveResult)
-				return ((MemberResolveResult)resolveResult).Member;
-			if (resolveResult is MethodGroupResolveResult) {
-				var mg = ((MethodGroupResolveResult)resolveResult);
-				var method = mg.Methods.FirstOrDefault ();
-				if (method == null && mg.GetExtensionMethods ().Any ()) 
-					method = mg.GetExtensionMethods ().First ().FirstOrDefault ();
-				return method;
+			var offset = doc.Editor.Caret.Offset;
+			var unit = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			if (unit != null) {
+				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
+				var token = root.FindToken (offset);
+				return unit.GetSymbolInfo (token.Parent); 
 			}
-			if (resolveResult is TypeResolveResult)
-				return resolveResult.Type;
-			if (resolveResult is NamespaceResolveResult)
-				return ((NamespaceResolveResult)resolveResult).Namespace;
-			if (resolveResult is OperatorResolveResult)
-				return ((OperatorResolveResult)resolveResult).UserDefinedOperatorMethod;
-			return null;
+			return new SymbolInfo ();
 		}
 
-		class JumpTo
-		{
-			object el;
-			
-			public JumpTo (object el)
-			{
-				this.el = el;
-			}
-			
-			public void Run ()
-			{
-				if (el is IUnresolvedEntity) {
-					var e = (IUnresolvedEntity)el;
-					IdeApp.Workbench.OpenDocument (e.Region.FileName, e.Region.BeginLine, e.Region.BeginColumn);
-					return;
-				} 
-				if (el is IVariable)
-					IdeApp.ProjectOperations.JumpToDeclaration ((IVariable)el);
-				if (el is INamedElement)
-					IdeApp.ProjectOperations.JumpToDeclaration ((INamedElement)el);
-			}
-		}
-
-		
+/*
 		class GotoBase 
 		{
 			IEntity item;
@@ -214,7 +182,7 @@ namespace MonoDevelop.Refactoring
 
 		DocumentLocation lastLocation;
 
-		static bool HasOverloads (Solution solution, object item)
+		static bool HasOverloads (MonoDevelop.Projects.Solution solution, object item)
 		{
 			var member = item as IMember;
 			if (member != null && member.ImplementedInterfaceMembers.Any ())
@@ -224,44 +192,49 @@ namespace MonoDevelop.Refactoring
 				return false;
 			return method.DeclaringType.GetMethods (m => m.Name == method.Name).Count () > 1;
 		}
+*/
 
+		
 
+		bool CanRename (ISymbol symbol)
+		{
+			if (symbol == null)
+				return false;
+			switch (symbol.Kind) {
+			case SymbolKind.Local:
+			case SymbolKind.Parameter:
+			case SymbolKind.NamedType:
+			case SymbolKind.Namespace:
+			case SymbolKind.Method:
+			case SymbolKind.Field:
+			case SymbolKind.Property:
+			case SymbolKind.Event:
+			case SymbolKind.Label:
+			case SymbolKind.TypeParameter:
+			case SymbolKind.RangeVariable:
+				return true;
+			}
+			return false;
+		}
+		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
+			var info = GetSymolInfoAsync (doc).Result;
 			
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null || parsedDocument.IsInvalid)
-				return;
-			
-			ResolveResult resolveResult;
-			object item = GetItem (doc, out resolveResult);
 			bool added = false;
 
-			var options = new RefactoringOptions (doc) {
-				ResolveResult = resolveResult,
-				SelectedItem = item
-			};
+//			var options = new RefactoringOptions (doc) {
+//				ResolveResult = resolveResult,
+//				SelectedItem = item
+//			};
 			
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
-			bool canRename;
-			if (item is IVariable || item is IParameter) {
-				canRename = true; 
-			} else if (item is ITypeDefinition) { 
-				canRename = !((ITypeDefinition)item).Region.IsEmpty;
-			} else if (item is IType) { 
-				canRename = ((IType)item).Kind == TypeKind.TypeParameter;
-			} else if (item is IMember) {
-				canRename = !((IMember)item).Region.IsEmpty;
-			} else if (item is INamespace) {
-				canRename = true;
-			} else {
-				canRename = false;
-			}
+			bool canRename = CanRename(info.Symbol);
 			if (canRename) {
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
 					new MonoDevelop.Refactoring.Rename.RenameHandler ().Start (null);
@@ -269,154 +242,166 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			
-			foreach (var refactoring in RefactoringService.Refactorings) {
-				if (refactoring.IsValid (options)) {
-					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = refactoring.AccelKey;
-					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-				}
-			}
-			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
-			if (refactoringInfo == null) {
-				refactoringInfo = new RefactoringDocumentInfo ();
-				doc.AddAnnotation (refactoringInfo);
-			}
-			var loc = doc.Editor.Caret.Location;
-			bool first = true;
-			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-
-				if (QuickTaskStrip.EnableFancyFeatures) {
-					var ext = doc.GetContent <CodeActionEditorExtension> ();
-					//refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
-				} else {
-					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
-				}
-
-				lastLocation = loc;
-				refactoringInfo.lastDocument = doc.ParsedDocument;
-			}
-			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-
-//				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-//					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-//						continue;
-//					var fix = fix_;
-//					if (first) {
-//						first = false;
-//						if (ciset.CommandInfos.Count > 0)
-//							ciset.CommandInfos.AddSeparator ();
-//					}
-//
-//					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+//			foreach (var refactoring in RefactoringService.Refactorings) {
+//				if (refactoring.IsValid (options)) {
+//					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+//					info.AccelKey = refactoring.AccelKey;
+//					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 //				}
-			}
-
-			if (ciset.CommandInfos.Count > 0) {
-				ainfo.Add (ciset, null);
-				added = true;
-			}
-			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
-				var type = item as IType;
-				if (type != null && type.GetDefinition ().Parts.Count > 1) {
+//			}
+//			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
+//			if (refactoringInfo == null) {
+//				refactoringInfo = new RefactoringDocumentInfo ();
+//				doc.AddAnnotation (refactoringInfo);
+//			}
+//			var loc = doc.Editor.Caret.Location;
+//			bool first = true;
+//			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
+//
+//				if (QuickTaskStrip.Enab///
+////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+////				}
+//			}
+//
+//			if (ciset.CommandInfos.Count > 0) {
+//				ainfo.Add (ciset, null);
+//				added = true;
+//			}
+//			
+//			if (canRename) {leFancyFeatures) {
+//					var ext = doc.GetContent <CodeActionEditorExtension> ();
+//					//refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
+//				} else {
+//					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
+//				}
+//
+//				lastLocation = loc;
+//				refactoringInfo.lastDocument = doc.ParsedDocument;
+//			}
+//			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
+//				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
+//
+////				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+////					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
+////						continue;
+////					var fix = fix_;
+////					if (first) {
+////						first = false;
+////						if (ciset.CommandInfos.Count > 0)
+////							ciset.CommandInfos.AddSeparator ();
+////					}
+////
+////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+////				}
+//			}
+//
+//			if (ciset.CommandInfos.Count > 0) {
+//				ainfo.Add (ciset, null);
+//				added = true;
+//			}
+//			
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (info.Symbol) || info.Symbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
+				var type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
+				if (type != null && type.Locations.Length > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
-					var ct = type.GetDefinition ();
-					foreach (var part in ct.Parts)
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.Region.FileName), part.Region.BeginLine), new System.Action (new JumpTo (part).Run));
+					foreach (var part in type.Locations) {
+						int line = 0;
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), line), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Project)));
+					}
 					ainfo.Add (declSet);
 				} else {
-					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new System.Action (new JumpTo (item).Run));
+					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration), new Action (() => GotoDeclarationHandler.JumpToDeclaration (doc, info)));
 				}
 				added = true;
 			}
-
-			if (item is IMember) {
-				var member = (IMember)item;
-				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
-					ainfo.Add (GettextCatalog.GetString ("Go to _Base Symbol"), new System.Action (new GotoBase (member).Run));
-					added = true;
-				}
-			}
-
-			if (!(item is IMethod && ((IMethod)item).SymbolKind == SymbolKind.Operator) && (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace)) {
-
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
-				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
-					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
-				added = true;
-			}
-
-			if (item is IMember) {
-				var member = (IMember)item;
-				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-					var handler = new FindDerivedSymbolsHandler (doc, member);
-					if (handler.IsValid) {
-						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
-						added = true;
-					}
-				}
-			}
-			if (item is IMember) {
-				var member = (IMember)item;
-				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
-					var findMemberOverloadsHandler = new FindMemberOverloadsHandler (doc, member);
-					if (findMemberOverloadsHandler.IsValid) {
-						ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (findMemberOverloadsHandler.Run));
-						added = true;
-					}
-				}
-			}
-
-			if (item is ITypeDefinition) {
-				ITypeDefinition cls = (ITypeDefinition)item;
-				foreach (var bc in cls.DirectBaseTypes) {
-					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-						ainfo.Add (GettextCatalog.GetString ("Go to _Base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
-						break;
-					}
-				}
-				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
-					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
-				}
-				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
-				added = true;
-
-			}
+//
+//			if (item is IMember) {
+//				var member = (IMember)item;
+//				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
+//					ainfo.Add (GettextCatalog.GetString ("Go to _Base Symbol"), new System.Action (new GotoBase (member).Run));
+//					added = true;
+//				}
+//			}
+//
+//			if (!(item is IMethod && ((IMethod)item).SymbolKind == SymbolKind.Operator) && (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace)) {
+//
+//				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
+//				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
+//					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
+//				added = true;
+//			}
+//
+//			if (item is IMember) {
+//				var member = (IMember)item;
+//				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
+//					var handler = new FindDerivedSymbolsHandler (doc, member);
+//					if (handler.IsValid) {
+//						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
+//						added = true;
+//					}
+//				}
+//			}
+//			if (item is IMember) {
+//				var member = (IMember)item;
+//				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
+//					var findMemberOverloadsHandler = new FindMemberOverloadsHandler (doc, member);
+//					if (findMemberOverloadsHandler.IsValid) {
+//						ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (findMemberOverloadsHandler.Run));
+//						added = true;
+//					}
+//				}
+//			}
+//
+//			if (item is ITypeDefinition) {
+//				ITypeDefinition cls = (ITypeDefinition)item;
+//				foreach (var bc in cls.DirectBaseTypes) {
+//					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
+//						ainfo.Add (GettextCatalog.GetString ("Go to _Base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
+//						break;
+//					}
+//				}
+//				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
+//					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
+//				}
+//				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
+//				added = true;
+//
+//			}
 
 			if (added)
 				ainfo.AddSeparator ();
 		}
-		
 
-		class RefactoringOperationWrapper
-		{
-			RefactoringOperation refactoring;
-			RefactoringOptions options;
-			
-			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringOptions options)
-			{
-				this.refactoring = refactoring;
-				this.options = options;
-			}
-			
-			public void Operation ()
-			{
-				refactoring.Run (options);
-			}
-		}
-
-		bool IsModifiable (object member)
-		{
-			IType t = member as IType;
-			if (t != null) 
-				return t.GetDefinition ().Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
-			if (member is IMember)
-				return ((IMember)member).DeclaringTypeDefinition.Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
-			return false;
-		}
-
+//		
+//
+//		class RefactoringOperationWrapper
+//		{
+//			RefactoringOperation refactoring;
+//			RefactoringOptions options;
+//			
+//			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringOptions options)
+//			{
+//				this.refactoring = refactoring;
+//				this.options = options;
+//			}
+//			
+//			public void Operation ()
+//			{
+//				refactoring.Run (options);
+//			}
+//		}
+//
+//		bool IsModifiable (object member)
+//		{
+//			IType t = member as IType;
+//			if (t != null) 
+//				return t.GetDefinition ().Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
+//			if (member is IMember)
+//				return ((IMember)member).DeclaringTypeDefinition.Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
+//			return false;
+//		}
+//
 		static string FormatFileName (string fileName)
 		{
 			if (fileName == null)
@@ -430,11 +415,11 @@ namespace MonoDevelop.Refactoring
 			return fileName;
 		}
 
-		public static bool ContainsAbstractMembers (IType cls)
-		{
-			if (cls == null)
-				return false;
-			return cls.GetMembers ().Any (m => m.IsAbstract);
-		}
+//		public static bool ContainsAbstractMembers (ITypeSymbol cls)
+//		{
+//			if (cls == null)
+//				return false;
+//			return cls.GetMembers ().Any (m => m.IsAbstract);
+//		}
 	}
 }

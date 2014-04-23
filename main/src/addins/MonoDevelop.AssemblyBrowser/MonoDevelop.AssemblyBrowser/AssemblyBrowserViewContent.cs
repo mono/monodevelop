@@ -107,23 +107,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 		#region IUrlHandler implementation 
 		
-		public void Open (INamedElement element)
+		public void Open (Microsoft.CodeAnalysis.ISymbol element)
 		{
-			var member = element as IUnresolvedEntity;
-			if (member == null) {
-				var entity = element as IMember;
-				if (entity != null)
-					member = entity.UnresolvedMember;
-
-			}
-			if (member == null) {
-				var entity = element as IType;
-				if (entity != null)
-					member = entity.GetDefinition ().Parts [0];
-			}
-			if (member == null)
-				return;
-			var url = AssemblyBrowserWidget.GetIdString (member); 
+			var url = element.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
 			widget.Open (url);
 		}
 		

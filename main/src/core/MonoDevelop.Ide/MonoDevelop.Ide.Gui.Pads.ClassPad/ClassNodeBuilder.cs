@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{
-			ClassData cls = CurrentNode.DataItem as ClassData;
-			IdeApp.ProjectOperations.JumpToDeclaration (cls.Class, true);
+//			ClassData cls = CurrentNode.DataItem as ClassData;
+//			IdeApp.ProjectOperations.JumpToDeclaration (cls.Class, true);
 		}
 	}	
 }

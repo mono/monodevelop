@@ -456,7 +456,18 @@ namespace MonoDevelop.Ide.Gui
 							}
 
 							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
-							if (info.Line >= 1 && ipos != null) {
+							if (info.Offset >= 0) {
+								doc.DisableAutoScroll ();
+								doc.RunWhenLoaded (() => {
+									int line, col;
+									ipos.GetLineColumnFromPosition (info.Offset, out line, out col);
+									ipos.SetCaretTo (
+										Math.Max(1, line),
+										Math.Max(1, col),
+										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+										info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+								}); 
+							} else if (info.Line >= 1 && ipos != null) {
 								doc.DisableAutoScroll ();
 								doc.RunWhenLoaded (() =>
 									ipos.SetCaretTo (
@@ -1193,7 +1204,17 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+		
+		int offset = -1;
 
+		public int Offset {
+			get {
+				return offset;
+			}
+			set {
+				offset = value;
+			}
+		}
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project)")]
 		public FileOpenInformation ()
@@ -1314,18 +1335,19 @@ namespace MonoDevelop.Ide.Gui
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			if (fileInfo.Line > 0 && ipos != null) {
+			if (fileInfo.Offset >= 0) {
 				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
-				ipos.RunWhenLoaded (JumpToLine); 
+				ipos.RunWhenLoaded (() => {
+					int line, col;
+					ipos.GetLineColumnFromPosition (fileInfo.Offset, out line, out col);
+					ipos.SetCaretTo (Math.Max(1, line), Math.Max(1, col), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+				}); 
+			} else if (fileInfo.Line > 0 && ipos != null) {
+				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
+				ipos.RunWhenLoaded (() => ipos.SetCaretTo (Math.Max (1, fileInfo.Line), Math.Max (1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine))); 
 			}
 			
 			fileInfo.NewContent = newContent;
-		}
-		
-		void JumpToLine ()
-		{
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 		}
 	}
 	

@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide
 {
@@ -219,22 +220,24 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (object element)
+		public bool CanJumpToDeclaration (Microsoft.CodeAnalysis.ISymbol symbol)
 		{
-			if (element is ICSharpCode.NRefactory.TypeSystem.IVariable)
-				return true;
-			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
-			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
-				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
-			if (entity == null)
+			if (symbol == null)
 				return false;
-			if (entity.Region.IsEmpty) {
-				var parentAssembly = entity.ParentAssembly;
-				if (parentAssembly == null)
-					return false;
-				return !string.IsNullOrEmpty (parentAssembly.UnresolvedAssembly.Location);
+			switch (symbol.Kind) {
+			case Microsoft.CodeAnalysis.SymbolKind.Local:
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
+			case Microsoft.CodeAnalysis.SymbolKind.Method:
+			case Microsoft.CodeAnalysis.SymbolKind.Field:
+			case Microsoft.CodeAnalysis.SymbolKind.Property:
+			case Microsoft.CodeAnalysis.SymbolKind.Event:
+			case Microsoft.CodeAnalysis.SymbolKind.Label:
+			case Microsoft.CodeAnalysis.SymbolKind.TypeParameter:
+			case Microsoft.CodeAnalysis.SymbolKind.RangeVariable:
+				return true;
 			}
-			return true;
+			return false;
 		}
 
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
@@ -251,64 +254,57 @@ namespace MonoDevelop.Ide
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
 
-		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement visitable, bool askIfMultipleLocations = true)
+		public void JumpTo (Microsoft.CodeAnalysis.ISymbol symbol, Microsoft.CodeAnalysis.Location location, Project project = null)
 		{
-			if (askIfMultipleLocations) {
-				var type = visitable as ICSharpCode.NRefactory.TypeSystem.IType;
-				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
-					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						foreach (var part in type.GetDefinition ().Parts)
-							monitor.ReportResult (GetJumpTypePartSearchResult (part));
-					}
+			if (location == null)
+				return;
+			if (location.IsInMetadata) {
+				string fileName = null;
+				var dn = project as DotNetProject;
+				if (dn == null)
 					return;
+				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+					if (assembly.IndexOf (location.MetadataModule.Name) > 0) {
+						fileName = assembly;
+						break;
+					}
 				}
-			}
+				if (fileName == null)
+					return;
+				var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
 
-			JumpToDeclaration (visitable);
-		}
+				if (doc != null) {
+					doc.RunWhenLoaded (delegate {
+						var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
+						if (handler != null)
+							handler.Open (symbol);
+					});
+				}
 
-		void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement element)
-		{
-			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
-
-			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
-				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
-			if (entity is SpecializedMember) 
-				entity = ((SpecializedMember)entity).MemberDefinition;
-
-			if (entity == null) {
-				LoggingService.LogError ("Unknown element:" + element);
 				return;
 			}
-			string fileName;
-			bool isCecilProjectContent = entity.Region.IsEmpty;
-			if (isCecilProjectContent) {
-				fileName = entity.ParentAssembly.UnresolvedAssembly.Location;
-			} else {
-				fileName = entity.Region.FileName;
-			}
-			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetProjectWhereTypeIsDefined ();
-			var doc = IdeApp.Workbench.OpenDocument (fileName,
-				project,
-				entity.Region.BeginLine,
-				entity.Region.BeginColumn);
-
-			if (isCecilProjectContent && doc != null) {
-				doc.RunWhenLoaded (delegate {
-					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
-					if (handler != null)
-						handler.Open (entity);
-				});
-			}
+			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
+				Offset = location.SourceSpan.Start
+			});
 		}
-
-		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.IVariable entity)
+		
+		public void JumpToDeclaration (Microsoft.CodeAnalysis.ISymbol symbol, Project project = null, bool askIfMultipleLocations = true)
 		{
-			if (entity == null)
-				throw new ArgumentNullException ("entity");
-			string fileName = entity.Region.FileName;
-			// variables are always in the same file -> file is already open, project not needed.
-			IdeApp.Workbench.OpenDocument (fileName, null, entity.Region.BeginLine, entity.Region.BeginColumn);
+			if (symbol == null)
+				throw new ArgumentNullException ("symbol");
+			var locations = symbol.Locations;
+			
+			if (askIfMultipleLocations && locations.Length > 1) {
+//				var type = visitable as ICSharpCode.NRefactory.TypeSystem.IType;
+//				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
+//					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+//						foreach (var part in type.GetDefinition ().Parts)
+//							monitor.ReportResult (GetJumpTypePartSearchResult (part));
+//					}
+//					return;
+//				}
+			}
+			JumpTo (symbol, locations.FirstOrDefault (), project);
 		}
 
 		public void RenameItem (IWorkspaceFileObject item, string newName)

@@ -38,6 +38,6 @@ namespace MonoDevelop.Ide.Gui.Content
 
 	public interface IOpenNamedElementHandler
 	{
-		void Open (ICSharpCode.NRefactory.TypeSystem.INamedElement element);
+		void Open (Microsoft.CodeAnalysis.ISymbol element);
 	}
 }

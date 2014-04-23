@@ -221,7 +221,7 @@ namespace MonoDevelop.DesignerSupport
 				o = outlineTreeStore.GetValue (iter, 0);
 			}
 				
-			IdeApp.ProjectOperations.JumpToDeclaration (o as IEntity);
+//			IdeApp.ProjectOperations.JumpToDeclaration (o as IEntity);
 			if (focusEditor)
 				IdeApp.Workbench.ActiveDocument.Select ();
 		}
