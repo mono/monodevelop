@@ -26,16 +26,30 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
 using System.Threading;
 using MonoDevelop.SourceEditor;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
+using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
+	class UsageData
+	{
+		public SymbolInfo SymbolInfo;
+		public Document Document;
+
+		public ISymbol Symbol {
+			get { return SymbolInfo.Symbol; }
+		}
+	}
+	
+	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
 
@@ -58,45 +72,32 @@ namespace MonoDevelop.CSharp.Highlighting
 			base.Dispose ();
 		}
 
-		protected override bool TryResolve (out ResolveResult resolveResult)
+		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
-			AstNode node;
-			resolveResult = null;
-			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out resolveResult, out node)) {
-				return false;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null) {
+				return new UsageData ();
 			}
-			if (node is PrimitiveType) {
-				return false;
-			}
-			return true;
+
+			var document = doc.AnalysisDocument;
+			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (document, doc.Editor.Caret.Offset, token);
+			return new UsageData {
+				Document = document,
+				SymbolInfo = symbolInfo
+			};
 		}
 
-
-		protected override IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult, CancellationToken token)
+		protected override IEnumerable<MemberReference> GetReferences (UsageData resolveResult, CancellationToken token)
 		{
-			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
-			if (resolveResult is MemberResolveResult) {
-				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
-			} else if (resolveResult is TypeResolveResult) {
-				finder.SetSearchedMembers (new [] { resolveResult.Type });
-			} else if (resolveResult is MethodGroupResolveResult) { 
-				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
-			} else if (resolveResult is NamespaceResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
-			} else if (resolveResult is LocalResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
-			} else if (resolveResult is NamedArgumentResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)resolveResult).Parameter });
-			} else {
-				return EmptyList;
+			if (resolveResult.Symbol == null)
+				yield break;
+			var doc = resolveResult.Document;
+			var documents = ImmutableHashSet.Create (doc); 
+			foreach (var mref in SymbolFinder.FindReferencesAsync (resolveResult.Symbol, RoslynTypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
+				foreach (var loc in mref.Locations) {
+					yield return new MemberReference (resolveResult.Symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+				}
 			}
-
-			try {
-				return new List<MemberReference> (finder.FindInDocument (Document, token));
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in highlight usages extension.", e);
-			}
-			return EmptyList;
 		}
 	}
 }

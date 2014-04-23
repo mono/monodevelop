@@ -87,10 +87,9 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static async Task<SymbolInfo> GetSymolInfoAsync (MonoDevelop.Ide.Gui.Document doc, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<SymbolInfo> GetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var offset = doc.Editor.Caret.Offset;
-			var unit = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			var unit = await document.GetSemanticModelAsync (cancellationToken);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
 				var token = root.FindToken (offset);
@@ -133,25 +132,6 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		class FindRefs 
-		{
-			object obj;
-			bool allOverloads;
-			public FindRefs (object obj, bool all)
-			{
-				this.obj = obj;
-				this.allOverloads = all;
-			}
-			
-			public void Run ()
-			{
-				if (allOverloads) {
-					FindAllReferencesHandler.FindRefs (obj);
-				} else {
-					FindReferencesHandler.FindRefs (obj);
-				}
-			}
-		}
 		
 		class FindDerivedClasses
 		{
@@ -222,7 +202,7 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var info = GetSymolInfoAsync (doc).Result;
+			var info = GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
 			
 			bool added = false;
 
@@ -234,7 +214,7 @@ namespace MonoDevelop.Refactoring
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
-			bool canRename = CanRename(info.Symbol);
+			bool canRename = CanRename (info.Symbol);
 			if (canRename) {
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
 					new MonoDevelop.Refactoring.Rename.RenameHandler ().Start (null);
@@ -324,14 +304,16 @@ namespace MonoDevelop.Refactoring
 //				}
 //			}
 //
-//			if (!(item is IMethod && ((IMethod)item).SymbolKind == SymbolKind.Operator) && (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace)) {
-//
-//				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
-//				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
-//					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
-//				added = true;
-//			}
-//
+			if (canRename) {
+
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (info.Symbol)));
+				if (doc.HasProject) {
+					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (info.Symbol, doc.GetCompilationAsync ().Result).Count() > 1)
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, doc.GetCompilationAsync ())));
+				}
+				added = true;
+			}
+
 //			if (item is IMember) {
 //				var member = (IMember)item;
 //				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {

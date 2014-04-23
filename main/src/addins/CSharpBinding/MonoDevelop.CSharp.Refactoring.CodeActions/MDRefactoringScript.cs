@@ -295,39 +295,39 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override void DoGlobalOperationOn (IEnumerable<IEntity> entities, Action<RefactoringContext, Script, IEnumerable<AstNode>> callback, string operationName = null)
 		{
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (operationName ?? GettextCatalog.GetString ("Performing refactoring task..."), null)) {
-				var col = entities.SelectMany (entity => ReferenceFinder.FindReferences (entity, true, monitor)).OfType<CSharpReferenceFinder.CSharpMemberReference> ().GroupBy(reference => reference.FileName);
-
-				foreach (var r in col) {
-					string filename = r.Key;
-
-					bool isOpen;
-					System.Text.Encoding encoding;
-					bool hadBom;
-
-					var data = TextFileProvider.Instance.GetTextEditorData (filename, out hadBom, out encoding, out isOpen);
-
-					var firstReference = r.First ();
-
-					var project = firstReference.Project;
-
-					ParsedDocument parsedDocument;
-					using (var reader = new StreamReader (data.OpenStream ()))
-						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, filename, reader, project);
-
-					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), firstReference.SyntaxTree, parsedDocument.ParsedFile as CSharpUnresolvedFile);
-
-					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, firstReference.AstNode.StartLocation, context.CancellationToken);
-					var script = new MDRefactoringScript (ctx, FormattingOptions);
-
-					callback (ctx, script, r.Select (reference => reference.AstNode));
-
-					if (!isOpen) {
-						script.Dispose ();
-						Mono.TextEditor.Utils.TextFileUtility.WriteText (filename, data.Text, encoding, hadBom);
-					}
-				}
-			}
+//			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (operationName ?? GettextCatalog.GetString ("Performing refactoring task..."), null)) {
+//				var col = entities.SelectMany (entity => ReferenceFinder.FindReferences (entity, true, monitor)).OfType<CSharpReferenceFinder.CSharpMemberReference> ().GroupBy(reference => reference.FileName);
+//
+//				foreach (var r in col) {
+//					string filename = r.Key;
+//
+//					bool isOpen;
+//					System.Text.Encoding encoding;
+//					bool hadBom;
+//
+//					var data = TextFileProvider.Instance.GetTextEditorData (filename, out hadBom, out encoding, out isOpen);
+//
+//					var firstReference = r.First ();
+//
+//					var project = firstReference.Project;
+//
+//					ParsedDocument parsedDocument;
+//					using (var reader = new StreamReader (data.OpenStream ()))
+//						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, filename, reader, project);
+//
+//					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), firstReference.SyntaxTree, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+//
+//					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, firstReference.AstNode.StartLocation, context.CancellationToken);
+//					var script = new MDRefactoringScript (ctx, FormattingOptions);
+//
+//					callback (ctx, script, r.Select (reference => reference.AstNode));
+//
+//					if (!isOpen) {
+//						script.Dispose ();
+//						Mono.TextEditor.Utils.TextFileUtility.WriteText (filename, data.Text, encoding, hadBom);
+//					}
+//				}
+//			}
 		}
 
 		public override void CreateNewType (AstNode newType, NewTypeContext ntctx = NewTypeContext.CurrentNamespace)

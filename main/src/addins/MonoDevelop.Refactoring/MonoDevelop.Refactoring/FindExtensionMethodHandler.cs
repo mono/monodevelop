@@ -70,7 +70,7 @@ namespace MonoDevelop.Refactoring
 							var sr = tf.SearchForward (start); 
 							if (sr != null)
 								start = sr.Offset;
-							monitor.ReportResult (new MemberReference (method, method.Region, start, method.Name.Length));
+							monitor.ReportResult (new MemberReference (method, method.Region.FileName, start, method.Name.Length));
 						}
 					}
 				}

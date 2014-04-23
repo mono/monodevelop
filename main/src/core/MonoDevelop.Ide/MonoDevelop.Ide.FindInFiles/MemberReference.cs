@@ -44,23 +44,24 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new MonoDevelop.Ide.FindInFiles.FileProvider (FileName);
 			}
 		}
-		
-		public override  string FileName {
+		readonly string fileName;
+		public override string FileName {
 			get {
-				return Region.FileName;
+				return fileName;
 			}
 		}
 
 		public ReferenceUsageType ReferenceUsageType { get; set; }
 		public object EntityOrVariable { get; private set;}
-		public DomRegion Region { get; private set;}
 		
-		public MemberReference (object entity, DomRegion region, int offset, int length) : base (offset, length)
+		public MemberReference (object entity, string fileName, int offset, int length) : base (offset, length)
 		{
 			if (entity == null)
 				throw new System.ArgumentNullException ("entity");
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
 			EntityOrVariable = entity;
-			Region = region;
+			this.fileName = fileName;
 		}
 
 		public string GetName ()

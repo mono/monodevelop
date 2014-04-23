@@ -26,27 +26,32 @@
 
 using System;
 using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.Semantics;
+using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.Tasks;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
 	public class FindReferencesHandler : CommandHandler
 	{
-		public static void FindRefs (object obj)
+		public static void FindRefs (ISymbol obj)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, false, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
-						monitor.ReportResult (mref);
+					foreach (var mref in SymbolFinder.FindReferencesAsync (obj, solution).Result) {
+						foreach (var loc in mref.Locations) {
+							var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+							monitor.ReportResult (sr);
+						}
 					}
 				} catch (Exception ex) {
 					if (monitor != null)
@@ -64,25 +69,28 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ResolveResult resolveResoult;
-			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
-			var entity = item as IEntity;
-			if (entity == null)
-				return;
-			FindRefs (entity);
+			
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			if (info.Symbol != null)
+				FindRefs (info.Symbol);
 		}
 	}
 
 	public class FindAllReferencesHandler : CommandHandler
 	{
-		public static void FindRefs (object obj)
+		public static void FindRefs (ISymbol obj, Task<Compilation> compilation)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, true, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
-						monitor.ReportResult (mref);
+					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation.Result)) {
+						foreach (var mref in SymbolFinder.FindReferencesAsync (simSym, solution).Result) {
+							foreach (var loc in mref.Locations) {
+								var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+								monitor.ReportResult (sr);
+							}
+						}
 					}
 				} catch (Exception ex) {
 					if (monitor != null)
@@ -95,17 +103,15 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}
+		
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ResolveResult resolveResoult;
-			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
-			var entity = item as IEntity;
-			if (entity == null)
-				return;
-			FindRefs (entity);
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			if (info.Symbol != null)
+				FindRefs (info.Symbol, doc.GetCompilationAsync ());
 		}
 	}
 }

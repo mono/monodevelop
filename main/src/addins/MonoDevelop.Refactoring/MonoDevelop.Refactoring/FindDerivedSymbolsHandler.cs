@@ -121,7 +121,7 @@ namespace MonoDevelop.Refactoring
 									if (sr != null)
 										start = sr.Offset;
 
-									monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
+								monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region.FileName, start, derivedMember.Name.Length));
 								}
 							}
 					});

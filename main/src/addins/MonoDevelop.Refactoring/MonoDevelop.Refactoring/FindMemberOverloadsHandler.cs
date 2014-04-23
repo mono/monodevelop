@@ -68,7 +68,7 @@ namespace MonoDevelop.Refactoring
 					var sr = tf.SearchForward (start); 
 					if (sr != null)
 						start = sr.Offset;
-					monitor.ReportResult (new MemberReference (overloadedMember, overloadedMember.Region, start, overloadedMember.Name.Length));
+					monitor.ReportResult (new MemberReference (overloadedMember, overloadedMember.Region.FileName, start, overloadedMember.Name.Length));
 				}
 			}
 		}

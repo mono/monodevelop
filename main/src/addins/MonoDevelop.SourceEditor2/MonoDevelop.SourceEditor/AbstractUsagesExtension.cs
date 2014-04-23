@@ -99,15 +99,15 @@ namespace MonoDevelop.SourceEditor
 		public void ForceUpdate ()
 		{
 			RemoveTimer ();
-			DelayedTooltipShow ();
+			Task.Factory.StartNew (DelayedTooltipShow);
 		}
 
 		/// <summary>
 		/// Tries to resolve inside the current location inside tho document.
 		/// </summary>
 		/// <returns><c>true</c>, if resolve was successful, <c>false</c> otherwise.</returns>
-		/// <param name="resolveResult">The resolve result.</param>
-		protected abstract bool TryResolve(out T resolveResult);
+		/// <param name="token">A cancellation token to cancel the operation.</param>
+		protected abstract Task<T> ResolveAsync (CancellationToken token);
 
 		/// <summary>
 		/// Gets all references from a given resolve result. Note that this method is called on a background thread.
@@ -117,34 +117,26 @@ namespace MonoDevelop.SourceEditor
 		/// <param name="token">A cancellation token to cancel the operation.</param>
 		protected abstract IEnumerable<MemberReference> GetReferences (T resolveResult, CancellationToken token);
 
-		bool DelayedTooltipShow ()
+		async void DelayedTooltipShow ()
 		{
 			try {
-				T result;
-
-				if (!TryResolve(out result)) {
-					ClearQuickTasks ();
-					return false;
-				}
-
 				CancelTooltip ();
 				var token = tooltipCancelSrc.Token;
-				Task.Factory.StartNew (delegate {
-					var list = GetReferences (result, token).ToList ();
-					if (!token.IsCancellationRequested) {
-						Gtk.Application.Invoke (delegate {
-							if (!token.IsCancellationRequested)
-								ShowReferences (list);
-						});
-					}
-				});
-
+				T result = await ResolveAsync (token);
+				if (token.IsCancellationRequested)
+					return;
+				var list = GetReferences (result, token).ToList ();
+				if (!token.IsCancellationRequested) {
+					Gtk.Application.Invoke (delegate {
+						if (!token.IsCancellationRequested)
+							ShowReferences (list);
+					});
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Unhandled Exception in HighlightingUsagesExtension", e);
 			} finally {
 				popupTimer = 0;
 			}
-			return false;
 		}
 
 		void RemoveTimer ()
@@ -164,7 +156,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveMarkers ();
 			RemoveTimer ();
 			if (!TextEditorData.IsSomethingSelected)
-				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
+				popupTimer = GLib.Timeout.Add (1000, () => { DelayedTooltipShow (); return false; } );
 		}
 
 		void ClearQuickTasks ()
@@ -217,10 +209,11 @@ namespace MonoDevelop.SourceEditor
 					foreach (var r in references) {
 						if (r == null)
 							continue;
-						var marker = GetMarker (r.Region.BeginLine);
+						var loc = TextEditorData.OffsetToLocation (r.Offset);
+						var marker = GetMarker (loc.Line);
 
 						//usages.Add (new Usage (r.Region.Begin, r.ReferenceUsageType));
-						usages.Add (r.Region.Begin);
+						usages.Add (loc);
 
 						int offset = r.Offset;
 						int endOffset = offset + r.Length;
@@ -230,7 +223,7 @@ namespace MonoDevelop.SourceEditor
 						}
 						UsagesSegments.Add (new UsageSegment (r.ReferenceUsageType, offset, endOffset - offset));
 						marker.Usages.Add (new UsageSegment (r.ReferenceUsageType, offset, endOffset - offset));
-						lineNumbers.Add (r.Region.BeginLine);
+						lineNumbers.Add (loc.Line);
 					}
 				}
 				foreach (int line in lineNumbers)
