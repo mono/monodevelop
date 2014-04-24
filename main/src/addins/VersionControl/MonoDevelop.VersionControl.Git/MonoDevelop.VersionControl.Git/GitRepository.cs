@@ -745,8 +745,8 @@ namespace MonoDevelop.VersionControl.Git
 				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in CachedSubmodules)
-						submoduleUpdate.AddPath (submodule.Item1);
+					foreach (var submodule in UpdateSubmodules)
+						submoduleUpdate.AddPath (submodule);
 
 					submoduleUpdate.Call ();
 					monitor.Step (1);
