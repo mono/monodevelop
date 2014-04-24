@@ -53,27 +53,6 @@ namespace MonoDevelop.VersionControl.Views
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
 		
-		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
-			: base (Path.GetFileName (filepath) + " Log")
-		{
-			try {
-				this.vinfo = vc.GetVersionInfo (filepath, VersionInfoQueryFlags.IgnoreCache);
-			}
-			catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
-			}
-			
-			// Widget setup
-			VersionControlDocumentInfo info  =new VersionControlDocumentInfo (null, null, vc);
-			info.History = history;
-			info.VersionInfo = vinfo;
-			var lw = new LogWidget (info);
-			
-			widget = lw;
-			lw.History = history;
-		}
-
-		
 		public override Gtk.Widget Control { 
 			get {
 				if (widget == null)
