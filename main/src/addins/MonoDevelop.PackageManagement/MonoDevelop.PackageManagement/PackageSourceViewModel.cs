@@ -72,6 +72,11 @@ namespace ICSharpCode.PackageManagement
 			set { packageSource.Password = value; }
 		}
 
+		public bool HasPassword ()
+		{
+			return !String.IsNullOrEmpty (Password);
+		}
+
 		public bool IsValid { get; set; }
 		public string ValidationFailureMessage { get; set; }
 	}
