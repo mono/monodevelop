@@ -173,8 +173,8 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
-		Tuple<FilePath, NGit.Repository>[] cachedSubmodules = new Tuple<FilePath, NGit.Repository>[0];
-		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
+		NGit.Repository[] cachedSubmodules = new NGit.Repository[0];
+		NGit.Repository[] CachedSubmodules {
 			get {
 				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(Constants.DOT_GIT_MODULES));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
@@ -184,7 +184,7 @@ namespace MonoDevelop.VersionControl.Git
 						submoduleStatus.AddPath (submodule);
 
 					cachedSubmodules = submoduleStatus.Call ()
-						.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
+						.Select(s => SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key))
 						.ToArray ();
 				}
 				return cachedSubmodules;
@@ -199,10 +199,10 @@ namespace MonoDevelop.VersionControl.Git
 		IEnumerable<IGrouping<NGit.Repository, FilePath>> GroupByRepository (IEnumerable<FilePath> files)
 		{
 			var cache = CachedSubmodules;
-			return files.GroupBy (f => cache.Where (s => {
-					var fullPath = s.Item1.ToAbsolute (RootPath);
-					return f.IsChildPathOf (fullPath) || f.CanonicalPath == fullPath.CanonicalPath;
-				}).Select (s => s.Item2).FirstOrDefault () ?? RootRepository);
+			return files.GroupBy (f => cache.FirstOrDefault (s => {
+				var fullPath = s.WorkTree.ToString ();
+				return f.IsChildPathOf (fullPath) || f.FullPath == fullPath;
+			}) ?? RootRepository);
 		}
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
@@ -502,14 +502,14 @@ namespace MonoDevelop.VersionControl.Git
 			// Iterate submodules and do status.
 			// SubmoduleStatus does not report changes for dirty submodules.
 			foreach (var submodule in CachedSubmodules) {
-				var submoduleGit = new NGit.Api.Git (submodule.Item2);
+				var submoduleGit = new NGit.Api.Git (submodule);
 				var statusCommand = submoduleGit.Status ();
 				var status = statusCommand.Call ();
 
 				if (status.IsClean ())
-					updateSubmodules.Add (submodule.Item1);
+					updateSubmodules.Add (submodule.WorkTree);
 				else
-					dirtySubmodules.Add (submodule.Item1);
+					dirtySubmodules.Add (submodule.WorkTree);
 			}
 
 			if (dirtySubmodules.Count != 0) {
