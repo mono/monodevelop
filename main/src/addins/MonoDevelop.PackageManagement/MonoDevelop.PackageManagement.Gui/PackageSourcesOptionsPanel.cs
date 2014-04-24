@@ -27,7 +27,11 @@
 //
 
 using System;
+using System.Linq;
+using System.Security.Cryptography;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.PackageManagement.Gui
@@ -45,7 +49,76 @@ namespace MonoDevelop.PackageManagement.Gui
 			packageSourcesWidget = new PackageSourcesWidget (viewModels.RegisteredPackageSourcesViewModel);
 			return packageSourcesWidget;
 		}
-		
+
+		/// <summary>
+		/// Check that mono can encrypt package source passwords. This can fail if the
+		/// "~/.config/.mono/keypairs" directory has incorrect permissions.
+		/// 
+		/// The keypairs directory will be created by the HttpWebRequest when a 
+		/// request is made to url using https. The keypairs directory created has the
+		/// wrong permissions so NuGet will fail to encrypt any passwords.
+		/// 
+		/// Use the following to fix the permissions:
+		/// 
+		/// chmod u=rwx,go= keypairs
+		/// 
+		/// This check is done here instead of in ApplyChanges so the user is presented
+		/// with a slightly better error message and the user can try to fix the problem
+		/// without losing their changes.
+		/// </summary>
+		public override bool ValidateChanges ()
+		{
+			if (Platform.IsWindows) {
+				return true;
+			}
+
+			try {
+				if (AnyPasswordsToBeEncrypted ()) {
+					CheckPasswordEncryptionIsWorking ();
+				}
+			} catch (CryptographicException ex) {
+				LoggingService.LogError ("Unable to encrypt NuGet Package Source passwords.", ex);
+
+				MessageService.ShowMessage (
+					GettextCatalog.GetString ("Unable to encrypt Package Source passwords."),
+					GetEncryptionFailureMessage (ex));
+
+				return false;
+			}
+			return true;
+		}
+
+		bool AnyPasswordsToBeEncrypted ()
+		{
+			return viewModels
+				.RegisteredPackageSourcesViewModel
+				.PackageSourceViewModels
+				.Any (packageSource => packageSource.HasPassword ());
+		}
+
+		/// <summary>
+		/// Try encrypting some data the same way NuGet does when it 
+		/// encrypts passwords in the NuGet.config file.
+		/// 
+		/// If the ~/.config/.mono/keypairs directory 
+		/// has incorrect permissions or has a corrupt key value pair then
+		/// ProtectedData.Protect (...) will throw an exception.
+		/// </summary>
+		void CheckPasswordEncryptionIsWorking ()
+		{
+			var userData = new byte [] { 0xFF };
+			ProtectedData.Protect (userData, null, DataProtectionScope.CurrentUser);
+		}
+
+		string GetEncryptionFailureMessage (Exception ex)
+		{
+			if (ex.InnerException != null) {
+				return ex.InnerException.Message;
+			}
+
+			return ex.Message;
+		}
+
 		public override void ApplyChanges()
 		{
 			if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
