@@ -437,7 +437,13 @@ namespace MonoDevelop.Ide
 			Gtk.IconSource source = new Gtk.IconSource ();
 			Gtk.IconSource source2x = null;
 
-			source.Pixbuf = pixbuf;
+			if (Platform.IsWindows) {
+				var pixel_scale = Mono.TextEditor.GtkWorkarounds.GetPixelScale ();
+				source.Pixbuf = pixbuf.ScaleSimple ((int)(pixbuf.Width * pixel_scale), (int)(pixbuf.Height * pixel_scale), Gdk.InterpType.Bilinear);
+			} else {
+				source.Pixbuf = pixbuf;
+			}
+
 			source.Size = iconSize;
 			source.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
 
