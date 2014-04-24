@@ -52,7 +52,8 @@ namespace MonoDevelop.VersionControl.Views
 			if (WorkbenchWindow != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
-		
+
+		[Obsolete]
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
 			: base (Path.GetFileName (filepath) + " Log")
 		{
