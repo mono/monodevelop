@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.Refactoring;
 using GLib;
 using MonoDevelop.Components;
 using Gdk;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -137,21 +138,18 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		Gdk.Color GetColor (Severity severity)
+		Xwt.Drawing.Image GetIcon (Severity severity)
 		{
 			switch (severity) {
-			case Severity.None:
-				return Style.Base (StateType.Normal);
 			case Severity.Error:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
+				return QuickTaskOverviewMode.ErrorImage;
 			case Severity.Warning:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
+				return QuickTaskOverviewMode.WarningImage;
 			case Severity.Hint:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
 			case Severity.Suggestion:
-				return (Mono.TextEditor.HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
+				return QuickTaskOverviewMode.SuggestionImage;
 			default:
-				throw new ArgumentOutOfRangeException ();
+				return QuickTaskOverviewMode.OkImage;
 			}
 		}
 
@@ -205,7 +203,7 @@ namespace MonoDevelop.CodeIssues
 
 		class CustomCellRenderer : CellRendererCombo
 		{
-			public Gdk.Color Color {
+			public Xwt.Drawing.Image Icon {
 				get;
 				set;
 			}
@@ -215,15 +213,7 @@ namespace MonoDevelop.CodeIssues
 				int w = 10;
 				var newCellArea = new Gdk.Rectangle (cell_area.X + w, cell_area.Y, cell_area.Width - w, cell_area.Height);
 				using (var ctx = CairoHelper.Create (window)) {
-					var r = 4;
-					ctx.Arc (
-						cell_area.X + r, 
-						cell_area.Y + cell_area.Height / 2 + 1,
-						r,
-						0,
-						Math.PI * 2); 
-					ctx.SetSourceColor ((Mono.TextEditor.HslColor)Color); 
-					ctx.Fill ();
+					ctx.DrawImage (widget, Icon, cell_area.X - 4, cell_area.Y + (cell_area.Height - Icon.Height) / 2);
 				}
 
 				base.Render (window, widget, background_area, newCellArea, expose_area, flags);
@@ -334,7 +324,7 @@ namespace MonoDevelop.CodeIssues
 				var severity = severities[provider];
 				comboRenderer.Visible = true;
 				comboRenderer.Text = GetDescription (severity);
-				comboRenderer.Color = GetColor (severity);
+				comboRenderer.Icon = GetIcon (severity);
 			});
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
