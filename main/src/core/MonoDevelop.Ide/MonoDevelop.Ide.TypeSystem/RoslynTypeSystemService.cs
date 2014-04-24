@@ -361,7 +361,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class RoslynTypeSystemService
 	{
-		static MonoDevelopWorkspace workspace;
+		static MonoDevelopWorkspace workspace = new MonoDevelopWorkspace ("");
 
 		public static MonoDevelopWorkspace Workspace {
 			get {
