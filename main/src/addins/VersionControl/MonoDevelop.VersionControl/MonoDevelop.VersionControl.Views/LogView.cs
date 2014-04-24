@@ -25,37 +25,7 @@ namespace MonoDevelop.VersionControl.Views
 				return widget;
 			}
 		}
-		
-		class Worker : Task {
-			Repository vc;
-			string filepath;
-			bool isDirectory;
-			Revision since;
-			Revision [] history;
-						
-			public Worker (Repository vc, string filepath, bool isDirectory, Revision since) {
-				this.vc = vc;
-				this.filepath = filepath;
-				this.isDirectory = isDirectory;
-				this.since = since;
-			}
-			
-			protected override string GetDescription () {
-				return GettextCatalog.GetString ("Retrieving history for {0}...", Path.GetFileName (filepath));
-			}
-			
-			protected override void Run () {
-				history = vc.GetHistory (filepath, since);
-			}
-		
-			protected override void Finished() {
-				if (history == null)
-					return;
-				LogView d = new LogView (filepath, isDirectory, history, vc);
-				IdeApp.Workbench.OpenDocument (d, true);
-			}
-		}
-		
+
 		public static bool CanShow (VersionControlItemList items, Revision since)
 		{
 			return items.All (i => i.VersionInfo.CanLog);

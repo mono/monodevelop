@@ -208,7 +208,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
 			List<Revision> revs = new List<Revision> ();
-		
+
 			var repository = GetRepository (localFile);
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
