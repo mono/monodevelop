@@ -51,3 +51,4 @@
 [submodule "main/external/NRefactory6"]
 	path = main/external/NRefactory6
 	url = git@github.com:icsharpcode/NRefactory.git
+	branch = roslyn
