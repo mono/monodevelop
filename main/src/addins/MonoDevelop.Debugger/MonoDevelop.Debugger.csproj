@@ -62,6 +62,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="ICSharpCode.NRefactory6.CSharp">
       <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

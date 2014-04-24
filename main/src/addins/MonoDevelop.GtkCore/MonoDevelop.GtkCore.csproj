@@ -63,6 +63,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
