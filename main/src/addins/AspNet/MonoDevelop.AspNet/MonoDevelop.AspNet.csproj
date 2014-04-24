@@ -114,6 +114,11 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
+      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -142,7 +147,8 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

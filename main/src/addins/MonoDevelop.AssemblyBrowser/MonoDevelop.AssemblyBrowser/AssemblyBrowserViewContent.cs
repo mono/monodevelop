@@ -121,7 +121,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var member = widget.ActiveMember as IMember;
 			if (member == null)
 				return;
-			FindReferencesHandler.FindRefs (member);
+			// FindReferencesHandler.FindRefs (member);
 		}
 		
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]

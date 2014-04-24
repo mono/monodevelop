@@ -55,24 +55,26 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\external\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\rcsc\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.NRefactory6.CSharp.Refactoring">
-      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.Refactoring.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="ICSharpCode.NRefactory6.CSharp">
-      <HintPath>..\..\..\external\roslyn\bootstrap\ICSharpCode.NRefactory6.CSharp.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -243,6 +245,16 @@
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
+      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory6.CSharp.Refactoring.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

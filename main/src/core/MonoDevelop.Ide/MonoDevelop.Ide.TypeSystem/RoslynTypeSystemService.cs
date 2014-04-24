@@ -28,18 +28,23 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
-using Microsoft.CodeAnalysis.Composition;
 using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
 using Mono.TextEditor;
+using Microsoft.CodeAnalysis.Host.Mef;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public class MonoDevelopWorkspace : Workspace
 	{
-		readonly MetadataReferenceProvider referenceProvider = new MetadataReferenceProvider ();
+		readonly static MefHostServices services = MefHostServices.Create(new [] { 
+				typeof(MefHostServices).Assembly,
+				typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
+			});
+			
+		readonly MetadataFileReferenceProvider referenceProvider = new MetadataFileReferenceProvider ();
 
 		readonly string activeConfiguration;
 
@@ -49,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public MonoDevelopWorkspace (string activeConfiguration) : base (MonoDevelopWorkspaceFeatures.Features, "MonoDevelopWorkspace")
+		public MonoDevelopWorkspace (string activeConfiguration) : base (services, "MonoDevelopWorkspace")
 		{
 			this.activeConfiguration = activeConfiguration;
 			SetCurrentSolution (CreateSolution (SolutionId.CreateNewId ())); 
@@ -215,7 +220,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					                netProject.TargetFramework
 				                );
 				if (corLibRef != null) {
-					yield return referenceProvider.GetReference (corLibRef.Location);
+					yield return referenceProvider.GetReference (corLibRef.Location, MetadataReferenceProperties.Assembly);
 				}
 			}
 
@@ -226,7 +231,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					fileName = Path.GetFullPath (file);
 				}
-				yield return referenceProvider.GetReference (fileName);
+				yield return referenceProvider.GetReference (fileName, MetadataReferenceProperties.Assembly);
 			}
 		}
 
@@ -275,11 +280,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}
 		
-		internal override bool CanChangeActiveContextDocument {
-			get {
-				return true;
-			}
-		}
+//		internal override bool CanChangeActiveContextDocument {
+//			get {
+//				return true;
+//			}
+//		}
 
 		public void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, string filePath)
 		{
@@ -317,42 +322,42 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 
-	static class MonoDevelopWorkspaceFeatures
-	{
-		static FeaturePack pack;
-
-		public static FeaturePack Features {
-			get {
-				if (pack == null)
-					Interlocked.CompareExchange (ref pack, ComputePack (), null);
-				return pack;
-			}
-		}
-
-		static FeaturePack ComputePack ()
-		{
-			var assemblies = new List<Assembly> ();
-			var workspaceCoreAssembly = typeof(Workspace).Assembly;
-			assemblies.Add (workspaceCoreAssembly);
-
-			LoadAssembly (assemblies, "Microsoft.CodeAnalysis.CSharp.Workspaces");
-			//LoadAssembly (assemblies, "Microsoft.CodeAnalysis.VisualBasic.Workspaces");
-
-			var catalogs = assemblies.Select (a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog (a));
-
-			return new MefExportPack (catalogs);
-		}
-
-		static void LoadAssembly (List<Assembly> assemblies, string assemblyName)
-		{
-			try {
-				var loadedAssembly = Assembly.Load (assemblyName);
-				assemblies.Add (loadedAssembly);
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Couldn't load assembly:" + assemblyName, e);
-			}
-		}
-	}
+//	static class MonoDevelopWorkspaceFeatures
+//	{
+//		static FeaturePack pack;
+//
+//		public static FeaturePack Features {
+//			get {
+//				if (pack == null)
+//					Interlocked.CompareExchange (ref pack, ComputePack (), null);
+//				return pack;
+//			}
+//		}
+//
+//		static FeaturePack ComputePack ()
+//		{
+//			var assemblies = new List<Assembly> ();
+//			var workspaceCoreAssembly = typeof(Workspace).Assembly;
+//			assemblies.Add (workspaceCoreAssembly);
+//
+//			LoadAssembly (assemblies, "Microsoft.CodeAnalysis.CSharp.Workspaces");
+//			//LoadAssembly (assemblies, "Microsoft.CodeAnalysis.VisualBasic.Workspaces");
+//
+//			var catalogs = assemblies.Select (a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog (a));
+//
+//			return new MefExportPack (catalogs);
+//		}
+//
+//		static void LoadAssembly (List<Assembly> assemblies, string assemblyName)
+//		{
+//			try {
+//				var loadedAssembly = Assembly.Load (assemblyName);
+//				assemblies.Add (loadedAssembly);
+//			} catch (Exception e) {
+//				LoggingService.LogWarning ("Couldn't load assembly:" + assemblyName, e);
+//			}
+//		}
+//	}
 
 	public static class RoslynTypeSystemService
 	{
@@ -397,7 +402,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			var projectId = workspace.GetProjectId (project); 
-			return workspace.CurrentSolution.GetProject (projectId, cancellationToken);
+			return workspace.CurrentSolution.GetProject (projectId);
 		}
 
 		public static void UpdateDocument (Project project, FilePath fileName, string currentParseText)

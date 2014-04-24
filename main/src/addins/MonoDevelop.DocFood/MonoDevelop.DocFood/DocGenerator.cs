@@ -73,9 +73,10 @@ namespace MonoDevelop.DocFood
 					}
 				}
 				if (documentMember != null) {
-					string documentation = AmbienceService.GetDocumentation (documentMember);
-					if (documentation != null)
-						return documentation;
+// TODO: Roslyn port!
+//					string documentation = AmbienceService.GetDocumentation (documentMember);
+//					if (documentation != null)
+//						return documentation;
 				}
 			}
 			return null;

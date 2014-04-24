@@ -86,11 +86,11 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\external\roslyn\bootstrap\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\external\roslyn\bootstrap\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\rcsc\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

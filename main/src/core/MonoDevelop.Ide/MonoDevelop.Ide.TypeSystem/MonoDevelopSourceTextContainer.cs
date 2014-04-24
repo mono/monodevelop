@@ -28,7 +28,6 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
-using Microsoft.CodeAnalysis.Composition;
 using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;

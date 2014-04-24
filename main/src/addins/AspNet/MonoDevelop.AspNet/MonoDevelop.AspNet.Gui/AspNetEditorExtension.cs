@@ -471,9 +471,10 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//properties as children of controls
 			if (parentName.HasPrefix && childrenAsProperties) {
-				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
-					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
+// TODO: Roslyn port!	
+//				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
+//					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
+//						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
 				return;
 			}
 		}
@@ -613,18 +614,19 @@ namespace MonoDevelop.AspNet.Gui
 		void AddControlMembers (CompletionDataList list, IType controlClass, 
 		                        Dictionary<string, string> existingAtts)
 		{
-			//add atts only if they're not already in the tag
-			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
-				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
-			
-			//similarly add events
-			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
-				string eveName = "On" + eve.Name;
-				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetSummaryMarkup (eve));
-			}
+// TODO: Roslyn port!
+//			//add atts only if they're not already in the tag
+//			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
+//				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
+//				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
+//						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
+//			
+//			//similarly add events
+//			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
+//				string eveName = "On" + eve.Name;
+//				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
+//					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetSummaryMarkup (eve));
+//			}
 		}
 		
 		void AddAspAttributeValueCompletionData (CompletionDataList list, S.XName tagName, S.XName attName, string id)
@@ -720,13 +722,14 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				//enum completion
-				IType retCls = prop.ReturnType;
-				if (retCls != null && retCls.Kind == TypeKind.Enum) {
-					foreach (var enumVal in retCls.GetFields ())
-						if (enumVal.IsPublic && enumVal.IsStatic)
-							list.Add (enumVal.Name, "md-literal", AmbienceService.GetSummaryMarkup (enumVal));
-					return;
-				}
+// TODO: Roslyn port!
+//				IType retCls = prop.ReturnType;
+//				if (retCls != null && retCls.Kind == TypeKind.Enum) {
+//					foreach (var enumVal in retCls.GetFields ())
+//						if (enumVal.IsPublic && enumVal.IsStatic)
+//							list.Add (enumVal.Name, "md-literal", AmbienceService.GetSummaryMarkup (enumVal));
+//					return;
+//				}
 			}
 		}
 		

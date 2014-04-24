@@ -440,8 +440,9 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public override string Description {
 			get { 
-				if (base.Description == null && cls != null)
-					base.Description = AmbienceService.GetSummaryMarkup (cls.GetDefinition ());
+// TODO: Roslyn port!
+//				if (base.Description == null && cls != null)
+//					base.Description = AmbienceService.GetSummaryMarkup (cls.GetDefinition ());
 				return base.Description;
 			}
 			set { base.Description = value;	}
