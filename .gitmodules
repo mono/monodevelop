@@ -45,3 +45,9 @@
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
 	url = git://github.com/mono/nuget-binary.git
+[submodule "main/external/roslyn"]
+	path = main/external/roslyn
+	url = git@github.com:mono/roslyn.git
+[submodule "main/external/NRefactory6"]
+	path = main/external/NRefactory6
+	url = git@github.com:icsharpcode/NRefactory.git
