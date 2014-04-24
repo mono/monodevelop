@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 	}
 	
-	class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
+	public class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 
