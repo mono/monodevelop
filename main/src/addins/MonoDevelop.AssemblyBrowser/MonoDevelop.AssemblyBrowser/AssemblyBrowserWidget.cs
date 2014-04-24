@@ -314,7 +314,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var menuSet = new CommandEntrySet ();
 			menuSet.AddItem (EditCommands.SelectAll);
 			menuSet.AddItem (EditCommands.Copy);
-			IdeApp.CommandService.ShowContextMenu (menuSet, this);
+			IdeApp.CommandService.ShowContextMenu (this, args.Event, menuSet, this);
 		}
 
 		void SearchTreeviewhandleRowActivated (object o, RowActivatedArgs args)

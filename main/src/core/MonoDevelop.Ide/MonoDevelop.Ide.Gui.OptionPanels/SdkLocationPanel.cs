@@ -54,21 +54,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		/// </summary>
 		public abstract string Label { get; }
 
-		[Obsolete ("Use DefaultSdkLocations")]
-		public virtual FilePath DefaultSdkLocation {
-			get {
-				return FilePath.Null;
-			}
-		}
-
 		/// <summary>
 		/// The default SDK locations that will be searched if the value is blank.
 		/// </summary>
 		public virtual FilePath[] DefaultSdkLocations {
 			get {
-#pragma warning disable 618
-				return DefaultSdkLocation.IsNull? new FilePath[0] : new FilePath[] { DefaultSdkLocation };
-#pragma warning restore 618
+				return new FilePath[0];
 			}
 		}
 		

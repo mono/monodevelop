@@ -21,11 +21,9 @@
 			_label = "Add Web Reference"
 			icon = "md-webreference-item" />
 		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll"
-			_label = "Update Web References"
-			icon = "gtk-reload" />
+			_label = "Update Web References" />
 		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.Update"
-			_label = "Update Web Reference"
-			icon = "gtk-reload" />
+			_label = "Update Web Reference" />
 		<Command id = "MonoDevelop.WebReferences.WebReferenceCommands.DeleteAll"
 			_label = "Delete All"
 			icon = "gtk-delete" />

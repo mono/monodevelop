@@ -35,6 +35,10 @@
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
 	url = git://github.com/mono/guiunit.git
+[submodule "main/external/fsharpbinding"]
+	path = main/external/fsharpbinding
+	url = git://github.com/fsharp/fsharpbinding.git
+	branch = vnext
 [submodule "main/external/raygun4net"]
 	path = main/external/raygun4net
 	url = git://github.com/mono/raygun4net.git
@@ -48,6 +52,7 @@
 [submodule "main/external/roslyn"]
 	path = main/external/roslyn
 	url = git@github.com:mono/roslyn.git
+	branch = monodevelop
 [submodule "main/external/NRefactory6"]
 	path = main/external/NRefactory6
 	url = git@github.com:icsharpcode/NRefactory.git

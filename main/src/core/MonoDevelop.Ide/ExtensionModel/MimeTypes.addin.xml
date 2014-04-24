@@ -74,8 +74,9 @@
 		<File pattern="*.sh" />
 	</MimeType>
 	<MimeType id="text/x-fsharp" _description="f# files" isText="true">
-		<File pattern="*.fs" />
-		<File pattern="*.fsx" />
+		<File pattern="*.fs" icon="md-file-source" />
+		<File pattern="*.fsx" icon="md-file-source" />
+		<File pattern="*.fsi" icon="md-file-header" />
 	</MimeType>
 	<MimeType id="application/x-msbuild" _description="MSBuild targets file" baseType="application/xml">
 		<File pattern="*.targets" />

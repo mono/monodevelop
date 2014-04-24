@@ -270,6 +270,15 @@ namespace Microsoft.Samples.Debugging.Extensions
 			attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerHiddenAttribute));
 			if (attr != null)
 				attributes.Add (attr);
+			attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerStepThroughAttribute));
+			if (attr != null)
+				attributes.Add (attr);
+			attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerNonUserCodeAttribute));
+			if (attr != null)
+				attributes.Add (attr);
+			attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerStepperBoundaryAttribute));
+			if (attr != null)
+				attributes.Add (attr);
 
 			return attributes.Count == 0 ? emptyAttributes : attributes.ToArray ();
 		}

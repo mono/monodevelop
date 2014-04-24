@@ -14,6 +14,7 @@ using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
+using System.Linq;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -28,6 +29,8 @@ namespace MonoDevelop.Debugger.Win32
 		CorStepper stepper;
 		bool terminated;
 		bool evaluating;
+		bool autoStepInto;
+		bool stepInsideDebuggerHidden=false;
 		int processId;
 
 		static int evaluationTimestamp;
@@ -87,6 +90,20 @@ namespace MonoDevelop.Debugger.Win32
 
 			// There is no explicit way of disposing the metadata objects, so we have
 			// to rely on the GC to do it.
+
+			foreach (var module in modules.Values) {
+				var disposable = module.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
+
+			//Same readers are already disposed in previous loop but
+			//seems more proper to do it again
+			foreach (var doc in documents.Values) {
+				var disposable = doc.Reader as IDisposable;
+				if (disposable != null)
+					disposable.Dispose ();
+			}
 
 			modules = null;
 			documents = null;
@@ -228,6 +245,38 @@ namespace MonoDevelop.Debugger.Win32
 			OnTargetEvent (args);
 		}
 
+		bool StepThrough (MethodInfo methodInfo)
+		{
+			var m = methodInfo.GetCustomAttributes (true);
+			if (Options.ProjectAssembliesOnly) {
+				return methodInfo.GetCustomAttributes (true).Any (v => 
+					v is System.Diagnostics.DebuggerHiddenAttribute ||
+					v is System.Diagnostics.DebuggerStepThroughAttribute ||
+					v is System.Diagnostics.DebuggerNonUserCodeAttribute);
+			} else {
+				return methodInfo.GetCustomAttributes (true).Any (v => 
+					v is System.Diagnostics.DebuggerHiddenAttribute ||
+					v is System.Diagnostics.DebuggerStepThroughAttribute);
+			}
+		}
+
+		bool ContinueOnStepIn(MethodInfo methodInfo)
+		{
+			return methodInfo.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerStepperBoundaryAttribute);
+		}
+
+		static bool IsPropertyOrOperatorMethod (MethodInfo method)
+		{
+			if (method == null)
+				return false;
+			string name = method.Name;
+
+			return method.IsSpecialName &&
+			(name.StartsWith ("get_", StringComparison.Ordinal) ||
+			name.StartsWith ("set_", StringComparison.Ordinal) ||
+			name.StartsWith ("op_", StringComparison.Ordinal));
+		}
+
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
 		{
 			lock (debugLock) {
@@ -236,6 +285,64 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
+
+			bool localAutoStepInto = autoStepInto;
+			autoStepInto = false;
+			bool localStepInsideDebuggerHidden = stepInsideDebuggerHidden;
+			stepInsideDebuggerHidden = false;
+
+			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+				e.Continue = true;
+				return;
+			}
+
+			if (localAutoStepInto) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
+			if (ContinueOnStepIn (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+				e.Continue = true;
+				return;
+			}
+
+			var currentSequence = CorBacktrace.GetSequencePoint (this, e.Thread.ActiveFrame);
+			if (currentSequence == null) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			if (StepThrough (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+				stepInsideDebuggerHidden = e.StepReason == CorDebugStepReason.STEP_CALL;
+				RawContinue (true, true);
+				e.Continue = true;
+				return;
+			}
+
+			if (Options.StepOverPropertiesAndOperators &&
+			    IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this)) &&
+				e.StepReason == CorDebugStepReason.STEP_CALL) {
+				stepper.StepOut ();
+				autoStepInto = true;
+				e.Continue = true;
+				return;
+			}
+
+			if (currentSequence.IsSpecial) {
+				Step (false);
+				e.Continue = true;
+				return;
+			}
+
+			if (localStepInsideDebuggerHidden && e.StepReason == CorDebugStepReason.STEP_RETURN) {
+				Step (true);
+				e.Continue = true;
+				return;
+			}
+
 			OnStopped ();
 			e.Continue = false;
 			SetActiveThread (e.Thread);
@@ -270,7 +377,7 @@ namespace MonoDevelop.Debugger.Win32
 				binfo.IncrementHitCount();
 				if (!binfo.HitCountReached)
 					return;
-				
+
 				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
 					if (bp.BreakIfConditionChanges) {
@@ -295,12 +402,18 @@ namespace MonoDevelop.Debugger.Win32
 					}
 				}
 			}
-			
+
+			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+				e.Continue = true;
+				return;
+			}
+
 			OnStopped ();
 			e.Continue = false;
 			// If a breakpoint is hit while stepping, cancel the stepping operation
 			if (stepper != null && stepper.IsActive ())
 				stepper.Deactivate ();
+			autoStepInto = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint);
 			args.Process = GetProcess (process);
@@ -323,6 +436,9 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolDocument doc in reader.GetDocuments ()) {
 				Console.WriteLine (doc.URL);
 			}
+			var disposable = reader as IDisposable;
+			if (disposable != null)
+				disposable.Dispose ();
 			e.Continue = true;
 		}
 
@@ -333,6 +449,7 @@ namespace MonoDevelop.Debugger.Win32
 			// If the main thread stopped, terminate the debugger session
 			if (e.Process.Id == process.Id) {
 				lock (terminateLock) {
+					process.Dispose ();
 					process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{
@@ -492,7 +609,7 @@ namespace MonoDevelop.Debugger.Win32
 				// If an exception is thrown while stepping, cancel the stepping operation
 				if (stepper != null && stepper.IsActive ())
 					stepper.Deactivate ();
-
+				autoStepInto = false;
 				SetActiveThread (e.Thread);
 				
 				args.Process = GetProcess (process);
@@ -501,7 +618,13 @@ namespace MonoDevelop.Debugger.Win32
 				OnTargetEvent (args);	
 			}
 		}
-		
+
+		public bool IsExternalCode (string fileName)
+		{
+			return string.IsNullOrWhiteSpace (fileName)
+			|| !documents.ContainsKey (fileName);
+		}
+
 		private bool IsCatchpoint (CorException2EventArgs e)
 		{
 			// Build up the exception type hierachy
@@ -748,7 +871,6 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			try {
 				if (stepper != null) {
-					stepper.IsActive ();
 					CorFrame frame = activeThread.ActiveFrame;
 					ISymbolReader reader = GetReaderForModule (frame.Function.Module.Name);
 					if (reader == null) {
@@ -765,30 +887,23 @@ namespace MonoDevelop.Debugger.Win32
 					CorDebugMappingResult mappingResult;
 					frame.GetIP (out offset, out mappingResult);
 
-					// Find the current line
-					SequencePoint currentSeq = null;
-					foreach (SequencePoint sp in met.GetSequencePoints ()) {
-						if (sp.Offset > offset)
-							break;
-						currentSeq = sp;
-					}
-
-					if (currentSeq == null) {
-						RawContinue (into);
-						return;
-					}
-
 					// Exclude all ranges belonging to the current line
 					List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
-					SequencePoint lastSeq = null;
-					foreach (SequencePoint sp in met.GetSequencePoints ()) {
-						if (lastSeq != null && lastSeq.Line == currentSeq.Line) {
-							COR_DEBUG_STEP_RANGE r = new COR_DEBUG_STEP_RANGE ();
-							r.startOffset = (uint) lastSeq.Offset;
-							r.endOffset = (uint) sp.Offset;
+					var sequencePoints = met.GetSequencePoints ().ToArray ();
+					for (int i = 0; i < sequencePoints.Length; i++) {
+						if (sequencePoints [i].Offset > offset) {
+							var r = new COR_DEBUG_STEP_RANGE ();
+							r.startOffset = i == 0 ? 0 : (uint)sequencePoints [i - 1].Offset;
+							r.endOffset = (uint)sequencePoints [i].Offset;
 							ranges.Add (r);
+							break;
 						}
-						lastSeq = sp;
+					}
+					if (ranges.Count == 0 && sequencePoints.Length > 0) {
+						var r = new COR_DEBUG_STEP_RANGE ();
+						r.startOffset = (uint)sequencePoints [sequencePoints.Length - 1].Offset;
+						r.endOffset = uint.MaxValue;
+						ranges.Add (r);
 					}
 
 					stepper.StepRange (into, ranges.ToArray ());
@@ -802,9 +917,12 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		private void RawContinue (bool into)
+		private void RawContinue (bool into, bool stepOverAll = false)
 		{
-			stepper.Step (into);
+			if (stepOverAll)
+				stepper.StepRange (into, new[]{ new COR_DEBUG_STEP_RANGE (){ startOffset = 0, endOffset = uint.MaxValue } });
+			else
+				stepper.Step (into);
 			ClearEvalStatus ();
 			process.Continue (false);
 		}
@@ -830,6 +948,8 @@ namespace MonoDevelop.Debugger.Win32
 			MtaThread.Run (delegate
 			{
 				activeThread = null;
+				if (stepper != null && stepper.IsActive ())
+					stepper.Deactivate ();
 				stepper = null;
 				foreach (CorThread t in process.Threads) {
 					if (t.Id == threadId) {
@@ -843,6 +963,9 @@ namespace MonoDevelop.Debugger.Win32
 		void SetActiveThread (CorThread t)
 		{
 			activeThread = t;
+			if (stepper != null && stepper.IsActive ()) {
+				stepper.Deactivate ();
+			}
 			stepper = activeThread.CreateStepper (); 
 			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
 			stepper.SetJmcStatus (true);
@@ -1234,7 +1357,9 @@ namespace MonoDevelop.Debugger.Win32
 	class SequencePoint
 	{
 		public int Line;
+		public int Column;
 		public int Offset;
+		public bool IsSpecial;
 		public ISymbolDocument Document;
 	}
 
@@ -1252,11 +1377,10 @@ namespace MonoDevelop.Debugger.Win32
 			met.GetSequencePoints (offsets, docs, lines, columns, endLines, endColumns);
 
 			for (int n = 0; n < sc; n++) {
-				if (columns[n] == 0)
-					continue;
 				SequencePoint sp = new SequencePoint ();
 				sp.Document = docs[n];
 				sp.Line = lines[n];
+				sp.Column = columns[n];
 				sp.Offset = offsets[n];
 				yield return sp;
 			}

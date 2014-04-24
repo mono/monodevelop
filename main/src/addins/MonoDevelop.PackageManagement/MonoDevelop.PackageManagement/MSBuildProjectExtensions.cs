@@ -77,13 +77,13 @@ namespace ICSharpCode.PackageManagement
 				return project.AddImportElementAtTop (importedProjectFile);
 			}
 			XmlElement import = project.CreateImportElement (importedProjectFile);
-			project.doc.DocumentElement.AppendChild (import);
+			project.Document.DocumentElement.AppendChild (import);
 			return import;
 		}
 		
 		static XmlElement CreateImportElement(this MSBuildProject project, string importedProjectFile)
 		{
-			XmlElement import = project.doc.CreateElement ("Import", MSBuildProject.Schema);
+			XmlElement import = project.Document.CreateElement ("Import", MSBuildProject.Schema);
 			import.SetAttribute ("Project", importedProjectFile);
 			return import;
 		}
@@ -91,7 +91,7 @@ namespace ICSharpCode.PackageManagement
 		static XmlElement AddImportElementAtTop (this MSBuildProject project, string importedProjectFile)
 		{
 			XmlElement import = project.CreateImportElement (importedProjectFile);
-			XmlElement projectRoot = project.doc.DocumentElement;
+			XmlElement projectRoot = project.Document.DocumentElement;
 			projectRoot.InsertBefore (import, projectRoot.FirstChild);
 			return import;
 		}
@@ -118,7 +118,7 @@ namespace ICSharpCode.PackageManagement
 		
 		static IEnumerable <XmlElement> Imports (this MSBuildProject project)
 		{
-			foreach (XmlElement import in project.doc.DocumentElement.SelectNodes ("tns:Import", namespaceManager)) {
+			foreach (XmlElement import in project.Document.DocumentElement.SelectNodes ("tns:Import", namespaceManager)) {
 				yield return import;
 			}
 		}

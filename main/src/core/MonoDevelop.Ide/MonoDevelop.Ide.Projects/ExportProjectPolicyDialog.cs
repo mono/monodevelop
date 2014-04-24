@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Projects
 			UpdateWidgets ();
 		}
 
-		protected void OnButtonOkClicked (object sender, System.EventArgs e)
+		protected void OnButtonOkClicked (object sender, EventArgs e)
 		{
 			if (radioCustom.Active) {
 				if (entryName.Text.Length == 0) {

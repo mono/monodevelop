@@ -36,11 +36,18 @@ using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
+using Xwt.Drawing;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public class QuickTaskOverviewMode : DrawingArea
 	{
+		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-light-16.png");
+		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-light-16.png");
+		static Xwt.Drawing.Image warningImage = Xwt.Drawing.Image.FromResource ("issues-warning-light-16.png");
+		static Xwt.Drawing.Image errorImage = Xwt.Drawing.Image.FromResource ("issues-error-light-16.png");
+		static Xwt.Drawing.Image suggestionImage = Xwt.Drawing.Image.FromResource ("issues-suggestion-light-16.png");
+
 		//TODO: find a way to look these up from the theme
 		static readonly Cairo.Color win81Background = new Cairo.Color (240/255d, 240/255d, 240/255d);
 		static readonly Cairo.Color win81Slider = new Cairo.Color (205/255d, 205/255d, 205/255d);
@@ -65,7 +72,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		public IEnumerable<TextLocation> AllUsages {
+		public IEnumerable<Usage> AllUsages {
 			get {
 				return parentStrip.AllUsages;
 			}
@@ -543,55 +550,34 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			Mono.TextEditor.Highlighting.AmbientColor color;
+			Xwt.Drawing.Image image;
 			switch (severity) {
 			case Severity.Error:
-				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusErrorsIcon;
+				image = errorImage;
 				break;
 			case Severity.Warning:
-				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusWarningsIcon;
+				image = warningImage;
 				break;
 			case Severity.Suggestion:
 			case Severity.Hint:
-				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusSuggestionsIcon;
+				image = suggestionImage;
 				break;
 			default:
-				color = parentStrip.TextEditor.ColorStyle.AnalysisStatusAllGoodIcon;
+				image = okImage;
 				break;
 			}
 
-			DrawIndicator (cr, color.Color, color.BorderColor);
+			DrawIndicator (cr, image);
 		}
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
 		{
-			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.Color;
-			darkColor.L *= 0.5;
-			DrawIndicator (cr, TextEditor.ColorStyle.SearchResultMain.Color, darkColor);
+			DrawIndicator (cr, searchImage);
 		}
 
-		void DrawIndicator (Cairo.Context cr, Cairo.Color color, Cairo.Color borderColor)
+		void DrawIndicator (Cairo.Context cr, Xwt.Drawing.Image img)
 		{
-			const int indicatorPadding = 3;
-			const int indicatorDiameter = 8;
-			var x1 = Allocation.Width / 2d;
-			var y1 = indicatorPadding + indicatorDiameter / 2d;
-
-			cr.Arc (x1, y1 + 1, indicatorDiameter / 2d, 0, 2 * Math.PI);
-			cr.SetSourceRGBA (0, 0, 0, 0.2);
-			cr.Fill ();
-
-			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
-			cr.SetSourceColor (color);
-			cr.Fill ();
-
-			cr.Arc (x1, y1, indicatorDiameter / 2d - 1, 0, 2 * Math.PI);
-			cr.SetSourceRGBA (1, 1, 1, 0.1);
-			cr.Stroke ();
-
-			cr.Arc (x1, y1, indicatorDiameter / 2d, 0, 2 * Math.PI);
-			cr.SetSourceColor (borderColor);
-			cr.Stroke ();
+			cr.DrawImage (this, img, Math.Round ((Allocation.Width - img.Width) / 2), -1);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -643,19 +629,29 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
 			Severity severity = Severity.None;
-			/*
+
 			foreach (var usage in AllUsages) {
-				double y = GetYPosition (usage.Line);
+				double y = GetYPosition (usage.Location.Line);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
-				cr.Color = usageColor;
+				HslColor color;
+				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
+					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
+				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0) {
+					color = TextEditor.ColorStyle.UsagesRectangle.Color;
+				} else {
+					color = usageColor;
+				}
+				color.L = 0.5;
+				cr.Color = color;
 				cr.MoveTo (0, y - 3);
 				cr.LineTo (5, y);
 				cr.LineTo (0, y + 3);
+				cr.LineTo (0, y - 3);
 				cr.ClosePath ();
 				cr.Fill ();
 			}
-*/
+
 			foreach (var task in AllTasks) {
 				double y = GetYPosition (TextEditor.OffsetToLineNumber (task.Location));
 

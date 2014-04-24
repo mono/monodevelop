@@ -39,7 +39,7 @@ namespace Mono.TextEditor.Tests
 			if (Platform.IsWindows)
 				Assert.Inconclusive ();
 			var data = Create ("class Foo {}");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedHtml = HtmlWriter.GenerateHtml (data);
 			Assert.AreEqual (
@@ -51,7 +51,7 @@ namespace Mono.TextEditor.Tests
 </HEAD>
 <BODY>
 <FONT face = 'Mono'>
-<SPAN style='color:#009695;'>class</SPAN><SPAN style='color:#444444;'>&nbsp;Foo&nbsp;</SPAN><SPAN style='color:#444444;'>{}</SPAN></FONT>
+<SPAN style='color:#3364a4;'>class</SPAN><SPAN style='color:#000000;'>&nbsp;Foo&nbsp;</SPAN><SPAN style='color:#000000;'>{}</SPAN></FONT>
 </BODY></HTML>
 ", generatedHtml);
 		}
@@ -66,10 +66,9 @@ namespace Mono.TextEditor.Tests
 	attr1 = ""1""
 	attr2 = ""2""
 />");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("Tango");
 			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
 			string generatedHtml = HtmlWriter.GenerateHtml (data);
-			Console.WriteLine (generatedHtml);
 			Assert.AreEqual (
 				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <HTML>
@@ -79,10 +78,10 @@ namespace Mono.TextEditor.Tests
 </HEAD>
 <BODY>
 <FONT face = 'Mono'>
-<SPAN style='color:#444444;'>&lt;</SPAN><SPAN style='color:#3364a4;'>foo</SPAN><BR>
-<SPAN style='color:#3364a4;'>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style='color:#444444;'>attr1</SPAN><SPAN style='color:#444444;'>&nbsp;=</SPAN><SPAN style='color:#3364a4;'>&nbsp;</SPAN><SPAN style='color:#f57d00;'>&quot;</SPAN><SPAN style='color:#f57d00;'>1</SPAN><SPAN style='color:#f57d00;'>&quot;</SPAN><BR>
-<SPAN style='color:#3364a4;'>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style='color:#444444;'>attr2</SPAN><SPAN style='color:#444444;'>&nbsp;=</SPAN><SPAN style='color:#3364a4;'>&nbsp;</SPAN><SPAN style='color:#f57d00;'>&quot;</SPAN><SPAN style='color:#f57d00;'>2</SPAN><SPAN style='color:#f57d00;'>&quot;</SPAN><BR>
-<SPAN style='color:#444444;'>/</SPAN><SPAN style='color:#444444;'>&gt;</SPAN></FONT>
+<SPAN style='color:#000000;'>&lt;</SPAN><SPAN style='color:#204987;'>foo</SPAN><BR>
+<SPAN style='color:#204987;'>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style='color:#f57800;'>attr1</SPAN><SPAN style='color:#000000;'>&nbsp;=</SPAN><SPAN style='color:#204987;'>&nbsp;</SPAN><SPAN style='color:#a40000;'>&quot;</SPAN><SPAN style='color:#a40000;'>1</SPAN><SPAN style='color:#a40000;'>&quot;</SPAN><BR>
+<SPAN style='color:#204987;'>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style='color:#f57800;'>attr2</SPAN><SPAN style='color:#000000;'>&nbsp;=</SPAN><SPAN style='color:#204987;'>&nbsp;</SPAN><SPAN style='color:#a40000;'>&quot;</SPAN><SPAN style='color:#a40000;'>2</SPAN><SPAN style='color:#a40000;'>&quot;</SPAN><BR>
+<SPAN style='color:#000000;'>/</SPAN><SPAN style='color:#000000;'>&gt;</SPAN></FONT>
 </BODY></HTML>
 "
 , generatedHtml);

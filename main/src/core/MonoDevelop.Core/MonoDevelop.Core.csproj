@@ -94,7 +94,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.Core.Web\Utility.cs" />
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
     <Compile Include="MonoDevelop.Core\UserException.cs" />
     <Compile Include="MonoDevelop.Core\Runtime.cs" />
@@ -450,19 +449,24 @@
     <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
     <Compile Include="BuildVariables.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.Core.Web\CredentialStore.cs" />
-    <Compile Include="MonoDevelop.Core.Web\CredentialType.cs" />
-    <Compile Include="MonoDevelop.Core.Web\ICredentialCache.cs" />
     <Compile Include="MonoDevelop.Core.Web\ICredentialProvider.cs" />
-    <Compile Include="MonoDevelop.Core.Web\IProxyCache.cs" />
-    <Compile Include="MonoDevelop.Core.Web\ProxyCache.cs" />
-    <Compile Include="MonoDevelop.Core.Web\RequestHelper.cs" />
-    <Compile Include="MonoDevelop.Core.Web\IHttpWebResponse.cs" />
-    <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
-    <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProject.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildExtension.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildHandler.cs" />
+    <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectBinding.cs" />
+    <Compile Include="MonoDevelop.Core\WebRequestHelper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialsUtility.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IProxyAuthenticationHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialType.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialStore.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
+    <Compile Include="MonoDevelop.Core.Web\MonoAddinsProxyWrapper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ProxyCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -500,11 +504,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-    <MakeDir Directories="$(OutputPath)" />
-    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
-    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
-  </Target>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
@@ -567,10 +566,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Core.Web\" />
+    <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
   </ItemGroup>
-  <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; ..\..\..\..\version.config" Outputs="BuildVariables.cs">
+  <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
+    <MakeDir Directories="$(OutputPath)" />
+    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
   </Target>
 </Project>

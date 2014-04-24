@@ -592,12 +592,6 @@ namespace MonoDevelop.Ide.Gui
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
 
-		[Obsolete("Will be replaced by 'ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)'")]
-		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
-		{
-			ShowGlobalPreferencesDialog (parentWindow, panelId, null);
-		}
-
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
 			if (parentWindow == null)
@@ -833,12 +827,12 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			
-			if (origName.StartsWith ("file://"))
+			if (origName.StartsWith ("file://", StringComparison.Ordinal))
 				fileName = new Uri (origName).LocalPath;
 			else
 				fileName = origName;
 			
-			if (!origName.StartsWith ("http://"))
+			if (!origName.StartsWith ("http://", StringComparison.Ordinal))
 				fileName = fileName.FullPath;
 			
 			//Debug.Assert(FileService.IsValidPath(fileName));
@@ -848,9 +842,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// test, if file fileName exists
-			if (!origName.StartsWith("http://")) {
+			if (!origName.StartsWith ("http://", StringComparison.Ordinal)) {
 				// test, if an untitled file should be opened
-				if (!System.IO.Path.IsPathRooted(origName)) {
+				if (!Path.IsPathRooted(origName)) {
 					foreach (Document doc in Documents) {
 						if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
 							doc.Select ();
@@ -875,17 +869,18 @@ namespace MonoDevelop.Ide.Gui
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
 			} else {
-				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).Where (d => d.CanUseAsDefault);
+				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).ToList ();
 				if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
-					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
+					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault (d => d.CanUseAsDefault)
+						?? bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
 					viewBinding = (IViewDisplayBinding) binding;
 				}
 				else if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyExternalViewer)) {
-					binding = bindings.OfType<IExternalDisplayBinding>().FirstOrDefault ();
+					binding = bindings.OfType<IExternalDisplayBinding>().FirstOrDefault (d => d.CanUseAsDefault);
 					viewBinding = null;
 				}
 				else {
-					binding = bindings.FirstOrDefault ();
+					binding = bindings.FirstOrDefault (d => d.CanUseAsDefault);
 					viewBinding = binding as IViewDisplayBinding;
 				}
 			}
@@ -1363,6 +1358,7 @@ namespace MonoDevelop.Ide.Gui
 		TryToReuseViewer = 1 << 5,
 		
 		Default = BringToFront | CenterCaretLine | HighlightCaretLine | TryToReuseViewer,
-		Debugger = BringToFront | CenterCaretLine | TryToReuseViewer
+		Debugger = BringToFront | CenterCaretLine | TryToReuseViewer,
+		DefaultInternal = Default | OnlyInternalViewer,
 	}
 }

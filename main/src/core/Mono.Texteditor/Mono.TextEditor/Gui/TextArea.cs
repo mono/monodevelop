@@ -1,5 +1,5 @@
 //
-// TextEditor.cs
+// TextArea.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -199,8 +199,8 @@ namespace Mono.TextEditor
 			HideTooltip (false);
 			double value = this.textEditorData.HAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.HAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.HAdjustment.Value = value;
 			}
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
@@ -223,8 +223,8 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			double value = this.textEditorData.VAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.VAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.VAdjustment.Value = value;
 			}
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
@@ -797,24 +797,6 @@ namespace Mono.TextEditor
 			longestLine = null;
 
 			base.OnDestroyed ();
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void ClearTooltipProviders ()
-		{
-			textEditorData.ClearTooltipProviders ();
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void AddTooltipProvider (TooltipProvider provider)
-		{
-			textEditorData.AddTooltipProvider (provider);
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void RemoveTooltipProvider (TooltipProvider provider)
-		{
-			textEditorData.RemoveTooltipProvider (provider);
 		}
 
 		public void RedrawMargin (Margin margin)
@@ -2644,11 +2626,6 @@ namespace Mono.TextEditor
 		#endregion
 	
 		#region Tooltips
-		[Obsolete("This property has been moved to TextEditorData.  Will be removed in future versions.")]
-		public IEnumerable<TooltipProvider> TooltipProviders {
-			get { return textEditorData.TooltipProviders; }
-		}
-
 		// Tooltip fields
 		const int TooltipTimeout = 650;
 		TooltipItem tipItem;
@@ -2800,6 +2777,7 @@ namespace Mono.TextEditor
 				}
 				tipWindow.Destroy ();
 				tipWindow = null;
+				tipItem = null;
 			}
 		}
 		

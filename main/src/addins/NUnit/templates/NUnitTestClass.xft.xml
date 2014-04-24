@@ -5,7 +5,7 @@
 		<_Name>Test Fixture</_Name>
 		<Icon>md-file-unit-test</Icon>
 		<_Category>NUnit</_Category>
-		<LanguageName>*</LanguageName>
+		<LanguageName>C#,VBNet</LanguageName>
 		<_Description>Creates a Test Fixture.</_Description>
 		<DefaultFilename>NUnitTestClass</DefaultFilename>
 	</TemplateConfiguration>

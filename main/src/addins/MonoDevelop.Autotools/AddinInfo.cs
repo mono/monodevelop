@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("Autotools", 
         Namespace = "MonoDevelop",
         Version = MonoDevelop.BuildInfo.Version,
+        EnabledByDefault = false,
         Category = "Project Import and Export")]
 
 [assembly:AddinName ("Makefile generation")]

@@ -19,6 +19,17 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
 
     [
         ComImport,
+        Guid("969708D2-05E5-4861-A3B0-96E473CDF63F"),
+        InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
+        ComVisible(false)
+    ]
+    public interface ISymUnmanagedDispose
+    {
+        int Destroy();
+    }
+
+    [
+        ComImport,
         Guid("B4CE6286-2A6B-3712-A3B7-1EE1DAD467B5"),
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
         ComVisible(false)
@@ -158,7 +169,9 @@ namespace Microsoft.Samples.Debugging.CorSymbolStore
 
         public void Dispose()
         {
-            // Release our unmanaged resources
+            var disposable = m_reader as ISymUnmanagedDispose;
+            if (disposable != null)
+                disposable.Destroy();
             m_reader = null;
         }
 

@@ -158,7 +158,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 	class AssemblyBrowserNavigationPoint : NavigationPoint
 	{
-		Document DoShow ()
+		static Document DoShow ()
 		{
 			foreach (var view in Ide.IdeApp.Workbench.Documents) {
 				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
@@ -175,11 +175,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		#region implemented abstract members of NavigationPoint
-
-		public override void Show ()
-		{
-			DoShow ();
-		}
 
 		public override Document ShowDocument ()
 		{

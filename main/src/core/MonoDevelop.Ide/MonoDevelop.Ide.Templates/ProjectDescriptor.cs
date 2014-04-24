@@ -165,8 +165,10 @@ namespace MonoDevelop.Ide.Templates
 					projectFile.BuildAction = BuildAction.EmbeddedResource;
 					project.Files.Add (projectFile);
 				} catch (Exception ex) {
+					if (!IdeApp.IsInitialized)
+						throw;
+					LoggingService.LogError (string.Format ("File {0} could not be written.", resourceTemplate.Name), ex);
 					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name));
-					LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name), ex);
 				}
 			}
 
@@ -174,8 +176,10 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
 				} catch (Exception ex) {
+					if (!IdeApp.IsInitialized)
+						throw;
+					LoggingService.LogError (string.Format ("File {0} could not be written.", fileTemplate.Name), ex);
 					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name));
-					LoggingService.LogError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
 				}
 			}
 		}

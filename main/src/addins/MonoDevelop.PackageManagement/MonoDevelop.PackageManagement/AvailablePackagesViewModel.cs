@@ -59,6 +59,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				repository = RegisteredPackageRepositories.ActiveRepository;
 			} catch (Exception ex) {
+				repository = null;
 				errorMessage = ex.Message;
 			}
 		}

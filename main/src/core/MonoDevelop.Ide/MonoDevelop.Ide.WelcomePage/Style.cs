@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static class WelcomeScreen
 		{
 			public const string FontFamilyMac = "Lucida Grande";
-			public const string FontFamilyWindows = "Calibri";
+			public const string FontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 			public const int VerticalPadding = 24;
 			public const int HorizontalPadding = 50;
 			public const string BackgroundTile = "./images/tiny_grid.png";
@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			public static class Pad
 			{
 				public const string TitleFontFamilyMac = "Lucida Grande";
-				public const string TitleFontFamilyWindows = "Calibri";
+				public const string TitleFontFamilyWindows = "Calibri"; // TODO: VV: "Segoe UI"
 				public const int Padding = 20;
 				public const string BackgroundColor = "#FFF";
 				public const string BorderColor = "#CCC";
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				public const string SmallTitleColor = "#777777";
 				public const int SmallTitleFontSize = 13;
 				public const int SummaryFontSize = 12;
-				public const string SummaryFontFamily = "Arial";
+				public const string SummaryFontFamily = "Arial"; // TODO: VV: "Segoe UI"
 				public const int SummaryLineHeight = 19;
 				public const int SummaryParagraphMarginTop = 8;
 

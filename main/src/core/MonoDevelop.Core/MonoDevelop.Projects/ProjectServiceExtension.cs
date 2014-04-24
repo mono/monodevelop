@@ -54,7 +54,15 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public virtual object GetService (IBuildTarget item, Type type)
+		public virtual object GetService (SolutionItem item, Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return GetNext (item).GetService (item, type);
+		}
+
+		public virtual object GetService (WorkspaceItem item, Type type)
 		{
 			if (type.IsInstanceOfType (this))
 				return this;
@@ -120,6 +128,34 @@ namespace MonoDevelop.Projects
 				return GetNext (item).RunTarget (monitor, item, target, configuration);
 		}
 		
+		public virtual bool SupportsTarget (IBuildTarget item, string target)
+		{
+			if (item is SolutionEntityItem)
+				return SupportsTarget ((SolutionEntityItem)item, target);
+			else if (item is WorkspaceItem)
+				return SupportsTarget ((WorkspaceItem) item, target);
+			else 
+				return GetNext (item).SupportsTarget (item, target);
+		}
+
+		protected virtual bool SupportsTarget (SolutionEntityItem item, string target)
+		{
+			return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
+		}
+
+		protected virtual bool SupportsTarget (Solution solution, string target)
+		{
+			return GetNext (solution).SupportsTarget ((IBuildTarget) solution, target);
+		}
+
+		protected virtual bool SupportsTarget (WorkspaceItem item, string target)
+		{
+			if (item is Solution)
+				return SupportsTarget ((Solution) item, target);
+			else
+				return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
+		}
+
 		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
@@ -173,7 +209,7 @@ namespace MonoDevelop.Projects
 		{
 			return GetNext (solution).RunTarget (monitor, solution, ProjectService.BuildTarget, configuration);
 		}
-		
+
 		public virtual void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)
@@ -360,6 +396,11 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
+		public bool SupportsTarget (string target)
+		{
+			return false;
+		}
+
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;

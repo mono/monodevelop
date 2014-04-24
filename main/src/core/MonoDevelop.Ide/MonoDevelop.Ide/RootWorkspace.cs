@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide
 		{
 			BuildResult result = null;
 			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
-			foreach (WorkspaceItem it in items) {
+			foreach (WorkspaceItem it in items.Where (i => i.SupportsTarget (target))) {
 				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
@@ -356,6 +356,15 @@ namespace MonoDevelop.Ide
 				}
 			}
 			return result;
+		}
+
+		bool IBuildTarget.SupportsTarget (string target)
+		{
+			foreach (WorkspaceItem it in Items.ToArray ()) {
+				if (it.SupportsTarget (target))
+					return true;
+			}
+			return false;
 		}
 
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
@@ -759,11 +768,11 @@ namespace MonoDevelop.Ide
 
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
-			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
-			foreach (Solution s in GetAllSolutions ().Where (sol => files.Contains (sol.FileName.CanonicalPath)))
+			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
+			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckWorkspaceItem (s);
 			
-			foreach (Project p in GetAllProjects ().Where (proj => files.Contains (proj.FileName.CanonicalPath)))
+			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckProject (p);
 		}
 		

@@ -219,10 +219,12 @@ namespace MonoDevelop.Components.MainToolbar
 				if (toplevel == null)
 					return;
 
+				var pixel_scale = GtkWorkarounds.GetPixelScale ();
+
 				int windowWidth = toplevel.Allocation.Width;
 				int center = windowWidth / 2;
-				int left = Math.Max (center - 300, args.Allocation.Left);
-				int right = Math.Min (left + 600, args.Allocation.Right);
+				int left = Math.Max (center - (int)(300 * pixel_scale), args.Allocation.Left);
+				int right = Math.Min (left + (int)(600 * pixel_scale), args.Allocation.Right);
 				uint left_padding = (uint) (left - args.Allocation.Left);
 				uint right_padding = (uint) (args.Allocation.Right - right);
 
@@ -261,7 +263,7 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
-				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
+				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.Activated += (sender, e) => {

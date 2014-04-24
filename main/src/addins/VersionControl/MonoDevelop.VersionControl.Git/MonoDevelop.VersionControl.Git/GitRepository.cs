@@ -161,18 +161,31 @@ namespace MonoDevelop.VersionControl.Git
 			return new StashCollection (repository);
 		}
 
+		IEnumerable<string> GetSubmodulePaths ()
+		{
+			if (!File.Exists (RootPath.Combine (Constants.DOT_GIT_MODULES)))
+				return new List<string> ();
+
+			var lines = File.ReadAllLines (RootPath.Combine (Constants.DOT_GIT_MODULES));
+			// Parses .gitmodules to get all submodules paths.
+			var res = lines.Where (l => l.Contains ("path = ")).Select (l => l.Substring (l.LastIndexOf (" ", StringComparison.Ordinal) + 1));
+			return res;
+		}
+
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
 		Tuple<FilePath, NGit.Repository>[] cachedSubmodules = new Tuple<FilePath, NGit.Repository>[0];
 		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
 			get {
-				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
+				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(Constants.DOT_GIT_MODULES));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
 					cachedSubmoduleTime = submoduleWriteTime;
-					cachedSubmodules = new NGit.Api.Git (RootRepository)
-					.SubmoduleStatus ()
-					.Call ()
-					.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
-					.ToArray ();
+					var submoduleStatus = new NGit.Api.Git (RootRepository).SubmoduleStatus ();
+					foreach (var submodule in GetSubmodulePaths ())
+						submoduleStatus.AddPath (submodule);
+
+					cachedSubmodules = submoduleStatus.Call ()
+						.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
+						.ToArray ();
 				}
 				return cachedSubmodules;
 			}
@@ -249,8 +262,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		// Used for checking if we will dupe data.
 		// This way we reduce the number of GitRevisions created and RevWalks done.
-		NGit.Repository versionInfoCacheRepository;
-		GitRevision versionInfoCacheRevision;
+		Dictionary<NGit.Repository, GitRevision> versionInfoCacheRevision = new Dictionary<NGit.Repository, GitRevision> ();
+		Dictionary<NGit.Repository, GitRevision> versionInfoCacheEmptyRevision = new Dictionary<NGit.Repository, GitRevision> ();
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, IEnumerable<FilePath> localFileNames, bool getRemoteStatus, bool recursive)
 		{
 			List<VersionInfo> versions = new List<VersionInfo> ();
@@ -261,7 +274,11 @@ namespace MonoDevelop.VersionControl.Git
 				var localFiles = new List<FilePath> ();
 				foreach (var group in GroupByRepository (localFileNames)) {
 					var repository = group.Key;
-					var arev = new GitRevision (this, repository, "");
+					GitRevision arev;
+					if (!versionInfoCacheEmptyRevision.TryGetValue (repository, out arev)) {
+						arev = new GitRevision (this, repository, "");
+						versionInfoCacheEmptyRevision.Add (repository, arev);
+					}
 					foreach (var p in group) {
 						if (Directory.Exists (p)) {
 							if (recursive)
@@ -287,7 +304,11 @@ namespace MonoDevelop.VersionControl.Git
 				CollectFiles (existingFiles, directories, localDirectory, recursive);
 				foreach (var group in GroupByRepository (directories)) {
 					var repository = group.Key;
-					var arev = new GitRevision (this, repository, "");
+					GitRevision arev;
+					if (!versionInfoCacheEmptyRevision.TryGetValue (repository, out arev)) {
+						arev = new GitRevision (this, repository, "");
+						versionInfoCacheEmptyRevision.Add (repository, arev);
+					}
 					foreach (var p in group)
 						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 				}
@@ -311,15 +332,16 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 
 				GitRevision rev = null;
-				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
-					versionInfoCacheRepository = repository;
-					RevCommit headCommit = GetHeadCommit (repository);
-					if (headCommit != null) {
+				RevCommit headCommit = GetHeadCommit (repository);
+				if (headCommit != null) {
+					if (!versionInfoCacheRevision.TryGetValue (repository, out rev)) {
 						rev = new GitRevision (this, repository, headCommit.Id.Name);
-						versionInfoCacheRevision = rev;
+						versionInfoCacheRevision.Add (repository, rev);
+					} else if (rev.ToString () != headCommit.Id.Name) {
+						rev = new GitRevision (this, repository, headCommit.Id.Name);
+						versionInfoCacheRevision [repository] = rev;
 					}
-				} else
-					rev = versionInfoCacheRevision;
+				}
 
 				GetDirectoryVersionInfoCore (repository, rev, group, existingFiles, nonVersionedMissingFiles, versions);
 				
@@ -515,12 +537,6 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
-		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
-		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
-		{
-			Rebase (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
-		}
-
 		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
@@ -643,12 +659,6 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				monitor.EndTask ();
 			}
-		}
-
-		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
-		public void Merge (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
-		{
-			Merge (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 		}
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
@@ -1041,11 +1051,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-		}
-
 		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
@@ -1064,11 +1069,6 @@ namespace MonoDevelop.VersionControl.Git
 						File.Delete (path);
 				}
 			}
-		}
-
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
 		}
 
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
@@ -1150,14 +1150,14 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = GetRepository (baseLocalPath);
 				if ((versionInfo.Status & VersionStatus.ScheduledAdd) != 0) {
 					var ctxt = GetFileContent (versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (EmptyContent, ctxt));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (EmptyContent, ctxt, repository));
 				} else if ((versionInfo.Status & VersionStatus.ScheduledDelete) != 0) {
 					var ctxt = GetCommitContent (GetHeadCommit (repository), versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt, EmptyContent));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt, EmptyContent, repository));
 				} else if ((versionInfo.Status & VersionStatus.Modified) != 0 || (versionInfo.Status & VersionStatus.Conflicted) != 0) {
 					var ctxt1 = GetCommitContent (GetHeadCommit (repository), versionInfo.LocalPath);
 					var ctxt2 = GetFileContent (versionInfo.LocalPath);
-					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt1, ctxt2));
+					return new DiffInfo (baseLocalPath, versionInfo.LocalPath, GenerateDiff (ctxt1, ctxt2, repository));
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not get diff for file '" + versionInfo.LocalPath + "'", ex);
@@ -1185,7 +1185,7 @@ namespace MonoDevelop.VersionControl.Git
 		byte[] GetCommitContent (RevCommit c, FilePath file)
 		{
 			var repository = GetRepository (file);
-			TreeWalk tw = TreeWalk.ForPath (repository, repository.ToGitPath (file), c.Tree);
+			TreeWalk tw = TreeWalk.ForPath (repository, file.IsAbsolute ? repository.ToGitPath (file) : (string)file, c.Tree);
 			if (tw == null)
 				return EmptyContent;
 			ObjectId id = tw.GetObjectId (0);
@@ -1200,7 +1200,7 @@ namespace MonoDevelop.VersionControl.Git
 			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		
-		static string GenerateDiff (byte[] data1, byte[] data2)
+		static string GenerateDiff (byte[] data1, byte[] data2, NGit.Repository repo)
 		{
 			if (RawText.IsBinary (data1) || RawText.IsBinary (data2)) {
 				if (data1.Length != data2.Length)
@@ -1220,36 +1220,9 @@ namespace MonoDevelop.VersionControl.Git
 					.Diff (RawTextComparator.DEFAULT, text1, text2);
 			MemoryStream s = new MemoryStream ();
 			var formatter = new DiffFormatter (s);
+			formatter.SetRepository (repo);
 			formatter.Format (edits, text1, text2);
 			return Encoding.UTF8.GetString (s.ToArray ());
-		}
-
-		DiffInfo[] GetUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
-		{
-			basePath = basePath.FullPath;
-			List<DiffInfo> list = new List<DiffInfo> ();
-			using (StringReader sr = new StringReader (diffContent)) {
-				string line;
-				StringBuilder content = new StringBuilder ();
-				string fileName = null;
-				
-				while ((line = sr.ReadLine ()) != null) {
-					if (line.StartsWith ("+++ ", StringComparison.Ordinal) || line.StartsWith ("--- ", StringComparison.Ordinal)) {
-						string newFile = RootPath.Combine (line.Substring (6));
-						if (fileName != null && fileName != newFile) {
-							list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-							content = new StringBuilder ();
-						}
-						fileName = newFile;
-					} else if (!line.StartsWith ("diff", StringComparison.Ordinal) && !line.StartsWith ("index", StringComparison.Ordinal)) {
-						content.Append (line).Append ('\n');
-					}
-				}
-				if (fileName != null) {
-					list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
-				}
-			}
-			return list.ToArray ();
 		}
 
 		public string GetCurrentRemote ()
@@ -1572,7 +1545,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
 				VersionStatus status;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.ADD:
@@ -1600,17 +1573,17 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			foreach (var change in GitUtil.CompareCommits (RootRepository, c2, c1)) {
+			foreach (var change in GitUtil.CompareCommits (RootRepository, c1, c2)) {
 				string diff;
 				switch (change.GetChangeType ()) {
 				case DiffEntry.ChangeType.DELETE:
-					diff = GenerateDiff (EmptyContent, GetCommitContent (c2, change.GetOldPath ()));
+					diff = GenerateDiff (GetCommitContent (c2, change.GetOldPath ()), EmptyContent, RootRepository);
 					break;
 				case DiffEntry.ChangeType.ADD:
-					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), EmptyContent);
+					diff = GenerateDiff (EmptyContent, GetCommitContent (c1, change.GetNewPath ()), RootRepository);
 					break;
 				default:
-					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), GetCommitContent (c2, change.GetNewPath ()));
+					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), GetCommitContent (c2, change.GetNewPath ()), RootRepository);
 					break;
 				}
 				DiffInfo di = new DiffInfo (RootPath, RootRepository.FromGitPath (change.GetNewPath ()), diff);

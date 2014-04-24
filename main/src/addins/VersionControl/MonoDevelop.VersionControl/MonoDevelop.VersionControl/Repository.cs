@@ -125,6 +125,10 @@ namespace MonoDevelop.VersionControl
 		public virtual bool AllowLocking {
 			get { return true; }
 		}
+
+		public virtual bool SupportsRemoteStatus {
+			get { return false; }
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{
@@ -244,11 +248,6 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
-		}
-
-		public void ClearCachedVersionInfo (FilePath rootPath)
-		{
-			infoCache.ClearCachedVersionInfo (rootPath);
 		}
 
 		public void ClearCachedVersionInfo (params FilePath[] paths)
@@ -568,84 +567,36 @@ namespace MonoDevelop.VersionControl
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file delete.
-		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor)
-		{
-			DeleteFile (localPath, force, monitor, true);
-		}
-
-		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteFiles (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-			DeleteFiles (localPaths, force, monitor, true);
-		}
-
-		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			OnDeleteFiles (localPaths, force, monitor, keepLocal);
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 
-		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteFiles (localPaths, force, monitor);
-#pragma warning restore 618
-		}
-
-		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
-		{
-			DeleteDirectory (localPath, force, monitor, true);
-		}
-
-		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteDirectories (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
-		{
-			DeleteDirectories (localPaths, force, monitor, true);
-		}
-
-		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
 		{
 			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
-
-		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
-		{
-#pragma warning disable 618
-			OnDeleteDirectories (localPaths, force, monitor);
-#pragma warning restore 618
-		}
-		
-		// Creates a local directory.
-		public void CreateLocalDirectory (FilePath path)
-		{
-			ClearCachedVersionInfo (path);
-			OnCreateLocalDirectory (path);
-		}
-		
-		protected virtual void OnCreateLocalDirectory (FilePath path)
-		{
-			Directory.CreateDirectory (path);
-		}
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
 		
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
 		// This method is allways called for versioned and unversioned files.
-		public virtual bool RequestFileWritePermission (FilePath path)
+		public virtual bool RequestFileWritePermission (params FilePath[] paths)
 		{
 			return true;
 		}

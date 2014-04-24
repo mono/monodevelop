@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl.Views
 					double center_x = cell_area.X + Math.Round ((double) (cell_area.Width / 2d));
 					double center_y = cell_area.Y + Math.Round ((double) (cell_area.Height / 2d));
 					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
-					cr.Color = new Cairo.Color (0, 0, 0);
+					cr.SetSourceRGBA (0, 0, 0, 1);
 					cr.Stroke ();
 					if (!FirstNode) {
 						cr.MoveTo (center_x, cell_area.Y - 2);
@@ -527,15 +527,13 @@ namespace MonoDevelop.VersionControl.Views
 			if (string.IsNullOrEmpty (rev.Email))
 				return;
 			ImageLoader img = ImageService.GetUserIcon (rev.Email, 16);
-			if (img.LoadOperation.IsCompleted)
-				renderer.Image = img.Image;
-			else {
-				renderer.Image = null;
-				img.LoadOperation.Completed += delegate {
-					Gtk.Application.Invoke (delegate {
-						if (logstore.IterIsValid (iter))
-							model.EmitRowChanged (model.GetPath (iter), iter);
-					});
+
+			renderer.Image = img.Image;
+			if (img.Downloading) {
+				img.Completed += (sender, e) => {
+					renderer.Image = img.Image;
+					if (logstore.IterIsValid (iter))
+						model.EmitRowChanged (model.GetPath (iter), iter);
 				};
 			}
 		}

@@ -36,14 +36,6 @@ namespace Mono.TextEditor.Highlighting
 		Stream Open ();
 	}
 
-	[Obsolete("Do not use this anymore. Use ResourceStreamProvider.")]
-	public class ResourceXmlProvider : ResourceStreamProvider
-	{
-		public ResourceXmlProvider (Assembly assembly, string manifestResourceName) : base(assembly, manifestResourceName)
-		{
-
-		}
-	}
 	public class ResourceStreamProvider : IStreamProvider
 	{
 		Assembly assembly;

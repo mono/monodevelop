@@ -6,6 +6,7 @@ using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
+using System.Linq;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -76,6 +77,96 @@ namespace MonoDevelop.Debugger.Win32
 			return array;
 		}
 
+		private const int SpecialSequencePoint = 0xfeefee;
+
+		public static SequencePoint GetSequencePoint(CorDebuggerSession session, CorFrame frame)
+		{
+			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
+			if (reader == null)
+				return null;
+
+			ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
+			if (met == null)
+				return null;
+
+			int SequenceCount = met.SequencePointCount;
+			if (SequenceCount <= 0)
+				return null;
+
+			CorDebugMappingResult mappingResult;
+			uint ip;
+			frame.GetIP (out ip, out mappingResult);
+			if (mappingResult == CorDebugMappingResult.MAPPING_NO_INFO || mappingResult == CorDebugMappingResult.MAPPING_UNMAPPED_ADDRESS)
+				return null;
+
+			int[] offsets = new int[SequenceCount];
+			int[] lines = new int[SequenceCount];
+			int[] endLines = new int[SequenceCount];
+			int[] columns = new int[SequenceCount];
+			int[] endColumns = new int[SequenceCount];
+			ISymbolDocument[] docs = new ISymbolDocument[SequenceCount];
+			met.GetSequencePoints (offsets, docs, lines, columns, endLines, endColumns);
+
+			if ((SequenceCount > 0) && (offsets [0] <= ip)) {
+				int i;
+				for (i = 0; i < SequenceCount; ++i) {
+					if (offsets [i] >= ip) {
+						break;
+					}
+				}
+
+				if ((i == SequenceCount) || (offsets [i] != ip)) {
+					--i;
+				}
+
+				if (lines [i] == SpecialSequencePoint) {
+					int j = i;
+					// let's try to find a sequence point that is not special somewhere earlier in the code
+					// stream.
+					while (j > 0) {
+						--j;
+						if (lines [j] != SpecialSequencePoint) {
+							return new SequencePoint () {
+								IsSpecial = true,
+								Offset = offsets [j],
+								Line = lines [j],
+								Column = columns [j],
+								Document = docs [j]
+							};
+						}
+					}
+					// we didn't find any non-special seqeunce point before current one, let's try to search
+					// after.
+					j = i;
+					while (++j < SequenceCount) {
+						if (lines [j] != SpecialSequencePoint) {
+							return new SequencePoint () {
+								IsSpecial = true,
+								Offset = offsets [j],
+								Line = lines [j],
+								Column = columns [j],
+								Document = docs [j]
+							};
+						}
+					}
+
+					// Even if sp is null at this point, it's a valid scenario to have only special sequence 
+					// point in a function.  For example, we can have a compiler-generated default ctor which
+					// doesn't have any source.
+					return null;
+				} else {
+					return new SequencePoint () {
+						IsSpecial = false,
+						Offset = offsets [i],
+						Line = lines [i],
+						Column = columns [i],
+						Document = docs [i]
+					};
+				}
+			}
+			return null;
+		}
+
 		internal static StackFrame CreateFrame (CorDebuggerSession session, CorFrame frame)
 		{
 			// TODO: Fix remaining.
@@ -102,44 +193,52 @@ namespace MonoDevelop.Debugger.Win32
 					method = mi.DeclaringType.FullName + "." + mi.Name;
 					type = mi.DeclaringType.FullName;
 					addressSpace = mi.Name;
-					ISymbolReader reader = session.GetReaderForModule (frame.Function.Module.Name);
-					if (reader != null) {
-						ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
-						if (met != null) {
-							CorDebugMappingResult mappingResult;
-							frame.GetIP (out address, out mappingResult);
-							SequencePoint prevSp = null;
-							foreach (SequencePoint sp in met.GetSequencePoints ()) {
-								if (sp.Offset > address)
-									break;
-								prevSp = sp;
-							}
-							if (prevSp != null) {
-								line = prevSp.Line;
-								column = prevSp.Offset;
-								file = prevSp.Document.URL;
-								address = (uint)prevSp.Offset;
-							}
+					
+					var sp = GetSequencePoint (session, frame);
+					if (sp != null) {
+						line = sp.Line;
+						column = sp.Column;
+						file = sp.Document.URL;
+						address = (uint)sp.Offset;
+					}
+
+					if (session.IsExternalCode (file)) {
+						external = true;
+					} else {
+						if (session.Options.ProjectAssembliesOnly) {
+							external = mi.GetCustomAttributes (true).Any (v => 
+								v is System.Diagnostics.DebuggerHiddenAttribute ||
+							v is System.Diagnostics.DebuggerNonUserCodeAttribute);
+						} else {
+							external = mi.GetCustomAttributes (true).Any (v => 
+								v is System.Diagnostics.DebuggerHiddenAttribute);
 						}
 					}
-					// FIXME: Still steps into.
-					//hidden = mi.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
+					hidden = mi.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
 				}
 				lang = "Managed";
 				hasDebugInfo = true;
-			}
-			else if (frame.FrameType == CorFrameType.NativeFrame) {
+			} else if (frame.FrameType == CorFrameType.NativeFrame) {
 				frame.GetNativeIP (out address);
 				method = "<Unknown>";
 				lang = "Native";
-			}
-			else if (frame.FrameType == CorFrameType.InternalFrame) {
+			} else if (frame.FrameType == CorFrameType.InternalFrame) {
 				switch (frame.InternalFrameType) {
-					case CorDebugInternalFrameType.STUBFRAME_M2U: method = "[Managed to Native Transition]"; break;
-					case CorDebugInternalFrameType.STUBFRAME_U2M: method = "[Native to Managed Transition]"; break;
-					case CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION: method = "[Lightweight Method Call]"; break;
-					case CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION: method = "[Application Domain Transition]"; break;
-					case CorDebugInternalFrameType.STUBFRAME_FUNC_EVAL: method = "[Function Evaluation]"; break;
+				case CorDebugInternalFrameType.STUBFRAME_M2U:
+					method = "[Managed to Native Transition]";
+					break;
+				case CorDebugInternalFrameType.STUBFRAME_U2M:
+					method = "[Native to Managed Transition]";
+					break;
+				case CorDebugInternalFrameType.STUBFRAME_LIGHTWEIGHT_FUNCTION:
+					method = "[Lightweight Method Call]";
+					break;
+				case CorDebugInternalFrameType.STUBFRAME_APPDOMAIN_TRANSITION:
+					method = "[Application Domain Transition]";
+					break;
+				case CorDebugInternalFrameType.STUBFRAME_FUNC_EVAL:
+					method = "[Function Evaluation]";
+					break;
 				}
 			}
 
@@ -147,7 +246,7 @@ namespace MonoDevelop.Debugger.Win32
 				method = "<Unknown>";
 
 			var loc = new SourceLocation (method, file, line, column);
-			return new StackFrame ((long) address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
+			return new StackFrame ((long)address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
 		}
 
 		#endregion

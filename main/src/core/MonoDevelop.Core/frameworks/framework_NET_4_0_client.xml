@@ -80,5 +80,6 @@
   <Assembly name="System.Device" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Speech" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Windows.Input.Manipulations" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="FSharp.Core" />
 </Assemblies>
 </TargetFramework>

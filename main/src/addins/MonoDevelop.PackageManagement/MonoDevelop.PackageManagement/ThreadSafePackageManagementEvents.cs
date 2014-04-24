@@ -28,8 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -47,6 +48,7 @@ namespace ICSharpCode.PackageManagement
 		void RegisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting += RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished += RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -62,6 +64,7 @@ namespace ICSharpCode.PackageManagement
 		void UnregisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting -= RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished -= RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -82,7 +85,21 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public event EventHandler PackageOperationsStarting;
-		
+
+		void RaisePackageOperationFinishedEventIfHasSubscribers(object sender, EventArgs e)
+		{
+			if (PackageOperationsFinished != null) {
+				DispatchService.GuiSyncDispatch (() => RaisePackageOperationFinishedEvent (sender, e));
+			}
+		}
+
+		void RaisePackageOperationFinishedEvent(object sender, EventArgs e)
+		{
+			PackageOperationsFinished(sender, e);
+		}
+
+		public event EventHandler PackageOperationsFinished;
+
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
@@ -147,6 +164,11 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.OnPackageOperationsStarting();
 		}
 		
+		public void OnPackageOperationsFinished()
+		{
+			unsafeEvents.OnPackageOperationsFinished();
+		}
+
 		public void OnPackageOperationError(Exception ex)
 		{
 			unsafeEvents.OnPackageOperationError(ex);
@@ -218,6 +240,16 @@ namespace ICSharpCode.PackageManagement
 		public void OnPackagesRestored()
 		{
 			unsafeEvents.OnPackagesRestored ();
+		}
+
+		public event EventHandler<FileEventArgs> FileChanged {
+			add { unsafeEvents.FileChanged += value; }
+			remove { unsafeEvents.FileChanged -= value; }
+		}
+
+		public void OnFileChanged (string path)
+		{
+			unsafeEvents.OnFileChanged (path);
 		}
 	}
 }

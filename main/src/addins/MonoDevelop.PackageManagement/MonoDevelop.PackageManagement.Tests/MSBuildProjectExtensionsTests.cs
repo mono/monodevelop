@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		
 		XmlElement GetLastMSBuildImportElement()
 		{
-			var import = project.doc.DocumentElement.LastChild as XmlElement;
+			var import = project.Document.DocumentElement.LastChild as XmlElement;
 			Assert.AreEqual (import.LocalName, "Import");
 			return import;
 		}
@@ -58,7 +58,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		
 		XmlElement GetFirstMSBuildImportElement()
 		{
-			var import = project.doc.DocumentElement.FirstChild as XmlElement;
+			var import = project.Document.DocumentElement.FirstChild as XmlElement;
 			Assert.AreEqual (import.LocalName, "Import");
 			return import;
 		}
@@ -135,7 +135,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			AddImportIfMissingAtBottom (import);
 			
-			Assert.AreEqual (1, project.doc.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (1, project.Document.DocumentElement.ChildNodes.Count);
 		}
 		
 		[Test]
@@ -160,7 +160,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			project.RemoveImportIfExists (import);
 			
-			Assert.AreEqual (0, project.doc.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (0, project.Document.DocumentElement.ChildNodes.Count);
 		}
 		
 		[Test]
@@ -173,7 +173,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			project.RemoveImportIfExists (import2);
 			
-			Assert.AreEqual (0, project.doc.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (0, project.Document.DocumentElement.ChildNodes.Count);
 		}
 		
 		[Test]
@@ -210,7 +210,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			AddImportIfMissingAtTop (import);
 			
-			Assert.AreEqual (1, project.doc.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (1, project.Document.DocumentElement.ChildNodes.Count);
 		}
 	}
 }

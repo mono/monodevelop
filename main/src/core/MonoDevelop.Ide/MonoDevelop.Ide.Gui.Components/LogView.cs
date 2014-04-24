@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void UpdateCustomFont ()
 		{
-			textEditorControl.ModifyFont (IdeApp.Preferences.CustomOutputPadFont ?? FontService.DefaultMonospaceFontDescription);
+			textEditorControl.ModifyFont (IdeApp.Preferences.CustomOutputPadFont ?? FontService.MonospaceFont);
 		}
 		
 		//mechanism to to batch copy text when large amounts are being dumped

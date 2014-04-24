@@ -77,12 +77,6 @@ namespace MonoDevelop.Ide.Navigation
 			get { return doc != null? doc.FileName : fileName; }
 		}
 
-		[Obsolete ("Will be removed. Please use ShowDocument.")]
-		public override void Show ()
-		{
-			DoShow ();
-		}
-
 		public override Document ShowDocument ()
 		{
 			return DoShow ();

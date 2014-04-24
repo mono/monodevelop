@@ -6,7 +6,7 @@
 		<Icon>md-gui-file</Icon>
 		<_Category>Gtk</_Category>
 		<LanguageName>*</LanguageName>
-		<ProjectType>DotNet</ProjectType>
+		<ProjectType>DotNetAssembly</ProjectType>
 		<_Description>Creates a Gtk dialog.</_Description>
 		<DefaultFilename>Dialog</DefaultFilename>
 	</TemplateConfiguration>

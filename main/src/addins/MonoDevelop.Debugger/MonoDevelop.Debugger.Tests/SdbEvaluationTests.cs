@@ -29,9 +29,17 @@ using NUnit.Framework;
 namespace MonoDevelop.Debugger.Tests.Soft
 {
 	[TestFixture]
-	public class SdbEvaluationTests: EvaluationTests
+	public class SdbEvaluationAllowTargetInvokesTests: EvaluationTests
 	{
-		public SdbEvaluationTests (): base ("Mono.Debugger.Soft")
+		public SdbEvaluationAllowTargetInvokesTests (): base ("Mono.Debugger.Soft", true)
+		{
+		}
+	}
+
+	[TestFixture]
+	public class SdbEvaluationNoTargetInvokesTests: EvaluationTests
+	{
+		public SdbEvaluationNoTargetInvokesTests (): base ("Mono.Debugger.Soft", false)
 		{
 		}
 	}

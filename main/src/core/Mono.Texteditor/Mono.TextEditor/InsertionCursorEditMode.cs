@@ -121,7 +121,6 @@ namespace Mono.TextEditor
 			editor.Destroyed += HandleEditorDestroy;
 			HelpWindow.ShowAll ();
 			editor.TextArea.AddTopLevelWidget (HelpWindow,  0, 0); 
-			((TextEditor.EditorContainerChild)editor.TextArea[HelpWindow]).FixedPosition = true;
 
 			if (positionWindow) {
 				PositionHelpWindow ();
@@ -271,7 +270,7 @@ namespace Mono.TextEditor
 		const int HelpWindowMargin = 2;
 		void SetHelpWindowPosition ()
 		{
-			int y = (int)(editor.LineToY (insertionPoints [CurIndex].Location.Line) - editor.VAdjustment.Value);
+			int y = (int)(editor.LineToY (insertionPoints [CurIndex].Location.Line));
 
 			PositionHelpWindow (editor.Allocation.Width - HelpWindow.Allocation.Width - HelpWindowMargin, y);
 		}

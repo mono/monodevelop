@@ -179,10 +179,10 @@ namespace MonoDevelop.Ide.Projects
 			
 			NewPolicySetDialog dlg = new NewPolicySetDialog (new List<PolicySet> (esets));
 			try {
-				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg, this) == (int) ResponseType.Ok) {
 					PolicySet pset = new PolicySet ();
 					pset.CopyFrom (dlg.SourceSet);
-					pset.Name = dlg.PolicyName;
+					pset.Name = GetUnusedName (dlg.PolicyName);
 					sets.Add (pset);
 					FillPolicySets ();
 					policiesCombo.Active = sets.IndexOf (pset);
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.Projects
 				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
 					PolicySet pset = new PolicySet ();
 					pset.CopyFrom (dlg.SelectedItem.Policies);
-					pset.Name = GetValidName (dlg.PolicyName);
+					pset.Name = GetUnusedName (dlg.PolicyName);
 					sets.Add (pset);
 					FillPolicySets ();
 					policiesCombo.Active = sets.IndexOf (pset);
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.Projects
 					pset.LoadFromFile (dlg.SelectedFile);
 					if (string.IsNullOrEmpty (pset.Name))
 						pset.Name = dlg.SelectedFile.FileNameWithoutExtension;
-					pset.Name = GetValidName (pset.Name);
+					pset.Name = GetUnusedName (pset.Name);
 					sets.Add (pset);
 					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = dlg.SelectedFile.ParentDirectory;
 					FillPolicySets ();
@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		string GetValidName (string name)
+		string GetUnusedName (string name)
 		{
 			string finalName = name;
 			int n = 1;
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.Projects
 			((ListStore)policiesCombo.Model).Clear ();
 			policiesCombo.WidthRequest = -1;
 			
-			sets.Sort ((p1,p2) => p1.Name.CompareTo(p2.Name));
+			sets.Sort ((p1, p2) => string.Compare (p1.Name, p2.Name, StringComparison.CurrentCulture));
 			
 			foreach (PolicySet pset in sets) {
 				policiesCombo.AppendText (pset.Name ?? "");

@@ -129,21 +129,8 @@ namespace MonoDevelop.Core.FileSystem
 
 		public virtual void RequestFileEdit (IEnumerable<FilePath> files)
 		{
-#pragma warning disable 618
-			foreach (var f in files) {
-				if (!RequestFileEdit (f))
-					throw new UserException (GettextCatalog.GetString ("File '{0}' can't be modified", f.FileName));
-			}
-#pragma warning restore 618
-
 			foreach (var fg in files.GroupBy (f => GetNextForPath (f, false)))
 				fg.Key.RequestFileEdit (fg);
-		}
-
-		[Obsolete ("This will be removed. Override RequestFileEdit (IEnumerable<FilePath>) instead")]
-		public virtual bool RequestFileEdit (FilePath file)
-		{
-			return true;
 		}
 		
 		public virtual void NotifyFilesChanged (IEnumerable<FilePath> files)

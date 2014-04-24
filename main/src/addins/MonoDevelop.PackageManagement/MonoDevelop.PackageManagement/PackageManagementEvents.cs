@@ -43,6 +43,15 @@ namespace ICSharpCode.PackageManagement
 				PackageOperationsStarting(this, new EventArgs());
 			}
 		}
+
+		public event EventHandler PackageOperationsFinished;
+
+		public void OnPackageOperationsFinished()
+		{
+			if (PackageOperationsFinished != null) {
+				PackageOperationsFinished(this, new EventArgs());
+			}
+		}
 		
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		
@@ -133,6 +142,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (PackagesRestored != null) {
 				PackagesRestored(this, new EventArgs());
+			}
+		}
+
+		public event EventHandler<FileEventArgs> FileChanged;
+
+		public void OnFileChanged (string path)
+		{
+			if (FileChanged != null) {
+				FileChanged (this, new FileEventArgs (new FilePath (path), false));
 			}
 		}
 	}

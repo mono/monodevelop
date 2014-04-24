@@ -53,13 +53,6 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 
 			//UpdatePackages ();
-			
-			this.packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
-		}
-		
-		void ParentPackageInstalled(object sender, ParentPackageOperationEventArgs e)
-		{
-			AddPackage(e.Package);
 		}
 		
 		public string Source {

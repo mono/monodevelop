@@ -210,8 +210,11 @@
     <EmbeddedResource Include="icons\light\project-reference-overlay-16%402x.png">
       <LogicalName>project-reference-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\parser-16.png">
-      <LogicalName>parser-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\parser-16.png">
+      <LogicalName>parser-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\parser-16%402x.png">
+      <LogicalName>parser-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\GenericProject.xpt.xml">
       <LogicalName>GenericProject.xpt.xml</LogicalName>
@@ -297,8 +300,11 @@
     <EmbeddedResource Include="icons\add-namespace-16.png">
       <LogicalName>add-namespace-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\assembly-project-16.png">
-      <LogicalName>assembly-project-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\assembly-project-16.png">
+      <LogicalName>assembly-project-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\assembly-project-16%402x.png">
+      <LogicalName>assembly-project-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\breakpoint-16.png">
       <LogicalName>breakpoint-light-16.png</LogicalName>
@@ -343,16 +349,16 @@
       <LogicalName>build-solution-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-16.png">
-      <LogicalName>element-template-16.png</LogicalName>
+      <LogicalName>element-template-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-16%402x.png">
-      <LogicalName>element-template-16@2x.png</LogicalName>
+      <LogicalName>element-template-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-surroundwith-16.png">
-      <LogicalName>element-template-surroundwith-16.png</LogicalName>
+      <LogicalName>element-template-surroundwith-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-template-surroundwith-16%402x.png">
-      <LogicalName>element-template-surroundwith-16@2x.png</LogicalName>
+      <LogicalName>element-template-surroundwith-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\comment-16.png">
       <LogicalName>comment-light-16.png</LogicalName>
@@ -426,8 +432,11 @@
     <EmbeddedResource Include="icons\light\element-method-16%402x.png">
       <LogicalName>element-method-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\element-method-new-16.png">
-      <LogicalName>element-method-new-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\element-method-new-16.png">
+      <LogicalName>element-method-new-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-method-new-16%402x.png">
+      <LogicalName>element-method-new-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-namespace-16.png">
       <LogicalName>element-namespace-light-16.png</LogicalName>
@@ -490,10 +499,10 @@
       <LogicalName>formatting-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16.png">
-      <LogicalName>element-keyword-16.png</LogicalName>
+      <LogicalName>element-keyword-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16%402x.png">
-      <LogicalName>element-keyword-16@2x.png</LogicalName>
+      <LogicalName>element-keyword-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\markers-rulers-16.png">
       <LogicalName>markers-rulers-16.png</LogicalName>
@@ -509,6 +518,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\monodevelop-48.png">
       <LogicalName>monodevelop-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-16.png">
+      <LogicalName>package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-16%402x.png">
+      <LogicalName>package-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\package-22.png">
       <LogicalName>package-light-22.png</LogicalName>
@@ -564,8 +579,26 @@
     <EmbeddedResource Include="icons\light\project-library-overlay-32%402x.png">
       <LogicalName>project-library-overlay-light-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-shared-assets-overlay-32.png">
+      <LogicalName>project-shared-assets-overlay-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-shared-assets-overlay-32%402x.png">
+      <LogicalName>project-shared-assets-overlay-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32.png">
+      <LogicalName>project-package-overlay-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-package-overlay-32%402x.png">
+      <LogicalName>project-package-overlay-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-new-16.png">
       <LogicalName>project-new-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-source-16.png">
+      <LogicalName>package-source-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-source-16%402x.png">
+      <LogicalName>package-source-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\reference-16.png">
       <LogicalName>reference-light-16.png</LogicalName>
@@ -1177,6 +1210,24 @@
     <EmbeddedResource Include="icons\light\information-16%402x.png">
       <LogicalName>information-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-24.png">
+      <LogicalName>information-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-24%402x.png">
+      <LogicalName>information-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-32.png">
+      <LogicalName>information-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-32%402x.png">
+      <LogicalName>information-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-48.png">
+      <LogicalName>information-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\information-48%402x.png">
+      <LogicalName>information-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\command-16.png">
       <LogicalName>command-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1480,18 +1531,6 @@
     <EmbeddedResource Include="icons\light\add-16%402x.png">
       <LogicalName>add-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16.png">
-      <LogicalName>bubble-error-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-error-16%402x.png">
-      <LogicalName>bubble-error-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16.png">
-      <LogicalName>bubble-warning-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bubble-warning-16%402x.png">
-      <LogicalName>bubble-warning-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9.png">
       <LogicalName>warning-overlay-light-9.png</LogicalName>
     </EmbeddedResource>
@@ -1784,7 +1823,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TransactedTreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\INavigable.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IUrlHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\IOpenNamedElementHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />
@@ -2190,7 +2229,6 @@
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\ICodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\IAdvancedCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
@@ -2203,8 +2241,6 @@
     <Compile Include="MonoDevelop.Ide.Extensions\StartupHandlerExtensionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ReferencesFinder.cs" />
     <Compile Include="MonoDevelop.Components\SectionList.cs" />
-    <Compile Include="MonoDevelop.Ide.OnlineTemplates\OnlineTemplateService.cs" />
-    <Compile Include="MonoDevelop.Ide.OnlineTemplates\ProjectTemplateIndex.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
@@ -2404,6 +2440,9 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\RoslynTypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTextLoader.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceTextContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2434,7 +2473,6 @@
     <Folder Include="MonoDevelop.Ide\" />
     <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
     <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
-    <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
     <Folder Include="MonoDevelop.Ide.Navigation\" />
     <Folder Include="MonoDevelop.Components.AutoTest\" />
     <Folder Include="MonoDevelop.Ide.Fonts\" />
@@ -2456,6 +2494,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="gtkrc.win32-vista">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -41,6 +41,7 @@ using System.Collections.Generic;
 using System.Collections;
 using MonoDevelop.Ide.Codons;
 using System.Xml;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -406,7 +407,7 @@ namespace MonoDevelop.Ide.Templates
 
             //filter on conditions
             if (project != null) {
-				if (!string.IsNullOrEmpty(projecttype) && (projecttype != project.ProjectType))
+				if (!string.IsNullOrEmpty (projecttype) && project.GetProjectTypes ().All (p => p != projecttype))
                     return false;
 
                 foreach (FileTemplateCondition condition in conditions)

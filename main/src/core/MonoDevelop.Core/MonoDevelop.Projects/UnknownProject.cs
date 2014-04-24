@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -49,8 +50,9 @@ namespace MonoDevelop.Projects
 			this.loadError = loadError;
 		}
 
-		public override string ProjectType {
-			get { return ""; }
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "";
 		}
 
 		public override FilePath FileName {

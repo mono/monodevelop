@@ -95,13 +95,13 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage progressMessage,
 			NuGetPackageRestoreCommandLine commandLine)
 		{
-			var aggregatedMonitor = (AggregatedProgressMonitor)progressMonitor;
+			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
 
 			Runtime.ProcessService.StartConsoleProcess(
 				commandLine.Command,
 				commandLine.Arguments,
 				commandLine.WorkingDirectory,
-				aggregatedMonitor.MasterMonitor as IConsole,
+				aggregatedMonitor.Console,
 				(sender, e) => {
 					using (progressMonitor) {
 						OnPackageRestoreCompleted ((IAsyncOperation)sender, progressMonitor, progressMessage);

@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Views
 			Ide.IdeApp.Workbench.ActiveDocumentChanged += HandleDocumentChanged;
 		}
 
-		void HandleDocumentChanged (object sender, EventArgs e)
+		static void HandleDocumentChanged (object sender, EventArgs e)
 		{
 			var document = Ide.IdeApp.Workbench.ActiveDocument;
 			try {
