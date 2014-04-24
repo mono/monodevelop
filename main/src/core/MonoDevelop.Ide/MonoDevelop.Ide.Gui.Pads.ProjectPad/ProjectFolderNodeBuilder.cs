@@ -202,12 +202,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (var folder in folders) {
 				var project = folder.Project;
 
+				AlertButton result;
+
+				if (project == null) {
+					deleteOnlyQuestion.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					result = MessageService.AskQuestion (deleteOnlyQuestion);
+					if (result == AlertButton.Delete) {
+						DeleteFolder (folder);
+						continue;
+					} else
+						break;
+				}
+
 				var folderRelativePath = folder.Path.ToRelative (project.BaseDirectory);
 				var files = project.Files.GetFilesInVirtualPath (folderRelativePath).ToList ();
 				var folderPf = project.Files.GetFileWithVirtualPath (folderRelativePath);
 				bool isProjectFolder = files.Count == 0 && folderPf == null;
-
-				AlertButton result;
 
 				//if the parent directory has already been removed, there may be nothing to do
 				if (isProjectFolder) {
@@ -236,14 +246,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				
 				if (result == AlertButton.Delete) {
-					try {
-						if (Directory.Exists (folder.Path))
-							// FileService events should remove remaining files from the project
-							FileService.DeleteDirectory (folder.Path);
-					} catch (Exception ex) {
-						MessageService.ShowError (GettextCatalog.GetString (
-							"The folder {0} could not be deleted from disk: {1}", folder.Path, ex.Message));
-					}
+					DeleteFolder (folder);
 				} else {
 					//explictly remove the node from the tree, since it currently only tracks real folder deletions
 					folder.Remove ();
@@ -262,7 +265,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			IdeApp.ProjectOperations.Save (projects);
 		}
-		
+
+		static void DeleteFolder (ProjectFolder folder)
+		{
+			try {
+				if (Directory.Exists (folder.Path))
+					// FileService events should remove remaining files from the project
+					FileService.DeleteDirectory (folder.Path);
+			}
+			catch (Exception ex) {
+				MessageService.ShowError (GettextCatalog.GetString ("The folder {0} could not be deleted from disk: {1}", folder.Path, ex.Message));
+			}
+		}
+
 		[CommandUpdateHandler (EditCommands.Delete)]
 		public void UpdateRemoveItem (CommandInfo info)
 		{
