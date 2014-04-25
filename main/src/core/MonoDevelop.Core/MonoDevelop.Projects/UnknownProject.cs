@@ -88,6 +88,12 @@ namespace MonoDevelop.Projects
 			set { }
 		}
 
+		internal protected override bool OnGetSupportsTarget (string target)
+		{
+			// We can't do anything with unsupported projects, other than display them in the solution pad
+			return false;
+		}
+
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 		}
