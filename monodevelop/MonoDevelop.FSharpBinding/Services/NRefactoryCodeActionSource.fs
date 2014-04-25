@@ -2,9 +2,14 @@
 open MonoDevelop.Ide.Gui
 open MonoDevelop.CodeActions
 open MonoDevelop.Ide.TypeSystem
+open MonoDevelop.Core
+open MonoDevelop.Ide
+open MonoDevelop.Projects
 open ICSharpCode.NRefactory
 open System.Threading
 open ICSharpCode.NRefactory.Refactoring
+open FSharp.CompilerBinding
+open Microsoft.FSharp.Compiler.SourceCodeServices
 
 type FSharpRefactoringContext() = 
    interface IRefactoringContext with   
@@ -36,11 +41,27 @@ type ImplementInterfaceCodeActionProvider() as x =
     x.Title       <- "Implement Interface category"
     x.Description <- "Implement this interface"
   override y.IdString = "ImplementInterfaceCodeActionProvider" 
-  override y.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = seq {
-    // TODO: Look at location, and decide whether it's an interface. Only return the action in that case
-    yield ImplementInterfaceCodeAction() :> _
-  }
 
+  override y.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
+    let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
+    if doc.ParsedDocument <> null then
+      match doc.ParsedDocument.Ast with
+        | :? ParseAndCheckResults as ast -> seq {
+            let currentFile = doc.FileName.ToString()
+            
+            let lineStr = doc.Editor.GetLineText(location.Line)
+            let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
+            match symbol with 
+            | Some sy -> 
+               match sy.Symbol with
+               | :? FSharpEntity as e when e.IsInterface ->
+                   //TODO: Check if completely implemented -> no command
+                   yield ImplementInterfaceCodeAction() :> _
+               | _ -> ()
+            | _ -> ()
+          }
+        | _ -> Seq.empty
+     else Seq.empty
 type NRefactoryCodeActionSource() = 
   interface ICodeActionProviderSource with
     member x.GetProviders() = seq {
