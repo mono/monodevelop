@@ -849,7 +849,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				if (node.Children != null) {
 					foreach (TreeNode cn in node.Children) {
-						Gtk.TreeIter it = tree.Store.AppendValues (node.NodeIter, cn.NodeInfo.Label, cn.NodeInfo.Icon, cn.NodeInfo.ClosedIcon, cn.DataItem, cn.BuilderChain, cn.Filled);
+						Gtk.TreeIter it = tree.Store.AppendValues (node.NodeIter, cn.NodeInfo.Label, cn.NodeInfo.Icon, cn.NodeInfo.ClosedIcon, cn.DataItem, cn.BuilderChain, cn.Filled, false, cn.NodeInfo.OverlayBottomRight, cn.NodeInfo.OverlayBottomLeft, cn.NodeInfo.OverlayTopLeft, cn.NodeInfo.OverlayTopRight);
 						if (!cn.Filled)
 							tree.Store.AppendNode (it);	// Dummy node
 						// The OnNodeAdded event was already fired when the node was added. There is no need to fire it again.
