@@ -142,7 +142,7 @@ namespace MonoDevelop.VersionControl
 			if ((status & VersionStatus.LockRequired) != 0)
 				return overlay_protected;
 				
-			return null;
+			return MonoDevelop.Components.CellRendererImage.NullImage;
 		}
 		
 		public static Xwt.Drawing.Image LoadIconForStatus (VersionStatus status)
