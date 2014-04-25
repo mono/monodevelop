@@ -371,5 +371,12 @@ namespace MonoDevelop.Debugger.Tests
 			val.ValueChanged -= h;
 			return val;
 		}
+
+		public static ObjectValue GetChildSync (this ObjectValue val, string name, EvaluationOptions ops)
+		{
+			var result = val.GetChild (name, ops);
+
+			return result != null ? result.Sync () : null;
+		}
 	}
 }

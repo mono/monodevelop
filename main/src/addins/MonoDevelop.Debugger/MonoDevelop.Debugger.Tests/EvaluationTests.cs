@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Threading;
 using Mono.Debugging.Client;
 using NUnit.Framework;
 
@@ -108,8 +109,16 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public virtual void Typeof ()
 		{
-			ObjectValue val = Eval ("typeof(System.Console)");
+			var val = Eval ("typeof(System.Console)");
 			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.Value == "{System.MonoType}" || val.Value == "{System.RuntimeType}");
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("{System.Console}", val.Value);
 		}
 
@@ -117,39 +126,112 @@ namespace MonoDevelop.Debugger.Tests
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
+
 			val = Eval ("TestMethod ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("TestMethod (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("24", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("TestMethod (42)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("TestMethod (false)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("this.TestMethod ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("this.TestMethod (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("24", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("this.TestMethod (42)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("System.Int32.Parse (\"67\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("67", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("this.BoxingTestMethod (43)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("\"43\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 		}
@@ -243,18 +325,50 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 			
 			val = Eval ("staticString[2]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("'m'", val.Value);
 			Assert.AreEqual ("char", val.TypeName);
 			
 			val = Eval ("alist[0]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			val = Eval ("alist[1]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("\"two\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 			
 			val = Eval ("alist[2]");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 		}
@@ -265,23 +379,50 @@ namespace MonoDevelop.Debugger.Tests
 			ObjectValue val;
 
 			val = Eval ("\"someString\".Length");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("10", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("numbers.Length");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("alist.Count");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
 			Eval ("var tt = this");
-			
-			val = Eval ("tt.someString");
-			Assert.AreEqual ("\"hi\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
-			
+
+			// FIXME: this errors out when target invokes are disabled
+			if (AllowTargetInvokes) {
+				val = Eval ("tt.someString");
+				Assert.AreEqual ("\"hi\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			}
+
 			val = Eval ("MonoDevelop.Debugger.Tests");
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests", val.Value);
 			Assert.AreEqual ("<namespace>", val.TypeName);
@@ -537,6 +678,7 @@ namespace MonoDevelop.Debugger.Tests
 
 				Assert.IsTrue (val.IsNotSupported);
 				val.Refresh (options);
+				val = val.Sync ();
 			}
 
 			Assert.AreEqual (value, val.Value);
@@ -548,6 +690,7 @@ namespace MonoDevelop.Debugger.Tests
 				options.AllowTargetInvoke = true;
 
 				val.Refresh (options);
+				val = val.Sync ();
 			}
 
 			Assert.AreEqual (value, val.Value);
@@ -624,6 +767,14 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"hi\"", val.Value);
 			
 			val = Eval ("EscapedStrings");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("\" \\\" \\\\ \\a \\b \\f \\v \\n \\r \\t\"", val.Value);
 			
 			val = Eval ("\" \\\" \\\\ \\a \\b \\f \\v \\n \\r \\t\"");
@@ -693,6 +844,14 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("C", val.TypeName);
 			
 			val = Eval ("withDisplayString");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.AreEqual ("{WithDisplayString}", val.Value);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("Some one Value 2 End", val.Value);
 			Assert.AreEqual ("WithDisplayString", val.TypeName);
 			
@@ -727,16 +886,22 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatGeneric ()
 		{
 			ObjectValue val;
-		
-			Session.Options.EvaluationOptions.AllowTargetInvoke = false;
-			val = Eval ("dict");
-			Session.Options.EvaluationOptions.AllowTargetInvoke = true;
+
+			try {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = false;
+				val = Eval ("dict");
+			} finally {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
+			}
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>", val.TypeName);
-			
-			Session.Options.EvaluationOptions.AllowTargetInvoke = false;
-			val = Eval ("dictArray");
-			Session.Options.EvaluationOptions.AllowTargetInvoke = true;
+
+			try {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = false;
+				val = Eval ("dictArray");
+			} finally {
+				Session.Options.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
+			}
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
 			
@@ -788,6 +953,14 @@ namespace MonoDevelop.Debugger.Tests
 			ObjectValue val;
 
 			val = Eval ("simpleStruct");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.AreEqual ("{SimpleStruct}", val.Value);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("{str 45 }", val.Value);
 			Assert.AreEqual ("SimpleStruct", val.TypeName);
 
@@ -846,14 +1019,38 @@ namespace MonoDevelop.Debugger.Tests
 			ObjectValue val;
 
 			val = Eval ("a.Prop");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.PropNoVirt1");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.PropNoVirt2");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
@@ -862,26 +1059,74 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.TestMethod ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.TestMethod (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("24", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.TestMethod (42)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.Prop");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.PropNoVirt1");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.PropNoVirt2");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
@@ -890,34 +1135,98 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("this.TestMethodBase ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("this.TestMethodBase (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("24", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("this.TestMethodBase (42)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("this.TestMethodBaseNotOverrided ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("TestMethodBase ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("TestMethodBase (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("24", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("TestMethodBase (42)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("TestMethodBaseNotOverrided ()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 		}
