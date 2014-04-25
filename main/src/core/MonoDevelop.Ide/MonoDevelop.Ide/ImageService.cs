@@ -718,7 +718,8 @@ namespace MonoDevelop.Ide
 			animatedImages.RemoveAll (a => (AnimatedImageInfo)a.Target == ainfo);
 		}
 
-		//TODO: size-limit this cache
+		//TODO: size-limit the in-memory cache
+		//TODO: size-limit the on-disk cache
 		static Dictionary<string,ImageLoader> gravatars = new Dictionary<string,ImageLoader> ();
 
 		public static ImageLoader GetUserIcon (string email, int size, Xwt.Screen screen = null)
@@ -740,7 +741,7 @@ namespace MonoDevelop.Ide
 			}
 
 			ImageLoader loader;
-			if (!gravatars.TryGetValue (key, out loader)) {
+			if (!gravatars.TryGetValue (key, out loader) || (!loader.Downloading && loader.Image == null)) {
 				var cacheFile = UserProfile.Current.TempDir.Combine ("Gravatars", key);
 				string url = "https://www.gravatar.com/avatar/" + hash + "?d=404&s=" + size;
 				gravatars[key] = loader = new ImageLoader (cacheFile, url, scaleFactor);
