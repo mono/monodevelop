@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using MonoDevelop.Projects;
 using NuGet;
@@ -185,6 +186,15 @@ namespace ICSharpCode.PackageManagement
 				return project.HasOlderPackageInstalled(package);
 			}
 			return false;
+		}
+
+		public FrameworkName GetTargetFramework ()
+		{
+			if (HasSingleProjectSelected ()) {
+				return new ProjectTargetFramework ((DotNetProject)singleDotNetProjectSelected)
+					.TargetFrameworkName;
+			}
+			return null;
 		}
 	}
 }
