@@ -343,7 +343,7 @@ namespace MonoDevelop.Debugger.Win32
 			
 			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
 			realArr.SetElement (new [] { 0 }, val);
-			
+			arr.IsValid = true;
 			CorType at = (CorType) GetType (ctx, "System.Array");
 			object[] argTypes = { GetType (ctx, "System.Int32") };
 			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
@@ -887,6 +887,8 @@ namespace MonoDevelop.Debugger.Win32
 						propTypes.Add (t);
 					}
 				}
+				if (cctx.Adapter.IsPrimitive (ctx, target))
+					break;
 				t = t.Base;
 			}
 
@@ -1492,7 +1494,7 @@ namespace MonoDevelop.Debugger.Win32
 			foreach (ISymbolVariable var in scope.GetLocals ()) {
 				if (var.Name == "$site")
 					continue;
-				if (IsClosureReferenceLocal (var) && IsGeneratedType (var.Name)) {
+				if (IsClosureReferenceLocal (var)) {
 					int addr = var.AddressField1;
 					var vref = new CorValRef (delegate {
 						return ctx.Frame.GetLocalVariable (addr);
@@ -1604,8 +1606,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsTypeLoaded (EvaluationContext ctx, object type)
 		{
-			var t = type as Type;
-			return IsTypeLoaded (ctx, t.FullName);
+			return IsTypeLoaded (ctx, GetTypeName (ctx, type));
 		}
 		// TODO: Implement GetHoistedLocalVariables
 	}

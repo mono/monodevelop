@@ -32,7 +32,7 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class EvaluationTests: DebugTests
 	{
-		protected EvaluationTests (string de, bool allowTargetInvokes): base (de)
+		protected EvaluationTests (string de, bool allowTargetInvokes) : base (de)
 		{
 			AllowTargetInvokes = allowTargetInvokes;
 		}
@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.TypeName);
 		}
-		
+
 		[Test]
 		public void UnaryOperators ()
 		{
@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("1234", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 		}
-		
+
 		[Test]
 		public void TypeReference ()
 		{
@@ -95,7 +95,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
-		
+
 		[Test]
 		public virtual void TypeReferenceGeneric ()
 		{
@@ -104,7 +104,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
-		
+
 		[Test]
 		public virtual void Typeof ()
 		{
@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{System.Console}", val.Value);
 		}
-		
+
 		[Test]
 		public void MethodInvoke ()
 		{
@@ -128,7 +128,7 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("TestMethod (42)");
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
-						 
+
 			val = Eval ("TestMethod (false)");
 			Assert.AreEqual ("2", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
@@ -153,7 +153,80 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"43\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 		}
-		
+
+		[Test]
+		[Ignore ("Missing implementation")]
+		public void GenericMethodInvoke ()
+		{
+			ObjectValue val;
+			val = Eval ("done.ReturnInt5()");
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("done.ReturnSame(3)");
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("ReturnSame(4)");
+			Assert.AreEqual ("4", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("ReturnSame(\"someString\")");
+			Assert.AreEqual ("someString", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("ReturnNew<WithToString>()");
+			Assert.AreEqual ("{SomeString}", val.Value);
+			Assert.AreEqual ("WithToString", val.TypeName);
+
+			val = Eval ("intZero");
+			Assert.AreEqual ("0", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("intOne");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("Swap (ref intZero, ref intOne)");
+			Assert.AreEqual ("", val.Value);
+
+			val = Eval ("intZero");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("intOne");
+			Assert.AreEqual ("0", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			//Lets return in same state as before in case some other test will use
+			val = Eval ("Swap (ref intZero, ref intOne)");
+			Assert.AreEqual ("", val.Value);
+
+			val = Eval ("GenerateList(\"someString\", 5)");
+			Assert.AreEqual ("Count=5", val.Value);
+			Assert.AreEqual ("System.Collections.Generic.List<string>", val.TypeName);
+
+			val = Eval ("GenerateList(2.0, 6)");
+			Assert.AreEqual ("Count=6", val.Value);
+			Assert.AreEqual ("System.Collections.Generic.List<double>", val.TypeName);
+
+			val = Eval ("done.GetDefault()");
+			Assert.AreEqual ("0", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("done.GetParentDefault()");
+			Assert.AreEqual ("(null)", val.Value);
+			Assert.AreEqual ("System.String", val.TypeName);//Should this be "string"?
+
+			val = Eval ("new Dictionary<int,string>()");
+			Assert.AreEqual ("Count=0", val.Value);
+			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string>", val.TypeName);
+
+			val = Eval ("done.Property");
+			Assert.AreEqual ("54", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+		}
+
 		[Test]
 		public void Indexers ()
 		{
@@ -185,11 +258,21 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 		}
-		
+
 		[Test]
 		public void MemberReference ()
 		{
-			ObjectValue val = Eval ("alist.Count");
+			ObjectValue val;
+
+			val = Eval ("\"someString\".Length");
+			Assert.AreEqual ("10", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("numbers.Length");
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("alist.Count");
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 			
@@ -211,7 +294,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"some static\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 		}
-		
+
 		[Test]
 		public void ConditionalExpression ()
 		{
@@ -223,7 +306,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"no\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 		}
-		
+
 		[Test]
 		public void Cast ()
 		{
@@ -349,7 +432,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("one|two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 		}
-		
+
 		[Test]
 		public void BinaryOperators ()
 		{
@@ -486,14 +569,14 @@ namespace MonoDevelop.Debugger.Tests
 			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
 			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
 		}
-		
+
 		[Test]
 		public virtual void AssignmentStatic ()
 		{
 			AssertAssignment ("staticString = \"test\"", "staticString", "\"test\"", "string");
 			AssertAssignment ("staticString = \"some static\"", "staticString", "\"some static\"", "string");
 		}
-		
+
 		[Test]
 		public void FormatBool ()
 		{
@@ -505,7 +588,7 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("false");
 			Assert.AreEqual ("false", val.Value);
 		}
-		
+
 		[Test]
 		public void FormatNumber ()
 		{
@@ -532,7 +615,7 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("dec");
 			Assert.AreEqual ("123.456", val.Value);
 		}
-		
+
 		[Test]
 		public void FormatString ()
 		{
@@ -546,7 +629,7 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("\" \\\" \\\\ \\a \\b \\f \\v \\n \\r \\t\"");
 			Assert.AreEqual ("\" \\\" \\\\ \\a \\b \\f \\v \\n \\r \\t\"", val.Value);
 		}
-		
+
 		[Test]
 		public void FormatChar ()
 		{
@@ -599,7 +682,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("'\\t'", val.Value);
 			Assert.AreEqual ("9 '\\t'", val.DisplayValue);
 		}
-		
+
 		[Test]
 		public void FormatObject ()
 		{
@@ -621,7 +704,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{SomeString}", val.Value);
 			Assert.AreEqual ("WithToString", val.TypeName);*/
 		}
-		
+
 		[Test]
 		public void FormatArray ()
 		{
@@ -639,7 +722,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 			Assert.AreEqual ("int[,,]", val.TypeName);
 		}
-		
+
 		[Test]
 		public void FormatGeneric ()
 		{
@@ -665,7 +748,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{Thing<string>.Done<int>}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>", val.TypeName);
 		}
-		
+
 		[Test]
 		public void FormatEnum ()
 		{
@@ -683,5 +766,161 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
 			Assert.AreEqual ("one|two", val.DisplayValue);
 		}
+
+		[Test]
+		public void LambdaInvoke ()
+		{
+			ObjectValue val;
+
+			val = Eval ("action");
+			Assert.AreEqual ("{System.Action}", val.Value);
+			Assert.AreEqual ("System.Action", val.TypeName);
+
+			val = Eval ("modifyInLamda");
+			Assert.AreEqual ("\"modified\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+		}
+
+		[Test]
+		public void Structures ()
+		{
+			ObjectValue val;
+
+			val = Eval ("simpleStruct");
+			Assert.AreEqual ("{str 45 }", val.Value);
+			Assert.AreEqual ("SimpleStruct", val.TypeName);
+
+			val = Eval ("nulledSimpleStruct");
+			Assert.AreEqual ("null", val.Value);
+			Assert.AreEqual ("SimpleStruct?", val.TypeName);
+		}
+
+		[Test]
+		[Ignore ("TODO")]
+		public void SdbFailingTests ()
+		{
+			ObjectValue val;
+
+			//When fixed put into MemberRefernce test?
+			val = Eval ("true.ToString()");
+			Assert.AreEqual ("\"true\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			//When fixed put into Inheriting test
+			val = Eval ("b.TestMethod ()");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			//When fixed put into Inheriting test
+			val = Eval ("b.TestMethod (\"23\")");
+			Assert.AreEqual ("25", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			//When fixed put into Inheriting test
+			val = Eval ("b.TestMethod (42)");
+			Assert.AreEqual ("44", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			//When fixed put into Inheriting test
+			val = Eval ("base.TestMethodBase ()");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("base.TestMethodBase (\"23\")");
+			Assert.AreEqual ("25", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("base.TestMethodBase (42)");
+			Assert.AreEqual ("44", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("base.TestMethodBaseNotOverrided ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+		}
+
+		[Test]
+		public void Inheriting ()
+		{
+			ObjectValue val;
+
+			val = Eval ("a.Prop");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.PropNoVirt1");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.PropNoVirt2");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.IntField");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.TestMethod ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.TestMethod (\"23\")");
+			Assert.AreEqual ("24", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("a.TestMethod (42)");
+			Assert.AreEqual ("43", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("b.Prop");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("b.PropNoVirt1");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("b.PropNoVirt2");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("b.IntField");
+			Assert.AreEqual ("2", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("this.TestMethodBase ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("this.TestMethodBase (\"23\")");
+			Assert.AreEqual ("24", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("this.TestMethodBase (42)");
+			Assert.AreEqual ("43", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("this.TestMethodBaseNotOverrided ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestMethodBase ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestMethodBase (\"23\")");
+			Assert.AreEqual ("24", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestMethodBase (42)");
+			Assert.AreEqual ("43", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestMethodBaseNotOverrided ()");
+			Assert.AreEqual ("1", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+		}
+
 	}
 }
