@@ -55,7 +55,7 @@ namespace MonoDevelop.Components
 		public float Xalign {
 			get { return xalign; }
 			set {
-				xalign = value;
+				xalign = (float)(value * IconScale);
 				QueueDraw ();
 			}
 		}
@@ -64,16 +64,20 @@ namespace MonoDevelop.Components
 		public float Yalign {
 			get { return yalign; }
 			set {
- 				yalign = value;
+				yalign = (float)(value * IconScale);
 				QueueDraw ();
 			}
+		}
+
+		double IconScale {
+			get { return Mono.TextEditor.GtkWorkarounds.GetPixelScale (); }
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			if (image != null) {
-				requisition.Width = (int)image.Width;
-				requisition.Height = (int)image.Height;
+				requisition.Width = (int)(image.Width * IconScale);
+				requisition.Height = (int)(image.Height * IconScale);
 			}
 		}
 
@@ -81,9 +85,12 @@ namespace MonoDevelop.Components
 		{
 			if (image != null) {
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
-					var x = Allocation.X + (Allocation.Width - image.Width) * xalign;
-					var y = Allocation.Y + (Allocation.Height - image.Height) * yalign;
-					ctx.DrawImage (this, image, x, y);
+					var x = Allocation.X + (Allocation.Width - image.Width) * Xalign;
+					var y = Allocation.Y + (Allocation.Height - image.Height) * Yalign;
+					ctx.Save ();
+					ctx.Scale (IconScale, IconScale);
+					ctx.DrawImage (this, image, x / IconScale, y / IconScale);
+					ctx.Restore ();
 				}
 			}
 			return true;
