@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override ContainerChild this [Widget w] {
 			get {
-				foreach (ContainerChild info in children.ToArray ()) {
+				foreach (ContainerChild info in children) {
 					if (info.Child == w)
 						return info;
 				}
