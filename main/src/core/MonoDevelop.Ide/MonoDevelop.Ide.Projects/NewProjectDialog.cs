@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Projects {
 	/// This class displays a new project dialog and sets up and creates a a new project,
 	/// the project types are described in an XML options file
 	/// </summary>
-	public partial class NewProjectDialog: Gtk.Dialog
+	internal partial class NewProjectDialog: Gtk.Dialog
 	{
 		ArrayList alltemplates = new ArrayList();
 		List<Category> categories = new List<Category> ();

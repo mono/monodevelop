@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class ExportSolutionDialog : Gtk.Dialog
+	partial class ExportSolutionDialog : Gtk.Dialog
 	{
 		FileFormat[] formats;
 		
