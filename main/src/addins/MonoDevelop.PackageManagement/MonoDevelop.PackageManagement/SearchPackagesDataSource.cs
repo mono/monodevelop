@@ -90,7 +90,12 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		int ISearchDataSource.ItemCount {
-			get { return 1; }
+			get {
+				if (IsProjectSelected ()) {
+					return 1;
+				}
+				return 0;
+			}
 		}
 	}
 }
