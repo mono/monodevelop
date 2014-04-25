@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				var project = file.Project;
 				var inFolder = project.Files.GetFilesInVirtualPath (file.ProjectVirtualPath.ParentDirectory).ToList ();
 
-				if (inFolder.Count == 1 && inFolder [0] == file) {
+				if (inFolder.Count == 1 && inFolder [0] == file && project.Files.GetFileWithVirtualPath (file.ProjectVirtualPath.ParentDirectory) == null) {
 					// This is the last project file in the folder. Make sure we keep
 					// a reference to the folder, so it is not deleted from the tree.
 					var folderFile = new ProjectFile (project.BaseDirectory.Combine (file.ProjectVirtualPath.ParentDirectory));

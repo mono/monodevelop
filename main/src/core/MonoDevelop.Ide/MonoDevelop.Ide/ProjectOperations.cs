@@ -1775,7 +1775,7 @@ namespace MonoDevelop.Ide
 			// a reference to the folder, so it is not deleted from the tree.
 			if (removeFromSource && sourceProject != null && pfolder.CanonicalPath != sourceProject.BaseDirectory.CanonicalPath && pfolder.IsChildPathOf (sourceProject.BaseDirectory)) {
 				pfolder = pfolder.ToRelative (sourceProject.BaseDirectory);
-				if (!sourceProject.Files.GetFilesInVirtualPath (pfolder).Any ()) {
+				if (!sourceProject.Files.GetFilesInVirtualPath (pfolder).Any () && sourceProject.Files.GetFileWithVirtualPath (pfolder) == null) {
 					var folderFile = new ProjectFile (sourceProject.BaseDirectory.Combine (pfolder));
 					folderFile.Subtype = Subtype.Directory;
 					sourceProject.Files.Add (folderFile);
