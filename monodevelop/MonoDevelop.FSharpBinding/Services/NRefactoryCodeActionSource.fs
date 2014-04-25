@@ -10,6 +10,7 @@ open System.Threading
 open ICSharpCode.NRefactory.Refactoring
 open FSharp.CompilerBinding
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open Mono.TextEditor
 
 type FSharpRefactoringContext() = 
    interface IRefactoringContext with   
@@ -22,12 +23,20 @@ type FSharpRefactoringContext() =
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction() as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, fsSymbolUse:FSharpSymbolUse, line:int) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
     x.IdString <- "ImplementInterfaceCodeAction"
-  override y.Run (context: IRefactoringContext, script:obj) = ()
+  override x.Run (context: IRefactoringContext, script:obj) = 
+     // TODO: Default indent? XS has policies, look into that. 
+     let indent = 2
+     let startindent = (doc.GetLineIndent line).Length + indent
+     let e = fsSymbolUse.Symbol :?> FSharpEntity
+     let iii = InterfaceStubGenerator.formatInterface startindent indent [||] "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     let insertpoint = doc.GetLine(line).NextLine.Offset
+     doc.Replace(insertpoint, 0, iii)
+     ()
 
 /// <summary>
 /// A code action provider is a factory that creates code actions for a document at a given location.
@@ -40,15 +49,13 @@ type ImplementInterfaceCodeActionProvider() as x =
     x.Category    <- "Test" // TODO: These are for preferences, but these actions don't show up there yet. Find out why. 
     x.Title       <- "Implement Interface category"
     x.Description <- "Implement this interface"
-  override y.IdString = "ImplementInterfaceCodeActionProvider" 
+  override x.IdString = "ImplementInterfaceCodeActionProvider" 
 
-  override y.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
+  override x.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
     let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
     if doc.ParsedDocument <> null then
       match doc.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast -> seq {
-            let currentFile = doc.FileName.ToString()
-            
             let lineStr = doc.Editor.GetLineText(location.Line)
             let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
             match symbol with 
@@ -56,12 +63,13 @@ type ImplementInterfaceCodeActionProvider() as x =
                match sy.Symbol with
                | :? FSharpEntity as e when e.IsInterface ->
                    //TODO: Check if completely implemented -> no command
-                   yield ImplementInterfaceCodeAction() :> _
+                   yield ImplementInterfaceCodeAction(doc.Editor.Document, sy, location.Line) :> _
                | _ -> ()
             | _ -> ()
           }
         | _ -> Seq.empty
      else Seq.empty
+     
 type NRefactoryCodeActionSource() = 
   interface ICodeActionProviderSource with
     member x.GetProviders() = seq {
