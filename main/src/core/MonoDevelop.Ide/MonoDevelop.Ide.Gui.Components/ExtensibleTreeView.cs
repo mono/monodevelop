@@ -2575,13 +2575,13 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		Xwt.Drawing.Image GetResized (Xwt.Drawing.Image value)
 		{
-			if (zoom == 1)
-				return value;
-
 			//this can happen during solution deserialization if the project is unrecognized
 			//because a line is added into the treeview with no icon
-			if (value == null)
+			if (value == null || value == CellRendererImage.NullImage)
 				return null;
+
+			if (zoom == 1)
+				return value;
 
 			Xwt.Drawing.Image resized;
 			if (resizedCache.TryGetValue (value, out resized))
@@ -2618,14 +2618,17 @@ namespace MonoDevelop.Ide.Gui.Components
 				Xwt.Drawing.Image image;
 				GetImageInfo (cell_area, out image, out x, out y);
 
+				if (image == null)
+					return;
+
 				using (var ctx = Gdk.CairoHelper.Create (window)) {
-					if (overlayBottomLeft != null)
+					if (overlayBottomLeft != null && overlayBottomLeft != NullImage)
 						ctx.DrawImage (widget, overlayBottomLeft, x - overlayOverflow, y + image.Height - overlayBottomLeft.Height + overlayOverflow);
-					if (overlayBottomRight != null)
+					if (overlayBottomRight != null && overlayBottomRight != NullImage)
 						ctx.DrawImage (widget, overlayBottomRight, x + image.Width - overlayBottomRight.Width + overlayOverflow, y + image.Height - overlayBottomRight.Height + overlayOverflow);
-					if (overlayTopLeft != null)
+					if (overlayTopLeft != null && overlayTopLeft != NullImage)
 						ctx.DrawImage (widget, overlayTopLeft, x - overlayOverflow, y - overlayOverflow);
-					if (overlayTopRight != null)
+					if (overlayTopRight != null && overlayTopRight != NullImage)
 						ctx.DrawImage (widget, overlayTopRight, x + image.Width - overlayTopRight.Width + overlayOverflow, y - overlayOverflow);
 				}
 			}
