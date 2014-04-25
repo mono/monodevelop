@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide
 
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string, string> composedIcons = new Dictionary<string, string> ();
-		static Dictionary<Gdk.Pixbuf, string> namedIcons = new Dictionary<Gdk.Pixbuf, string> ();
 
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();

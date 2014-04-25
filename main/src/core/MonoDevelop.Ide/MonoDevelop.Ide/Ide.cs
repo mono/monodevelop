@@ -58,7 +58,6 @@ namespace MonoDevelop.Ide
 		static IdeServices ideServices;
 		static RootWorkspace workspace;
 		static IdePreferences preferences;
-		static IdeCustomizer customizer;
 
 		public const int CurrentRevision = 5;
 		

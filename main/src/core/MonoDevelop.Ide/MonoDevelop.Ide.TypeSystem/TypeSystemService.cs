@@ -1753,7 +1753,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			var oldCache = cachedAssemblyContents.Values.ToList ();
 			cachedAssemblyContents.Clear ();
 			lock (parseQueueLock) {
 				parseQueueIndex.Clear ();
@@ -2602,7 +2601,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
-				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
 					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
