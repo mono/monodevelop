@@ -1332,7 +1332,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Remove old items
 			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
 			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.Include + "<" + item.Condition] = new ItemInfo () {
+				oldItems [item.Name + "<" + item.UnevaluatedInclude + "<" + item.Condition] = new ItemInfo () {
 					Item = item
 				};
 			// Add the new items
